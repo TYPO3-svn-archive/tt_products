@@ -12,7 +12,7 @@ plugin.tt_products {
   pid_list.field = pages
   recursive.field = recursive
   code.field = select_key
-
+  
   limit = {$plugin.tt_products.limit}
   image {
     file.maxW = {$plugin.tt_products.maxW_single}
@@ -21,7 +21,7 @@ plugin.tt_products {
       enable = 1
       bodyTag = <BODY bgColor=black>
       wrap = <A href="javascript:close();"> | </A>
-      width = 400m
+      width = 400
       height = 400
 
       JSwindow = 1
@@ -31,8 +31,9 @@ plugin.tt_products {
   }
   listImage < .image
   listImage.file.maxW = {$plugin.tt_products.maxW_list}
-  listImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_list}
-
+  listImage.file.maxH = {$plugin.tt_products.maxH_list}
+  listImage.imageLinkWrap >
+  
   basketImage < .image
   basketImage.file.maxW = {$plugin.tt_products.maxW_basket}
   basketImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_basket}
@@ -54,6 +55,7 @@ plugin.tt_products {
   PIDsearch = {$plugin.tt_products.PIDsearch}
   PIDbasket = {$plugin.tt_products.PIDbasket}
   PIDstoreRoot = {$plugin.tt_products.PIDstoreRoot}
+  PIDmemo = {$plugin.tt_products.PIDmemo}
   PID_sys_products_orders = 0
 #  PIDinfo = 209
 #  PIDfinalize = 210
@@ -66,13 +68,13 @@ plugin.tt_products {
   priceDec = {$plugin.tt_products.priceDec}
   priceDecPoint = {$plugin.tt_products.priceDecPoint}
   priceThousandPoint = {$plugin.tt_products.priceThousandPoint}
-  currencySymbol = USD
+  currencySymbol = EUR
 
   TAXpercentage = {$plugin.tt_products.TAXpercentage}
   TAXincluded = {$plugin.tt_products.TAXincluded}
 
-  lockLoginUserInfo = 1
-  requiredInfoFields = name, address, telephone
+  lockLoginUserInfo = 0
+  requiredInfoFields = name, address, telephone, email
   orderNumberPrefix = order_
   orderEmail_from = shop@myTypo3Shop.com
   orderEmail_fromName = My Typo3 Shop
@@ -80,15 +82,19 @@ plugin.tt_products {
   orderEmail_htmlmail = 0
   email_notify_default = 1
   statusCodes {
+# 1: Incoming orders    
     1 = Order submitted by user
+# 2-49: Useable by the shop admin
     2 = Order is recieved and accepted by store
     10 = Shop is awaiting goods from third-party
     11 = Shop is awaiting customer payment
     12 = Shop is awaiting material from customer
     20 = Goods shipped to customer
     30 = Other message from store
+# 50-99: Useable by the customer
     50 = Customer request for cancelling
     51 = Message from customer to shop
+# 100- :
     100 = Order shipped and closed
     101 = Order closed
     200 = Ordre cancelled
@@ -96,6 +102,52 @@ plugin.tt_products {
   update_code = password
   statusDate_stdWrap.strftime= %e-%m-%y %H:%M
   orderDate_stdWrap.strftime= %e-%m-%y
+  
+  usePriceTag = {$plugin.tt_products.usePriceTag}
+
+  priceTagObj = IMAGE
+  priceTagObj.wrap = |<br>
+  priceTagObj.file = GIFBUILDER
+  priceTagObj.file {
+    backColor = #C4C400
+    XY = [10.w]+10,[10.h]+5
+    10 = TEXT
+    10 {
+      text = ###PRICE###
+      offset = 0,14
+      fontColor = #222222
+      fontSize = 16
+      align = center
+      niceText = 1
+    }
+  }
+
+  max_note_length = {$plugin.tt_products.max_note_length}
+
+  bulkilyWarning = {$plugin.tt_products.bulkilyWarning}
+  bulkilyAddition = {$plugin.tt_products.bulkilyAddition}
+  specialPreparation = {$plugin.tt_products.specialPreparation}
+
+  createUsers = {$plugin.tt_products.createUsers}
+  PIDuserFolder = {$plugin.tt_products.PIDuserFolder}
+  memberOfGroup = {$plugin.tt_products.memberOfGroup}
+
+  stdSearchFieldExt = subtitle
+  PIDagb = {$plugin.tt_products.PIDagb}
+  agbtarget = {$plugin.tt_products.agbtarget}
+  AGBattachment = {$plugin.tt_products.AGBattachment}
+
+  generateCSV = {$plugin.tt_products.generateCSV}
+  CSVdestination = {$plugin.tt_products.CSVdestination}
+  CSVfields = {$plugin.tt_products.CSVfields}
+  CSVinOneLine = {$plugin.tt_products.CSVinOneLine}
+
+  alwaysInStockMessage = {$plugin.tt_products.alwaysInStockMessage}
+  inStockPieces = {$plugin.tt_products.inStockPieces}
+
+  newItemDays = {$plugin.tt_products.newItemDays}
+
+  substitutePagetitle = {$plugin.tt_products.substitutePagetitle}  
 }
 
 ## EXAMPLE payment config:

@@ -2,7 +2,7 @@
 # Table structure for table 'tt_products'
 #
 CREATE TABLE tt_products (
-  uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+  uid int(11) unsigned NOT NULL auto_increment,
   pid int(11) unsigned DEFAULT '0' NOT NULL,
   tstamp int(11) unsigned DEFAULT '0' NOT NULL,
   hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
@@ -20,6 +20,17 @@ CREATE TABLE tt_products (
   deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
   ordered int(10) unsigned DEFAULT '0' NOT NULL,
   fe_group int(11) DEFAULT '0' NOT NULL,
+  tax int(11) DEFAULT '0' NOT NULL,
+  weight varchar(20) DEFAULT '' NOT NULL,
+  bulkily int(11) DEFAULT '0' NOT NULL,
+  offer int(11) DEFAULT '0' NOT NULL,
+  highlight int(11) DEFAULT '0' NOT NULL,
+  directcost varchar(20) DEFAULT '' NOT NULL,
+  color varchar(100) DEFAULT '' NOT NULL,
+  size varchar(40) DEFAULT '' NOT NULL,
+  special_preparation int(11) DEFAULT '0' NOT NULL,
+  gradings varchar(40) DEFAULT '' NOT NULL,
+  subtitle tinytext NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid)
 );
@@ -28,7 +39,7 @@ CREATE TABLE tt_products (
 # Table structure for table 'tt_products_cat'
 #
 CREATE TABLE tt_products_cat (
-  uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+  uid int(11) unsigned NOT NULL auto_increment,
   pid int(11) unsigned DEFAULT '0' NOT NULL,
   tstamp int(11) unsigned DEFAULT '0' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -43,7 +54,7 @@ CREATE TABLE tt_products_cat (
 # Table structure for table 'sys_products_orders'
 #
 CREATE TABLE sys_products_orders (
-  uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+  uid int(11) unsigned NOT NULL auto_increment,
   pid int(11) unsigned DEFAULT '0' NOT NULL,
   tstamp int(11) unsigned DEFAULT '0' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -51,6 +62,7 @@ CREATE TABLE sys_products_orders (
   note text NOT NULL,
   name varchar(80) DEFAULT '' NOT NULL,
   telephone varchar(20) DEFAULT '' NOT NULL,
+  fax varchar(20) DEFAULT '' NOT NULL,
   email varchar(80) DEFAULT '' NOT NULL,
   payment varchar(80) DEFAULT '' NOT NULL,
   shipping varchar(80) DEFAULT '' NOT NULL,
@@ -60,6 +72,7 @@ CREATE TABLE sys_products_orders (
   status tinyint(4) unsigned DEFAULT '0' NOT NULL,
   status_log blob NOT NULL,
   orderData mediumblob NOT NULL,
+  agb char(2) DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid),
   KEY tracking (tracking_code),
@@ -76,4 +89,19 @@ CREATE TABLE sys_products_orders_mm_tt_products (
   tt_products_uid int(11) unsigned DEFAULT '0' NOT NULL,
   KEY tt_products_uid (tt_products_uid),
   KEY sys_products_orders_uid (sys_products_orders_uid)
+);
+
+#
+# Table structure for table 'fe_users'
+#
+CREATE TABLE fe_users (
+  tt_products_memoItems tinytext NOT NULL,
+  tt_products_discount int(11) DEFAULT '0' NOT NULL
+);
+
+#
+# Extension of table 'tt_content'
+#
+CREATE TABLE tt_content (
+  tt_products_code varchar(30) DEFAULT 'LIST' NOT NULL
 );
