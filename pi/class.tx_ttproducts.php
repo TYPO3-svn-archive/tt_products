@@ -508,6 +508,11 @@ class tx_ttproducts extends tslib_pibase {
 
 					// Substitute
 				$content= $this->cObj->substituteMarkerArrayCached($item,$markerArray,array(),$wrappedSubpartArray);
+
+				if (trim($row["color"]) == '')
+					$content = $this->cObj->substituteSubpart($content, "###display_variant1###", "");
+				if (trim($row["size"]) == '')
+					$content = $this->cObj->substituteSubpart($content, "###display_variant2###", "");
 			}
 		} elseif ($theCode=="SINGLE") {
 			$content.="Wrong parameters, GET/POST var 'tt_products' was missing.";
@@ -666,7 +671,12 @@ class tx_ttproducts extends tslib_pibase {
 							if (strlen($markerArray["###PRODUCT_NOTE###"]) > $this->conf["max_note_length"])
 								$markerArray["###PRODUCT_NOTE###"] = substr($markerArray["###PRODUCT_NOTE###"], 0, $this->conf["max_note_length"]) . "...";
 
-							$itemsOut.= $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),$wrappedSubpartArray);
+							$tempContent = $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),$wrappedSubpartArray);
+							if (trim($row["color"]) == '')
+								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant1###", "");
+							if (trim($row["size"]) == '')
+								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant2###", "");
+							$itemsOut .= $tempContent;
 						}
 
 						if ($this->conf["displayBasketColumns"] > 1) { // complete the last table row
