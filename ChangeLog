@@ -1,8 +1,15 @@
-2004-09-13  Michael Stucki  <mundaun@gmx.ch>
+2005-04-02  Michael Stucki  <michael@typo3.org>
 
-	* Initial CVS upload
-2004-04-01  Franz Holzinger <franz@fholzinger.com>
+	* Removed ChangeLog part from class.tx_ttproducts.php
+
+2004-04-01  Franz Holzinger  <franz@fholzinger.com>
 
 	* tt_products 2.0.0 upload
+	* bring in of zk_products by Klaus Zierer
+	* display in the columns of a table
+	* bill and delivery sheet
+	* special price calculation
 
+2004-09-13  Michael Stucki  <michael@typo3.org>
 
+	* Initial CVS upload

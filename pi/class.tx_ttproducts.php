@@ -30,45 +30,14 @@
  * Creates a list of products for the shopping basket in TYPO3.
  * Also controls basket, searching and payment.
  *
- * TypoScript config:
+ * Typoscript config:
  * - See static_template "plugin.tt_products"
- * - See TS_ref.pdf
+ * - See TSref.pdf
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @coauthor René Fritz <r.fritz@colorcube.de>
- * improvements:
- * 2005 Franz Holzinger <kontakt@fholzinger.com>
- * 2005 Klaus Zierer    <klaus@ziererk.de / zierer@pz-systeme.de>:
- */
-
-
-/**
- * changes:
- *
- * 12.9.2001
- *
- * added 'page browsing': <- 1 2 3 ->
- * - see ###LINK_BROWSE### and ###BROWSE_LINKS###
- * added ###ITEMS_SELECT_COUNT### for displaying the amount of the current available items (in this category or search)
- *
- * 13.9.2001 René Fritz
- *
- * added range check for $begin_at
- *
- * 14.9.2001 René Fritz
- * bugfix: with adding of page browsing 'orderby' was damaged
- *
- * 19.9.2001 René Fritz
- * changed counting select to 'select count(*)'
- *
- * 20.9.2001 René Fritz
- * new TS value 'stdSearchFieldExt' extends the search fields. Example: 'stdSearchFieldExt = note2,year'
- *
- * 26.03.2005 Franz Holzinger
- * bring in of zk_products by Klaus Zierer
- * display in the columns of a table
- * bill and delivery sheet
- * special price calculation
+ * @author	René Fritz <r.fritz@colorcube.de>
+ * @author	Klaus Zierer <klaus@ziererk.de> / <zierer@pz-systeme.de>
+ * @author	Franz Holzinger <kontakt@fholzinger.com>
  */
 
 
@@ -333,12 +302,10 @@ class tx_ttproducts extends tslib_pibase {
 					$this->load_noLinkExtCobj();
 					$content.=$this->getBasket("###BASKET_INFO_TEMPLATE###");
 				break;
-				// ZK+
 				case "products_overview":
 					$this->load_noLinkExtCobj();
 					$content.=$this->getBasket("###BASKET_OVERVIEW_TEMPLATE###");
 				break;
-				// ZK-
 				case "products_payment":
 					$this->load_noLinkExtCobj();
 					if ($this->checkRequired() &&
@@ -620,13 +587,11 @@ class tx_ttproducts extends tslib_pibase {
 					$productsArray[$row["pid"]][]=$row;
 				}
 
-				// ZK+
 					// Getting various subparts we're going to use here:
 				if ($memoItems != "")
 					$t["listFrameWork"] = $this->cObj->getSubpart($this->templateCode,$this->spMarker("###MEMO_TEMPLATE###"));
 				else
 					$t["listFrameWork"] = $this->cObj->getSubpart($this->templateCode,$this->spMarker("###ITEM_LIST_TEMPLATE###"));
-				// ZK-
 
 				$t["categoryTitle"] = $this->cObj->getSubpart($t["listFrameWork"],"###ITEM_CATEGORY###");
 				$t["itemFrameWork"] = $this->cObj->getSubpart($t["listFrameWork"],"###ITEM_LIST###");
@@ -696,12 +661,10 @@ class tx_ttproducts extends tslib_pibase {
 								$markerArray["###ITEM_SINGLE_POST_HTML###"] = ($iColCount == $this->conf["displayBasketColumns"] ? "</TR>" : "");
 							}
 
-							// ZK+
 							$markerArray["###FORM_MEMO###"] = $this->getLinkUrl($this->conf["PIDmemo"]);
 							// cuts note in list view
 							if (strlen($markerArray["###PRODUCT_NOTE###"]) > $this->conf["max_note_length"])
 								$markerArray["###PRODUCT_NOTE###"] = substr($markerArray["###PRODUCT_NOTE###"], 0, $this->conf["max_note_length"]) . "...";
-							// ZK-
 
 							$itemsOut.= $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),$wrappedSubpartArray);
 						}
@@ -814,9 +777,7 @@ class tx_ttproducts extends tslib_pibase {
 
 	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
-	 *
-     * $basket is the TYPO3 default shopping basket array from ses-data
-	 * // ZK++
+	 * $basket is the TYPO3 default shopping basket array from ses-data
 	 */
 	function initBasket($basket, $updateMode)	{
 		global $TSFE;
@@ -1204,7 +1165,7 @@ class tx_ttproducts extends tslib_pibase {
 						$subject=trim($parts[0]);
 						$plain_message=trim($parts[1]);
 
-						$this->zk_mail($this->personInfo["email"], $subject, $plain_message, $this->conf["orderEmail_from"], $this->conf["orderEmail_fromName"]);
+						$this->send_mail($this->personInfo["email"], $subject, $plain_message, $this->conf["orderEmail_from"], $this->conf["orderEmail_fromName"]);
 					}
 				}
 			}
@@ -1398,12 +1359,12 @@ class tx_ttproducts extends tslib_pibase {
 						$Typo3_htmlmail->sendtheMail();
 				} else {		// ... else just plain text...
 					// $headers variable überall entfernt!
-					$this->zk_mail($this->deliveryInfo["email"], $subject, $plain_message, $this->conf["orderEmail_from"], $this->conf["orderEmail_fromName"], $this->conf["AGBattachment"]);
+					$this->send_mail($this->deliveryInfo["email"], $subject, $plain_message, $this->conf["orderEmail_from"], $this->conf["orderEmail_fromName"], $this->conf["AGBattachment"]);
 					if ($this->conf["generateCSV"])
 						$addcsv = $csvfilepath;
 					else
 						$addcsv = "";
-					$this->zk_mail($this->conf["orderEmail_to"], $subject, $plain_message, $this->deliveryInfo["email"], $this->deliveryInfo["name"], $addcsv);
+					$this->send_mail($this->conf["orderEmail_to"], $subject, $plain_message, $this->deliveryInfo["email"], $this->deliveryInfo["name"], $addcsv);
 				}
 			}
 		}
@@ -1997,7 +1958,6 @@ class tx_ttproducts extends tslib_pibase {
 		$templateCode = $templateCode ? $templateCode : $this->templateCode;
 		$this->calculatedBasket = array();		// array that holds the final list of items, shipping and payment + total amounts
 
-		// ZK+
 		$this->calculatedSums_number["goodstotal"] = 0;
 
 		$uidArr = array();
@@ -2007,11 +1967,9 @@ class tx_ttproducts extends tslib_pibase {
 				$uidArr[] = $uidTmp;
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->pid_list.')'.$this->cObj->enableFields('tt_products'));
-		// ZK-
 
 		$productsArray = array();
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
-			// ZK+
 			reset($this->basketExt[$row["uid"]]);
 			while(list($bextVars,)=each($this->basketExt[$row["uid"]])) {
 				$groesseFarbe = explode(";", $bextVars);
@@ -2021,7 +1979,6 @@ class tx_ttproducts extends tslib_pibase {
 				$productsArray[$row["pid"]][]=$row;
 						// Fills this array with the product records. Reason: Sorting them by category (based on the page, they reside on)
 			}
-				// ZK-
 		}
 
 			// Getting subparts from the template code.
@@ -2669,13 +2626,12 @@ class tx_ttproducts extends tslib_pibase {
 				$plain_message=trim($parts[1]);
 
 //				$TSFE->plainMailEncoded(implode($recipients,","), $subject, $plain_message, implode($headers,chr(10)));
-				$this->zk_mail(implode($recipients,","), $subject, $plain_message, $this->conf["orderEmail_from"], $this->conf["orderEmail_fromName"]);
+				$this->send_mail(implode($recipients,","), $subject, $plain_message, $this->conf["orderEmail_from"], $this->conf["orderEmail_fromName"]);
 			}
 		}
 	}
 
 	/**
-	 * // ZK++
 	 * Generate a graphical price tag or print the price as text
 	 */
 	function printPrice($priceText)
@@ -2694,10 +2650,9 @@ class tx_ttproducts extends tslib_pibase {
 
 
 	/**
-	 * // ZK++
-	 * ZKs extended mail function
+	 * Extended mail function
 	 */
-	function zk_mail($email,$subject,$message,$fromEMail,$fromName,$attachment="")
+	function send_mail($email,$subject,$message,$fromEMail,$fromName,$attachment="")
 	{
 		$cls=t3lib_div::makeInstanceClassName("t3lib_htmlmail");
 		if (class_exists($cls))
@@ -2726,7 +2681,6 @@ class tx_ttproducts extends tslib_pibase {
 	}
 
 	/**
-	 * // ZK++
 	 * Displays and manages the memo
 	 */
 	function memo_display($theCode)
