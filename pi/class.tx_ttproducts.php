@@ -818,7 +818,7 @@ class tx_ttproducts extends tslib_pibase {
 						}
 						else
 						{
-							$this->basketExt[$uid][$extVars] = $this->basketExt[$uid][$extVars] + $count;
+							$this->basketExt[$uid][$extVars] += $count;
 						}
 					}
 					else
@@ -1185,7 +1185,7 @@ class tx_ttproducts extends tslib_pibase {
 		// Reduce inStock
 		reset($this->calculatedBasket);
 		while(list(,$itemInfo)=each($this->calculatedBasket))   {
-			$query="uid='".intval($itemInfo["rec"]["uid"])."';";
+			$query="uid='".intval($itemInfo["rec"]["uid"])."'";
 
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products', $query);
 
@@ -1201,8 +1201,7 @@ class tx_ttproducts extends tslib_pibase {
 					$fieldsArray["inStock"]=$newInStock;
 
 								// Saving the order record
-					$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('sys_products_orders', 'uid='.intval($itemInfo["rec"]["uid"]), $fieldsArray);
-
+					$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'uid='.intval($itemInfo["rec"]["uid"]), $fieldsArray);
 				}
 			}
 		}
@@ -1509,7 +1508,8 @@ class tx_ttproducts extends tslib_pibase {
 		if (trim($this->conf["requiredInfoFields"]))	{
 			$infoFields = t3lib_div::trimExplode(",",$this->conf["requiredInfoFields"]);
 			while(list(,$fName)=each($infoFields))	{
-				if (!trim($this->personInfo[$fName]))	{
+				if (trim($this->personInfo[$fName])=='')	{
+					debug ($this->personInfo[$fName], "'$fName' is not filled in", __LINE__, __FILE__);
 					$flag=0;
 					break;
 				}
