@@ -2,7 +2,7 @@
 
 	* Removed ChangeLog part from class.tx_ttproducts.php
 
-2004-04-01  Franz Holzinger  <franz@fholzinger.com>
+2005-04-01  Franz Holzinger  <franz@fholzinger.com>
 
 	* tt_products 2.0.0 upload
 	* bring in of zk_products by Klaus Zierer
