@@ -142,6 +142,7 @@ plugin.tt_products {
   CSVfields = {$plugin.tt_products.CSVfields}
   CSVinOneLine = {$plugin.tt_products.CSVinOneLine}
 
+  alwaysInStock  = {$plugin.tt_products.alwaysInStock}
   alwaysInStockMessage = {$plugin.tt_products.alwaysInStockMessage}
   inStockPieces = {$plugin.tt_products.inStockPieces}
 
@@ -181,7 +182,7 @@ plugin.tt_products.shipping {
 
   20.title = Airmail
   20.image.file = media/logos/postdanmark.gif
-  10.image.params = align=absmiddle
+  20.image.params = align=absmiddle
   20.priceTax = 120
   20.priceNoTax = 120
 

@@ -6,7 +6,7 @@
 $TCA["tt_products"] = Array (
 	"ctrl" => $TCA["tt_products"]["ctrl"],
 	"interface" => Array (
-		"showRecordFieldList" => "title,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,special_preparation,gradings,subtitle,image,hidden,starttime,endtime"
+		"showRecordFieldList" => "title,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,accessory,accessory2,special_preparation,gradings,subtitle,image,hidden,starttime,endtime"
 	),
 	"columns" => Array (
 		"starttime" => Array (
@@ -198,6 +198,26 @@ $TCA["tt_products"] = Array (
 				"max" => "255"
 			)
 		),
+		"accessory" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products.accessory",
+			"config" => Array (
+				"type" => "input",
+				"size" => "6",
+				"eval" => "trim,double2",
+				"max" => "8"
+			)
+		),
+		"accessory2" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products.accessory2",
+			"config" => Array (
+				"type" => "input",
+				"size" => "6",
+				"eval" => "trim,double2",
+				"max" => "8"
+			)
+		),
 		"size" => Array (
 			"exclude" => 1,
 			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products.size",
@@ -250,13 +270,14 @@ $TCA["tt_products"] = Array (
 		)
 	),
 	"types" => Array (
-		"1" => Array("showitem" => "hidden;;;;1-1-1, title;;3;;3-3-3, itemnumber, category, price;;2, weight;;4, note;;;richtext[cut|copy|paste|formatblock|textcolor|bold|italic|underline|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image|line|chMode]:rte_transform[mode=ts_css|imgpath=uploads/tx_djshop/rte/], image;;;;5-5-5")
+		"1" => Array("showitem" => "hidden;;;;1-1-1, title;;3;;3-3-3, itemnumber, category, price;;2, weight;;4, accessory;;5, note;;;richtext[cut|copy|paste|formatblock|textcolor|bold|italic|underline|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image|line|chMode]:rte_transform[mode=ts_css|imgpath=uploads/tx_djshop/rte/], image;;;;5-5-5")
 	),
 	"palettes" => Array (
 		"1" => Array("showitem" => "starttime, endtime, fe_group"),
 		"2" => Array("showitem" => "price2, inStock, directcost, tax, offer, highlight"),
 		"3" => Array("showitem" => "www, subtitle"),
-		"4" => Array("showitem" => "bulkily, color, size, gradings, special_preparation")
+		"4" => Array("showitem" => "bulkily, color, size, gradings, special_preparation"),
+		"5" => Array("showitem" => "accessory2")
 	)
 );
 

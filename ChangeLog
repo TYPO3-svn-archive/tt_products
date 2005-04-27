@@ -1,3 +1,16 @@
+2005-04-27  Franz Holzinger  <franz@fholzinger.com>
+
+	* fill ###PRODUCT_IMAGE15### with empty string if no image is available
+	* correct error with wrong filling in of delivery address
+	* correct error with AGB
+	* price factor for weight to increase shipping cost
+	* adapted accessory from Jens Schmietendorf
+	* template from bananaguard.de in documentation
+	* enable '.$key.' for shopping template
+	* correct error with taxpercentage
+	* email notification to order person and not delivery person
+	* alwaysInStock will never reduce stock, set to 1 by default
+
 2005-04-05  Franz Holzinger  <franz@fholzinger.com>
 
 	* correction manual (Shopsort extension)

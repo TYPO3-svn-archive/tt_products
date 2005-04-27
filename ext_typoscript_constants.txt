@@ -66,11 +66,11 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label=Use Price Tag: Print a graphical price tag instead of the normal text field
   usePriceTag = 1
     # cat=plugin.products//; type=text; label=Message displayed at bulkily items
-  bulkilyWarning = <p><b>Warnung! Dieser Artikel ist sperrig und muss gesondert transportiert werden.</b></p>
+  bulkilyWarning = <p><b>Warning! This article needs special transport.</b></p>
     # cat=plugin.products//; type=int+; label=Additional cost for bulkily items
   bulkilyAddition = 25
     # cat=plugin.products//; type=text; label=Special preparation: Message displayed at items marked as special preparation
-  specialPreparation = Spezialanfertigungen möglich! <A HREF="?id=999&tt_products=###PRODUCT_ID###">Hier anfordern</A>.
+  specialPreparation = Special preparation possible! <A HREF="?id=999&tt_products=###PRODUCT_ID###">Order here</A>.
 
     # cat=plugin.products//; type=int+; label=Max note length: Max. length of note text in list view
   max_note_length = 100
@@ -99,6 +99,8 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label=Choose your CSV format: Write all additional information in one line behind the first ordered product. This is good if you want to import this files somewhere. If you not check this, the CSV is formatted for best view in Excel for example
   CSVinOneLine = 0
 
+    # cat=plugin.products//; type=text; label=Always inStock: The stock will never get reduced.
+  alwaysInStock = 1
     # cat=plugin.products//; type=text; label=Always inStock message: Message is displayed if inStock <= -1 (means always inStock)
   alwaysInStockMessage = Auf Lager
     # cat=plugin.products//; type=text; label=Unit for pieces

@@ -26,6 +26,8 @@ CREATE TABLE tt_products (
   offer int(11) DEFAULT '0' NOT NULL,
   highlight int(11) DEFAULT '0' NOT NULL,
   directcost varchar(20) DEFAULT '' NOT NULL,
+  accessory varchar(255) DEFAULT '' NOT NULL,
+  accessory2 varchar(255) DEFAULT '' NOT NULL,
   color varchar(255) DEFAULT '' NOT NULL,
   size varchar(255) DEFAULT '' NOT NULL,
   special_preparation int(11) DEFAULT '0' NOT NULL,
