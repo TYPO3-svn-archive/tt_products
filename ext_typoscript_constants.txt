@@ -83,7 +83,7 @@ plugin.tt_products {
   memberOfGroup = 1
 
     # cat=plugin.products//; type=int+; label=PID of AGB page: PID of the page with the AGB
-  PIDagb = 123
+  PIDagb = 0
     # cat=plugin.products//; type=small; label=Target of AGB page: Target for the AGB page
   agbtarget = _blank
 
