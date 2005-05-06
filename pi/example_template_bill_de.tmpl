@@ -1,0 +1,1662 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<TITLE>bananaGUARD Shop-Template</TITLE>
+</head>
+
+<body>
+
+<br>
+<H1>bananaGUARD Shop-Template</H1>
+
+<BR><HR><BR>
+<h3>ITEM_LIST_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
+<br>
+<br>
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>ITEM_LIST_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
+<br>
+<br>
+
+
+<!-- ###ITEM_LIST_TEMPLATE### begin
+	This subpart is used to display the regular list of products. It's also used by search-results.
+-->
+
+<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td></td>
+		<td></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>nächste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+		<!-- ###ITEM_CATEGORY### begin -->		
+			<tr>
+				
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<tr>
+				<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
+			</tr>
+			<TR><TD colspan="3">
+			<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
+			
+        <TABLE bordercolor="#003399" cellspacing="1" border="1">
+          <tr> 
+            <td><img src="clear.gif" width=150 height=1></td>
+            <td><img src="clear.gif" width=150 height=1></td>
+            <td><img src="clear.gif" width=150 height=1></td>
+          </tr>
+          <!-- ###ITEM_SINGLE### begin-->
+          ###ITEM_SINGLE_PRE_HTML### 
+          <TD height="150" bgcolor="###GC1###" valign="bottom" align="center"> 
+            <!--###LINK_ITEM###-->
+            ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E### 
+            <!--###LINK_ITEM###-->
+            <br>
+            ###PRODUCT_IMAGE### <br>
+            ###GW1B### Stückzahl: ###GW1E### <INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> 
+            <p> </TD>
+          ###ITEM_SINGLE_POST_HTML### 
+          <!-- ###ITEM_SINGLE### end -->
+          <TR> 
+            <TD colspan="3" align="CENTER"> <input type="Submit" name="order2" value="In den Warenkorb" onclick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></TD>
+          </TR>
+          <TR>
+            <TD colspan="3" align="CENTER"> <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=59'"></TD>
+          </TR>
+        </TABLE>
+			</FORM>
+			</TD></TR>
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td></td>
+		<td></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>nächste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+</TABLE>
+###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Befüllung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte über den Link Kontakt/Bestellung per Email. Viel Spaß beim Einkaufen! ###GW1E###
+
+<BR>
+<table width="163">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<BR>
+<!-- ###ITEM_LIST_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>ITEM_SINGLE_DISPLAY</h3>
+<em>This subpart is used to display single products.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_SINGLE_DISPLAY### begin
+	This subpart is used to display single products.
+-->
+<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<FORM method="post" action="###FORM_URL###">
+	<tr>
+		<td><img src="clear.gif" width=100 height=1></td>
+		<td><img src="clear.gif" width=5 height=1></td>
+		<td><img src="clear.gif" width=300 height=1></td>
+	</tr>
+	<tr>
+		<td colspan=3><img src="clear.gif" width=1 height=6></td>
+	</tr>
+	<tr>
+		<td colspan=3 bgcolor="###GC1###"><!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--></td>
+	</tr>
+	<TR>
+		<TD valign=top>###PRODUCT_IMAGE###</TD>
+		<td></td>
+		<TD valign=top>
+			###GW1B###
+				
+				<B>Info:</B><br>
+				###PRODUCT_NOTE###<br>
+			###GW1E###	<br>
+				<nobr>###GW2B### Menge: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">   <input type="Submit" name="order" value="in den Warenkorb" onclick="if (!document.forms[0]['###FIELD_NAME###'].value!=''){document.forms[0]['###FIELD_NAME###'].value=1;};"></nobr>
+		</TD>
+	</TR>
+</form>
+</TABLE>
+<br>
+<br>
+
+###GW2B###	
+<!--###LINK_ITEM###-->
+<b><- zurück zur Liste</b>
+<!--###LINK_ITEM###-->
+###GW2E###						
+	
+<!-- ###ITEM_SINGLE_DISPLAY### end -->
+
+
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>ITEM_SEARCH</h3>
+<em>Subpart for the search-form.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_SEARCH### begin
+Subpart for the search-form
+-->
+<FORM method="post" action="###FORM_URL###">
+<INPUT size="30" maxlength="100" type="text" name="swords" value="###SWORDS###">
+<input type="Submit" name="order" value="Suchen">
+</form>
+<!-- ###ITEM_SEARCH### end -->
+
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>ITEM_SEARCH_EMPTY</h3>
+<em>Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_SEARCH_EMPTY### begin
+Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.
+-->
+###GW1B###<B>Es wurden keine Artikel gefunden.</B>###GW1E###
+<!-- ###ITEM_SEARCH_EMPTY### end -->
+
+
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>BASKET_TEMPLATE</h3>
+<em>
+Subpart used to display the content of the shopping basket.<br>
+The product list part has the exact same features as the regular LIST_ITEM_TEMPLATE subpart.<br>
+In addition there's a number of fields used for delivery and payment information.<br>
+</em><br>
+
+
+<!-- ###BASKET_TEMPLATE###
+Subpart used to display the content of the shopping basket.
+The product list part has the exact same features as the regular LIST_ITEM_TEMPLATE subpart.
+In addition there's a number of fields used for delivery and payment information.
+-->
+###EXTERNAL_COBJECT###
+<FORM method="post" action="###FORM_URL###">
+
+<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<tr>
+<td><img src="clear.gif" width=100 height=1></td>
+<td><img src="clear.gif" width=5 height=1></td>
+<td><img src="clear.gif" width=110 height=1></td>
+<td colspan=3><img src="clear.gif" width=100 height=1></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>bananaGUARDs:</b>###GW2E###</td>
+<td bgcolor="###GC2###">###GW2B###<b> </b>###GW2E###</td>
+<td bgcolor="###GC2###">###GW2B###<b>Anzahl:</b>###GW2E###</td>
+<td align=center bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+</tr>
+<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+<!-- ###ITEM_CATEGORY### begin -->
+<tr>
+<td colspan=6><br>###CATEGORY_TITLE###<br>
+</td>
+</tr>
+<!-- ###ITEM_CATEGORY### end -->
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=6></td>
+</tr>
+<TR>
+
+<TD valign=top>
+<!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###-->
+
+</TD>
+<td></td>
+<td></td>
+<td valign=top>###GW1B### <!-- ###PRICE_TAX### --> ###GW1E###</td>
+<TD valign=top> <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> </TD>
+<td valign=top align=right>###GW1B### <!--<b>###PRICE_TOTAL_TAX###</b> <BR>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###) --> ###GW1E###</td>
+</TR>
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+
+
+<tr>
+      <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Versand und Verpackung:</b>###GW2E###</td>
+      <td colspan=2></td>
+
+</tr>
+
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=6></td>
+</tr>
+
+
+<TR>
+<td colspan=5>
+###GW1B###Pauschale: <b>###SHIPPING_TITLE###</B>###GW1E###<br><br>
+
+<TABLE><TR>
+            <TD valign="middle">###GW1B######SHIPPING_SELECTOR######GW1E###</TD>
+</TR></TABLE>
+
+</td>
+      <td valign=top align=right>###GW1B### <b>###PRICE_SHIPPING_TAX###</b>
+        <!-- <BR>(###PRICE_SHIPPING_NO_TAX###) -->
+        ###GW1E###</td>
+</TR>
+
+<tr>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+
+
+<!-- Payment habe ich hier rausgenommen -->
+
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Zahlungsweise:</b>###GW2E###</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=6></td>
+</tr>
+<TR>
+<td colspan=5>
+###GW1B###
+
+###PAYMENT_SELECTOR###
+
+###GW1E###
+
+###GW2B###
+<!-- ###MESSAGE_PAYMENT###
+This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
+-->
+<!-- ###MESSAGE_PAYMENT_11### -->
+<BR><B>Du kan kun bruge udenlandske Mastercard i vores butik. Desuden tager MasterCard 5,75% af transaktionsbeløbet i gebyr. Derfor bliver der kompenseret for dette beløb her.</b><br>
+<!-- ###MESSAGE_PAYMENT_11### -->
+<!-- ###MESSAGE_PAYMENT_12### -->
+<br>
+<B>Du kan kun bruge udenlandske VISA-kort i vores butik. Desuden tager VISA 5,75% af transaktionsbeløbet i gebyr. Derfor bliver der kompenseret for dette beløb her.</b><br>
+<!-- ###MESSAGE_PAYMENT_12### -->
+<!-- ###MESSAGE_PAYMENT_13### -->
+<br>
+<B>Du kan kun bruge udenlandske Diners-kort i vores butik. Desuden tager Diners Club 5,75% af transaktionsbeløbet i gebyr. Derfor bliver der kompenseret for dette beløb her.</b><br>
+<!-- ###MESSAGE_PAYMENT_13### -->
+<!-- ###MESSAGE_PAYMENT### -->
+###GW2E###
+
+</td>
+<td valign=top align=right>###GW1B###
+<b>###PRICE_PAYMENT_TAX###</b><BR>
+<!-- (###PRICE_PAYMENT_NO_TAX###) -->###GW1E###</td>
+</TR>
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+
+
+<!-- Payment habe ich hier rausgenommen -->
+
+
+
+<tr>
+<td colspan=6 bgcolor="###GC2###">###GW2B###<b>Gesamtbetrag:</b>###GW2E###</td>
+</tr>
+<TR>
+<td valign=top colspan=5></td>
+<td valign=top align=right nowrap>###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b><br> 
+      (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)<br> ###GW1E###</td>
+</TR>
+</TABLE><BR>
+<TABLE width="100%"><TR>
+<TD>
+<input type="hidden" name="mode_update" value="1">
+<input type="Submit" name="products_update" value="Warenkorb aktualisieren"></TD>
+<TD align="right"><input type="Submit" name="products_info" value="Ihre Daten eingeben" onclick="document.forms[0].action='###FORM_URL_INFO###';"></TD>
+</TR>
+</TABLE>
+</FORM>
+<BR>
+<!-- ###BASKET_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>BASKET_INFO_TEMPLATE</h3>
+<em>
+Subpart used if the GPvar "products_info" was set. This is normally used to let people enter address information separately from the real basket.<BR>
+Exact same features as BASKET_TEMPLATE<BR>
+</em><br>
+
+<!-- ###BASKET_INFO_TEMPLATE### begin
+Subpart used if the GPvar "products_info" was set. This is normally used to let people enter address information separately from the real basket
+Exact same features as BASKET_TEMPLATE
+-->
+<FORM method="post" action="###FORM_URL###">
+<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<tr>
+<td><img src="clear.gif" width=100 height=1></td>
+<td><img src="clear.gif" width=5 height=1></td>
+<td><img src="clear.gif" width=110 height=1></td>
+<td colspan=3><img src="clear.gif" width=100 height=1></td>
+</tr>
+<tr>
+<td colspan=4 bgcolor="###GC2###">###GW2B###<b>Rechnungsanschrift:</b>###GW2E###</td>
+</tr>
+<tr>
+      <td colspan=4> 
+        <!-- ###BILLING_ADDRESS### start -->
+        ###GW1B### Geben Sie Ihre Postanschrift in diesem Formular an. Der angegebene 
+        Name und die Adresse werde auf der Rechnung der Bestellung erscheinen. 
+        Sie können auch alternativ eine abweichende Lieferadresse in den unteren 
+        Feldern angeben. ###GW1E### <br>
+<br>
+<table>
+<tr>
+<td>###GW1B###<strong>Name: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][name]" size="30" value="###PERSON_NAME###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Adresse: </strong>*###GW1E###</td>
+<td><textarea cols=30 rows=5 name="recs[personinfo][address]" wrap="off">###PERSON_ADDRESS###</textarea></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>PLZ: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][zip]" size="5" value="###PERSON_ZIP###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Stadt: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][city]" size="50" value="###PERSON_CITY###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Land: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][country]" size="60" value="###PERSON_COUNTRY###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Telefon:</strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][telephone]" size="25" value="###PERSON_TELEPHONE###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Email: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][email]" size="60" value="###PERSON_EMAIL###"></td>
+</tr>
+</table><br>
+
+###GW1B###
+<em>Hinweis: Felder mit * sind Pflichtfelder.<br>Ihre Daten werden nicht an Dritte weitergegeben!</em>
+###GW1E###
+<!-- ###BILLING_ADDRESS### end-->
+
+
+<!-- ###BILLING_ADDRESS_LOGIN### start
+If this part is not empty then this will be used instead of BILLING_ADDRESS if there is a FE-login user.
+-->
+<br>
+<table>
+<tr>
+<td>###GW1B###<strong>Name:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_NAME######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Postanschrift:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_ADDRESS_DISPLAY######GW1E###</td>
+</tr>
+<tr>
+<tr>
+<td>###GW1B###<strong>PLZ:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_ZIP######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Stadt:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_CITY######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Land:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_COUNTRY######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Telefon:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_TELEPHONE######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Email:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_EMAIL######GW1E###</td>
+</tr>
+</table>
+<!-- ###BILLING_ADDRESS_LOGIN### end-->
+</td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Alternativ Lieferadresse:</b>###GW2E###</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=3>
+###GW1B###
+Wenn Ihre Bestellung zu einer anderen Anschrift geliefert werden soll, so geben Sie hier bitte die vollständige Adresse an.
+###GW1E###
+<br>
+<br>
+
+<table>
+<tr>
+<td>###GW1B###<strong>Kontaktperson:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][name]" size="30" value="###DELIVERY_NAME###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Adresse:</strong>###GW1E###</td>
+<td><textarea cols=30 rows=5 name="recs[delivery][address]" wrap="off">###DELIVERY_ADDRESS###</textarea></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>PLZ:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][zip]" size="5" value="###DELIVERY_ZIP###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Stadt:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][city]" size="50" value="###DELIVERY_CITY###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Land:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][country]" size="60" value="###DELIVERY_COUNTRY###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Telefon:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][telephone]" size="25" value="###DELIVERY_TELEPHONE###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Email:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][email]" size="60" value="###DELIVERY_EMAIL###"></td>
+</tr>
+</table>
+</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Bemerkung:</b>###GW2E###</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=3>
+###GW1B###
+Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
+###GW1E###
+<br>
+<br>
+
+<table>
+<tr>
+<td>###GW1B###Kommentar:###GW1E###</td>
+<td><textarea cols=30 rows=5 name="recs[delivery][note]">###DELIVERY_NOTE###</textarea></td>
+</tr>
+<tr>
+<td colspan=3>
+<br>
+              <br>
+</table>
+</td>
+      <td colspan=3 valign="BOTTOM">###GW1B### Sie bestätigen hiermit, dass Sie 
+        die AGB´s von Marcel Schwarz - Online Vertrieb gelesen haben und diese akzeptieren. 
+        ###GW1E### </td>
+</tr>
+</TABLE>
+<br>
+<TABLE width="100%"><TR>
+<TD><input type="Submit" name="products_update" value="zurück zum Warenkorb"></TD>
+<TD align="right"><input type="Submit" name="products_payment" value="ABG´s akzeptiert" onclick="document.forms[0].action='###FORM_URL_FINALIZE###';"></TD>
+</TR></TABLE>
+</FORM>
+<BR>
+<!-- ###BASKET_INFO_TEMPLATE### end -->
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>BASKET_PAYMENT_TEMPLATE</h3>
+<em>
+Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.<BR>
+Exact same features as BASKET_TEMPLATE<BR>
+</em><br>
+<br>
+<br>
+<!-- ###BASKET_PAYMENT_TEMPLATE### begin
+Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.
+Exact same features as BASKET_TEMPLATE
+-->
+###EXTERNAL_COBJECT###
+<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+  <tr> 
+    <td><img src="clear.gif" width=100 height=1></td>
+    <!--
+<td><img src="clear.gif" width=5 height=1></td>
+-->
+    <td><img src="clear.gif" width=165 height=1></td>
+    <td colspan=2><img src="clear.gif" width=70 height=1></td>
+  </tr>
+  <tr> 
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>bananaGUARDs:</b>###GW2E###</td>
+    <!-- <td bgcolor="###GC2###">###GW2B###<b>Preis: </b>
+###GW2E###
+</td>
+-->
+    <td bgcolor="###GC2###">###GW2B###<b>Menge:</b>###GW2E###</td>
+    <td bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+  </tr>
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+  <!-- ###ITEM_CATEGORY### begin -->
+  <tr> 
+    <td colspan=5><br>
+      ###CATEGORY_TITLE###<br> </td>
+  </tr>
+  <!-- ###ITEM_CATEGORY### end -->
+  <!-- ###ITEM_LIST### begin -->
+  <!-- ###ITEM_SINGLE### begin-->
+  <tr> 
+    <td colspan=5><img src="clear.gif" width=1 height=6></td>
+  </tr>
+  <TR> 
+    <TD valign=top colspan=3> ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E### </TD>
+    <!--
+<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
+-->
+    <TD valign=top align=center>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
+    <td valign=top align=right>###GW1B### 
+      <!--
+<b>###PRICE_TOTAL_TAX###</b>
+-->
+      <!--
+<BR>(###PRICE_TOTAL_NO_TAX###) ###GW1E###
+-->
+    </td>
+  </TR>
+  <!-- ###ITEM_SINGLE### end -->
+  <!-- ###ITEM_LIST### end -->
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+  <tr> 
+    <td colspan=><img src="clear.gif" width=1 height=10></td>
+  </tr>
+  <tr> 
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Rechnungsanschrift:</b>###GW2E###</td>
+    <td colspan=2></td>
+  </tr>
+  <tr> 
+    <td colspan=3> <table border=0>
+        <tr> 
+          <td>###GW1B###Name:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###</td>
+        </tr>
+        <tr>
+          <td>###GW1B###Adresse:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+        </tr>
+        <tr>
+          <td>###GW1B###PLZ Stadt:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_ZIP### ###PERSON_CITY###</strong>###GW1E###</td>
+        </tr>
+        <tr>
+          <td>###GW1B###Land:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_COUNTRY###</strong>###GW1E###</td>
+        </tr>
+        <tr> 
+          <td>###GW1B###Telefon:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###</td>
+        </tr>
+        <tr> 
+          <td valign="TOP">###GW1B###Email:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E### ###GW2B###<BR>
+            (An diese Email-Adresse wird die Bestätigung Ihrer Bestellung geschickt!)###GW2E###<BR> 
+          </td>
+        </tr>
+      </table></td>
+    <td colspan=2></td>
+  </tr>
+  <tr> 
+    <td colspan=5><img src="clear.gif" width=1 height=10></td>
+  </tr>
+  <tr> 
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Lieferanschrift:</b>###GW2E###</td>
+    <td colspan=2></td>
+  </tr>
+  <tr> 
+    <td colspan=3> 
+      <table border=0>
+	<tr>
+	<td>###GW1B###Kontaktperson:###GW1E###</td>
+	<td>###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###</td>
+	</tr>
+	<tr>
+	<td>###GW1B###Postadresse:###GW1E###</td>
+	<td>###GW1B###<strong>###DELIVERY_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+	</tr>
+	<tr>
+	  <td>###GW1B###PLZ Stadt:###GW1E###</td>
+	  <td>###GW1B###<strong>###DELIVERY_ZIP### ###DELIVERY_CITY###</strong>###GW1E###</td>
+	</tr>
+	<tr>
+	  <td>###GW1B###Land:###GW1E###</td>
+	  <td>###GW1B###<strong>###DELIVERY_COUNTRY###</strong>###GW1E###</td>
+	</tr>
+	<tr>
+	<td>###GW1B###Telefon:###GW1E###</td>
+	<td>###GW1B###<strong>###DELIVERY_TELEPHONE###</strong>###GW1E###</td>
+	</tr>
+        <tr> 
+          <td valign="TOP">###GW1B###Email:###GW1E###</td>
+          <td>###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E### ###GW2B###<BR>
+            (An diese Email-Adresse wird die Bestätigung Ihrer Bestellung geschickt!)###GW2E###<BR> 
+          </td>
+        </tr>
+      </table></td>
+    <td colspan=2></td>
+  </tr>
+  <tr> 
+    <td colspan=5><img src="clear.gif" width=1 height=10></td>
+  </tr>
+  <tr> 
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Bemerkungen:</b>###GW2E###</td>
+    <td colspan=2></td>
+  </tr>
+  <tr> 
+    <td colspan=3> <table>
+        <tr> 
+          <td>###GW1B###Kommentar:###GW1E###</td>
+          <td>###GW1B###<strong>###DELIVERY_NOTE_DISPLAY###</strong>###GW1E###</td>
+        </tr>
+      </table></td>
+    <td colspan=2></td>
+  </tr>
+  <tr> 
+    <td colspan=5><img src="clear.gif" width=1 height=10></td>
+  </tr>
+  <tr> 
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Versand und Verpackung:</b>###GW2E###</td>
+    <td colspan=2></td>
+  </tr>
+    <td colspan=3>###GW1B###Pauschale: <b>###SHIPPING_TITLE###</B>###GW1E###<br></td>
+    <td valign=top align=right colspan=2>###GW1B###<b>###PRICE_SHIPPING_TAX###</b>###GW1E###</td>
+  </tr>
+  <TR> 
+    <td colspan=5 height="12"><img src="clear.gif" width=1 height=10></td>
+  </TR>
+  <TR> 
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Zahlungsweise:</b>###GW2E###</td>
+    <td valign=top align=right colspan=3>&nbsp;</td>
+  </TR>
+  <TR> 
+    <td valign=top colspan=3> ###GW1B######PAYMENT_IMAGE### ###PAYMENT_TITLE### 
+      ###GW1E###</td>
+    <td valign=top align=right colspan=3>###GW1B### <b>###PRICE_PAYMENT_TAX###</b>
+      <!-- (###PRICE_PAYMENT_NO_TAX###)<br>
+-->
+      ###GW1E###</td>
+  </TR>
+  <tr> 
+    <td colspan=5><img src="clear.gif" width=1 height=10></td>
+  </tr>
+  <tr> 
+    <td colspan=5 bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+  </tr>
+  <TR> 
+    <td valign=top colspan=3>###GW1B### <strong>Gesamtbetrag in EURO:</strong> 
+      ###GW1E###</td>
+    <td valign=top align=right colspan=2 nowrap>###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b> 
+      <br> 
+      (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)<br>
+      ###GW1E###</td>
+  </TR>
+</TABLE>
+<br>
+<FORM method="post" action="###FORM_URL###">
+<TABLE width="100%"><TR>
+<TD><input type="Submit" name="products_update" value="zurück zum Warenkorb"></TD>
+<TD align="right"><input type="Submit" name="products_finalize" value="Bestellung abschliessen!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### (auch PayPal)###GW1E###</TD>
+</TR></TABLE>
+</FORM>
+<BR>
+<!-- ###BASKET_PAYMENT_TEMPLATE### end -->
+
+
+
+
+
+<!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### begin
+Subpart used if the order is finalized and this is thus the confirmation shown.
+-->
+<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<tr>
+<td><img src="clear.gif" width=100 height=1></td>
+<td><img src="clear.gif" width=5 height=1></td>
+<td><img src="clear.gif" width=165 height=1></td>
+<td colspan=3><img src="clear.gif" width=200 height=1></td>
+</tr>
+
+
+<tr>
+    <td colspan=6> <p>###GW1B###<b>Bestellbestätigung:</b><br>
+        Vielen Dank für Ihre Bestellung!<br>
+        Ihre Bestellung ist nun abgeschlossen und hat folgende Nummer:<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<B>###ORDER_UID###</B> <br>
+        <br>
+        Verwenden Sie diese Nummer wenn Sie mit uns in Kontakt treten.<br>
+        Die Bestellbestätigung wird auch an die Emailadresse im Feld "Lieferung" 
+        geschickt. (###DELIVERY_EMAIL###). <br></p>
+	<p><font color=red><em><strong>Zahlungsart:</strong></em></font></p>
+        <!-- ###MESSAGE_PAYMENT###
+	This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
+-->
+        <!-- ###MESSAGE_PAYMENT_10### begin
+Message for payment method 10, Vorkasse
+-->
+      <p><font color=red><strong>Vorkasse:</strong><br>
+        Bitte &uuml;berweisen Sie den Rechnungsbetrag auf folgendes Konto:<br>
+        Bank: Postbank N&uuml;rnberg <br>
+        Bankleitzahl: 76010085<br>
+        Kontonummer: 130731855<br>
+        IBAN: DE46 7601 0085 0130 7318 55<br>
+        BIC: PBNKDEFF<br>
+        Betreff: Ihre Bestellnummer ###ORDER_UID### unbedingt angeben! </font></p>
+	<!-- ###MESSAGE_PAYMENT_10### end -->
+        <!-- ###MESSAGE_PAYMENT_20### begin
+Message for payment method 10, Paypal
+-->
+      <p><font color=red><strong>PayPal:</strong><br>
+        Sie haben als Zahlungsart PayPal gewählt. Bezahlen Sie über diesen Link direkt Online per Kreditkarte via PayPal.
+		
+<form target="paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_xclick">
+<input type="hidden" name="business" value="info@bananaguard.de">
+<input type="hidden" name="item_name" value="###ORDER_UID###">
+<input type="hidden" name="amount" value="###PRICE_TOTAL_TAX###">
+<input type="hidden" name="no_note" value="1">
+<input type="hidden" name="currency_code" value="EUR">
+<input type="hidden" name="lc" value="DE">
+<input type="hidden" name="tax" value="0,00">
+<input type="submit" name="submit" value="Bezahlung mit Kreditkarte via Paypal" alt="Protect Your Banana!">
+</form>	</font></p>
+	<!-- ###MESSAGE_PAYMENT_20### end -->
+		
+        <!-- ###MESSAGE_PAYMENT_30### begin -->
+      <p><font color=red><strong>Nachnahme:</strong><br>
+        Die bananaGUARDs werden Ihnen direkt zugesandt.<br>
+        Sie bezahlen die Ware bei Erhalt.
+      </font> 
+        <br></p>
+        <!-- ###MESSAGE_PAYMENT_30### end -->
+	<!-- ###MESSAGE_PAYMENT### -->
+   <br>
+        <b>Liefer- und Bestellstatus</b><br>
+        Die Ware bleibt bis zur vollständigen Bezahlung unser Eigentum.<BR>
+        Ihr Bestelldatum: ###ORDER_DATE###.<br>
+        <br>
+        Sie können Ihren Bestellstatus jederzeit mittels Ihres Bestellstatus-Codes<BR>
+        <strong>###ORDER_TRACKING_NO###</strong> nachvollziehen. <br>
+        Klicken Sie hier <a href="index.php?id=57&tracking=###ORDER_TRACKING_NO###"><strong> 
+        um den Status jetzt zu sehen.</strong></a> <br>
+        Klicken Sie hier <a href="index.php?id=62&tracking=###ORDER_TRACKING_NO###"><strong> 
+        um die Rechnung jetzt zu sehen.</strong></a><br>
+        Klicken Sie hier <a href="index.php?id=70&tracking=###ORDER_TRACKING_NO###"><strong> 
+	        um den Lieferschein jetzt zu sehen.</strong></a><br>
+        <br>
+        <br>
+        ###GW1E### ###EXTERNAL_COBJECT### </p>
+      </td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>bananaGUARDs:</b>###GW2E###</td>
+<td bgcolor="###GC2###">###GW2B###<b><!-- Preis: --></b>###GW2E###</td>
+<td bgcolor="###GC2###">###GW2B###<b>Menge:</b>###GW2E###</td>
+<td bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+</tr>
+<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+<!-- ###ITEM_CATEGORY### begin -->
+<tr>
+<td colspan=6><br>###CATEGORY_TITLE###<br>
+</td>
+</tr>
+<!-- ###ITEM_CATEGORY### end -->
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=6></td>
+</tr>
+<TR>
+<TD valign=top>###PRODUCT_IMAGE###</TD>
+<td></td>
+<TD valign=top>
+###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+
+</TD>
+<td valign=top><!--###GW1B### ###PRICE_TAX### ###GW1E###--></td>
+<TD valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
+<td valign=top align=right>###GW1B### <b><!--###PRICE_TOTAL_TAX###--></b><BR><!--(###PRICE_TOTAL_NO_TAX###) ###GW1E###--></td>
+</TR>
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Rechnungsanschrift:</b>###GW2E###</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=3>
+<table cellspacing=3>
+<tr>
+<td>###GW1B###Name/Firma:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Postadresse:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###PLZ Stadt:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_ZIP### ###PERSON_CITY###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Land:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_COUNTRY###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Telefon:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Email:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E###</td>
+</tr>
+
+<!-- ###FE_USER_SECTION### begin -->
+<tr>
+<td>###GW1B###Username:###GW1E###</td>
+<td>###GW1B###<strong>###FE_USER_USERNAME###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###User ID:###GW1E###</td>
+<td>###GW1B###<strong>###FE_USER_UID###</strong>###GW1E###</td>
+</tr>
+<!-- ###FE_USER_SECTION### end -->
+
+</table>
+</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Lieferadresse:</b>###GW2E###</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=3>
+<table>
+<tr>
+<td>###GW1B###Postadresse:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Kontaktperson:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###</td>
+</tr>
+<tr> 
+  <td>###GW1B###PLZ Stadt:###GW1E###</td>
+  <td>###GW1B###<strong>###DELIVERY_ZIP### ###DELIVERY_CITY###</strong>###GW1E###</td>
+</tr>
+<tr> 
+  <td>###GW1B###Land:###GW1E###</td>
+  <td>###GW1B###<strong>###DELIVERY_COUNTRY###</strong>###GW1E###</td>
+</tr> 
+<tr>
+<td>###GW1B###Telefon:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_TELEPHONE###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Email:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E###</td>
+</tr>
+</table>
+</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Nachricht:</b>###GW2E###</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=3>
+<table>
+<tr>
+<td>###GW1B###Kommentar:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_NOTE_DISPLAY###</strong>###GW1E###</td>
+</tr>
+</table>
+</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Versand und Verpackung:</b>###GW2E###</td>
+    <td valign=top align=right colspan=3>###GW1B###<b>###PRICE_SHIPPING_TAX###</b>###GW1E###</td>
+</tr>
+<TR>
+<td valign=top colspan=3>###GW1B###
+<strong>Zahlungsweise:</strong><br>
+###PAYMENT_IMAGE### ###PAYMENT_TITLE###
+###GW1E###</td>
+
+<td valign=top align=right colspan=3>###GW1B###
+<b>###PRICE_PAYMENT_TAX###</b><br>
+<!-- (###PRICE_PAYMENT_NO_TAX###)<br>
+-->
+
+###GW1E###</td>
+</TR>
+<tr>
+<td colspan=6><img src="clear.gif" width=1 height=10></td>
+</tr>
+<tr>
+<td colspan=6 bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+</tr>
+<TR>
+<td valign=top colspan=3>###GW1B###
+<strong>Gesamtpreis in EUR:</strong>
+###GW1E###</td>
+
+<td valign=top align=right colspan=3>###GW1B###
+<b>EUR ###PRICE_TOTAL_TAX###</b><br>
+ (exkl. MwSt.: ###PRICE_TOTAL_NO_TAX###)<br>
+
+###GW1E###</td>
+</TR>
+<tr>
+    <td colspan=6> <p>###GW1B### <br>
+        <br>
+        Mit freundlichen Grüssen: <br>
+        <br>
+        <strong>bananaGUARD.de</strong><br>
+        Marcel Schwarz<br>
+        Chistophstr. 4<br>
+        D- 71364 Winnenden<br>
+        Tel.: +49 (0)7195 583372<br>
+        Email: info@bananaguard.de<br>
+        ###GW1E### </p>
+      </td>
+</tr>
+</TABLE>
+<br>
+<BR>
+<!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### end -->
+
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>BASKET_TEMPLATE_EMPTY</h3>
+<em><br>
+<br>
+<br>
+If the basket is empty this subpart is displayed<br>
+</em>
+<!-- ###BASKET_TEMPLATE_EMPTY### begin
+If the basket is empty this subpart is displayed
+-->
+<br>
+###GW1B###<B>Ihr Warenkorb ist noch leer.</B>###GW1E###
+<!-- ###BASKET_TEMPLATE_EMPTY### end -->
+
+
+
+
+
+
+
+<h3>BASKET_REQUIRED_INFO_MISSING</h3>
+<em>
+If payment is initiated but the required information fields are not filled in correctly, this happens.<br>
+</em><br>
+<br>
+<br>
+<!-- ###BASKET_REQUIRED_INFO_MISSING### begin
+If payment is initiated but the required information fields are not filled in correctly, this happens
+-->
+###GW1B###Fehler bei der Eingabe###GW1E###<br>
+###GW1B###<B>Sie haben nicht alle erforderlichen Felder mit Ihren Adressinformationen ausgefüllt. Bitte gehen Sie zurück zum Aktualisieren!</B>###GW1E###
+<FORM method="post" action="###FORM_URL###">
+<input type="Submit" name="products_info" value="Adressdaten eingeben" onclick="document.forms[0].action='###FORM_URL_INFO###';">
+</FORM>
+<!-- ###BASKET_REQUIRED_INFO_MISSING### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>TRACKING_DISPLAY_INFO</h3>
+<em>
+Displays the view of the order status by tracking codes.<br>
+</em><br>
+<br>
+<br>
+<!-- ###TRACKING_DISPLAY_INFO### begin
+Displays the view of the order status by tracking codes.
+-->
+###GW1B###
+<B>Ihre Bestellung (###ORDER_UID###) hat folgenden Status:</B><br>
+(siehe letzte Zeile für aktuellsten Stand)<br>
+<br>
+
+<table border=1 cellpadding=0 cellspacing=4>
+<tr>
+<td>###GW1B### <strong>Datum/Zeit:</strong> ###GW1E###</td>
+<td>###GW1B### <strong>Code:</strong> ###GW1E###</td>
+<td>###GW1B### <strong>Aktion:</strong> ###GW1E###</td>
+<td>###GW1B### <strong>Kommentar:</strong> ###GW1E###</td>
+</tr>
+<!-- ###STATUS_ITEM### begin
+This part is repeated for each order status item and finally this part in the template code is substituted with the accumulated code for all order status actions.
+-->
+<tr>
+<td nowrap valign=top>###GW1B### ###ORDER_STATUS_TIME###  ###GW1E###</td>
+<td valign=top>###GW1B### ###ORDER_STATUS###  ###GW1E###</td>
+<td nowrap valign=top>###GW1B### ###ORDER_STATUS_INFO###  ###GW1E###</td>
+<td valign=top>###GW1B### ###ORDER_STATUS_COMMENT###  ###GW1E###</td>
+</tr>
+<!-- ###STATUS_ITEM### end -->
+</table>
+<br>
+
+<!-- ###ADMIN_CONTROL### begin -->
+<table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
+<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
+###GW1B### <strong>Shop ADMIN:</strong><br>
+Order: ####ORDER_UID###
+<br>
+###GW1B###
+
+<!-- ###ADMIN_CONTROL_OK### begin -->
+<FORM method="post" action="###FORM_URL###">
+<select name="orderRecord[status][]" size="9" multiple>
+###STATUS_OPTIONS###
+</select>
+<br>
+###GW1B###Comment to the new order status:###GW1B###<br>
+<textarea cols="40" rows="5" name="orderRecord[status_comment]"></textarea><br>
+
+<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
+<input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
+<input type="Submit" name="submit" value="Bestellstatus hinzufügen">
+</FORM>
+<hr>
+Zu einer anderen Bestellung wechseln:
+<FORM method="post" action="###FORM_URL###">
+<select name="tracking" size="9">
+###OTHER_ORDERS_OPTIONS###
+</select><br><br>
+<input type="Submit" name="submit" value="Select">
+<input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
+</FORM>
+<!-- ###ADMIN_CONTROL_OK### begin -->
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+<FORM method="post" action="###FORM_URL###">
+<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
+###GW1B###Code:###GW1B###<br>
+<input type="password" size=40 name="update_code" value="###UPDATE_CODE###">
+<input type="Submit" name="submit" value="Code eingeben">
+</FORM>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+</td></tr></table>
+</td></tr>
+</table><br>
+<!-- ###ADMIN_CONTROL### end -->
+
+
+<strong>Email-Benachrichtigung:</strong><br>
+Wenn Sie sich über den Status Ihrer Bestellung informieren lassen wollen (###FIELD_EMAIL###) sobald sich der Status geändert hat, dann überprüfen Sie bitte folgendes:<br>
+<FORM method="post" action="###FORM_URL###">
+
+<input type="hidden" name="orderRecord[email_notify]" value="0">
+<input type="checkbox" name="orderRecord[email_notify]" value="1"###FIELD_EMAIL_NOTIFY###>Nachricht über Ablauf des Bestellvorgangs erhalten.<br>
+<input type="text" size=40 name="orderRecord[email]" value="###FIELD_EMAIL###">
+<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
+
+<input type="Submit" name="submit" value="Aktualisieren">
+</FORM>
+<br><br>
+
+<!--
+<strong>Nachricht an bananaGUARD.de:</strong><br>
+Hier können Sie uns eine Nachricht bezüglich Ihrer Bestellung schicken.<br>
+<FORM method="post" action="###FORM_URL###">
+<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
+###GW1B###Betreff auswählen:###GW1B###<br>
+<select name="orderRecord[status][]" size="1">
+    <option value="51">Nachricht von Kunde an bananaGUARD.de</option>
+    <option value="50">Kunde w&uuml;nscht die Stornierung der Bestellung</option>
+  </select>
+<br>
+  ###GW1B###Bemerkung:###GW1B###<br>
+<textarea cols="40" rows="5" name="orderRecord[status_comment]"></textarea><br>
+<input type="Submit" name="submit" value="Nachricht senden">
+</FORM>
+-->
+<br>
+<br>
+<B>Bestellbestätigung - Original:</B><br><br>
+###GW1E###
+<HR>
+<br>
+
+###ORDER_HTML_OUTPUT###
+<!-- ###TRACKING_DISPLAY_INFO### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>TRACKING_ENTER_NUMBER</h3>
+<em>
+Displays form for entering the tracking number.<br>
+</em><br>
+<br>
+<br>
+<!-- ###TRACKING_ENTER_NUMBER### begin
+Displays form for entering the tracking number.
+-->
+###GW1B###<B>Bestellstatus-Code eingeben:</B>###GW1E###<br>
+<FORM method="post" action="###FORM_URL###">
+<input type="text" name="tracking"><br>
+<input type="Submit" name="submit" value="Status sehen">
+</FORM>
+
+<!-- ###ADMIN_CONTROL### begin -->
+<table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
+<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
+###GW1B### <strong>Shop ADMIN:</strong><br>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+<FORM method="post" action="###FORM_URL###">
+###GW1B###Code:###GW1B###<br>
+<input type="password" size=40 name="update_code" value="">
+<input type="Submit" name="submit" value="Code eingeben">
+</FORM>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+</td></tr></table>
+</td></tr>
+</table><br>
+<!-- ###ADMIN_CONTROL### end -->
+
+
+
+<!-- ###TRACKING_ENTER_NUMBER### end -->
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>TRACKING_WRONG_NUMBER</h3>
+<em>
+Displays error message if no tracking code.<br>
+</em><br>
+<br>
+<br>
+<!-- ###TRACKING_WRONG_NUMBER### begin
+Displays error message if no tracking code.
+-->
+###GW1B###<B>Der Bestellstatus-Code existiert nicht! Bitte stellen Sie die Richtigkeit sicher und versuchen es noch einmal!</B>###GW1E###<br>
+
+<FORM method="post" action="###FORM_URL###">
+<input type="text" name="tracking"><br>
+<input type="Submit" name="submit" value="Bestellstatus einsehen">
+</FORM>
+
+<!-- ###TRACKING_WRONG_NUMBER### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>TRACKING_EMAILNOTIFY_TEMPLATE</h3>
+<em>
+Subpart used as template for the notify emails.<br>
+First line is used as subject for the mail.<br>
+</em><br>
+<br>
+<br>
+<pre>
+<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### begin
+Subpart used as template for the notify emails
+First line is used as subject for the mail.
+-->
+
+bananaGUARD.de Bestellstatus (####ORDER_UID###)
+
+BESETELLINFORMATION (####ORDER_UID###):
+Der Status Ihrer Bestellung wurde geändert:
+
+Zeit: ###ORDER_STATUS_TIME###
+Status: ###ORDER_STATUS_INFO###
+
+Bemerkung:
+###ORDER_STATUS_COMMENT###
+
+
+BESTELLSTATUS:
+Auf Ihren Wunsch hin, erhalten Sie diese E-mail bzgl. Ihrer Bestellung bei bananaGUARD.de. Mit Ihrem Bestellstatus-Code können Sie jederzeit den Bestellstatus einsehen und evtl. Bestellinformationen ändern:
+###ORDER_TRACKING_NO###
+
+Klicken Sie um Ihre Daten jetzt einzusehen:
+http://www.bananaguard.de/index.php?id=57&tracking=###ORDER_TRACKING_NO###
+
+
+
+Mit freundlichen Grüssen,
+bananaGUARD.de
+Marcel Schwarz - Online Vertrieb
+Chistophstr. 4
+D- 71364 Winnenden
+Tel.: +49 (0)7195 583372
+Email: info@bananaguard.de<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
+</pre>
+<BR>
+<BR><BR><BR><HR><BR><BR><BR>
+<h3>EMAIL_PLAINTEXT_TEMPLATE</h3>
+<em>
+Subpart used as template for the order-emails.<br>
+First line is used as subject for the mail.<br>
+</em><br>
+<br>
+<br>
+<pre>
+<!-- ###EMAIL_PLAINTEXT_TEMPLATE### begin
+Subpart used as template for the order-emails
+First line is used as subject for the mail.
+-->
+
+Bestellung ####ORDER_UID###
+
+Bestellbestätigung:
+Ihre Bestellung ist abgeschlossen und hat die Nummer ###ORDER_UID###.
+Verweisen Sie bitte bei jedem Kontakt mit uns auf diese Bestellnummer.
+
+BESTELLSTATUS:
+Sie können den Status Ihrer Bestellung an dieser Adresse einsehen:
+http://www.bananaguard.de/index.php?id=57&tracking=###ORDER_TRACKING_NO###
+
+Ihre Bestellung:
+1) ARTIKEL:
+<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
+###PRODUCT_TITLE###
+Anzahl: ###FIELD_QTY###
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+2) ZAHLUNGSADRESSE:
+###PERSON_NAME###
+###PERSON_ADDRESS###
+Telefon: ###PERSON_TELEPHONE###
+Email: ###PERSON_EMAIL###
+3) LIEFERADRESSE:
+###DELIVERY_ADDRESS###
+###DELIVERY_ZIP###  ###DELIVERY_CITY###
+
+###DELIVERY_COUNTRY###
+
+att. ###DELIVERY_NAME###
+Telefon: ###DELIVERY_TELEPHONE###
+Email: ###DELIVERY_EMAIL###
+4) BEMERKUNG:
+###DELIVERY_NOTE_DISPLAY###
+5) VERSAND UND VERPACKUNG:
+Preis: ###PRICE_SHIPPING_TAX### EUR
+6) ZAHLUNGSWEISE:
+###PAYMENT_TITLE###
+Preis: ###PRICE_PAYMENT_TAX### EUR
+
+GESAMT: ________________________ EUR ###PRICE_TOTAL_TAX### (ohne MWSt. EUR ###PRICE_TOTAL_NO_TAX###)
+
+Herzlichen Dank für Ihre Bestellung!
+Mit freundlichen Grüßen
+
+bananaGUARD.de
+Marcel Schwarz - Online Vertrieb
+Chistophstr. 4
+D- 71364 Winnenden
+Tel.: +49 (0)7195 583372
+Email: info@bananaguard.de
+
+<!-- ###EMAIL_PLAINTEXT_TEMPLATE### end -->
+</pre>
+
+
+
+
+<!-- ###BILL_TEMPLATE### start -->
+
+
+<TABLE border="0" cellspacing="0" cellpadding="1" width=672>
+  <tr> 
+    <td colspan="2"> <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr> 
+          <td width="750" height="120" align="CENTER" valign="TOP"><img src="http://shopms.de/images/header_rechnung.jpg" width="669" height="90"></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td colspan="2">###GW1B### Marcel Schwarz &#8211; Online Vertrieb, Christophstr. 
+      4, 71364 Winnenden, Germany<br>
+      ------------------------------------------------------------------------------------------------- 
+      ###GW1E###</td>
+  </tr>
+  <tr> 
+    <td colspan=1 width="446"> <table cellspacing=1>
+        <tr> 
+          <td><strong><font size="5">###PERSON_NAME### </font></strong></td>
+        </tr>
+        <tr> 
+          <td><strong><font size="5">###PERSON_ADDRESS_DISPLAY### </font></strong></td>
+        </tr>
+        <tr> 
+          <td><strong><font size="5">###PERSON_ZIP### ###PERSON_CITY###</font></strong></td>
+        </tr>
+        <tr> 
+          <td><strong><font size="5">###PERSON_COUNTRY### </font></strong></td>
+        </tr>
+        <tr> 
+          <td height="62"><img src="http://shopms.de/images/clear.gif" width=160 height=50></td>
+        </tr>
+      </table> 
+  <tr> 
+    <td colspan=2> ###GW1B###<b>Rechnung Nr. ###ORDER_UID###:</b>###GW1E###<br>
+      <br> </tr>
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+  <!-- ###ITEM_CATEGORY### begin -->
+  <tr> 
+    <td>###GW1B###Warenwert (###CATEGORY_QTY### x ###CATEGORY_TITLE###)###GW1E###</td>
+    <td align=right width="100">###GW1B### <b>EUR ###PRICE_GOODS_TAX### <br>(ohne MWSt. EUR ###PRICE_GOODS_NO_TAX###)</b> ###GW1E###</td>
+  </tr>
+  <!-- ###ITEM_CATEGORY### end -->
+  <!-- ###ITEM_LIST### begin -->
+  <!-- ###ITEM_SINGLE### begin-->
+  <tr> 
+    <td colspan=2><img src="clear.gif" width=1 height=2></td>
+  </tr>
+  <TR> 
+    <TD valign=top colspan=2> ###FIELD_QTY###x ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E### 
+    </TD>
+  </TR>
+  <!-- ###ITEM_SINGLE### end -->
+  <!-- ###ITEM_LIST### end -->
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+  <tr> 
+    <td colspan=2><img src="clear.gif" width=1 height=10></td>
+  </tr>
+  <TR> 
+    <td valign=top colspan=1>###GW1B### Zahlungsart: ###PAYMENT_TITLE### ###GW1E###</td>
+    <td valign=top align=right>###GW1B### <b>EUR ###PRICE_PAYMENT_TAX###</b><br>
+      ###GW1E###</td>
+  </TR>
+  <TR> 
+    <td valign=top>###GW1B### Verpackung und Versand###GW1E###</td>
+    <td valign=top align=right>###GW1B### <b>EUR ###PRICE_SHIPPING_TAX###</b><br>
+      ###GW1E###</td>
+  </TR>
+  <tr> 
+    <td colspan=2><img src="clear.gif" width=1 height=10></td>
+  </tr>
+  <tr> 
+    <td colspan=2>--------------------------------------------------------------------------------------------------------------------------</td>
+  </tr>
+  <TR> 
+    <td valign=top colspan=1 height="59">###GW1B### <strong>Gesamt</strong> ###GW1E###</td>
+    <td valign=top align=right colspan=1>###GW1B### <b>EUR ###PRICE_TOTAL_TAX### <br>(ohne MWSt. EUR ###PRICE_TOTAL_NO_TAX###)</b><br>
+      ###GW1E###</td>
+  </TR>
+  <tr> 
+    <td colspan=2>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td valign="TOP">###GW1B### Wir wünschen viel Spaß mit dem bananaGUARD. <br>
+      NICHT VERGESSEN: WEITERSAGEN. <br> <br>
+      Mit freundlichen Grüssen: <br> <br> <strong>bananaGUARD.de<br>
+      </strong>Marcel Schwarz - Online Vertrieb<br>
+      Christophstr. 4<br>
+      71364 Winnenden<br>
+      Deutschland 
+      <p>Tel: +49 (0)7195 / 583372<br>
+        Email: info@bananaguard.de<br>
+        Steuer-Nr. DE9038742052</p>
+      ###GW1E###</td>
+    <td valign="BOTTOM">###GW1B### <p>Bankverbindung:<br>
+        Postbank Nürnberg<br>
+        Blz. 76010085<br>
+        Kto. 130731855</p>
+      <p>IBAN: DE46 7601 0085 0130 7318 55<br>
+        BIC: PBNKDEFF<br>
+        ###GW1E### </p></td>
+  </tr>
+  <tr> 
+    <td colspan=2>&nbsp;</td>
+  </tr>
+</TABLE>
+
+
+<!-- ###BILL_TEMPLATE### end -->
+
+
+<!-- ###DELIVERY_TEMPLATE### start -->
+
+
+<TABLE border="0" cellspacing="0" cellpadding="1" width=672>
+  <tr> 
+    <td colspan="2"> <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr> 
+          <td width="750" height="120" align="CENTER" valign="TOP"><img src="http://shopms.de/images/header_rechnung.jpg" width="669" height="90"></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td colspan="2">###GW1B### Marcel Schwarz &#8211; Online Vertrieb, Christophstr. 
+      4, 71364 Winnenden, Germany<br>
+      ------------------------------------------------------------------------------------------------- 
+      ###GW1E###</td>
+  </tr>
+  <tr>
+<td colspan=1>
+<table cellspacing=1>
+<tr>
+<td><font size="5"><strong>###DELIVERY_NAME###</strong></font></td>
+</tr>
+<tr>
+<td><font size="5"><strong>###DELIVERY_ADDRESS_DISPLAY###</strong></font></td>
+</tr>
+<tr> 
+  <td><strong><font size="5">###DELIVERY_ZIP### ###DELIVERY_CITY###</font></strong></td>
+</tr>
+<tr> 
+  <td><strong><font size="5">###DELIVERY_COUNTRY### </font></strong></td>
+</tr>
+</tr>
+<tr>
+<td><img src="http://shopms.de/images/clear.gif" width=160 height=60></td>
+</tr>
+</table>
+
+<tr>
+<td colspan=2>
+###GW1B###<b>Lieferschein für Rechnung Nr. ###ORDER_UID###:</b>###GW1E###<br><br>
+<br>
+</tr>
+<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+<!-- ###ITEM_CATEGORY### begin -->
+<tr>
+<td>###GW1B###Warenwert (###CATEGORY_QTY### x ###CATEGORY_TITLE###)###GW1E###</td>
+<td align=right></td>
+</tr>
+<!-- ###ITEM_CATEGORY### end -->
+
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
+<tr>
+<td colspan=2><img src="clear.gif" width=1 height=2></td>
+</tr>
+<TR>
+<TD valign=top colspan=2>
+ ###FIELD_QTY###x ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+</TD>
+</TR>
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+<tr>
+<td colspan=2><img src="clear.gif" width=1 height=10></td>
+</tr>
+
+<tr>
+    <td colspan=2><img src="clear.gif" width=1 height=10>###GW1B### Zahlungsart: ###PAYMENT_TITLE### 
+      ###GW1E###</td>
+</tr>
+<tr>
+<td colspan=2>-----------------------------------------------------------------------------------------------------</td>
+</tr>
+<tr>
+    <td colspan=2>&nbsp;</td>
+</tr>
+<tr> 
+    <td valign="TOP">###GW1B### Wir wünschen viel Spaß mit dem bananaGUARD. <br>
+      NICHT VERGESSEN: WEITERSAGEN. <br> 
+      Mit freundlichen Grüssen: <br> <br> <strong>bananaGUARD.de<br>
+      </strong>Marcel Schwarz - Online Vertrieb<br>
+      Christophstr. 4<br>
+      71364 Winnenden<br>
+      Deutschland 
+      <p>Tel: +49 (0)7195 / 583372<br>
+        Email: info@bananaguard.de<br>
+        Steuer-Nr. DE9038742052</p>
+      ###GW1E###</td>
+    <td valign="BOTTOM">###GW1B### <p>Bankverbindung:<br>
+        Postbank Nürnberg<br>
+        Blz. 76010085<br>
+        Kto. 130731855</p>
+      <p>IBAN: DE46 7601 0085 0130 7318 55<br>
+        BIC: PBNKDEFF<br>
+        ###GW1E### </p></td>
+  </tr>
+
+</tr>
+</TABLE>
+
+
+<!-- ###DELIVERY_TEMPLATE### end -->
+
