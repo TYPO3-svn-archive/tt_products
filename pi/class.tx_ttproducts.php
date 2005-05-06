@@ -310,7 +310,6 @@ class tx_ttproducts extends tslib_pibase {
 				case "products_payment":
 					$this->load_noLinkExtCobj();
 					$pidagb = intval($this->conf["PIDagb"]);
-					debug ($pidagb, 'initBasket: $pidagb', __LINE__, __FILE__);
 					if ($this->checkRequired() &&
 						(empty($pidagb) || isset($_REQUEST["recs"]["personinfo"]["agb"]))) {
 						$this->mapPersonIntoToDelivery();
@@ -848,7 +847,6 @@ class tx_ttproducts extends tslib_pibase {
 							if (is_array($this->basketExt[$uid]))
 							{
 								reset($this->basketExt[$uid]);
-								debug ($this->basketExt[$uid], "initBasket: this->basketExt[$uid]", __LINE__, __FILE__);
 								while(list($beVars,)=each($this->basketExt[$uid])) {
 									//if (md5($beVars)==$md5) {
 									$this->basketExt[$uid][$beVars] = $quantity;
@@ -871,13 +869,11 @@ class tx_ttproducts extends tslib_pibase {
 					$basketExtNew[$tmpUid][$tmpExtVar] = $tmpCount;
 		$this->basketExt = $basketExtNew;
 
-		debug ($this->basketExt, 'initBasket vor Schreiben: $this->basketExt', __LINE__, __FILE__);
 		if (is_array($this->basketExt) && count($this->basketExt))
 			$TSFE->fe_user->setKey("ses","basketExt",$this->basketExt);
 		else
 			$TSFE->fe_user->setKey("ses","basketExt",array());
 
-		debug ($basket, 'initBasket nach Schreiben: basket', __LINE__, __FILE__);
 		$this->setBasketExtras($basket);
 
 		$this->personInfo = $basket["personinfo"];
@@ -932,20 +928,15 @@ class tx_ttproducts extends tslib_pibase {
 	function setBasketExtras($basket)	{
 		global $TSFE;
 
-		debug ($basket, 'setBasketExtras $basket', __LINE__, __FILE__);
-
 			// shipping
 		ksort($this->conf["shipping."]);
 		reset($this->conf["shipping."]);
 		$k=intval($basket["tt_products"]["shipping"]);
-		debug ($k, '$k', __LINE__, __FILE__);
 		if (!$this->checkExtraAvailable("shipping",$k))	{
 			$k=intval(key($this->cleanConfArr($this->conf["shipping."],1)));
-			debug ($k, '$k kein checkExtraAvailable', __LINE__, __FILE__);
 		}
 		$this->basketExtra["shipping"] = $k;
 		$this->basketExtra["shipping."] = $this->conf["shipping."][$k."."];
-		debug ($this->basketExtra["shipping."], '$this->basketExtra["shipping."]', __LINE__, __FILE__);
 		$excludePayment = trim($this->basketExtra["shipping."]["excludePayment"]);
 
 			// payment
@@ -1076,7 +1067,6 @@ class tx_ttproducts extends tslib_pibase {
 			$this->recs["tt_products"]["orderUid"] = $orderUid;
 			$this->recs["tt_products"]["orderDate"] = time();
 			$this->recs["tt_products"]["orderTrackingNo"] = $this->getOrderNumber($orderUid)."-".strtolower(substr(md5(uniqid(time())),0,6));
-			debug ($this->recs, 'initBasket vor Schreiben2: $this->recs', __LINE__, __FILE__);
 			$TSFE->fe_user->setKey("ses","recs",$this->recs);
 		}
 		return $orderUid;
@@ -1409,7 +1399,6 @@ class tx_ttproducts extends tslib_pibase {
 			}
 		}
 
-		debug ($this->getClearBasketRecord(), 'initBasket vor Schreiben3: $this->getClearBasketRecord', __LINE__, __FILE__);
 			// Empties the shopping basket!
 		$TSFE->fe_user->setKey("ses","recs",$this->getClearBasketRecord());
 		$TSFE->fe_user->setKey("ses","basketExt",array());
@@ -1659,7 +1648,6 @@ class tx_ttproducts extends tslib_pibase {
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
 		$markerArray["###FIELD_QTY###"]= $this->basketExt[$row["uid"]][$row["size"].";".$row["color"].";".$row["accessory"]] ? $this->basketExt[$row["uid"]][$row["size"].";".$row["color"].";".$row["accessory"]] : "";
-		debug ($markerArray["###FIELD_QTY###"], '$markerArray["###FIELD_QTY###"]', __LINE__, __FILE__);
 		$markerArray["###FIELD_NAME_BASKET###"]="ttp_basket[".$row["uid"]."][".md5($row["extVars"])."]";
 
 		$markerArray["###FIELD_SIZE_NAME###"]="ttp_basket[".$row["uid"]."][size]";
@@ -1757,20 +1745,15 @@ class tx_ttproducts extends tslib_pibase {
 			 	.template	[string]	Template string for the display of radiobuttons.  Only if .radio is true. See default below
 
 			 */
-		debug ($key, 'generateRadioSelect $key', __LINE__, __FILE__);
 		$type=$this->conf[$key."."]["radio"];
 		$active = $this->basketExtra[$key];
-		debug ($this->basketExtra, 'generateRadioSelect $this->basketExtra', __LINE__, __FILE__);
 		$confArr = $this->cleanConfArr($this->conf[$key."."]);
 		$out="";
 
-		debug ($this->conf[$key."."]["template"], 'generateRadioSelect $this->conf[$key."."]["template"]', __LINE__, __FILE__);
 		$template = $this->conf[$key."."]["template"] ? ereg_replace('\' *\. *\$key *\. *\'',$key, $this->conf[$key."."]["template"]) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$key.']" onClick="submit()" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
-		debug ($template, 'generateRadioSelect $template', __LINE__, __FILE__);
 
 		$wrap = $this->conf[$key."."]["wrap"] ? $this->conf[$key."."]["wrap"] :'<select name="recs[tt_products]['.$key.']" onChange="submit()">|</select>';
 
-		debug ($confArr, 'generateRadioSelect $confArr', __LINE__, __FILE__);
 		while(list($key,$val)=each($confArr))	{
 			if (($val["show"] || !isset($val["show"])) &&
 				(doubleval($val["showLimit"]) >= doubleval($countTotal) || !isset($val["showLimit"]) ||
@@ -1778,12 +1761,9 @@ class tx_ttproducts extends tslib_pibase {
 				if ($type)	{	// radio
 					$markerArray=array();
 					$markerArray["###VALUE###"]=intval($key);
-					debug ($key, '$key', __LINE__, __FILE__);
-					debug ($active, '$active', __LINE__, __FILE__);
 					$markerArray["###CHECKED###"]=(intval($key)==$active?" checked":"");
 					$markerArray["###TITLE###"]=$val["title"];
 					$markerArray["###IMAGE###"]=$this->cObj->IMAGE($val["image."]);
-					debug ($markerArray, '$markerArray', __LINE__, __FILE__);
 					$out.=$this->cObj->substituteMarkerArrayCached($template, $markerArray);
 				} else {
 					$out.='<option value="'.intval($key).'"'.(intval($key)==$active?" selected":"").'>'.htmlspecialchars($val["title"]).'</option>';
@@ -1812,20 +1792,15 @@ class tx_ttproducts extends tslib_pibase {
 		return $outArr;
 	}
 
-
 	function GetCalculatedData(
 			&$priceCalc, &$discountPrice,
-			&$priceItemTax, &$countItem,
-			&$priceShippingTax, &$countTotal)
+			&$categoryItem,
+			&$priceItemTax, &$countItem, &$priceShippingTax,
+			&$countTotal, &$goodstotalSum, &$countCategory)
 	{
 		global $TSFE;
 
 		$inGroup = 0;
-
-		debug ($priceCalc, 'GetCalculatedData $priceCalc', __LINE__, __FILE__);
-		debug ($discountPrice, 'GetCalculatedData $discountPrice', __LINE__, __FILE__);
-		debug ($priceItemTax, 'GetCalculatedData $priceItemTax', __LINE__, __FILE__);
-		debug ($countItem, 'GetCalculatedData $countItem', __LINE__, __FILE__);
 
 		$gr_list = explode (',' , $TSFE->gr_list);
 
@@ -1861,6 +1836,7 @@ class tx_ttproducts extends tslib_pibase {
 						(doubleval($priceItemTax[$k2]) == doubleval($price1["1"])))
 					{
 						$dumCount += $count2;
+						$countCategory[$categoryItem[$k2]] += $count2;
 					}
 				}
 
@@ -1951,14 +1927,11 @@ class tx_ttproducts extends tslib_pibase {
 					(doubleval($priceItemTax[$k2]) == doubleval($price1["1"])))
 				{
 					$dumCount += $count2;
+					$countCategory[$categoryItem[$k2]] += $count2;
 				}
 			}
 
 			$countTotal += $dumCount;
-
-			$priceCalcTemp = $priceCalc[$k1];
-			krsort($priceCalcTemp);
-			reset($priceCalcTemp);
 
 			$priceCalcTemp = $priceCalc[$k1];
 			krsort($priceCalcTemp);
@@ -1978,15 +1951,6 @@ class tx_ttproducts extends tslib_pibase {
 			$goodstotalSum += $priceTotal [$k1];
 		}
 
-		debug ($goodstotalSum, 'GetCalculatedData $goodstotalSum', __LINE__, __FILE__);
-
-		$this->calculatedSums_tax["goodstotal"] = $this->getPrice($goodstotalSum,1);
-		$this->calculatedSums_no_tax["goodstotal"] = $this->getPrice($goodstotalSum,0);
-
-		// these 2 assignements is necessary for tracking to create a bill only
-		$this->calculatedSums_tax["total"] = $this->calculatedSums_tax["goodstotal"];
-		$this->calculatedSums_no_tax["total"] = $this->calculatedSums_no_tax["goodstotal"];
-
 		//$this->calculatedSums_tax["payment"] = 0;
 		//$this->calculatedSums_no_tax["payment"] = 0;
 
@@ -1995,7 +1959,6 @@ class tx_ttproducts extends tslib_pibase {
 		if ($confArr) {
 			krsort($confArr);
 			reset($confArr);
-			debug ($confArr, '$confArr', __LINE__, __FILE__);
 
 			while (list ($k1, $price1) = each ($confArr))
 			{
@@ -2034,6 +1997,16 @@ class tx_ttproducts extends tslib_pibase {
 		return $result;
 	}
 
+	// This calculates the total for everything
+	function getCalculateSums () {
+		$this->calculatedSums_tax["total"] = $this->calculatedSums_tax["goodstotal"];
+		$this->calculatedSums_tax["total"]+= $this->calculatedSums_tax["payment"];
+		$this->calculatedSums_tax["total"]+= $this->calculatedSums_tax["shipping"];
+
+		$this->calculatedSums_no_tax["total"] = $this->calculatedSums_no_tax["goodstotal"];
+		$this->calculatedSums_no_tax["total"]+= $this->calculatedSums_no_tax["payment"];
+		$this->calculatedSums_no_tax["total"]+= $this->calculatedSums_no_tax["shipping"];
+	}
 
 	/**
 	 * This generates the shopping basket layout and also calculates the totals. Very important function.
@@ -2107,6 +2080,7 @@ class tx_ttproducts extends tslib_pibase {
 		$this->calculatedSums_tax=array();
 		$this->calculatedSums_no_tax=array();
 
+		$itemCategory = array();
 		$itemPrice = array ();
 		$itemCount = array ();
 
@@ -2135,11 +2109,11 @@ class tx_ttproducts extends tslib_pibase {
 					$wrappedSubpartArray=array();
 					$markerArray = $this->getItemMarkerArray ($row,$catTitle,1,"basketImage");
 
+					// if reseller is logged in then take 'price2', default is 'price'
 					$priceTax = $this->getResellerPrice($row,1);
 					$priceNoTax = $this->getResellerPrice($row,0);
 					$calculatedBasketItem = array(
 						"itemnumber" => intval($row["itemnumber"]),
-				// if reseller is logged in then take 'price2', default is 'price'
 						"priceTax" => $priceTax,
 						"priceNoTax" => $priceNoTax,
 						"weight" => $row["weight"],
@@ -2148,12 +2122,10 @@ class tx_ttproducts extends tslib_pibase {
 						"rec" => $row
 					);
 
-					debug ($calculatedBasketItem, 'calculatedBasketItem', __LINE__, __FILE__);
-
 					// If accesssory has been selected, add the price of it, multiplicated with the count :
 					if($calculatedBasketItem["rec"]["accessory"] AND $calculatedBasketItem["rec"]["accessory"] != 0 ){
 						$calculatedBasketItem["totalTax"] = ($calculatedBasketItem["priceTax"]+ $this->getPrice($calculatedBasketItem["rec"]["accessory"],1,$row["tax"]))*$calculatedBasketItem["count"];
-						$calculatedBasketItem["totalNoTax"] = ($calculatedBasketItem["priceNoTax"]+$calculatedBasketItem["rec"]["accessory"])*$calculatedBasketItem["count"];
+						$calculatedBasketItem["totalNoTax"] = ($calculatedBasketItem["priceNoTax"]+getPrice($calculatedBasketItem["rec"]["accessory"],0,$row["tax"]))*$calculatedBasketItem["count"];
 						$markerArray["###PRICE_ACCESSORY_TEXT###"]= $this->conf['accessoryText'];
 						$markerArray["###PRICE_ACCESSORY_COUNT###"]= '<INPUT size="3" maxlength="4" type="text" class="readonly" name="'.$calculatedBasketItem["count"].'" value="'.$calculatedBasketItem["count"].'" readonly="readonly">';
 						$markerArray["###ACCESSORY_VALUE_TAX###"]= $this->printPrice($this->priceFormat($this->getPrice($row["accessory".$this->config['priceNoReseller']],1,$row["tax"])));
@@ -2169,13 +2141,9 @@ class tx_ttproducts extends tslib_pibase {
 						$markerArray["###ACCESSORY_VALUE_NO_TAX###"]= '';
 					}
 
-					debug ($calculatedBasketItem, 'calculatedBasketItem', __LINE__, __FILE__);
-
+					$itemCategory[$calculatedBasketItem["itemnumber"]] = $row["category"];
 					$itemPrice[$calculatedBasketItem["itemnumber"]] = $calculatedBasketItem["priceTax"];
 					$itemCount[$calculatedBasketItem["itemnumber"]] = $calculatedBasketItem["count"];
-
-					debug ($itemPrice, 'itemPrice', __LINE__, __FILE__);
-					debug ($itemCount, 'itemCount', __LINE__, __FILE__);
 
 					$calculatedBasketItem["totalWeight"] = $calculatedBasketItem["weight"]*$calculatedBasketItem["count"];
 					$this->calculatedWeight+= $calculatedBasketItem["totalWeight"];
@@ -2203,9 +2171,13 @@ class tx_ttproducts extends tslib_pibase {
 			$this->GetCalculatedData(
 			$this->basketExtra["pricecalc."],
 			$this->basketExtra["discountprice."],
+			$itemCategory,
 			$itemPrice, $itemCount, $priceShippingTax,
-			$countTotal);
-			debug ($this->calculatedSums_tax["goodstotal"], 'nach GetCalculatedData $this->calculatedSums_tax["goodstotal"]', __LINE__, __FILE__);
+			$countTotal, $goodsTotal, $countCategory);
+
+			$this->calculatedSums_tax["goodstotal"] = $this->getPrice($goodsTotal,1);
+			$this->calculatedSums_no_tax["goodstotal"] = $this->getPrice($goodsTotal,0);
+
 		}
 
 			// Initializing the markerArray for the rest of the template
@@ -2220,11 +2192,12 @@ class tx_ttproducts extends tslib_pibase {
 		$markerArray["###IMAGE_BASKET###"] = '<img src="'.$this->conf["basket_pic"].'">';
 		$wrappedSubpartArray["###LINK_BASKET###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDbasket"]).'">','</A>');
 
-			// Shipping
+			// Shipping (must be before payment)
 		$this->calculatedSums_tax["shipping"]=doubleVal($this->basketExtra["shipping."]["priceTax"]);
 		if ($this->basketExtra["shipping."]["priceTax."]["1"] != NULL)
 		{
-			$this->calculatedSums_tax["shipping"]=$priceShippingTax;
+			$this->calculatedSums_tax["shipping"]=$this->getPrice($priceShippingTax,1);
+			$this->calculatedSums_no_tax["shipping"]=$this->getPrice($priceShippingTax,0);
 		}
 		$this->calculatedSums_no_tax["shipping"]=doubleVal($this->basketExtra["shipping."]["priceNoTax"]);
 		$perc = doubleVal($this->basketExtra["shipping."]["percentOfGoodstotal"]);
@@ -2251,10 +2224,16 @@ class tx_ttproducts extends tslib_pibase {
 			{
 				if ($prodSingle["bulkily"])
 				{
-					$this->calculatedSums_no_tax["shipping"] += ($this->conf["bulkilyAddition"] * $this->basketExt[$prodSingle["uid"]][$prodSingle["size"].";".$prodSingle["color"].";".$prodSingle["accessory"]]);
-					$this->calculatedSums_tax["shipping"] += ($this->conf["bulkilyAddition"] * $this->basketExt[$prodSingle["uid"]][$prodSingle["size"].";".$prodSingle["color"].";".$prodSingle["accessory"]]) * (1+$conf["bulkilyFeeTax"]/100);
+					$value = ($this->conf["bulkilyAddition"] * $this->basketExt[$prodSingle["uid"]][$prodSingle["size"].";".$prodSingle["color"].";".$prodSingle["accessory"]]);
+					$this->calculatedSums_tax["shipping"] += $value  * (1+$conf["bulkilyFeeTax"]/100);
+					$this->calculatedSums_no_tax["shipping"] += $value;
 				}
 			}
+
+		// TAXpercentage replaces priceNoTax
+		if ($this->conf["shipping."]["TAXpercentage"]) {
+			$this->calculatedSums_no_tax["shipping"] = $this->calculatedSums_tax["shipping"]/(1+doubleVal($this->conf["shipping."]["TAXpercentage"])/100);
+		}
 
 		$markerArray["###PRICE_SHIPPING_PERCENT###"] = $perc;
 		$markerArray["###PRICE_SHIPPING_TAX###"] = $this->priceFormat($this->calculatedSums_tax["shipping"]);
@@ -2277,15 +2256,20 @@ class tx_ttproducts extends tslib_pibase {
 		                  		$countTotal);
 		$perc = doubleVal($this->basketExtra["payment."]["percentOfTotalShipping"]);
 		if ($perc)	{
-			$this->calculatedSums_tax["payment"]=
-			($this->calculatedSums_tax["goodstotal"] + $this->calculatedSums_tax["shipping"] ) *
-				doubleVal($perc);
+			$payment = ($this->calculatedSums_tax["goodstotal"] + $this->calculatedSums_tax["shipping"] ) * doubleVal($perc);
+
+			$this->calculatedSums_tax["payment"]=$payment;
+			$this->calculatedSums_no_tax["payment"]=$this->getPrice($payment,0);
 		}
 
 		$perc = doubleVal($this->basketExtra["payment."]["percentOfGoodstotal"]);
 		if ($perc)	{
 			$this->calculatedSums_tax["payment"]+= $this->calculatedSums_tax["goodstotal"]/100*$perc;
 			$this->calculatedSums_no_tax["payment"]+= $this->calculatedSums_no_tax["goodstotal"]/100*$perc;
+		}
+		// TAXpercentage replaces priceNoTax
+		if ($this->conf["payment."]["TAXpercentage"]) {
+			$this->calculatedSums_no_tax["payment"] = $this->calculatedSums_tax["payment"]/(1+doubleVal($this->conf["payment."]["TAXpercentage"])/100);
 		}
 		if ($this->basketExtra["payment."]["calculationScript"])	{
 			$calcScript = $TSFE->tmpl->getFileName($this->basketExtra["payment."]["calculationScript"]);
@@ -2313,15 +2297,7 @@ class tx_ttproducts extends tslib_pibase {
 		}
 
 			// This is the total for everything
-		$this->calculatedSums_tax["total"] = $this->calculatedSums_tax["goodstotal"];
-		$this->calculatedSums_tax["total"]+= $this->calculatedSums_tax["payment"];
-		$this->calculatedSums_tax["total"]+= $this->calculatedSums_tax["shipping"];
-
-		$this->calculatedSums_no_tax["total"] = $this->calculatedSums_no_tax["goodstotal"];
-		$this->calculatedSums_no_tax["total"]+= $this->calculatedSums_no_tax["payment"];
-		$this->calculatedSums_no_tax["total"]+= $this->calculatedSums_no_tax["shipping"];
-
-		debug ($this->calculatedSums_tax["total"], 'getBasket $this->calculatedSums_tax["total"]', __LINE__, __FILE__);
+		$this->getCalculateSums();
 
 		$markerArray["###PRICE_TOTAL_TAX###"] = $this->priceFormat($this->calculatedSums_tax["total"]);
 		$markerArray["###PRICE_TOTAL_NO_TAX###"] = $this->priceFormat($this->calculatedSums_no_tax["total"]);
@@ -2408,8 +2384,6 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function getTrackingInformation($orderRow, $templateCode)	{
 			/*
-
-
 
 					Tracking information display and maintenance.
 
@@ -2599,25 +2573,21 @@ class tx_ttproducts extends tslib_pibase {
 		$t["itemFrameWork"] = $this->cObj->getSubpart($t["orderFrameWork"],"###ITEM_LIST###");
 		$t["item"] = $this->cObj->getSubpart($t["itemFrameWork"],"###ITEM_SINGLE###");
 
-
-
 		$categoryQty = array();
+		$countCategory = array();
 		$category = array();
 
 		reset($basket);
 
-
-		$priceItemTax = array();
-		$countItem = array();
-		// $preis and $count must start with index 1
-		$itemPrice[] = 0;
-		$itemCount[] = 0;
+		$itemCategory = array();
+		$itemCount = array();
 
 		// Calculate quantities for all categories
 		foreach ($basket as $actBasket)
 		{
 			$currentCategory=$actBasket["rec"]["category"];
-			$category[] = $currentCategory;
+			$category[$currentCategory] = 1;
+			$itemCategory[] = $currentCategory;
 			$itemPrice[] = $actBasket["priceTax"];
 			$itemCount[] = $actBasket["count"];
 			if(isset($categoryQty[$currentCategory]))
@@ -2636,8 +2606,12 @@ class tx_ttproducts extends tslib_pibase {
 			$this->GetCalculatedData(
 			$this->basketExtra["pricecalc."],
 			$this->basketExtra["discountprice."],
+			$itemCategory,
 			$itemPrice, $itemCount, $priceShippingTax,
-			$countTotal);
+			$countTotal, $goodsTotal, $countCategory); // $countCategory will be used later ...
+
+			$this->calculatedSums_tax["goodstotal"] = $this->getPrice($goodsTotal,1);
+			$this->calculatedSums_no_tax["goodstotal"] = $this->getPrice($goodsTotal,0);
 		}
 		$currentCategory=0;
 
@@ -2645,7 +2619,7 @@ class tx_ttproducts extends tslib_pibase {
 		$itemsOut="";
 		$out="";
 
-		foreach ($category as $currentCategory)
+		foreach ($category as $currentCategory=>$value)
 		{
 			$categoryChanged = 1;
 
@@ -2662,10 +2636,9 @@ class tx_ttproducts extends tslib_pibase {
 						$this->cObj->setCurrentVal($catTitle);
 						$markerArray["###CATEGORY_TITLE###"]=$this->cObj->cObjGetSingle($this->conf["categoryHeader"],$this->conf["categoryHeader."], "categoryHeader");
 						$markerArray["###CATEGORY_QTY###"]=$categoryQty[$currentCategory];
-						debug ($this->calculatedSums_tax["total"], 'getInformation calculatedSums_tax["total"])', __LINE__, __FILE__);
 
-						$markerArray["###CATEGORY_PRICE###"]= $this->priceFormat($this->calculatedSums_tax["total"]);
-						$markerArray["###CATEGORY_PRICE_NO_TAX###"]= $this->priceFormat($this->calculatedSums_no_tax["total"]);
+						$markerArray["###PRICE_GOODS_TAX###"]= $this->priceFormat($this->calculatedSums_tax["goodstotal"]);
+						$markerArray["###PRICE_GOODS_NO_TAX###"]= $this->priceFormat($this->calculatedSums_no_tax["goodstotal"]);
 
 						$out2 = $this->cObj->substituteMarkerArray($t["categoryTitle"], $markerArray);
 						$out.= $out2;
@@ -2713,6 +2686,7 @@ class tx_ttproducts extends tslib_pibase {
 		$markerArray["###PRICE_PAYMENT_NO_TAX###"] = $this->priceFormat($orderData["calculatedSum_no_tax"]["payment"]);
 		$markerArray["###PRICE_TOTAL_TAX###"] = $this->priceFormat($orderData["calculatedSum_tax"]["total"]);
 		$markerArray["###PRICE_TOTAL_NO_TAX###"] = $this->priceFormat($orderData["calculatedSums_no_tax"]["total"]);
+
 		$markerArray["###ORDER_UID###"] = $this->getOrderNumber($orderRow["uid"]);
 		$markerArray["###ORDER_DATE###"] = $this->cObj->stdWrap($orderRow["crdate"],$this->conf["orderDate_stdWrap."]);
 
