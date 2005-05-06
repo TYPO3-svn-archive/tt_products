@@ -1,3 +1,9 @@
+2005-05-06  Franz Holzinger  <franz@fholzinger.com>
+
+	* example templates from bananaguard.de
+	* correct error with taxes on payment and shipping costs
+	* use TAXpercentage instead of priceNoTax (deprecated) in payment and shipping
+
 2005-04-27  Franz Holzinger  <franz@fholzinger.com>
 
 	* fill ###PRODUCT_IMAGE15### with empty string if no image is available

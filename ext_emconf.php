@@ -2,9 +2,9 @@
 
 ########################################################################
 # Extension Manager/Repository config file for ext: "tt_products"
-# 
+#
 # Auto generated 30-03-2005 16:28
-# 
+#
 # Manual updates:
 # Only the data in the array - anything else is removed by next write
 ########################################################################
@@ -18,8 +18,8 @@ $EM_CONF[$_EXTKEY] = Array (
 	'conflicts' => 'zk_products',
 	'priority' => '',
 	'loadOrder' => '',
-	'TYPO3_version' => '-',
-	'PHP_version' => '-',
+	'TYPO3_version' => '3.6.0-0.0.1',
+	'PHP_version' => '0.0.1-0.0.1',
 	'module' => '',
 	'state' => 'stable',
 	'internal' => 0,
@@ -28,9 +28,9 @@ $EM_CONF[$_EXTKEY] = Array (
 	'modify_tables' => '',
 	'clearCacheOnLoad' => 1,
 	'lockType' => '',
-	'author' => 'Kasper Skårhøj',
-	'author_email' => 'kasperYYYY@typo3.com',
-	'author_company' => 'Curby Soft Multimedia',
+	'author' => 'Franz Holzinger',
+	'author_email' => 'kontakt@fholzinger.com',
+	'author_company' => 'fholzinger.com',
 	'CGLcompliance' => '',
 	'CGLcompliance_note' => '',
 	'private' => 0,
