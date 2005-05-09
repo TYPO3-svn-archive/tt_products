@@ -40,6 +40,8 @@ $LOCAL_LANG = Array (
 		'plugins_description' => 'Dodaje listê produktów sklepu internetowego. Jest czê¶ci± wbudowanego sklepu internetowego i wymaga aby strona zawiera³a zdefiniowane produkty w bazie.',
 	),
 	'si' => Array (
+		'plugins_title' => 'Seznam izdelkov',
+		'plugins_description' => 'Doda seznam izdelkov za prodajo na stran. Ta modul je del vgrajenega sistema za prodajo in zahteva doloèene elemente izdelkov v bazi podatkov strani.',
 	),
 	'fi' => Array (
 		'plugins_title' => 'Tuotelista',
@@ -66,8 +68,64 @@ $LOCAL_LANG = Array (
 	'ch' => Array (
 	),
 	'sk' => Array (
+		'plugins_title' => 'Zoznam produktov',
+		'plugins_description' => 'Pridá na stránku zoznam produktov e-obchode. Toto je èas  e-obchodu. Stránka musí obsahova produkty zapísané v databáze.',
 	),
 	'lt' => Array (
+	),
+	'is' => Array (
+	),
+	'hr' => Array (
+		'plugins_title' => 'Popis proizvoda',
+		'plugins_description' => 'Dodaje popis proizvoda za prodaju na stranicu. Ovo je dio ugraðene trgovine i zahtjeva da stranica sadrži proizvode u bazi podataka.',
+	),
+	'hu' => Array (
+		'plugins_title' => 'Terméklista',
+		'plugins_description' => 'Egy vásárlási terméklista hozzáadása az oldalhoz. Ez a beépített shop egy része, az oldalnak tartalmaznia kell a termék elemeket az adatbázisban.',
+	),
+	'gl' => Array (
+	),
+	'th' => Array (
+	),
+	'gr' => Array (
+	),
+	'hk' => Array (
+		'plugins_title' => '²£«~¦Cªí',
+		'plugins_description' => '¥[¤@¶µ²£«~¦Cªí¨ìºô­¶¡C³o¬O¤º¸m½u¤W©±çEªº¤@³¡¤À¡A»Ý­nºô­¶®e¯Ç¦b¸ê®Æ®w¤¤ªº²£«~¤¸¯À',
+	),
+	'eu' => Array (
+	),
+	'bg' => Array (
+		'plugins_title' => 'Ëèñò íà ïðîäóêòèòå',
+		'plugins_description' => 'Äîáàâÿíå íà ìàãàçèíåí ëèñò íà ïðîäóêòèòå êúì ñòðàíèöàòà. Òîâà å ÷àñò îò âãðàäåíèÿ ìàãàçèí è èçèñêâà ñòðàíèöàòà äà ñúäúðæà åëåìåíòè íà ïðîäóêòà â áàçàòà äàííè.',
+	),
+	'br' => Array (
+	),
+	'et' => Array (
+	),
+	'ar' => Array (
+	),
+	'he' => Array (
+	),
+	'ua' => Array (
+	),
+	'lv' => Array (
+	),
+	'jp' => Array (
+	),
+	'vn' => Array (
+	),
+	'ca' => Array (
+	),
+	'ba' => Array (
+	),
+	'kr' => Array (
+	),
+	'eo' => Array (
+	),
+	'my' => Array (
+	),
+	'hi' => Array (
 	),
 );
 ?>
