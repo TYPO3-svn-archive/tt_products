@@ -13,7 +13,6 @@ $LOCAL_LANG = Array (
 	'dk' => Array (
 	),
 	'de' => Array (
-	'default' => Array (
 		'.description' => 'Eingebaute Produktkategorien',
 		'.details' => 'Die Kategorien werden im Shop System nur dann verwendet, wenn das Shop auch dafür konfiguriert worden ist.',
 	),
