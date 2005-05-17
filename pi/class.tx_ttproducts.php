@@ -222,7 +222,7 @@ class tx_ttproducts extends tslib_pibase {
 
 						// Markers and substitution:
 					$markerArray["###CODE###"] = $theCode;
-					$markerArray["###PATH###"] = PATH_ttproducts;
+					$markerArray["###PATH###"] = t3lib_extMgm::siteRelPath('tt_products');
 					$content.=$this->cObj->substituteMarkerArray($helpTemplate,$markerArray);
 				break;
 			}
