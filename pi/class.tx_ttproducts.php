@@ -1618,8 +1618,10 @@ class tx_ttproducts extends tslib_pibase {
 		}
 
 			// empty all image fields with no availble image
-		for ($i=count($theImgCode) + 1; $i<=15; ++$i) {
-			$markerArray["###PRODUCT_IMAGE" .  $i. "###"] = '';
+		for ($i=1; $i<=15; ++$i) {
+			if (!$markerArray["###PRODUCT_IMAGE" .  $i. "###"]) {
+				$markerArray["###PRODUCT_IMAGE" .  $i. "###"] = '';
+			}
 		}
 
 		$markerArray["###PRODUCT_SUBTITLE###"] = $row["subtitle"];
