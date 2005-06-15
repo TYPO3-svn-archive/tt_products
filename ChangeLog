@@ -1,3 +1,10 @@
+2005-06-15  Franz Holzinger  <franz@fholzinger.com>
+
+	* correct language files
+	* corrected error in SQL for creation of fe_users
+	* correct German template
+	* correct shipping and payment price calculation
+
 2005-05-18  Michael Stucki  <michael@typo3.org>
 
 	* Fixed help image (file was not found)

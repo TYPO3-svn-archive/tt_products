@@ -55,8 +55,21 @@
 				<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Product:</b>###GW2E###</td>
 				<td bgcolor="###GC2###">###GW2B###<b>Enter quantity:</b>###GW2E###</td>
 			</tr>
+			<tr>
+				<td colspan=4><img src="clear.gif" width=1 height=6></td>
+			</tr>
 			<!-- ###ITEM_SINGLE### begin-->
+			<tr>
+			<tr>
+			<td colspan=4>
 			<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
+			<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+				<tr>
+					<td><img src="clear.gif" width=100 height=1></td>
+					<td><img src="clear.gif" width=5 height=1></td>
+					<td><img src="clear.gif" width=300 height=1></td>
+					<td><img src="clear.gif" width=100 height=1></td>
+				</tr>
 				<tr>
 					<td colspan=4><img src="clear.gif" width=1 height=6></td>
 				</tr>
@@ -64,16 +77,19 @@
 					<td colspan=4 bgcolor="###GC1###"><!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--></td>
 				</tr>
 				<TR>
-					<TD valign=top>###PRODUCT_IMAGE###</TD>
+				+	<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
-					<TD valign=top>###GW2B######PRODUCT_NOTE######GW2E###<br>
-						###GW1B###<B>Web-price:</b> <font color=red><strong>###PRICE_TAX### USD</strong></font>###GW1E###<br>
+					<TD valign=top>###GW2B######PRODUCT_NOTE######GW2E###<br />
+						###GW1B###<B>Web-price:</b> <font color=red><strong>###PRICE_TAX### USD</strong></font>###GW1E###<br />
 						###GW2B###(w/o VAT: ###PRICE_NO_TAX###)###GW2E###
 					</TD>
 					<TD valign=top nowrap align=right>###GW2B### Qty: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><BR><input type="Submit" name="order" value="Put in basket" onClick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 					</TD>
 				</TR>
+			</TABLE>
 			</FORM>
+			</td>
+			</tr>
 			<!-- ###ITEM_SINGLE### end -->
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
@@ -222,7 +238,7 @@ In addition there's a number of fields used for delivery and payment information
 <br>
 <br>
 
-<!-- ###BASKET_TEMPLATE### 
+<!-- ###BASKET_TEMPLATE### begin
 	Subpart used to display the content of the shopping basket.
 	The product list part has the exact same features as the regular LIST_ITEM_TEMPLATE subpart.
 	In addition there's a number of fields used for delivery and payment information.
@@ -787,7 +803,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 			Delivery will be done according to our sales policy. Your order is dated ###ORDER_DATE###.<br>
 			<br>
 			You can follow your order by using your tracking number, which is: <br>
-			<strong>###ORDER_TRACKING_NO###</strong>. Click here to <a href="index.php?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###">see the status now.</a><br><br>
+			<strong>###ORDER_TRACKING_NO###</strong>. Click here to <a href="http://###DOMAIN###/index.php?id=trackingpid&type=0&tracking=###ORDER_TRACKING_NO###">see the status now.</a><br><br>
 			<br>
 		###GW1E###
 		###EXTERNAL_COBJECT###				
@@ -1281,7 +1297,7 @@ You get this email, because you have chosen to recieve information about your or
         ###ORDER_TRACKING_NO###
 		
 Click here to see information now:
-        http://www.myTypoShop.com/?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###
+        http://###DOMAIN###/index.php?id=trackingpid&type=0&tracking=###ORDER_TRACKING_NO###
 
 
 
@@ -1333,7 +1349,7 @@ Use this number as a reference when you contact us.
 
 TRACKING:
 You can follow you order status by using this tracking number: 
-        http://www.myTypoShop.com/?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###
+        http://###DOMAIN###/index.php?id=trackingpid&type=0&tracking=###ORDER_TRACKING_NO###
 
 
 ORDER:

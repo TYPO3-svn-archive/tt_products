@@ -26,6 +26,8 @@ tt_content:list_type',
 	'dk' => Array (
 	),
 	'de' => Array (
+		'.description' => 'Eigenschaften der Produkte.',
+		'.details' => 'Diese Tabelle enthält die Produkte, die im standardmäßig im TypoScript Shop System zur Verfügung stehen.',
 	),
 	'no' => Array (
 	),
@@ -50,19 +52,6 @@ tt_content:list_type',
 	'se' => Array (
 		'.description' => 'Inbyggd butiksprodukter',
 		'.details' => 'Denna tabell innehåller produkterna i standardversionen av TypoScript butikssystemet.',
-		'hidden.description' => '[FYLL I] tt_products->gömd',
-		'www.description' => '[FYLL I] tt_products->www',
-		'title.description' => '[FYLL I] tt_products->rubrik',
-		'itemnumber.description' => '[FYLL I] tt_products->produktnummer',
-		'category.description' => '[FYLL I] tt_products->kategori',
-		'price2.description' => '[FYLL I] tt_products->pris2',
-		'inStock.description' => '[FYLL I] tt_products->påLager',
-		'price.description' => '[FYLL I] tt_products->pris',
-		'note.description' => '[FYLL I] tt_products->notering',
-		'image.description' => '[FYLL I] tt_products->bild',
-		'starttime.description' => '[FYLL I] tt_products->starttid',
-		'endtime.description' => '[FYLL I] tt_products->sluttid',
-		'fe_group.description' => '[FYLL I] tt_products->fe_grupp',
 	),
 	'pt' => Array (
 	),

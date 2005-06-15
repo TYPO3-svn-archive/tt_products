@@ -57,14 +57,13 @@ plugin.tt_products {
   TAXincluded = 1
     # Price decimals
   priceDec = 2
-
     # cat=plugin.products//; type=small; label=Price decimal point
   priceDecPoint = .
     # cat=plugin.products//; type=small; label=Price Thousand point
   priceThousandPoint = 
 
     # cat=plugin.products//; type=boolean; label=Use Price Tag: Print a graphical price tag instead of the normal text field
-  usePriceTag = 1
+  usePriceTag = 0
     # cat=plugin.products//; type=text; label=Message displayed at bulkily items
   bulkilyWarning = <p><b>Warning! This article needs special transport.</b></p>
     # cat=plugin.products//; type=int+; label=Additional cost for bulkily items
@@ -102,9 +101,9 @@ plugin.tt_products {
     # cat=plugin.products//; type=text; label=Always inStock: The stock will never get reduced.
   alwaysInStock = 1
     # cat=plugin.products//; type=text; label=Always inStock message: Message is displayed if inStock <= -1 (means always inStock)
-  alwaysInStockMessage = Auf Lager
+  alwaysInStockMessage = on stock
     # cat=plugin.products//; type=text; label=Unit for pieces
-  inStockPieces = Stück
+  inStockPieces = pieces
 
     # cat=plugin.products//; type=text; label=New Item Days: How many days list new items in LISTNEWITEMS
   newItemDays = 7

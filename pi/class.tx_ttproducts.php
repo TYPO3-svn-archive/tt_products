@@ -110,7 +110,7 @@ class tx_ttproducts extends tslib_pibase {
 		$this->config["recursive"] = $this->cObj->stdWrap($this->conf["recursive"],$this->conf["recursive."]);
 		$this->config["storeRootPid"] = $this->conf["PIDstoreRoot"] ? $this->conf["PIDstoreRoot"] : $TSFE->tmpl->rootLine[0][uid];
 		$this->config["useCategories"] = $this->conf["useCategories"] ? $this->conf["useCategories"] : 1;
-		$this->config["reseller"] = t3lib_div::intInRange($this->conf['reseller'],2,2);
+		$this->config["priceNoReseller"] = $this->config["priceNoReseller"] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : $this->config["priceNoReseller"];
 
 			//extend standard search fields with user setup
 		$this->searchFieldList = trim($this->conf["stdSearchFieldExt"]) ? implode(",", array_unique(t3lib_div::trimExplode(",",$this->searchFieldList.",".trim($this->conf["stdSearchFieldExt"]),1))) : $this->searchFieldList;
@@ -135,13 +135,7 @@ class tx_ttproducts extends tslib_pibase {
 		$globalMarkerArray["###GC1###"] = $this->cObj->stdWrap($this->conf["color1"],$this->conf["color1."]);
 		$globalMarkerArray["###GC2###"] = $this->cObj->stdWrap($this->conf["color2"],$this->conf["color2."]);
 		$globalMarkerArray["###GC3###"] = $this->cObj->stdWrap($this->conf["color3"],$this->conf["color3."]);
-
-		if ($this->conf["displayBasketColumns"])
-		{
-			$formUrl = $this->getLinkUrl($this->conf["PIDbasket"]);
-			$globalMarkerArray["###FORM_URL###"]=$formUrl;
-			$globalMarkerArray["###FORM_NAME###"]="ShopForm";
-		}
+		$globalMarkerArray["###DOMAIN###"] = $this->conf["domain"];
 
 			// Substitute Global Marker Array
 		$this->templateCode= $this->cObj->substituteMarkerArrayCached($this->templateCode, $globalMarkerArray);
@@ -397,25 +391,29 @@ class tx_ttproducts extends tslib_pibase {
 	function products_delivery($theCode)	{
 		global $TSFE;
 
-	    $this->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
+		$this->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
 		$this->setPidlist($this->config["storeRootPid"]);	// Set list of page id's to the storeRootPid.
 		$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
 		$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
 
 		$admin = $this->shopAdmin();
-		if (t3lib_div::_GP("tracking") || $admin)	{		// Tracking number must be set
+		if (t3lib_div::_GP("tracking") || $admin) {		// Tracking number must be set
 			$orderRow = $this->getOrderRecord("",t3lib_div::_GP("tracking"));
-			if (is_array($orderRow) || $admin)	{		// If order is associated with tracking id.
+			if (is_array($orderRow) || $admin) {		// If order is associated with tracking id.
 				if (!is_array($orderRow))	$orderRow=array("uid"=>0);
 				$content = $this->getInformation("delivery",$orderRow,
 				           $this->templateCode,t3lib_div::_GP("tracking"));
 			} else {	// ... else output error page
 				$content=$this->cObj->getSubpart($this->templateCode,$this->spMarker("###TRACKING_WRONG_NUMBER###"));
-				if (!$TSFE->beUserLogin)	{$content = $this->cObj->substituteSubpart($content,"###ADMIN_CONTROL###","");}
+				if (!$TSFE->beUserLogin) {
+					$content = $this->cObj->substituteSubpart($content,"###ADMIN_CONTROL###","");
+				}
 			}
 		} else {	// No tracking number - show form with tracking number
 			$content=$this->cObj->getSubpart($this->templateCode,$this->spMarker("###TRACKING_ENTER_NUMBER###"));
-			if (!$TSFE->beUserLogin)	{$content = $this->cObj->substituteSubpart($content,"###ADMIN_CONTROL###","");}
+			if (!$TSFE->beUserLogin) {
+				$content = $this->cObj->substituteSubpart($content,"###ADMIN_CONTROL###","");
+			}
 		}
 		$markerArray=array();
 		$markerArray["###FORM_URL###"] = $this->getLinkUrl();	// Add FORM_URL to globalMarkerArray, linking to self.
@@ -482,7 +480,7 @@ class tx_ttproducts extends tslib_pibase {
 
 				$catTitle= $this->pageArray[$row["pid"]]["title"].($row["category"]?"/".$this->categories[$row["category"]]:"");
 				if (!$item)	{$item = $this->cObj->getSubpart($this->templateCode,$this->spMarker("###ITEM_SINGLE_DISPLAY###"));}
-
+				
 					// Fill marker arrays
 				$wrappedSubpartArray=array();
 				$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl(t3lib_div::_GP("backPID")).'">','</A>');
@@ -490,6 +488,7 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray = $this->getItemMarkerArray ($row,$catTitle,$this->config["limitImage"]);
 
 				$markerArray["###FORM_NAME###"]="item_".$this->tt_product_single;
+				$formUrl = $this->getLinkUrl(t3lib_div::_GP("backPID"));
 				$markerArray["###FORM_URL###"]=$formUrl;
 
 				$url = $this->getLinkUrl("","tt_products");
@@ -747,6 +746,7 @@ class tx_ttproducts extends tslib_pibase {
 				}
 
 				$subpartArray["###ITEM_CATEGORY_AND_ITEMS###"]=$out;
+				
 				$markerArray["###FORM_URL###"]=$formUrl;      // Applied it here also...
 				$markerArray["###ITEMS_SELECT_COUNT###"]=$productsCount;
 
@@ -999,9 +999,6 @@ class tx_ttproducts extends tslib_pibase {
 		unset($this->recs["tt_products"]);
 		return ($this->recs);
 	}
-
-
-
 
 
 
@@ -1267,7 +1264,7 @@ class tx_ttproducts extends tslib_pibase {
 						$csvlinedelivery .= ";";
 					}
 					$csvlinehead .= "\"" . $fName . "\"";
-					$csvlineperson .= "\"" . $this->personInfo[$fName] . "\"";
+					$csvlineperson .= "\"" . str_replace("\r\n", "|", $this->personInfo[$fName]) . "\"";
 					$csvlinedelivery .= "\"" . $this->deliveryInfo[$fName] . "\"";
 				}
 
@@ -1306,10 +1303,12 @@ class tx_ttproducts extends tslib_pibase {
 				reset($this->calculatedBasket);
 				$infoWritten = false;
 				while(list(,$itemInfo)=each($this->calculatedBasket)) {
-					$sizecolor = explode(";", $itemInfo["rec"]["extVars"]);
+					$sizecoloraccessory = explode(";", $itemInfo["rec"]["extVars"]);
 					$csvdata = "\"".intval($itemInfo["rec"]["uid"])."\";\"".
 							intval($itemInfo["count"])."\";\"".
-							$sizecolor[0]."\";\"".$sizecolor[1]."\"";
+							$sizecoloraccessory[0]."\";\"".
+							$sizecoloraccessory[1]."\";\"".
+							$sizecoloraccessory[2]."\"";
 					reset($csvfields);
 					foreach($csvfields as $csvfield)
 						$csvdata .= ";\"".$itemInfo["rec"][$csvfield]."\"";
@@ -1342,7 +1341,7 @@ class tx_ttproducts extends tslib_pibase {
 
 			// Sends order emails:
 		$recipients = $this->conf["orderEmail_to"];
-		$recipients.=",".$this->personInfo["email"]; // +++ deliveryInfo
+		$recipients.=",".$this->personInfo["email"]; // former: deliveryInfo
 		$recipients=t3lib_div::trimExplode(",",$recipients,1);
 
 		if (count($recipients))	{	// If any recipients, then compile and send the mail.
@@ -1791,22 +1790,44 @@ class tx_ttproducts extends tslib_pibase {
 		return $outArr;
 	}
 
+
+	function GetPaymentShippingData(
+			&$countItem, &$priceShippingTax,
+			&$countTotal) {
+		$priceSingleShippingTax = 0;
+		$confArr = $this->basketExtra["shipping."]["priceTax."];
+		if ($confArr) {
+			$countTotal = 0;
+			foreach ($countItem as $key=>$count2) {
+				$countTotal += $count2;
+			}
+
+			krsort($confArr);
+			reset($confArr);
+
+			while (list ($k1, $price1) = each ($confArr)) {
+				if ($countTotal >= intval($k1)) {
+					$priceShippingTax = $price1;
+					break;
+				}
+			}
+		}	
+	}
+
+
 	function GetCalculatedData(
 			&$priceCalc, &$discountPrice,
 			&$categoryItem,
-			&$priceItemTax, &$countItem, &$priceShippingTax,
-			&$countTotal, &$goodstotalSum, &$countCategory)
-	{
+			&$priceItemTax, &$countItem,
+			&$goodstotalSum, &$countCategory) {
 		global $TSFE;
 
 		$inGroup = 0;
 
 		$gr_list = explode (',' , $TSFE->gr_list);
 
-		while (list(,$val) = each ($gr_list))
-		{
-			if ((intval($val) > 0) && ($inGroup == 0))
-			{
+		while (list(,$val) = each ($gr_list)) {
+			if ((intval($val) > 0) && ($inGroup == 0)) {
 				$inGroup = 1 - strcmp($TSFE->fe_user->groupData->title, $this->conf["discountGroupName "] );
 
 				if (strlen($TSFE->fe_user->groupData['title']) == 0)
@@ -1814,26 +1835,22 @@ class tx_ttproducts extends tslib_pibase {
 			}
 		}
 
-		$goodstotalSum = 0;
 		$priceTotal = array();
 		$priceReduction = array();
 		$countTotal = 0;
 
-		ksort($discountPrice);
-		reset($discountPrice);
-
 		// Check if a special group price can be used
 		if (($inGroup == 1) && ($discountPrice != NULL))
 		{
-			while (list ($k1, $price1) = each ($discountPrice))
-			{
+			ksort($discountPrice);
+			reset($discountPrice);
+
+			while (list ($k1, $price1) = each ($discountPrice)) {
 				$dumCount = 0;
 				reset($countItem);
-				while (list ($k2, $count2) = each ($countItem))
-				{
+				while (list ($k2, $count2) = each ($countItem))	{
 					if ((intval($count2) > 0) &&
-						(doubleval($priceItemTax[$k2]) == doubleval($price1["1"])))
-					{
+						(doubleval($priceItemTax[$k2]) == doubleval($price1["1"]))) {
 						$dumCount += $count2;
 						$countCategory[$categoryItem[$k2]] += $count2;
 					}
@@ -1845,52 +1862,40 @@ class tx_ttproducts extends tslib_pibase {
 				krsort($priceCalcTemp);
 				reset($priceCalcTemp);
 
-				if ($this->conf["discountprice."]["additive"] == 0)
-				{
-					while (list ($k2, $price2) = each ($priceCalcTemp))
-					{
-						if ($dumCount >= intval($k2)) // only the highest value for this count will be used; 1 should never be reached, this would not be logical
-						{
+				if ($this->conf["discountprice."]["additive"] == 0) {
+					while (list ($k2, $price2) = each ($priceCalcTemp)) {
+						if ($dumCount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
 							$priceTotal [$k1] = doubleval($price2) * $dumCount;
-							if (intval($k2) > 1)
-							{
+							if (intval($k2) > 1) {
 								$priceReduction[$k1] = 1; // remember the reduction in order not to calculate another price with $priceCalc
 							}
-							else
-							{
+							else {
 								$priceReduction[$k1] = 0;
 							}
 							break; // finish
 						}
 					}
 				}
-				else
-				{
+				else {
 					$priceTotal [$k1] = $dumCount; // save only the product count
 				}
 			}
-			if ($this->conf["discountprice."]["additive"] == 1)
-			{
+			if ($this->conf["discountprice."]["additive"] == 1) {
 				$newCountTotal = $countTotal;
 
 				reset($discountPrice);
-				while (list ($k1, $price1) = each ($discountPrice))
-				{
+				while (list ($k1, $price1) = each ($discountPrice)) {
 					$priceCalcTemp = $discountPrice[$k1];
 					krsort($priceCalcTemp);
 					reset($priceCalcTemp);
-					while (list ($k2, $price2) = each ($priceCalcTemp))
-					{
-						if ($countTotal >= intval($k2)) // search the price from the total count
-						{
-							if (intval($k2) > 1)
-							{
+					while (list ($k2, $price2) = each ($priceCalcTemp)) {
+						if ($countTotal >= intval($k2)) { // search the price from the total count
+							if (intval($k2) > 1) {
 								$priceTotal [$k1] = doubleval($price2) * $priceTotal [$k1];
 
 								$priceReduction[$k1] = 1; // remember the reduction in order not to calculate another price with $priceCalc
 							}
-							else
-							{	// $priceTotal [$k1] contains the product count
+							else  {	// $priceTotal [$k1] contains the product count
 								$priceReduction[$k1] = 0;
 								$newCountTotal -= $priceTotal [$k1];
 							}
@@ -1905,69 +1910,48 @@ class tx_ttproducts extends tslib_pibase {
 			}
 		}
 
-		ksort($priceCalc);
-		reset($priceCalc);
+		if ($priceCalc) {
+			$goodstotalSum = 0;
+			ksort($priceCalc);
+			reset($priceCalc);
 
-		while (list ($k1, $price1) = each ($priceCalc))
-		{
-			// has the price already been calculated before ?
-			if ($priceReduction[$k1] == 1) {
-				$goodstotalSum += $priceTotal [$k1];
-				continue;
-			}
-		    $priceTotal[$k1] = 0;
-
-		    $dumCount = 0;
-
-			reset($countItem);
-		    while (list ($k2, $count2) = each ($countItem))
-			{
-				if ((intval($count2) > 0) &&
-					(doubleval($priceItemTax[$k2]) == doubleval($price1["1"])))
-				{
-					$dumCount += $count2;
-					$countCategory[$categoryItem[$k2]] += $count2;
+			while (list ($k1, $price1) = each ($priceCalc)) {
+				// has the price already been calculated before ?
+				if ($priceReduction[$k1] == 1) {
+					$goodstotalSum += $priceTotal [$k1];
+					continue;
 				}
-			}
-
-			$countTotal += $dumCount;
-
-			$priceCalcTemp = $priceCalc[$k1];
-			krsort($priceCalcTemp);
-			reset($priceCalcTemp);
-			while (list ($k2, $price2) = each ($priceCalcTemp))
-			{
-				if (intval($k2) > 0)
-				{
-					while ($dumCount >= intval($k2))
-					{
-						$dumCount -= intval($k2);
-						$priceTotal [$k1] += doubleval($price2);
+				$priceTotal[$k1] = 0;
+				$dumCount = 0;
+				reset($countItem);
+				while (list ($k2, $count2) = each ($countItem)) {
+					if ((intval($count2) > 0) && 
+						(doubleval($priceItemTax[$k2]) == doubleval($price1["1"]))) {
+						$dumCount += $count2;
+						$countCategory[$categoryItem[$k2]] += $count2;
 					}
 				}
-			}
 
-			$goodstotalSum += $priceTotal [$k1];
+				$countTotal += $dumCount;
+
+				$priceCalcTemp = $priceCalc[$k1];
+				krsort($priceCalcTemp);
+				reset($priceCalcTemp);
+				while (list ($k2, $price2) = each ($priceCalcTemp)) {
+					if (intval($k2) > 0) {
+						while ($dumCount >= intval($k2)) {
+							$dumCount -= intval($k2);
+							$priceTotal [$k1] += doubleval($price2);
+						}
+					}
+				}
+
+				$goodstotalSum += $priceTotal [$k1];
+			}
 		}
 
 		//$this->calculatedSums_tax["payment"] = 0;
 		//$this->calculatedSums_no_tax["payment"] = 0;
-
-		$priceSingleShippingTax = 0;
-		$confArr = $this->basketExtra["shipping."]["priceTax."];
-		if ($confArr) {
-			krsort($confArr);
-			reset($confArr);
-
-			while (list ($k1, $price1) = each ($confArr))
-			{
-				if ($countTotal >= intval($k1))
-				{
-					$priceShippingTax = $price1;
-					break;
-				}
-			}
-		}
 
 	}
 
@@ -2062,12 +2046,20 @@ class tx_ttproducts extends tslib_pibase {
 		$t=array();
 			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
 		$t["basketFrameWork"] = $this->cObj->getSubpart($templateCode,$this->spMarker($subpartMarker));
+				
 		if (trim($this->cObj->getSubpart($t["basketFrameWork"],"###BILLING_ADDRESS_LOGIN###")))	{
 			if ($GLOBALS["TSFE"]->loginUser)	{
 				$t["basketFrameWork"] = $this->cObj->substituteSubpart($t["basketFrameWork"], "###BILLING_ADDRESS###", "");
 			} else {
 				$t["basketFrameWork"] = $this->cObj->substituteSubpart($t["basketFrameWork"], "###BILLING_ADDRESS_LOGIN###", "");
 			}
+		}
+
+		if ($this->conf["displayBasketColumns"])
+		{
+			$formUrl = $this->getLinkUrl($this->conf["PIDbasket"]);
+			$t["basketFrameWork"] = $this->cObj->substituteSubpart($t["basketFrameWork"], "###FORM_URL###", $formUrl);
+			$t["basketFrameWork"] = $this->cObj->substituteSubpart($t["basketFrameWork"], "###FORM_NAME###", "ShopForm");
 		}
 
 		$t["categoryTitle"] = $this->cObj->getSubpart($t["basketFrameWork"],"###ITEM_CATEGORY###");
@@ -2168,19 +2160,21 @@ class tx_ttproducts extends tslib_pibase {
 			}
 		}
 
-		if ($this->conf["pricecalc."] || $this->conf["discountprice."])
-		{
+		if ($this->conf["pricecalc."] || $this->conf["discountprice."]) {
 			$this->GetCalculatedData(
-			$this->basketExtra["pricecalc."],
-			$this->basketExtra["discountprice."],
-			$itemCategory,
-			$itemPrice, $itemCount, $priceShippingTax,
-			$countTotal, $goodsTotal, $countCategory);
+				$this->basketExtra["pricecalc."],
+				$this->basketExtra["discountprice."],
+				$itemCategory,
+				$itemPrice, $itemCount,
+				$goodsTotal, $countCategory);
 
 			$this->calculatedSums_tax["goodstotal"] = $this->getPrice($goodsTotal,1);
 			$this->calculatedSums_no_tax["goodstotal"] = $this->getPrice($goodsTotal,0);
-
 		}
+
+		$this->GetPaymentShippingData(
+			$itemCount, $priceShippingTax,
+			$countTotal);
 
 			// Initializing the markerArray for the rest of the template
 		$markerArray=$mainMarkerArray;
@@ -2606,15 +2600,20 @@ class tx_ttproducts extends tslib_pibase {
 		if ($this->conf["pricecalc."] || $this->conf["discountprice."])
 		{
 			$this->GetCalculatedData(
-			$this->basketExtra["pricecalc."],
-			$this->basketExtra["discountprice."],
-			$itemCategory,
-			$itemPrice, $itemCount, $priceShippingTax,
-			$countTotal, $goodsTotal, $countCategory); // $countCategory will be used later ...
+				$this->basketExtra["pricecalc."],
+				$this->basketExtra["discountprice."],
+				$itemCategory,
+				$itemPrice, $itemCount, 
+				$goodsTotal, $countCategory); // $countCategory will be used later ...
 
 			$this->calculatedSums_tax["goodstotal"] = $this->getPrice($goodsTotal,1);
 			$this->calculatedSums_no_tax["goodstotal"] = $this->getPrice($goodsTotal,0);
 		}
+
+		$this->GetPaymentShippingData(
+			$itemCount, $priceShippingTax,
+			$countTotal);
+
 		$currentCategory=0;
 
 		reset($basket);
