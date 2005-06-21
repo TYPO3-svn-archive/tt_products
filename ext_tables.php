@@ -66,8 +66,8 @@ $tempColumns = Array (
 	)
 );
 
-t3lib_div::loadTCA('tt_content');
 if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory'] == 1) {
+	t3lib_div::loadTCA('tt_content');
 	t3lib_extMgm::addTCAcolumns('tt_content',$tempColumns,1);
 	$TCA['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='tt_products_code;;;;1-1-1';

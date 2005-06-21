@@ -205,7 +205,7 @@ $TCA["tt_products"] = Array (
 				"type" => "input",
 				"size" => "6",
 				"eval" => "trim,double2",
-				"max" => "8"
+				"max" => "10"
 			)
 		),
 		"accessory2" => Array (
@@ -215,7 +215,7 @@ $TCA["tt_products"] = Array (
 				"type" => "input",
 				"size" => "6",
 				"eval" => "trim,double2",
-				"max" => "8"
+				"max" => "10"
 			)
 		),
 		"size" => Array (
