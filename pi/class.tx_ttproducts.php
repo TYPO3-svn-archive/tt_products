@@ -41,7 +41,6 @@
  */
 
 
-require_once(PATH_tslib."class.tslib_pibase.php");
 require_once(PATH_t3lib."class.t3lib_parsehtml.php");
 require_once(PATH_t3lib."class.t3lib_htmlmail.php");
 
@@ -526,8 +525,6 @@ class tx_ttproducts extends tslib_pibase {
 					$content = $this->cObj->substituteSubpart($content, "###display_variant1###", "");
 				if (trim($row["size"]) == '')
 					$content = $this->cObj->substituteSubpart($content, "###display_variant2###", "");
-				if (trim($row["accessory"]) == '')
-					$content = $this->cObj->substituteSubpart($content, "###display_variant3###", "");
 			}
 		} elseif ($theCode=="SINGLE") {
 			$content.="Wrong parameters, GET/POST var 'tt_products' was missing.";
@@ -691,8 +688,6 @@ class tx_ttproducts extends tslib_pibase {
 								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant1###", "");
 							if (trim($row["size"]) == '')
 								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant2###", "");
-							if (trim($row["accessory"]) == '')
-								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant3###", "");
 							$itemsOut .= $tempContent;
 						}
 
@@ -828,7 +823,7 @@ class tx_ttproducts extends tslib_pibase {
 					if (!$updateMode)
 					{
 						$count=t3lib_div::intInRange($basketItem['quantity'],0,100000);
-						$extVars = $basketItem['size'].";".$basketItem['color'].";".$basketItem['accessory'];
+						$extVars = $basketItem['size'].';'.$basketItem['color'].';'.intval(100*$basketItem['accessory']);
 
 						if ($this->config["useCategories"] == 1)
 						{
@@ -1158,9 +1153,11 @@ class tx_ttproducts extends tslib_pibase {
 		if ($this->conf["createUsers"] && ($this->personInfo["email"] != "") && ($this->conf["PIDuserFolder"]) && (trim($GLOBALS["TSFE"]->fe_user->user["username"]) == ""))
 		{
 			$username = strtolower(trim($this->personInfo["email"]));
-
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'username='.$username . ' AND deleted=0');
-			if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res))
+	
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
+			$num_rows = $TYPO3_DB->sql_num_rows($res);
+			
+			if (!$num_rows)
 			{
 				$this->password = substr(md5(rand()), 0, 6);
 
@@ -1304,11 +1301,11 @@ class tx_ttproducts extends tslib_pibase {
 				$infoWritten = false;
 				while(list(,$itemInfo)=each($this->calculatedBasket)) {
 					$sizecoloraccessory = explode(";", $itemInfo["rec"]["extVars"]);
-					$csvdata = "\"".intval($itemInfo["rec"]["uid"])."\";\"".
-							intval($itemInfo["count"])."\";\"".
-							$sizecoloraccessory[0]."\";\"".
-							$sizecoloraccessory[1]."\";\"".
-							$sizecoloraccessory[2]."\"";
+					$csvdata = '"'.intval($itemInfo["rec"]["uid"]).'";"'.
+							intval($itemInfo["count"]).'";"'.
+							$sizecoloraccessory[0].'";"'.
+							$sizecoloraccessory[1].'";"'.
+							$sizecoloraccessory[2]/100 .'"';
 					reset($csvfields);
 					foreach($csvfields as $csvfield)
 						$csvdata .= ";\"".$itemInfo["rec"][$csvfield]."\"";
@@ -1645,14 +1642,15 @@ class tx_ttproducts extends tslib_pibase {
 
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
-		$markerArray["###FIELD_QTY###"]= $this->basketExt[$row["uid"]][$row["size"].";".$row["color"].";".$row["accessory"]] ? $this->basketExt[$row["uid"]][$row["size"].";".$row["color"].";".$row["accessory"]] : "";
+		$temp = $this->basketExt[$row["uid"]][$row["size"].';'.$row["color"].';'.intval(100*$row["accessory"])];
+		$markerArray["###FIELD_QTY###"]= $temp ? $temp : '';
 		$markerArray["###FIELD_NAME_BASKET###"]="ttp_basket[".$row["uid"]."][".md5($row["extVars"])."]";
 
-		$markerArray["###FIELD_SIZE_NAME###"]="ttp_basket[".$row["uid"]."][size]";
+		$markerArray["###FIELD_SIZE_NAME###"]='ttp_basket['.$row["uid"].'][size]';
 		$markerArray["###FIELD_SIZE_VALUE###"]=$row["size"];
-		$markerArray["###FIELD_COLOR_NAME###"]="ttp_basket[".$row["uid"]."][color]";
+		$markerArray["###FIELD_COLOR_NAME###"]='ttp_basket['.$row["uid"].'][color]';
 		$markerArray["###FIELD_COLOR_VALUE###"]=$row["color"];
-		$markerArray["###FIELD_ACCESSORY_NAME###"]="ttp_basket[".$row["uid"]."][accessory]";
+		$markerArray["###FIELD_ACCESSORY_NAME###"]='ttp_basket['.$row["uid"].'][accessory]';
 		$markerArray["###FIELD_ACCESSORY_VALUE###"]=$row["accessory"];
 
 		$prodColorText = '';
@@ -1664,11 +1662,6 @@ class tx_ttproducts extends tslib_pibase {
 		$prodSizeTmp = explode(';', $row["size"]);
 		foreach ($prodSizeTmp as $prodSize)
 			$prodSizeText = $prodSizeText . '<OPTION value="'.$prodSize.'">'.$prodSize.'</OPTION>';
-
-		$prodAccessoryText = '';
-		$prodAccessoryTmp = explode(';', $row["accessory"]);
-		foreach ($prodSizeTmp as $prodAccesssory)
-			$prodAccessoryText = $prodAccessoryText . '<OPTION value="'.$prodAccessory.'">'.$prodAccessory.'</OPTION>';
 
 		$markerArray["###PRODUCT_WEIGHT###"] = doubleval($row["weight"]);
 		$markerArray["###BULKILY_WARNING###"] = $row["bulkily"] ? $this->conf["bulkilyWarning"] : "";
@@ -2019,6 +2012,7 @@ class tx_ttproducts extends tslib_pibase {
 		$this->calculatedBasket = array();		// array that holds the final list of items, shipping and payment + total amounts
 
 		$this->calculatedSums_number["goodstotal"] = 0;
+		$this->calculatedWeight = 0;	// initialise the total weight count
 
 		$uidArr = array();
 		reset($this->basketExt);
@@ -2032,10 +2026,10 @@ class tx_ttproducts extends tslib_pibase {
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
 			reset($this->basketExt[$row["uid"]]);
 			while(list($bextVars,)=each($this->basketExt[$row["uid"]])) {
-				$groesseFarbe = explode(";", $bextVars);
-				$row["size"] = $groesseFarbe[0];
-				$row["color"] = $groesseFarbe[1];
-				$row["accessory"] = $groesseFarbe[2];
+				$sizecoloraccessory = explode(";", $bextVars);
+				$row["size"] = $sizecoloraccessory[0];
+				$row["color"] = $sizecoloraccessory[1];
+				$row["accessory"] = floatval($sizecoloraccessory[2]);
 				$row["extVars"] = $bextVars;
 				$productsArray[$row["pid"]][]=$row;
 						// Fills this array with the product records. Reason: Sorting them by category (based on the page, they reside on)
@@ -2112,12 +2106,12 @@ class tx_ttproducts extends tslib_pibase {
 						"priceNoTax" => $priceNoTax,
 						"weight" => $row["weight"],
 						"accessory" => $row["accessory"],
-						"count" => intval($this->basketExt[$row["uid"]][$row["size"].";".$row["color"].";".$row["accessory"]]),
+						"count" => intval($this->basketExt[$row["uid"]][$row["size"].';'.$row["color"].';'.intval(100*$row["accessory"])]),
 						"rec" => $row
 					);
 
 					// If accesssory has been selected, add the price of it, multiplicated with the count :
-					if($calculatedBasketItem["rec"]["accessory"] AND $calculatedBasketItem["rec"]["accessory"] != 0 ){
+					if($calculatedBasketItem["rec"]["accessory"] > 0 ){
 						$calculatedBasketItem["totalTax"] = ($calculatedBasketItem["priceTax"]+ $this->getPrice($calculatedBasketItem["rec"]["accessory"],1,$row["tax"]))*$calculatedBasketItem["count"];
 						$calculatedBasketItem["totalNoTax"] = ($calculatedBasketItem["priceNoTax"]+getPrice($calculatedBasketItem["rec"]["accessory"],0,$row["tax"]))*$calculatedBasketItem["count"];
 						$markerArray["###PRICE_ACCESSORY_TEXT###"]= $this->conf['accessoryText'];
@@ -2220,7 +2214,7 @@ class tx_ttproducts extends tslib_pibase {
 			{
 				if ($prodSingle["bulkily"])
 				{
-					$value = ($this->conf["bulkilyAddition"] * $this->basketExt[$prodSingle["uid"]][$prodSingle["size"].";".$prodSingle["color"].";".$prodSingle["accessory"]]);
+					$value = ($this->conf["bulkilyAddition"] * $this->basketExt[$prodSingle["uid"]][$prodSingle["size"].';'.$prodSingle["color"].';'.intval(100*$prodSingle["accessory"])]);
 					$this->calculatedSums_tax["shipping"] += $value  * (1+$conf["bulkilyFeeTax"]/100);
 					$this->calculatedSums_no_tax["shipping"] += $value;
 				}
