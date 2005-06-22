@@ -44,7 +44,6 @@
 require_once(PATH_t3lib."class.t3lib_parsehtml.php");
 require_once(PATH_t3lib."class.t3lib_htmlmail.php");
 
-
 class tx_ttproducts extends tslib_pibase {
 	var $cObj;		// The backReference to the mother cObj object set at call time
 
@@ -264,8 +263,9 @@ class tx_ttproducts extends tslib_pibase {
 	 * Takes care of basket, address info, confirmation and gate to payment
 	 */
 	function products_basket($theCode)	{
-		global $TSFE;
+		global $TSFE, $LANG;
 
+		$content = '';
 		$this->setPidlist($this->config["storeRootPid"]);	// Set list of page id's to the storeRootPid.
 		$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
 		$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
@@ -304,17 +304,27 @@ class tx_ttproducts extends tslib_pibase {
 				case "products_payment":
 					$this->load_noLinkExtCobj();
 					$pidagb = intval($this->conf["PIDagb"]);
-					if ($this->checkRequired() &&
+					$check = $this->checkRequired();
+					if ($check=='' &&
 						(empty($pidagb) || isset($_REQUEST["recs"]["personinfo"]["agb"]))) {
 						$this->mapPersonIntoToDelivery();
-						$content=$this->getBasket("###BASKET_PAYMENT_TEMPLATE###");
+						$content.=$this->getBasket("###BASKET_PAYMENT_TEMPLATE###");
 					} else {	// If not all required info-fields are filled in, this is shown instead:
 						$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker("###BASKET_REQUIRED_INFO_MISSING###"));
-						$content = $this->cObj->substituteMarkerArray($content, $this->addURLMarkers(array()));
+						$markerArray = $this->addURLMarkers(array());
+						$label = '';
+						if ($check=='') {
+							$label = '*** AGB ***';
+						} else {
+							$label = $LANG->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
+						}
+						$markerArray['###ERROR_DETAILS###'] = $label;  
+						$content = $this->cObj->substituteMarkerArray($content, $markerArray);						
 					}
 				break;
 				case "products_finalize":
-					if ($this->checkRequired())	{
+					$check = $this->checkRequired(); 
+					if ($check=='')	{
 						$this->load_noLinkExtCobj();
 						$this->mapPersonIntoToDelivery();
 						$handleScript = $TSFE->tmpl->getFileName($this->basketExtra["payment."]["handleScript"]);
@@ -322,7 +332,7 @@ class tx_ttproducts extends tslib_pibase {
 							$content = $this->includeHandleScript($handleScript,$this->basketExtra["payment."]["handleScript."]);
 						} else {
 							$orderUid = $this->getBlankOrderUid();
-							$content=$this->getBasket("###BASKET_ORDERCONFIRMATION_TEMPLATE###");
+							$content.=$this->getBasket("###BASKET_ORDERCONFIRMATION_TEMPLATE###");
 							$content.=$this->finalizeOrder($orderUid);	// Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 						}
 					} else {	// If not all required info-fields are filled in, this is shown instead:
@@ -1522,7 +1532,7 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function mapPersonIntoToDelivery()	{
 
-			// all of the delivery address will be overwritten when no address and no city have been filled in
+			// all of the delivery address will be overwritten when no city and not email address have been filled in
 		if (!trim($this->deliveryInfo['city']) && !trim($this->deliveryInfo['email'])) {
 			$infoFields = explode(",","name,address,telephone,fax,email,company,city,zip,state,country");
 			while(list(,$fName)=each($infoFields))	{
@@ -1535,6 +1545,7 @@ class tx_ttproducts extends tslib_pibase {
 	 * Checks if required fields are filled in
 	 */
 	function checkRequired()	{
+		$flag = '';
 		$requiredInfoFields = trim($this->conf["requiredInfoFields"]);
 		if ($this->basketExtra["payment."]["addRequiredInfoFields"] != "")
 			$requiredInfoFields .= ",".trim($this->basketExtra["payment."]["addRequiredInfoFields"]);
@@ -1544,7 +1555,7 @@ class tx_ttproducts extends tslib_pibase {
 			$infoFields = t3lib_div::trimExplode(",",$this->conf["requiredInfoFields"]);
 			while(list(,$fName)=each($infoFields))	{
 				if (trim($this->personInfo[$fName])=='')	{
-					$flag=0;
+					$flag=$fName;
 					break;
 				}
 			}
@@ -2154,6 +2165,9 @@ class tx_ttproducts extends tslib_pibase {
 			}
 		}
 
+		$subpartArray = array();
+		$wrappedSubpartArray = array();
+
 		if ($this->conf["pricecalc."] || $this->conf["discountprice."]) {
 			$this->GetCalculatedData(
 				$this->basketExtra["pricecalc."],
@@ -2323,8 +2337,6 @@ class tx_ttproducts extends tslib_pibase {
 
 			// URL
 		$markerArray = $this->addURLMarkers($markerArray);
-		$subpartArray = array();
-		$wrappedSubpartArray = array();
 
 		$agb_url=array();
 		$pidagb = intval($this->conf["PIDagb"]);

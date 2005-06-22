@@ -1,8 +1,7 @@
-2005-06-21  Franz Holzinger  <franz@fholzinger.com>
+2005-06-22  Franz Holzinger  <franz@fholzinger.com>
 
-	* correct error in SQL for creation of fe_users
-	* correct error in basket
-	* correct and modify templates
+	* output exact error messages when requiredInfoFields are not satisfied
+	* correct error in single basket view link
 
 2005-06-15  Franz Holzinger  <franz@fholzinger.com>
 
