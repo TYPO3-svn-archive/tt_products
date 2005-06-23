@@ -497,7 +497,9 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray = $this->getItemMarkerArray ($row,$catTitle,$this->config["limitImage"]);
 
 				$markerArray["###FORM_NAME###"]="item_".$this->tt_product_single;
-				$formUrl = $this->getLinkUrl(t3lib_div::_GP("backPID"));
+				if (!$formUrl) {
+					$formUrl = $this->getLinkUrl(t3lib_div::_GP("backPID"));
+				}
 				$markerArray["###FORM_URL###"]=$formUrl;
 
 				$url = $this->getLinkUrl("","tt_products");
@@ -640,9 +642,9 @@ class tx_ttproducts extends tslib_pibase {
 
 						reset($productsArray[$v]);
 						$itemsOut="";
-						$iColCount=0;
+						$iColCount=1;
+						$tableRowOpen=0;
 						while(list(,$row)=each($productsArray[$v]))	{
-							$iColCount++;
 							$iCount++;
 							if ($iCount>$this->config["limit"])	{
 								$more=1;
@@ -684,8 +686,18 @@ class tx_ttproducts extends tslib_pibase {
 							}
 							else
 							{
-								$markerArray["###ITEM_SINGLE_PRE_HTML###"] = ($iColCount == 1 ? "<TR>" : "");
-								$markerArray["###ITEM_SINGLE_POST_HTML###"] = ($iColCount == $this->conf["displayBasketColumns"] ? "</TR>" : "");
+								$temp='';
+								if ($iColCount == 1) {
+									$temp = '<TR>';
+									$tableRowOpen=1;
+								}
+								$markerArray["###ITEM_SINGLE_PRE_HTML###"] = $temp;
+								$temp='';
+								if ($iColCount == $this->conf["displayBasketColumns"]) {
+									$temp = '</TR>';
+									$tableRowOpen=0;
+								}
+								$markerArray["###ITEM_SINGLE_POST_HTML###"] = $temp;
 							}
 
 							$markerArray["###FORM_MEMO###"] = $this->getLinkUrl($this->conf["PIDmemo"]);
@@ -699,12 +711,14 @@ class tx_ttproducts extends tslib_pibase {
 							if (trim($row["size"]) == '')
 								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant2###", "");
 							$itemsOut .= $tempContent;
+							$iColCount++;
 						}
 
 						if ($this->conf["displayBasketColumns"] > 1) { // complete the last table row
-							while ($iColCount++ < $this->conf["displayBasketColumns"]) {
+							while ($iColCount <= $this->conf["displayBasketColumns"]) {
+								$iColCount++;
 								$itemsOut.= "<TD></TD>";
-								$itemsOut.= ($iColCount == $this->conf["displayBasketColumns"] ? "</TR>" : "");
+								$itemsOut.= ($tableRowOpen ? "</TR>" : "");
 							}
 						}
 
@@ -1550,7 +1564,6 @@ class tx_ttproducts extends tslib_pibase {
 		if ($this->basketExtra["payment."]["addRequiredInfoFields"] != "")
 			$requiredInfoFields .= ",".trim($this->basketExtra["payment."]["addRequiredInfoFields"]);
 
-		$flag=1;
 		if (trim($this->conf["requiredInfoFields"]))	{
 			$infoFields = t3lib_div::trimExplode(",",$this->conf["requiredInfoFields"]);
 			while(list(,$fName)=each($infoFields))	{

@@ -1,3 +1,7 @@
+2005-06-23  Franz Holzinger  <franz@fholzinger.com>
+
+	* corrections with multitable view and basketPID
+
 2005-06-22  Franz Holzinger  <franz@fholzinger.com>
 
 	* output exact error messages when requiredInfoFields are not satisfied
