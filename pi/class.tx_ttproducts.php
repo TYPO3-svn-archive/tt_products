@@ -40,6 +40,7 @@
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  */
 
+require_once(PATH_tslib."class.tslib_pibase.php"); 
 
 require_once(PATH_t3lib."class.t3lib_parsehtml.php");
 require_once(PATH_t3lib."class.t3lib_htmlmail.php");
