@@ -81,6 +81,7 @@ class tx_ttproducts extends tslib_pibase {
 	var $tt_product_single="";
 	var $globalMarkerArray=array();
 	var $externalCObject="";
+	var $isOverview = 0;					// overview mode of the basket
 
 
 	/**
@@ -150,9 +151,13 @@ class tx_ttproducts extends tslib_pibase {
 
 		$this->initCategories();
 
+		debug ($this->config["code"], '$this->config["code"] ', __LINE__, __FILE__);
+		debug ($this->conf["defaultCode"], '$this->conf["defaultCode"] ', __LINE__, __FILE__);
+
 		$codes=t3lib_div::trimExplode(",", $this->config["code"]?$this->config["code"]:$this->conf["defaultCode"],1);
 		if (!count($codes))     $codes=array("");
 
+		debug ($codes, '$codes ', __LINE__, __FILE__);
 		while(list(,$theCode)=each($codes))
 		{
 			if (strtoupper($theCode)=="BASKET")
@@ -495,6 +500,7 @@ class tx_ttproducts extends tslib_pibase {
 				$wrappedSubpartArray=array();
 				$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl(t3lib_div::_GP("backPID")).'">','</A>');
 
+				debug ($wrappedSubpartArray, 'SINGLE $wrappedSubpartArray', __LINE__, __FILE__);
 				$markerArray = $this->getItemMarkerArray ($row,$catTitle,$this->config["limitImage"]);
 
 				$markerArray["###FORM_NAME###"]="item_".$this->tt_product_single;
@@ -678,7 +684,9 @@ class tx_ttproducts extends tslib_pibase {
 								// Print Item Title
 							$wrappedSubpartArray=array();
 							$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&tt_products='.$row["uid"].'">','</A>');
+							debug ($wrappedSubpartArray, '!SEARCH $wrappedSubpartArray', __LINE__, __FILE__);
 							$markerArray = $this->getItemMarkerArray ($row,$catTitle, $this->config["limitImage"],"listImage");
+							
 
 							if (!$this->conf["displayBasketColumns"])
 							{
@@ -719,8 +727,8 @@ class tx_ttproducts extends tslib_pibase {
 							while ($iColCount <= $this->conf["displayBasketColumns"]) {
 								$iColCount++;
 								$itemsOut.= "<TD></TD>";
-								$itemsOut.= ($tableRowOpen ? "</TR>" : "");
 							}
+							$itemsOut.= ($tableRowOpen ? "</TR>" : "");
 						}
 
 						if ($itemsOut)	{
@@ -834,21 +842,30 @@ class tx_ttproducts extends tslib_pibase {
 
 		$tmpBasketExt = $TSFE->fe_user->getKey("ses","basketExt");
 
-		if (is_array($tmpBasketExt))
+		if (is_array($tmpBasketExt)) {
 			$this->basketExt = $tmpBasketExt;
-		else
+			debug ($this->basketExt, '************initBasket neugelesen $this->basketExt', __LINE__, __FILE__);
+		} else {
 			$this->basketExt = array();
+			debug ($this->basketExt, '************initBasket gelöscht $this->basketExt', __LINE__, __FILE__);
+		}
 
 		$basketExtRaw = t3lib_div::_GP("ttp_basket");
+		debug ($basketExtRaw, '************initBasket neugelesen $basketExtRaw', __LINE__, __FILE__);
 
+		debug ($this->isOverview, '$this->isOverview', __LINE__, __FILE__);
+		
 		if ((!$this->isOverview) && is_array($basketExtRaw)) {
 
 			while(list($uid,$basketItem)=each($basketExtRaw))       {
+				debug ($uid, '$uid', __LINE__, __FILE__);
+				debug ($basketItem, '$basketItem', __LINE__, __FILE__);
 				if (t3lib_div::testInt($uid))   {
 					if (!$updateMode)
 					{
 						$count=t3lib_div::intInRange($basketItem['quantity'],0,100000);
 						$extVars = $basketItem['size'].';'.$basketItem['color'].';'.intval(100*$basketItem['accessory']);
+						debug ($extVars, 'initBasket $extVars', __LINE__, __FILE);
 
 						if ($this->config["useCategories"] == 1)
 						{
@@ -858,6 +875,7 @@ class tx_ttproducts extends tslib_pibase {
 						{
 							$this->basketExt[$uid][$extVars] += $count;
 						}
+						debug ($this->basketExt, 'initBasket $this->basketExt', __LINE__, __FILE);
 					}
 					else
 					{
@@ -869,9 +887,10 @@ class tx_ttproducts extends tslib_pibase {
 								reset($this->basketExt[$uid]);
 								while(list($beVars,)=each($this->basketExt[$uid])) {
 									//if (md5($beVars)==$md5) {
-									$this->basketExt[$uid][$beVars] = $quantity;
+									$this->basketExt[$uid][$beVars] = $quantity;									
 									//}
 								}
+								debug ($this->basketExt, 'initBasket if nach while $this->basketExt', __LINE__, __FILE__);
 							}
 						}
 					}
@@ -889,6 +908,7 @@ class tx_ttproducts extends tslib_pibase {
 					$basketExtNew[$tmpUid][$tmpExtVar] = $tmpCount;
 		$this->basketExt = $basketExtNew;
 
+		debug ($this->basketExt, 'initBasket **SETZEN** $this->basketExt', __LINE__, __FILE__);
 		if (is_array($this->basketExt) && count($this->basketExt))
 			$TSFE->fe_user->setKey("ses","basketExt",$this->basketExt);
 		else
@@ -943,7 +963,7 @@ class tx_ttproducts extends tslib_pibase {
 	}
 
 	/**
-	 * Setting shipping and payment methods
+	 * Setting shipping, payment, pricecalc and discount price methods
 	 */
 	function setBasketExtras($basket)	{
 		global $TSFE;
@@ -1625,6 +1645,8 @@ class tx_ttproducts extends tslib_pibase {
 
 			// Subst. fields
 		$markerArray["###PRODUCT_TITLE###"] = $row["title"];
+		debug ($row["title"], 'TITEL', __LINE__, __FILE__);
+		debug ($row, '$row', __LINE__, __FILE__);
 		$markerArray["###PRODUCT_NOTE###"] = nl2br($row["note"]);
 		if (is_array($this->conf["parseFunc."]))	{
 			$markerArray["###PRODUCT_NOTE###"] = $this->cObj->parseFunc($markerArray["###PRODUCT_NOTE###"],$this->conf["parseFunc."]);
@@ -1667,8 +1689,14 @@ class tx_ttproducts extends tslib_pibase {
 
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
+		debug ($this->basketExt, '$this->basketExt', __LINE__, __FILE__);
+		debug ($row["uid"], '$row["uid"]', __LINE__, __FILE__);
+		debug ($row["size"], '$row["size"]', __LINE__, __FILE__);
+		debug ($row["color"], '$row["color"]', __LINE__, __FILE__);
+		debug ($row["accessory"], '$row["accessory"]', __LINE__, __FILE__);
 		$temp = $this->basketExt[$row["uid"]][$row["size"].';'.$row["color"].';'.intval(100*$row["accessory"])];
 		$markerArray["###FIELD_QTY###"]= $temp ? $temp : '';
+		debug ($temp, '$temp', __LINE__, __FILE__);
 		$markerArray["###FIELD_NAME_BASKET###"]="ttp_basket[".$row["uid"]."][".md5($row["extVars"])."]";
 
 		$markerArray["###FIELD_SIZE_NAME###"]='ttp_basket['.$row["uid"].'][size]';
@@ -2040,6 +2068,7 @@ class tx_ttproducts extends tslib_pibase {
 		$this->calculatedWeight = 0;	// initialise the total weight count
 
 		$uidArr = array();
+		debug ($this->basketExt, 'getBasket if nach while $this->basketExt', __LINE__, __FILE__);
 		reset($this->basketExt);
 		while(list($uidTmp,)=each($this->basketExt))
 			if (!in_array($uidTmp, $uidArr))
@@ -2050,8 +2079,11 @@ class tx_ttproducts extends tslib_pibase {
 		$productsArray = array();
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
 			reset($this->basketExt[$row["uid"]]);
+			debug ($this->basketExt, '$this->basketExt', __LINE__, __FILE__);
 			while(list($bextVars,)=each($this->basketExt[$row["uid"]])) {
+				debug ($bextVars, '$bextVars', __LINE__, __FILE__);
 				$sizecoloraccessory = explode(";", $bextVars);
+				debug ($sizecoloraccessory, '$sizecoloraccessory', __LINE__, __FILE__);
 				$row["size"] = $sizecoloraccessory[0];
 				$row["color"] = $sizecoloraccessory[1];
 				$row["accessory"] = floatval($sizecoloraccessory[2]);
@@ -2120,6 +2152,7 @@ class tx_ttproducts extends tslib_pibase {
 
 						// Fill marker arrays
 					$wrappedSubpartArray=array();
+					debug ($wrappedSubpartArray, 'GET_BASKET $wrappedSubpartArray', __LINE__, __FILE__);
 					$markerArray = $this->getItemMarkerArray ($row,$catTitle,1,"basketImage");
 
 					// if reseller is logged in then take 'price2', default is 'price'
@@ -2667,6 +2700,7 @@ class tx_ttproducts extends tslib_pibase {
 
 						// Print Item Title
 					$wrappedSubpartArray=array();
+					debug ($wrappedSubpartArray, 'GET_INFORMATION $wrappedSubpartArray', __LINE__, __FILE__);
 					$markerArray = $this->getItemMarkerArray ($row["rec"],$catTitle,1,"listImage");
 					$markerArray["###FIELD_QTY###"] = $row["count"];
 
