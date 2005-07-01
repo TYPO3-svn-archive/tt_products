@@ -1,3 +1,7 @@
+2005-07-01  Franz Holzinger  <franz@fholzinger.com>
+
+	* correction with $requiredInfoFields
+
 2005-06-23  Franz Holzinger  <franz@fholzinger.com>
 
 	* corrections with multitable view and basketPID
