@@ -10,9 +10,12 @@ CREATE TABLE tt_products (
   endtime int(11) unsigned DEFAULT '0' NOT NULL,
   title tinytext NOT NULL,
   note text NOT NULL,
+  unit varchar(20) DEFAULT '' NOT NULL,  
+  unit_factor varchar(6) DEFAULT '' NOT NULL,   
   price varchar(20) DEFAULT '' NOT NULL,
   price2 varchar(20) DEFAULT '' NOT NULL,
   image tinyblob NOT NULL,
+  datasheet tinyblob NOT NULL,
   www varchar(80) DEFAULT '' NOT NULL,
   itemnumber varchar(40) DEFAULT '' NOT NULL,
   category int(10) unsigned DEFAULT '0' NOT NULL,
@@ -46,10 +49,79 @@ CREATE TABLE tt_products_cat (
   tstamp int(11) unsigned DEFAULT '0' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
   title tinytext NOT NULL,
+  note text NOT NULL,
+  image tinyblob NOT NULL,
+  parent_cat blob NOT NULL,  
   deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid)
 );
+
+#
+# Table structure for table 'tt_products_language_overlay'
+#
+#CREATE TABLE tt_products_language_overlay (
+#  uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+#  pid int(11) unsigned DEFAULT '0' NOT NULL,
+#  tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+#  crdate int(11) unsigned DEFAULT '0' NOT NULL,
+#  hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
+#  prd_uid int(11) unsigned DEFAULT '0' NOT NULL,
+#  sys_language_uid int(11) unsigned DEFAULT '0' NOT NULL,
+#  title tinytext NOT NULL,
+#  note text NOT NULL,
+#  unit varchar(20) DEFAULT '' NOT NULL,  
+#  datasheet tinyblob NOT NULL,  
+#  www varchar(80) DEFAULT '' NOT NULL,
+#  deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
+#  PRIMARY KEY (uid),
+#  KEY parent (pid)
+#);
+
+#
+# Table structure for table 'tt_products_cat_language_overlay'
+#
+#CREATE TABLE tt_products_cat_language_overlay (
+#  uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+#  pid int(11) unsigned DEFAULT '0' NOT NULL,
+#  tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+#  crdate int(11) unsigned DEFAULT '0' NOT NULL,
+#  hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
+#  deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,  
+#  title tinytext NOT NULL,
+#  note text NOT NULL,  
+#  cat_uid int(11) unsigned DEFAULT '0' NOT NULL,
+#  sys_language_uid int(11) unsigned DEFAULT '0' NOT NULL,
+#  PRIMARY KEY (uid),
+#  KEY parent (pid)
+#);
+
+#
+# Table structure for table 'tt_products_card_payments'
+#
+#CREATE TABLE tt_products_card_payments (
+#  uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+#  pid int(11) unsigned DEFAULT '0' NOT NULL,
+#  tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+#  crdate int(11) unsigned DEFAULT '0' NOT NULL,
+#  deleted tinyint(4) unsigned DEFAULT '0' NOT NULL,
+#  ord_uid int(11) unsigned DEFAULT '0' NOT NULL,
+#  order_id varchar(20) DEFAULT '' NOT NULL,
+#  session_id varchar(30) DEFAULT '' NOT NULL,  
+#  amount_num int(10) DEFAULT '0' NOT NULL,
+#  response_code char(3) DEFAULT '' NOT NULL,   
+#  cc_number_hash1 varchar(255) DEFAULT '' NOT NULL,
+#  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,  
+#  card_type varchar(20) DEFAULT '' NOT NULL,
+#  address_ok char(1) DEFAULT '' NOT NULL, 
+#  test char(1) DEFAULT '' NOT NULL,   
+#  auth_code varchar(16) DEFAULT '' NOT NULL,
+#  bin int(6) unsigned DEFAULT '0' NOT NULL,
+#  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,  
+#  sequence int(6) unsigned DEFAULT '0' NOT NULL,                   
+#  PRIMARY KEY (uid),
+#  KEY parent (ord_uid)
+#);
 
 
 #
@@ -62,7 +134,10 @@ CREATE TABLE sys_products_orders (
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
   deleted tinyint(4) unsigned DEFAULT '0' NOT NULL,
   note text NOT NULL,
+# forename varchar(80) DEFAULT '' NOT NULL,
   name varchar(80) DEFAULT '' NOT NULL,
+# company varchar(80) DEFAULT '' NOT NULL,  
+# vat_id varchar(20) DEFAULT '' NOT NULL,  
   telephone varchar(20) DEFAULT '' NOT NULL,
   fax varchar(20) DEFAULT '' NOT NULL,
   email varchar(80) DEFAULT '' NOT NULL,
@@ -74,6 +149,15 @@ CREATE TABLE sys_products_orders (
   status tinyint(4) unsigned DEFAULT '0' NOT NULL,
   status_log blob NOT NULL,
   orderData mediumblob NOT NULL,
+#  session_id varchar(30) DEFAULT '' NOT NULL,
+#  amount_num int(10) unsigned DEFAULT '0' NOT NULL,
+#  street varchar(40) DEFAULT '' NOT NULL,
+#  street_n1 varchar(40) DEFAULT '' NOT NULL,
+#  street_n2 varchar(10) DEFAULT '' NOT NULL,
+#  city varchar(40) DEFAULT '' NOT NULL,
+#  zip varchar(10) DEFAULT '' NOT NULL,
+#  country_code char(3) DEFAULT '' NOT NULL,
+#  client_ip varchar(15) DEFAULT '' NOT NULL,
   agb char(2) DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid),

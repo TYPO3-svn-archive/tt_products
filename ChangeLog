@@ -1,3 +1,8 @@
+2005-07-02  Franz Holzinger  <franz@fholzinger.com>
+
+	* remake of price calculation
+	* preparation for mkl_products
+
 2005-07-01  Franz Holzinger  <franz@fholzinger.com>
 
 	* correction with $requiredInfoFields
