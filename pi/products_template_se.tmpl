@@ -20,10 +20,10 @@ It's also used by search-results.
 
 		<TABLE border="1" cellspacing="0" cellpadding="1" width=1>
 			<tr>
-				<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>previous page</b></div>###GW2E###<!--###LINK_PREV###--></td>
+				<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>Föregående sida</b></div>###GW2E###<!--###LINK_PREV###--></td>
 				<td></td>
 				<td></td>
-				<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>next page</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+				<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>Nästa sida</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 			</tr>
 			<tr>
 				<td><img src="clear.gif" width=100 height=1></td>
@@ -42,8 +42,8 @@ It's also used by search-results.
 		<!-- ###ITEM_CATEGORY### end -->
 		<!-- ###ITEM_LIST### begin -->
 			<tr>
-				<td colspan=3 bgcolor="###GC2###">###GW2B###<b>product:</b>###GW2E###</td>
-				<td bgcolor="###GC2###">###GW2B###<b>quantity:</b>###GW2E###</td>
+				<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Produkt:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Antal:</b>###GW2E###</td>
 			</tr>
 			<tr>
 				<td colspan=4><img src="clear.gif" width=1 height=6></td>
@@ -69,10 +69,10 @@ It's also used by search-results.
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
 					<TD valign=top>###GW2B######PRODUCT_NOTE######GW2E###<br>
-						###GW1B###<B>price:</b> <font color=red><strong>###PRICE_TAX### $</strong></font>###GW1E###<br>
-						###GW2B###(excl. tax: ###PRICE_NO_TAX###)###GW2E###
+						###GW1B###<B>Pris:</b> <font color=red><strong>###PRICE_TAX### $</strong></font>###GW1E###<br>
+						###GW2B###(exkl. moms: ###PRICE_NO_TAX###)###GW2E###
 					</TD>
-					<TD valign=top nowrap align=right>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><BR><input type="Submit" name="order" value="Lägg i kundkorgen">
+					<TD valign=top nowrap align=right>###GW2B### Antal: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><BR><input type="Submit" name="order" value="Lägg i kundkorgen">
 					</TD>
 				</TR>
 			</TABLE>
@@ -127,12 +127,12 @@ This subpart is used to display single products.
 					###GW1B###
 						<B>Kategori:</B> ###CATEGORY_TITLE### <br>
 						<B>Artikelnummer:</B> ###PRODUCT_ITEMNUMBER###<br>
-						<B>Webb-pris:</B> <font color=red><strong>###PRICE_TAX### $</strong></font>###GW2B### &nbsp; (excl. tax ###PRICE_NO_TAX###)###GW2E###<br>
+						<B>Webb-pris:</B> <font color=red><strong>###PRICE_TAX### $</strong></font>###GW2B### &nbsp; (exkl. moms ###PRICE_NO_TAX###)###GW2E###<br>
 
 						<B>Info:</B><br>
 						###PRODUCT_NOTE###<br>
 					###GW1E###	<br>
-						<nobr>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; <input type="Submit" name="order" value="put in basket"></nobr>
+						<nobr>###GW2B### Antal: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; <input type="Submit" name="order" value="Lägg i kundkorgen"></nobr>
 				</TD>
 			</TR>
 </form>
@@ -142,7 +142,7 @@ This subpart is used to display single products.
 
 	###GW2B###
 	<!--###LINK_ITEM###-->
-	<b><- TILBAGE TIL LISTEN</b>
+	<b><- tillbaka till översikt</b>
 	<!--###LINK_ITEM###-->
 	###GW2E###
 
@@ -269,7 +269,7 @@ In addition there's a number of fields used for delivery and payment information
 
 			###SHIPPING_IMAGE###
 			</td>
-			<td valign=top align=right>###GW1B### <b>###PRICE_SHIPPING_TAX###</b> <BR>(###PRICE_SHIPPING_NO_TAX###) ###GW1E###</td>
+			<td valign=top align=right>###GW1B### <b>###PRICE_SHIPPING_TAX###</b> <BR>(exkl. moms ###PRICE_SHIPPING_NO_TAX###) ###GW1E###</td>
 		</TR>
 		<tr>
 			<td colspan=6><img src="clear.gif" width=1 height=10></td>
@@ -294,31 +294,31 @@ In addition there's a number of fields used for delivery and payment information
 				This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
 			-->
 				<!-- ###MESSAGE_PAYMENT_11### begin -->
-				<BR><B>Du kan bara anvämda internationella Mastercard i våran shop.</b><br>
+				<BR><B>Du kan bara använda internationella Mastercard i våran shop.</b><br>
 				<!-- ###MESSAGE_PAYMENT_11### end -->
 				<!-- ###MESSAGE_PAYMENT_12### begin -->
 				<br>
-				<B>Du kan kun bruge udenlandske VISA-kort i vores butik. Desuden tager VISA 5,75% af transaktionsbeløbet i gebyr. Derfor bliver der kompenseret for dette beløb her.</b><br>
+				<B>Du kan använda utländskt VISA-kort i våran shop. VISA tar en avgift av 5,75% av transaktionsbeloppet. P.g.a. detta blir totalbeloppet kompenserat om VISA-avgiften.</b><br>
 				<!-- ###MESSAGE_PAYMENT_12### end -->
 				<!-- ###MESSAGE_PAYMENT_13### begin -->
 				<br>
-				<B>Du kan kun bruge udenlandske Diners-kort i vores butik. Desuden tager Diners Club 5,75% af transaktionsbeløbet i gebyr. Derfor bliver der kompenseret for dette beløb her.</b><br>
+				<B>Du kan använda utländskt Diners kort i våran shop.  Diners club tar en avgift av 5,75% av transaktionsbeloppet. P.g.a. detta blir totalbeloppet kompenserat om Diners-avgiften.</b><br>
 				<!-- ###MESSAGE_PAYMENT_13### end -->
 			<!-- ###MESSAGE_PAYMENT### end -->
 ###GW2E###
 
 			</td>
-			<td valign=top align=right>###GW1B### <b>###PRICE_PAYMENT_TAX###</b> <BR>(###PRICE_PAYMENT_NO_TAX###) ###GW1E###</td>
+			<td valign=top align=right>###GW1B### <b>###PRICE_PAYMENT_TAX###</b> <BR>(exkl. moms ###PRICE_PAYMENT_NO_TAX###) ###GW1E###</td>
 		</TR>
 		<tr>
 			<td colspan=6><img src="clear.gif" width=1 height=10></td>
 		</tr>
 		<tr>
-			<td colspan=6 bgcolor="###GC2###">###GW2B###<b>TOTAL:</b>###GW2E###</td>
+			<td colspan=6 bgcolor="###GC2###">###GW2B###<b>Totalt:</b>###GW2E###</td>
 		</tr>
 		<TR>
 			<td valign=top colspan=5></td>
-			<td valign=top align=right nowrap>###GW1B### <b>Kronor  ###PRICE_TOTAL_TAX###</b><br>
+			<td valign=top align=right nowrap>###GW1B### <b>SEK  ###PRICE_TOTAL_TAX###</b><br>
 			(utan moms: ###PRICE_TOTAL_NO_TAX###) ###GW1E###</td>
 		</TR>
 	</TABLE>
@@ -464,7 +464,7 @@ Exact same features as BASKET_TEMPLATE
 			<td colspan=6><img src="clear.gif" width=1 height=10></td>
 		</tr>
 		<tr>
-			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Notereringar:</b>###GW2E###</td>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Anteckningar:</b>###GW2E###</td>
 			<td colspan=3></td>
 		</tr>
 		<tr>
@@ -486,7 +486,7 @@ Exact same features as BASKET_TEMPLATE
 		</tr>
 	</TABLE>
 	<br>
-<input type="Submit" name="products_update" value="Åter till kundkorgent">&nbsp;&nbsp;	
+<input type="Submit" name="products_update" value="tillbaka till kundkorgen">&nbsp;&nbsp;	
 <input type="Submit" name="products_payment" value="Betala/beställ" onClick="document.forms[0].action='###FORM_URL_FINALIZE###';">
 
 	</FORM>
@@ -555,7 +555,7 @@ Exact same features as BASKET_TEMPLATE
 		</tr>
 
 		<tr>
-			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Faktueringsadress:<</b>###GW2E###</td>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Faktureringsadress:<</b>###GW2E###</td>
 			<td colspan=3></td>
 		</tr>
 		<tr>
@@ -570,7 +570,7 @@ Exact same features as BASKET_TEMPLATE
 					<td>###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###</td>
 				</tr>
 				<tr>
-					<td>###GW1B###Phone:###GW1E###</td>
+					<td>###GW1B###Telefon:###GW1E###</td>
 					<td>###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###</td>
 				</tr>
 				<tr>
@@ -622,7 +622,7 @@ Exact same features as BASKET_TEMPLATE
 			<td colspan=6><img src="clear.gif" width=1 height=10></td>
 		</tr>
 		<tr>
-			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Noteringar:</b>###GW2E###</td>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Anteckningar:</b>###GW2E###</td>
 			<td colspan=3></td>
 		</tr>
 		<tr>
@@ -655,7 +655,7 @@ Exact same features as BASKET_TEMPLATE
 
 			<td valign=top align=right colspan=3>###GW1B###
 			<b>###PRICE_SHIPPING_TAX###</b><br>
-			(###PRICE_SHIPPING_NO_TAX###)<br>
+			(exkl. moms ###PRICE_SHIPPING_NO_TAX###)<br>
 
 			###GW1E###</td>
 		</TR>
@@ -669,21 +669,22 @@ Exact same features as BASKET_TEMPLATE
 				This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
 			-->
 				<!-- ###MESSAGE_PAYMENT_11### begin -->
-				<BR><B>Du kan kun bruge udenlandske Mastercard i vores butik. Desuden tager MasterCard 5,75% af transaktionsbeløbet i gebyr. Derfor bliver der kompenseret for dette beløb her.</b><br>
+				<BR><B>Du kan bara använda internationella Mastercard i våran shop.</b><br>
 				<!-- ###MESSAGE_PAYMENT_11### end -->
 				<!-- ###MESSAGE_PAYMENT_12### begin -->
-				<BR><B>Du kan <em>bara</em> använda internationella VISA-kort i våran shop.</b><br>
+				<br>
+				<B>Du kan använda utländskt VISA-kort i våran shop. VISA tar en avgift av 5,75% av transaktionsbeloppet. P.g.a. detta blir totalbeloppet kompenserat om VISA-avgiften.</b><br>
 				<!-- ###MESSAGE_PAYMENT_12### end -->
 				<!-- ###MESSAGE_PAYMENT_13### begin -->
 				<br>
-				<B>Du kan kun bruge udenlandske Diners-kort i vores butik. Desuden tager Diners Club 5,75% af transaktionsbeløbet i gebyr. Derfor bliver der kompenseret for dette beløb her.</b><br>
-				<!-- ###MESSAGE_PAYMENT_13### end -->
+				<B>Du kan använda utländskt Diners kort i våran shop.  Diners club tar en avgift av 5,75% av transaktionsbeloppet. P.g.a. detta blir totalbeloppet kompenserat om Diners-avgiften.</b><br>
+				<!-- ###MESSAGE_PAYMENT_13### end -->				
 			<!-- ###MESSAGE_PAYMENT### end -->
 ###GW2E###
 			</td>
 			<td valign=top align=right colspan=3>###GW1B###
 			<b>###PRICE_PAYMENT_TAX###</b><br>
-			(###PRICE_PAYMENT_NO_TAX###)<br>
+			(exkl. moms ###PRICE_PAYMENT_NO_TAX###)<br>
 
 			###GW1E###</td>
 		</TR>
@@ -697,11 +698,11 @@ Exact same features as BASKET_TEMPLATE
 		</tr>
 		<TR>
 			<td valign=top colspan=3>###GW1B###
-				<strong>Totalsumma i kronor:</strong>
+				<strong>Totalsumma i SEK:</strong>
 			###GW1E###</td>
 
 			<td valign=top align=right colspan=3 nowrap>###GW1B###
-			<b>$ ###PRICE_TOTAL_TAX### kronor<</b><br>
+			<b>SEK ###PRICE_TOTAL_TAX### </b><br>
 			(utan moms: ###PRICE_TOTAL_NO_TAX###)<br>
 
 			###GW1E###</td>
@@ -710,8 +711,8 @@ Exact same features as BASKET_TEMPLATE
 	<br>
 
 <FORM method="post" action="###FORM_URL###">
-<input type="Submit" name="products_update" value="Tillbaks till kundkorgen">&nbsp;&nbsp;
-<input type="Submit" name="products_finalize" value="Finalize order!" onClick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">
+<input type="Submit" name="products_update" value="Tillbaka till kundkorgen">&nbsp;&nbsp;
+<input type="Submit" name="products_finalize" value="Skicka beställningen" onClick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">
 </FORM>
 <BR>
 
@@ -752,12 +753,12 @@ Exact same features as BASKET_TEMPLATE
 			<tr>
 				<td colspan=6>
 				###GW1B###
-					<b>Ordre bekræftelse:</b><br>
-					Mange tak fordi du handlede med os.<br>
-					Din ordre er gennemført og har nummer:<br><br>
+					<b>Order bekräftelse:</b><br>
+					Tack för att du handlade hos os.<br>
+					Din beställning är avslutat och har numret:<br><br>
 										&nbsp;&nbsp;&nbsp;&nbsp;<B>###ORDER_UID###</B> <br>
 								<br>
-								Använd det här numret som refersens när du kontaktar oss.<br />
+								Använd det här numret som referens när du kontaktar oss.<br />
 								Order bekräftelse skickas också med epost till som lämnades vid "Leverans" (###DELIVERY_EMAIL###).
 								Dock så bör du ändå skriva ut den här sidan som bevis på din order.<br />
 					<br>
@@ -765,26 +766,18 @@ Exact same features as BASKET_TEMPLATE
 					<!-- ###MESSAGE_PAYMENT### begin
 						This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
 					-->
-						<!-- ###MESSAGE_PAYMENT_10### begin -->
-						<B>Dankort transaktionen blev godkendt</B> og har transaktionsnummeret, ###TRANSACT_CODE###.<br>
-						<br>
-						<!-- ###MESSAGE_PAYMENT_10### end -->
 						<!-- ###MESSAGE_PAYMENT_11### begin -->
-										<B>Mastercard betalningen godkänndes</B> och har transaktionsnummer, ###TRANSACT_CODE###.<br>
+										<B>Mastercard betalningen blev godkänd</B> och har transaktionsnumret, ###TRANSACT_CODE###.<br>
 						<br>
 						<!-- ###MESSAGE_PAYMENT_11### end -->
 						<!-- ###MESSAGE_PAYMENT_12### begin -->
-						<B>VISA transaktionen blev godkendt</B> og har transaktionsnummeret, ###TRANSACT_CODE###.<br>
+						<B>VISA transaktionen  blev godkänd</B> och har transaktionsnumret, ###TRANSACT_CODE###.<br>
 						<br>
 						<!-- ###MESSAGE_PAYMENT_12### end -->
 						<!-- ###MESSAGE_PAYMENT_13### begin -->
-						<B>Diner Club transaktionen blev godkendt</B> og har transaktionsnummeret, ###TRANSACT_CODE###.<br>
+						<B>Diner Club betalningen blev godkänd</B> och har transaktionsnumret, ###TRANSACT_CODE###.<br>
 						<br>
 						<!-- ###MESSAGE_PAYMENT_13### end -->
-						<!-- ###MESSAGE_PAYMENT_20### begin -->
-						<B>Solo-e transaktionen blev godkendt</B> og har transaktionsnummeret, ###TRANSACT_CODE###.<br>
-						<br>
-						<!-- ###MESSAGE_PAYMENT_20### end -->
 				<!-- ###MESSAGE_PAYMENT_40### begin
 					Message for payment method 40, in this case not a credit card but plain ordering
 				-->
@@ -797,7 +790,7 @@ Exact same features as BASKET_TEMPLATE
 						<!-- ###MESSAGE_PAYMENT_40### end -->
 						<!-- ###MESSAGE_PAYMENT_50### begin -->
 						<B>Kredit</B><br>
-				Du har previliget att vara en god kund hos oss, så du får kredit som vanligt.<br>
+				Du har previleget att vara en god kund hos oss, så du får kredit som vanligt.<br>
 						<!-- ###MESSAGE_PAYMENT_50### end -->
 					<!-- ###MESSAGE_PAYMENT### end -->
 
@@ -814,10 +807,10 @@ Exact same features as BASKET_TEMPLATE
 
 
 			<tr>
-				<td colspan=3 bgcolor="###GC2###">###GW2B###<b>product:</b>###GW2E###</td>
-				<td bgcolor="###GC2###">###GW2B###<b>price:</b>###GW2E###</td>
-				<td bgcolor="###GC2###">###GW2B###<b>qty:</b>###GW2E###</td>
-				<td bgcolor="###GC2###">###GW2B###<b>total:</b>###GW2E###</td>
+				<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Produkt:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Pris:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Antal:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Totalt:</b>###GW2E###</td>
 			</tr>
 
 
@@ -855,7 +848,7 @@ Exact same features as BASKET_TEMPLATE
 		</tr>
 
 		<tr>
-			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Faktueringsadress:</b>###GW2E###</td>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Faktureringsadress:</b>###GW2E###</td>
 			<td colspan=3></td>
 		</tr>
 		<tr>
@@ -965,7 +958,7 @@ Exact same features as BASKET_TEMPLATE
 
 			<td valign=top align=right colspan=3>###GW1B###
 			<b>###PRICE_SHIPPING_TAX###</b><br>
-			(###PRICE_SHIPPING_NO_TAX###)<br>
+			(exkl moms ###PRICE_SHIPPING_NO_TAX###)<br>
 
 			###GW1E###</td>
 		</TR>
@@ -991,11 +984,11 @@ Exact same features as BASKET_TEMPLATE
 		</tr>
 		<TR>
 			<td valign=top colspan=3>###GW1B###
-				<strong>Total summa i kronor:</strong>
+				<strong>Totalsumma i SEK:</strong>
 			###GW1E###</td>
 
 			<td valign=top align=right colspan=3>###GW1B###
-			<b>###PRICE_TOTAL_TAX### kronor<</b><br>
+			<b>###PRICE_TOTAL_TAX### SEK<</b><br>
 			(utan moms: ###PRICE_TOTAL_NO_TAX###)<br>
 
 			###GW1E###</td>
@@ -1010,11 +1003,11 @@ Vänliga hälsningar:
 <br>
 <br>
 
-&nbsp;&nbsp;&nbsp;<strong>My company</strong><br>
-&nbsp;&nbsp;&nbsp;My street <br>
-&nbsp;&nbsp;&nbsp;1234 My City<br>
+&nbsp;&nbsp;&nbsp;<strong>Sven Svensson AB</strong><br>
+&nbsp;&nbsp;&nbsp;Svenssonsvägen 17 <br>
+&nbsp;&nbsp;&nbsp;999 99 Svenssonsvik<br>
 <br>
-&nbsp;&nbsp;&nbsp;Phone: +46 xxx xxx-xxxx<br>
+&nbsp;&nbsp;&nbsp;Telefon: +46 xxx xxx-xxxx<br>
 
 				###GW1E###
 				</td>
@@ -1053,7 +1046,7 @@ If the basket is empty this subpart is displayed
 If payment is initiated but the required information fields are not filled in correctly, this happens
 
 -->
-###GW1B###<B>Du har inte fullt i alla nödvändiga fält med adressuppgifter. Vänligen gå tillbaks och gör det.</B>###GW1E###
+###GW1B###<B>Du har inte fyllt i alla nödvändiga fält med adressuppgifter. Vänligen gå tillbaka och gör det.</B>###GW1E###
 
 	<FORM method="post" action="###FORM_URL###">
 	<input type="Submit" name="products_info" value="Ange adressuppgifter" onClick="document.forms[0].action='###FORM_URL_INFO###';">
@@ -1077,7 +1070,7 @@ Displays the view of the order status by tracking codes.
 -->
 ###GW1B###
 <B>Din order (###ORDER_UID###) har följande status:</B><br>
-(Sista linjen är sista statusen)<br>
+(Sista linjen är aktuella statusen)<br>
 <br>
 
 <table border=1 cellpadding=0 cellspacing=4>
@@ -1124,7 +1117,7 @@ Displays the view of the order status by tracking codes.
 			<input type="Submit" name="submit" value="Lägg till orderstatus">
 			</FORM>
 			<hr>
-			Switch to another order:
+			Byta till annan beställning:
 			<FORM method="post" action="###FORM_URL###">
 				<select name="tracking" size="9">
 					###OTHER_ORDERS_OPTIONS###
@@ -1172,7 +1165,7 @@ Du kan skicka ett meddelande till shopen rörande den här ordern.<br>
 	<br>
 	###GW1B###Comment to follow:###GW1B###<br>
 	<textarea cols="40" rows="5" name="orderRecord[status_comment]"></textarea><br>
-	<input type="Submit" name="submit" value="Send message">
+	<input type="Submit" name="submit" value="Skicka meddelandet">
 	</FORM>
 <br>
 <br>
@@ -1196,7 +1189,7 @@ Displays form for entering the tracking number.
 ###GW1B###<B>Ange ditt spårningsnummer:</B>###GW1E###<br>
 	<FORM method="post" action="###FORM_URL###">
 	<input type="text" name="tracking"><br>
-	<input type="Submit" name="submit" value="See status">
+	<input type="Submit" name="submit" value="Se orderstatus">
 	</FORM>
 
 <!-- ###ADMIN_CONTROL### begin -->		
@@ -1241,7 +1234,7 @@ Subpart used as template for the notify emails
 First line is used as subject for the mail.
 -->
 
-My Shop orderstatus (####ORDER_UID###)
+Sven Svensson AB orderstatus (####ORDER_UID###)
 
 ORDER INFORMATION (####ORDER_UID###): 
 Statusen på din order hos oss har ändrats:
@@ -1254,7 +1247,7 @@ Kommentar:
 
 
 Spårning:
-Du får det här epostmeddelandet eftersom du har valt att få information om din order. Du kan följa din orders status och ändra inställningar för
+Du får det här epostmeddelandet eftersom du har valt att få information om din order. Du kan följa din order status och ändra inställningar för
 orderinformationen genom att använda följande spårningsnummer:
         ###ORDER_TRACKING_NO###
 		
@@ -1264,11 +1257,11 @@ Klicka här för att se information nu:
 
 
 Mycket vänliga hälsningar
-	My Shop
-	My Street
-	1234 My City
+	Sven Svensson AB
+	Svenssonsvägen 17
+	999 99 Svenssonsvik
 
-	Phone: +x xxx xxx-xxxx
+	Telefon: +x xxx xxx-xxxx
 	
 <!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
 </pre>
@@ -1286,7 +1279,7 @@ Mycket vänliga hälsningar
 	First line is used as subject for the mail.
 -->
 
-My Shop order ####ORDER_UID###
+Sven Svensson AB order ####ORDER_UID###
 
 ORDER BEKRÄFTELSE: 
 Din order är komplett och har ordernummer: ###ORDER_UID###.
@@ -1305,13 +1298,13 @@ ORDER:
 			<!-- ###ITEM_SINGLE### begin-->
 Produkt: ###PRODUCT_TITLE###
 Artikelnummer: ###PRODUCT_ITEMNUMBER###
-Pris: ###PRICE_TAX### Kronor
-Antal: ###FIELD_QTY###        = ###PRICE_TOTAL_TAX### Kronor
+Pris: ###PRICE_TAX### SEK
+Antal: ###FIELD_QTY###        = ###PRICE_TOTAL_TAX### SEK
 			<!-- ###ITEM_SINGLE### end -->
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS###  end -->
 
-2) Faktueringsadress:
+2) Faktureringsadress:
 ###PERSON_NAME###
 ###PERSON_ADDRESS###
 
@@ -1326,24 +1319,24 @@ Telefon: ###DELIVERY_TELEPHONE###
 Epost: ###DELIVERY_EMAIL###
 
 
-4) Notereringar:
+4) Noteringar:
 ###DELIVERY_NOTE_DISPLAY###
 
 
 5) Leverans:
 ###SHIPPING_TITLE###				
-Pris: ###PRICE_SHIPPING_TAX### Kronor (###PRICE_SHIPPING_NO_TAX### utan moms)
+Pris: ###PRICE_SHIPPING_TAX### SEK (###PRICE_SHIPPING_NO_TAX### utan moms)
 
 
 6) Betalningsmetod:
 ###PAYMENT_TITLE###
-Pris: ###PRICE_PAYMENT_TAX### Kronor (###PRICE_PAYMENT_NO_TAX### utan moms)
+Pris: ###PRICE_PAYMENT_TAX### SEK (###PRICE_PAYMENT_NO_TAX### utan moms)
 
 
-TOTALT: ________________________ ###PRICE_TOTAL_TAX### Kronor
+TOTALT: ________________________ ###PRICE_TOTAL_TAX### SEK
 (Utan moms: ###PRICE_TOTAL_NO_TAX###)
 
-Vänliga hälsningar, My Shop
+Vänliga hälsningar, Sven Svensson AB
 
 
 
@@ -1363,3 +1356,4 @@ Vänliga hälsningar, My Shop
 
 
  
+
