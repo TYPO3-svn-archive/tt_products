@@ -78,7 +78,8 @@ class tx_ttproducts extends tslib_pibase {
 	var $deliveryInfo; 					// Set by initBasket to the delivery address
 
 		// Internal: Arrays from getBasket() function
-	var $calculatedBasket;				// - The basked elements, how many (quantity, count) and the price and total
+	var $calculatedBasket;				// TODO: replace these by itemArray	
+	var $itemArray;						// - The basked items,, how many (quantity, count) and the price and total
 	var $calculatedSums_tax;			// - Sums of goods, shipping, payment and total amount WITH TAX included
 	var $calculatedSums_no_tax;			// - Sums of goods, shipping, payment and total amount WITHOUT TAX
 	var $categorySums_tax;				// this is the goodstotal for the categories
@@ -943,7 +944,6 @@ class tx_ttproducts extends tslib_pibase {
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
 			$this->categories[$row["uid"]] = $row["title"];
 		}
-		debug ($this->categories, '$this->categories', __FILE__, __LINE__);
 	}
 /*
 			// Fetching catagories:
@@ -1418,7 +1418,7 @@ class tx_ttproducts extends tslib_pibase {
 			// Reduce inStock
 			reset($this->calculatedBasket);
 			while(list(,$itemInfo)=each($this->calculatedBasket))   {
-				$query="uid='".intval($itemInfo["row"]["uid"])."'";
+				$query="uid='".intval($itemInfo['rec']["uid"])."'";
 
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products', $query);
 
@@ -1434,7 +1434,7 @@ class tx_ttproducts extends tslib_pibase {
 						$fieldsArray["inStock"]=$newInStock;
 
 									// Saving the order record
-						$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'uid='.intval($itemInfo["row"]["uid"]), $fieldsArray);
+						$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'uid='.intval($itemInfo['rec']["uid"]), $fieldsArray);
 					}
 				}
 			}
@@ -1453,7 +1453,7 @@ class tx_ttproducts extends tslib_pibase {
 			$insertFields = array(
 				'sys_products_orders_uid' => $orderUid,
 				'sys_products_orders_qty' => intval($itemInfo['count']),
-				'tt_products_uid' => intval($itemInfo['row']['uid'])
+				'tt_products_uid' => intval($itemInfo['rec']['uid'])
 			);
 			$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
 		}
@@ -1520,15 +1520,15 @@ class tx_ttproducts extends tslib_pibase {
 				reset($this->calculatedBasket);
 				$infoWritten = false;
 				while(list(,$itemInfo)=each($this->calculatedBasket)) {
-					$sizecoloraccessory = explode(";", $itemInfo["row"]["extVars"]);
-					$csvdata = '"'.intval($itemInfo["row"]["uid"]).'";"'.
+					$sizecoloraccessory = explode(";", $itemInfo['rec']["extVars"]);
+					$csvdata = '"'.intval($itemInfo['rec']["uid"]).'";"'.
 							intval($itemInfo["count"]).'";"'.
 							$sizecoloraccessory[0].'";"'.
 							$sizecoloraccessory[1].'";"'.
 							$sizecoloraccessory[2]/100 .'"';
 					reset($csvfields);
 					foreach($csvfields as $csvfield)
-						$csvdata .= ";\"".$itemInfo["row"][$csvfield]."\"";
+						$csvdata .= ";\"".$itemInfo['rec'][$csvfield]."\"";
 					if ($this->conf["CSVinOneLine"] && (!$infoWritten))
 					{
 						$infoWritten = true;
@@ -2147,7 +2147,7 @@ class tx_ttproducts extends tslib_pibase {
 		// result: fill in the  ["calcprice"] of $itemArray["pid""] ["itemnumber"]
 	function GetCalculatedData(
 			&$priceCalc, &$discountPrice,
-			&$itemArray, &$countTotal) {
+			&$countTotal) {
 		global $TSFE;
 
 		$inGroup = 0;
@@ -2166,7 +2166,7 @@ class tx_ttproducts extends tslib_pibase {
 		$priceTotal = array();
 		$priceReduction = array();
 		$countTotal = 0;
-
+		
 		// Check if a special group price can be used
 		if (($inGroup == 1) && ($discountPrice != NULL))
 		{
@@ -2179,11 +2179,13 @@ class tx_ttproducts extends tslib_pibase {
 				$dumCount = 0;
 				$pricefor1 = doubleval($priceCalcTemp["1"]);
 				
+				#debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
 					// count all items which will apply to the discount price
-				foreach ($itemArry as $pid=>$pidItem) {
+				foreach ($this->itemArray as $pid=>$pidItem) {
+					#debug ($pidItem, '$pidItem', __LINE__, __FILE__);
 					foreach ($pidItem as $itemnumber=>$actItem) {
 						$count2 = $actItem["count"];
-						if (($count2 > 0) && ($actItem["price"] == $pricefor1)) {
+						if (($count2 > 0) && ($actItem["rec"]["price"] == $pricefor1)) {
 							$countedItems [] = array ("pid" => $pid, "itemnumber" => $itemnumber);
 							$dumCount += $count2;
 						}
@@ -2201,7 +2203,7 @@ class tx_ttproducts extends tslib_pibase {
 							if (intval($k2) > 1) {
 								// store the discount price in all calculated items from before
 								foreach ($countedItems as $k3=>$v3) {
-									$itemArray[$v3["pid"]] [$v3["itemnumber"]] ["calcprice"] = $price2;
+									$this->itemArray[$v3["pid"]] [$v3["itemnumber"]] ["calcprice"] = $price2;
 								}
 								$priceReduction[$pricefor1] = 1; // remember the reduction in order not to calculate another price with $priceCalc
 							}
@@ -2225,7 +2227,7 @@ class tx_ttproducts extends tslib_pibase {
 							if (intval($k2) > 1) {
 								// store the discount price in all calculated items from before
 								foreach ($countedItems as $k3=>$v3) {
-									$itemArray[$v3["pid"]] [$v3["itemnumber"]] ["calcprice"] = $price2;
+									$this->itemArray[$v3["pid"]] [$v3["itemnumber"]] ["calcprice"] = $price2;
 								}
 								$priceReduction[$pricefor1] = 1; // remember the reduction in order not to calculate another price with $priceCalc
 							}
@@ -2244,7 +2246,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		if ($priceCalc) {
 			// $countTotal from discountprice is used if available
-
+			
 			ksort($priceCalc);
 			reset($priceCalc);
 
@@ -2258,12 +2260,12 @@ class tx_ttproducts extends tslib_pibase {
 				}
 				$dumCount = 0;
 
-				reset($itemArry);
+				reset($this->itemArray);
 					// count all items which will apply to the discount price
-				foreach ($itemArry as $pid=>$pidItem) {
+				foreach ($this->itemArray as $pid=>$pidItem) {
 					foreach ($pidItem as $itemnumber=>$actItem) {
 						$count2 = $actItem["count"];
-						if (($count2 > 0) && ($actItem["price"] == $pricefor1)) {
+						if (($count2 > 0) && ($actItem["rec"]["price"] == $pricefor1)) {
 							$countedItems [] = array ("pid" => $pid, "itemnumber" => $itemnumber);
 							$dumCount += $count2;
 						}
@@ -2284,10 +2286,10 @@ class tx_ttproducts extends tslib_pibase {
 						}
 					}
 				}
-
-				$priceProduct = $priceTotalTemp / $countTemp;
+				
+				$priceProduct = $priceTotalTemp / $dumCount;
 				foreach ($countedItems as $k3=>$v3) {
-					$itemArray[$v3["pid"]] [$v3["itemnumber"]] ["calcprice"] = $priceProduct;
+					$this->itemArray[$v3["pid"]] [$v3["itemnumber"]] ["calcprice"] = $priceProduct;
 				}
 				
 			}
@@ -2423,33 +2425,29 @@ class tx_ttproducts extends tslib_pibase {
 
 		$pageArr=explode(",",$this->pid_list);
 
-		$itemArray = array(); // the item array contains all the data for the elements found in the basket
+		$this->itemArray = array(); // the item array contains all the data for the elements found in the basket
 
 		while(list(,$v)=each($pageArr))	{
 			if (is_array($productsArray[$v]))	{
 				reset($productsArray[$v]);
 				while(list(,$row)=each($productsArray[$v]))	{
-					$itemArray [intval($row["pid"])] [intval($row["itemnumber"])] = array (
-						"price" => doubleval("price"),
+					$this->itemArray [intval($row["pid"])] [intval($row["itemnumber"])] = array (
 						"calcprice" => 0,
-						"weight" => $row["weight"],
 						"count" => intval($this->basketExt[$row["uid"]][$row["size"].';'.$row["color"].';'.intval(100*$row["accessory"])]),
-						"category" => $row["category"],
-						"accessory" => $row["accessory"],
-						"tax" => $row["tax"],
-						"row" => $row
+						'rec' => $row
 						);
 				}
 			}
 		}
-
+		
+	
 		if ($this->conf["pricecalc."] || $this->conf["discountprice."]) {
 			// do the price calculation 
 			$this->GetCalculatedData(
 				$this->basketExtra["pricecalc."],
-				$this->basketExtra["discountprice."],
-				$itemArray);
+				$this->basketExtra["discountprice."]);
 		}
+
 
 			// Initialize traversing the items in the basket
 		$this->calculatedSums_tax=array();
@@ -2469,21 +2467,22 @@ class tx_ttproducts extends tslib_pibase {
 				while(list(,$row)=each($productsArray[$v]))	{ */
 		
 		$countTotal = 0;
-		reset ($itemArray);
-		foreach ($itemArray as $pid=>$pidItem) {
+		reset ($this->itemArray);
+		// loop over all items in the basket sorted by page and itemnumber
+		foreach ($this->itemArray as $pid=>$pidItem) {
 			foreach ($pidItem as $itemnumber=>$actItem) {
 				$countTotal++;
-				$row = 	$actItem["row"];
+				$row = 	$actItem['rec'];
 					// Print Category Title
-				if ($row["pid"]."_".$row["category"]!=$currentP)	{
+				if ($pid."_".$actItem["rec"]["category"]!=$currentP)	{
 					if ($itemsOut)	{
 						$out.=$this->cObj->substituteSubpart($t["itemFrameWork"], "###ITEM_SINGLE###", $itemsOut);
 					}
 					$itemsOut="";			// Clear the item-code var
-					$currentP = $row["pid"]."_".$row["category"];
+					$currentP = $pid."_".$actItem["rec"]["category"];
 					if ($this->conf["displayBasketCatHeader"])	{
 						$markerArray=array();
-						$catTitle= $this->pageArray[$row["pid"]]["title"].($row["category"]?"/".$this->categories[$row["category"]]:"");
+						$catTitle= $this->pageArray[$pid]["title"].($row["category"]?"/".$this->categories[$row["category"]]:"");
 						$this->cObj->setCurrentVal($catTitle);
 						$markerArray["###CATEGORY_TITLE###"]=$this->cObj->cObjGetSingle($this->conf["categoryHeader"],$this->conf["categoryHeader."], "categoryHeader");
 						$out.= $this->cObj->substituteMarkerArray($t["categoryTitle"], $markerArray);
@@ -2495,26 +2494,28 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray = $this->getItemMarkerArray ($row,$catTitle,1,"basketImage");
 
 				// if reseller is logged in then take 'price2', default is 'price'
-				$priceTax = $this->getResellerPrice($row,1);
-				$priceNoTax = $this->getResellerPrice($row,0);
-				$calculatedBasketItem = array(		// <----- this must be replaced by $actItem everywhere !!!  TODO
+				$priceTax = $this->getResellerPrice($actItem["rec"],1);
+				$priceNoTax = $this->getResellerPrice($actItem["rec"],0);
+				$calculatedBasketItem = array(
+					"itemnumber" => intval($row["itemnumber"]),
 					"priceTax" => $priceTax,
 					"priceNoTax" => $priceNoTax,
 					"weight" => $row["weight"],
 					"accessory" => $row["accessory"],
 					"count" => intval($this->basketExt[$row["uid"]][$row["size"].';'.$row["color"].';'.intval(100*$row["accessory"])]),
-					"row" => $row
-				);
-				// has the price been calculated before?
-				if ($actItem["calcprice"] > 0 && strcmp($priceTax,'price')==0 ) {
-					$calculatedBasketItem["priceTax"] = $this->getPrice($actItem["calcprice"],1,$actItem["tax"]);
-					$calculatedBasketItem["priceNoTax"] = $this->getPrice($actItem["calcprice"],0,$actItem["tax"]);
+					"rec" => $row
+				);				
+				
+				// has the price been calculated before and no reseller price?
+				if ($actItem["calcprice"] > 0 && $actItem["rec"]["price"] == $priceTax ) {
+					$calculatedBasketItem["priceTax"] = $this->getPrice($actItem["calcprice"],1,$actItem["rec"]["tax"]);
+					$calculatedBasketItem["priceNoTax"] = $this->getPrice($actItem["calcprice"],0,$actItem["rec"]["tax"]);
 				}
 
 				// If accesssory has been selected, add the price of it, multiplicated with the count :
-				if($calculatedBasketItem["row"]["accessory"] > 0 ){
-					$calculatedBasketItem["totalTax"] = ($calculatedBasketItem["priceTax"]+ $this->getPrice($calculatedBasketItem["row"]["accessory"],1,$row["tax"]))*$calculatedBasketItem["count"];
-					$calculatedBasketItem["totalNoTax"] = ($calculatedBasketItem["priceNoTax"]+getPrice($calculatedBasketItem["row"]["accessory"],0,$row["tax"]))*$calculatedBasketItem["count"];
+				if($calculatedBasketItem['rec']["accessory"] > 0 ){
+					$calculatedBasketItem["totalTax"] = ($calculatedBasketItem["priceTax"]+ $this->getPrice($calculatedBasketItem['rec']["accessory"],1,$row["tax"]))*$calculatedBasketItem["count"];
+					$calculatedBasketItem["totalNoTax"] = ($calculatedBasketItem["priceNoTax"]+getPrice($calculatedBasketItem['rec']["accessory"],0,$row["tax"]))*$calculatedBasketItem["count"];
 					$markerArray["###PRICE_ACCESSORY_TEXT###"]= $this->conf['accessoryText'];
 					$markerArray["###PRICE_ACCESSORY_COUNT###"]= '<INPUT size="3" maxlength="4" type="text" class="readonly" name="'.$calculatedBasketItem["count"].'" value="'.$calculatedBasketItem["count"].'" readonly="readonly">';
 					$markerArray["###ACCESSORY_VALUE_TAX###"]= $this->printPrice($this->priceFormat($this->getPrice($row["accessory".$this->config['priceNoReseller']],1,$row["tax"])));
@@ -2971,12 +2972,11 @@ class tx_ttproducts extends tslib_pibase {
 		// Calculate quantities for all categories
 		foreach ($basket as $actBasket)
 		{
-			debug ($actBasket, '$actBasket');
-			$currentCategory=$actBasket["row"]["category"];
+			$currentCategory=$actBasket['rec']["category"];
 			$category[$currentCategory] = 1;
 			$countTotal += $actBasket["count"];
 			$categoryQty[$currentCategory] += intval($actBasket["count"]);
-			$categoryPrice[$currentCategory] += doubleval($actBasket["row"]["price"]) * intval($actBasket["count"]);
+			$categoryPrice[$currentCategory] += doubleval($actBasket['priceTax']) * intval($actBasket['count']);
 		}
 			// Initialize traversing the items in the calculated basket
 
@@ -2990,38 +2990,26 @@ class tx_ttproducts extends tslib_pibase {
 		$itemsOut="";
 		$out="";
 		
-		debug ($category, '$category', __FILE__, __LINE__);
-
 		foreach ($category as $currentCategory=>$value)
 		{
 			$categoryChanged = 1;
-			debug ($currentCategory, '$currentCategory', __LINE__, __FILE__);
 
 			while(list(,$row)=each($basket))
 			{
-				debug ($row, '$row', __LINE__, __FILE__);
-				debug ($currentCategory, '$currentCategory', __LINE__, __FILE__);
 					// Print Category Title
-				if ($row["row"]["category"]==$currentCategory)
+				if ($row['rec']["category"]==$currentCategory)
 				{
 
 					if ($categoryChanged == 1)
 					{
-						debug ($this->conf["categoryHeader"], '$this->conf["categoryHeader"]', __LINE__, __FILE__);
-						debug ($this->conf["categoryHeader."], '$this->conf["categoryHeader."]', __LINE__, __FILE__);
 						$markerArray=array();
-						debug ($currentCategory, '$currentCategory', __LINE__, __FILE__);
 						$catTitle= ($this->categories[$currentCategory] ? $this->categories[$currentCategory]:"");
 						$this->cObj->setCurrentVal($catTitle);
-						debug ($catTitle, '$catTitle', __LINE__, __FILE__);
 						$markerArray["###CATEGORY_TITLE###"]=$this->cObj->cObjGetSingle($this->conf["categoryHeader"],$this->conf["categoryHeader."], "categoryHeader");
 						$markerArray["###CATEGORY_QTY###"]=$categoryQty[$currentCategory];
-
-						debug($this->calculatedSums_tax["goodstotal"], '$this->calculatedSums_tax["goodstotal"]', __LINE__, __FILE__);
 						
-						$markerArray["###PRICE_GOODS_TAX###"]= $this->priceFormat($this->getPrice($categoryPrice[$currentCategory],1,$row["row"]["tax"]));
-						debug($this->calculatedSums_no_tax["goodstotal"], '$this->calculatedSums_no_tax["goodstotal"]', __LINE__, __FILE__);
-						$markerArray["###PRICE_GOODS_NO_TAX###"]= $this->priceFormat($this->getPrice($categoryPrice[$currentCategory],0,$row["row"]["tax"]));
+						$markerArray["###PRICE_GOODS_TAX###"]= $this->priceFormat($this->getPrice($categoryPrice[$currentCategory],1,$row['rec']["tax"]));
+						$markerArray["###PRICE_GOODS_NO_TAX###"]= $this->priceFormat($this->getPrice($categoryPrice[$currentCategory],0,$row['rec']["tax"]));
 
 						$out2 = $this->cObj->substituteMarkerArray($t["categoryTitle"], $markerArray);
 						$out.= $out2;
@@ -3029,7 +3017,7 @@ class tx_ttproducts extends tslib_pibase {
 
 						// Print Item Title
 					$wrappedSubpartArray=array();
-					$markerArray = $this->getItemMarkerArray ($row["row"],$catTitle,1,"listImage");
+					$markerArray = $this->getItemMarkerArray ($row['rec'],$catTitle,1,"listImage");
 					$markerArray["###FIELD_QTY###"] = $row["count"];
 
 					$itemsOut = $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),$wrappedSubpartArray);
