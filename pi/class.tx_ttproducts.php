@@ -2439,7 +2439,8 @@ class tx_ttproducts extends tslib_pibase {
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->pid_list.')'.$this->cObj->enableFields('tt_products'));
 
-		$productsArray = array();
+		$this->productsArray = array(); // TODO: use only local products array
+		$productsArray = &$this->productsArray;
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
 			reset($this->basketExt[$row["uid"]]);
 			while(list($bextVars,)=each($this->basketExt[$row["uid"]])) {
@@ -2687,7 +2688,7 @@ class tx_ttproducts extends tslib_pibase {
 			}
 		}
 
-		foreach ($productsArray as $prodUID)
+		foreach ($this->productsArray as $prodUID)
 			foreach ($prodUID as $prodSingle)
 			{
 				if ($prodSingle["bulkily"])
