@@ -155,7 +155,7 @@ class tx_ttproducts extends tslib_pibase {
 		$this->config["recursive"] = $this->cObj->stdWrap($this->conf["recursive"],$this->conf["recursive."]);
 		$this->config["storeRootPid"] = $this->conf["PIDstoreRoot"] ? $this->conf["PIDstoreRoot"] : $TSFE->tmpl->rootLine[0][uid];
 		$this->config["useCategories"] = $this->conf["useCategories"] ? $this->conf["useCategories"] : 1;
-		$this->config["priceNoReseller"] = $this->config["priceNoReseller"] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : $this->config["priceNoReseller"];
+		$this->config["priceNoReseller"] = $this->conf["priceNoReseller"] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
 
 			//extend standard search fields with user setup
 		$this->searchFieldList = trim($this->conf["stdSearchFieldExt"]) ? implode(",", array_unique(t3lib_div::trimExplode(",",$this->searchFieldList.",".trim($this->conf["stdSearchFieldExt"]),1))) : $this->searchFieldList;
