@@ -1,3 +1,14 @@
+2005-07-11  Franz Holzinger  <franz@fholzinger.com>
+
+	* getDiscountPrice
+	* start to use a global $calculatedArray and $itemArray
+
+2005-07-06  Franz Holzinger  <franz@fholzinger.com>
+
+	* make instock to default -1
+	* make it configurable to show instock=0 with a special message
+	* CSS into the rows
+
 2005-07-04  Franz Holzinger  <franz@fholzinger.com>
 
 	* correction after remake of price calculation
