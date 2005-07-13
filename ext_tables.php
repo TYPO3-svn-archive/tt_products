@@ -12,12 +12,13 @@ t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:mkl_products/flexform_ds_pi.xml'
 
 $TCA['tt_products'] = Array (
 	'ctrl' => Array (
+		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products',
 		'label' => 'title',
+		'label_alt' => 'subtitle',
 		'default_sortby' => 'ORDER BY title',
 		'tstamp' => 'tstamp',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'delete' => 'deleted',
-		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products',
 		'enablecolumns' => Array (
 			'disabled' => 'hidden',
 			'starttime' => 'starttime',
@@ -79,11 +80,11 @@ t3lib_extMgm::addPlugin(Array("LLL:EXT:mkl_products/locallang_tca.php:tt_content
 */
 t3lib_extMgm::addPlugin(Array('LLL:EXT:tt_products/locallang_tca.php:tt_products', '5'));
 t3lib_extMgm::allowTableOnStandardPages('tt_products');
-/* mkl:
+
 t3lib_extMgm::allowTableOnStandardPages("tt_products_language_overlay");
 t3lib_extMgm::allowTableOnStandardPages("tt_products_cat");
 t3lib_extMgm::allowTableOnStandardPages("tt_products_cat_language_overlay");
-*/
+
 t3lib_extMgm::addToInsertRecords('tt_products');
 if (TYPO3_MODE=='BE')	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttproducts_wizicon.php';
 
@@ -110,6 +111,7 @@ $tempColumns = Array (
 				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.12', 'TRACKING'),
 				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.13', 'BILL'),
 				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.14', 'DELIVERY'),
+				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.15', 'CURRENCY'),
 			),
 		)
 	)

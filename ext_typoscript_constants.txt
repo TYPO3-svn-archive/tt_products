@@ -98,10 +98,10 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label=Choose your CSV format: Write all additional information in one line behind the first ordered product. This is good if you want to import this files somewhere. If you not check this, the CSV is formatted for best view in Excel for example
   CSVinOneLine = 0
 
-    # cat=plugin.products//; type=text; label=Always inStock: The stock will never get reduced.
+    # cat=plugin.products//; type=text; label=Always in Stock: The stock will never get reduced.
   alwaysInStock = 1
-    # cat=plugin.products//; type=text; label=Always inStock message: Message is displayed if inStock <= -1 (means always inStock)
-  alwaysInStockMessage = on stock
+    # cat=plugin.products//; type=text; label=Not in Stock message: Message is displayed if inStock = 0 (means not inStock)
+  notInStockMessage = not in stock
     # cat=plugin.products//; type=text; label=Unit for pieces
   inStockPieces = pieces
 

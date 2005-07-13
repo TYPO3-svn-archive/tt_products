@@ -1,3 +1,7 @@
+2005-07-13  Franz Holzinger  <franz@fholzinger.com>
+
+	* finish usage of global $calculatedArray and $itemArray instead of CalulatedSum and CalulatedBasketArray
+
 2005-07-11  Franz Holzinger  <franz@fholzinger.com>
 
 	* getDiscountPrice

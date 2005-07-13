@@ -144,7 +144,7 @@ plugin.tt_products {
   CSVinOneLine = {$plugin.tt_products.CSVinOneLine}
 
   alwaysInStock  = {$plugin.tt_products.alwaysInStock}
-  alwaysInStockMessage = {$plugin.tt_products.alwaysInStockMessage}
+  notInStockMessage = {$plugin.tt_products.notInStockMessage}
   inStockPieces = {$plugin.tt_products.inStockPieces}
 
   newItemDays = {$plugin.tt_products.newItemDays}

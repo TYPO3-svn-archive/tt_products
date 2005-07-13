@@ -19,7 +19,7 @@ CREATE TABLE tt_products (
   www varchar(80) DEFAULT '' NOT NULL,
   itemnumber varchar(40) DEFAULT '' NOT NULL,
   category int(10) unsigned DEFAULT '0' NOT NULL,
-  inStock int(11) DEFAULT '0' NOT NULL,
+  inStock int(11) DEFAULT '1' NOT NULL,
   deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
   ordered int(10) unsigned DEFAULT '0' NOT NULL,
   fe_group int(11) DEFAULT '0' NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE tt_products_cat (
   title tinytext NOT NULL,
   note text NOT NULL,
   image tinyblob NOT NULL,
-  parent_cat blob NOT NULL,  
+# parent_cat blob NOT NULL,  
   deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid)
