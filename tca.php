@@ -317,12 +317,12 @@ $TCA["tt_products"] = Array (
 );
 
 
-$TCA["tt_products_language_overlay"] = Array (
-	"ctrl" => $TCA["tt_products_language_overlay"]["ctrl"],
+$TCA["tt_products_language"] = Array (
+	"ctrl" => $TCA["tt_products_language"]["ctrl"],
 	"interface" => Array (
 		"showRecordFieldList" => "hidden,prd_uid,sys_language_uid,title,note,www"
 	),
-	"feInterface" => $TCA["tt_products_language_overlay"]["feInterface"],
+	"feInterface" => $TCA["tt_products_language"]["feInterface"],
 	"columns" => Array (	
 		"hidden" => Array (
 			"exclude" => 1,	
@@ -333,7 +333,7 @@ $TCA["tt_products_language_overlay"] = Array (
 		),
 		"prd_uid" => Array (		
 			"exclude" => 0,		
-			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language_overlay.prd_uid",		
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language.prd_uid",		
 			"config" => Array (
 				"type" => "select",	
 				"foreign_table" => "tt_products",	
@@ -345,11 +345,11 @@ $TCA["tt_products_language_overlay"] = Array (
 		),
 		"sys_language_uid" => Array (		
 			"exclude" => 0,		
-			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language_overlay.sys_language_uid",		
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language.sys_language_uid",		
 			"config" => Array (
 				"type" => "select",
 				"items" => Array (
-					Array("LLL:EXT:tt_products/locallang_tca.php:tt_products_language_overlay.sys_language_uid.I.0", "0"),
+					Array("LLL:EXT:tt_products/locallang_tca.php:tt_products_language.sys_language_uid.I.0", "0"),
 				),
 				"itemsProcFunc" => "tx_ttproducts_language->main",
 			)
@@ -389,7 +389,7 @@ $TCA["tt_products_language_overlay"] = Array (
 		),
 		"datasheet" => Array (
 			"exclude" => 1,	
-			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language_overlay.datasheet",
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language.datasheet",
 			"config" => Array (
 				"type" => "group",
 				"internal_type" => "file",
@@ -462,12 +462,12 @@ $TCA["tt_products_cat"] = Array (
 // ******************************************************************
 // This is the language overlay for  products category table, tt_products_cat
 // ******************************************************************
-$TCA["tt_products_cat_language_overlay"] = Array (
-	"ctrl" => $TCA["tt_products_cat_language_overlay"]["ctrl"],
+$TCA["tt_products_cat_language"] = Array (
+	"ctrl" => $TCA["tt_products_cat_language"]["ctrl"],
 	"interface" => Array (
 		"showRecordFieldList" => "hidden,cat_uid,sys_language_uid,title"
 	),
-	"feInterface" => $TCA["tt_products_cat_language_overlay"]["feInterface"],
+	"feInterface" => $TCA["tt_products_cat_language"]["feInterface"],
 	"columns" => Array (	
 		"hidden" => Array (
 			"exclude" => 1,	
@@ -487,7 +487,7 @@ $TCA["tt_products_cat_language_overlay"] = Array (
 		),
 		"cat_uid" => Array (		
 			"exclude" => 0,		
-			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language_overlay.cat_uid",		
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language.cat_uid",		
 			"config" => Array (
 				"type" => "select",	
 				"foreign_table" => "tt_products_cat",	
@@ -499,11 +499,11 @@ $TCA["tt_products_cat_language_overlay"] = Array (
 		),
 		"sys_language_uid" => Array (		
 			"exclude" => 0,		
-			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language_overlay.sys_language_uid",		
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language.sys_language_uid",		
 			"config" => Array (
 				"type" => "select",
 				"items" => Array (
-					Array("LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language_overlay.sys_language_uid.I.0", "0"),
+					Array("LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language.sys_language_uid.I.0", "0"),
 				),
 				"itemsProcFunc" => "tx_ttproducts_language->main",
 			)

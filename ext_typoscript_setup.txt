@@ -32,7 +32,7 @@ plugin.tt_products {
   listImage < .image
   listImage.file.maxW = {$plugin.tt_products.maxW_list}
   listImage.file.maxH = {$plugin.tt_products.maxH_list}
-  listImage.imageLinkWrap >
+  listImageLinkWrap = {$plugin.tt_products.clickEnlarge_basket}
   
   basketImage < .image
   basketImage.file.maxW = {$plugin.tt_products.maxW_basket}
@@ -47,6 +47,9 @@ plugin.tt_products {
   color1.wrap = {$plugin.tt_products.color1}
   color2.wrap = {$plugin.tt_products.color2}
   color3.wrap = {$plugin.tt_products.color3}
+
+  selectColor = {$plugin.tt_products.selectColor}
+  selectSize = {$plugin.tt_products.selectSize}
 
   displayListCatHeader = {$plugin.tt_products.displayListCatHeader}
   displayBasketCatHeader = {$plugin.tt_products.displayBasketCatHeader}

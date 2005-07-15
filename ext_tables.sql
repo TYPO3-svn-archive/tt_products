@@ -9,6 +9,7 @@ CREATE TABLE tt_products (
   starttime int(11) unsigned DEFAULT '0' NOT NULL,
   endtime int(11) unsigned DEFAULT '0' NOT NULL,
   title tinytext NOT NULL,
+  subtitle tinytext NOT NULL,
   note text NOT NULL,
   unit varchar(20) DEFAULT '' NOT NULL,  
   unit_factor varchar(6) DEFAULT '' NOT NULL,   
@@ -35,7 +36,6 @@ CREATE TABLE tt_products (
   size varchar(255) DEFAULT '' NOT NULL,
   special_preparation int(11) DEFAULT '0' NOT NULL,
   gradings varchar(40) DEFAULT '' NOT NULL,
-  subtitle tinytext NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid)
 );
@@ -58,43 +58,62 @@ CREATE TABLE tt_products_cat (
 );
 
 #
-# Table structure for table 'tt_products_language_overlay'
+# Table structure for table 'tt_products_language'
 #
-#CREATE TABLE tt_products_language_overlay (
-#  uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
-#  pid int(11) unsigned DEFAULT '0' NOT NULL,
-#  tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-#  crdate int(11) unsigned DEFAULT '0' NOT NULL,
-#  hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
-#  prd_uid int(11) unsigned DEFAULT '0' NOT NULL,
-#  sys_language_uid int(11) unsigned DEFAULT '0' NOT NULL,
-#  title tinytext NOT NULL,
-#  note text NOT NULL,
-#  unit varchar(20) DEFAULT '' NOT NULL,  
-#  datasheet tinyblob NOT NULL,  
-#  www varchar(80) DEFAULT '' NOT NULL,
-#  deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
-#  PRIMARY KEY (uid),
-#  KEY parent (pid)
-#);
+CREATE TABLE tt_products_language (
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	tstamp int(11) DEFAULT '0' NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+	cruser_id int(11) DEFAULT '0' NOT NULL,
+	t3ver_oid int(11) DEFAULT '0' NOT NULL,
+	t3ver_id int(11) DEFAULT '0' NOT NULL,
+	t3ver_label varchar(30) DEFAULT '' NOT NULL,
+	sys_language_uid int(11) DEFAULT '0' NOT NULL,
+	l18n_parent int(11) DEFAULT '0' NOT NULL,
+	l18n_diffsource mediumblob NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	hidden tinyint(4) DEFAULT '0' NOT NULL,
+	starttime int(11) DEFAULT '0' NOT NULL,
+	endtime int(11) DEFAULT '0' NOT NULL,
+	title varchar(80) DEFAULT "" NOT NULL,
+	subtitle varchar(80) DEFAULT "" NOT NULL,
+	prd_uid int(11) DEFAULT '0' NOT NULL,
+	title tinytext NOT NULL,
+	subtitle tinytext NOT NULL,
+	note text NOT NULL,
+	unit varchar(20) DEFAULT '' NOT NULL,  
+	datasheet tinyblob NOT NULL,  
+	www varchar(80) DEFAULT '' NOT NULL,
+	PRIMARY KEY (uid),
+	KEY parent (pid)
+);
 
 #
-# Table structure for table 'tt_products_cat_language_overlay'
+# Table structure for table 'tt_products_cat_language'
 #
-#CREATE TABLE tt_products_cat_language_overlay (
-#  uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
-#  pid int(11) unsigned DEFAULT '0' NOT NULL,
-#  tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-#  crdate int(11) unsigned DEFAULT '0' NOT NULL,
-#  hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
-#  deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,  
-#  title tinytext NOT NULL,
-#  note text NOT NULL,  
-#  cat_uid int(11) unsigned DEFAULT '0' NOT NULL,
-#  sys_language_uid int(11) unsigned DEFAULT '0' NOT NULL,
-#  PRIMARY KEY (uid),
-#  KEY parent (pid)
-#);
+CREATE TABLE tt_products_cat_language (
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	tstamp int(11) DEFAULT '0' NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+	cruser_id int(11) DEFAULT '0' NOT NULL,
+	t3ver_oid int(11) DEFAULT '0' NOT NULL,
+	t3ver_id int(11) DEFAULT '0' NOT NULL,
+	t3ver_label varchar(30) DEFAULT '' NOT NULL,
+	sys_language_uid int(11) DEFAULT '0' NOT NULL,
+	l18n_parent int(11) DEFAULT '0' NOT NULL,
+	l18n_diffsource mediumblob NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	hidden tinyint(4) DEFAULT '0' NOT NULL,
+	starttime int(11) DEFAULT '0' NOT NULL,
+	endtime int(11) DEFAULT '0' NOT NULL,
+	title tinytext NOT NULL,
+	note text NOT NULL,  
+	cat_uid int(11) DEFAULT '0' NOT NULL,
+	PRIMARY KEY (uid),
+	KEY parent (pid)
+);
 
 #
 # Table structure for table 'tt_products_card_payments'
@@ -134,6 +153,7 @@ CREATE TABLE sys_products_orders (
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
   deleted tinyint(4) unsigned DEFAULT '0' NOT NULL,
   note text NOT NULL,
+  feusers_uid int(11) DEFAULT '' NOT NULL,
 # forename varchar(80) DEFAULT '' NOT NULL,
   name varchar(80) DEFAULT '' NOT NULL,
 # company varchar(80) DEFAULT '' NOT NULL,  
@@ -158,6 +178,7 @@ CREATE TABLE sys_products_orders (
 #  zip varchar(10) DEFAULT '' NOT NULL,
 #  country_code char(3) DEFAULT '' NOT NULL,
 #  client_ip varchar(15) DEFAULT '' NOT NULL,
+  creditpoints decimal(10,2) default '0.00' NOT NULL, 
   agb char(2) DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid),
@@ -183,10 +204,12 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 CREATE TABLE fe_users (
   tt_products_memoItems tinytext NOT NULL,
   tt_products_discount int(11) DEFAULT '0' NOT NULL
-);
+  tt_products_creditpoints decimal(10,2) default '0.00' NOT NULL,
+  tt_products_vouchercode varchar(50) default NULL 
+  );
 
 #
-# Extension of table 'tt_content'
+# Extension of table 'tt_content' for zk_products compatibility where pages are used as categories
 #
 CREATE TABLE tt_content (
   tt_products_code varchar(30) DEFAULT 'LIST' NOT NULL

@@ -17,6 +17,7 @@ $LOCAL_LANG = Array (
 		'tt_content.tt_products_code.I.12' => 'TRACKING',
 		'tt_content.tt_products_code.I.13' => 'BILL',
 		'tt_content.tt_products_code.I.14' => 'DELIVERY',
+		'tt_content.tt_products_code.I.15' => 'CURRENCY',
 		'tt_content.tt_products_code' => 'Code',
 		'tt_products' => 'Products',
 		'tt_products.price' => 'Price:',

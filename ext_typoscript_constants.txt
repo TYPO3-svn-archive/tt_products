@@ -23,6 +23,11 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Basket display: As above, but for the images in the basket
   clickEnlarge_basket = 1
 
+    # cat=plugin.products//; type=boolean; label= Make the color selectable in the list
+  selectColor = 1
+    # cat=plugin.products//; type=boolean; label= Make the size selectable in the list
+  selectSize = 1
+  
     # cat=plugin.products//; type=boolean; label= Display Category Header in list: If this option is set, the category headers (page titles) will automatically be displayed in the product lists. This is not always convenient because you might have chosen a header-title for the "list" content element.
   displayListCatHeader = 1
     # cat=plugin.products//; type=boolean; label= Display Category Header in basket: If this option is set, the category headers (page titles) will automatically be displayed in the basket lists.
