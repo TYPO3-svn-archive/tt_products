@@ -108,9 +108,12 @@ class tx_ttproducts extends tslib_pibase {
 
 		$TSFE->set_no_cache();
     	// multilanguage support
-        $this->language = $GLOBALS["TSFE"]->sys_language_uid;
-        $this->langKey = $GLOBALS["TSFE"]->tmpl->setup["config."]["language"];
-
+        $this->language = $TSFE->sys_language_uid;
+        debug ($this->language, '$this->language', __LINE__, __FILE__);
+        
+        $this->langKey = $langKey = strtoupper($TSFE->config['config']['language']);
+        debug ($this->langKey, '$this->langKey', __LINE__, __FILE__);
+        
 		// *************************************
 		// *** getting configuration values:
 		// *************************************
@@ -250,17 +253,16 @@ class tx_ttproducts extends tslib_pibase {
 					$content.=$this->currency_selector($theCode);
 				break;				
 				default:
-					$langKey = strtoupper($TSFE->config["config"]["language"]);
-					$helpTemplate = $this->cObj->fileResource("EXT:tt_products/pi/products_help.tmpl");
+					$helpTemplate = $this->cObj->fileResource('EXT:'.TT_PRODUCTS_EXTkey.'/pi/products_help.tmpl');
 
 						// Get language version
 					$helpTemplate_lang="";
-					if ($langKey)	{$helpTemplate_lang = $this->cObj->getSubpart($helpTemplate,"###TEMPLATE_".$langKey."###");}
+					if ($this->langKey)	{$helpTemplate_lang = $this->cObj->getSubpart($helpTemplate,"###TEMPLATE_".$this->langKey."###");}
 					$helpTemplate = $helpTemplate_lang ? $helpTemplate_lang : $this->cObj->getSubpart($helpTemplate,"###TEMPLATE_DEFAULT###");
 
 						// Markers and substitution:
 					$markerArray["###CODE###"] = $theCode;
-					$markerArray["###PATH###"] = t3lib_extMgm::siteRelPath('tt_products');
+					$markerArray["###PATH###"] = t3lib_extMgm::siteRelPath(TT_PRODUCTS_EXTkey);
 					$content.=$this->cObj->substituteMarkerArray($helpTemplate,$markerArray);
 				break;
 			}
@@ -506,20 +508,20 @@ class tx_ttproducts extends tslib_pibase {
  			$query .= ",tt_products.inStock,tt_products.ordered";
  			$query .= ",tt_products.fe_group";
 
- 	       		// language ovelay 	
+ 	       		// language overlay 	
 			if ($this->language > 0) {
-				$query .= ",tt_products_language_overlay.title AS o_title";
-				$query .= ",tt_products_language_overlay.note AS o_note";
-				$query .= ",tt_products_language_overlay.unit AS o_unit";				
-				$query .= ",tt_products_language_overlay.datasheet AS o_datasheet";				
-				$query .= ",tt_products_language_overlay.www AS o_www";
+				$query .= ",tt_products_language.title AS o_title";
+				$query .= ",tt_products_language.note AS o_note";
+				$query .= ",tt_products_language.unit AS o_unit";				
+				$query .= ",tt_products_language.datasheet AS o_datasheet";				
+				$query .= ",tt_products_language.www AS o_www";
 			}	
 			$query .= " FROM tt_products";
 			if ($this->language > 0) {
-				$query .= " LEFT JOIN tt_products_language_overlay";
-				$query .= " ON (tt_products.uid=tt_products_language_overlay.prd_uid";
-				$query .= " AND tt_products_language_overlay.sys_language_uid=$this->language";
-				$query .= $this->cObj->enableFields("tt_products_language_overlay");
+				$query .= " LEFT JOIN tt_products_language";
+				$query .= " ON (tt_products.uid=tt_products_language.prd_uid";
+				$query .= " AND tt_products_language.sys_language_uid=$this->language";
+				$query .= $this->cObj->enableFields("tt_products_language");
 				$query .= ")";
 			}	
 			$query .= " WHERE 1=1";
@@ -557,6 +559,8 @@ class tx_ttproducts extends tslib_pibase {
 			} else {
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 			}
+			
+			debug ($row, '$row', __LINE__, __FILE__);
 
 			if($row) {
 			 	$this->tt_product_single = intval ($row['uid']); // store the uid for later usage here
@@ -590,12 +594,13 @@ class tx_ttproducts extends tslib_pibase {
 				$wrappedSubpartArray=array();
 				$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl(t3lib_div::_GP("backPID")).'">','</A>');
 
+				debug ($wrappedSubpartArray, '$wrappedSubpartArray', __LINE__, __FILE__);
 /*
 
 				if( $datasheetFile == "" )  {
 					$wrappedSubpartArray["###LINK_DATASHEET###"]= array('<!--','-->');
 				}  else  {
-					$wrappedSubpartArray["###LINK_DATASHEET###"]= array('<A href="uploads/tx_mklproducts/datasheet/'.$datasheetFile.'">','</A>');	
+					$wrappedSubpartArray["###LINK_DATASHEET###"]= array('<A href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</A>');	
 				}
 
 
@@ -736,18 +741,18 @@ class tx_ttproducts extends tslib_pibase {
 	 				 				
 	 	       		// language ovelay 	
 				if ($this->language > 0) {
-					$query .= ",tt_products_language_overlay.title AS o_title";
-					$query .= ",tt_products_language_overlay.note AS o_note";
-					$query .= ",tt_products_language_overlay.unit AS o_unit";					
-					$query .= ",tt_products_language_overlay.datasheet AS o_datasheet";					
-					$query .= ",tt_products_language_overlay.www AS o_www";										
+					$query .= ",tt_products_language.title AS o_title";
+					$query .= ",tt_products_language.note AS o_note";
+					$query .= ",tt_products_language.unit AS o_unit";					
+					$query .= ",tt_products_language.datasheet AS o_datasheet";					
+					$query .= ",tt_products_language.www AS o_www";										
 				}	 	
 				$query .= " FROM tt_products";	
 				if ($this->language > 0) {
-					$query .= " LEFT JOIN tt_products_language_overlay";
-					$query .= " ON (tt_products.uid=tt_products_language_overlay.prd_uid";
-					$query .= " AND tt_products_language_overlay.sys_language_uid=$this->language";
-					$query .= $this->cObj->enableFields("tt_products_language_overlay");
+					$query .= " LEFT JOIN tt_products_language";
+					$query .= " ON (tt_products.uid=tt_products_language.prd_uid";
+					$query .= " AND tt_products_language.sys_language_uid=$this->language";
+					$query .= $this->cObj->enableFields("tt_products_language");
 					$query .= ")";
 				}
 				$query .= " WHERE 1=1";
@@ -836,6 +841,8 @@ class tx_ttproducts extends tslib_pibase {
 								// Print Item Title
 							$wrappedSubpartArray=array();
 							$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&tt_products='.$row["uid"].'" id="'.$css_current.'">','</A>');
+							
+							debug ($wrappedSubpartArray, '$wrappedSubpartArray', __LINE__, __FILE__);
 							$markerArray = $this->getItemMarkerArray ($row,$catTitle, $this->config["limitImage"],"listImage");
 
 /*
@@ -989,15 +996,15 @@ class tx_ttproducts extends tslib_pibase {
 	 	$query .= ",tt_products_cat.note,tt_products_cat.image,tt_products_cat.deleted";	
 	 	       // mkl: language ovelay 	
 		if ($this->language > 0) {
-			$query .= ",tt_products_cat_language_overlay.title AS o_title";
-			$query .= ",tt_products_cat_language_overlay.note AS o_note";			
+			$query .= ",tt_products_cat_language.title AS o_title";
+			$query .= ",tt_products_cat_language.note AS o_note";			
 		}	 	
 		$query .= " FROM tt_products_cat";	
 		if ($this->language > 0) {
-			$query .= " LEFT JOIN tt_products_cat_language_overlay";
-			$query .= " ON (tt_products_cat.uid=tt_products_cat_language_overlay.cat_uid";
-			$query .= " AND tt_products_cat_language_overlay.sys_language_uid=$this->language";
-			$query .= $this->cObj->enableFields("tt_products_cat_language_overlay");
+			$query .= " LEFT JOIN tt_products_cat_language";
+			$query .= " ON (tt_products_cat.uid=tt_products_cat_language.cat_uid";
+			$query .= " AND tt_products_cat_language.sys_language_uid=$this->language";
+			$query .= $this->cObj->enableFields("tt_products_cat_language");
 			$query .= ")";
 		}
 		$query .= " WHERE 1=1";
@@ -1948,7 +1955,7 @@ class tx_ttproducts extends tslib_pibase {
 			$theImgCode[$c] .= $this->cObj->IMAGE($this->conf[$imageRenderObj."."]);
 		}
 
-// mkl:		$iconImgCode = $this->cObj->IMAGE($this->conf["datasheetIcon."]);				
+		$iconImgCode = $this->cObj->IMAGE($this->conf["datasheetIcon."]);				
 
 			// Subst. fields
 /* mkl:
@@ -1959,35 +1966,31 @@ class tx_ttproducts extends tslib_pibase {
 			$markerArray["###PRODUCT_TITLE###"] = $row["title"];
 		}
 			
-		if ( ($this->language > 0) && $row["o_note"] )	{	
-//			$markerArray["###PRODUCT_NOTE###"] = nl2br($row["o_note"]);	
-			$markerArray["###PRODUCT_NOTE###"] = $this->pi_RTEcssText($row["o_note"]);	
-		}
-		else  {
-//			$markerArray["###PRODUCT_NOTE###"] = nl2br($row["note"]);
-			$markerArray["###PRODUCT_NOTE###"] = $this->pi_RTEcssText($row["note"]);
-		}	
-
 		if ( ($this->language > 0) && $row["o_unit"] )	{	
 			$markerArray["###UNIT###"] = $row["o_unit"];		
 		}
 		else  {
 			$markerArray["###UNIT###"] = $row["unit"];
 		}
-		$markerArray["###UNIT_FACTOR###"] = $row["unit_factor"];
-		
-		if (is_array($this->conf["parseFunc."]))	{
-			$markerArray["###PRODUCT_NOTE###"] = $this->cObj->parseFunc($markerArray["###PRODUCT_NOTE###"],$this->conf["parseFunc."]);
-		}
-		$markerArray["###PRODUCT_ITEMNUMBER###"] = $row["itemnumber"];
-		$markerArray["###PRODUCT_IMAGE###"] = $theImgCode;	
-		$markerArray["###ICON_DATASHEET###"]=$iconImgCode;	
-
 
 */
+		$markerArray["###UNIT###"] = $row["unit"];
+		$markerArray["###UNIT_FACTOR###"] = $row["unit_factor"];
+		
+		$markerArray["###ICON_DATASHEET###"]=$iconImgCode;	
 
 		$markerArray["###PRODUCT_TITLE###"] = $row["title"];
 		$markerArray["###PRODUCT_NOTE###"] = nl2br($row["note"]);
+
+//		if ( ($this->language > 0) && $row["o_note"] )	{	
+////			$markerArray["###PRODUCT_NOTE###"] = nl2br($row["o_note"]);	
+//			$markerArray["###PRODUCT_NOTE###"] = $this->pi_RTEcssText($row["o_note"]);	
+//		}
+//		else  {
+////			$markerArray["###PRODUCT_NOTE###"] = nl2br($row["note"]);
+//			$markerArray["###PRODUCT_NOTE###"] = $this->pi_RTEcssText($row["note"]);
+//		}			
+		
 		if (is_array($this->conf["parseFunc."]))	{
 			$markerArray["###PRODUCT_NOTE###"] = $this->cObj->parseFunc($markerArray["###PRODUCT_NOTE###"],$this->conf["parseFunc."]);
 		}
@@ -2730,6 +2733,7 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray["###PRICE_TOTAL_NO_TAX###"]=$this->priceFormat($actItem["totalNoTax"]);
 
 				$wrappedSubpartArray["###LINK_ITEM###"]=array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&tt_products='.$actItem['rec']["uid"].'">','</A>');
+				debug ($wrappedSubpartArray, '$wrappedSubpartArray', __LINE__, __FILE__);
 
 					// Substitute
 				$itemsOut.= $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),$wrappedSubpartArray);
