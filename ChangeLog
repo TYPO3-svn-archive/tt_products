@@ -1,3 +1,8 @@
+2005-07-18  Franz Holzinger  <franz@fholzinger.com>
+
+	* correct view of color and size in the basket and mail template
+	* better English template
+
 2005-07-13  Franz Holzinger  <franz@fholzinger.com>
 
 	* finish usage of global $calculatedArray and $itemArray instead of CalulatedSum and CalulatedBasketArray

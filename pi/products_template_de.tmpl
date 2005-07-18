@@ -25,12 +25,7 @@ It's also used by search-results.
 				<td></td>
 				<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>next page</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 			</tr>
-			<tr>
-				<td><img src="clear.gif" width=100 height=1></td>
-				<td><img src="clear.gif" width=5 height=1></td>
-				<td><img src="clear.gif" width=300 height=1></td>
-				<td><img src="clear.gif" width=100 height=1></td>
-			</tr>
+
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
 		<!-- ###ITEM_CATEGORY### begin -->
 			<tr>
@@ -48,38 +43,52 @@ It's also used by search-results.
 			<tr>
 				<td colspan=4><img src="clear.gif" width=1 height=6></td>
 			</tr>
-			<!-- ###ITEM_SINGLE### begin-->
+          			
 			<tr>
-			<td colspan=4>
+			<td>
 			<FORM method="post" action="###FORM_URL###">
 			<TABLE border="1" cellspacing="0" cellpadding="1" width=1>
+			<!-- ###ITEM_SINGLE### begin-->
+          ###ITEM_SINGLE_PRE_HTML###
+          		<TD>
+          		<TABLE>
 				<tr>
-					<td><img src="clear.gif" width=100 height=1></td>
-					<td><img src="clear.gif" width=5 height=1></td>
-					<td><img src="clear.gif" width=300 height=1></td>
-					<td><img src="clear.gif" width=100 height=1></td>
+					<td><img src="clear.gif" width=20 height=1></td>
+					<td><img src="clear.gif" width=1 height=1></td>
+					<td><img src="clear.gif" width=60 height=1></td>
+					<td><img src="clear.gif" width=20 height=1></td>
 				</tr>
 				<tr>
 					<td colspan=4><img src="clear.gif" width=1 height=6></td>
 				</tr>
 				<tr>
-					<td colspan=4 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###--></td>
+					<td colspan=2 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###--></td>
 				</tr>
 				<TR>
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
+				</TR>
+				<TR>
 					<TD valign=top>###GW2B######PRODUCT_NOTE######GW2E###<br>
-						###GW1B###<B>price:</b> <font color=red><strong>###PRICE_TAX### $</strong></font>###GW1E###<br>
-						###GW2B###(excl. tax: ###PRICE_NO_TAX###)###GW2E###
+						###GW1B###<B>price:</b> <font color=red><strong>###PRICE_TAX### ¤</strong></font>###GW1E###<br>
+						###GW2B###(excl. tax: ###PRICE_NO_TAX###)###GW2E###<br>
+						  <!-- ###display_variant2### -->
+						  ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
+						  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+						  <!-- ###display_variant2### -->
 					</TD>
-					<TD valign=top nowrap align=right>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><BR><input type="Submit" name="order" value="put in basket">
+					<TD valign=top nowrap align=right>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><BR>
+								<input type="Submit" name="order" value="put in basket">
 					</TD>
 				</TR>
+				</TABLE>
+				</TD>
+	      ###ITEM_SINGLE_POST_HTML###
+			<!-- ###ITEM_SINGLE### end -->
 			</TABLE>
 			</FORM>
 			</td>
 			</tr>
-			<!-- ###ITEM_SINGLE### end -->
 		<!-- ###ITEM_LIST### end -->
 
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
@@ -97,18 +106,20 @@ It's also used by search-results.
 
 
 
-
-
-
-
-
 <!-- ###ITEM_SINGLE_DISPLAY### begin
 
 This subpart is used to display single products.
 
 -->
+		<TABLE border="0" cellspacing="0" cellpadding="1" width="100%">
+			<tr>
+				<td align="left"><!--###LINK_PREV_SINGLE### begin-->###GW2B###&lt;&lt; previous article###GW2E###<!--###LINK_PREV_SINGLE### end--></td>
+				<td align="right"><!--###LINK_NEXT_SINGLE### begin-->###GW2B###next article &gt;&gt;###GW2E###<!--###LINK_NEXT_SINGLE### end--></td>
+			</tr>
+		</TABLE>
+
 		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
-<FORM method="post" action="###FORM_URL###">
+<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 			<tr>
 				<td><img src="clear.gif" width=100 height=1></td>
 				<td><img src="clear.gif" width=5 height=1></td>
@@ -117,8 +128,9 @@ This subpart is used to display single products.
 			<tr>
 				<td colspan=3><img src="clear.gif" width=1 height=6></td>
 			</tr>
-			<tr>
-				<td colspan=3 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###--></td>
+			<tr> 
+				<td colspan=3 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
+  ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### --></b>###GW1E###<!-- ###LINK_ITEM###--></td>
 			</tr>
 			<TR>
 				<TD valign=top>###PRODUCT_IMAGE###</TD>
@@ -127,12 +139,15 @@ This subpart is used to display single products.
 					###GW1B###
 						<B>category:</B> ###CATEGORY_TITLE### <br>
 						<B>product:</B> ###PRODUCT_ITEMNUMBER###<br>
-						<B>price:</B> <font color=red><strong>###PRICE_TAX### $</strong></font>###GW2B### &nbsp; (excl. tax ###PRICE_NO_TAX###)###GW2E###<br>
+						<B>price:</B> <font color=red><strong>###PRICE_TAX### ¤</strong></font>###GW2B### &nbsp; (excl. tax ###PRICE_NO_TAX###)###GW2E###<br>
 
 						<B>info:</B><br>
 						###PRODUCT_NOTE###<br>
 					###GW1E###	<br>
-						<nobr>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; <input type="Submit" name="order" value="put in basket"></nobr>
+						<nobr>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; 
+						<input type="Submit" name="order" value="put in basket"
+onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
+						</nobr>
 				</TD>
 			</TR>
 </form>
@@ -241,7 +256,8 @@ In addition there's a number of fields used for delivery and payment information
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
 					<TD valign=top>
-						<!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###-->
+						<!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
+  ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### --></b>###GW1E###<!-- ###LINK_ITEM###-->
 
 					</TD>
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
@@ -318,7 +334,7 @@ In addition there's a number of fields used for delivery and payment information
 		</tr>
 		<TR>
 			<td valign=top colspan=5></td>
-			<td valign=top align=right nowrap>###GW1B### <b>$ ###PRICE_TOTAL_TAX###</b><br>
+			<td valign=top align=right nowrap>###GW1B### <b>¤ ###PRICE_TOTAL_TAX###</b><br>
 			(excl. tax: ###PRICE_TOTAL_NO_TAX###) ###GW1E###</td>
 		</TR>
 	</TABLE>
@@ -535,7 +551,8 @@ Exact same features as BASKET_TEMPLATE
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
 					<TD valign=top>
-						###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+						###GW1B###<b>###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
+  ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### --></b>###GW1E###
 
 					</TD>
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
@@ -700,7 +717,7 @@ Exact same features as BASKET_TEMPLATE
 			###GW1E###</td>
 
 			<td valign=top align=right colspan=3 nowrap>###GW1B###
-			<b>$ ###PRICE_TOTAL_TAX###</b><br>
+			<b>¤ ###PRICE_TOTAL_TAX###</b><br>
 			(excl. tax: ###PRICE_TOTAL_NO_TAX###)<br>
 
 			###GW1E###</td>
@@ -835,7 +852,8 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
 					<TD valign=top>
-						###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+						###GW1B###<b>###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
+  ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### --></b>###GW1E###
 
 					</TD>
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
@@ -993,7 +1011,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 			###GW1E###</td>
 
 			<td valign=top align=right colspan=3>###GW1B###
-			<b>$ ###PRICE_TOTAL_TAX###</b><br>
+			<b>¤ ###PRICE_TOTAL_TAX###</b><br>
 			(excl. tax: ###PRICE_TOTAL_NO_TAX###)<br>
 
 			###GW1E###</td>
@@ -1296,16 +1314,17 @@ Du kan følge status med din ordre ved at bruge dit trackingnummer, som er
         http://###DOMAIN###/index.php?id=trackingpid&type=0&tracking=###ORDER_TRACKING_NO###
 
 
-ORDRE:
+ORDER:
 
 1) Varer:
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
 		<!-- ###ITEM_LIST### begin -->
 			<!-- ###ITEM_SINGLE### begin-->
-producttitel: ###PRODUCT_TITLE###
+producttitel: ###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
+  ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### -->
 productnummer: ###PRODUCT_ITEMNUMBER###
-price: ###PRICE_TAX### $
-quantity: ###FIELD_QTY###        = ###PRICE_TOTAL_TAX### $
+price: ###PRICE_TAX### ¤
+quantity: ###FIELD_QTY###        = ###PRICE_TOTAL_TAX### ¤
 			<!-- ###ITEM_SINGLE### end -->
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS###  end -->
@@ -1331,15 +1350,15 @@ email: ###DELIVERY_EMAIL###
 
 5) Forsendelse:
 ###SHIPPING_TITLE###
-price: ###PRICE_SHIPPING_TAX### $ (###PRICE_SHIPPING_NO_TAX### excl. tax)
+price: ###PRICE_SHIPPING_TAX### ¤ (###PRICE_SHIPPING_NO_TAX### excl. tax)
 
 
 6) payment form:
 ###PAYMENT_TITLE###
-price: ###PRICE_PAYMENT_TAX### $ (###PRICE_PAYMENT_NO_TAX### excl. tax)
+price: ###PRICE_PAYMENT_TAX### ¤ (###PRICE_PAYMENT_NO_TAX### excl. tax)
 
 
-TOTAL: ________________________ $ ###PRICE_TOTAL_TAX###
+TOTAL: ________________________ ¤ ###PRICE_TOTAL_TAX###
 (excl. tax: ###PRICE_TOTAL_NO_TAX###)
 
 Med venlig hilsen, Inter-Photo

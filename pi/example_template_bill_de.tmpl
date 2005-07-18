@@ -102,19 +102,6 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 <BR><BR><BR><BR><HR><BR><BR><BR>
 <h3>ITEM_SINGLE_DISPLAY</h3>
 <em>This subpart is used to display single products.</em><br>
@@ -124,6 +111,13 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 <!-- ###ITEM_SINGLE_DISPLAY### begin
 	This subpart is used to display single products.
 -->
+<TABLE border="0" cellspacing="0" cellpadding="1" width="100%">
+	<tr>
+		<td align="left"><!--###LINK_PREV_SINGLE###-->###GW2B###&lt;&lt; voriger Artikel###GW2E###<!--###LINK_PREV_SINGLE###--></td>
+		<td align="right"><!--###LINK_NEXT_SINGLE###-->###GW2B###nächster Artikel &gt;&gt;###GW2E###<!--###LINK_NEXT_SINGLE###--></td>
+	</tr>
+</TABLE>
+
 <TABLE border="0" cellspacing="0" cellpadding="1" width=1>
 <FORM method="post" action="###FORM_URL###">
 	<tr>
@@ -146,7 +140,10 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 				<B>Info:</B><br>
 				###PRODUCT_NOTE###<br>
 			###GW1E###	<br>
-				<nobr>###GW2B### Menge: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">   <input type="Submit" name="order" value="in den Warenkorb" onclick="if (!document.forms[0]['###FIELD_NAME###'].value!=''){document.forms[0]['###FIELD_NAME###'].value=1;};"></nobr>
+				<nobr>###GW2B### Menge: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">  
+				<input type="Submit" name="order" value="in den Warenkorb"
+onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
+				</nobr>
 		</TD>
 	</TR>
 </form>
@@ -161,12 +158,6 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 ###GW2E###
 
 <!-- ###ITEM_SINGLE_DISPLAY### end -->
-
-
-
-
-
-
 
 
 

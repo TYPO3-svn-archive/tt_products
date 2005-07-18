@@ -44,7 +44,7 @@
 require_once(PATH_tslib."class.tslib_pibase.php"); 
 
 require_once(PATH_t3lib."class.t3lib_parsehtml.php");
-require_once("products_mail.inc");
+require_once("class.tx_ttproducts_htmlmail.php");
 
 
 class tx_ttproducts extends tslib_pibase {
@@ -161,7 +161,7 @@ class tx_ttproducts extends tslib_pibase {
 			$this->tt_product_single = true;
 		} else {
 			$temp = t3lib_div::_GET("tt_products");
-			$this->tt_product_single = ($temp ? $temp : $this->conf["defaultProductID"]); // TODO: remove defaultProductID
+			$this->tt_product_single = ($temp ? $temp : $this->conf["defaultProductID"]);
 		}
 
 			// template file is fetched. The whole template file from which the various subpart are extracted.
@@ -558,22 +558,14 @@ class tx_ttproducts extends tslib_pibase {
 */
 
 		$formUrl = $this->getLinkUrl($this->conf["PIDbasket"]);
-		if ($theCode=="SINGLE") {
-			$itemNumber = $this->conf["defaultItem"];  
-	        
-			// if ($this->tt_product_single || $itemNumber)	{
+		if ($theCode=="SINGLE") {        
 			// List single product:
 				// performing query:
 			$this->setPidlist($this->config["storeRootPid"]);
 			$this->initRecursive(999);
 			$this->generatePageArray();
 
-			$where = '1=1';
-			if ($this->tt_product_single) {
-				$where = 'uid='.intval($this->tt_product_single);
-			} elseif ($itemNumber != '') {
-				$where = 'itemnumber='.intval($itemNumber);
-			}  
+			$where = 'uid='.intval($this->tt_product_single);
 				
 		 	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $where .' AND pid IN ('.$this->pid_list.')'.$this->cObj->enableFields('tt_products'));
 		 	$row = '';
@@ -584,7 +576,7 @@ class tx_ttproducts extends tslib_pibase {
 			}
 			
 			if($row) {
-			 	$this->tt_product_single = intval ($row['uid']); // store the uid for later usage here
+			 	// $this->tt_product_single = intval ($row['uid']); // store the uid for later usage here
 
 					// Get the subpart code
 				$item ="";
@@ -623,16 +615,17 @@ class tx_ttproducts extends tslib_pibase {
 					$wrappedSubpartArray["###LINK_DATASHEET###"]= array('<A href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</A>');	
 				}
 
-
 */
 
 				$markerArray = $this->getItemMarkerArray ($row,$catTitle,$this->config["limitImage"]);
+				$subpartArray = array();
 
 				$markerArray["###FORM_NAME###"]="item_".$this->tt_product_single;
 				if (!$formUrl) {
 					$formUrl = $this->getLinkUrl(t3lib_div::_GP("backPID"));
+					
 				}
-				$markerArray["###FORM_URL###"]=$formUrl;
+				$markerArray["###FORM_URL###"]=$formUrl.'&tt_products='.$this->tt_product_single ;
 
 				$url = $this->getLinkUrl("","tt_products");
 
@@ -663,16 +656,17 @@ class tx_ttproducts extends tslib_pibase {
 				else
 					$subpartArray["###LINK_NEXT_SINGLE###"]="";
 
-				debug ($subpartArray, '$subpartArray');
+				if (trim($row['color']) == '')
+					$subpartArray['###display_variant1###'] = '';
+				if (trim($row['size']) == '')
+					$subpartArray['###display_variant2###'] = '';
+				if (trim($row['accessory']) == '0')
+					$subpartArray['###display_variant3###'] = '';					
+
 					// Substitute
 				$content= $this->cObj->substituteMarkerArrayCached($item,$markerArray,$subpartArray,$wrappedSubpartArray);
-
-				if (trim($row['color']) == '')
-					$content = $this->cObj->substituteSubpart($content, "###display_variant1###", "");
-				if (trim($row['size']) == '')
-					$content = $this->cObj->substituteSubpart($content, "###display_variant2###", "");
-				if (trim($row['accessory']) == '0')
-					$content = $this->cObj->substituteSubpart($content, "###display_variant3###", "");					
+			} else {
+				$content.='Wrong parameters, GET/POST var \'tt_products\' was missing or no product with uid = '.intval($this->tt_product_single) .' found.';	
 			}
 		} else {
 			$content="";
@@ -878,6 +872,7 @@ class tx_ttproducts extends tslib_pibase {
 							}					
 
 							$markerArray = $this->getItemMarkerArray ($row,$catTitle, $this->config["limitImage"],"listImage");
+							$subpartArray = array();
 
 							if (!$this->conf["displayBasketColumns"])
 							{
@@ -908,13 +903,14 @@ class tx_ttproducts extends tslib_pibase {
 							if (strlen($markerArray["###PRODUCT_NOTE###"]) > $this->conf["max_note_length"])
 								$markerArray["###PRODUCT_NOTE###"] = substr($markerArray["###PRODUCT_NOTE###"], 0, $this->conf["max_note_length"]) . "...";
 
-							$tempContent = $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),$wrappedSubpartArray);
-							if (trim($row["color"]) == '')
-								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant1###", "");
-							if (trim($row["size"]) == '')
-								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant2###", "");
-							if (trim($row["accessory"]) == '0')
-								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant3###", "");
+							if (trim($row['color']) == '')
+								$subpartArray['###display_variant1###'] = '';
+							if (trim($row['size']) == '')
+								$subpartArray['###display_variant2###'] = '';
+							if (trim($row['accessory']) == '0')
+								$subpartArray['###display_variant3###'] = '';					
+							
+							$tempContent = $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,$subpartArray,$wrappedSubpartArray);
 							$itemsOut .= $tempContent;
 							$iColCount++;
 						}
@@ -928,7 +924,7 @@ class tx_ttproducts extends tslib_pibase {
 						}
 
 						if ($itemsOut)	{
-							$out.=$this->cObj->substituteMarkerArrayCached($t["itemFrameWork"], array(), array("###ITEM_SINGLE###"=>$itemsOut));
+							$out.=$this->cObj->substituteMarkerArrayCached($t["itemFrameWork"], $subpartArray, array("###ITEM_SINGLE###"=>$itemsOut));
 						}
 					}
 				}
@@ -1647,7 +1643,7 @@ class tx_ttproducts extends tslib_pibase {
 				$plain_message=trim($parts[1]);
 
 
-				$cls  = t3lib_div::makeInstanceClassName("tt_products_htmlmail");
+				$cls  = t3lib_div::makeInstanceClassName("tx_ttproducts_htmlmail");
 				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$this->cObj->getSubpart($this->templateCode,"###EMAIL_HTML_SHELL###");
 					$HTMLmailContent=$this->cObj->substituteMarker($HTMLmailShell,"###HTML_BODY###",$orderConfirmationHTML);
@@ -1677,7 +1673,7 @@ class tx_ttproducts extends tslib_pibase {
 						"attachment" => ($this->conf["AGBattachment"] ? $this->conf["AGBattachment"] : '')
 					);
 
-					$Typo3_htmlmail = t3lib_div::makeInstance("tt_products_htmlmail");
+					$Typo3_htmlmail = t3lib_div::makeInstance("tx_ttproducts_htmlmail");
 					$Typo3_htmlmail->useBase64();
 					$Typo3_htmlmail->start(implode($recipients,","), $subject, $plain_message, $HTMLmailContent, $V);
 						$Typo3_htmlmail->sendtheMail();
@@ -1796,7 +1792,7 @@ class tx_ttproducts extends tslib_pibase {
 		$queryString["id"] = ($id ? $id : $TSFE->id);
 		$queryString["type"]= $TSFE->type ? 'type='.$TSFE->type : "";
 		$queryString["L"]= t3lib_div::GPvar("L") ? 'L='.t3lib_div::GPvar("L") : "";	
-		$queryString["C"]= t3lib_div::GPvar("C") ? 'C='.t3lib_div::GPvar("C") : 'C='.$this->currency;	
+		$queryString["C"]= t3lib_div::GPvar("C") ? 'C='.t3lib_div::GPvar("C") : $this->currency ? 'C='.$this->currency : '';	
 		if( isset($addQueryString["C"]) )  {
 			$queryString["C"] = $addQueryString["C"] ;	
 			unset( $addQueryString["C"] );	
@@ -1823,8 +1819,7 @@ class tx_ttproducts extends tslib_pibase {
 			if( $addQueryString )	{
 				$allQueryString .= "&".implode($addQueryString,"&");
 			}	
-//			debug($allQueryString);
-                        return $TSFE->makeSimulFileName("", $pageId, $pageType, $allQueryString ).".html";								
+            return $TSFE->makeSimulFileName("", $pageId, $pageType, $allQueryString ).".html";								
 		
 		}
 		else	{
@@ -1925,7 +1920,6 @@ class tx_ttproducts extends tslib_pibase {
 				}
 			}	
 		}	
-//debug($include,"vat included" );
 		return $include ;
 	}
 
@@ -2707,6 +2701,7 @@ class tx_ttproducts extends tslib_pibase {
 
 					// Fill marker arrays
 				$wrappedSubpartArray=array();
+				$subpartArray=array();
 				$markerArray = $this->getItemMarkerArray ($actItem['rec'],$catTitle,1,"basketImage");
 				
 				$markerArray["###PRODUCT_COLOR###"] = $actItem['rec']['color'];
@@ -2734,11 +2729,19 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray["###PRICE_TOTAL_NO_TAX###"]=$this->priceFormat($actItem["totalNoTax"]);
 
 				$pid = $this->getPID($this->conf["PIDitemDisplay"], $this->conf["PIDitemDisplay."], $actItem['rec']);
-				$wrappedSubpartArray["###LINK_ITEM###"]=array('<A href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'">','</A>');
-
+				$wrappedSubpartArray["###LINK_ITEM###"]=array('<A href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'">','</A>');		
+				
+				if (trim($actItem['rec']['color']) == '')
+					$subpartArray['###display_variant1###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,"###display_variant1###") : '');
+				if (trim($actItem['rec']['size']) == '')
+					$subpartArray['###display_variant2###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,"###display_variant2###") : '');
+				if (trim($actItem['rec']['accessory']) == '0')
+					$subpartArray['###display_variant3###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,"###display_variant3###") : '');				
+							
 					// Substitute
-				$tempContent = $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),$wrappedSubpartArray);
-				if ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###') {
+				$tempContent = $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,$subpartArray,$wrappedSubpartArray);
+				
+/*				if ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###') {
 					$tempVar = $this->cObj->getSubpart($tempContent,"###display_variant1###");
 					if (trim($actItem['rec']['color']) == '')
 						$tempVar = '';
@@ -2758,7 +2761,8 @@ class tx_ttproducts extends tslib_pibase {
 	  					$tempContent = $this->cObj->substituteSubpart($tempContent,"###display_variant2###","");
 					if (trim($actItem['rec']['accessory']) == '0')
 	  					$tempContent = $this->cObj->substituteSubpart($tempContent,"###display_variant3###","");
-				}
+				} */
+				
 				$itemsOut .= $tempContent;
 				}
 			if ($itemsOut)	{

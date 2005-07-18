@@ -111,7 +111,8 @@ $tempColumns = Array (
 				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.12', 'TRACKING'),
 				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.13', 'BILL'),
 				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.14', 'DELIVERY'),
-				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.15', 'CURRENCY'),
+				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.15', 'HELP'),
+				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.16', 'CURRENCY'),
 			),
 		)
 	)

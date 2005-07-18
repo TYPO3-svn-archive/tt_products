@@ -34,8 +34,8 @@ CREATE TABLE tt_products (
   accessory2 varchar(10) DEFAULT '' NOT NULL,
   color varchar(255) DEFAULT '' NOT NULL,
   size varchar(255) DEFAULT '' NOT NULL,
-  special_preparation int(11) DEFAULT '0' NOT NULL,
   gradings varchar(40) DEFAULT '' NOT NULL,
+  special_preparation int(11) DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid)
 );
@@ -212,5 +212,5 @@ CREATE TABLE fe_users (
 # Extension of table 'tt_content' for zk_products compatibility where pages are used as categories
 #
 CREATE TABLE tt_content (
-  tt_products_code varchar(30) DEFAULT 'LIST' NOT NULL
+  tt_products_code varchar(30) DEFAULT 'HELP' NOT NULL
 );

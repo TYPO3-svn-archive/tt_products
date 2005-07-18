@@ -44,7 +44,7 @@ plugin.tt_products {
     # cat=plugin.products/dims; type=int+; label= Max image width, basket display: The maximum width in pixels of an image when displayed in the shopping-basket.
   maxW_basket = 100
 
-    # cat=plugin.products//; type=int+; label=PID for single item display: If you want a certain page to be used for display of item details, please enter the PID (page-uid) here.
+    # cat=plugin.products//; type=int+; label=PID for single item display: Set this in your setup for defining where conditions for several pages.
   PIDitemDisplay =
     # cat=plugin.products//; type=int+; label=PID for search page: If you want all product searches to go to a specific page, enter the PID it here! NOTE: If you set this PID, all searchqueries will (must) be handled with a list content element with the code "search" on that page.
   PIDsearch =

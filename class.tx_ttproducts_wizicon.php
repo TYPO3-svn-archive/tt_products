@@ -36,11 +36,11 @@ class tx_ttproducts_wizicon {
 
 		if ($TYPO3_CONF_VARS['EXTCONF']['tt_products']['pageAsCategory'] == 0)
 		{
-			$params = "&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=".rawurlencode("LIST");
+			$params = "&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=".rawurlencode("HELP");
 		}
 		else
 		{
-			$params = "&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]=".rawurlencode("LIST");
+			$params = "&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]=".rawurlencode("HELP");
 		}
 		$wizardItems["plugins_ttproducts"] = array(
 			"icon"=>t3lib_extMgm::extRelPath("tt_products")."productlist.gif",
