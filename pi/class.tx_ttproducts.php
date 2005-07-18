@@ -44,12 +44,8 @@
 require_once(PATH_tslib."class.tslib_pibase.php"); 
 
 require_once(PATH_t3lib."class.t3lib_parsehtml.php");
-require_once(PATH_t3lib."class.t3lib_htmlmail.php");
+require_once("products_mail.inc");
 
-/* mkl:
-require_once(t3lib_extMgm::extPath('sr_static_info').'pi1/class.tx_srstaticinfo_pi1.php');
-require_once(t3lib_extMgm::extPath('mkl_currxrate').'pi1/class.tx_mklcurrxrate_pi1.php');
-*/
 
 class tx_ttproducts extends tslib_pibase {
 	var $cObj;		// The backReference to the mother cObj object set at call time
@@ -108,11 +104,8 @@ class tx_ttproducts extends tslib_pibase {
 
 		$TSFE->set_no_cache();
     	// multilanguage support
-        $this->language = $TSFE->sys_language_uid;
-        debug ($this->language, '$this->language', __LINE__, __FILE__);
-        
-        $this->langKey = $langKey = strtoupper($TSFE->config['config']['language']);
-        debug ($this->langKey, '$this->langKey', __LINE__, __FILE__);
+        $this->language = $TSFE->config['config']['sys_language_uid']; 
+        $this->langKey = $langKey = strtoupper($TSFE->config['config']['language']);	// TYPO3_languages
         
 		// *************************************
 		// *** getting configuration values:
@@ -301,7 +294,7 @@ class tx_ttproducts extends tslib_pibase {
 		$content = $this->cObj->substituteMarker( $content, "###SELECTOR###", $selector );			
 		
 		// javascript to submit correct get parameters for each currency
-		$GLOBALS['TSFE']->additionalHeaderData['tx_mklproducts'] = '<script type="text/javascript">'.chr(10).$jScript.'</script>';							
+		$GLOBALS['TSFE']->additionalHeaderData['tx_ttproducts'] = '<script type="text/javascript">'.chr(10).$jScript.'</script>';							
 		return $content ;
 	}
 
@@ -493,6 +486,36 @@ class tx_ttproducts extends tslib_pibase {
 
 
 	/**
+	 * Returning the pid out from the row using the where clause
+	 */
+	function getPID($conf, $confExt, $row) {
+		$rc = 0;
+		if ($confExt) {
+			foreach ($confExt as $k1 => $param) {
+				$where = $param['where']; 
+				if ($where) {
+					$wherelist = explode ('AND', $where);
+					$isValid = true;
+					foreach ($wherelist as $k2 => $condition) {
+						$args = explode ('=', $condition);
+						if ($row[$args[0]] != $args[1]) {
+							$isValid = false;
+						}
+					}
+				}
+				if ($isValid == true) {
+					$rc = $param['pid'];
+					break;
+				}					
+			}  
+		} else
+		{
+			$rc = intval($conf);
+		}
+		return $rc;
+	}
+
+	/**
 	 * Displaying single products/ the products list / searching
 	 */
 	function products_display($theCode, $memoItems="")	{
@@ -560,8 +583,6 @@ class tx_ttproducts extends tslib_pibase {
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 			}
 			
-			debug ($row, '$row', __LINE__, __FILE__);
-
 			if($row) {
 			 	$this->tt_product_single = intval ($row['uid']); // store the uid for later usage here
 
@@ -594,7 +615,6 @@ class tx_ttproducts extends tslib_pibase {
 				$wrappedSubpartArray=array();
 				$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl(t3lib_div::_GP("backPID")).'">','</A>');
 
-				debug ($wrappedSubpartArray, '$wrappedSubpartArray', __LINE__, __FILE__);
 /*
 
 				if( $datasheetFile == "" )  {
@@ -627,7 +647,7 @@ class tx_ttproducts extends tslib_pibase {
 				}
 				$queryprev = '';
 				$wherestock = ($this->config['showNotinStock'] ? '' : 'AND (inStock >0) ');
-				$queryprev = $queryPrevPrefix .' AND pid IN ('.$TSFE->id.') '. $wherestock . $this->cObj->enableFields('tt_products');
+				$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->cObj->enableFields('tt_products');
 				$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev);
 
 				if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )
@@ -635,7 +655,7 @@ class tx_ttproducts extends tslib_pibase {
 				else
 					$subpartArray["###LINK_PREV_SINGLE###"]="";
 			
-				$querynext = $queryNextPrefix .' AND pid IN ('.$TSFE->id .') '. $wherestock . $this->cObj->enableFields('tt_products');
+				$querynext = $queryNextPrefix.' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->cObj->enableFields('tt_products');
 				$resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext);
 
 				if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )
@@ -643,13 +663,16 @@ class tx_ttproducts extends tslib_pibase {
 				else
 					$subpartArray["###LINK_NEXT_SINGLE###"]="";
 
+				debug ($subpartArray, '$subpartArray');
 					// Substitute
-				$content= $this->cObj->substituteMarkerArrayCached($item,$markerArray,array(),$wrappedSubpartArray);
+				$content= $this->cObj->substituteMarkerArrayCached($item,$markerArray,$subpartArray,$wrappedSubpartArray);
 
-				if (trim($row["color"]) == '')
+				if (trim($row['color']) == '')
 					$content = $this->cObj->substituteSubpart($content, "###display_variant1###", "");
-				if (trim($row["size"]) == '')
+				if (trim($row['size']) == '')
 					$content = $this->cObj->substituteSubpart($content, "###display_variant2###", "");
+				if (trim($row['accessory']) == '0')
+					$content = $this->cObj->substituteSubpart($content, "###display_variant3###", "");					
 			}
 		} else {
 			$content="";
@@ -833,6 +856,7 @@ class tx_ttproducts extends tslib_pibase {
 								$datasheetFile = $row["datasheet"] ;					
 							}
 */
+							$datasheetFile = $row["datasheet"] ;
 							$css_current = $this->conf["CSSListDefault"];
 							if ($row["uid"]==$this->tt_product_single) {
                             	$css_current = $this->conf["CSSListCurrent"];
@@ -840,21 +864,20 @@ class tx_ttproducts extends tslib_pibase {
 							
 								// Print Item Title
 							$wrappedSubpartArray=array();
-							$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&tt_products='.$row["uid"].'" id="'.$css_current.'">','</A>');
-							
-							debug ($wrappedSubpartArray, '$wrappedSubpartArray', __LINE__, __FILE__);
-							$markerArray = $this->getItemMarkerArray ($row,$catTitle, $this->config["limitImage"],"listImage");
+							// $wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&tt_products='.$row["uid"].'" id="'.$css_current.'">','</A>');
 
-/*
 							$addQueryString=array();
 							$addQueryString["tt_products"]= 'tt_products='.$row["uid"];
-							$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"],"",$addQueryString).'">','</A>'); 
+							$pid = $this->getPID($this->conf["PIDitemDisplay"], $this->conf["PIDitemDisplay."], $row);
+							$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($pid,"",$addQueryString).'" id="'.$css_current.'">','</A>'); 
+
 							if( $datasheetFile == "" )  {
 								$wrappedSubpartArray["###LINK_DATASHEET###"]= array('<!--','-->');
 							}  else  {
 								$wrappedSubpartArray["###LINK_DATASHEET###"]= array('<A href="uploads/tx_mklproducts/datasheet/'.$datasheetFile.'">','</A>');
-							}	
-*/							
+							}					
+
+							$markerArray = $this->getItemMarkerArray ($row,$catTitle, $this->config["limitImage"],"listImage");
 
 							if (!$this->conf["displayBasketColumns"])
 							{
@@ -890,6 +913,8 @@ class tx_ttproducts extends tslib_pibase {
 								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant1###", "");
 							if (trim($row["size"]) == '')
 								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant2###", "");
+							if (trim($row["accessory"]) == '0')
+								$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant3###", "");
 							$itemsOut .= $tempContent;
 							$iColCount++;
 						}
@@ -1623,7 +1648,7 @@ class tx_ttproducts extends tslib_pibase {
 
 
 				$cls  = t3lib_div::makeInstanceClassName("tt_products_htmlmail");
-				if (class_exists($cls) && $this->conf["orderEmail_htmlmail"])	{	// If htmlmail lib is included, then generate a nice HTML-email
+				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$this->cObj->getSubpart($this->templateCode,"###EMAIL_HTML_SHELL###");
 					$HTMLmailContent=$this->cObj->substituteMarker($HTMLmailShell,"###HTML_BODY###",$orderConfirmationHTML);
 					$HTMLmailContent=$this->cObj->substituteMarkerArray($HTMLmailContent, $this->globalMarkerArray);
@@ -1648,7 +1673,8 @@ class tx_ttproducts extends tslib_pibase {
 
 					$V = array (
 						"from_email" => $this->conf["orderEmail_from"],
-						"from_name" => $this->conf["orderEmail_fromName"]
+						"from_name" => $this->conf["orderEmail_fromName"],
+						"attachment" => ($this->conf["AGBattachment"] ? $this->conf["AGBattachment"] : '')
 					);
 
 					$Typo3_htmlmail = t3lib_div::makeInstance("tt_products_htmlmail");
@@ -1763,12 +1789,18 @@ class tx_ttproducts extends tslib_pibase {
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function getLinkUrl($id="",$excludeList="")	{
+	function getLinkUrl($id="",$excludeList="",$addQueryString=array())	{
 		global $TSFE;
 
 		$queryString=array();
 		$queryString["id"] = ($id ? $id : $TSFE->id);
 		$queryString["type"]= $TSFE->type ? 'type='.$TSFE->type : "";
+		$queryString["L"]= t3lib_div::GPvar("L") ? 'L='.t3lib_div::GPvar("L") : "";	
+		$queryString["C"]= t3lib_div::GPvar("C") ? 'C='.t3lib_div::GPvar("C") : 'C='.$this->currency;	
+		if( isset($addQueryString["C"]) )  {
+			$queryString["C"] = $addQueryString["C"] ;	
+			unset( $addQueryString["C"] );	
+		}
 		$queryString["backPID"]= 'backPID='.$TSFE->id;
 		$queryString["begin_at"]= t3lib_div::_GP("begin_at") ? 'begin_at='.t3lib_div::_GP("begin_at") : "";
 		$queryString["swords"]= t3lib_div::_GP("swords") ? "swords=".rawurlencode(t3lib_div::_GP("swords")) : "";
@@ -1780,37 +1812,10 @@ class tx_ttproducts extends tslib_pibase {
 				unset($queryString[$key]);
 			}
 		}
-		return $TSFE->absRefPrefix.'index.php?'.implode($queryString,"&");
-	}
-
-
-	/**
-	 * Returns a url for use in forms and links
-	 */
-/* mkl:
-	function getLinkUrl($id="",$excludeList="",$addQueryString=array())	{
-		$queryString=array();
-		$queryString["id"] = "id=".($id ? $id : $GLOBALS["TSFE"]->id);
-		$queryString["type"]= $GLOBALS["TSFE"]->type ? 'type='.$GLOBALS["TSFE"]->type : "";
-		$queryString["L"]= t3lib_div::GPvar("L") ? 'L='.t3lib_div::GPvar("L") : "";	
-		$queryString["C"]= t3lib_div::GPvar("C") ? 'C='.t3lib_div::GPvar("C") : 'C='.$this->currency;	
-		if( isset($addQueryString["C"]) )  {
-			$queryString["C"] = $addQueryString["C"] ;	
-			unset( $addQueryString["C"] );	
-		}
-		$queryString["backPID"]= 'backPID='.$GLOBALS["TSFE"]->id;
-		$queryString["begin_at"]= t3lib_div::GPvar("begin_at") ? 'begin_at='.t3lib_div::GPvar("begin_at") : "";
-		$queryString["swords"]= t3lib_div::GPvar("swords") ? "swords=".rawurlencode(stripslashes(t3lib_div::GPvar("swords"))) : "";
-
-		reset($queryString);
-		while(list($key,$val)=each($queryString))	{
-			if (!$val || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
-				unset($queryString[$key]);
-			}
-		}
-		if ($GLOBALS['TSFE']->config['config']['simulateStaticDocuments'])   {
-			$pageId = $id ? $id : $GLOBALS["TSFE"]->id ;
-			$pageType = $GLOBALS["TSFE"]->type ;
+		
+		if ($TSFE->config['config']['simulateStaticDocuments'])   {
+			$pageId = $id ? $id : $TSFE->id ;
+			$pageType = $TSFE->type ;
 			unset($queryString['id']);
 			unset($queryString['type']);
 
@@ -1819,7 +1824,7 @@ class tx_ttproducts extends tslib_pibase {
 				$allQueryString .= "&".implode($addQueryString,"&");
 			}	
 //			debug($allQueryString);
-                        return $GLOBALS["TSFE"]->makeSimulFileName("", $pageId, $pageType, $allQueryString ).".html";								
+                        return $TSFE->makeSimulFileName("", $pageId, $pageType, $allQueryString ).".html";								
 		
 		}
 		else	{
@@ -1827,11 +1832,11 @@ class tx_ttproducts extends tslib_pibase {
 			if( $addQueryString )	{
 				$allQueryString .= "&".implode($addQueryString,"&");
 			}				
-			return $GLOBALS["TSFE"]->absRefPrefix.'index.php?'.$allQueryString;
+			return $TSFE->absRefPrefix.'index.php?'.$allQueryString;
 		}	
+	
 	}
 
-*/
 
 	/**
 	 * convert amount to selected currency 
@@ -2064,8 +2069,9 @@ class tx_ttproducts extends tslib_pibase {
 		$prodSizeText = '';
 		$prodTmp = explode(';', $row["size"]);
 		if ($this->conf['selectSize']) {
-			foreach ($prodTmp as $prodSize)
+			foreach ($prodTmp as $prodSize) {
 				$prodSizeText = $prodSizeText . '<OPTION value="'.$prodSize.'">'.$prodSize.'</OPTION>';
+			}
 		} else {
 			$prodSizeText = $prodTmp[0];
 		}
@@ -2093,11 +2099,8 @@ class tx_ttproducts extends tslib_pibase {
 		else
 			$markerArray["###PRODUCT_SPECIAL_PREP###"] = "";
 			// Fill the Currency Symbol or not
-		if ($this->conf["showcurSymbol"]) {
-			$markerArray["###CUR_SYM###"] = " ".$this->conf["currencySymbol"];
-		} else {
-			$markerArray["###CUR_SYM###"] = "";
-		}
+		
+		$markerArray["###CUR_SYM###"] = " ".($this->conf["currencySymbol"] ? $this->conf["currencySymbol"] : '');
 
 		if ($this->conf["itemMarkerArrayFunc"])	{
 			$markerArray = $this->userProcess("itemMarkerArrayFunc",$markerArray);
@@ -2330,10 +2333,8 @@ class tx_ttproducts extends tslib_pibase {
 				$dumCount = 0;
 				$pricefor1 = doubleval($priceCalcTemp["1"]);
 				
-				#debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
 					// count all items which will apply to the discount price
 				foreach ($this->itemArray as $pid=>$pidItem) {
-					#debug ($pidItem, '$pidItem', __LINE__, __FILE__);
 					foreach ($pidItem as $itemnumber=>$actItem) {
 						$count2 = $actItem["count"];
 						if (($count2 > 0) && ($actItem["rec"]["price"] == $pricefor1)) {
@@ -2732,14 +2733,37 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray["###PRICE_TOTAL_TAX###"]=$this->priceFormat($actItem["totalTax"]);
 				$markerArray["###PRICE_TOTAL_NO_TAX###"]=$this->priceFormat($actItem["totalNoTax"]);
 
-				$wrappedSubpartArray["###LINK_ITEM###"]=array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&tt_products='.$actItem['rec']["uid"].'">','</A>');
-				debug ($wrappedSubpartArray, '$wrappedSubpartArray', __LINE__, __FILE__);
+				$pid = $this->getPID($this->conf["PIDitemDisplay"], $this->conf["PIDitemDisplay."], $actItem['rec']);
+				$wrappedSubpartArray["###LINK_ITEM###"]=array('<A href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'">','</A>');
 
 					// Substitute
-				$itemsOut.= $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),$wrappedSubpartArray);
+				$tempContent = $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),$wrappedSubpartArray);
+				if ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###') {
+					$tempVar = $this->cObj->getSubpart($tempContent,"###display_variant1###");
+					if (trim($actItem['rec']['color']) == '')
+						$tempVar = '';
+					$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant1###", $tempVar);
+					$tempVar = $this->cObj->getSubpart($tempContent,"###display_variant2###");
+					if (trim($actItem['rec']['size']) == '')
+						$tempVar = '';
+					$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant2###", $tempVar);
+					$tempVar = $this->cObj->getSubpart($tempContent,"###display_variant3###");
+					if (trim($actItem['rec']['accessory']) == '0')
+						$tempVar = '';
+					$tempContent = $this->cObj->substituteSubpart($tempContent, "###display_variant3###", $tempVar);
+				} else {
+					if (trim($actItem['rec']['color']) == '')
+						$tempContent=$this->cObj->substituteSubpart($tempContent,"###display_variant1###","");
+					if (trim($actItem['rec']['size']) == '')
+	  					$tempContent = $this->cObj->substituteSubpart($tempContent,"###display_variant2###","");
+					if (trim($actItem['rec']['accessory']) == '0')
+	  					$tempContent = $this->cObj->substituteSubpart($tempContent,"###display_variant3###","");
+				}
+				$itemsOut .= $tempContent;
 				}
 			if ($itemsOut)	{
-				$out.=$this->cObj->substituteSubpart($t["itemFrameWork"], "###ITEM_SINGLE###", $itemsOut);
+				$tempContent=$this->cObj->substituteSubpart($t["itemFrameWork"], "###ITEM_SINGLE###", $itemsOut);
+				$out .= $tempContent;
 				$itemsOut="";			// Clear the item-code var
 			}
 		}
@@ -2760,8 +2784,8 @@ class tx_ttproducts extends tslib_pibase {
 		$wrappedSubpartArray["###LINK_BASKET###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDbasket"]).'">','</A>');
 
 		$markerArray["###PRICE_SHIPPING_PERCENT###"] = $perc;
-		$markerArray["###PRICE_SHIPPING_TAX###"] = $this->calculatedArray['priceTax']['shipping'];
-		$markerArray["###PRICE_SHIPPING_NO_TAX###"] = $this->calculatedArray['priceNoTax']['shipping'];
+		$markerArray["###PRICE_SHIPPING_TAX###"] = $this->priceFormat($this->calculatedArray['priceTax']['shipping']);
+		$markerArray["###PRICE_SHIPPING_NO_TAX###"] = $this->priceFormat($this->calculatedArray['priceNoTax']['shipping']);
 
 		$markerArray["###SHIPPING_SELECTOR###"] = $this->generateRadioSelect("shipping", $countTotal);
 		$markerArray["###SHIPPING_IMAGE###"] = $this->cObj->IMAGE($this->basketExtra["shipping."]["image."]);
