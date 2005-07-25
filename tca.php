@@ -9,6 +9,13 @@ $TCA["tt_products"] = Array (
 		"showRecordFieldList" => "title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,accessory,accessory2,unit,unit_factor,www,datasheet,special_preparation,gradings,image,hidden,starttime,endtime"
 	),
 	"columns" => Array (
+		"hidden" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:lang/locallang_general.php:LGL.hidden",
+			"config" => Array (
+				"type" => "check"
+			)
+		),
 		"starttime" => Array (
 			"exclude" => 1,
 			"label" => "LLL:EXT:lang/locallang_general.php:LGL.starttime",
@@ -35,13 +42,6 @@ $TCA["tt_products"] = Array (
 					"upper" => mktime(0,0,0,12,31,2020),
 					"lower" => mktime(0,0,0,date("m")-1,date("d"),date("Y"))
 				)
-			)
-		),
-		"hidden" => Array (
-			"exclude" => 1,
-			"label" => "LLL:EXT:lang/locallang_general.php:LGL.hidden",
-			"config" => Array (
-				"type" => "check"
 			)
 		),
 		"fe_group" => Array (
@@ -324,16 +324,90 @@ $TCA["tt_products_language"] = Array (
 	),
 	"feInterface" => $TCA["tt_products_language"]["feInterface"],
 	"columns" => Array (	
-		"hidden" => Array (
-			"exclude" => 1,	
-			"label" => "LLL:EXT:lang/locallang_general.php:LGL.hidden",
-			"config" => Array (
-				"type" => "check"
+		'sys_language_uid' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.language',
+			'config' => Array (
+				'type' => 'select',
+				'foreign_table' => 'sys_language',
+				'foreign_table_where' => 'ORDER BY sys_language.title',
+				'items' => Array(
+					Array('LLL:EXT:lang/locallang_general.php:LGL.allLanguages',-1),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.default_value',0)
+				)
 			)
 		),
-		"prd_uid" => Array (		
+		'l18n_parent' => Array (
+			'displayCond' => 'FIELD:sys_language_uid:>:0',
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.l18n_parent',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('', 0),
+				),
+				'foreign_table' => 'tt_products_language',
+				'foreign_table_where' => 'AND tt_products_language.pid=###CURRENT_PID### AND tt_products_language.sys_language_uid IN (-1,0)',
+			)
+		),
+		'l18n_diffsource' => Array (
+			'config' => Array (
+				'type' => 'passthrough'
+			)
+		),
+		"hidden" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:lang/locallang_general.php:LGL.hidden",
+			"config" => Array (
+				"type" => "check",
+				"default" => "0"
+			)
+		),
+		"starttime" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:lang/locallang_general.php:LGL.starttime",
+			"config" => Array (
+				"type" => "input",
+				"size" => "8",
+				"max" => "20",
+				"eval" => "date",
+				"default" => "0",
+				"checkbox" => "0"
+			)
+		),
+		"endtime" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:lang/locallang_general.php:LGL.endtime",
+			"config" => Array (
+				"type" => "input",
+				"size" => "8",
+				"max" => "20",
+				"eval" => "date",
+				"checkbox" => "0",
+				"default" => "0",
+				"range" => Array (
+					"upper" => mktime(0,0,0,12,31,2020),
+					"lower" => mktime(0,0,0,date("m")-1,date("d"),date("Y"))
+				)
+			)
+		),
+		"fe_group" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:lang/locallang_general.php:LGL.fe_group",
+			"config" => Array (
+				"type" => "select",
+				"items" => Array (
+					Array("", 0),
+					Array("LLL:EXT:lang/locallang_general.php:LGL.hide_at_login", -1),
+					Array("LLL:EXT:lang/locallang_general.php:LGL.any_login", -2),
+					Array("LLL:EXT:lang/locallang_general.php:LGL.usergroups", "--div--")
+				),
+				"foreign_table" => "fe_groups"
+			)
+		),	
+		"prod_uid" => Array (		
 			"exclude" => 0,		
-			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language.prd_uid",		
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language.prod_uid",		
 			"config" => Array (
 				"type" => "select",	
 				"foreign_table" => "tt_products",	
@@ -341,17 +415,6 @@ $TCA["tt_products_language"] = Array (
 				"size" => 1,	
 				"minitems" => 0,
 				"maxitems" => 1,
-			)
-		),
-		"sys_language_uid" => Array (		
-			"exclude" => 0,		
-			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language.sys_language_uid",		
-			"config" => Array (
-				"type" => "select",
-				"items" => Array (
-					Array("LLL:EXT:tt_products/locallang_tca.php:tt_products_language.sys_language_uid.I.0", "0"),
-				),
-				"itemsProcFunc" => "tx_ttproducts_language->main",
 			)
 		),
 		"title" => Array (
@@ -402,6 +465,26 @@ $TCA["tt_products_language"] = Array (
 				"minitems" => "0"
 			)
 		),				
+		"color" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products.color",
+			"config" => Array (
+				"type" => "input",
+				"size" => "20",
+				"eval" => "trim",
+				"max" => "255"
+			)
+		),
+		"size" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products.size",
+			"config" => Array (
+				"type" => "input",
+				"size" => "20",
+				"eval" => "trim",
+				"max" => "255"
+			)
+		),
 		"www" => Array (
 			"exclude" => 1,	
 			"label" => "LLL:EXT:lang/locallang_general.php:LGL.www",
@@ -435,14 +518,6 @@ $TCA["tt_products_cat"] = Array (
 	),
 	"feInterface" => $TCA["tt_products_cat"]["feInterface"],
 	"columns" => Array (
-		"hidden" => Array (
-			"exclude" => 1,	
-			"label" => "LLL:EXT:lang/locallang_general.php:LGL.hidden",
-			"config" => Array (
-				"type" => "check",
-                "default" => "0"
-			)
-		),
 		"title" => Array (
 			"label" => "LLL:EXT:lang/locallang_general.php:LGL.title",
 			"config" => Array (
@@ -469,12 +544,85 @@ $TCA["tt_products_cat_language"] = Array (
 	),
 	"feInterface" => $TCA["tt_products_cat_language"]["feInterface"],
 	"columns" => Array (	
+		'sys_language_uid' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.language',
+			'config' => Array (
+				'type' => 'select',
+				'foreign_table' => 'sys_language',
+				'foreign_table_where' => 'ORDER BY sys_language.title',
+				'items' => Array(
+					Array('LLL:EXT:lang/locallang_general.php:LGL.allLanguages',-1),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.default_value',0)
+				)
+			)
+		),		
+		'l18n_parent' => Array (
+			'displayCond' => 'FIELD:sys_language_uid:>:0',
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.l18n_parent',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('', 0),
+				),
+				'foreign_table' => 'tt_products_cat_language',
+				'foreign_table_where' => 'AND tt_products_cat_language.pid=###CURRENT_PID### AND tt_products_cat_language.sys_language_uid IN (-1,0)',
+			)
+		),
+		'l18n_diffsource' => Array (
+			'config' => Array (
+				'type' => 'passthrough'
+			)
+		),
 		"hidden" => Array (
-			"exclude" => 1,	
+			"exclude" => 1,
 			"label" => "LLL:EXT:lang/locallang_general.php:LGL.hidden",
 			"config" => Array (
 				"type" => "check",
-			"default" => "0"
+				"default" => "0"
+			)
+		),
+		"starttime" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:lang/locallang_general.php:LGL.starttime",
+			"config" => Array (
+				"type" => "input",
+				"size" => "8",
+				"max" => "20",
+				"eval" => "date",
+				"default" => "0",
+				"checkbox" => "0"
+			)
+		),
+		"endtime" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:lang/locallang_general.php:LGL.endtime",
+			"config" => Array (
+				"type" => "input",
+				"size" => "8",
+				"max" => "20",
+				"eval" => "date",
+				"checkbox" => "0",
+				"default" => "0",
+				"range" => Array (
+					"upper" => mktime(0,0,0,12,31,2020),
+					"lower" => mktime(0,0,0,date("m")-1,date("d"),date("Y"))
+				)
+			)
+		),
+		"fe_group" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:lang/locallang_general.php:LGL.fe_group",
+			"config" => Array (
+				"type" => "select",
+				"items" => Array (
+					Array("", 0),
+					Array("LLL:EXT:lang/locallang_general.php:LGL.hide_at_login", -1),
+					Array("LLL:EXT:lang/locallang_general.php:LGL.any_login", -2),
+					Array("LLL:EXT:lang/locallang_general.php:LGL.usergroups", "--div--")
+				),
+				"foreign_table" => "fe_groups"
 			)
 		),
 		"title" => Array (
@@ -497,25 +645,14 @@ $TCA["tt_products_cat_language"] = Array (
 				"maxitems" => 1,
 			)
 		),
-		"sys_language_uid" => Array (		
-			"exclude" => 0,		
-			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language.sys_language_uid",		
-			"config" => Array (
-				"type" => "select",
-				"items" => Array (
-					Array("LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language.sys_language_uid.I.0", "0"),
-				),
-				"itemsProcFunc" => "tx_ttproducts_language->main",
-			)
-		)
 	),
 	"types" => Array (	
-		"0" => Array("showitem" => "hidden;;;;1-1-1, cat_uid;;;;2-2-2, sys_language_uid, title;;;;3-3-3")
-
+		"0" => Array("showitem" => '
+		sys_language_uid;;;;1-1-1, l18n_parent, l18n_diffsource, hidden;;1,  cat_uid;;;;2-2-2, sys_language_uid, title;;;;3-3-3')
 	),
 	"palettes" => Array (
-		"1" => Array("showitem" => "")
-	)
+		"1" => Array("showitem" => "starttime, endtime, fe_group")
+	)	
 );
 
 ?>

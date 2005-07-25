@@ -54,15 +54,15 @@ plugin.tt_products {
   displayListCatHeader = {$plugin.tt_products.displayListCatHeader}
   displayBasketCatHeader = {$plugin.tt_products.displayBasketCatHeader}
 
+  PIDinfo = {$plugin.tt_products.PIDinfo}
+  PIDfinalize = {$plugin.tt_products.PIDfinalize}
+  PIDthanks = {$plugin.tt_products.PIDthanks}
   PIDitemDisplay = {$plugin.tt_products.PIDitemDisplay}
   PIDsearch = {$plugin.tt_products.PIDsearch}
   PIDbasket = {$plugin.tt_products.PIDbasket}
   PIDstoreRoot = {$plugin.tt_products.PIDstoreRoot}
   PIDmemo = {$plugin.tt_products.PIDmemo}
   PID_sys_products_orders = 0
-#  PIDinfo = 209
-#  PIDfinalize = 210
-#  PIDthanks = 211
 
   parseFunc < styles.content.parseFunc
   categoryHeader = TEXT

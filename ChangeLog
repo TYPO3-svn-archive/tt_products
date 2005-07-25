@@ -1,3 +1,8 @@
+2005-07-25  Franz Holzinger  <franz@fholzinger.com>
+
+	* shipping price by weight
+	* correct link to '&id= ...'
+
 2005-07-18  Franz Holzinger  <franz@fholzinger.com>
 
 	* correct view of color and size in the basket and mail template
@@ -14,7 +19,7 @@
 
 2005-07-06  Franz Holzinger  <franz@fholzinger.com>
 
-	* make instock to default -1
+	* make instock to default 0
 	* make it configurable to show instock=0 with a special message
 	* CSS into the rows
 
