@@ -11,7 +11,7 @@ $LOCAL_LANG = Array (
 	),
 	'de' => Array (
 		'plugins_title' => 'Produktliste',
-		'plugins_description' => 'Fügt eine Produktliste ein. Diese ist Bestandteil des intergrierten Online-Shops und benötigt eine Produktdatensätze in der Datenbank.',
+		'plugins_description' => 'Fügt eine Produktliste ein. Diese ist Bestandteil des intergrierten Online-Shops und benötigt Produktdatensätze in der Datenbank.',
 	),
 	'no' => Array (
 		'plugins_title' => 'Produktliste',

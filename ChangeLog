@@ -1,37 +1,3 @@
-2005-07-25  Franz Holzinger  <franz@fholzinger.com>
-
-	* shipping price by weight
-	* correct link to '&id= ...'
-
-2005-07-18  Franz Holzinger  <franz@fholzinger.com>
-
-	* correct view of color and size in the basket and mail template
-	* better English template
-
-2005-07-13  Franz Holzinger  <franz@fholzinger.com>
-
-	* finish usage of global $calculatedArray and $itemArray instead of CalulatedSum and CalulatedBasketArray
-
-2005-07-11  Franz Holzinger  <franz@fholzinger.com>
-
-	* getDiscountPrice
-	* start to use a global $calculatedArray and $itemArray
-
-2005-07-06  Franz Holzinger  <franz@fholzinger.com>
-
-	* make instock to default 0
-	* make it configurable to show instock=0 with a special message
-	* CSS into the rows
-
-2005-07-04  Franz Holzinger  <franz@fholzinger.com>
-
-	* correction after remake of price calculation
-
-2005-07-02  Franz Holzinger  <franz@fholzinger.com>
-
-	* remake of price calculation
-	* preparation for mkl_products
-
 2005-07-01  Franz Holzinger  <franz@fholzinger.com>
 
 	* correction with $requiredInfoFields

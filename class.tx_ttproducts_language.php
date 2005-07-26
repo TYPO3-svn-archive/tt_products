@@ -25,6 +25,8 @@
  * Class/Function which manipulates the item-array for table/field tt_products_language_overlay.sys_language_uid.
  *
  * @author  Milosz Klosowicz <typo3@miklobit.com>
+ * @package TYPO3
+ * @subpackage tt_products
  */
 
 

@@ -44,7 +44,7 @@ $TCA['tt_products_cat'] = Array (
 	)
 );
 /* mkl:
-$TCA["tt_products_language_overlay"] = Array (
+$TCA["tt_products_language"] = Array (
 	"ctrl" => Array (
 		"label" => "title",
 		"default_sortby" => "ORDER BY title",
@@ -58,7 +58,7 @@ $TCA["tt_products_language_overlay"] = Array (
 	)
 );
 
-$TCA["tt_products_cat_language_overlay"] = Array (
+$TCA["tt_products_cat_language"] = Array (
 	"ctrl" => Array (
 		"label" => "title",
 		"default_sortby" => "ORDER BY title",
@@ -113,6 +113,8 @@ $tempColumns = Array (
 				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.14', 'DELIVERY'),
 				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.15', 'HELP'),
 				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.16', 'CURRENCY'),
+/* Added Els: I.17 ORDERS */
+				Array('LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.17', 'ORDERS'),
 			),
 		)
 	)
