@@ -1,3 +1,7 @@
+2005-07-26  Franz Holzinger  <franz@fholzinger.com>
+	* a lot of changes due to make it more compliant to coding guidelines and use ' instead of " where possible
+	* voucher system etc. from Bert Hiddink and Els Verberne 
+
 2005-07-01  Franz Holzinger  <franz@fholzinger.com>
 
 	* correction with $requiredInfoFields

@@ -46,7 +46,7 @@ It's also used by search-results.
           			
 			<tr>
 			<td>
-			<FORM method="post" action="###FORM_URL###">
+			<FORM method="post" action="###FORM_URL###"  name="###FORM_NAME###">
 			<TABLE border="1" cellspacing="0" cellpadding="1" width=1>
 			<!-- ###ITEM_SINGLE### begin-->
           ###ITEM_SINGLE_PRE_HTML###
@@ -167,20 +167,12 @@ onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){do
 
 
 
-
-
-
-
-
-
-
-
 <!-- ###ITEM_SEARCH###
 
 Subpart for the search-form
 
 -->
-<FORM method="post" action="###FORM_URL###">
+<FORM method="post" action="###FORM_URL###" name="name="###FORM_NAME###"">
 	<INPUT size="30" maxlength="100" type="text" name="swords" value="###SWORDS###">
 	<input type="Submit" name="order" value="search">
 </form>
@@ -225,7 +217,7 @@ In addition there's a number of fields used for delivery and payment information
 
 -->
 
-			<FORM method="post" action="###FORM_URL###">
+			<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###"">
 		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
 			<tr>
 				<td><img src="clear.gif" width=100 height=1></td>
@@ -340,13 +332,10 @@ In addition there's a number of fields used for delivery and payment information
 	</TABLE>
 	<input type="hidden" name="mode_update" value="1">
 	<input type="Submit" name="products_update" value="update calc.">&nbsp;&nbsp;
-	<input type="Submit" name="products_info" value="continue with order/payment" onClick="document.forms[0].action='###FORM_URL_INFO###';">
+	<input type="Submit" name="products_info" value="continue with order/payment" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_INFO###';">
 	</FORM>
 <BR>
 <!-- ###BASKET_TEMPLATE### end -->
-
-
-
 
 
 
@@ -359,7 +348,7 @@ Exact same features as BASKET_TEMPLATE
 
 -->
 
-	<FORM method="post" action="###FORM_URL###">
+	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 
 	<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
 		<tr>
@@ -501,7 +490,7 @@ Exact same features as BASKET_TEMPLATE
 		</tr>
 	</TABLE>
 	<br>
-	<input type="Submit" name="products_update" value="back to basket">&nbsp;&nbsp;	<input type="Submit" name="products_payment" value="pay / order" onClick="document.forms[0].action='###FORM_URL_FINALIZE###';">
+	<input type="Submit" name="products_update" value="back to basket">&nbsp;&nbsp;	<input type="Submit" name="products_payment" value="pay / order" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_FINALIZE###';">
 
 	</FORM>
 <BR>
@@ -725,9 +714,11 @@ Exact same features as BASKET_TEMPLATE
 	</TABLE>
 	<br>
 
-	<FORM method="post" action="###FORM_URL###">
-	<input type="Submit" name="products_update" value="back to shopping">&nbsp;&nbsp;	<input type="Submit" name="products_finalize" value="Udfør ordre" onClick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">
+	<FORM method="post" action="###FORM_URL###" name="paymentform">
+	<input type="Submit" name="products_update" value="back to shopping">&nbsp;&nbsp;	
+	<input type="Submit" name="products_finalize" value="Udfør ordre" onclick="document.getElementsByName('paymentform')[0].action='###FORM_URL_THANKS###'; document.getElementsByName('paymentform')[0].target='###FORM_URL_TARGET###';">
 	</FORM>
+
 <BR>
 
 
@@ -1071,8 +1062,8 @@ If payment is initiated but the required information fields are not filled in co
 -->
 ###GW1B###<B>Du har ikke udfyldt alle påkrævede felter med adresse information. ###ERROR_DETAILS### Gå venligst tilbage og gør det.</B>###GW1E###
 
-	<FORM method="post" action="###FORM_URL###">
-	<input type="Submit" name="products_info" value="input address information" onClick="document.forms[0].action='###FORM_URL_INFO###';">
+	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
+	<input type="Submit" name="products_info" value="input address information" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_INFO###';">
 	</FORM>
 
 <!-- ###BASKET_REQUIRED_INFO_MISSING### end -->
@@ -1127,7 +1118,7 @@ Displays the view of the order status by tracking codes.
 		###GW1B###
 
 	<!-- ###ADMIN_CONTROL_OK### begin -->
-	<FORM method="post" action="###FORM_URL###">
+	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 	<select name="orderRecord[status][]" size="9" multiple>
 		###STATUS_OPTIONS###
 	</select>
@@ -1151,7 +1142,7 @@ Displays the view of the order status by tracking codes.
 		</FORM>
 	<!-- ###ADMIN_CONTROL_OK### begin -->
 	<!-- ###ADMIN_CONTROL_DENY### begin -->
-		<FORM method="post" action="###FORM_URL###">
+		<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 		<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
 		###GW1B###code:###GW1B###<br>
 		<input type="password" size=40 name="update_code" value="###UPDATE_CODE###">
@@ -1169,7 +1160,7 @@ Displays the view of the order status by tracking codes.
 
 <strong>email besked:</strong><br>
 Hvis du ønsker at modtage en besked til ordrens contactemail, ###FIELD_EMAIL###, hver gang status opdateres, så afkryds dette felt herunder.<br>
-	<FORM method="post" action="###FORM_URL###">
+	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 
 	<input type="hidden" name="orderRecord[email_notify]" value="0">
 	<input type="checkbox" name="orderRecord[email_notify]" value="1"###FIELD_email_NOTIFY###>Modtag besked ved status ændringer<br>
@@ -1181,7 +1172,7 @@ Hvis du ønsker at modtage en besked til ordrens contactemail, ###FIELD_EMAIL###,
 <br><br>
 <strong>Besked til butikken:</strong><br>
 Du kan indsende en besked til butikken angående denne ordre.<br>
-	<FORM method="post" action="###FORM_URL###">
+	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 	<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
 	###GW1B###Vælg emne:###GW1B###<br>
 	<select name="orderRecord[status][]" size="1">
@@ -1217,7 +1208,7 @@ Displays form for entering the tracking number.
 ###GW1B###<B>Indtast din tracking kode:</B>###GW1E###<br>
 
 
-	<FORM method="post" action="###FORM_URL###">
+	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 	<input type="text" name="tracking"><br>
 	<input type="Submit" name="submit" value="Se status">
 	</FORM>
@@ -1232,7 +1223,7 @@ Displays error message if no tracking code.
 ###GW1B###<B>Den indtastede kode fandtes ikke! Prøv venligst igen!</B>###GW1E###<br>
 
 
-	<FORM method="post" action="###FORM_URL###">
+	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 	<input type="text" name="tracking"><br>
 	<input type="Submit" name="submit" value="Se status">
 	</FORM>

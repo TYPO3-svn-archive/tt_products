@@ -25,11 +25,14 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * products_mail.inc
+ * Part of the TT_PRODUCTS (Shopping System) extension.
  * 
  * Class for sending HTML-email order confirmations
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @package TYPO3
+ * @subpackage tt_products
+ *
  */
 
 
@@ -74,8 +77,8 @@ class tx_ttproducts_htmlmail extends t3lib_htmlmail {
 	}	
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_products/pi/products_mail.inc"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_products/pi/products_mail.inc"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_products/pi/class.tx_ttproducts_htmlmail.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_products/pi/class.tx_ttproducts_htmlmail.php"]);
 }
 
 ?>

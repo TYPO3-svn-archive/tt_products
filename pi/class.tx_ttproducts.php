@@ -1198,7 +1198,7 @@ class tx_ttproducts extends tslib_pibase {
 			$this->personInfo['tx_feuserextrafields_initials_name'] = $TSFE->fe_user->user['tx_feuserextrafields_initials_name'];
 			$this->personInfo['tx_feuserextrafields_prefix_name'] = $TSFE->fe_user->user['tx_feuserextrafields_prefix_name'];
 			$this->personInfo['tx_feuserextrafields_gsm_tel'] = $TSFE->fe_user->user['tx_feuserextrafields_gsm_tel'];
-			$this->personInfo['date_of_birth'] = $TSFE->fe_user->user['date_of_birth'];
+			$this->personInfo['date_of_birth'] = date( 'd-m-Y', $TSFE->fe_user->user["date_of_birth"]); 
 			$this->personInfo['company'] = $TSFE->fe_user->user['company'];
 			$this->personInfo['tx_feuserextrafields_company_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_company_deliv'];
 			$this->personInfo['address'] = $TSFE->fe_user->user['address'];
@@ -1472,17 +1472,16 @@ class tx_ttproducts extends tslib_pibase {
 		}
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$this->deliveryInfo['feusers_uid'], $fieldsArrayFeUsers);
 
-/* Added ELS: update user from vouchercode with 5 credits */
-		$uid_credit = substr($this->recs['tt_products']['vouchercode'],1);
 
-		// get the 'old' creditpoints for the user
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints', 'fe_users', 'uid="'.$uid_credit.'"');
-		if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$els = $row['tt_products_creditpoints'];
-		}
-		$fieldsArrayFeUserCredit = array();
-		$fieldsArrayFeUserCredit['tt_products_creditpoints'] = $row['tt_products_creditpoints'] + 5;
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$uid_voucher, $fieldsArrayFeUserCredit);
+/* Added ELS2: update user from vouchercode with 5 credits */
+       // get the "old" creditpoints for the user
+       $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints', 'fe_users', 'username="'.$this->recs['tt_products']['vouchercode'].'"');
+       if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
+           $ttproductscreditpoints = $row['tt_products_creditpoints'];
+       }
+       $fieldsArrayFeUserCredit = array();
+       $fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + 5;
+       $GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$uid_voucher, $fieldsArrayFeUserCredit);
 
 /*
 		//<-- MKL 2004.09.21
@@ -1538,7 +1537,7 @@ class tx_ttproducts extends tslib_pibase {
 		{
 			$username = strtolower(trim($this->personInfo['email']));
 
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 
 			if (!$num_rows)
@@ -1587,7 +1586,7 @@ class tx_ttproducts extends tslib_pibase {
 			// loop over all items in the basket sorted by page and itemnumber
 			foreach ($this->itemArray as $pid=>$pidItem) {
 				foreach ($pidItem as $itemnumber=>$actItem) {
-					$query='uid=''.intval($actItem['rec']['uid']).''';
+					$query='uid=\''.intval($actItem['rec']['uid']).'\'';
 
 					$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products', $query);
 
@@ -3640,49 +3639,87 @@ class tx_ttproducts extends tslib_pibase {
 		return $this->products_display($theCode, implode(',', $memoItems));
 	}
 
-/* Added Els: Displays and manages the orders */
-	function orders_display($theCode)
-	{
-		global $TSFE;
+/* Added Els2: Displays and manages the orders */
+   function orders_display($theCode)
+   {
+       global $TSFE;
 
-		$feusers_uid = $TSFE->fe_user->user['uid'];
+       $feusers_uid = $TSFE->fe_user->user['uid'];
 
-		if (!$feusers_uid)
-			return $this->cObj->getSubpart($this->templateCode,$this->spMarker('###MEMO_NOT_LOGGED_IN###'));
+       if (!$feusers_uid)
+           return $this->cObj->getSubpart($this->templateCode,$this->spMarker('###MEMO_NOT_LOGGED_IN###'));
 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
+       $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
 
-		$content=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###ORDERS_LIST_TEMPLATE###'));
-		$content .= '<p class=\'bodytext\'><br>';
+       $content=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###ORDERS_LIST_TEMPLATE###'));
+       //$content .= '<p class=\'bodytext\'><br>';
 
-		$this->orders = array();
-		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$this->orders[$row['uid']] = $row['tracking_code'];
-			$content .= $this->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']);
-			$content .= ' - ';
-			$content .= $row['tracking_code'];
-			$content .= '- <a href=\'index.php?id=215&tracking='.$row['tracking_code'].'\'>status</a><br>';
-		}
+       $content .= "<div style='width:714px;'>
+<table border='0' cellspacing='0' cellpadding='0'>
+ <tr>
+   <th width='20%' scope='col'><b>Spaarhistorie</b></th>
+   <th width='80%' scope='col' colspan='2'><b>Klantnummer: $feusers_uid</b></th>
+ </tr>
+ <tr>
+   <th width='20%' scope='col'>Datum</th>
+   <th width='20%' scope='col'>Factuurnr</th>
+   <th width='60%' scope='col'>Kurken</th>
+ </tr>
+";
 
-//		$content=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###TRACKING_CODE###'));
-//		$markerArray=array();
-//		$content= $this->cObj->substituteMarkerArray($content, $markerArray);
+       $this->orders = array();
+       while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+           $this->orders[$row['uid']] = $row['tracking_code'];
+           $content .= "<tr><td width='20%'>".$this->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']).'</td>';
+           $number = str_replace('mw_order', '', $row['tracking_code']);
+           $content .= '<td width="20%"><a href="index.php?id=215&tracking='.$row['tracking_code'].'">'.$number.'</a></td>';
+           if ($row['amount'] <= 100) {
+               $creditpoints = 0.02;
+           } elseif ($row['amount'] <= 500) {
+               $creditpoints = 0.04;
+           } else {
+               $creditpoints = 0.06;
+           }
+           $content .= "<td width='60%'>".($this->priceFormat($creditpoints*$row['amount']) - number_format($row['creditpoints'],0)).'</td>';
+       }
 
-		$res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
+       $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
+       if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
+           $username = $row['username'];
+       }
 
-		$content .= '<p class=\'bodytext\'>Uw heeft ';
+       $content .= "
+ <tr>
+   <th width='40%' scope='col' colspan='2'>Verdiende kurken met uw vouchercode <i>".$row['username'].'</i></th>';
 
-		$this->creditpoints = array();
-		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
-			$this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
-			$content .= '<span class=\'kurkensaldo\'>';
-			$content .= $row['tt_products_creditpoints'];
-			$content .= '</span>';
-		}
-		$content .= ' kurken op uw saldo</p>';
-		return $content;
+       $res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
+       $num_rows = $GLOBALS['TYPO3_DB']->sql_num_rows($res2);
 
-	}
+       $content .= "<th width='60%' scope='col'>".($num_rows * 5).'</th></tr>';
+
+       $res3 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
+       $content .= "
+ <tr>
+   <th width='40%' scope='col' colspan='2'>Uw kurkensaldo</th>";
+
+       $this->creditpoints = array();
+       while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res3)) {
+           $this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
+           $content .= "<th width='60%' scope='col'><span class='kurkensaldo'>";
+           $content .= $this->priceFormat($row['tt_products_creditpoints']);
+           $content .= '</span></th></tr>';
+       }
+       $content .= "
+</table>
+</div>
+<div class='shopTable-content-white'>
+</div>
+       ";
+
+       return $content;
+
+   }
+
 }
 
 
