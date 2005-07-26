@@ -34,6 +34,8 @@
  * - See static_template "plugin.tt_products"
  * - See TSref.pdf
  *
+ * $Id$
+ *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	René Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <kontakt@fholzinger.com>

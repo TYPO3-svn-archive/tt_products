@@ -29,6 +29,8 @@
  * 
  * Class for sending HTML-email order confirmations
  *
+ * $Id$
+ *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @package TYPO3
  * @subpackage tt_products
