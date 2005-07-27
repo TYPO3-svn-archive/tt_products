@@ -1,3 +1,6 @@
+2005-07-27  Franz Holzinger  <franz@fholzinger.com>
+	* put several products with different sizes into the basket
+
 2005-07-26  Franz Holzinger  <franz@fholzinger.com>
 	* a lot of changes due to make it more compliant to coding guidelines and use ' instead of " where possible
 	* voucher system etc. from Bert Hiddink and Els Verberne 
