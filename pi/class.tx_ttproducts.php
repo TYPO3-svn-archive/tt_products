@@ -2143,9 +2143,18 @@ class tx_ttproducts extends tslib_pibase {
 		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
 			$oldPrice = $oldPriceNoTax = '';
 		}
-		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
-		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
 
+		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
+		/* Added els3: if oldpricenotax is empty do print other marker */
+		//$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
+		if ($oldPriceNoTax == '0.00') {
+			$markerArray['###OLD_PRICE_NO_TAX_CLASS###'] = 'prijsvoorleeg';
+			$markerArray['###OLD_PRICE_NO_TAX###'] = '-';
+		} else {
+			$markerArray['###OLD_PRICE_NO_TAX_CLASS###'] = 'prijsvan';
+			$markerArray['###OLD_PRICE_NO_TAX###'] = '&euro; '.$oldPriceNoTax;
+		}
+		
 		$markerArray['###PRODUCT_INSTOCK_UNIT###'] = '';
 		if ($row['inStock'] > 0) {
 			$markerArray['###PRODUCT_INSTOCK###'] = $row['inStock'];
@@ -2800,15 +2809,25 @@ class tx_ttproducts extends tslib_pibase {
 				reset($productsArray[$v]);
 				while(list(,$row)=each($productsArray[$v]))	{
 					// if reseller is logged in then take 'price2', default is 'price'
-					$priceTax = $this->getResellerPrice($row,1);
-					$priceNoTax = $this->getResellerPrice($row,0);
 					$newItem = $this->getItem($row);
 					$this->itemArray [intval($row['pid'])] [intval($row['itemnumber'])][] = $newItem;
 					$count = $newItem['count'];
+					$priceTax = $newItem['priceTax'];
+					$priceNoTax = $newItem['priceNoTax'];
+					
 					$this->calculatedArray['count']			+= $count;
 					$this->calculatedArray['weight']		+= $row['weight']*$count;
-					$this->calculatedArray['oldPriceTax']	+= $this->getPrice($row['price'],1,$row['tax'])*$count;
-					$this->calculatedArray['oldPriceNoTax']	+= $this->getPrice($row['price'],0,$row['tax'])*$count;
+					
+					$oldPriceTax = $this->getPrice($row['price'],1,$row['tax']);
+					$oldPriceNoTax = $this->getPrice($row['price'],0,$row['tax']);
+										
+					/* Added Els3: if oldpricenotax is 0 -> oldpricenotax = pricenotax, otherwise price_discount doesn't calculate correctly */
+					if (doubleval($oldPriceNoTax) == 0) {
+					   $oldPriceNoTax = $priceNoTax;
+					}
+					
+					$this->calculatedArray['oldPriceTax']	+= $oldPriceTax * $count;
+					$this->calculatedArray['oldPriceNoTax']	+= $oldPriceNoTax * $count;
 				}
 			}
 		}
