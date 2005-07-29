@@ -22,7 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /** 
- * Class/Function which manipulates the item-array for table/field tt_products_language_overlay.sys_language_uid.
+ * Class/Function which manipulates the item-array for table/field tt_products_language.sys_language_uid.
  *
  * @author  Milosz Klosowicz <typo3@miklobit.com>
  * @package TYPO3

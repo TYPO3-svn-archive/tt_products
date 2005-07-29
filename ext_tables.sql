@@ -34,7 +34,6 @@ CREATE TABLE tt_products (
   accessory2 varchar(10) DEFAULT '' NOT NULL,
   color varchar(255) DEFAULT '' NOT NULL,
   size varchar(255) DEFAULT '' NOT NULL,
-  gradings varchar(40) DEFAULT '' NOT NULL,
   special_preparation int(11) DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid)
@@ -78,7 +77,7 @@ CREATE TABLE tt_products_language (
 	endtime int(11) DEFAULT '0' NOT NULL,
 	title varchar(80) DEFAULT "" NOT NULL,
 	subtitle varchar(80) DEFAULT "" NOT NULL,
-	prd_uid int(11) DEFAULT '0' NOT NULL,
+	prod_uid int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	subtitle tinytext NOT NULL,
 	note text NOT NULL,

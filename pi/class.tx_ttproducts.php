@@ -299,8 +299,8 @@ class tx_ttproducts extends tslib_pibase {
 		}
 
 		$content = $this->cObj->getSubpart($this->templateCode,$this->spMarker('###CURRENCY_SELECTOR###'));
-		$content = $this->cObj->substituteMarker( $content, '###CURRENCY_FORM_NAME###', 'mkl_products_currsel_form' );
-		$onChange = 'if (!document.mkl_products_currsel_form.C.options[document.mkl_products_currsel_form.C.selectedIndex].value) return; top.location.replace(currlink[document.mkl_products_currsel_form.C.selectedIndex] );';
+		$content = $this->cObj->substituteMarker( $content, '###CURRENCY_FORM_NAME###', 'tt_products_currsel_form' );
+		$onChange = 'if (!document.tt_products_currsel_form.C.options[document.tt_products_currsel_form.C.selectedIndex].value) return; top.location.replace(currlink[document.tt_products_currsel_form.C.selectedIndex] );';
 		$selector = $this->exchangeRate->buildCurrSelector($this->BaseCurrency,'C','',$this->currency, $onChange);
 		$content = $this->cObj->substituteMarker( $content, '###SELECTOR###', $selector );
 
@@ -497,7 +497,6 @@ class tx_ttproducts extends tslib_pibase {
 		return strcmp($this->categories[$row1['category']], $this->categories[$row2['category']]);
 	}
 
-
 	/**
 	 * Returning the pid out from the row using the where clause
 	 */
@@ -524,6 +523,9 @@ class tx_ttproducts extends tslib_pibase {
 		} else
 		{
 			$rc = intval($conf);
+			if ($rc == 0) {
+				$rc = intval ($row['pid']);
+			}
 		}
 		return $rc;
 	}

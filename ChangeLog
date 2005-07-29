@@ -1,4 +1,7 @@
 2005-07-29  Franz Holzinger  <franz@fholzinger.com>
+	* Use $row['pid'] if PIDitemDisplay is not defined
+
+2005-07-29  Franz Holzinger  <franz@fholzinger.com>
 	* make all former fields like country, name available again.
 
 2005-07-29  Franz Holzinger  <franz@fholzinger.com>
