@@ -153,7 +153,7 @@ CREATE TABLE sys_products_orders (
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
   deleted tinyint(4) unsigned DEFAULT '0' NOT NULL,
   note text NOT NULL,
-  feusers_uid int(11) DEFAULT '' NOT NULL,
+  feusers_uid int(11) DEFAULT '0' NOT NULL,
 # forename varchar(80) DEFAULT '' NOT NULL,
   name varchar(80) DEFAULT '' NOT NULL,
 # company varchar(80) DEFAULT '' NOT NULL,  
@@ -178,7 +178,7 @@ CREATE TABLE sys_products_orders (
 #  zip varchar(10) DEFAULT '' NOT NULL,
 #  country_code char(3) DEFAULT '' NOT NULL,
 #  client_ip varchar(15) DEFAULT '' NOT NULL,
-  creditpoints decimal(10,4) default '0' NOT NULL,
+  creditpoints decimal(10,4) default '0.0000' NOT NULL,
   agb char(2) DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid),
@@ -204,8 +204,8 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 CREATE TABLE fe_users (
   tt_products_memoItems tinytext NOT NULL,
   tt_products_discount int(11) DEFAULT '0' NOT NULL
-  tt_products_creditpoints decimal(10,2) default '0' NOT NULL,
-  tt_products_vouchercode varchar(50) default NULL
+  tt_products_creditpoints decimal(10,4) DEFAULT '0.0000' NOT NULL,
+  tt_products_vouchercode varchar(50) DEFAULT ''
   );
 
 #
