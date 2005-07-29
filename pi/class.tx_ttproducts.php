@@ -1649,7 +1649,7 @@ class tx_ttproducts extends tslib_pibase {
 		// Generate CSV for each order
 		if ($this->conf['generateCSV'])
 		{
-			$csvfilepath = $this->conf['CSVdestination'];
+			$csvfilepath = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $this->conf['CSVdestination'];
 			if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
 				$csvfilepath .= '/';
 			}
@@ -3569,19 +3569,20 @@ class tx_ttproducts extends tslib_pibase {
 		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
 
 		$content= $this->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);
-		$dateiname = $this->conf['outputFolder'] . '/' . $type . '/' . $tracking . '.htm';
-
+		$reldateiname = $this->conf['outputFolder'] . '/' . $type . '/' . $tracking . '.htm';
+		
+		$dateiname = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $reldateiname;
 		$datei = fopen($dateiname, 'w');
 		fwrite ($datei, $content);
 		fclose ($datei);
 
 		if ($type == 'bill')
 		{		// TODO: +++
-			$content = '<A href="' . $dateiname . '" >zum &Ouml;ffnen der Rechnung hier klicken</A>';
+			$content = '<A href="' . $reldateiname . '" >zum &Ouml;ffnen der Rechnung hier klicken</A>';
 		}
 		else
 		{
-			$content = '<A href="' . $dateiname . '" >zum &Ouml;ffnen des Lieferscheins hier klicken</A>';
+			$content = '<A href="' . $reldateiname . '" >zum &Ouml;ffnen des Lieferscheins hier klicken</A>';
 		}
 
 		return $content;

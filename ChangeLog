@@ -1,3 +1,6 @@
+2005-07-29  Franz Holzinger  <franz@fholzinger.com>
+	* correct error with sometimes wrong path to file directory on server for saving of the CVS file and of the bill
+
 2005-07-27  Franz Holzinger  <franz@fholzinger.com>
 	* put several products with different sizes into the basket
 
