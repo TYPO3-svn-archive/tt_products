@@ -3103,8 +3103,11 @@ class tx_ttproducts extends tslib_pibase {
 
 			// Personal and delivery info:
 /* Add ELS: more fields */
-		//$infoFields = explode(',','name,address,telephone,fax,email,company,city,zip,state,country');		// Fields...
-		$infoFields = explode(',','tx_feuserextrafields_initials_name,telephone,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,email,date_of_birth,company,tx_feuserextrafields_company_deliv,address,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,city,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv'); // Fields...
+		$list = 'name,address,telephone,fax,email,company,city,zip,state,country';
+		if (t3lib_extMgm::isLoaded('feuserextrafields')) {
+			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,address,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,city,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
+		}
+		$infoFields = explode(',',$list); // Fields...
 // mkl: 	$infoFields = explode(',','forename,name,address,telephone,fax,email,company,city,zip,state,street,street_n1,street_n2,country_code,vat_id');
 
 		while(list(,$fName)=each($infoFields))	{
