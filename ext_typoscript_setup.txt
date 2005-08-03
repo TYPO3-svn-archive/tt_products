@@ -32,7 +32,7 @@ plugin.tt_products {
   listImage < .image
   listImage.file.maxW = {$plugin.tt_products.maxW_list}
   listImage.file.maxH = {$plugin.tt_products.maxH_list}
-  listImageLinkWrap = {$plugin.tt_products.clickEnlarge_basket}
+  listImageLinkWrap = {$plugin.tt_products.clickEnlarge_list}
   
   basketImage < .image
   basketImage.file.maxW = {$plugin.tt_products.maxW_basket}

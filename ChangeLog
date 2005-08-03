@@ -1,3 +1,9 @@
+2005-08-03  Franz Holzinger  <franz@fholzinger.com>
+	* Datasheet
+	* correct error with single view at page with LIST code
+	* correct error with OVERVIEW at a page with LIST code
+	* bananaguard example bill template with option for HTML email
+
 2005-07-29  Franz Holzinger  <franz@fholzinger.com>
 	* Use $row['pid'] if PIDitemDisplay is not defined
 

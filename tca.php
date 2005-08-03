@@ -166,9 +166,9 @@ $TCA["tt_products"] = Array (
 			"config" => Array (
 				"type" => "group",
 				"internal_type" => "file",
-				"allowed" => "pdf",
+				"allowed" => "doc,htm,html,pdf,sxw,txt,xls,gif,jpg,png",
 				"max_size" => "1000",
-				"uploadfolder" => "uploads/tx_mklproducts/datasheet",
+				"uploadfolder" => "uploads/tx_ttproducts/datasheet",
 				"show_thumbs" => "1",
 				"size" => "1",
 				"maxitems" => "1",
@@ -320,8 +320,9 @@ $TCA["tt_products"] = Array (
 $TCA["tt_products_language"] = Array (
 	"ctrl" => $TCA["tt_products_language"]["ctrl"],
 	"interface" => Array (
-		"showRecordFieldList" => "hidden,prd_uid,sys_language_uid,title,note,www"
+		"showRecordFieldList" => "sys_language_uid,l18n_parent,l18n_diffsource,hidden,starttime,endtime,prod_uid,title,subtitle,unit,note,datasheet,color,size,www"
 	),
+	
 	"feInterface" => $TCA["tt_products_language"]["feInterface"],
 	"columns" => Array (	
 		'sys_language_uid' => Array (
@@ -391,20 +392,6 @@ $TCA["tt_products_language"] = Array (
 				)
 			)
 		),
-		"fe_group" => Array (
-			"exclude" => 1,
-			"label" => "LLL:EXT:lang/locallang_general.php:LGL.fe_group",
-			"config" => Array (
-				"type" => "select",
-				"items" => Array (
-					Array("", 0),
-					Array("LLL:EXT:lang/locallang_general.php:LGL.hide_at_login", -1),
-					Array("LLL:EXT:lang/locallang_general.php:LGL.any_login", -2),
-					Array("LLL:EXT:lang/locallang_general.php:LGL.usergroups", "--div--")
-				),
-				"foreign_table" => "fe_groups"
-			)
-		),	
 		"prod_uid" => Array (		
 			"exclude" => 0,		
 			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_language.prod_uid",		
@@ -456,7 +443,7 @@ $TCA["tt_products_language"] = Array (
 			"config" => Array (
 				"type" => "group",
 				"internal_type" => "file",
-				"allowed" => "pdf",
+				"allowed" => "doc,htm,html,pdf,sxw,txt,xls,gif,jpg,png",
 				"max_size" => "1000",
 				"uploadfolder" => "uploads/tx_ttproducts/datasheet",
 				"show_thumbs" => "1",
@@ -540,8 +527,8 @@ $TCA["tt_products_cat"] = Array (
 $TCA["tt_products_cat_language"] = Array (
 	"ctrl" => $TCA["tt_products_cat_language"]["ctrl"],
 	"interface" => Array (
-		"showRecordFieldList" => "hidden,cat_uid,sys_language_uid,title"
-	),
+		"showRecordFieldList" => "sys_language_uid,l18n_parent,l18n_diffsource,hidden,starttime,endtime,fe_group,title,subtitle,description_extra,price_gross,price_net,tax,article_type_uid,products_uid,title,cat_uid"
+	),	
 	"feInterface" => $TCA["tt_products_cat_language"]["feInterface"],
 	"columns" => Array (	
 		'sys_language_uid' => Array (
@@ -609,20 +596,6 @@ $TCA["tt_products_cat_language"] = Array (
 					"upper" => mktime(0,0,0,12,31,2020),
 					"lower" => mktime(0,0,0,date("m")-1,date("d"),date("Y"))
 				)
-			)
-		),
-		"fe_group" => Array (
-			"exclude" => 1,
-			"label" => "LLL:EXT:lang/locallang_general.php:LGL.fe_group",
-			"config" => Array (
-				"type" => "select",
-				"items" => Array (
-					Array("", 0),
-					Array("LLL:EXT:lang/locallang_general.php:LGL.hide_at_login", -1),
-					Array("LLL:EXT:lang/locallang_general.php:LGL.any_login", -2),
-					Array("LLL:EXT:lang/locallang_general.php:LGL.usergroups", "--div--")
-				),
-				"foreign_table" => "fe_groups"
 			)
 		),
 		"title" => Array (

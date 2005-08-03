@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2004 Kasper Skaarhoj (kasperYYYY@typo3.com)
+*  (c) 1999-2005 Kasper Skaarhoj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -105,7 +105,7 @@ class tx_ttproducts extends tslib_pibase {
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
 	function main_products($content,$conf)	{
-		global $TSFE;
+		global $TSFE, $LANG;
 
 			// getting configuration values:
 		$this->conf=$conf;
@@ -206,8 +206,8 @@ class tx_ttproducts extends tslib_pibase {
 		{
 			if (strtoupper($theCode)=='BASKET')
 				$isBasket = 1;
-			if (strtoupper($theCode)=='OVERVIEW')
-				$this->isOverview = 1;
+			/* if (strtoupper($theCode)=='OVERVIEW')
+				$this->isOverview = 1; */
 		}
 
 		if (t3lib_div::_GP('mode_update') && ($isBasket || ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory'] == 0)))
@@ -504,28 +504,36 @@ class tx_ttproducts extends tslib_pibase {
 		$rc = 0;
 		if ($confExt) {
 			foreach ($confExt as $k1 => $param) {
+				$type  = $param['type'];
 				$where = $param['where'];
-				if ($where) {
-					$wherelist = explode ('AND', $where);
-					$isValid = true;
-					foreach ($wherelist as $k2 => $condition) {
-						$args = explode ('=', $condition);
-						if ($row[$args[0]] != $args[1]) {
-							$isValid = false;
+				switch ($type) {
+					case 'sql':					
+						if ($where) {
+							$wherelist = explode ('AND', $where);
+							$isValid = true;
+							foreach ($wherelist as $k2 => $condition) {
+								$args = explode ('=', $condition);
+								if ($row[$args[0]] != $args[1]) {
+									$isValid = false;
+								}
+							}
 						}
-					}
+						if ($isValid == true) {
+							$rc = $param['pid'];
+							break;
+						}
+						break;
+					case 'pid':
+						$rc = intval ($row['pid']);
+						break;
 				}
-				if ($isValid == true) {
-					$rc = $param['pid'];
-					break;
+				if ($rc > 0) {
+					break; //ready with the foreach loop
 				}
 			}
 		} else
 		{
-			$rc = intval($conf);
-			if ($rc == 0) {
-				$rc = intval ($row['pid']);
-			}
+			$rc = $conf;
 		}
 		return $rc;
 	}
@@ -576,7 +584,7 @@ class tx_ttproducts extends tslib_pibase {
 		if (!$formUrl) {
 			$formUrl = $this->getLinkUrl(t3lib_div::_GP('backPID'));
 		}
-		if ($theCode=='SINGLE') {
+		if (($theCode=='SINGLE') || ($this->tt_product_single && !$this->conf['NoSingleViewOnList'])) {
 			// List single product:
 				// performing query:
 			$this->setPidlist($this->config['storeRootPid']);
@@ -619,21 +627,20 @@ class tx_ttproducts extends tslib_pibase {
 					$datasheetFile = $row['datasheet'] ;
 				}
 */
+
+				$datasheetFile = $row['datasheet'];
 				if (!$itemFrameWork)	{$itemFrameWork = $this->cObj->getSubpart($this->templateCode,$this->spMarker('###ITEM_SINGLE_DISPLAY###'));}
 
 					// Fill marker arrays
 				$wrappedSubpartArray=array();
 				$wrappedSubpartArray['###LINK_ITEM###']= array('<A href="'.$this->getLinkUrl(t3lib_div::_GP('backPID')).'">','</A>');
 
-/*
 
 				if( $datasheetFile == '' )  {
 					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
 				}  else  {
-					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<A href='uploads/tx_ttproducts/datasheet/'.$datasheetFile.''>','</A>');
+					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<A href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</A>');
 				}
-
-*/
 
 				$item = $this->getItem($row);
 				$markerArray = $this->getItemMarkerArray ($item,$catTitle,$this->config['limitImage']);
@@ -693,10 +700,7 @@ class tx_ttproducts extends tslib_pibase {
 				$t['search'] = $this->cObj->getSubpart($this->templateCode,$this->spMarker('###ITEM_SEARCH###'));
 					// Substitute a few markers
 				$out=$t['search'];
-				if (!$this->conf['displayBasketColumns'])
-				{
-					$out=$this->cObj->substituteMarker($out, '###FORM_URL###', $this->getLinkUrl($this->conf['PIDsearch']));
-				}
+				$out=$this->cObj->substituteMarker($out, '###FORM_URL###', $this->getLinkUrl($this->conf['PIDsearch']));
 				$out=$this->cObj->substituteMarker($out, '###SWORDS###', htmlspecialchars(t3lib_div::_GP('swords')));
 					// Add to content
 				$content.=$out;
@@ -722,7 +726,7 @@ class tx_ttproducts extends tslib_pibase {
 			}
 			if ($theCode=='MEMO') {
 				if ($memoItems != '')
-					$where = ' AND uid IN ($memoItems)';
+					$where = ' AND uid IN ('.$memoItems.')';
 				else
 					$where = ' AND 1=0';
 			}
@@ -878,26 +882,26 @@ class tx_ttproducts extends tslib_pibase {
 							if ($row['uid']==$this->tt_product_single) {
                             	$css_current = $this->conf['CSSListCurrent'];
                             }
+                            $css_current = ($css_current ? '" id="'.$css_current.'"' : '');
 
 								// Print Item Title
 							$wrappedSubpartArray=array();
-							// $wrappedSubpartArray['###LINK_ITEM###']= array('<A href="'.$this->getLinkUrl($this->conf['PIDitemDisplay']).'&tt_products='.$row['uid'].'" id="'.$css_current.'">','</A>');
 
 							$addQueryString=array();
 							$addQueryString['tt_products']= 'tt_products='.$row['uid'];
 							$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
-							$wrappedSubpartArray['###LINK_ITEM###']= array('<A href="'.$this->getLinkUrl($pid,'',$addQueryString).'" id="'.$css_current.'">','</A>');
-
+							$wrappedSubpartArray['###LINK_ITEM###']= array('<A href="'.$this->getLinkUrl($pid,'',$addQueryString).$css_current.'>','</A>');
+							
 							if( $datasheetFile == '' )  {
 								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
 							}  else  {
-								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<A href="uploads/tx_mklproducts/datasheet/'.$datasheetFile.'">','</A>');
+								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<A href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</A>');
 							}
 
 							$item = $this->getItem($row);
 /* Added Bert: in stead of listImage -> Image, reason: images are read from directory */
-//							$markerArray = $this->getItemMarkerArray ($item,$catTitle, $this->config['limitImage'],'listImage');
-							$markerArray = $this->getItemMarkerArray ($item,$catTitle, $this->config['limitImage'],'image');
+//							$markerArray = $this->getItemMarkerArray ($item,$catTitle, $this->config['limitImage'],'image');
+							$markerArray = $this->getItemMarkerArray ($item,$catTitle, $this->config['limitImage'],'listImage');
 							$subpartArray = array();
 
 							if (!$this->conf['displayBasketColumns'])
@@ -912,7 +916,11 @@ class tx_ttproducts extends tslib_pibase {
 
 							$temp='';
 							if ($iColCount == 1) {
-								$temp = '<TR class="'.$even_uneven.'">';
+								if ($even_uneven) {
+									$temp = '<TR class="'.$even_uneven.'">';
+								} else {
+									$temp = '<TR>';
+								}
 								$tableRowOpen=1;
 							}
 							$markerArray['###ITEM_SINGLE_PRE_HTML###'] = $temp;
@@ -1109,7 +1117,7 @@ class tx_ttproducts extends tslib_pibase {
 		}
 
 		$basketExtRaw = t3lib_div::_GP('ttp_basket');
-
+		
 		if ((!$this->isOverview) && is_array($basketExtRaw)) {
 
 			while(list($uid,$basketItem)=each($basketExtRaw))       {
@@ -1797,7 +1805,7 @@ class tx_ttproducts extends tslib_pibase {
 					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
 					$Typo3_htmlmail->useBase64();
 					$Typo3_htmlmail->start(implode($recipients,','), $subject, $plain_message, $HTMLmailContent, $V);
-						$Typo3_htmlmail->sendtheMail();
+					$Typo3_htmlmail->sendtheMail();
 				} else {		// ... else just plain text...
 					// $headers variable überall entfernt!
 					$this->send_mail($this->personInfo['email'], $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName'], $this->conf['AGBattachment']);
@@ -3063,7 +3071,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		// This is for the Basketoverview
 		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->calculatedArray['count'];
-		$markerArray['###IMAGE_BASKET###'] = '<img src="'.$this->conf['basket_pic'].'">';
+		$markerArray['###IMAGE_BASKET###'] = '<img src="'.$this->conf['basketPic'].'">';
 		$wrappedSubpartArray['###LINK_BASKET###']= array('<A href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</A>');
 
 		$markerArray['###PRICE_SHIPPING_PERCENT###'] = $perc;
