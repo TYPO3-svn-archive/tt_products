@@ -169,7 +169,8 @@ class tx_ttproducts extends tslib_pibase {
 			$this->tt_product_single = true;
 		} else {
 			$temp = t3lib_div::_GET('tt_products');
-			$this->tt_product_single = ($temp ? $temp : $this->conf['defaultProductID']);
+			$this->tt_product_single = $temp;			
+//			$this->tt_product_single = ($temp ? $temp : $this->conf['defaultProductID']);
 		}
 
 			// template file is fetched. The whole template file from which the various subpart are extracted.
@@ -586,6 +587,11 @@ class tx_ttproducts extends tslib_pibase {
 		}
 		if (($theCode=='SINGLE') || ($this->tt_product_single && !$this->conf['NoSingleViewOnList'])) {
 			// List single product:
+			
+			if (!$this->tt_product_single) {
+				$this->tt_product_single = $this->conf['defaultProductID'];	
+			}
+			
 				// performing query:
 			$this->setPidlist($this->config['storeRootPid']);
 			$this->initRecursive(999);
@@ -1251,10 +1257,6 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function setBasketExtras($basket)	{
 		global $TSFE;
-
-		error_log ('setBasketExtras');
-		$this->createOrder(); // +++
-		$this->getOrderNumber($dum1)	; //+++
 		
 			// shipping
 		ksort($this->conf['shipping.']);
@@ -3307,8 +3309,6 @@ class tx_ttproducts extends tslib_pibase {
 				// Initialize update of status...
 			$fieldsArray = array();
 			$orderRecord = t3lib_div::_GP('orderRecord');
-			debug ($orderRecord, 'orderRecord', __LINE__, __FILE__);
-			debug ($orderRow, 'orderRow', __LINE__, __FILE__);
 			if (isset($orderRecord['email_notify']))	{
 				$fieldsArray['email_notify']=$orderRecord['email_notify'];
 				$orderRow['email_notify'] = $fieldsArray['email_notify'];
@@ -3330,7 +3330,6 @@ class tx_ttproducts extends tslib_pibase {
 							'status' => $val,
 							'comment' => $orderRecord['status_comment']
 						);
-						debug ($orderRow, '$orderRow', __LINE__, __FILE__);
 						$recipient = $this->conf['orderEmail_to'];
 						if ($orderRow['email'] && $orderRow['email_notify'])	{
 							$recipient .= ','.$orderRow['email'];
