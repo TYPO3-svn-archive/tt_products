@@ -1421,7 +1421,8 @@ class tx_ttproducts extends tslib_pibase {
 		$fieldsArray['telephone']=$this->deliveryInfo['telephone'];
 		$fieldsArray['fax']=$this->deliveryInfo['fax'];
 		$fieldsArray['email']=$this->deliveryInfo['email'];
-		$fieldsArray['email_notify']=  $this->conf['email_notify_default'];		// Email notification is set here. Default email address is delivery email contact
+//		debug ($this->conf['email_notify_default'], "this->conf['email_notify_default']", __LINE__, __FILE__);
+//Franz:		$fieldsArray['email_notify']=  $this->conf['email_notify_default'];		// Email notification is set here. Default email address is delivery email contact
 
 			// can be changed after order is set.
 		$fieldsArray['payment']=$this->basketExtra['payment'].': '.$this->basketExtra['payment.']['title'];
@@ -2348,6 +2349,8 @@ class tx_ttproducts extends tslib_pibase {
 			&$pricePaymentTax,
 			&$pricePaymentNoTax
 			) {
+		global $TSFE;
+
 			// shipping
 		$priceShipping = $priceShippingTax = $priceShippingNoTax = 0;
 		$confArr = $this->basketExtra['shipping.']['priceTax.'];
@@ -3162,6 +3165,8 @@ class tx_ttproducts extends tslib_pibase {
 
 		$markerArray['###USERNAME###'] = $this->personInfo['email'];
 		$markerArray['###PASSWORD###'] = $this->password;
+		$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
+
 
 			// URL
 		$markerArray = $this->addURLMarkers($markerArray);
@@ -3302,6 +3307,8 @@ class tx_ttproducts extends tslib_pibase {
 				// Initialize update of status...
 			$fieldsArray = array();
 			$orderRecord = t3lib_div::_GP('orderRecord');
+			debug ($orderRecord, 'orderRecord', __LINE__, __FILE__);
+			debug ($orderRow, 'orderRow', __LINE__, __FILE__);
 			if (isset($orderRecord['email_notify']))	{
 				$fieldsArray['email_notify']=$orderRecord['email_notify'];
 				$orderRow['email_notify'] = $fieldsArray['email_notify'];
@@ -3323,9 +3330,12 @@ class tx_ttproducts extends tslib_pibase {
 							'status' => $val,
 							'comment' => $orderRecord['status_comment']
 						);
+						debug ($orderRow, '$orderRow', __LINE__, __FILE__);
+						$recipient = $this->conf['orderEmail_to'];
 						if ($orderRow['email'] && $orderRow['email_notify'])	{
-							$this->sendNotifyEmail($orderRow['email'], $status_log_element, t3lib_div::_GP('tracking'), $this->getOrderNumber($orderRow['uid']),$templateCode);
+							$recipient .= ','.$orderRow['email'];
 						}
+						$this->sendNotifyEmail($recipient, $status_log_element, t3lib_div::_GP('tracking'), $this->getOrderNumber($orderRow['uid']),$templateCode);
 						$status_log[] = $status_log_element;
 						$update=1;
 					}
@@ -3623,6 +3633,8 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray['###ORDER_STATUS###']=$v['status'];
 				$markerArray['###ORDER_STATUS_INFO###']=$v['info'];
 				$markerArray['###ORDER_STATUS_COMMENT###']=$v['comment'];
+				$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
+				
 
 				$markerArray['###ORDER_TRACKING_NO###']=$tracking;
 				$markerArray['###ORDER_UID###']=$uid;

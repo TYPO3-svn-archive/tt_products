@@ -809,7 +809,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 					Levering sker iflg. vores salgs- og leveringsbetingelser inden for 3 dage fra ordreafgivelsen, som er dateret til ###ORDER_DATE###.<br>
 					<br>
 					Du kan følge status med din ordre ved at bruge dit trackingnummer, som er <br>
-					<strong>###ORDER_TRACKING_NO###</strong>. Klik her for at <a href="http://###DOMAIN###/index.php?id=trackingpid&type=0&tracking=###ORDER_TRACKING_NO###">se status nu.</a><br><br>
+					<strong>###ORDER_TRACKING_NO###</strong>. Klik her for at <a href="http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###">se status nu.</a><br><br>
 
 					Vi håber, at du har følt dig lige så godt betjent i vores Internet-butik, som i vores virkelige forretninger. Hvis du har forslag til forbedringer eller andre kommentarer, så skriv til <a href="mailto:butik@inter-photo.dk">butik@inter-photo.dk</a>.<br>
 					<br>
@@ -1143,10 +1143,10 @@ Displays the view of the order status by tracking codes.
 	<!-- ###ADMIN_CONTROL_OK### begin -->
 	<!-- ###ADMIN_CONTROL_DENY### begin -->
 		<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
-		<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
+			<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
 		###GW1B###code:###GW1B###<br>
-		<input type="password" size=40 name="update_code" value="###UPDATE_CODE###">
-		<input type="Submit" name="submit" value="input code">
+			<input type="password" size=40 name="update_code" value="###UPDATE_CODE###">
+			<input type="Submit" name="submit" value="input code">
 		</FORM>
 	<!-- ###ADMIN_CONTROL_DENY### begin -->
 
@@ -1162,8 +1162,7 @@ Displays the view of the order status by tracking codes.
 Hvis du ønsker at modtage en besked til ordrens contactemail, ###FIELD_EMAIL###, hver gang status opdateres, så afkryds dette felt herunder.<br>
 	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 
-	<input type="hidden" name="orderRecord[email_notify]" value="0">
-	<input type="checkbox" name="orderRecord[email_notify]" value="1"###FIELD_email_NOTIFY###>Modtag besked ved status ændringer<br>
+	<input type="checkbox" name="orderRecord[email_notify]" ###FIELD_EMAIL_NOTIFY###>Modtag besked ved status ændringer<br>
 	<input type="text" size=40 name="orderRecord[email]" value="###FIELD_EMAIL###">
 	<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
 
@@ -1254,7 +1253,7 @@ Du får denne email, fordi du har valgt at modtage information om din ordre ved a
 Du kan følge status med din ordre samt ændre indstillinger for ordre information ved at bruge dit trackingnummer, som er
         ###ORDER_TRACKING_NO###
 
-<a href="http://###DOMAIN###/index.php?id=trackingpid&type=0&tracking=###ORDER_TRACKING_NO###">Klik her for at se information nu:</a>
+<a href="http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###">Klik her for at se information nu:</a>
 
 Med venlig hilsen
 	Inter Photo A/S
@@ -1302,7 +1301,7 @@ vores Internet-butik, som i vores virkelige forretninger.
 
 TRACKING:
 Du kan følge status med din ordre ved at bruge dit trackingnummer, som er
-        http://###DOMAIN###/index.php?id=trackingpid&type=0&tracking=###ORDER_TRACKING_NO###
+        http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###
 
 
 ORDER:

@@ -1,4 +1,7 @@
 2005-08-03  Franz Holzinger  <franz@fholzinger.com>
+	* PID_TRACKING for easier templates
+
+2005-08-03  Franz Holzinger  <franz@fholzinger.com>
 	* Datasheet
 	* correct error with single view at page with LIST code
 	* correct error with OVERVIEW at a page with LIST code
