@@ -105,7 +105,7 @@ class tx_ttproducts extends tslib_pibase {
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
 	function main_products($content,$conf)	{
-		global $TSFE, $LANG;
+		global $TSFE;
 
 			// getting configuration values:
 		$this->conf=$conf;
@@ -315,7 +315,7 @@ class tx_ttproducts extends tslib_pibase {
 	 * Takes care of basket, address info, confirmation and gate to payment
 	 */
 	function products_basket($theCode)	{
-		global $TSFE, $LANG;
+		global $TSFE;
 
 		$content = '';
 		$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
@@ -369,7 +369,8 @@ class tx_ttproducts extends tslib_pibase {
 							$label = '*** AGB ***';
 						} else {
 							if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-								$label = $LANG->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
+								$label = $GLOBALS['TSFE']->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
+								//$label = $LANG->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
 							} else {
 								$label = 'field: '.$check;
 							}
@@ -543,7 +544,7 @@ class tx_ttproducts extends tslib_pibase {
 	 * Displaying single products/ the products list / searching
 	 */
 	function products_display($theCode, $memoItems='')	{
-		global $TSFE, $LANG;
+		global $TSFE;
 
 
 /*

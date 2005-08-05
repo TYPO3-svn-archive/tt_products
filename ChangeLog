@@ -1,3 +1,6 @@
+2005-08-05  Holzinger Franz  <franz@fholzinger.com>
+	* correct error with display of error message of missing fields of the entries
+
 2005-08-03  Holzinger Franz  <franz@fholzinger.com>
 	* correct error with sys_orders_products
 
