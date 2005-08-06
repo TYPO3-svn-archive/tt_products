@@ -1,3 +1,6 @@
+2005-08-06  Franz Holzinger <franz@fholzinger.com>
+	* gradings has been missing in ext_tables.sql and it had a too small size
+
 2005-08-05  Holzinger Franz  <franz@fholzinger.com>
 	* correct error with display of error message of missing fields of the entries
 

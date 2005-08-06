@@ -34,6 +34,7 @@ CREATE TABLE tt_products (
   accessory2 varchar(10) DEFAULT '' NOT NULL,
   color varchar(255) DEFAULT '' NOT NULL,
   size varchar(255) DEFAULT '' NOT NULL,
+  gradings varchar(255) DEFAULT '' NOT NULL,
   special_preparation int(11) DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid)

@@ -281,9 +281,9 @@ $TCA["tt_products"] = Array (
 			"label" => "LLL:EXT:tt_products/locallang_tca.php:tt_products.gradings",
 			"config" => Array (
 				"type" => "input",
-				"size" => "10",
+				"size" => "20",
 				"eval" => "trim",
-				"max" => "30"
+				"max" => "255"
 			)
 		),
 		"image" => Array (
