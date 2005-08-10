@@ -1,3 +1,9 @@
+2005-08-10  Franz Holzinger <franz@fholzinger.com>
+	* correct <A>-tags to <a>
+	* correct errors in links with ###LINK_ITEM###
+	* language file for link to bill and delivery
+	* make useStaticInfoCountry configurable
+
 2005-08-06  Franz Holzinger <franz@fholzinger.com>
 	* gradings has been missing in ext_tables.sql and it had a too small size
 

@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the TT_PRODUCTS (Shopping System) extension.
+ * Part of the tt_products (Shopping System) extension.
  *
  * Creates a list of products for the shopping basket in TYPO3.
  * Also controls basket, searching and payment.
@@ -56,6 +56,10 @@ require_once('class.tx_ttproducts_htmlmail.php');
 
 
 class tx_ttproducts extends tslib_pibase {
+	var $prefixId = 'tx_ttproducts';	// Same as class name
+	var $scriptRelPath = 'pi/class.tx_ttproducts.php';	// Path to this script relative to the extension dir.
+	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
+
 	var $cObj;		// The backReference to the mother cObj object set at call time
 
 	var $searchFieldList='title,note,itemnumber';
@@ -109,6 +113,8 @@ class tx_ttproducts extends tslib_pibase {
 
 			// getting configuration values:
 		$this->conf=$conf;
+		$this->pi_setPiVarDefaults();
+		$this->pi_loadLL();
 
 		$TSFE->set_no_cache();
     	// multilanguage support
@@ -640,13 +646,13 @@ class tx_ttproducts extends tslib_pibase {
 
 					// Fill marker arrays
 				$wrappedSubpartArray=array();
-				$wrappedSubpartArray['###LINK_ITEM###']= array('<A href="'.$this->getLinkUrl(t3lib_div::_GP('backPID')).'">','</A>');
+				$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'.$this->getLinkUrl(t3lib_div::_GP('backPID')).'">','</a>');
 
 
 				if( $datasheetFile == '' )  {
 					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
 				}  else  {
-					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<A href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</A>');
+					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
 				}
 
 				$item = $this->getItem($row);
@@ -674,7 +680,7 @@ class tx_ttproducts extends tslib_pibase {
 				$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev);
 
 				if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )
-					$wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<A href="'.$url.'&tt_products='.$rowprev['uid'].'">','</A>');
+					$wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
 				else
 					$subpartArray['###LINK_PREV_SINGLE###']='';
 
@@ -682,7 +688,7 @@ class tx_ttproducts extends tslib_pibase {
 				$resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext);
 
 				if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )
-					$wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<A href="'.$url.'&tt_products='.$rownext['uid'].'">','</A>');
+					$wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rownext['uid'].'">','</a>');
 				else
 					$subpartArray['###LINK_NEXT_SINGLE###']='';
 
@@ -897,12 +903,12 @@ class tx_ttproducts extends tslib_pibase {
 							$addQueryString=array();
 							$addQueryString['tt_products']= 'tt_products='.$row['uid'];
 							$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
-							$wrappedSubpartArray['###LINK_ITEM###']= array('<A href="'.$this->getLinkUrl($pid,'',$addQueryString).$css_current.'>','</A>');
+							$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'.$this->getLinkUrl($pid,'',$addQueryString).'"'.$css_current.'>','</a>');
 							
 							if( $datasheetFile == '' )  {
 								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
 							}  else  {
-								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<A href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</A>');
+								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
 							}
 
 							$item = $this->getItem($row);
@@ -980,13 +986,13 @@ class tx_ttproducts extends tslib_pibase {
 
 				if ($more)	{
 					$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
-					$wrappedSubpartArray['###LINK_NEXT###']=array('<A href="'.$url.'&begin_at='.$next.'">','</A>');
+					$wrappedSubpartArray['###LINK_NEXT###']=array('<a href="'.$url.'&begin_at='.$next.'">','</a>');
 				} else {
 					$subpartArray['###LINK_NEXT###']='';
 				}
 				if ($begin_at)	{
 					$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
-					$wrappedSubpartArray['###LINK_PREV###']=array('<A href="'.$url.'&begin_at='.$prev.'">','</A>');
+					$wrappedSubpartArray['###LINK_PREV###']=array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
 				} else {
 					$subpartArray['###LINK_PREV###']='';
 				}
@@ -999,7 +1005,7 @@ class tx_ttproducts extends tslib_pibase {
 							//	you may use this if you want to link to the current page also
 							//
 						} else {
-							$markerArray['###BROWSE_LINKS###'].= ' <A href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</A> ';
+							$markerArray['###BROWSE_LINKS###'].= ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
 						}
 					}
 				} else {
@@ -1194,7 +1200,7 @@ class tx_ttproducts extends tslib_pibase {
 					t3lib_div::trimExplode(chr(10),
 						$TSFE->fe_user->user['address'].chr(10).
 						$TSFE->fe_user->user['zip'].' '.$TSFE->fe_user->user['city'].chr(10).
-						$TSFE->fe_user->user['country']
+						($this->conf['useStaticInfoCountry'] ? $TSFE->fe_user->user['static_info_country']:$TSFE->fe_user->user['country'])
 						,1)
 					);
 			}
@@ -1212,7 +1218,7 @@ class tx_ttproducts extends tslib_pibase {
 			$this->personInfo['fax'] = $TSFE->fe_user->user['fax'];
 			$this->personInfo['zip'] = $TSFE->fe_user->user['zip'];
 			$this->personInfo['city'] = $TSFE->fe_user->user['city'];
-			$this->personInfo['country'] = $TSFE->fe_user->user['static_info_country'];
+			$this->personInfo['country'] = ($this->conf['useStaticInfoCountry'] ? $TSFE->fe_user->user['static_info_country']:$TSFE->fe_user->user['country']);
 			$this->personInfo['agb'] = $TSFE->fe_user->user['agb'];
 /* Added Els: getting the fields for displaying in the BASKET_PAYMENT_TEMPLATE  from fe_user */
 			$this->personInfo['tx_feuserextrafields_initials_name'] = $TSFE->fe_user->user['tx_feuserextrafields_initials_name'];
@@ -1575,6 +1581,7 @@ class tx_ttproducts extends tslib_pibase {
 					'usergroup' => $this->conf['memberOfGroup'],
 /* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
 					'uid' => $this->personInfo['feusers_uid'],
+					'company' => $this->personInfo['company'],
 					'name' => $this->personInfo['name'],
 					'address' => $this->personInfo['address'],
 					'telephone' => $this->personInfo['telephone'],
@@ -1582,11 +1589,11 @@ class tx_ttproducts extends tslib_pibase {
 					'email' => $this->personInfo['email'],
 					'zip' => $this->personInfo['zip'],
 					'city' => $this->personInfo['city'],
-					'country' => $this->personInfo['country'],
+					'country' => $TSFE->fe_user->user['country'],
+					'static_info_country' => $TSFE->fe_user->user['static_info_country'],
 					'crdate' => time()
 				);
 				$res = $GLOBALS['TYPO3_DB']->exec_INSERTquery('fe_users', $insertFields);
-
 				// send new user mail
 				if (count($this->personInfo['email'])) {
 					$emailContent=trim($this->getBasket('###EMAIL_NEWUSER_TEMPLATE###'));
@@ -2785,7 +2792,6 @@ class tx_ttproducts extends tslib_pibase {
 
 	... which holds the total amount, the final list of products and the price of payment and shipping!!
 
-	TODO: make all the basket calculations only here and call this function only once
 	 */
 	function getCalculatedBasket()	{
 		if (count($this->itemArray)) {// the item array contains all the data for the elements found in the basket
@@ -3021,7 +3027,7 @@ class tx_ttproducts extends tslib_pibase {
 					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->priceFormat($actItem['totalNoTax']);
 	
 					$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
-					$wrappedSubpartArray['###LINK_ITEM###']=array('<A href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'">','</A>');
+					$wrappedSubpartArray['###LINK_ITEM###']=array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'">','</a>');
 	
 					if (trim($actItem['rec']['color']) == '')
 						$subpartArray['###display_variant1###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,'###display_variant1###') : '');
@@ -3078,7 +3084,7 @@ class tx_ttproducts extends tslib_pibase {
 		// This is for the Basketoverview
 		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->calculatedArray['count'];
 		$markerArray['###IMAGE_BASKET###'] = '<img src="'.$this->conf['basketPic'].'">';
-		$wrappedSubpartArray['###LINK_BASKET###']= array('<A href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</A>');
+		$wrappedSubpartArray['###LINK_BASKET###']= array('<a href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</a>');
 
 		$markerArray['###PRICE_SHIPPING_PERCENT###'] = $perc;
 		$markerArray['###PRICE_SHIPPING_TAX###'] = $this->priceFormat($this->calculatedArray['priceTax']['shipping']);
@@ -3247,7 +3253,7 @@ class tx_ttproducts extends tslib_pibase {
 		$markerArray['###PRICE_TOTAL_TAX###'] = $this->priceFormat($this->calculatedArray['priceTax']['total']);
 		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->priceFormat($this->calculatedArray['priceNoTax']['total']);
 
-		$wrappedSubpartArray['###LINK_AGB###']=array('<A href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</A>');
+		$wrappedSubpartArray['###LINK_AGB###']=array('<a href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</a>');
 
 			// Final substitution:
 		if (!$TSFE->loginUser)	{		// Remove section for FE_USERs only, if there are no fe_user
@@ -3599,14 +3605,8 @@ class tx_ttproducts extends tslib_pibase {
 		fwrite ($datei, $content);
 		fclose ($datei);
 
-		if ($type == 'bill')
-		{		// TODO: +++
-			$content = '<A href="' . $reldateiname . '" >zum &Ouml;ffnen der Rechnung hier klicken</A>';
-		}
-		else
-		{
-			$content = '<A href="' . $reldateiname . '" >zum &Ouml;ffnen des Lieferscheins hier klicken</A>';
-		}
+		$message = $this->pi_getLL('open_'.$type);
+		$content = '<a href="' . $reldateiname . '" >'.$message.'</a>';
 
 		return $content;
 	}

@@ -6,15 +6,15 @@ if (!defined ('TT_PRODUCTS_EXTkey')) {
 }
 
 if (!defined ('PATH_BE_ttproducts')) {
-	define('PATH_ttproducts', t3lib_extMgm::extPath(TT_PRODUCTS_EXTkey));
+	define('PATH_BE_ttproducts', t3lib_extMgm::extPath(TT_PRODUCTS_EXTkey));
 }
 
 if (!defined ('PATH_BE_ttproducts_rel')) {
-	define('PATH_ttproducts_rel', t3lib_extMgm::extRelPath(TT_PRODUCTS_EXTkey));
+	define('PATH_BE_ttproducts_rel', t3lib_extMgm::extRelPath(TT_PRODUCTS_EXTkey));
 }
 
 if (!defined ('PATH_FE_ttproducts_rel')) {
-	define('PATH_ttproducts_rel', t3lib_extMgm::siteRelPath(TT_PRODUCTS_EXTkey));
+	define('PATH_FE_ttproducts_rel', t3lib_extMgm::siteRelPath(TT_PRODUCTS_EXTkey));
 }
 
 t3lib_extMgm::addUserTSConfig('

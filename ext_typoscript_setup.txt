@@ -57,6 +57,7 @@ plugin.tt_products {
   PIDinfo = {$plugin.tt_products.PIDinfo}
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
   PIDthanks = {$plugin.tt_products.PIDthanks}
+  PIDtracking = {$plugin.tt_products.PIDtracking}
   PIDitemDisplay = {$plugin.tt_products.PIDitemDisplay}
   PIDsearch = {$plugin.tt_products.PIDsearch}
   PIDbasket = {$plugin.tt_products.PIDbasket}
@@ -64,6 +65,8 @@ plugin.tt_products {
   PIDmemo = {$plugin.tt_products.PIDmemo}
   PID_sys_products_orders = 0
 
+  defaultProductID = {$plugin.tt_products.defaultProductID}
+  
   parseFunc < styles.content.parseFunc
   categoryHeader = TEXT
   categoryHeader.current = 1
@@ -107,6 +110,7 @@ plugin.tt_products {
   orderDate_stdWrap.strftime= %e-%m-%y
   
   usePriceTag = {$plugin.tt_products.usePriceTag}
+  useStaticInfoCountry = {$plugin.tt_products.useStaticInfoCountry}
 
   priceTagObj = IMAGE
   priceTagObj.wrap = |

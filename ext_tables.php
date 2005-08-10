@@ -4,9 +4,9 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 //if (TYPO3_MODE=="BE")   include_once(t3lib_extMgm::extPath("tt_products")."class.tx_ttproducts_language.php");
 
 //t3lib_div::loadTCA("tt_content");
-//$TCA["tt_content"]["types"]["list"]["subtypes_excludelist"]["5"]="layout,select_key";
-//$TCA["tt_content"]["types"]["list"]["subtypes_addlist"]["5"]="pi_flexform";
-//t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:tt_products/flexform_ds_pi.xml');
+//$TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi']='layout,select_key';
+//$TCA['tt_content']['types']['list"'['subtypes_addlist'][$_EXTKEY.'_pi']='pi_flexform';
+//t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi', 'FILE:EXT:tt_products/flexform_ds_pi.xml');
 
 
 $TCA['tt_products'] = Array (

@@ -46,10 +46,12 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=int+; label=PID for info page: This is the PID of the infoPage of the store.
   PIDinfo = 
-    # cat=plugin.products//; type=int+; label=PID for finalize page: This is the PID of the infoPage of the store.
+    # cat=plugin.products//; type=int+; label=PID for finalize page
   PIDfinalize =
-    # cat=plugin.products//; type=int+; label=PID for thanks page: This is the PID of the infoPage of the store.
+    # cat=plugin.products//; type=int+; label=PID for thanks page
   PIDthanks =
+    # cat=plugin.products//; type=int+; label=PID for tracking page
+  PIDtracking =
     # cat=plugin.products//; type=int+; label=PID for single item display: Set this in your setup for defining where conditions for several pages.
   PIDitemDisplay =
     # cat=plugin.products//; type=int+; label=PID for search page: If you want all product searches to go to a specific page, enter the PID it here! NOTE: If you set this PID, all searchqueries will (must) be handled with a list content element with the code "search" on that page.
@@ -61,6 +63,9 @@ plugin.tt_products {
     # cat=plugin.products//; type=int+; label=PID for the memo page: Needed if you want to use the memo page
   PIDmemo = 
 
+    # cat=plugin.products//; type=int+; label=ID of the default product that will be shown in a single page when nothing else is configured
+  defaultProductID = 1
+ 
     # cat=plugin.products//; type=small; label=TAX percentage: Type= Double (means, "use . as decimal point")
   TAXpercentage = 25
 
@@ -75,6 +80,8 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=boolean; label=Use Price Tag: Print a graphical price tag instead of the normal text field
   usePriceTag = 0
+    # cat=plugin.products//; type=boolean; label=Use Frontend User Static Info Country Field: This is the small country field of the fe_user table
+  useStaticInfoCountry = 1
     # cat=plugin.products//; type=text; label=Message displayed at bulkily items
   bulkilyWarning = <p><b>Warning! This article needs special transport.</b></p>
     # cat=plugin.products//; type=int+; label=Additional cost for bulkily items
