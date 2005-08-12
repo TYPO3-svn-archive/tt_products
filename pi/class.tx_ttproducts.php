@@ -1120,7 +1120,6 @@ class tx_ttproducts extends tslib_pibase {
 		$this->recs = $basket;	// Sets it internally
 		$this->basket=array();
 
-		error_log ('initBasket');
 		$tmpBasketExt = $TSFE->fe_user->getKey('ses','basketExt');
 
 		if (is_array($tmpBasketExt)) {
@@ -2533,7 +2532,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		$additive = 0;
 		// Check if a special group price can be used
-		if (($getDiscount == 1) && ($this->conf['discountprice.'] != NULL))
+		if (($getDiscount == 1) && ($this->conf['discountprice.'] != NULL && $this->conf['discountprice.']['prod.'] != NULL))
 		{
 			$countTotal = 0;
 			$countedItems = array();
@@ -2864,8 +2863,8 @@ class tx_ttproducts extends tslib_pibase {
 		foreach ($this->itemArray as $pid=>$pidItem) {
 			foreach ($pidItem as $itemnumber=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
-					// has the price been calculated before and no reseller price?
-					if ($actItem['calcprice'] > 0) {
+					// has the price been calculated before take it if it gets cheaper now
+					if (($actItem['calcprice'] > 0) && ($actItem['calcprice'] < $actItem['priceTax'])) {
 						$this->itemArray[$pid][$itemnumber][$k1]['priceTax'] = $this->getPrice($actItem['calcprice'],1,$actItem['rec']['tax']);
 						$this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] = $this->getPrice($actItem['calcprice'],0,$actItem['rec']['tax']);
 					}
@@ -2893,7 +2892,7 @@ class tx_ttproducts extends tslib_pibase {
 				if ($prodSingle['bulkily'])
 				{
 					$value = ($this->conf['bulkilyAddition'] * $this->basketExt[$prodSingle['uid']][$prodSingle['size'].';'.$prodSingle['color'].';'.intval(100*$prodSingle['accessory'])]);
-					$this->$this->calculatedArray['priceTax']['shipping'] += $value  * (1+$conf['bulkilyFeeTax']/100);
+					$this->calculatedArray['priceTax']['shipping'] += $value  * (1+$conf['bulkilyFeeTax']/100);
 					$this->calculatedArray['priceNoTax']['shipping'] += $value;
 				}
 			}
