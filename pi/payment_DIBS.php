@@ -117,21 +117,27 @@ switch(t3lib_div::_GP("products_cmd"))	{
 <input type=hidden name="ordline1-4" value="Pris">
 ';				
 			$cc=1;
-			while(list(,$rec)=each($this->calculatedBasket))		{
-				$cc++;
-				$theFields.='
-<input type=hidden name="ordline'.$cc.'-1" value="'.htmlspecialchars($rec["rec"]["itemnumber"]).'">
-<input type=hidden name="ordline'.$cc.'-2" value="'.htmlspecialchars($rec["rec"]["title"]).'">
-<input type=hidden name="ordline'.$cc.'-3" value="'.$rec["count"].'">
-<input type=hidden name="ordline'.$cc.'-4" value="'.$this->priceFormat($rec["totalTax"]).'">';
+			//while(list(,$rec)=each($this->calculatedBasket))		{
+			// loop over all items in the basket indexed by page and itemnumber
+			foreach ($this->itemArray as $pid=>$pidItem) {
+				foreach ($pidItem as $itemnumber=>$actItemArray) {
+					foreach ($actItemArray as $k1=>$actItem) {
+						$cc++;
+						$theFields.='
+		<input type=hidden name="ordline'.$cc.'-1" value="'.htmlspecialchars($actItem['rec']['itemnumber']).'">
+		<input type=hidden name="ordline'.$cc.'-2" value="'.htmlspecialchars($actItem['rec']['title']).'">
+		<input type=hidden name="ordline'.$cc.'-3" value="'.$actItem['count'].'">
+		<input type=hidden name="ordline'.$cc.'-4" value="'.$this->priceFormat($actItem['totalTax']).'">';
+					}
+				}
 			}
 		
 			$theFields.='
-<input type=hidden name="priceinfo1.Shipping" value="'.$this->priceFormat($this->calculatedSums_tax["shipping"]).'">';
+<input type=hidden name="priceinfo1.Shipping" value="'.$this->priceFormat($this->calculatedArray['priceTax']['shipping']).'">';
 			$theFields.='
-<input type=hidden name="priceinfo2.Payment" value="'.$this->priceFormat($this->calculatedSums_tax["payment"]).'">';
+<input type=hidden name="priceinfo2.Payment" value="'.$this->priceFormat($this->calculatedArray['priceTax']['payment']).'">';
 			$theFields.='
-<input type=hidden name="priceinfo3.Tax" value="'.$this->priceFormat($this->calculatedSums_tax["total"]-$this->calculatedSums_no_tax["total"]).'">';
+<input type=hidden name="priceinfo3.Tax" value="'.$this->priceFormat( $this->calculatedArray['priceTax']['total'] - $this->calculatedArray['priceNoTax']['total']).'">';
 			$markerArray["###HIDDEN_FIELDS###"].=$theFields;
 		}
 		$content= $this->cObj->substituteMarkerArrayCached($content, $markerArray);
@@ -152,7 +158,7 @@ switch(t3lib_div::_GP("products_cmd"))	{
 		$k2=$lConf["k2"];
 	
 			// Checking transaction
-		$amount=round($this->calculatedSums_tax["total"]*100);
+		$amount=round($this->calculatedArray['priceTax']['total'] *100);
 		$currency="208";
 		$transact=t3lib_div::_GP("transact");
 		$md5key= md5($k2.md5($k1."transact=".$transact."&amount=".$amount."&currency=".$currency));
