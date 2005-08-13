@@ -1,3 +1,10 @@
+2005-08-13  Franz Holzinger <franz@fholzinger.com>
+	* make DIBS payment working with direct ###DIBS_DIRECT_TEMPLATE###
+
+2005-08-12  Franz Holzinger <franz@fholzinger.com>
+	* adapt payment_DIBS.php to current code
+	* more entries to the constants editor
+
 2005-08-10  Franz Holzinger <franz@fholzinger.com>
 	* correct <A>-tags to <a>
 	* correct errors in links with ###LINK_ITEM###

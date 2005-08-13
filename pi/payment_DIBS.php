@@ -43,26 +43,29 @@ if (!is_object($this) || !is_object($this->cObj))	die('$this and $this->cObj mus
 
 // $lConf = $this->basketExtra["payment."]["handleScript."];		// Loads the handleScript TypoScript into $lConf.
 $lConf = $conf;
+
 $localTemplateCode = $this->cObj->fileResource($lConf[templateFile] ? $lConf[templateFile] : "EXT:tt_products/pi/payment_DIBS_template.tmpl");		// Fetches the DIBS template file
 $localTemplateCode = $this->cObj->substituteMarkerArrayCached($localTemplateCode, $this->globalMarkerArray);
 
 $orderUid = $this->getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
 
-switch(t3lib_div::_GP("products_cmd"))	{
+$products_cmd = t3lib_div::_GP('products_cmd'); 
+switch($products_cmd)	{
 	case "cardno":
 		$tSubpart = $lConf["soloe"] ? "###DIBS_SOLOE_TEMPLATE###" : "###DIBS_CARDNO_TEMPLATE###";		// If solo-e is selected, use different subpart from template
+		$tSubpart = $lConf["direct"] ? "###DIBS_DIRECT_TEMPLATE###" : $tSubpart;		// If direct is selected, use different subpart from template
 		$content=$this->getBasket($tSubpart,$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 
 		$markerArray=array();
 		$markerArray["###HIDDEN_FIELDS###"] = '
 <input type=hidden name=merchant value="'.$lConf["merchant"].'">
-<input type=hidden name=amount value="'.round($this->calculatedSums_tax["total"]*100).'">
+<input type=hidden name=amount value="'.round($this->calculatedArray['priceTax']['total'] *100).'">
 <input type=hidden name=currency value="'.$lConf["currency"].'">		<!--Valuta som angivet i ISO4217, danske kroner=208-->
 <input type=hidden name=orderid value="'.$this->getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type=hidden name=uniqueoid value="1">
 <input type=hidden name="accepturl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">
 <input type=hidden name="declineurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';	
-		if ($lConf["soloe"])	{
+		if ($lConf["soloe"] || $lConf["direct"])	{
 		$markerArray["###HIDDEN_FIELDS###"].= '
 <input type=hidden name="cancelurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cancel&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';
 		}
@@ -71,7 +74,7 @@ switch(t3lib_div::_GP("products_cmd"))	{
 				<input type=hidden name=test value="foo">
 			';
 		}
-		if ($lConf["cardType"] && !$lConf["soloe"])	{
+		if ($lConf["cardType"] && !$lConf["soloe"] && !$lConf["direct"])	{
 				/*
 				Examples:
 					DK 			Dankort
@@ -109,7 +112,7 @@ switch(t3lib_div::_GP("products_cmd"))	{
 			}
 			
 				// Order items
-			reset($this->calculatedBasket);
+			reset($this->itemArray);
 			$theFields.='
 <input type=hidden name="ordline1-1" value="Varenummer">
 <input type=hidden name="ordline1-2" value="Beskrivelse">
@@ -174,14 +177,6 @@ switch(t3lib_div::_GP("products_cmd"))	{
 			$content=$this->getBasket("###BASKET_ORDERCONFIRMATION_TEMPLATE###","",$markerArray);
 			$this->finalizeOrder($orderUid,$markerArray);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 		}
-/*
-		debug($md5key,1);
-		debug($authkey,1);
-		debug("transact");
-		debug(t3lib_div::_GP("transact"));
-		debug($GLOBALS["TSFE"]->fe_user->id);
-//				echo phpinfo();	
-*/
 	break;
 	default:	
 		if ($lConf["relayURL"])	{

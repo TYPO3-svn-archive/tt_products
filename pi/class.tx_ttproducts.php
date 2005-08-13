@@ -392,6 +392,8 @@ class tx_ttproducts extends tslib_pibase {
 						$this->mapPersonIntoToDelivery();
 						$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
 						if ($handleScript)	{
+							$this->getCalculatedBasket();
+							$this->getCalculateSums();
 							$content = $this->includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 						} else {
 							$orderUid = $this->getBlankOrderUid();
@@ -2300,7 +2302,6 @@ class tx_ttproducts extends tslib_pibase {
 
 			 */
 			 
-		error_log ('generateRadioSelect');
 		$type=$this->conf[$key.'.']['radio'];
 		$active = $this->basketExtra[$key];
 		$confArr = $this->cleanConfArr($this->conf[$key.'.']);
@@ -2764,7 +2765,6 @@ class tx_ttproducts extends tslib_pibase {
 		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['payment'];
 		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['shipping'];
 	}
-
 /* mkl:
 	function cleanConfArr($confArr,$checkShow=0)	{
 		$outArr=array();
