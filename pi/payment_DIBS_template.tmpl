@@ -20,7 +20,7 @@ Has the standard fields of the normal BASKET-templates
 -->
 
 
-<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<table border="0" cellspacing="0" cellpadding="1" width=1>
 	<tr>
 		<td><img src="clear.gif" width=100 height=1></td>
 		<td><img src="clear.gif" width=5 height=1></td>
@@ -30,7 +30,7 @@ Has the standard fields of the normal BASKET-templates
 	<tr>
 		<td colspan=6 bgcolor="###GC2###">###GW2B###<b>TOTAL:</b>###GW2E###</td>
 	</tr>
-	<TR>
+	<tr>
 		<td valign=top colspan=3>###GW1B###
 			<strong>Total beløb i DKR:</strong>				
 		###GW1E###</td>
@@ -38,14 +38,12 @@ Has the standard fields of the normal BASKET-templates
 		<td valign=top align=right colspan=3 nowrap>###GW1B###
 		<b>Kr. ###PRICE_TOTAL_TAX###</b><br>
 		###GW1E###</td>
-	</TR>
-</TABLE>
+	</tr>
+</table>
 
 
 
-<form action="https://payment.architrade.com/cgi-ssl/auth.cgi" method=POST autocomplete="off">
-
-	
+<form action="https://payment.architrade.com/cgi-ssl/auth.cgi" method="post" autocomplete="off">
 	
 	<table width=400>
 		<tr>
@@ -76,7 +74,7 @@ Has the standard fields of the normal BASKET-templates
 
 
 
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5">
+<table BORDER="0" CELLPADDING="0" CELLSPACING="5">
 <TR>
 <TD><A HREF="http://www.dibs.dk/" TARGET="_blank"><IMG SRC="/images/DIBS.gif" BORDER="0"></A></TD>
 <TD><FONT FACE="Verdana, Arial, Helvetica" SIZE=1>Denne butik anvender DIBS <A HREF="http://www.dibs.dk/" TARGET="_blank">(Dansk Internet Betalingssystem)</A>
@@ -85,7 +83,7 @@ Betalingen med kreditkort i denne butik er derfor sikkert og godkendt af <A HREF
 <BR>
 Er De i tvivl, har De har mulighed for at se en <A HREF="http://www.dibs.dk/butikker.pml" TARGET="_blank">liste over godkendte butikker</A>.</FONT></TD>
 </TR>
-</TABLE>
+</table>
 
 
 
@@ -122,12 +120,6 @@ Det er <i>frivilligt</i> at benytte dem, men det giver os hos Inter-Photo en eks
 
 
 
-
-
-
-
-
-
 <!-- ###DIBS_SOLOE_TEMPLATE### 
 
 This subpart is used to display the card number information dialog FOR Unibank SOLO-E payment. It differs because this dialog does not use any
@@ -135,7 +127,7 @@ This subpart is used to display the card number information dialog FOR Unibank S
 -->
 
 
-<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<table border="0" cellspacing="0" cellpadding="1" width=1>
 	<tr>
 		<td><img src="clear.gif" width=100 height=1></td>
 		<td><img src="clear.gif" width=5 height=1></td>
@@ -154,7 +146,7 @@ This subpart is used to display the card number information dialog FOR Unibank S
 		<b>Kr. ###PRICE_TOTAL_TAX###</b><br>
 		###GW1E###</td>
 	</TR>
-</TABLE>
+</table>
 
 ###GW1B###
 Du har valgt Unibanks e-betaling. Tryk derfor på nedenstående knap og din PC-bank vil blive startet op. Betalingen foregår direkte via Unibanks software.
@@ -162,13 +154,13 @@ Du har valgt Unibanks e-betaling. Tryk derfor på nedenstående knap og din PC-ban
 ###GW1E###
 
 
-<form action="https://payment.architrade.com/cgi-ssl/solo_payment.cgi" method=POST autocomplete="off">
+<form action="https://payment.architrade.com/cgi-ssl/solo_payment.cgi" method="post" autocomplete="off">
 <input type="submit" name="betal" value="Gå til Unibank e-betaling">&nbsp;&nbsp;<img src="tslib/media-00/logos/soloe.gif" width="53" height="33" hspace=10 border="0" alt="" align=absmiddle>
 	###HIDDEN_FIELDS###
 </form>
 
 
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5">
+<table BORDER="0" CELLPADDING="0" CELLSPACING="5">
 <TR>
 <TD><A HREF="http://www.dibs.dk/" TARGET="_blank"><IMG SRC="/images/DIBS.gif" BORDER="0"></A></TD>
 <TD><FONT FACE="Verdana, Arial, Helvetica" SIZE=1>Denne butik anvender DIBS <A HREF="http://www.dibs.dk/" TARGET="_blank">(Dansk Internet Betalingssystem)</A>
@@ -177,20 +169,9 @@ Betalingen med kreditkort i denne butik er derfor sikkert og godkendt af <A HREF
 <BR>
 Er De i tvivl, har De har mulighed for at se en <A HREF="http://www.dibs.dk/butikker.pml" TARGET="_blank">liste over godkendte butikker</A>.</FONT></TD>
 </TR>
-</TABLE>
+</table>
 
 <!-- ###DIBS_SOLOE_TEMPLATE###	 end -->
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -249,7 +230,7 @@ Din ordre er i midlertid ikke slettet, så du kan <a href="http://www.inter-photo
 
 ###GW1E###
 
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5">
+<table BORDER="0" CELLPADDING="0" CELLSPACING="5">
 <TR>
 <TD><A HREF="http://www.dibs.dk/" TARGET="_blank"><IMG SRC="/images/DIBS.gif" BORDER="0"></A></TD>
 <TD><FONT FACE="Verdana, Arial, Helvetica" SIZE=1>Denne butik anvender DIBS <A HREF="http://www.dibs.dk/" TARGET="_blank">(Dansk Internet Betalingssystem)</A>
@@ -258,25 +239,9 @@ Betalingen med kreditkort i denne butik er derfor sikkert og godkendt af <A HREF
 <BR>
 Er De i tvivl, har De har mulighed for at se en <A HREF="http://www.dibs.dk/butikker.pml" TARGET="_blank">liste over godkendte butikker</A>.</FONT></TD>
 </TR>
-</TABLE>
+</table>
 
 <!-- ###DIBS_DECLINE_TEMPLATE###	 end -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -314,11 +279,6 @@ Din ordre er i midlertid ikke slettet, så du kan <a href="http://www.inter-photo
 
 
 
-
-
-
-
-
 <!-- ###DIBS_SOLOE_CANCEL_TEMPLATE### 
 
 This subpart is used to display information IF the payment was cancel by Unibank Solo-E software
@@ -339,15 +299,6 @@ Din ordre er i midlertid ikke slettet, så du kan <a href="http://www.inter-photo
 ###GW1E###
 
 <!-- ###DIBS_SOLOE_CANCEL_TEMPLATE### 	 end -->
-
-
-
-
-
-
-
-
-
 
 
 
@@ -386,9 +337,6 @@ Din ordre er i midlertid ikke slettet, så du kan <a href="http://www.inter-photo
 
 
 
-
-
-
 <!-- ###DIBS_REDIRECT_TEMPLATE### 
 
 This subpart is used to display information IF the payment was declined!
@@ -420,52 +368,28 @@ DUMMY
 
 
 <!-- ###DIBS_DIRECT_TEMPLATE### 
-
-This subpart is used to directly call the payment script. It differs because this dialog does not use any
-
+---- This subpart is used to directly call the payment script. It differs because this dialog does not use any
 -->
-
-
-<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
-	<tr>
-		<td><img src="clear.gif" width=100 height=1></td>
-		<td><img src="clear.gif" width=5 height=1></td>
-		<td><img src="clear.gif" width=100 height=1></td>
-		<td colspan=3><img src="clear.gif" width=200 height=1></td>
-	</tr>
-	<tr>
-		<td colspan=6 bgcolor="###GC2###">###GW2B###<b>TOTAL:</b>###GW2E###</td>
-	</tr>
-	<TR>
-		<td valign=top colspan=3>###GW1B###
-			<strong>Total beløb i DKR:</strong>				
-		###GW1E###</td>
-		
-		<td valign=top align=right colspan=3 nowrap>###GW1B###
-		<b>Kr. ###PRICE_TOTAL_TAX###</b><br>
-		###GW1E###</td>
-	</TR>
-</TABLE>
-
-###GW1B###
-direct call to DIBS script will follow
-
-###GW1E###
-
-
-<form action="https://payment.architrade.com/payment/start.pml" method=POST autocomplete="off">
-<input type="submit" name="betal" value="pay this now via DIBS">&nbsp;&nbsp;
-	###HIDDEN_FIELDS###
+<script type="text/javascript">
+<!--
+var newwin = null;
+function doPopup(f) {
+  self.name = 'shopwin';
+  newwin = window.open('', 'Betaling', 'scrollbars,status,width=550,height=600');
+  newwin.focus();
+  if (!newwin.opener) newwin.opener = self;
+  f.opener.value = self.name;
+  return true;
+}
+//-->
+</script>
+<p>Klik here for at åbne betalingsvinduet.</p>
+<p><b>Total DKK: </b>###PRICE_TOTAL_TAX###</p>
+<form action="https://payment.architrade.com/payment/start.pml" method="POST" name="paymentform" id="paymentform" onsubmit="return doPopup(this);" target="Betaling" autocomplete="off">
+ ###HIDDEN_FIELDS###
+  <input type="submit" name="next" value="&Aring;ben betalingsvindue">
 </form>
-
-
-
-
 <!-- ###DIBS_DIRECT_TEMPLATE###	 end -->
-
-
-
-
 
 
 </body>

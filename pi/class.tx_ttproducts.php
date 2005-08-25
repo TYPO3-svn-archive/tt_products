@@ -98,7 +98,7 @@ class tx_ttproducts extends tslib_pibase {
 	var $langKey;
        // mkl - multicurrency support
 	var $currency = '';				// currency iso code for selected currency
-	var $baseCurrency = '';				// currency iso code for default shop currency
+	var $baseCurrency = '';			// currency iso code for default shop currency
 	var $xrate = 1.0;				// currency exchange rate (currency/baseCurrency)
 
 	var $isOverview = 0;				// overview mode of the basket
@@ -1193,7 +1193,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		$this->personInfo = $basket['personinfo'];
 		$this->deliveryInfo = $basket['delivery'];
-		if ($TSFE->loginUser && (!$this->personInfo || $this->conf['lockLoginUserInfo']))	{
+		if ($TSFE->loginUser && !$this->personInfo && $this->conf['lockLoginUserInfo'])	{
 			$address = '';
 
 			if ($this->conf['loginUserInfoAddress']) {
@@ -1208,7 +1208,7 @@ class tx_ttproducts extends tslib_pibase {
 			else {
 				$address = $TSFE->fe_user->user['address'];
 			}
-
+			
 /* Added Els: getting the field uid form fe_users and introducing the field feusers_uid into sys_products_orders */
 			$this->personInfo['feusers_uid'] = $TSFE->fe_user->user['uid'];
 			$this->personInfo['name'] = $TSFE->fe_user->user['name'];
@@ -1928,6 +1928,7 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function getLinkUrl($id='',$excludeList='',$addQueryString=array())	{
 		global $TSFE;
+		$rc = '';
 
 		$queryString=array();
 		$queryString['id'] = 'id=' . ($id ? $id : $TSFE->id);
@@ -1960,16 +1961,21 @@ class tx_ttproducts extends tslib_pibase {
 			if( $addQueryString )	{
 				$allQueryString .= '&'.implode($addQueryString,'&');
 			}
-            return $TSFE->makeSimulFileName('', $pageId, $pageType, $allQueryString ).'.html';
-
+            $rc = $TSFE->makeSimulFileName('', $pageId, $pageType, $allQueryString ).'.html';
+            if (!$this->config['config']['simulateStaticDocuments_pEnc']) {
+            	// add the parameters
+            	$rc .= '?'.$allQueryString;
+            }
 		}
 		else	{
 			$allQueryString = implode($queryString,'&');
 			if( $addQueryString )	{
 				$allQueryString .= '&'.implode($addQueryString,'&');
 			}
-			return $TSFE->absRefPrefix.'index.php?'.$allQueryString;
+			$rc = $TSFE->absRefPrefix.'index.php?'.$allQueryString;
 		}
+		
+		return $rc;
 
 	}
 
@@ -2823,6 +2829,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		$pageArr=explode(',',$this->pid_list);
 
+		$this->itemArray = array(); // array of the items in the basket
 		$this->calculatedArray = array(); // this array is usede for all calculated things
 
 		while(list(,$v)=each($pageArr))	{
@@ -2937,11 +2944,12 @@ class tx_ttproducts extends tslib_pibase {
 
 			// Getting subparts from the template code.
 		$t=array();
-			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
 		$t['basketFrameWork'] = $this->cObj->getSubpart($templateCode,$this->spMarker($subpartMarker));
 
+			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
 		if (trim($this->cObj->getSubpart($t['basketFrameWork'],'###BILLING_ADDRESS_LOGIN###')))	{
-			if ($GLOBALS['TSFE']->loginUser)	{
+			//if ($GLOBALS['TSFE']->loginUser)	{
+			if ($TSFE->loginUser && $this->conf['lockLoginUserInfo']) {
 				$t['basketFrameWork'] = $this->cObj->substituteSubpart($t['basketFrameWork'], '###BILLING_ADDRESS###', '');
 			} else {
 				$t['basketFrameWork'] = $this->cObj->substituteSubpart($t['basketFrameWork'], '###BILLING_ADDRESS_LOGIN###', '');

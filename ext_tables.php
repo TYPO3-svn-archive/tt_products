@@ -74,6 +74,24 @@ $TCA["tt_products_cat_language"] = Array (
 	)
 );
 
+
+$TCA["tt_products_articles"] = Array (
+	"ctrl" => Array (
+		"label" => "title",
+		"default_sortby" => "ORDER BY title",
+		"tstamp" => "tstamp",
+		"delete" => "deleted",
+		"prependAtCopy" => "LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy",
+		"crdate" => "crdate",
+		"title" => "LLL:EXT:tt_products/locallang_tca.php:tt_products_articles",
+		"dynamicConfigFile" => t3lib_extMgm::extPath($_EXTKEY)."tca.php",
+		"iconfile" => t3lib_extMgm::extRelPath($_EXTKEY)."icon_tx_tt_products_articles.gif",
+	),
+	"feInterface" => Array (
+		"fe_admin_fieldList" => "hidden,cat_uid, sys_language_uid,title",
+	)
+);
+
 t3lib_extMgm::addPlugin(Array("LLL:EXT:tt_products/locallang_tca.php:tt_content.list_type_pi1","5"),"list_type");
 
 
@@ -83,6 +101,7 @@ t3lib_extMgm::allowTableOnStandardPages('tt_products');
 t3lib_extMgm::allowTableOnStandardPages("tt_products_language");
 t3lib_extMgm::allowTableOnStandardPages("tt_products_cat");
 t3lib_extMgm::allowTableOnStandardPages("tt_products_cat_language");
+t3lib_extMgm::allowTableOnStandardPages("tt_products_articles");
 
 t3lib_extMgm::addToInsertRecords('tt_products');
 if (TYPO3_MODE=='BE')	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttproducts_wizicon.php';

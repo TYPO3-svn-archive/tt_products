@@ -35,6 +35,7 @@
  * DIBS:	http://www.dibs.dk
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @author	Franz Holzinger <kontakt@fholzinger.com>
  */
 
 
@@ -58,20 +59,25 @@ switch($products_cmd)	{
 
 		$markerArray=array();
 		$markerArray["###HIDDEN_FIELDS###"] = '
-<input type=hidden name=merchant value="'.$lConf["merchant"].'">
-<input type=hidden name=amount value="'.round($this->calculatedArray['priceTax']['total'] *100).'">
-<input type=hidden name=currency value="'.$lConf["currency"].'">		<!--Valuta som angivet i ISO4217, danske kroner=208-->
-<input type=hidden name=orderid value="'.$this->getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
-<input type=hidden name=uniqueoid value="1">
-<input type=hidden name="accepturl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">
-<input type=hidden name="declineurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';	
-		if ($lConf["soloe"] || $lConf["direct"])	{
-		$markerArray["###HIDDEN_FIELDS###"].= '
-<input type=hidden name="cancelurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cancel&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';
+<input type="hidden" name="merchant" value="'.$lConf["merchant"].'">
+<input type="hidden" name="amount" value="'.round($this->calculatedArray['priceTax']['total'] *100).'">
+<input type="hidden" name="currency" value="'.$lConf["currency"].'">		<!--Valuta som angivet i ISO4217, danske kroner=208-->
+<input type="hidden" name="orderid" value="'.$this->getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
+<input type="hidden" name="uniqueoid" value="1">
+<input type="hidden" name="accepturl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">
+<input type="hidden" name="declineurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';	
+		if ($lConf['soloe'] || $lConf['direct'])	{
+		$markerArray['###HIDDEN_FIELDS###'].= '
+<input type="hidden" name="cancelurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cancel&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';
 		}
-		if ($lConf["test"])	{
-			$markerArray["###HIDDEN_FIELDS###"].= '
-				<input type=hidden name=test value="foo">
+		if ($lConf['direct'])	{
+		$markerArray['###HIDDEN_FIELDS###'].= '
+<input type="hidden" name="opener" value="">';
+		}
+
+		if ($lConf['test'])	{
+			$markerArray['###HIDDEN_FIELDS###'].= '
+				<input type="hidden" name="test" value="foo">
 			';
 		}
 		if ($lConf["cardType"] && !$lConf["soloe"] && !$lConf["direct"])	{
@@ -87,12 +93,12 @@ switch($products_cmd)	{
 				*/
 		
 			$markerArray["###HIDDEN_FIELDS###"].= '
-				<input type=hidden name=cardtype value="'.$lConf["cardType"].'">
+				<input type="hidden" name="cardtype" value="'.$lConf["cardType"].'">
 			';
 		}
 		if ($lConf["account"])	{		// DIBS account feature
 			$markerArray["###HIDDEN_FIELDS###"].= '
-				<input type=hidden name=account value="'.$lConf["account"].'">
+				<input type="hidden" name="account" value="'.$lConf["account"].'">
 			';
 		}
 		
@@ -107,17 +113,17 @@ switch($products_cmd)	{
 				$value = trim($value);
 				if ($value)	{
 					$cc++;
-					$theFields.=chr(10).'<input type=hidden name="delivery'.$cc.'.'.$field.'" value="'.htmlspecialchars($value).'">';
+					$theFields.=chr(10).'<input type="hidden" name="delivery'.$cc.'.'.$field.'" value="'.htmlspecialchars($value).'">';
 				}
 			}
 			
 				// Order items
 			reset($this->itemArray);
 			$theFields.='
-<input type=hidden name="ordline1-1" value="Varenummer">
-<input type=hidden name="ordline1-2" value="Beskrivelse">
-<input type=hidden name="ordline1-3" value="Antal">
-<input type=hidden name="ordline1-4" value="Pris">
+<input type="hidden" name="ordline1-1" value="Varenummer">
+<input type="hidden" name="ordline1-2" value="Beskrivelse">
+<input type="hidden" name="ordline1-3" value="Antal">
+<input type="hidden" name="ordline1-4" value="Pris">
 ';				
 			$cc=1;
 			//while(list(,$rec)=each($this->calculatedBasket))		{
@@ -127,20 +133,20 @@ switch($products_cmd)	{
 					foreach ($actItemArray as $k1=>$actItem) {
 						$cc++;
 						$theFields.='
-		<input type=hidden name="ordline'.$cc.'-1" value="'.htmlspecialchars($actItem['rec']['itemnumber']).'">
-		<input type=hidden name="ordline'.$cc.'-2" value="'.htmlspecialchars($actItem['rec']['title']).'">
-		<input type=hidden name="ordline'.$cc.'-3" value="'.$actItem['count'].'">
-		<input type=hidden name="ordline'.$cc.'-4" value="'.$this->priceFormat($actItem['totalTax']).'">';
+		<input type="hidden" name="ordline'.$cc.'-1" value="'.htmlspecialchars($actItem['rec']['itemnumber']).'">
+		<input type="hidden" name="ordline'.$cc.'-2" value="'.htmlspecialchars($actItem['rec']['title']).'">
+		<input type="hidden" name="ordline'.$cc.'-3" value="'.$actItem['count'].'">
+		<input type="hidden" name="ordline'.$cc.'-4" value="'.$this->priceFormat($actItem['totalTax']).'">';
 					}
 				}
 			}
 		
 			$theFields.='
-<input type=hidden name="priceinfo1.Shipping" value="'.$this->priceFormat($this->calculatedArray['priceTax']['shipping']).'">';
+<input type="hidden" name="priceinfo1.Shipping" value="'.$this->priceFormat($this->calculatedArray['priceTax']['shipping']).'">';
 			$theFields.='
-<input type=hidden name="priceinfo2.Payment" value="'.$this->priceFormat($this->calculatedArray['priceTax']['payment']).'">';
+<input type="hidden" name="priceinfo2.Payment" value="'.$this->priceFormat($this->calculatedArray['priceTax']['payment']).'">';
 			$theFields.='
-<input type=hidden name="priceinfo3.Tax" value="'.$this->priceFormat( $this->calculatedArray['priceTax']['total'] - $this->calculatedArray['priceNoTax']['total']).'">';
+<input type="hidden" name="priceinfo3.Tax" value="'.$this->priceFormat( $this->calculatedArray['priceTax']['total'] - $this->calculatedArray['priceNoTax']['total']).'">';
 			$markerArray["###HIDDEN_FIELDS###"].=$theFields;
 		}
 		$content= $this->cObj->substituteMarkerArrayCached($content, $markerArray);

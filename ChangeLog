@@ -1,3 +1,8 @@
+2005-08-25  Franz Holzinger <franz@fholzinger.com>
+	* correct usage of lockLoginUserInfo
+	* minimum version of an article table
+	* DIBS payment in popup window
+
 2005-08-13  Franz Holzinger <franz@fholzinger.com>
 	* make DIBS payment working with direct ###DIBS_DIRECT_TEMPLATE###
 
