@@ -33,6 +33,8 @@
  * This script is used as a "handleScript" with the default productsLib.inc shopping system.
  *
  * DIBS:	http://www.dibs.dk
+ * 
+ * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	Franz Holzinger <kontakt@fholzinger.com>

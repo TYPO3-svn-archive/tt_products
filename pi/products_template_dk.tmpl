@@ -64,11 +64,11 @@ It's also used by search-results.
 				<tr>
 					<td colspan=2 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###--></td>
 				</tr>
-				<TR>
+				<tr>
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
-				</TR>
-				<TR>
+				</tr>
+				<tr>
 					<TD valign=top>###GW2B######PRODUCT_NOTE######GW2E###<br>
 						###GW1B###<B>price:</b> <font color=red><strong>###PRICE_TAX### ¤</strong></font>###GW1E###<br>
 						###GW2B###(excl. tax: ###PRICE_NO_TAX###)###GW2E###<br>
@@ -80,7 +80,7 @@ It's also used by search-results.
 					<TD valign=top nowrap align=right>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><BR>
 								<input type="Submit" name="order" value="put in basket">
 					</TD>
-				</TR>
+				</tr>
 				</TABLE>
 				</TD>
 	      ###ITEM_SINGLE_POST_HTML###
@@ -132,7 +132,7 @@ This subpart is used to display single products.
 				<td colspan=3 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
   ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### --></b>###GW1E###<!-- ###LINK_ITEM###--></td>
 			</tr>
-			<TR>
+			<tr>
 				<TD valign=top>###PRODUCT_IMAGE###</TD>
 				<td></td>
 				<TD valign=top>
@@ -149,7 +149,7 @@ This subpart is used to display single products.
 onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 						</nobr>
 				</TD>
-			</TR>
+			</tr>
 </form>
 		</TABLE>
 <br>
@@ -244,7 +244,7 @@ In addition there's a number of fields used for delivery and payment information
 				<tr>
 					<td colspan=6><img src="clear.gif" width=1 height=6></td>
 				</tr>
-				<TR>
+				<tr>
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
 					<TD valign=top>
@@ -255,7 +255,7 @@ In addition there's a number of fields used for delivery and payment information
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
 					<TD valign=top>&nbsp;<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">&nbsp;</TD>
 					<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> ###GW1E###</td>
-				</TR>
+				</tr>
 			<!-- ###ITEM_SINGLE### end -->
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS###  end -->
@@ -269,7 +269,7 @@ In addition there's a number of fields used for delivery and payment information
 		<tr>
 			<td colspan=6><img src="clear.gif" width=1 height=6></td>
 		</tr>
-		<TR>
+		<tr>
 			<td colspan=5>
 			###GW1B###shipping: <b>###SHIPPING_TITLE###</B>###GW1E###<br><br>
 
@@ -278,7 +278,7 @@ In addition there's a number of fields used for delivery and payment information
 			###SHIPPING_IMAGE###
 			</td>
 			<td valign=top align=right>###GW1B### <b>###PRICE_SHIPPING_TAX###</b> <BR>(###PRICE_SHIPPING_NO_TAX###) ###GW1E###</td>
-		</TR>
+		</tr>
 		<tr>
 			<td colspan=6><img src="clear.gif" width=1 height=10></td>
 		</tr>
@@ -289,7 +289,7 @@ In addition there's a number of fields used for delivery and payment information
 		<tr>
 			<td colspan=6><img src="clear.gif" width=1 height=6></td>
 		</tr>
-		<TR>
+		<tr>
 			<td colspan=5>
 			###GW1B###
 
@@ -317,18 +317,26 @@ In addition there's a number of fields used for delivery and payment information
 
 			</td>
 			<td valign=top align=right>###GW1B### <b>###PRICE_PAYMENT_TAX###</b> <BR>(###PRICE_PAYMENT_NO_TAX###) ###GW1E###</td>
-		</TR>
+		</tr>
+		<tr><td>
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME_GIFT_CERTIFICATE###">
+			number of gift certificate:<br/>
+				<input size="30" maxlength="30" type="text" name="###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###">
+				<input type="Submit" name="products_redeem_gift" value="redeem gift certificate">&nbsp;&nbsp;
+			</form>
+			</td>
+		</tr>
 		<tr>
 			<td colspan=6><img src="clear.gif" width=1 height=10></td>
 		</tr>
 		<tr>
 			<td colspan=6 bgcolor="###GC2###">###GW2B###<b>TOTAL:</b>###GW2E###</td>
 		</tr>
-		<TR>
+		<tr>
 			<td valign=top colspan=5></td>
 			<td valign=top align=right nowrap>###GW1B### <b>¤ ###PRICE_TOTAL_TAX###</b><br>
 			(excl. tax: ###PRICE_TOTAL_NO_TAX###) ###GW1E###</td>
-		</TR>
+		</tr>
 	</TABLE>
 	<input type="hidden" name="mode_update" value="1">
 	<input type="Submit" name="products_update" value="update calc.">&nbsp;&nbsp;
@@ -536,7 +544,7 @@ Exact same features as BASKET_TEMPLATE
 				<tr>
 					<td colspan=6><img src="clear.gif" width=1 height=6></td>
 				</tr>
-				<TR>
+				<tr>
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
 					<TD valign=top>
@@ -547,7 +555,7 @@ Exact same features as BASKET_TEMPLATE
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
 					<TD valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
 					<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> ###GW1E###</td>
-				</TR>
+				</tr>
 			<!-- ###ITEM_SINGLE### end -->
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS###  end -->
@@ -650,7 +658,7 @@ Exact same features as BASKET_TEMPLATE
 
 
 
-		<TR>
+		<tr>
 			<td valign=top colspan=3>###GW1B###
 				<strong>shipping form:</strong><br>
 				###SHIPPING_IMAGE### ###SHIPPING_TITLE###
@@ -662,8 +670,8 @@ Exact same features as BASKET_TEMPLATE
 			(###PRICE_SHIPPING_NO_TAX###)<br>
 
 			###GW1E###</td>
-		</TR>
-		<TR>
+		</tr>
+		<tr>
 			<td valign=top colspan=3>###GW1B###
 				<strong>payment form:</strong><br>
 				###PAYMENT_IMAGE### ###PAYMENT_TITLE###
@@ -691,7 +699,7 @@ Exact same features as BASKET_TEMPLATE
 			(###PRICE_PAYMENT_NO_TAX###)<br>
 
 			###GW1E###</td>
-		</TR>
+		</tr>
 
 
 		<tr>
@@ -700,7 +708,7 @@ Exact same features as BASKET_TEMPLATE
 		<tr>
 			<td colspan=6 bgcolor="###GC2###">###GW2B###<b>TOTAL:</b>###GW2E###</td>
 		</tr>
-		<TR>
+		<tr>
 			<td valign=top colspan=3>###GW1B###
 				<strong>total beløb i DKR:</strong>
 			###GW1E###</td>
@@ -710,7 +718,7 @@ Exact same features as BASKET_TEMPLATE
 			(excl. tax: ###PRICE_TOTAL_NO_TAX###)<br>
 
 			###GW1E###</td>
-		</TR>
+		</tr>
 	</TABLE>
 	<br>
 
@@ -839,7 +847,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 				<tr>
 					<td colspan=6><img src="clear.gif" width=1 height=6></td>
 				</tr>
-				<TR>
+				<tr>
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
 					<td></td>
 					<TD valign=top>
@@ -850,7 +858,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
 					<TD valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
 					<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> ###GW1E###</td>
-				</TR>
+				</tr>
 			<!-- ###ITEM_SINGLE### end -->
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS###  end -->
@@ -963,7 +971,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 
 
 
-		<TR>
+		<tr>
 			<td valign=top colspan=3>###GW1B###
 				<strong>shipping form:</strong><br>
 				###SHIPPING_IMAGE### ###SHIPPING_TITLE###
@@ -975,8 +983,8 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 			(###PRICE_SHIPPING_NO_TAX###)<br>
 
 			###GW1E###</td>
-		</TR>
-		<TR>
+		</tr>
+		<tr>
 			<td valign=top colspan=3>###GW1B###
 				<strong>order form:</strong><br>
 				###PAYMENT_IMAGE### ###PAYMENT_TITLE###
@@ -987,7 +995,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 			(###PRICE_PAYMENT_NO_TAX###)<br>
 
 			###GW1E###</td>
-		</TR>
+		</tr>
 
 
 		<tr>
@@ -996,7 +1004,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 		<tr>
 			<td colspan=6 bgcolor="###GC2###">###GW2B###<b>TOTAL:</b>###GW2E###</td>
 		</tr>
-		<TR>
+		<tr>
 			<td valign=top colspan=3>###GW1B###
 				<strong>total beløb i DKR:</strong>
 			###GW1E###</td>
@@ -1006,7 +1014,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 			(excl. tax: ###PRICE_TOTAL_NO_TAX###)<br>
 
 			###GW1E###</td>
-		</TR>
+		</tr>
 			<tr>
 				<td colspan=6>
 				###GW1B###
@@ -1071,6 +1079,18 @@ If payment is initiated but the required information fields are not filled in co
 
 
 
+<!-- ###BASKET_TEMPLATE_NO_FRONTEND_USER### begin
+
+For some functionality it is necessary that a front end user has been logged in. Otherwise this error message must appear.
+
+-->
+###GW1B###<B>You have not logged in as a front end user. You have to create a frontend user to redeem a gift certificate.</B>###GW1E###
+
+	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
+	<input type="Submit" name="basket" value="back to the basket page" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_INFO###';">
+	</FORM>
+
+<!-- ###BASKET_TEMPLATE_NO_FRONTEND_USER### end -->
 
 
 
@@ -1177,6 +1197,7 @@ Du kan indsende en besked til butikken angående denne ordre.<br>
 	<select name="orderRecord[status][]" size="1">
 		<option value=51>Besked fra kunden til butikken</option>
 		<option value=50>Kunden anmoder om annullering</option>
+		<!--###STATUS_CODE_60###--><option value=60>Send gift certificate message to receiver</option><!--###STATUS_CODE_60###-->
 	</select>
 	<br>
 	###GW1B###Kommentar til beskeden:###GW1B###<br>
@@ -1267,16 +1288,35 @@ Med venlig hilsen
 
 
 
+<!-- ###TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE### begin
 
+Subpart used as template for the notify of gift emails
+First line is used as subject for the mail.
+-->
+You have received a certificate
 
+Sender:     ###PERSON_NAME###
+Receiver:   ###DELIVERY_NAME###
 
+Comment:  
+###ORDER_STATUS_COMMENT###
 
+value certificate in Euros:
+###CERTIFICATES_TOTAL###
 
+unique code certificate:
+###CERTIFICATES_UNIQUE_CODE###
 
+<a href="http://###DOMAIN###/index.php?">You have to create a user account here</a>
 
+Med venlig hilsen
+	Inter Photo A/S
+	Torvet 14
+	8600 Silkeborg
 
+	Tlf.nr.: 86804142
 
-
+<!-- ###TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE### end -->
 
 
 

@@ -27,7 +27,7 @@ tt_content:list_type',
 	),
 	'de' => Array (
 		'.description' => 'Eigenschaften der Produkte.',
-		'.details' => 'Diese Tabelle enthält die Produkte, die im standardmäßig im TypoScript Shop System zur Verfügung stehen.',
+		'.details' => 'Diese Tabelle enthält die Produkte, die standardmäßig im TypoScript Shop System zur Verfügung stehen.',
 	),
 	'no' => Array (
 	),

@@ -111,19 +111,24 @@ plugin.tt_products {
 # 1: Incoming orders    
     1 = Order submitted by user
 # 2-49: Useable by the shop admin
-    2 = Order is recieved and accepted by store
+    2 = Order is received and accepted by store
     10 = Shop is awaiting goods from third-party
     11 = Shop is awaiting customer payment
     12 = Shop is awaiting material from customer
+    13 = Order has been payed    
     20 = Goods shipped to customer
+    21 = Gift certificates shipped to customer
     30 = Other message from store
 # 50-99: Useable by the customer
+# 50-59: General user messages
     50 = Customer request for cancelling
     51 = Message from customer to shop
-# 100- :
+# 60-69: Special user messages
+    60 = Send gift certificate message to receiver
+# 100-299 : Order finalized.
     100 = Order shipped and closed
     101 = Order closed
-    200 = Ordre cancelled
+    200 = Order cancelled
   }
   update_code = {$plugin.tt_products.update_code}
   statusDate_stdWrap.strftime= %e-%m-%y %H:%M

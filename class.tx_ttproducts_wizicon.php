@@ -25,7 +25,10 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
+ * $Id$
+ *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  */
