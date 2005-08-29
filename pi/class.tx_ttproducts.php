@@ -278,7 +278,7 @@ class tx_ttproducts extends tslib_pibase {
 				break;
 			}
 		}
-		return $content;
+		return $this->pi_wrapInBaseClass($content);
 	}
 
 	/**
@@ -356,7 +356,7 @@ class tx_ttproducts extends tslib_pibase {
 			#debug ($activity, '$activity', __LINE__, __FILE__);
 			
 			$this->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
-			#debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
+			debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
 			
 				// perform action
 			switch($activity)	{
@@ -400,7 +400,7 @@ class tx_ttproducts extends tslib_pibase {
 						$this->mapPersonIntoToDelivery();
 						$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
 						if ($handleScript)	{
-							$this->getCalculatedBasket();
+							//$this->getCalculatedBasket();
 							$this->getCalculateSums();
 							$content = $this->includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 						} else {
@@ -418,9 +418,10 @@ class tx_ttproducts extends tslib_pibase {
 				case 'products_redeem_gift':
 					$tmpl = 'BASKET_TEMPLATE';
 					if (trim($TSFE->fe_user->user['username']) == '') {
-						$tmpl = 'BASKET_TEMPLATE_NO_FRONTEND_USER';
+						$tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
 					} else {
-						$creditpoints = $this->getCreditPoints($row['amount']);
+						$creditpoints = $this->recs['tt_products']['creditpoints']*$this->conf['creditpoints.']['pricefactor'];
+						
 					}
 					$content.=$this->getBasket('###'.$tmpl.'###');
 				break;
@@ -3271,7 +3272,7 @@ class tx_ttproducts extends tslib_pibase {
 		} else {
 			// quantity chosen can not be larger than the amount of creditpoints
 			if ($this->recs['tt_products']['creditpoints'] > $creditpoints_integer[0]) $this->recs['tt_products']['creditpoints'] = $creditpoints_integer[0];
-			$this->calculatedArray['priceTax']['creditpoints'] = $this->priceFormat($this->recs['tt_products']['creditpoints']*0.5);
+			$this->calculatedArray['priceTax']['creditpoints'] = $this->priceFormat($this->recs['tt_products']['creditpoints']*$this->conf['creditpoints.']['pricefactor']);
 			$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = $this->recs['tt_products']['creditpoints'];
 			$subpartArray['###SUB_CREDITPOINTS_DISCOUNT_EMPTY###'] = '';
 		    $markerArray['###CREDIT_DISCOUNT###'] = $this->calculatedArray['priceTax']['creditpoints'];
@@ -3314,8 +3315,8 @@ class tx_ttproducts extends tslib_pibase {
 			$subpartArray['###SUB_VOUCHERCODE_EMPTY###'] = '';
 		}
 
-// Addes Franz: GIFT CERTIFICATE
-		$markerArray['###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###']='ttp_basket[gift_certificate_unique_number]';
+// Added Franz: GIFT CERTIFICATE
+		$markerArray['###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###']='recs[tt_products][gift_certificate_unique_number]';
 
 /* Added Els: below 3 lines moved from above */
 			// This is the total for everything
@@ -3888,7 +3889,7 @@ class tx_ttproducts extends tslib_pibase {
        $feusers_uid = $TSFE->fe_user->user['uid'];
 
        if (!$feusers_uid)
-           return $this->cObj->getSubpart($this->templateCode,$this->spMarker('###MEMO_NOT_LOGGED_IN###'));
+           return $this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_TEMPLATE_NOT_LOGGED_IN###'));
 
        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
 
