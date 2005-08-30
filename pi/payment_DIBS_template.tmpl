@@ -374,18 +374,18 @@ DUMMY
 <!--
 var newwin = null;
 function doPopup(f) {
-  self.name = 'shopwin';
   newwin = window.open('', 'Betaling', 'scrollbars,status,width=550,height=600');
   newwin.focus();
+  if (!self.name) self.name = 'shopwin';
   if (!newwin.opener) newwin.opener = self;
   f.opener.value = self.name;
   return true;
-}
+} 
 //-->
 </script>
 <p>Klik here for at åbne betalingsvinduet.</p>
 <p><b>Total DKK: </b>###PRICE_TOTAL_TAX###</p>
-<form action="https://payment.architrade.com/payment/start.pml" method="POST" name="paymentform" id="paymentform" onsubmit="return doPopup(this);" target="Betaling" autocomplete="off">
+<form action="https://payment.architrade.com/payment/start.pml" method="POST" name="paymentform" id="paymentform" ###WINDOW_OPENER### autocomplete="off">
  ###HIDDEN_FIELDS###
   <input type="submit" name="next" value="&Aring;ben betalingsvindue">
 </form>

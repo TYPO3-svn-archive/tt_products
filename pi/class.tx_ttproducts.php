@@ -152,7 +152,6 @@ class tx_ttproducts extends tslib_pibase {
 		} else {
 			$this->config['code'] = strtolower(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));
 		}
-		$this->config['limit'] = t3lib_div::intInRange($this->conf['limit'],0,1000);
 		$this->config['limit'] = $this->config['limit'] ? $this->config['limit'] : 50;
 		$this->config['limitImage'] = t3lib_div::intInRange($this->conf['limitImage'],0,9);
 		$this->config['limitImage'] = $this->config['limitImage'] ? $this->config['limitImage'] : 1;
@@ -324,6 +323,8 @@ class tx_ttproducts extends tslib_pibase {
 		global $TSFE;
 
 		$content = '';
+		$mainMarkerArray=array();
+		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
 		$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
 		$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
 		$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
@@ -356,13 +357,13 @@ class tx_ttproducts extends tslib_pibase {
 			#debug ($activity, '$activity', __LINE__, __FILE__);
 			
 			$this->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
-			debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
+			#debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
 			
 				// perform action
 			switch($activity)	{
 				case 'products_info':
 					$this->load_noLinkExtCobj();
-					$content.=$this->getBasket('###BASKET_INFO_TEMPLATE###');
+					$content.=$this->getBasket('###BASKET_INFO_TEMPLATE###','',$mainMarkerArray);
 				break;
 				case 'products_overview':
 					$this->load_noLinkExtCobj();
@@ -375,7 +376,7 @@ class tx_ttproducts extends tslib_pibase {
 					if ($check=='' &&
 						(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
 						$this->mapPersonIntoToDelivery();
-						$content.=$this->getBasket('###BASKET_PAYMENT_TEMPLATE###');
+						$content.=$this->getBasket('###BASKET_PAYMENT_TEMPLATE###', '', $mainMarkerArray);
 					} else {	// If not all required info-fields are filled in, this is shown instead:
 						$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 						$markerArray = $this->addURLMarkers(array());
@@ -399,17 +400,18 @@ class tx_ttproducts extends tslib_pibase {
 						$this->load_noLinkExtCobj();
 						$this->mapPersonIntoToDelivery();
 						$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
+						$orderUid = $this->getBlankOrderUid();
 						if ($handleScript)	{
 							//$this->getCalculatedBasket();
 							$this->getCalculateSums();
 							$content = $this->includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
-						} else {
-							$orderUid = $this->getBlankOrderUid();
-							// Added Els: instead of orderconfirmation_template display a orderthanks_template (orderconfirmation_template is still used for sending the final email
-							$tmpl = ($this->conf['PIDthanks'] > 0 ? 'BASKET_ORDERTHANKS_TEMPLATE' : 'BASKET_ORDERCONFIRMATION_TEMPLATE');
-							$content.=$this->getBasket('###'.$tmpl.'###');
-							$content.=$this->finalizeOrder($orderUid);	// Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 						}
+						// Added Els: instead of orderconfirmation_template display a orderthanks_template (orderconfirmation_template is still used for sending the final email
+						$tmpl = ($this->conf['PIDthanks'] > 0 ? 'BASKET_ORDERTHANKS_TEMPLATE' : 'BASKET_ORDERCONFIRMATION_TEMPLATE');
+						$orderConfirmationHTML=$this->getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
+						$content.=$orderConfirmationHTML;
+
+						$content.=$this->finalizeOrder($orderUid, $orderConfirmationHTML);	// Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 					} else {	// If not all required info-fields are filled in, this is shown instead:
 						$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 						$content = $this->cObj->substituteMarkerArray($content, $this->addURLMarkers(array()));
@@ -695,7 +697,7 @@ class tx_ttproducts extends tslib_pibase {
 					$queryNextPrefix = 'uid > '.intval($this->tt_product_single);
 				}
 				$queryprev = '';
-				$wherestock = ($this->config['showNotinStock'] ? '' : 'AND (inStock >0) ');
+				$wherestock = ($this->conf['showNotinStock'] ? '' : 'AND (inStock >0) ');
 				$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->cObj->enableFields('tt_products');
 				$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev);
 
@@ -1477,14 +1479,16 @@ class tx_ttproducts extends tslib_pibase {
 	 * $orderUid is the order-uid to finalize
 	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
 	 */
-	function finalizeOrder($orderUid,$mainMarkerArray=array())	{
+	function finalizeOrder($orderUid, $orderConfirmationHTML)	{
 		global $TSFE;
 		global $TYPO3_DB;
+		
+		$content = '';
 
 			// Fix delivery address
 		$this->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
-		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
-		$orderConfirmationHTML=trim($this->getBasket('###BASKET_ORDERCONFIRMATION_TEMPLATE###','',$mainMarkerArray));		// Getting the template subpart for the order confirmation!
+//		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
+//		$orderConfirmationHTML=trim($this->getBasket('###BASKET_ORDERCONFIRMATION_TEMPLATE###','',$mainMarkerArray));		// Getting the template subpart for the order confirmation!
 
 			// Saving order data
 		$fieldsArray=array();
@@ -1496,7 +1500,7 @@ class tx_ttproducts extends tslib_pibase {
 		$fieldsArray['fax']=$this->deliveryInfo['fax'];
 		$fieldsArray['email']=$this->deliveryInfo['email'];
 //		debug ($this->conf['email_notify_default'], "this->conf['email_notify_default']", __LINE__, __FILE__);
-//Franz:		$fieldsArray['email_notify']=  $this->conf['email_notify_default'];		// Email notification is set here. Default email address is delivery email contact
+		$fieldsArray['email_notify']=  $this->conf['email_notify_default'];		// Email notification is set here. Default email address is delivery email contact
 
 			// can be changed after order is set.
 		$fieldsArray['payment']=$this->basketExtra['payment'].': '.$this->basketExtra['payment.']['title'];
