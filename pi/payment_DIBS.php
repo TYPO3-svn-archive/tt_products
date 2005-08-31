@@ -73,7 +73,8 @@ switch($products_cmd)	{
 <input type="hidden" name="cancelurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cancel&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';
 		}
 		if ($lConf['direct'])	{
-			$markerArray['###HIDDEN_FIELDS###'].= '<input type="hidden" name="opener" value="">';
+			$markerArray['###HIDDEN_FIELDS###'].= '<input type="hidden" name="opener" value="">' .
+					'<input type="hidden" name="callbackurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';
 			$markerArray['###WINDOW_OPENER###'] = 'onsubmit="return doPopup(this);" target="Betaling"'; // if this is empty then no popup window will be opened
 		}
 

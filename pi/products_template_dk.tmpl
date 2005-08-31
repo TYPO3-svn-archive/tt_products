@@ -443,6 +443,7 @@ Exact same features as BASKET_TEMPLATE
 		</tr>
 		<tr>
 			<td colspan=3>
+			<!-- ###DELIVERY_ADDRESS### begin -->
 			###GW1B###
 				Hvis du ønsker levering til en anden adresse end fakturaadressen ovenfor, så indtast den fulde adresse her. Du kan også angive en contact person/email i forbindelse med dette leveringssted.
 			###GW1E###
@@ -467,6 +468,7 @@ Exact same features as BASKET_TEMPLATE
 					<td><input type="text" name="recs[delivery][email]" size="30" value="###DELIVERY_EMAIL###"></td>
 				</tr>
 				</table>
+			<!-- ###DELIVERY_ADDRESS### end -->
 			</td>
 			<td colspan=3></td>
 		</tr>
@@ -489,7 +491,7 @@ Exact same features as BASKET_TEMPLATE
 
 				<table>
 				<tr>
-					<td>###GW1B###annotation:###GW1E###</td>
+					<td>###GW1B###Besked:###GW1E###</td>
 					<td><textarea cols=30 rows=5 name="recs[delivery][note]">###DELIVERY_NOTE###</textarea></td>
 				</tr>
 				</table>
@@ -1219,21 +1221,34 @@ Du kan indsende en besked til butikken angående denne ordre.<br>
 
 
 
-
-
-
 <!-- ###TRACKING_ENTER_NUMBER### begin
 Displays form for entering the tracking number.
 -->
-###GW1B###<B>Indtast din tracking kode:</B>###GW1E###<br>
+###GW1B###<B>Bestellstatus-Code eingeben:</B>###GW1E###<br>
+<FORM method="post" action="###FORM_URL###">
+<input type="text" name="tracking"><br>
+<input type="Submit" name="submit" value="Status sehen">
+</FORM>
 
+<!-- ###ADMIN_CONTROL### begin -->
+<table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
+<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
+###GW1B### <strong>Shop ADMIN:</strong><br>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+<FORM method="post" action="###FORM_URL###">
+###GW1B###Code:###GW1B###<br>
+<input type="password" size=40 name="update_code" value="">
+<input type="Submit" name="submit" value="Code eingeben">
+</FORM>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+</td></tr></table>
+</td></tr>
+</table><br>
+<!-- ###ADMIN_CONTROL### end -->
 
-	<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
-	<input type="text" name="tracking"><br>
-	<input type="Submit" name="submit" value="Se status">
-	</FORM>
 
 <!-- ###TRACKING_ENTER_NUMBER### end -->
+
 
 
 

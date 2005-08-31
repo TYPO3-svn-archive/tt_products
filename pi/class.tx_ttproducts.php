@@ -358,7 +358,7 @@ class tx_ttproducts extends tslib_pibase {
 			
 			$this->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 			#debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
-			
+
 				// perform action
 			switch($activity)	{
 				case 'products_info':
@@ -377,6 +377,13 @@ class tx_ttproducts extends tslib_pibase {
 						(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
 						$this->mapPersonIntoToDelivery();
 						$content.=$this->getBasket('###BASKET_PAYMENT_TEMPLATE###', '', $mainMarkerArray);
+
+						$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
+						$orderUid = $this->getBlankOrderUid();
+						if (trim($this->conf['paymentActivity'])=='payment' && $handleScript)	{
+							$this->getCalculateSums();
+							$content.= $this->includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
+						}
 					} else {	// If not all required info-fields are filled in, this is shown instead:
 						$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 						$markerArray = $this->addURLMarkers(array());
@@ -401,7 +408,7 @@ class tx_ttproducts extends tslib_pibase {
 						$this->mapPersonIntoToDelivery();
 						$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
 						$orderUid = $this->getBlankOrderUid();
-						if ($handleScript)	{
+						if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
 							//$this->getCalculatedBasket();
 							$this->getCalculateSums();
 							$content = $this->includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
@@ -423,7 +430,6 @@ class tx_ttproducts extends tslib_pibase {
 						$tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
 					} else {
 						$creditpoints = $this->recs['tt_products']['creditpoints']*$this->conf['creditpoints.']['pricefactor'];
-						
 					}
 					$content.=$this->getBasket('###'.$tmpl.'###');
 				break;
@@ -795,6 +801,7 @@ class tx_ttproducts extends tslib_pibase {
 				$selectConf['max'] = ($this->config['limit']+1);
 				$selectConf['begin'] = $begin_at;
 
+				#debug ($selectConf, '$selectConf', __LINE__, __FILE__);
 			 	$res = $this->cObj->exec_getQuery('tt_products',$selectConf);
 
 				$productsArray=array();
@@ -3474,14 +3481,16 @@ class tx_ttproducts extends tslib_pibase {
 		$orderPayed = false;
 		$orderClosed = false;
 		#debug ($status_log, '$status_log', __LINE__, __FILE__);
-		foreach($status_log as $key=>$val)	{
-			#debug ($val, '$val', __LINE__, __FILE__);
-			if ($val['status'] == 13)	{// Numbers 13 means order has been payed
-				$orderPayed = true;
-			}
-			if ($val['status'] >= 100)	{// Numbers 13 means order has been payed
-				$orderClosed = true;
-				break;
+		if (is_array($status_log)) {
+			foreach($status_log as $key=>$val)	{
+				#debug ($val, '$val', __LINE__, __FILE__);
+				if ($val['status'] == 13)	{// Numbers 13 means order has been payed
+					$orderPayed = true;
+				}
+				if ($val['status'] >= 100)	{// Numbers 13 means order has been payed
+					$orderClosed = true;
+					break;
+				}
 			}
 		}
 		

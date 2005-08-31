@@ -1,3 +1,7 @@
+2005-08-31  Franz Holzinger <franz@fholzinger.com>
+	* change in Danish template to make administration login for backend user visible
+	* paymentActivity
+
 2005-08-30  Franz Holzinger <franz@fholzinger.com>
 	* corrections to DIBS
 
