@@ -52,6 +52,14 @@ $localTemplateCode = $this->cObj->substituteMarkerArrayCached($localTemplateCode
 
 $orderUid = $this->getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
 
+$param = '&FE_SESSION_KEY='.rawurlencode(
+$GLOBALS['TSFE']->fe_user->id.'-'.
+	md5(
+	$GLOBALS['TSFE']->fe_user->id.'/'.
+	$GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
+	)
+);
+
 $products_cmd = t3lib_div::_GP('products_cmd'); 
 switch($products_cmd)	{
 	case "cardno":
@@ -66,15 +74,15 @@ switch($products_cmd)	{
 <input type="hidden" name="currency" value="'.$lConf["currency"].'">		<!--Valuta som angivet i ISO4217, danske kroner=208-->
 <input type="hidden" name="orderid" value="'.$this->getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type="hidden" name="uniqueoid" value="1">
-<input type="hidden" name="accepturl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">
-<input type="hidden" name="declineurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';	
+<input type="hidden" name="accepturl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1'.$param.'">
+<input type="hidden" name="declineurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1'.$param.'">';	
 		if ($lConf['soloe'] || $lConf['direct'])	{
 		$markerArray['###HIDDEN_FIELDS###'].= '
-<input type="hidden" name="cancelurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cancel&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';
+<input type="hidden" name="cancelurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cancel&products_finalize=1'.$param.'">';
 		}
 		if ($lConf['direct'])	{
 			$markerArray['###HIDDEN_FIELDS###'].= '<input type="hidden" name="opener" value="">' .
-					'<input type="hidden" name="callbackurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id).'">';
+					'<input type="hidden" name="callbackurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1'.$param.'">';
 			$markerArray['###WINDOW_OPENER###'] = 'onsubmit="return doPopup(this);" target="Betaling"'; // if this is empty then no popup window will be opened
 		}
 
@@ -190,7 +198,7 @@ switch($products_cmd)	{
 	default:	
 		if ($lConf["relayURL"])	{
 			$markerArray=array();
-			$markerArray["###REDIRECT_URL###"] = 'https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cardno&products_finalize=1&HTTP_COOKIE='.rawurlencode("fe_typo_user=".$GLOBALS["TSFE"]->fe_user->id);
+			$markerArray["###REDIRECT_URL###"] = 'https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cardno&products_finalize=1'.$param;
 			$content=$this->getBasket("###DIBS_REDIRECT_TEMPLATE###",$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$content = "NO .relayURL given!!";

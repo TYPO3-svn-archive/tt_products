@@ -1,3 +1,7 @@
+2005-09-01  Franz Holzinger <franz@fholzinger.com>
+	* make the DIBS script to survive the fe_users session
+	* alwaysAdvanceOrderNumber for payment scripts with unique order ids
+
 2005-08-31  Franz Holzinger <franz@fholzinger.com>
 	* change in Danish template to make administration login for backend user visible
 	* paymentActivity

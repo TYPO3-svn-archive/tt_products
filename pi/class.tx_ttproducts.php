@@ -172,7 +172,7 @@ class tx_ttproducts extends tslib_pibase {
 			$this->config['code']='SINGLE';
 			$this->tt_product_single = true;
 		} else {
-			$temp = t3lib_div::_GET('tt_products');
+			$temp = t3lib_div::_GP('tt_products');
 			$this->tt_product_single = $temp;			
 //			$this->tt_product_single = ($temp ? $temp : $this->conf['defaultProductID']);
 		}
@@ -220,7 +220,16 @@ class tx_ttproducts extends tslib_pibase {
 			$updateMode = 1;
 		else
 			$updateMode = 0;
-			
+
+//// Franz start ++++			
+//		$HTTP_COOKIE = rawurldecode(t3lib_div::_GP('HTTP_COOKIE'));
+//		$temp = explode ('=', $HTTP_COOKIE);
+//		if (is_array($temp)) {
+//			$TSFE->fe_user->id = $temp[1]; 
+//			$TSFE->fe_user->fetchUserSession();
+//		}
+//// Franz end
+		
 		$this->initBasket($TSFE->fe_user->getKey('ses','recs'), $updateMode); // Must do this to initialize the basket...
 
 		// *************************************
@@ -1222,6 +1231,7 @@ class tx_ttproducts extends tslib_pibase {
 			$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
 		else
 			$TSFE->fe_user->setKey('ses','basketExt',array());
+		$TSFE->fe_user->storeSessionData(); // Franz: The basket shall not get lost
 
 		$this->setBasketExtras($basket);
 
@@ -1370,13 +1380,17 @@ class tx_ttproducts extends tslib_pibase {
 		if (!$pid)	$pid = intval($TSFE->id);
 
 		if ($TSFE->sys_page->getPage_noCheck ($pid))	{
-			$advanceUid = 0;
-			if ($this->conf['advanceOrderNumberWithInteger'])	{
+			$advanceUid = 0; 
+			if ($this->conf['advanceOrderNumberWithInteger'] || $this->conf['alwaysAdvanceOrderNumber'])	{
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', '', '', 'uid DESC', '1');
 				list($prevUid) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 
-				$rndParts = explode(',',$this->conf['advanceOrderNumberWithInteger']);
-				$advanceUid = $prevUid+t3lib_div::intInRange(rand(intval($rndParts[0]),intval($rndParts[1])),1);
+				if ($this->conf['advanceOrderNumberWithInteger']) {
+					$rndParts = explode(',',$this->conf['advanceOrderNumberWithInteger']);
+					$advanceUid = $prevUid+t3lib_div::intInRange(rand(intval($rndParts[0]),intval($rndParts[1])),1);
+				} else {
+					$advanceUid = $prevUid + 1;
+				}
 			}
 
 			$insertFields = array(
@@ -1406,9 +1420,10 @@ class tx_ttproducts extends tslib_pibase {
 	function getBlankOrderUid()	{
 		global $TSFE;
 
+	// an new orderUid has been created always because also payment systems can be used which do not accept a duplicate order id
 		$orderUid = intval($this->recs['tt_products']['orderUid']);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', 'uid='.intval($orderUid).' AND deleted AND NOT status');	// Checks if record exists, is marked deleted (all blank orders are deleted by default) and is not finished.
-		if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res))	{
+		if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res) || $this->conf['alwaysAdvanceOrderNumber'])	{
 			$orderUid = $this->createOrder();
 			$this->recs['tt_products']['orderUid'] = $orderUid;
 			$this->recs['tt_products']['orderDate'] = time();
