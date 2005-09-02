@@ -17,6 +17,10 @@ if (!defined ('PATH_FE_ttproducts_rel')) {
 	define('PATH_FE_ttproducts_rel', t3lib_extMgm::siteRelPath(TT_PRODUCTS_EXTkey));
 }
 
+if (!defined ('PATH_ttproducts_icon_table_rel')) {
+	define('PATH_ttproducts_icon_table_rel', PATH_BE_ttproducts_rel.'res/icons/table/');
+}
+
 t3lib_extMgm::addUserTSConfig('
         options.saveDocNew.tt_products=1
 ');

@@ -1,3 +1,7 @@
+2005-09-02  Franz Holzinger <franz@fholzinger.com>
+	* correct error with missing country field for fe_users
+	* gift certificates can be put into basket
+
 2005-09-01  Franz Holzinger <franz@fholzinger.com>
 	* make the DIBS script to survive the fe_users session
 	* alwaysAdvanceOrderNumber for payment scripts with unique order ids

@@ -5,7 +5,7 @@
 
 $LOCAL_LANG = Array (
 	'default' => Array (
-		'.description' => 'Built-in  shop items categories.',
+		'.description' => 'Shop items categories.',
 		'.details' => 'The categories are only used with the shopping system if the shop is configured to do so.',
 		'_.seeAlso' => 'tt_products',
 		'title.description' => '[FILL IN] tt_products_cat->title',
@@ -13,7 +13,7 @@ $LOCAL_LANG = Array (
 	'dk' => Array (
 	),
 	'de' => Array (
-		'.description' => 'Eingebaute Produktkategorien',
+		'.description' => 'Produktkategorien',
 		'.details' => 'Die Kategorien werden im Shop System nur dann verwendet, wenn das Shop auch dafür konfiguriert worden ist.',
 	),
 	'no' => Array (

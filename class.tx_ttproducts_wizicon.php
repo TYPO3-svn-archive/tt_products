@@ -41,28 +41,28 @@ class tx_ttproducts_wizicon {
 
 		if ($TYPO3_CONF_VARS['EXTCONF']['tt_products']['pageAsCategory'] == 0)
 		{
-			$params = "&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=".rawurlencode("HELP");
+			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]='.rawurlencode('HELP');
 		}
 		else
 		{
-			$params = "&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]=".rawurlencode("HELP");
+			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]='.rawurlencode('HELP');
 		}
-		$wizardItems["plugins_ttproducts"] = array(
-			"icon"=>t3lib_extMgm::extRelPath("tt_products")."productlist.gif",
-			"title"=>$LANG->getLLL("plugins_title",$LL),
-			"description"=>$LANG->getLLL("plugins_description",$LL),
-			"params"=> $params	);
+		$wizardItems['plugins_ttproducts'] = array(
+			'icon'=>PATH_BE_ttproducts_rel.'pi/ce_wiz.gif',
+			'title'=>$LANG->getLLL('plugins_title',$LL),
+			'description'=>$LANG->getLLL('plugins_description',$LL),
+			'params'=> $params	);
 
 		return $wizardItems;
 	}
 	function includeLocalLang()	{
-		include(t3lib_extMgm::extPath("tt_products")."locallang.php");
+		include(PATH_BE_ttproducts.'locallang.php');
 		return $LOCAL_LANG;
 	}
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_products/class.tx_ttproducts_wizicon.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_products/class.tx_ttproducts_wizicon.php"]);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/class.tx_ttproducts_wizicon.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/class.tx_ttproducts_wizicon.php']);
 }
 
 ?>

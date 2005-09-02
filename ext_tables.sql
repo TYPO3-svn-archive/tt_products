@@ -154,6 +154,44 @@ CREATE TABLE tt_products_articles (
 );
 
 
+
+#
+# Table structure for table 'tt_products_gifts'
+#
+CREATE TABLE tt_products_gifts (
+	uid int(11) DEFAULT '0' NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	tstamp int(11) DEFAULT '0' NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	
+	order_number int(11) NOT NULL,
+	person_name varchar(80) DEFAULT '' NOT NULL,
+	person_email varchar(80) DEFAULT '' NOT NULL,
+	delivery_name varchar(80) DEFAULT '' NOT NULL,
+	delivery_email varchar(80) DEFAULT '' NOT NULL,
+	note text NOT NULL,
+
+	PRIMARY KEY (uid),
+	KEY parent (pid)
+);
+
+
+
+#
+# Table structure for table 'tt_products_gifts_articles_mm'
+#
+#
+CREATE TABLE tt_products_gifts_articles_mm (
+  uid_local int(11) DEFAULT '0' NOT NULL,
+  uid_foreign int(11) DEFAULT '0' NOT NULL,
+  KEY uid_local (uid_local),
+  KEY uid_foreign (uid_foreign),
+);
+
+
+
+
 #
 # Table structure for table 'tt_products_card_payments'
 #

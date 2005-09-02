@@ -80,6 +80,7 @@ plugin.tt_products {
   paymentActivity = {$plugin.tt_products.paymentActivity}
   
   advanceOrderNumberWithInteger = {$plugin.tt_products.advanceOrderNumberWithInteger}
+  alwaysAdvanceOrderNumber = {$plugin.tt_products.alwaysAdvanceOrderNumber}
 
   defaultProductID = {$plugin.tt_products.defaultProductID}
   recursive = {$plugin.tt_products.recursive}
@@ -185,6 +186,9 @@ plugin.tt_products {
   newItemDays = {$plugin.tt_products.newItemDays}
 
   substitutePagetitle = {$plugin.tt_products.substitutePagetitle}  
+  
+  whereGift = {$plugin.tt_products.whereGift}  
+  defaultGiftUID = {$plugin.tt_products.defaultGiftUID}  
 }
 
 ## EXAMPLE payment config:

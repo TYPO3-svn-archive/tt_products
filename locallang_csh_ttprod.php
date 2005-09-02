@@ -5,8 +5,8 @@
 
 $LOCAL_LANG = Array (
 	'default' => Array (
-		'.description' => 'Built-in shop items.',
-		'.details' => 'This table holds the products available in the default TypoScript shopping system.',
+		'.description' => 'Shop items.',
+		'.details' => 'This table holds the products available in the default shopping system.',
 		'_.seeAlso' => 'tt_products_cat
 tt_content:list_type',
 		'hidden.description' => '[FILL IN] tt_products->hidden',
@@ -27,7 +27,7 @@ tt_content:list_type',
 	),
 	'de' => Array (
 		'.description' => 'Eigenschaften der Produkte.',
-		'.details' => 'Diese Tabelle enthält die Produkte, die standardmäßig im TypoScript Shop System zur Verfügung stehen.',
+		'.details' => 'Diese Tabelle enthält die Produkte, die standardmäßig im Shop System zur Verfügung stehen.',
 	),
 	'no' => Array (
 	),
