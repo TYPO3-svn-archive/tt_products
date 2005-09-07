@@ -253,9 +253,13 @@ This subpart is used to display single products.
 				<td colspan=3><img src="clear.gif" width=1 height=6></td>
 			</tr>
 			<tr> 
-				<td colspan=3 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
-  ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### --></b>###GW1E###<!-- ###LINK_ITEM###--></td>
-			</tr>
+				<td colspan=3 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###--></td>
+  				<td>
+  				<!-- ###display_variant2### -->
+				  ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
+				  name="###FIELD_SIZE_NAME###" onchange = "###FIELD_SIZE_ONCHANGE###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+				  <!-- ###display_variant2### -->
+  				</td>			</tr>
 			<tr>
 				<td valign=top>###PRODUCT_IMAGE###</td>
 				<td></td>
@@ -287,6 +291,98 @@ onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){do
 
 
 <!-- ###ITEM_SINGLE_DISPLAY### end -->
+
+
+
+
+
+<!-- ###ITEM_SINGLE_DISPLAY_GIFT### begin
+
+This subpart is used to display single gift products.
+
+-->
+		<table border="0" cellspacing="0" cellpadding="1" width="100%">
+			<tr>
+				<td align="left"><!--###LINK_PREV_SINGLE### begin-->###GW2B###&lt;&lt; previous article###GW2E###<!--###LINK_PREV_SINGLE### end--></td>
+				<td align="right"><!--###LINK_NEXT_SINGLE### begin-->###GW2B###next article &gt;&gt;###GW2E###<!--###LINK_NEXT_SINGLE### end--></td>
+			</tr>
+		</table>
+		
+		<H2>gift item</H2>
+
+		<table border="0" cellspacing="0" cellpadding="1" width=1>
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=300 height=1></td>
+			</tr>
+			<tr>
+				<td colspan=2><img src="clear.gif" width=1 height=6></td>
+			</tr>
+			<!-- ###PRODUCT_DATA### begin-->
+			<tr> 
+				<td colspan=2 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
+  ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### --></b>###GW1E###<!-- ###LINK_ITEM###--></td>
+			</tr>
+			<tr>
+				<td valign=top>###PRODUCT_IMAGE###</td>
+				<td valign=top>
+					###GW1B###
+						<b>category:</b> ###CATEGORY_TITLE### <br>
+						<b>product:</b> ###PRODUCT_ITEMNUMBER###<br>
+						<b>price:</b> <font color=red><strong>###PRICE_TAX### ¤</strong></font>###GW2B### &nbsp; (excl. tax ###PRICE_NO_TAX###)###GW2E###<br>
+
+						<b>info:</b><br>
+						###PRODUCT_NOTE###<br>
+					###GW1E###	<br>
+				</td>				
+			</tr>
+			<!-- ###PRODUCT_DATA### end-->
+			<!-- ###PERSON_DATA### begin-->
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+			<tr>
+				<td>###GW1B###<strong>sender name: </strong>###GW1E###</td>
+				<td><input type="text" name="###FIELD_NAME_PERSON_NAME###" size="30" value="###GIFT_PERSON_NAME###"></td>
+			</tr>
+			<tr>
+				<td>###GW1B###<strong>sender email: </strong>###GW1E###</td>
+				<td><input type="text" name="###FIELD_NAME_PERSON_EMAIL###" size="30" value="###GIFT_PERSON_EMAIL###"></td>
+			</tr>
+				<td>###GW1B###<strong>receiver name: </strong>###GW1E###</td>
+				<td><input type="text" name="###FIELD_NAME_DELIVERY_NAME###" size="30" value="###GIFT_DELIVERY_NAME###"></td>
+			</tr>
+			<tr>
+				<td>###GW1B###<strong>receiver email:</strong>###GW1E###</td>
+				<td><input type="text" name="###FIELD_NAME_DELIVERY_EMAIL###" size="30" value="###GIFT_DELIVERY_EMAIL###"></td>
+			</tr> 
+			<tr>
+				<td>###GW1B###<strong>message: </strong>###GW1E###</td>
+				<td><textarea cols=30 rows=5 name="###FIELD_NAME_GIFT_NOTE###" wrap="off">###GIFT_NOTE###</textarea></td>
+			</tr>
+			<tr> <td>
+			<nobr>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; 
+						<input type="hidden" name="giftnumber" value="###GIFTNO###">
+						<input type="Submit" name="order" value="put in basket"
+onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
+						</nobr>
+			</td></tr>
+			</form>
+			<!-- ###PERSON_DATA### end-->
+		</table>
+<br>
+<br>
+
+	###GW2B###
+	<!--###LINK_ITEM###-->
+	<b><- TILBAGE TIL LISTEN</b>
+	<!--###LINK_ITEM###-->
+	###GW2E###
+
+
+<!-- ###ITEM_SINGLE_DISPLAY_GIFT### end -->
+
+
+
 
 
 

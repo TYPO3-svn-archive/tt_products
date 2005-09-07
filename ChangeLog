@@ -1,3 +1,6 @@
+2005-09-07  Franz Holzinger <franz@fholzinger.com>
+	* fill in the transact code for DIBS
+
 2005-09-02  Franz Holzinger <franz@fholzinger.com>
 	* correct error with missing country field for fe_users
 	* gift certificates can be put into basket

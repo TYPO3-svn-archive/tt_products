@@ -202,7 +202,6 @@ plugin.tt_products {
   
     # cat=plugin.products//; type=string; label=gift selection: SQL where clause to form the gift products from the tt_products table
   whereGift = 
-    # cat=plugin.products//; type=int+; label=Uid of the gift product: Uid of the gift product which will be listed in the basket
-  defaultGiftUID = 1
+
 }
 

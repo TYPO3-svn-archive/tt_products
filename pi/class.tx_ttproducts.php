@@ -172,9 +172,7 @@ class tx_ttproducts extends tslib_pibase {
 			$this->config['code']='SINGLE';
 			$this->tt_product_single = true;
 		} else {
-			$temp = t3lib_div::_GP('tt_products');
-			$this->tt_product_single = $temp;			
-//			$this->tt_product_single = ($temp ? $temp : $this->conf['defaultProductID']);
+			$this->tt_product_single = t3lib_div::_GP('tt_products');			
 		}
 
 			// template file is fetched. The whole template file from which the various subpart are extracted.
@@ -577,6 +575,27 @@ class tx_ttproducts extends tslib_pibase {
 		return $rc;
 	} // getPID
 
+
+	/**
+	 * returns if the product has been put into the basket as a gift
+	 * 
+	 * @param	integer		uid of the product
+	 * @param	integer		variant of the product only size is used now --> TODO
+	 * @return	array		all gift numbers for this product		
+	 */
+	function getGiftNumbers($uid, $variant)	{
+		$giftArray = array();
+		
+		foreach ($this->basketExt['gift'] as $giftnumber => $giftItem) {
+			if ($giftItem['item'][$uid][$variant]) {
+				$giftArray [] = $giftnumber;
+			}
+		} 
+
+		return $giftArray;
+	}
+
+
 	/**
 	 * Displaying single products/ the products list / searching
 	 */
@@ -631,6 +650,8 @@ class tx_ttproducts extends tslib_pibase {
 				$this->tt_product_single = $this->conf['defaultProductID'];	
 			}
 			
+			$extVars= t3lib_div::_GP('tt_products_extVars'); 
+			
 				// performing query:
 			$this->setPidlist($this->config['storeRootPid']);
 			$this->initRecursive(999);
@@ -645,14 +666,36 @@ class tx_ttproducts extends tslib_pibase {
 			} else {
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 			}
+			
+			if ($extVars) {
+				$this->getValuesFromVariant (&$row, $extVars);
+			}
 
 			if($row) {
 			 	// $this->tt_product_single = intval ($row['uid']); // store the uid for later usage here
 
 					// Get the subpart code
-				$itemFrameWork ='';
+				$itemFrameTemplate ='';
+				$giftNumberArray = $this->getGiftNumbers ($row['uid'], $extVars);
+
+
+
+		#debug ($giftNumberArray, '$giftNumberArray', __LINE__, __FILE__);
+			
 				if ($this->config['displayCurrentRecord'])	{
-					$itemFrameWork = trim($this->cObj->getSubpart($this->templateCode,$this->spMarker('###ITEM_SINGLE_DISPLAY_RECORDINSERT###')));
+					$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
+				} else if (count($giftNumberArray)) {
+					$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
+				} else {
+					$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
+				}
+				$itemFrameWork = $this->cObj->getSubpart($this->templateCode,$this->spMarker($itemFrameTemplate));
+				
+				
+				if (count($giftNumberArray)) {
+					$personDataFrameWork = $this->cObj->getSubpart($itemFrameWork,'###PERSON_DATA###');
+					// the itemFramework is a smaller part here
+					$itemFrameWork = $this->cObj->getSubpart($itemFrameWork,'###PRODUCT_DATA###');					
 				}
 
 				// set the title of the single view
@@ -674,7 +717,6 @@ class tx_ttproducts extends tslib_pibase {
 */
 
 				$datasheetFile = $row['datasheet'];
-				if (!$itemFrameWork)	{$itemFrameWork = $this->cObj->getSubpart($this->templateCode,$this->spMarker('###ITEM_SINGLE_DISPLAY###'));}
 
 					// Fill marker arrays
 				$wrappedSubpartArray=array();
@@ -688,10 +730,12 @@ class tx_ttproducts extends tslib_pibase {
 				}
 
 				$item = $this->getItem($row);
-				$markerArray = $this->getItemMarkerArray ($item,$catTitle,$this->config['limitImage']);
+				$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->tt_product_single);
+				$markerArray = $this->getItemMarkerArray ($item,$catTitle,$this->config['limitImage'],'image', $forminfoArray);
+				
 				$subpartArray = array();
 
-				$markerArray['###FORM_NAME###']='item_'.$this->tt_product_single;
+				$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];
 
 				$markerArray['###FORM_URL###']=$formUrl.'&tt_products='.$this->tt_product_single ;
 
@@ -735,6 +779,24 @@ class tx_ttproducts extends tslib_pibase {
 
 					// Substitute
 				$content= $this->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
+				
+				if ($personDataFrameWork) {
+										
+					$subpartArray = array();
+					$wrappedSubpartArray=array();
+					$markerArray = $this->addGiftMarkers ($markerArray);
+					foreach ($giftNumberArray as $k => $giftnumber) {
+						#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
+						$markerArray = $this->addGiftMarkers ($markerArray, $giftnumber);
+						$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'].'_'.$giftnumber;
+						$markerArray['###FORM_URL###'] = $formUrl.'&tt_products='.$this->tt_product_single.'&tt_products_gifts='.  $giftnumber ;
+
+//		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]'; // here again, because this is here in ITEM_LIST view
+//		$markerArray['###FIELD_QTY###'] =  '';
+
+						$content.=$this->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
+					}
+				}
 			} else {
 				$content.='Wrong parameters, GET/POST var \'tt_products\' was missing or no product with uid = '.intval($this->tt_product_single) .' found.';
 			}
@@ -865,7 +927,7 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray['###FORM_URL###']=$formUrl; // Applied later as well.
 				
 				if ($theCode=='LISTGIFTS') {
-					$markerArray = $this->addGiftMarkers ($markerArray);
+					$markerArray = $this->addGiftMarkers ($markerArray, $this->giftnumber);
 					$markerArray['###FORM_NAME###']= 'GiftForm';
 
 					$markerFramework = 'listFrameWork';
@@ -960,7 +1022,7 @@ class tx_ttproducts extends tslib_pibase {
 //							$markerArray = $this->getItemMarkerArray ($item,$catTitle, $this->config['limitImage'],'image');
 							$markerArray = $this->getItemMarkerArray ($item,$catTitle, $this->config['limitImage'],'listImage');
 							if ($theCode=='LISTGIFTS') {
-								$markerArray = $this->addGiftMarkers ($markerArray);
+								$markerArray = $this->addGiftMarkers ($markerArray, $this->giftnumber);
 							}
 							
 							$subpartArray = array();
@@ -2196,14 +2258,19 @@ class tx_ttproducts extends tslib_pibase {
 	} // checkVatInclude
 
 
-	// **************************
-	// Template marker substitution
-	// **************************
-
 	/**
+	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
+	 *
+	 * @param	array		reference to an item array with all the data of the item
+	 * @param	string		title of the category
+	 * @param	integer		number of images to be shown
+	 * @param	object		the image cObj to be used
+	 * @param   array		information about the parent HTML form
+	 * @return	string
+	 * @access private
 	 */
-	function &getItemMarkerArray (&$item,$catTitle, $imageNum=0, $imageRenderObj='image')	{
+	function &getItemMarkerArray (&$item,$catTitle, $imageNum=0, $imageRenderObj='image', $forminfoArray = array())	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 
 		$row = &$item['rec'];
@@ -2327,10 +2394,14 @@ class tx_ttproducts extends tslib_pibase {
 
 		$markerArray['###FIELD_SIZE_NAME###']='ttp_basket['.$row['uid'].'][size]';
 		$markerArray['###FIELD_SIZE_VALUE###']=$row['size'];
+		$markerArray['###FIELD_SIZE_ONCHANGE']= ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
+		
 		$markerArray['###FIELD_COLOR_NAME###']='ttp_basket['.$row['uid'].'][color]';
 		$markerArray['###FIELD_COLOR_VALUE###']=$row['color'];
+		
 		$markerArray['###FIELD_ACCESSORY_NAME###']='ttp_basket['.$row['uid'].'][accessory]';
 		$markerArray['###FIELD_ACCESSORY_VALUE###']=$row['accessory'];
+		
 		$markerArray['###FIELD_GRADINGS_NAME###']='ttp_basket['.$row['uid'].'][gradings]';
 		$markerArray['###FIELD_GRADINGS_VALUE###']=$row['gradings'];
 
@@ -2436,15 +2507,14 @@ class tx_ttproducts extends tslib_pibase {
 	/**
 	 * Adds gift markers to a markerArray
 	 */
-	function addGiftMarkers($markerArray)	{
+	function addGiftMarkers($markerArray, $giftnumber)	{
 		
-		$prevgiftnumber = $this->giftnumber;
-		$markerArray['###GIFTNO###'] = $this->giftnumber;
-		$markerArray['###GIFT_PERSON_NAME###'] = $this->basketExt['gift'][$prevgiftnumber]['personname']; 
-		$markerArray['###GIFT_PERSON_EMAIL###'] = $this->basketExt['gift'][$prevgiftnumber]['personemail']; 
-		$markerArray['###GIFT_DELIVERY_NAME###'] = $this->basketExt['gift'][$prevgiftnumber]['deliveryname']; 
-		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $this->basketExt['gift'][$prevgiftnumber]['deliveryemail']; 
-		$markerArray['###GIFT_NOTE###'] = $this->basketExt['gift'][$prevgiftnumber]['note'];
+		$markerArray['###GIFTNO###'] = $giftnumber;
+		$markerArray['###GIFT_PERSON_NAME###'] = $this->basketExt['gift'][$giftnumber]['personname']; 
+		$markerArray['###GIFT_PERSON_EMAIL###'] = $this->basketExt['gift'][$giftnumber]['personemail']; 
+		$markerArray['###GIFT_DELIVERY_NAME###'] = $this->basketExt['gift'][$giftnumber]['deliveryname']; 
+		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $this->basketExt['gift'][$giftnumber]['deliveryemail']; 
+		$markerArray['###GIFT_NOTE###'] = $this->basketExt['gift'][$giftnumber]['note'];
 //		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]'; // here again, because this is here in ITEM_LIST view
 //		$markerArray['###FIELD_QTY###'] =  '';
 		
@@ -2453,7 +2523,6 @@ class tx_ttproducts extends tslib_pibase {
 		$markerArray['###FIELD_NAME_DELIVERY_NAME###']='ttp_gift[deliveryname]';
 		$markerArray['###FIELD_NAME_DELIVERY_EMAIL###']='ttp_gift[deliveryemail]';
 		$markerArray['###FIELD_NAME_GIFT_NOTE###']='ttp_gift[note]';
-		
 		
 		return $markerArray;
 	} // addGiftMarkers
@@ -2954,6 +3023,23 @@ class tx_ttproducts extends tslib_pibase {
 */
 
 	/**
+	 * Wrapping $title in a-tags.
+	 *
+	 * @param	array		the row
+	 * @param	string		variants separated by ';'
+	 * @return	void
+	 * @access private
+	 */
+	 function getValuesFromVariant (&$row, $variant) {
+		$variantArray = explode(';', $variant);
+		$row['color'] = $variantArray[0];
+		$row['size'] = $variantArray[1];
+		$row['accessory'] = floatval($variantArray[2]);
+		$row['gradings'] = $variantArray[3];
+	 }
+
+
+	/**
 	 * This calculates the totals. Very important function.
 	This function also calculates the internal arrays
 
@@ -2986,11 +3072,7 @@ class tx_ttproducts extends tslib_pibase {
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
 			reset($this->basketExt[$row['uid']]);
 			while(list($bextVars,)=each($this->basketExt[$row['uid']])) {
-				$variants = explode(';', $bextVars);
-				$row['color'] = $variants[0];
-				$row['size'] = $variants[1];
-				$row['accessory'] = floatval($variants[2]);
-				$row['gradings'] = $variants[3];
+				$this->getValuesFromVariant ($row, $bextVars);
 				$row['extVars'] = $bextVars;
 				if ($this->conf['useArticles']) {
 					// get the article uid with these colors, sizes and gradings
@@ -3205,7 +3287,7 @@ class tx_ttproducts extends tslib_pibase {
 					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->priceFormat($actItem['totalNoTax']);
 	
 					$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
-					$wrappedSubpartArray['###LINK_ITEM###']=array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'">','</a>');
+					$wrappedSubpartArray['###LINK_ITEM###']=array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&tt_products_extVars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
 	
 					if (trim($actItem['rec']['color']) == '')
 						$subpartArray['###display_variant1###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,'###display_variant1###') : '');
@@ -3264,6 +3346,8 @@ class tx_ttproducts extends tslib_pibase {
 		$markerArray['###PAYMENT_SELECTOR###'] = $this->generateRadioSelect('payment', $countTotal);
 		$markerArray['###PAYMENT_IMAGE###'] = $this->cObj->IMAGE($this->basketExtra['payment.']['image.']);
 		$markerArray['###PAYMENT_TITLE###'] = $this->basketExtra['payment.']['title'];
+		
+		$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
 
 			// Fill the Currency Symbol or not
 		if ($this->conf['showcurSymbol']) {

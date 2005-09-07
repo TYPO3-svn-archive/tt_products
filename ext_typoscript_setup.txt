@@ -188,7 +188,7 @@ plugin.tt_products {
   substitutePagetitle = {$plugin.tt_products.substitutePagetitle}  
   
   whereGift = {$plugin.tt_products.whereGift}  
-  defaultGiftUID = {$plugin.tt_products.defaultGiftUID}  
+
 }
 
 ## EXAMPLE payment config:
