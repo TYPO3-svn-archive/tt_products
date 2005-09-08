@@ -262,7 +262,7 @@ class tx_ttproducts extends tslib_pibase {
 					$content.=$this->orders_display($theCode);
 				break;
 				default:	// 'HELP'
-					$helpTemplate = $this->cObj->fileResource('EXT:'.TT_PRODUCTS_EXTkey.'/pi/products_help.tmpl');
+					$helpTemplate = $this->cObj->fileResource('EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl');
 
 						// Get language version
 					$helpTemplate_lang='';
@@ -650,7 +650,7 @@ class tx_ttproducts extends tslib_pibase {
 				$this->tt_product_single = $this->conf['defaultProductID'];	
 			}
 			
-			$extVars= t3lib_div::_GP('tt_products_extVars'); 
+			$extVars= t3lib_div::_GP('ttp_extvars'); 
 			
 				// performing query:
 			$this->setPidlist($this->config['storeRootPid']);
@@ -676,9 +676,9 @@ class tx_ttproducts extends tslib_pibase {
 
 					// Get the subpart code
 				$itemFrameTemplate ='';
+				#debug ($extVars, '$extVars', __LINE__, __FILE__);
+				#debug ($row['uid'], '$row[\'uid\']', __LINE__, __FILE__);
 				$giftNumberArray = $this->getGiftNumbers ($row['uid'], $extVars);
-
-
 
 		#debug ($giftNumberArray, '$giftNumberArray', __LINE__, __FILE__);
 			
@@ -789,10 +789,14 @@ class tx_ttproducts extends tslib_pibase {
 						#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
 						$markerArray = $this->addGiftMarkers ($markerArray, $giftnumber);
 						$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'].'_'.$giftnumber;
-						$markerArray['###FORM_URL###'] = $formUrl.'&tt_products='.$this->tt_product_single.'&tt_products_gifts='.  $giftnumber ;
+						$markerArray['###FORM_URL###'] = $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($extVars);
 
-//		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]'; // here again, because this is here in ITEM_LIST view
-//		$markerArray['###FIELD_QTY###'] =  '';
+						#debug ($TSFE->id, '$TSFE->id', __LINE__, __FILE__);
+						$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$extVars.']'; // here again, because this is here in ITEM_LIST view
+						#debug ($this->basketExt['gift'][$giftnumber]['item'], '$this->basketExt[\'gift\'][$giftnumber][\'item\']', __LINE__, __FILE__);
+						#debug ($extVars, '$extVars', __LINE__, __FILE__);
+						#debug ($this->basketExt['gift'][$giftnumber]['item'][$extVars], '$this->basketExt[\'gift\'][$giftnumber][\'item\'][$extVars]', __LINE__, __FILE__);
+						$markerArray['###FIELD_QTY###'] = $this->basketExt['gift'][$giftnumber]['item'][$row['uid']][$extVars];
 
 						$content.=$this->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 					}
@@ -1246,37 +1250,56 @@ class tx_ttproducts extends tslib_pibase {
 		$this->giftnumber = count ($this->basketExt['gift']) + 1;
 		
 		$newGiftData = t3lib_div::_GP('ttp_gift');
+		$extVars= t3lib_div::_GP('ttp_extvars'); 
+		$uid = t3lib_div::_GP('tt_products');
 		
 		$sameGiftData = true;
 		$identGiftnumber = 0;
 		if ($newGiftData) {
-		 	if (is_array($this->basketExt['gift'])) {
-				foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
-					$sameGiftData = true;
-					foreach ($rec as $field => $value) {
-						// only the 'field' field can be different
-						if ($field != 'item' && $field != 'note' && $value != $newGiftData[$field]) {
-							$sameGiftData = false;
+			#debug ($newGiftData, '$newGiftData', __LINE__, __FILE__);
+	 		$giftnumber = t3lib_div::_GP('giftnumber');
+			if (!$updateMode) {
+			 	if (is_array($this->basketExt['gift'])) {
+			 		#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
+			 		#debug ($updateMode, '$updateMode', __LINE__, __FILE__);
+			 		#debug ($giftnumber, '$giftnumber', __LINE__, __FILE__);
+					foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
+						$sameGiftData = true;
+						foreach ($rec as $field => $value) {
+							// only the 'field' field can be different
+							if ($field != 'item' && $field != 'note' && $value != $newGiftData[$field]) {
+								$sameGiftData = false;
+								break;
+							}
+						}
+						if ($sameGiftData) {
+							$identGiftnumber = $prevgiftnumber;
+							// always use the latest note
+							$this->basketExt['gift'][$identGiftnumber]['note'] = $newGiftData['note'];
 							break;
 						}
-					}
-					if ($sameGiftData) {
-						$identGiftnumber = $prevgiftnumber;
-						// always use the latest note
-						$this->basketExt['gift'][$identGiftnumber]['note'] = $newGiftData['note'];
-						break;
-					}
-				} 
-				
-		 	} else {
-				$sameGiftData = false;
+					} 
+					
+			 	} else {
+					$sameGiftData = false;
+				}
+				if (!$sameGiftData) {
+					$this->basketExt['gift'][$this->giftnumber] = $newGiftData;
+				}
+			} else {
+				$this->basketExt['gift'][$giftnumber] = $newGiftData;
+				#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
+				$count = 0;
+				foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
+					$count += $rec['item'][$uid][$extVars];
+				}
+				// update the general basket entry for this product
+				$this->basketExt[$uid][$extVars] = $count;
 			}
 			
-			if (!$sameGiftData) {
-				$this->basketExt['gift'][$this->giftnumber] = $newGiftData;
-			}
 		} 
 				
+		#debug ($basketExtRaw, '$basketExtRaw', __LINE__, __FILE__);
 		if (is_array($basketExtRaw)) {
 			while(list($uid,$basketItem)=each($basketExtRaw)) {
 				if (t3lib_div::testInt($uid))   {
@@ -1320,6 +1343,8 @@ class tx_ttproducts extends tslib_pibase {
 		// than to recreate the array
 		$basketExtNew = array();
 		reset($this->basketExt);
+		#debug ($this->basketExt, '$this->basketExt', __LINE__, __FILE__);
+		#debug ($this->basketExt['gift'][1]['item'], '$this->basketExt[\'gift\'][1][\'item\']', __LINE__, __FILE__);
 		while(list($tmpUid,$tmpSubArr)=each($this->basketExt)) {
 			while(list($tmpExtVar,$tmpCount)=each($tmpSubArr)) {
 				if ($tmpCount > 0) {
@@ -1462,571 +1487,6 @@ class tx_ttproducts extends tslib_pibase {
 		return ($this->recs);
 	} // getClearBasketRecord
 
-
-
-	// **************************
-	// ORDER related functions
-	// **************************
-
-	/**
-	 * Create a new order record
-	 *
-	 * This creates a new order-record on the page with pid, .PID_sys_products_orders. That page must exist!
-	 * Should be called only internally by eg. getBlankOrderUid, that first checks if a blank record is already created.
-	 */
-	function createOrder()	{
-		global $TSFE;
-
-		$newId = 0;
-		$pid = intval($this->conf['PID_sys_products_orders']);
-		if (!$pid)	$pid = intval($TSFE->id);
-
-		if ($TSFE->sys_page->getPage_noCheck ($pid))	{
-			$advanceUid = 0; 
-			if ($this->conf['advanceOrderNumberWithInteger'] || $this->conf['alwaysAdvanceOrderNumber'])	{
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', '', '', 'uid DESC', '1');
-				list($prevUid) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
-
-				if ($this->conf['advanceOrderNumberWithInteger']) {
-					$rndParts = explode(',',$this->conf['advanceOrderNumberWithInteger']);
-					$advanceUid = $prevUid+t3lib_div::intInRange(rand(intval($rndParts[0]),intval($rndParts[1])),1);
-				} else {
-					$advanceUid = $prevUid + 1;
-				}
-			}
-
-			$insertFields = array(
-				'pid' => $pid,
-				'tstamp' => time(),
-				'crdate' => time(),
-				'deleted' => 1
-			);
-			if ($advanceUid > 0)	{
-				$insertFields['uid'] = $advanceUid;
-			}
-
-			$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders', $insertFields);
-
-			$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
-		}
-		return $newId;
-	} // createOrder
-
-	/**
-	 * Returns a blank order uid. If there was no order id already, a new one is created.
-	 *
-	 * Blank orders are marked deleted and with status=0 initialy. Blank orders are not necessarily finalized because users may abort instead of buying.
-	 * A finalized order is marked 'not deleted' and with status=1.
-	 * Returns this uid which is a blank order record uid.
-	 */
-	function getBlankOrderUid()	{
-		global $TSFE;
-
-	// an new orderUid has been created always because also payment systems can be used which do not accept a duplicate order id
-		$orderUid = intval($this->recs['tt_products']['orderUid']);
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', 'uid='.intval($orderUid).' AND deleted AND NOT status');	// Checks if record exists, is marked deleted (all blank orders are deleted by default) and is not finished.
-		if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res) || $this->conf['alwaysAdvanceOrderNumber'])	{
-			$orderUid = $this->createOrder();
-			$this->recs['tt_products']['orderUid'] = $orderUid;
-			$this->recs['tt_products']['orderDate'] = time();
-			$this->recs['tt_products']['orderTrackingNo'] = $this->getOrderNumber($orderUid).'-'.strtolower(substr(md5(uniqid(time())),0,6));
-			$TSFE->fe_user->setKey('ses','recs',$this->recs);
-		}
-		return $orderUid;
-	} // getBlankOrderUid
-
-	/**
-	 * Returns the orderRecord if $orderUid.
-	 * If $tracking is set, then the order with the tracking number is fetched instead.
-	 */
-	function getOrderRecord($orderUid,$tracking='')	{
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', ($tracking ? 'tracking_code="'.$GLOBALS['TYPO3_DB']->quoteStr($tracking, 'sys_products_orders').'"' : 'uid='.intval($orderUid)).' AND NOT deleted');
-		return $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-	} //getOrderRecord
-
-	/**
-	 * This returns the order-number (opposed to the order_uid) for display in the shop, confirmation notes and so on.
-	 * Basically this prefixes the .orderNumberPrefix, if any
-	 */
-	function getOrderNumber($orderUid)	{
-		$orderNumberPrefix = substr($this->conf['orderNumberPrefix'],0,10);
-		if ($orderNumberPrefix[0]=='%')
-			$orderNumberPrefix = date(substr($orderNumberPrefix, 1));
-		return $orderNumberPrefix.$orderUid;
-	} // getOrderNumber
-
-	
-	/**
-	 * Returns the number of creditpoints for the frontend user
-	 */
-	function getCreditPoints($amount)	{
-		$type = '';
-		$where = '';
-		$creditpoints = 0;
-		foreach ($this->conf['creditpoints.'] as $k1=>$priceCalcTemp) {
-			if (!is_array($priceCalcTemp)) {
-				switch ($k1) {
-					case 'type':
-						$type = $priceCalcTemp;
-						break;
-					case 'where':
-						$where = $priceCalcTemp;
-						break;
-				}
-				continue;
-			}
-			$dumCount = 0;
-			$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
-		
-			if ($type != 'price') {
-				break;
-			}
-			krsort($priceCalcTemp['prod.']);
-			reset($priceCalcTemp['prod.']);
-
-			foreach ($priceCalcTemp['prod.'] as $k2=>$points) {
-				if ($amount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
-					$creditpoints = $points;		
-					break; // finish
-				}
-			}
-		}
-		return $creditpoints;
-	} // getCreditPoints
-
-	/**
-	 * Finalize an order
-	 *
-	 * This finalizes an order by saving all the basket info in the current order_record.
-	 * A finalized order is then marked 'not deleted' and with status=1
-	 * The basket is also emptied, but address info is preserved for any new orders.
-	 * $orderUid is the order-uid to finalize
-	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
-	 */
-	function finalizeOrder($orderUid, $orderConfirmationHTML)	{
-		global $TSFE;
-		global $TYPO3_DB;
-		
-		$content = '';
-
-			// Fix delivery address
-		$this->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
-//		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
-//		$orderConfirmationHTML=trim($this->getBasket('###BASKET_ORDERCONFIRMATION_TEMPLATE###','',$mainMarkerArray));		// Getting the template subpart for the order confirmation!
-
-			// Saving order data
-		$fieldsArray=array();
-		$fieldsArray['note']=$this->deliveryInfo['note'];
-/* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
-		$fieldsArray['feusers_uid']=$this->personInfo['feusers_uid'];
-		$fieldsArray['name']=$this->deliveryInfo['name'];
-		$fieldsArray['telephone']=$this->deliveryInfo['telephone'];
-		$fieldsArray['fax']=$this->deliveryInfo['fax'];
-		$fieldsArray['email']=$this->deliveryInfo['email'];
-//		debug ($this->conf['email_notify_default'], "this->conf['email_notify_default']", __LINE__, __FILE__);
-		$fieldsArray['email_notify']=  $this->conf['email_notify_default'];		// Email notification is set here. Default email address is delivery email contact
-
-			// can be changed after order is set.
-		$fieldsArray['payment']=$this->basketExtra['payment'].': '.$this->basketExtra['payment.']['title'];
-		$fieldsArray['shipping']=$this->basketExtra['shipping'].': '.$this->basketExtra['shipping.']['title'];
-		$fieldsArray['amount']=$this->calculatedArray['priceTax']['total'];
-		$fieldsArray['status']=1;	// This means, "Order confirmed on website, next step: confirm from shop that order is received"
-
-/* Added Els: update fe_user with amount of creditpoints and subtract creditpoints used in order*/
-		$fieldsArrayFeUsers = array();
-		/* example:
-  creditpoints {
-  10.where =
-  10.type = price
-  10.prod.1   = 0.02
-  10.prod.101 = 0.04
-  10.prod.501 = 0.06
-}
-		 */
-		if ($this->conf['creditpoints.']) {
-			$creditpoints = $this->getCreditPoints($fieldsArray['amount']);
-			
-			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->recs['tt_products']['creditpoints'];
-		}
-
-/* Added Els: update fe_user with vouchercode */
-		if ($this->recs['tt_products']['vouchercode'] != '') {
-			// first check if vouchercode exist and is not their own vouchercode
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'fe_users', 'username="'.$this->recs['tt_products']['vouchercode'].'"');
-			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$uid_voucher = $row['uid'];
-			}
-			if (($uid_voucher != '') & ($this->deliveryInfo['feusers_uid'] != $uid_voucher) ) {
-				$fieldsArrayFeUsers['tt_products_vouchercode'] = $this->recs['tt_products']['vouchercode'];
-			}
-		}
-		
-		if ($this->deliveryInfo['feusers_uid']) {
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$this->deliveryInfo['feusers_uid'], $fieldsArrayFeUsers);
-	/* Added ELS2: update user from vouchercode with 5 credits */
-	       // get the "old" creditpoints for the user
-	       $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints', 'fe_users', 'username="'.$this->recs['tt_products']['vouchercode'].'"');
-	       if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
-	           $ttproductscreditpoints = $row['tt_products_creditpoints'];
-	       }
-	       $fieldsArrayFeUserCredit = array();
-	       $fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + 5;
-	       $GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$uid_voucher, $fieldsArrayFeUserCredit);
-		}
-
-
-/*
-		//<-- MKL 2004.09.21
-		$fieldsArray['forename']=$this->personInfo['forename'];
-		$fieldsArray['company']=$this->personInfo['company'];
-		$fieldsArray['vat_id']=$this->personInfo['vat_id'];
-		$fieldsArray['street']=$this->deliveryInfo['street'];
-		$fieldsArray['street_n1']=$this->deliveryInfo['street_n1'];
-		$fieldsArray['street_n2']=$this->deliveryInfo['street_n2'];
-		$fieldsArray['city']=$this->deliveryInfo['city'];
-		$fieldsArray['zip']=$this->deliveryInfo['zip'];
-		$fieldsArray['country_code']=$this->personInfo['country_code'];
-		$fieldsArray['client_ip']=t3lib_div::getIndpEnv('REMOTE_ADDR');
-		//--> MKL 2004.09.21
-*/
-
-				// Default status_log entry
-		$status_log=array();
-		$status_log[] = array(
-			'time' => time(),
-			'info' => $this->conf['statusCodes.'][$fieldsArray['status']],
-			'status' => $fieldsArray['status'],
-			'comment' => $this->deliveryInfo['note']
-		);
-		$fieldsArray['status_log']=serialize($status_log);
-
-			// Order Data serialized
-		$fieldsArray['orderData']=serialize(array(
-				'html_output' 			=>	$orderConfirmationHTML,
-				'deliveryInfo' 			=>	$this->deliveryInfo,
-				'personInfo' 			=>	$this->personInfo,
-				'itemArray'				=>	$this->itemArray,
-				'calculatedArray'		=>	$this->calculatedArray
-		));
-
-			// Setting tstamp, deleted and tracking code
-		$fieldsArray['tstamp']=time();
-		$fieldsArray['deleted']=0;
-		$fieldsArray['tracking_code']=$this->recs['tt_products']['orderTrackingNo'];
-		$fieldsArray['agb']		= $this->personInfo['agb'];
-/* Added Els: write creditpointvalue into sys_products_order */
-		$fieldsArray['creditpoints'] = $this->recs['tt_products']['creditpoints'];
-
-			// Saving the order record
-		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
-
-			// Fetching the orderRecord by selecing the newly saved one...
-		$this->orderRecord = $this->getOrderRecord($orderUid);
-		$content .= $this->getBasket('###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
-
-		// Is no user is logged in --> create one
-		if ($this->conf['createUsers'] && ($this->personInfo['email'] != '') && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
-		{
-			$username = strtolower(trim($this->personInfo['email']));
-
-			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
-			$num_rows = $TYPO3_DB->sql_num_rows($res);
-
-			if (!$num_rows)
-			{
-				$this->password = substr(md5(rand()), 0, 6);
-
-				$insertFields = array(
-					'pid' => $this->conf['PIDuserFolder'],
-					'tstamp' => time(),
-					'username' => $username,
-					'password' => $this->password,
-					'usergroup' => $this->conf['memberOfGroup'],
-/* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
-					'uid' => $this->personInfo['feusers_uid'],
-					'company' => $this->personInfo['company'],
-					'name' => $this->personInfo['name'],
-					'address' => $this->personInfo['address'],
-					'telephone' => $this->personInfo['telephone'],
-					'fax' => $this->personInfo['fax'],
-					'email' => $this->personInfo['email'],
-					'zip' => $this->personInfo['zip'],
-					'city' => $this->personInfo['city'],
-					'crdate' => time()
-				);
-
-				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country':'country');
-				$insertFields[$countryKey] =  $this->personInfo['country'];
-				
-				$res = $GLOBALS['TYPO3_DB']->exec_INSERTquery('fe_users', $insertFields);
-				// send new user mail
-				if (count($this->personInfo['email'])) {
-					$emailContent=trim($this->getBasket('###EMAIL_NEWUSER_TEMPLATE###'));
-					if ($emailContent) {
-						$parts = split(chr(10),$emailContent,2);
-						$subject=trim($parts[0]);
-						$plain_message=trim($parts[1]);
-
-						$this->send_mail($this->personInfo['email'], $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName']);
-					}
-				}
-			}
-		}
-
-
-		if (!$this->conf['AlwaysInStock']) {
-			// Reduce inStock
-			reset($this->itemArray);
-			
-			#debug ($this->itemArray, '$this->itemArray Reduce in stock', __LINE__, __FILE__);
-
-			// loop over all items in the basket indexed by page and itemnumber
-			foreach ($this->itemArray as $pid=>$pidItem) {
-				foreach ($pidItem as $itemnumber=>$actItemArray) {
-					#error_Log ("tt_products  $this->conf['useArticles'] = ".$this->conf['useArticles']);
-					if ($this->conf['useArticles']) {
-						foreach ($actItemArray as $k1=>$actItem) {
-							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'];
-							
-							$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products_articles', $query);
-								// 	TODO: Saving the order record support color, size and accessory here
-						}
-					} else {	
-						$query='uid=\''.intval($actItemArray[0]['rec']['uid']).'\'';
-
-						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products', $query);
-		
-						if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-							if ($row['inStock'] > 0) {
-								$newInStock = intval($row['inStock'])-intval($actItemArray[0]['count']);
-								if ($newInStock < 0) {
-									$newInStock = 0;
-								}
-		
-								$fieldsArray =array();
-											// Setting tstamp, deleted and tracking code
-								$fieldsArray['inStock']=$newInStock;
-								
-								$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'uid='.intval($actItemArray[0]['rec']['uid']), $fieldsArray);
-							}
-						}
-					}
-				}
-			}
-		}
-
-			// Creates M-M relations for the products with tt_products table. Isn't really used yet, but later will be used to display stock-status by looking up how many items are already ordered.
-			// First: delete any existing. Shouldn't be any
-		$where='sys_products_orders_uid='.$orderUid;
-		$res = $GLOBALS['TYPO3_DB']->exec_DELETEquery('sys_products_orders_mm_tt_products',$where);
-	
-			// Second: Insert a new relation for each ordered item
-		reset($this->itemArray);
-
-		// loop over all items in the basket indexed by page and itemnumber
-		foreach ($this->itemArray as $pid=>$pidItem) {
-			foreach ($pidItem as $itemnumber=>$actItemArray) {
-				if ($this->conf['useArticles']) {
-					foreach ($actItemArray as $k1=>$actItem) {
-						// get the article uid with these colors, sizes and gradings
-						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
-							
-						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
-		
-						if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-							$insertFields = array (
-								'sys_products_orders_uid' => $orderUid,
-								'sys_products_orders_qty' => intval($actItemArray[0]['count']),
-								'tt_products_uid' => intval($actItemArray[0]['rec']['uid']),
-								'tt_products_articles_uid' => intval($row['uid'])
-							);	
-							$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
-						}						
-					}
-				} else {
-					$insertFields = array (
-						'sys_products_orders_uid' => $orderUid,
-						'sys_products_orders_qty' => intval($actItemArray[0]['count']),
-						'tt_products_uid' => intval($actItemArray[0]['rec']['uid'])
-					);	// TODO: differentiate between colors, sizes, gradings and accessory
-					$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
-				}
-			}
-		}
-
-		// Generate CSV for each order
-		if ($this->conf['generateCSV'])
-		{
-			$csvfilepath = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $this->conf['CSVdestination'];
-			if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
-				$csvfilepath .= '/';
-			}
-			$csvfilepath .= $this->getOrderNumber($this->recs['tt_products']['orderUid']).'.csv';
-			$csvfile = fopen($csvfilepath, 'w');
-			if ($csvfile !== FALSE)
-			{
-				// Generate invoice and delivery address
-				$csvlinehead = '';
-				$csvlineperson = '';
-				$csvlinedelivery = '';
-/* Added Els: 'feusers_uid,' */
-				$infoFields = explode(',','feusers_uid,name,address,telephone,fax,email,company,city,zip,state,country,kk_fa,kk_nr,kk_ablauf,kk_pruefcode,agb');
-				while(list(,$fName)=each($infoFields)) {
-					if ($csvlinehead != '') {
-						$csvlinehead .= ';';
-						$csvlineperson .= ';';
-						$csvlinedelivery .= ';';
-					}
-					$csvlinehead .= '"' . $fName . '"';
-					$csvlineperson .= '"' . str_replace('\r\n', '|', $this->personInfo[$fName]) . '"';
-					$csvlinedelivery .= '"' . $this->deliveryInfo[$fName] . '"';
-				}
-
-				// Generate shipping/payment information and delivery note
-				$csvlineshipping = '"' . $this->basketExtra['shipping.']['title'] . '";"' .
-					$this->priceFormat($this->calculatedArray['priceTax']['shipping']) . '";"' .
-					$this->priceFormat($this->calculatedArray['priceNoTax']['shipping']) . '"';
-
-				$csvlinepayment = '"' . $this->basketExtra['payment.']['title'] . '";"' .
-					$this->priceFormat($this->calculatedArray['priceTax']['payment']) . '";"' .
-					$this->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '"';
-
-				$csvlinedeliverynote = '"'.$this->deliveryInfo['note'].'"';
-
-				// Build field list
-				$csvfields = explode(',', $this->conf['CSVfields']);
-				$csvfieldcount = count($csvfields);
-				for ($a=0;$a<$csvfieldcount;$a++)
-					$csvfields[$a] = trim($csvfields[$a]);
-
-				// Write description header
-				$csvdescr = '"uid";"count";"color";"size";"accessory";"gradings"';
-				reset($csvfields);
-				foreach($csvfields as $csvfield)
-					$csvdescr .= ';"'.$csvfield.'"';
-				if ($this->conf['CSVinOneLine'])
-				{
-					$csvdescr .= ';"deliverynote";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
-					$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
-				}
-				$csvdescr .= '\n';
-				fwrite($csvfile, $csvdescr);
-
-				// Write ordered product list
-				reset($this->itemArray);
-
-				$infoWritten = false;
-				// loop over all items in the basket indexed by page and itemnumber
-				foreach ($this->itemArray as $pid=>$pidItem) {
-					foreach ($pidItem as $itemnumber=>$actItemArray) {
-						foreach ($actItemArray as $k1=>$actItem) {
-							$variants = explode(';', $actItem['rec']['extVars']);
-							$csvdata = '"'.intval($actItem['rec']['uid']).'";"'.
-										intval($actItem['count']).'";"'.
-										$variants[0].'";"'.
-										$variants[1].'";"'.
-										$variants[2]/100 .'";"'.
-										$variants[3].'"';
-							reset($csvfields);
-							foreach($csvfields as $csvfield) {
-								$csvdata .= ';"'.$actItem['rec'][$csvfield].'"';
-							}
-							if ($this->conf['CSVinOneLine'] && (!$infoWritten))	{
-								$infoWritten = true;
-								$csvdata .= ';'.$csvlinedeliverynote.';'.$csvlineshipping.';'.$csvlinepayment.';'.$csvlineperson.';'.$csvlinedelivery;
-							}
-							$csvdata .= '\n';
-							fwrite($csvfile, $csvdata);
-						}
-					}
-				}
-
-				if (!$this->conf['CSVinOneLine']) {
-					fwrite($csvfile, '\n');
-					fwrite($csvfile, $csvlinehead . '\n');
-					fwrite($csvfile, $csvlineperson . '\n');
-					fwrite($csvfile, $csvlinedelivery . '\n');
-					fwrite($csvfile, '\n');
-					fwrite($csvfile, $csvlinedeliverynote. '\n');
-					fwrite($csvfile, $csvlineshipping . '\n');
-					fwrite($csvfile, $csvlinepayment . '\n');
-				}
-
-				fclose($csvfile);
-			}
-			else
-				echo 'Warning: Cannot create CSV file \''.$csvfilepath.'\' for this order!';
-		}
-
-			// Sends order emails:
-		$recipients = $this->conf['orderEmail_to'];
-		$recipients.=','.$this->personInfo['email']; // former: deliveryInfo
-		$recipients=t3lib_div::trimExplode(',',$recipients,1);
-
-		if (count($recipients))	{	// If any recipients, then compile and send the mail.
-			$emailContent=trim($this->getBasket('###EMAIL_PLAINTEXT_TEMPLATE###'));
-			if ($emailContent)	{		// If there is plain text content - which is required!!
-				$parts = split(chr(10),$emailContent,2);		// First line is subject
-				$subject=trim($parts[0]);
-				$plain_message=trim($parts[1]);
-
-
-				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
-				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
-					$HTMLmailShell=$this->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
-					$HTMLmailContent=$this->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$orderConfirmationHTML);
-					$HTMLmailContent=$this->cObj->substituteMarkerArray($HTMLmailContent, $this->globalMarkerArray);
-
-
-						// Remove image tags to products:
-					if ($this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix'])	{
-						$parser = t3lib_div::makeInstance('t3lib_parsehtml');
-						$htmlMailParts = $parser->splitTags('img',$HTMLmailContent);
-
-						reset($htmlMailParts);
-						while(list($kkk,$vvv)=each($htmlMailParts))	{
-							if ($kkk%2)	{
-								list($attrib) = $parser->get_tag_attributes($vvv);
-								if (t3lib_div::isFirstPartOfStr($attrib['src'],$this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix']))	{
-									$htmlMailParts[$kkk]='';
-								}
-							}
-						}
-						$HTMLmailContent=implode('',$htmlMailParts);
-					}
-
-					$V = array (
-						'from_email' => $this->conf['orderEmail_from'],
-						'from_name' => $this->conf['orderEmail_fromName'],
-						'attachment' => ($this->conf['AGBattachment'] ? $this->conf['AGBattachment'] : '')
-					);
-
-					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
-					$Typo3_htmlmail->useBase64();
-					$Typo3_htmlmail->start(implode($recipients,','), $subject, $plain_message, $HTMLmailContent, $V);
-					$Typo3_htmlmail->sendtheMail();
-				} else {		// ... else just plain text...
-					// $headers variable überall entfernt!
-					$this->send_mail($this->personInfo['email'], $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName'], $this->conf['AGBattachment']);
-					if ($this->conf['generateCSV'])
-						$addcsv = $csvfilepath;
-					else
-						$addcsv = '';
-					$this->send_mail($this->conf['orderEmail_to'], $subject, $plain_message, $this->personInfo['email'], $this->personInfo['name'], $addcsv);
-				}
-			}
-		}
-
-			// Empties the shopping basket!
-		$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
-		$TSFE->fe_user->setKey('ses','basketExt',array());
-
-			// This cObject may be used to call a function which clears settings in an external order system.
-			// The output is NOT included anywhere
-		$this->getExternalCObject('externalFinalizing');
-
-		return $content;
-	} // finalizeOrder
 
 
 	// **************************
@@ -3287,7 +2747,7 @@ class tx_ttproducts extends tslib_pibase {
 					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->priceFormat($actItem['totalNoTax']);
 	
 					$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
-					$wrappedSubpartArray['###LINK_ITEM###']=array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&tt_products_extVars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
+					$wrappedSubpartArray['###LINK_ITEM###']=array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
 	
 					if (trim($actItem['rec']['color']) == '')
 						$subpartArray['###display_variant1###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,'###display_variant1###') : '');
@@ -3516,6 +2976,622 @@ class tx_ttproducts extends tslib_pibase {
 	} // getBasket
 
 
+
+
+
+	// **************************
+	// ORDER related functions
+	// **************************
+
+	/**
+	 * Create a new order record
+	 *
+	 * This creates a new order-record on the page with pid, .PID_sys_products_orders. That page must exist!
+	 * Should be called only internally by eg. getBlankOrderUid, that first checks if a blank record is already created.
+	 */
+	function createOrder()	{
+		global $TSFE;
+
+		$newId = 0;
+		$pid = intval($this->conf['PID_sys_products_orders']);
+		if (!$pid)	$pid = intval($TSFE->id);
+
+		if ($TSFE->sys_page->getPage_noCheck ($pid))	{
+			$advanceUid = 0; 
+			if ($this->conf['advanceOrderNumberWithInteger'] || $this->conf['alwaysAdvanceOrderNumber'])	{
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', '', '', 'uid DESC', '1');
+				list($prevUid) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+
+				if ($this->conf['advanceOrderNumberWithInteger']) {
+					$rndParts = explode(',',$this->conf['advanceOrderNumberWithInteger']);
+					$advanceUid = $prevUid+t3lib_div::intInRange(rand(intval($rndParts[0]),intval($rndParts[1])),1);
+				} else {
+					$advanceUid = $prevUid + 1;
+				}
+			}
+
+			$insertFields = array(
+				'pid' => $pid,
+				'tstamp' => time(),
+				'crdate' => time(),
+				'deleted' => 1
+			);
+			if ($advanceUid > 0)	{
+				$insertFields['uid'] = $advanceUid;
+			}
+
+			$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders', $insertFields);
+
+			$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
+		}
+		return $newId;
+	} // createOrder
+
+	/**
+	 * Returns a blank order uid. If there was no order id already, a new one is created.
+	 *
+	 * Blank orders are marked deleted and with status=0 initialy. Blank orders are not necessarily finalized because users may abort instead of buying.
+	 * A finalized order is marked 'not deleted' and with status=1.
+	 * Returns this uid which is a blank order record uid.
+	 */
+	function getBlankOrderUid()	{
+		global $TSFE;
+
+	// an new orderUid has been created always because also payment systems can be used which do not accept a duplicate order id
+		$orderUid = intval($this->recs['tt_products']['orderUid']);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', 'uid='.intval($orderUid).' AND deleted AND NOT status');	// Checks if record exists, is marked deleted (all blank orders are deleted by default) and is not finished.
+		if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res) || $this->conf['alwaysAdvanceOrderNumber'])	{
+			$orderUid = $this->createOrder();
+			$this->recs['tt_products']['orderUid'] = $orderUid;
+			$this->recs['tt_products']['orderDate'] = time();
+			$this->recs['tt_products']['orderTrackingNo'] = $this->getOrderNumber($orderUid).'-'.strtolower(substr(md5(uniqid(time())),0,6));
+			$TSFE->fe_user->setKey('ses','recs',$this->recs);
+		}
+		return $orderUid;
+	} // getBlankOrderUid
+
+	/**
+	 * Returns the orderRecord if $orderUid.
+	 * If $tracking is set, then the order with the tracking number is fetched instead.
+	 */
+	function getOrderRecord($orderUid,$tracking='')	{
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', ($tracking ? 'tracking_code="'.$GLOBALS['TYPO3_DB']->quoteStr($tracking, 'sys_products_orders').'"' : 'uid='.intval($orderUid)).' AND NOT deleted');
+		return $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+	} //getOrderRecord
+
+	/**
+	 * This returns the order-number (opposed to the order_uid) for display in the shop, confirmation notes and so on.
+	 * Basically this prefixes the .orderNumberPrefix, if any
+	 */
+	function getOrderNumber($orderUid)	{
+		$orderNumberPrefix = substr($this->conf['orderNumberPrefix'],0,10);
+		if ($orderNumberPrefix[0]=='%')
+			$orderNumberPrefix = date(substr($orderNumberPrefix, 1));
+		return $orderNumberPrefix.$orderUid;
+	} // getOrderNumber
+
+	
+	/**
+	 * Returns the number of creditpoints for the frontend user
+	 */
+	function getCreditPoints($amount)	{
+		$type = '';
+		$where = '';
+		$creditpoints = 0;
+		foreach ($this->conf['creditpoints.'] as $k1=>$priceCalcTemp) {
+			if (!is_array($priceCalcTemp)) {
+				switch ($k1) {
+					case 'type':
+						$type = $priceCalcTemp;
+						break;
+					case 'where':
+						$where = $priceCalcTemp;
+						break;
+				}
+				continue;
+			}
+			$dumCount = 0;
+			$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
+		
+			if ($type != 'price') {
+				break;
+			}
+			krsort($priceCalcTemp['prod.']);
+			reset($priceCalcTemp['prod.']);
+
+			foreach ($priceCalcTemp['prod.'] as $k2=>$points) {
+				if ($amount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
+					$creditpoints = $points;		
+					break; // finish
+				}
+			}
+		}
+		return $creditpoints;
+	} // getCreditPoints
+
+	/**
+	 * Finalize an order
+	 *
+	 * This finalizes an order by saving all the basket info in the current order_record.
+	 * A finalized order is then marked 'not deleted' and with status=1
+	 * The basket is also emptied, but address info is preserved for any new orders.
+	 * $orderUid is the order-uid to finalize
+	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
+	 */
+	function finalizeOrder($orderUid, $orderConfirmationHTML)	{
+		global $TSFE;
+		global $TYPO3_DB;
+		
+		$content = '';
+
+			// Fix delivery address
+		$this->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
+//		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
+//		$orderConfirmationHTML=trim($this->getBasket('###BASKET_ORDERCONFIRMATION_TEMPLATE###','',$mainMarkerArray));		// Getting the template subpart for the order confirmation!
+
+		#debug ($this->basketExt, '$this->basketExt', __LINE__, __FILE__);
+	
+			// Saving order data
+		$fieldsArray=array();
+		$fieldsArray['note']=$this->deliveryInfo['note'];
+/* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
+		$fieldsArray['feusers_uid']=$this->personInfo['feusers_uid'];
+		$fieldsArray['name']=$this->deliveryInfo['name'];
+		$fieldsArray['telephone']=$this->deliveryInfo['telephone'];
+		$fieldsArray['fax']=$this->deliveryInfo['fax'];
+		$fieldsArray['email']=$this->deliveryInfo['email'];
+//		debug ($this->conf['email_notify_default'], "this->conf['email_notify_default']", __LINE__, __FILE__);
+		$fieldsArray['email_notify']=  $this->conf['email_notify_default'];		// Email notification is set here. Default email address is delivery email contact
+
+			// can be changed after order is set.
+		$fieldsArray['payment']=$this->basketExtra['payment'].': '.$this->basketExtra['payment.']['title'];
+		$fieldsArray['shipping']=$this->basketExtra['shipping'].': '.$this->basketExtra['shipping.']['title'];
+		$fieldsArray['amount']=$this->calculatedArray['priceTax']['total'];
+		$fieldsArray['status']=1;	// This means, "Order confirmed on website, next step: confirm from shop that order is received"
+
+/* Added Els: update fe_user with amount of creditpoints and subtract creditpoints used in order*/
+		$fieldsArrayFeUsers = array();
+		/* example:
+  creditpoints {
+  10.where =
+  10.type = price
+  10.prod.1   = 0.02
+  10.prod.101 = 0.04
+  10.prod.501 = 0.06
+}
+		 */
+		if ($this->conf['creditpoints.']) {
+			$creditpoints = $this->getCreditPoints($fieldsArray['amount']);
+			
+			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->recs['tt_products']['creditpoints'];
+		}
+
+/* Added Els: update fe_user with vouchercode */
+		if ($this->recs['tt_products']['vouchercode'] != '') {
+			// first check if vouchercode exist and is not their own vouchercode
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'fe_users', 'username="'.$this->recs['tt_products']['vouchercode'].'"');
+			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				$uid_voucher = $row['uid'];
+			}
+			if (($uid_voucher != '') & ($this->deliveryInfo['feusers_uid'] != $uid_voucher) ) {
+				$fieldsArrayFeUsers['tt_products_vouchercode'] = $this->recs['tt_products']['vouchercode'];
+			}
+		}
+		
+		if ($this->deliveryInfo['feusers_uid']) {
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$this->deliveryInfo['feusers_uid'], $fieldsArrayFeUsers);
+	/* Added ELS2: update user from vouchercode with 5 credits */
+	       // get the "old" creditpoints for the user
+	       $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints', 'fe_users', 'username="'.$this->recs['tt_products']['vouchercode'].'"');
+	       if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
+	           $ttproductscreditpoints = $row['tt_products_creditpoints'];
+	       }
+	       $fieldsArrayFeUserCredit = array();
+	       $fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + 5;
+	       $GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$uid_voucher, $fieldsArrayFeUserCredit);
+		}
+
+
+/*
+		//<-- MKL 2004.09.21
+		$fieldsArray['forename']=$this->personInfo['forename'];
+		$fieldsArray['company']=$this->personInfo['company'];
+		$fieldsArray['vat_id']=$this->personInfo['vat_id'];
+		$fieldsArray['street']=$this->deliveryInfo['street'];
+		$fieldsArray['street_n1']=$this->deliveryInfo['street_n1'];
+		$fieldsArray['street_n2']=$this->deliveryInfo['street_n2'];
+		$fieldsArray['city']=$this->deliveryInfo['city'];
+		$fieldsArray['zip']=$this->deliveryInfo['zip'];
+		$fieldsArray['country_code']=$this->personInfo['country_code'];
+		$fieldsArray['client_ip']=t3lib_div::getIndpEnv('REMOTE_ADDR');
+		//--> MKL 2004.09.21
+*/
+
+				// Default status_log entry
+		$status_log=array();
+		$status_log[] = array(
+			'time' => time(),
+			'info' => $this->conf['statusCodes.'][$fieldsArray['status']],
+			'status' => $fieldsArray['status'],
+			'comment' => $this->deliveryInfo['note']
+		);
+		$fieldsArray['status_log']=serialize($status_log);
+
+			// Order Data serialized
+		$fieldsArray['orderData']=serialize(array(
+				'html_output' 			=>	$orderConfirmationHTML,
+				'deliveryInfo' 			=>	$this->deliveryInfo,
+				'personInfo' 			=>	$this->personInfo,
+				'itemArray'				=>	$this->itemArray,
+				'calculatedArray'		=>	$this->calculatedArray
+		));
+
+			// Setting tstamp, deleted and tracking code
+		$fieldsArray['tstamp']=time();
+		$fieldsArray['deleted']=0;
+		$fieldsArray['tracking_code']=$this->recs['tt_products']['orderTrackingNo'];
+		$fieldsArray['agb']		= $this->personInfo['agb'];
+/* Added Els: write creditpointvalue into sys_products_order */
+		$fieldsArray['creditpoints'] = $this->recs['tt_products']['creditpoints'];
+
+			// Saving the order record
+		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
+
+		#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__); // $this->basketExt['gift'][$this->giftnumber]['item'][$uid][$extVars] = $count;
+		// any gift orders in the extended basket?
+		if ($this->basketExt['gift']) {
+			$pid = intval($this->conf['PIDGiftsTable']);
+			if (!$pid)	$pid = intval($TSFE->id);
+			
+			foreach ($this->basketExt['gift'] as $giftnumber => $rec) {
+				// Saving gift order data
+				$insertFields = array(
+					'pid' => $pid,
+					'tstamp' => time(),
+					'crdate' => time(),
+					'deleted' => 0,
+					
+					'ordernumber' => $orderUid,
+					'personname'  => $rec['personname'],
+					'personemail'  => $rec['personemail'],
+					'deliveryname'  => $rec['deliveryname'],
+					'deliveryemail'  => $rec['deliveryemail'],
+					'note'  => $rec['note'],
+				);
+				// Saving the gifts order record
+				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts', $insertFields);
+				$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
+				$insertFields = array();
+				$insertFields['uid_local'] = $newId;
+					
+				foreach ($rec['item'] as $productid => $product) {
+					#debug ($product, 'product', __LINE__, __FILE__);
+					foreach ($product as $variant => $count) {
+						$row = array();
+						$this->getValuesFromVariant (&$row, $variant);
+						
+						$query='uid_product=\''.intval($productid).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND gradings=\''.$row['gradings'].'\'' ;
+						$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
+						
+						if ($articleRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($articleRes)) {
+							$insertFields['uid_foreign'] = $articleRow['uid'];
+							$insertFields['count'] = $count;
+							// Saving the gifts mm order record
+							$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts_articles_mm', $insertFields);
+						}
+					}
+				}
+			}
+		}
+
+			// Fetching the orderRecord by selecing the newly saved one...
+		$this->orderRecord = $this->getOrderRecord($orderUid);
+		$content .= $this->getBasket('###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
+		
+
+		// Is no user is logged in --> create one
+		if ($this->conf['createUsers'] && ($this->personInfo['email'] != '') && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
+		{
+			$username = strtolower(trim($this->personInfo['email']));
+
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
+			$num_rows = $TYPO3_DB->sql_num_rows($res);
+
+			if (!$num_rows)
+			{
+				$this->password = substr(md5(rand()), 0, 6);
+
+				$insertFields = array(
+					'pid' => $this->conf['PIDuserFolder'],
+					'tstamp' => time(),
+					'username' => $username,
+					'password' => $this->password,
+					'usergroup' => $this->conf['memberOfGroup'],
+/* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
+					'uid' => $this->personInfo['feusers_uid'],
+					'company' => $this->personInfo['company'],
+					'name' => $this->personInfo['name'],
+					'address' => $this->personInfo['address'],
+					'telephone' => $this->personInfo['telephone'],
+					'fax' => $this->personInfo['fax'],
+					'email' => $this->personInfo['email'],
+					'zip' => $this->personInfo['zip'],
+					'city' => $this->personInfo['city'],
+					'crdate' => time()
+				);
+
+				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country':'country');
+				$insertFields[$countryKey] =  $this->personInfo['country'];
+				
+				$res = $GLOBALS['TYPO3_DB']->exec_INSERTquery('fe_users', $insertFields);
+				// send new user mail
+				if (count($this->personInfo['email'])) {
+					$emailContent=trim($this->getBasket('###EMAIL_NEWUSER_TEMPLATE###'));
+					if ($emailContent) {
+						$parts = split(chr(10),$emailContent,2);
+						$subject=trim($parts[0]);
+						$plain_message=trim($parts[1]);
+
+						$this->send_mail($this->personInfo['email'], $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName']);
+					}
+				}
+			}
+		}
+
+
+		if (!$this->conf['AlwaysInStock']) {
+			// Reduce inStock
+			reset($this->itemArray);
+			
+			#debug ($this->itemArray, '$this->itemArray Reduce in stock', __LINE__, __FILE__);
+
+			// loop over all items in the basket indexed by page and itemnumber
+			foreach ($this->itemArray as $pid=>$pidItem) {
+				foreach ($pidItem as $itemnumber=>$actItemArray) {
+					#error_Log ("tt_products  $this->conf['useArticles'] = ".$this->conf['useArticles']);
+					if ($this->conf['useArticles']) {
+						foreach ($actItemArray as $k1=>$actItem) {
+							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
+							
+							$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products_articles', $query);
+								// 	TODO: Saving the order record support color, size and accessory here
+						}
+					} else {	
+						$query='uid=\''.intval($actItemArray[0]['rec']['uid']).'\'';
+
+						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products', $query);
+		
+						if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+							if ($row['inStock'] > 0) {
+								$newInStock = intval($row['inStock'])-intval($actItemArray[0]['count']);
+								if ($newInStock < 0) {
+									$newInStock = 0;
+								}
+		
+								$fieldsArray =array();
+											// Setting tstamp, deleted and tracking code
+								$fieldsArray['inStock']=$newInStock;
+								
+								$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'uid='.intval($actItemArray[0]['rec']['uid']), $fieldsArray);
+							}
+						}
+					}
+				}
+			}
+		}
+
+			// Creates M-M relations for the products with tt_products table. Isn't really used yet, but later will be used to display stock-status by looking up how many items are already ordered.
+			// First: delete any existing. Shouldn't be any
+		$where='sys_products_orders_uid='.$orderUid;
+		$res = $GLOBALS['TYPO3_DB']->exec_DELETEquery('sys_products_orders_mm_tt_products',$where);
+	
+			// Second: Insert a new relation for each ordered item
+		reset($this->itemArray);
+
+		// loop over all items in the basket indexed by page and itemnumber
+		foreach ($this->itemArray as $pid=>$pidItem) {
+			foreach ($pidItem as $itemnumber=>$actItemArray) {
+				if ($this->conf['useArticles']) {
+					foreach ($actItemArray as $k1=>$actItem) {
+						// get the article uid with these colors, sizes and gradings
+						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
+							
+						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
+		
+						if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+							$insertFields = array (
+								'sys_products_orders_uid' => $orderUid,
+								'sys_products_orders_qty' => intval($actItemArray[0]['count']),
+								'tt_products_uid' => intval($actItemArray[0]['rec']['uid']),
+								'tt_products_articles_uid' => intval($row['uid'])
+							);	
+							$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
+						}						
+					}
+				} else {
+					$insertFields = array (
+						'sys_products_orders_uid' => $orderUid,
+						'sys_products_orders_qty' => intval($actItemArray[0]['count']),
+						'tt_products_uid' => intval($actItemArray[0]['rec']['uid'])
+					);	// TODO: differentiate between colors, sizes, gradings and accessory
+					$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
+				}
+			}
+		}
+
+		// Generate CSV for each order
+		if ($this->conf['generateCSV'])
+		{
+			$csvfilepath = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $this->conf['CSVdestination'];
+			if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
+				$csvfilepath .= '/';
+			}
+			$csvfilepath .= $this->getOrderNumber($this->recs['tt_products']['orderUid']).'.csv';
+			$csvfile = fopen($csvfilepath, 'w');
+			if ($csvfile !== FALSE)
+			{
+				// Generate invoice and delivery address
+				$csvlinehead = '';
+				$csvlineperson = '';
+				$csvlinedelivery = '';
+/* Added Els: 'feusers_uid,' */
+				$infoFields = explode(',','feusers_uid,name,address,telephone,fax,email,company,city,zip,state,country,kk_fa,kk_nr,kk_ablauf,kk_pruefcode,agb');
+				while(list(,$fName)=each($infoFields)) {
+					if ($csvlinehead != '') {
+						$csvlinehead .= ';';
+						$csvlineperson .= ';';
+						$csvlinedelivery .= ';';
+					}
+					$csvlinehead .= '"' . $fName . '"';
+					$csvlineperson .= '"' . str_replace('\r\n', '|', $this->personInfo[$fName]) . '"';
+					$csvlinedelivery .= '"' . $this->deliveryInfo[$fName] . '"';
+				}
+
+				// Generate shipping/payment information and delivery note
+				$csvlineshipping = '"' . $this->basketExtra['shipping.']['title'] . '";"' .
+					$this->priceFormat($this->calculatedArray['priceTax']['shipping']) . '";"' .
+					$this->priceFormat($this->calculatedArray['priceNoTax']['shipping']) . '"';
+
+				$csvlinepayment = '"' . $this->basketExtra['payment.']['title'] . '";"' .
+					$this->priceFormat($this->calculatedArray['priceTax']['payment']) . '";"' .
+					$this->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '"';
+
+				$csvlinedeliverynote = '"'.$this->deliveryInfo['note'].'"';
+
+				// Build field list
+				$csvfields = explode(',', $this->conf['CSVfields']);
+				$csvfieldcount = count($csvfields);
+				for ($a=0;$a<$csvfieldcount;$a++)
+					$csvfields[$a] = trim($csvfields[$a]);
+
+				// Write description header
+				$csvdescr = '"uid";"count";"color";"size";"accessory";"gradings"';
+				reset($csvfields);
+				foreach($csvfields as $csvfield)
+					$csvdescr .= ';"'.$csvfield.'"';
+				if ($this->conf['CSVinOneLine'])
+				{
+					$csvdescr .= ';"deliverynote";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
+					$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
+				}
+				$csvdescr .= '\n';
+				fwrite($csvfile, $csvdescr);
+
+				// Write ordered product list
+				reset($this->itemArray);
+
+				$infoWritten = false;
+				// loop over all items in the basket indexed by page and itemnumber
+				foreach ($this->itemArray as $pid=>$pidItem) {
+					foreach ($pidItem as $itemnumber=>$actItemArray) {
+						foreach ($actItemArray as $k1=>$actItem) {
+							$variants = explode(';', $actItem['rec']['extVars']);
+							$csvdata = '"'.intval($actItem['rec']['uid']).'";"'.
+										intval($actItem['count']).'";"'.
+										$variants[0].'";"'.
+										$variants[1].'";"'.
+										$variants[2]/100 .'";"'.
+										$variants[3].'"';
+							reset($csvfields);
+							foreach($csvfields as $csvfield) {
+								$csvdata .= ';"'.$actItem['rec'][$csvfield].'"';
+							}
+							if ($this->conf['CSVinOneLine'] && (!$infoWritten))	{
+								$infoWritten = true;
+								$csvdata .= ';'.$csvlinedeliverynote.';'.$csvlineshipping.';'.$csvlinepayment.';'.$csvlineperson.';'.$csvlinedelivery;
+							}
+							$csvdata .= '\n';
+							fwrite($csvfile, $csvdata);
+						}
+					}
+				}
+
+				if (!$this->conf['CSVinOneLine']) {
+					fwrite($csvfile, '\n');
+					fwrite($csvfile, $csvlinehead . '\n');
+					fwrite($csvfile, $csvlineperson . '\n');
+					fwrite($csvfile, $csvlinedelivery . '\n');
+					fwrite($csvfile, '\n');
+					fwrite($csvfile, $csvlinedeliverynote. '\n');
+					fwrite($csvfile, $csvlineshipping . '\n');
+					fwrite($csvfile, $csvlinepayment . '\n');
+				}
+
+				fclose($csvfile);
+			}
+			else
+				echo 'Warning: Cannot create CSV file \''.$csvfilepath.'\' for this order!';
+		}
+
+			// Sends order emails:
+		$recipients = $this->conf['orderEmail_to'];
+		$recipients.=','.$this->personInfo['email']; // former: deliveryInfo
+		$recipients=t3lib_div::trimExplode(',',$recipients,1);
+
+		if (count($recipients))	{	// If any recipients, then compile and send the mail.
+			$emailContent=trim($this->getBasket('###EMAIL_PLAINTEXT_TEMPLATE###'));
+			if ($emailContent)	{		// If there is plain text content - which is required!!
+				$parts = split(chr(10),$emailContent,2);		// First line is subject
+				$subject=trim($parts[0]);
+				$plain_message=trim($parts[1]);
+
+
+				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
+				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
+					$HTMLmailShell=$this->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
+					$HTMLmailContent=$this->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$orderConfirmationHTML);
+					$HTMLmailContent=$this->cObj->substituteMarkerArray($HTMLmailContent, $this->globalMarkerArray);
+
+
+						// Remove image tags to products:
+					if ($this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix'])	{
+						$parser = t3lib_div::makeInstance('t3lib_parsehtml');
+						$htmlMailParts = $parser->splitTags('img',$HTMLmailContent);
+
+						reset($htmlMailParts);
+						while(list($kkk,$vvv)=each($htmlMailParts))	{
+							if ($kkk%2)	{
+								list($attrib) = $parser->get_tag_attributes($vvv);
+								if (t3lib_div::isFirstPartOfStr($attrib['src'],$this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix']))	{
+									$htmlMailParts[$kkk]='';
+								}
+							}
+						}
+						$HTMLmailContent=implode('',$htmlMailParts);
+					}
+
+					$V = array (
+						'from_email' => $this->conf['orderEmail_from'],
+						'from_name' => $this->conf['orderEmail_fromName'],
+						'attachment' => ($this->conf['AGBattachment'] ? $this->conf['AGBattachment'] : '')
+					);
+
+					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
+					$Typo3_htmlmail->useBase64();
+					$Typo3_htmlmail->start(implode($recipients,','), $subject, $plain_message, $HTMLmailContent, $V);
+					$Typo3_htmlmail->sendtheMail();
+				} else {		// ... else just plain text...
+					// $headers variable überall entfernt!
+					$this->send_mail($this->personInfo['email'], $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName'], $this->conf['AGBattachment']);
+					if ($this->conf['generateCSV'])
+						$addcsv = $csvfilepath;
+					else
+						$addcsv = '';
+					$this->send_mail($this->conf['orderEmail_to'], $subject, $plain_message, $this->personInfo['email'], $this->personInfo['name'], $addcsv);
+				}
+			}
+		}
+
+			// Empties the shopping basket!
+		$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
+		$TSFE->fe_user->setKey('ses','basketExt',array());
+
+			// This cObject may be used to call a function which clears settings in an external order system.
+			// The output is NOT included anywhere
+		$this->getExternalCObject('externalFinalizing');
+
+		return $content;
+	} // finalizeOrder
 
 
 	// **************************
@@ -4051,6 +4127,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		return $this->products_display($theCode, implode(',', $memoItems));
 	}
+
 
 /* Added Els2: Displays and manages the orders */
    function orders_display($theCode)
