@@ -2644,6 +2644,32 @@ class tx_ttproducts extends tslib_pibase {
 	} // getCalculatedBasket
 
 
+
+
+	function getVariantSubpartArray (&$subpartArray, &$row, &$tempContent, $condition)  {
+		if ($condition) {
+			if (trim($row['color']) != '')
+				$subpartArray['###display_variant1###'] = $this->cObj->getSubpart($tempContent,'###display_variant1###');
+			if (trim($row['size']) != '')
+				$subpartArray['###display_variant2###'] = $this->cObj->getSubpart($tempContent,'###display_variant2###');
+			if (trim($row['accessory']) != '0')
+				$subpartArray['###display_variant3###'] = $this->cObj->getSubpart($tempContent,'###display_variant3###');
+			if (trim($row['gradings']) != '')
+				$subpartArray['###display_variant4###'] = $this->cObj->getSubpart($tempContent,'###display_variant4###');
+		}
+		if (trim($row['color']) == '')
+			$subpartArray['###display_variant1###'] =  '';
+		if (trim($row['size']) == '')
+			$subpartArray['###display_variant2###'] =  '';
+		if (trim($row['accessory']) == '0')
+			$subpartArray['###display_variant3###'] = '';
+		if (trim($row['gradings']) == '')
+			$subpartArray['###display_variant4###'] = '';
+		
+	}
+
+
+
 	/**
 	 * This generates the shopping basket layout and also calculates the totals. Very important function.
 	 */
@@ -2745,17 +2771,14 @@ class tx_ttproducts extends tslib_pibase {
 					$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
 					$wrappedSubpartArray['###LINK_ITEM###']=array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
 	
-					if (trim($actItem['rec']['color']) == '')
-						$subpartArray['###display_variant1###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,'###display_variant1###') : '');
-					if (trim($actItem['rec']['size']) == '')
-						$subpartArray['###display_variant2###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,'###display_variant2###') : '');
-					if (trim($actItem['rec']['accessory']) == '0')
-						$subpartArray['###display_variant3###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,'###display_variant3###') : '');
-					if (trim($actItem['rec']['gradings']) == '')
-						$subpartArray['###display_variant4###'] = ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###' ? $this->cObj->getSubpart($tempContent,'###display_variant4###') : '');
+					
+					debug ($subpartArray, '$subpartArray', __LINE__, __FILE__);
 	
 						// Substitute
 					$tempContent = $this->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
+
+					$this->getVariantSubpartArray ($subpartArray, $actItem['rec'], $tempContent, ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'));
+					$tempContent = $this->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
 	
 					$itemsOut .= $tempContent;
 				}
@@ -3295,7 +3318,7 @@ class tx_ttproducts extends tslib_pibase {
 		
 
 		// Is no user is logged in --> create one
-		if ($this->conf['createUsers'] && ($this->personInfo['email'] != '') && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
+		if ($this->conf['createUsers'] && $this->personInfo['email'] != '' && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
 		{
 			$username = strtolower(trim($this->personInfo['email']));
 
@@ -3535,6 +3558,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		if (count($recipients))	{	// If any recipients, then compile and send the mail.
 			$emailContent=trim($this->getBasket('###EMAIL_PLAINTEXT_TEMPLATE###'));
+			debug ($emailContent, '$emailContent', __LINE__, __FILE__);
 			if ($emailContent)	{		// If there is plain text content - which is required!!
 				$parts = split(chr(10),$emailContent,2);		// First line is subject
 				$subject=trim($parts[0]);
@@ -3688,17 +3712,22 @@ class tx_ttproducts extends tslib_pibase {
 						if ($orderRow['email'] && ($orderRow['email_notify']))	{  
 							$recipient .= ','.$orderRow['email'];
 						}
-						$templateMarker = ($val == 60 ? 'TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE' : 'TRACKING_EMAILNOTIFY_TEMPLATE');
+						$templateMarker = 'TRACKING_EMAILNOTIFY_TEMPLATE';
 						$this->sendNotifyEmail($recipient, $status_log_element, t3lib_div::_GP('tracking'), $orderRow, $templateCode, $templateMarker);
 						$status_log[] = $status_log_element;
 						$update=1;
 					} else if ($val>=60 && $val<69) { //  60 -69 are special messages
+						$templateMarker = 'TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE';
 						$query = 'ordernumber=\''.$orderRow['uid'].'\'';
+						debug ($query, '$query', __LINE__, __FILE__);
 						$giftRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products_gifts', $query);
 						while ($giftRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($giftRes)) {
+							debug ($giftRow, '$giftRow', __LINE__, __FILE__);
 							$recipient = $giftRow['deliveryemail'];
-							$this->sendGiftEmail($recipient, $giftRow, $templateCode, $templateMarker);
+							$this->sendGiftEmail($recipient, $orderRecord['status_comment'], $giftRow, $templateCode, $templateMarker);
 						}
+						$status_log[] = $status_log_element;
+						$update=1;
 					}
 				}
 				if ($update)	{
@@ -4003,7 +4032,7 @@ class tx_ttproducts extends tslib_pibase {
 	/**
 	 * Send notification email for gift certificates
 	 */
-	function sendGiftEmail($recipient, $giftRow, $templateCode, $templateMarker)	{
+	function sendGiftEmail($recipient, $comment, $giftRow, $templateCode, $templateMarker)	{
 		global $TSFE;
 
 		$sendername = ($giftRow['personname'] ? $giftRow['personname'] : $this->conf['orderEmail_fromName']);
@@ -4012,6 +4041,7 @@ class tx_ttproducts extends tslib_pibase {
 		$recipients = $recipient;
 		$recipients=t3lib_div::trimExplode(',',$recipients,1);
 
+		debug ($recipients, '$recipients', __LINE__, __FILE__);
 		if (count($recipients))	{	// If any recipients, then compile and send the mail.
 			$emailContent=trim($this->cObj->getSubpart($templateCode,'###'.$templateMarker.'###'));
 			if ($emailContent)	{		// If there is plain text content - which is required!!
@@ -4022,7 +4052,11 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray = array();
 				$markerArray['###CERTIFICATES_TOTAL###'] = $giftRow['amount'];
 				$markerArray['###CERTIFICATES_UNIQUE_CODE###'] =  $giftRow['uid'].'-'.$giftRow['crdate'];
-				$emailContent=$this->cObj->substituteMarkerArrayCached($plain_message, $markerArray);
+				$markerArray['###PERSON_NAME###'] = $giftRow['personname'];
+				$markerArray['###DELIVERY_NAME###'] = $giftRow['deliveryname'];
+				$markerArray['###ORDER_STATUS_COMMENT###'] = $giftRow['note'].'\n'.$comment;   
+								
+				$emailContent = $this->cObj->substituteMarkerArrayCached($plain_message, $markerArray);
 					
 				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
 				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
@@ -4038,16 +4072,14 @@ class tx_ttproducts extends tslib_pibase {
 		
 					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
 					$Typo3_htmlmail->useBase64();
+					debug ($recipients, '$recipients', __LINE__, __FILE__);
 					$Typo3_htmlmail->start(implode($recipients,','), $subject, $emailContent, $HTMLmailContent, $V);
 					$Typo3_htmlmail->sendtheMail();
 				} else {		// ... else just plain text...
 					// $headers variable überall entfernt!
-					$this->send_mail($this->personInfo['email'], $subject, $emailContent, $this->conf['orderEmail_from'], $sendername, $this->conf['GiftAttachment']);
-					if ($this->conf['generateCSV'])
-						$addcsv = $csvfilepath;
-					else
-						$addcsv = '';
-					$this->send_mail($this->conf['orderEmail_to'], $subject, $emailContent, $this->personInfo['email'], $sendername, $addcsv);
+					debug ($recipients, '$recipients', __LINE__, __FILE__);
+					$this->send_mail($recipients, $subject, $emailContent, $senderemail, $sendername, $this->conf['GiftAttachment']);
+					$this->send_mail($this->conf['orderEmail_to'], $subject, $emailContent, $this->personInfo['email'], $this->personInfo['name'], $this->conf['GiftAttachment']);
 				}
 			}
 		}
@@ -4084,7 +4116,6 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
 				$markerArray['###PERSON_NAME###'] =  $orderData['personInfo']['name'];
 				$markerArray['###DELIVERY_NAME###'] =  $orderData['deliveryInfo']['name'];
-				
 
 				$markerArray['###ORDER_TRACKING_NO###']=$tracking;
 				$markerArray['###ORDER_UID###']=$uid;

@@ -1,4 +1,7 @@
 2005-09-08  Franz Holzinger <franz@fholzinger.com>
+	* correct error to remove ###display_variant### from email texts
+
+2005-09-08  Franz Holzinger <franz@fholzinger.com>
 	* gift certificate: this can be ordered already. The data is stored in the gift tables.
 
 2005-09-07  Franz Holzinger <franz@fholzinger.com>
