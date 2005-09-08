@@ -1,0 +1,1359 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<title>Products example template Swedish</title>
+</head>
+
+<body>
+
+
+
+
+<!-- ###ITEM_LIST_TEMPLATE### begin
+
+This subpart is used to display the regular list of products.
+
+It's also used by search-results.
+
+-->
+
+		<TABLE border="1" cellspacing="0" cellpadding="1" width=1>
+			<tr>
+				<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>Föregående sida</b></div>###GW2E###<!--###LINK_PREV###--></td>
+				<td></td>
+				<td></td>
+				<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>Nästa sida</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+			</tr>
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=300 height=1></td>
+				<td><img src="clear.gif" width=100 height=1></td>
+			</tr>
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+		<!-- ###ITEM_CATEGORY### begin -->
+			<tr>
+				<td colspan=4><br>###GW1B###<font size=3><strong>###CATEGORY_TITLE###</strong></font> ###GW1E###
+				<br>
+
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<tr>
+				<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Produkt:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Antal:</b>###GW2E###</td>
+			</tr>
+			<tr>
+				<td colspan=4><img src="clear.gif" width=1 height=6></td>
+			</tr>
+			<!-- ###ITEM_SINGLE### begin-->
+			<tr>
+			<td colspan=4>
+			<FORM method="post" action="###FORM_URL###">
+			<TABLE border="1" cellspacing="0" cellpadding="1" width=1>
+				<tr>
+					<td><img src="clear.gif" width=100 height=1></td>
+					<td><img src="clear.gif" width=5 height=1></td>
+					<td><img src="clear.gif" width=300 height=1></td>
+					<td><img src="clear.gif" width=100 height=1></td>
+				</tr>
+				<tr>
+					<td colspan=4><img src="clear.gif" width=1 height=6></td>
+				</tr>
+				<tr>
+					<td colspan=4 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###--></td>
+				</tr>
+				<TR>
+					<TD valign=top>###PRODUCT_IMAGE###</TD>
+					<td></td>
+					<TD valign=top>###GW2B######PRODUCT_NOTE######GW2E###<br>
+						###GW1B###<B>Pris:</b> <font color=red><strong>###PRICE_TAX### $</strong></font>###GW1E###<br>
+						###GW2B###(exkl. moms: ###PRICE_NO_TAX###)###GW2E###
+					</TD>
+					<TD valign=top nowrap align=right>###GW2B### Antal: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><BR><input type="Submit" name="order" value="Lägg i kundkorgen">
+					</TD>
+				</TR>
+			</TABLE>
+			</FORM>
+			</td>
+			</tr>
+			<!-- ###ITEM_SINGLE### end -->
+		<!-- ###ITEM_LIST### end -->
+
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+			<tr>
+				<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>Föregående sida</b></div>###GW2E###<!--###LINK_PREV###--></td>
+				<td></td>
+				<td></td>
+				<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>Nästa sida</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+			</tr>
+</TABLE>
+<BR><BR>
+<!-- ###ITEM_LIST_TEMPLATE### -->
+
+
+
+
+
+
+
+
+
+
+<!-- ###ITEM_SINGLE_DISPLAY### begin
+
+This subpart is used to display single products.
+
+-->
+		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<FORM method="post" action="###FORM_URL###">
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=300 height=1></td>
+			</tr>
+			<tr>
+				<td colspan=3><img src="clear.gif" width=1 height=6></td>
+			</tr>
+			<tr>
+				<td colspan=3 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###--></td>
+			</tr>
+			<TR>
+				<TD valign=top>###PRODUCT_IMAGE###</TD>
+				<td></td>
+				<TD valign=top>
+					###GW1B###
+						<B>Kategori:</B> ###CATEGORY_TITLE### <br>
+						<B>Artikelnummer:</B> ###PRODUCT_ITEMNUMBER###<br>
+						<B>Webb-pris:</B> <font color=red><strong>###PRICE_TAX### $</strong></font>###GW2B### &nbsp; (exkl. moms ###PRICE_NO_TAX###)###GW2E###<br>
+
+						<B>Info:</B><br>
+						###PRODUCT_NOTE###<br>
+					###GW1E###	<br>
+						<nobr>###GW2B### Antal: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; <input type="Submit" name="order" value="Lägg i kundkorgen"></nobr>
+				</TD>
+			</TR>
+</form>
+		</TABLE>
+<br>
+<br>
+
+	###GW2B###
+	<!--###LINK_ITEM###-->
+	<b><- tillbaka till översikt</b>
+	<!--###LINK_ITEM###-->
+	###GW2E###
+
+
+<!-- ###ITEM_SINGLE_DISPLAY### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###ITEM_SEARCH###
+
+Subpart for the search-form
+
+-->
+<FORM method="post" action="###FORM_URL###">
+	<INPUT size="30" maxlength="100" type="text" name="swords" value="###SWORDS###">
+	<input type="Submit" name="order" value="Sök">
+</form>
+<!-- ###ITEM_SEARCH### -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###ITEM_SEARCH_EMPTY### begin
+
+Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.
+
+-->
+###GW1B###<B>Sökningen hittade inga matchande produkter.</B>###GW1E###
+<!-- ###ITEM_SEARCH_EMPTY### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###BASKET_TEMPLATE### begin
+
+Subpart used to display the content of the shopping basket.
+The product list part has the exact same features as the regular LIST_ITEM_TEMPLATE subpart.
+In addition there's a number of fields used for delivery and payment information.
+
+-->
+
+			<FORM method="post" action="###FORM_URL###">
+		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=200 height=1></td>
+				<td colspan=3><img src="clear.gif" width=200 height=1></td>
+			</tr>
+			<tr>
+				<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Produkt:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Pris:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Antal:</b>###GW2E###</td>
+				<td align=center bgcolor="###GC2###">###GW2B###<b>Totalt:</b>###GW2E###</td>
+			</tr>
+
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+		<!-- ###ITEM_CATEGORY### begin -->
+			<tr>
+				<td colspan=6><br>###CATEGORY_TITLE###<br>
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<!-- ###ITEM_SINGLE### begin-->
+				<tr>
+					<td colspan=6><img src="clear.gif" width=1 height=6></td>
+				</tr>
+				<TR>
+					<TD valign=top>###PRODUCT_IMAGE###</TD>
+					<td></td>
+					<TD valign=top>
+						<!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###-->
+
+					</TD>
+					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
+					<TD valign=top>&nbsp;<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">&nbsp;</TD>
+					<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> ###GW1E###</td>
+				</TR>
+			<!-- ###ITEM_SINGLE### end -->
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS###  end -->
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Leverans:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=6></td>
+		</tr>
+		<TR>
+			<td colspan=5>
+			###GW1B###Frakt: <b>###SHIPPING_TITLE###</B>###GW1E###<br><br>
+
+			###SHIPPING_SELECTOR###
+
+			###SHIPPING_IMAGE###
+			</td>
+			<td valign=top align=right>###GW1B### <b>###PRICE_SHIPPING_TAX###</b> <BR>(exkl. moms ###PRICE_SHIPPING_NO_TAX###) ###GW1E###</td>
+		</TR>
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Betalningsmetod:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=6></td>
+		</tr>
+		<TR>
+			<td colspan=5>
+			###GW1B###
+
+			###PAYMENT_SELECTOR###
+
+			###GW1E###
+
+###GW2B###
+			<!-- ###MESSAGE_PAYMENT### begin
+				This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
+			-->
+				<!-- ###MESSAGE_PAYMENT_11### begin -->
+				<BR><B>Du kan bara använda internationella Mastercard i våran shop.</b><br>
+				<!-- ###MESSAGE_PAYMENT_11### end -->
+				<!-- ###MESSAGE_PAYMENT_12### begin -->
+				<br>
+				<B>Du kan använda utländskt VISA-kort i våran shop. VISA tar en avgift av 5,75% av transaktionsbeloppet. P.g.a. detta blir totalbeloppet kompenserat om VISA-avgiften.</b><br>
+				<!-- ###MESSAGE_PAYMENT_12### end -->
+				<!-- ###MESSAGE_PAYMENT_13### begin -->
+				<br>
+				<B>Du kan använda utländskt Diners kort i våran shop.  Diners club tar en avgift av 5,75% av transaktionsbeloppet. P.g.a. detta blir totalbeloppet kompenserat om Diners-avgiften.</b><br>
+				<!-- ###MESSAGE_PAYMENT_13### end -->
+			<!-- ###MESSAGE_PAYMENT### end -->
+###GW2E###
+
+			</td>
+			<td valign=top align=right>###GW1B### <b>###PRICE_PAYMENT_TAX###</b> <BR>(exkl. moms ###PRICE_PAYMENT_NO_TAX###) ###GW1E###</td>
+		</TR>
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=6 bgcolor="###GC2###">###GW2B###<b>Totalt:</b>###GW2E###</td>
+		</tr>
+		<TR>
+			<td valign=top colspan=5></td>
+			<td valign=top align=right nowrap>###GW1B### <b>SEK  ###PRICE_TOTAL_TAX###</b><br>
+			(utan moms: ###PRICE_TOTAL_NO_TAX###) ###GW1E###</td>
+		</TR>
+	</TABLE>
+	<input type="hidden" name="mode_update" value="1">
+	<input type="Submit" name="products_update" value="Uppdatera kundkorgen">&nbsp;&nbsp;
+	<input type="Submit" name="products_info" value="Gå till betalning/orderavslut" onClick="document.forms[0].action='###FORM_URL_INFO###';">
+	</FORM>
+<BR>
+<!-- ###BASKET_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+<!-- ###BASKET_INFO_TEMPLATE### begin
+
+Subpart used if the GLOBAL var "products_info" was set. This is normally used to let people enter address information separately from the real basket
+Exact same features as BASKET_TEMPLATE
+
+-->
+
+	<FORM method="post" action="###FORM_URL###">
+
+	<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+		<tr>
+			<td><img src="clear.gif" width=100 height=1></td>
+			<td><img src="clear.gif" width=5 height=1></td>
+			<td><img src="clear.gif" width=200 height=1></td>
+			<td colspan=3><img src="clear.gif" width=200 height=1></td>
+		</tr>
+
+
+		<tr>
+			<td colspan=6 bgcolor="###GC2###">###GW2B###<b>Faktureringsadress:</b>###GW2E###</td>
+		</tr>
+		<tr>
+			<td colspan=6>
+
+			<!-- ###BILLING_ADDRESS### start -->
+
+			###GW1B###
+				Skriv in din postadress här. Detta är det namn och adress som kommer skrivas på fakturan som den som köpt varorna.<br>
+		    I normala fall kommer vi skicka godset till denna adress. men om du skriver in en alternativ adress i fälten nedan så skickar vi godset dit istället.<br>
+			Om du väljer "Hämtas" som leveransmetod så skickas så klart inte dina varor till dig.
+			###GW1E###
+				<br>
+				<br>
+				<table>
+				<tr>
+					<td>###GW1B###<strong>Namn/Företag: </strong>*###GW1E###</td>
+					<td><input type="text" name="recs[personinfo][name]" size="30" value="###PERSON_NAME###"></td>
+				</tr>
+				<tr>
+					<td>###GW1B###<strong>Address: </strong>*###GW1E###</td>
+					<td><textarea cols=30 rows=5 name="recs[personinfo][address]" wrap="off">###PERSON_ADDRESS###</textarea></td>
+				</tr>
+				<tr>
+					<td>###GW1B###<strong>Telefon: </strong>*###GW1E###</td>
+					<td><input type="text" name="recs[personinfo][telephone]" size="30" value="###PERSON_TELEPHONE###"></td>
+				</tr>
+				<tr>
+					<td>###GW1B###<strong>Epost:</strong>###GW1E###</td>
+					<td><input type="text" name="recs[personinfo][email]" size="30" value="###PERSON_EMAIL###"></td>
+				</tr>
+				</table><br>
+
+				###GW1B###
+			<em>Notera: Fält markerade med * måste fyllas i.</em>
+				###GW1E###
+
+			<!-- ###BILLING_ADDRESS### end-->
+
+
+			<!-- ###BILLING_ADDRESS_LOGIN### start
+
+				If this part is not empty then this will be used instead of BILLING_ADDRESS if there is a FE-login user.
+			 -->
+				<br>
+				<table>
+				<tr>
+					<td>###GW1B###<strong>Namn/Företag:</strong>###GW1E###</td>
+					<td>###GW1B######PERSON_NAME######GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###<strong>Postadress:</strong>###GW1E###</td>
+					<td>###GW1B######PERSON_ADDRESS_DISPLAY######GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###<strong>Telefon:</strong>###GW1E###</td>
+					<td>###GW1B######PERSON_TELEPHONE######GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###<strong>Epost:</strong>###GW1E###</td>
+					<td>###GW1B######PERSON_EMAIL######GW1E###</td>
+				</tr>
+				</table>
+			<!-- ###BILLING_ADDRESS_LOGIN### end-->
+			</td>
+		</tr>
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Annan leveransadress:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=3>
+			###GW1B###
+				Om du önskar få dina varor leverade till en annan adress än faktueringsadressen så fyll i den fullständiga adressen här.
+		    Du kan också fylla i kontaktperson och epost till den adressen.
+			###GW1E###
+				<br>
+				<br>
+
+				<table>
+				<tr>
+					<td>###GW1B###<strong>Kontakt person:</strong>###GW1E###</td>
+					<td><input type="text" name="recs[delivery][name]" size="30" value="###DELIVERY_NAME###"></td>
+				</tr>
+				<tr>
+					<td>###GW1B###<strong>Adress:</strong>###GW1E###</td>
+					<td><textarea cols=30 rows=5 name="recs[delivery][address]" wrap="off">###DELIVERY_ADDRESS###</textarea></td>
+				</tr>
+				<tr>
+					<td>###GW1B###<strong>Telefon:</strong>###GW1E###</td>
+					<td><input type="text" name="recs[delivery][telephone]" size="30" value="###DELIVERY_TELEPHONE###"></td>
+				</tr>
+				<tr>
+					<td>###GW1B###<strong>Epost:</strong>###GW1E###</td>
+					<td><input type="text" name="recs[delivery][email]" size="30" value="###DELIVERY_EMAIL###"></td>
+				</tr>
+				</table>
+			</td>
+			<td colspan=3></td>
+		</tr>
+
+
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Anteckningar:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=3>
+				###GW1B###
+					Om du har ytterligare kommentarer om din order så skriv dess här:
+				###GW1E###
+				<br>
+				<br>
+
+				<table>
+				<tr>
+					<td>###GW1B###annotation:###GW1E###</td>
+					<td><textarea cols=30 rows=5 name="recs[delivery][note]">###DELIVERY_NOTE###</textarea></td>
+				</tr>
+				</table>
+			</td>
+			<td colspan=3></td>
+		</tr>
+	</TABLE>
+	<br>
+<input type="Submit" name="products_update" value="tillbaka till kundkorgen">&nbsp;&nbsp;	
+<input type="Submit" name="products_payment" value="Betala/beställ" onClick="document.forms[0].action='###FORM_URL_FINALIZE###';">
+
+	</FORM>
+<BR>
+<!-- ###BASKET_INFO_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+<!-- ###BASKET_PAYMENT_TEMPLATE### begin
+
+Subpart used if the GLOBAL var "products_payment" was set. This displays the final information about the order before the payment is initiated.
+Exact same features as BASKET_TEMPLATE
+
+-->
+
+		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=200 height=1></td>
+				<td colspan=3><img src="clear.gif" width=200 height=1></td>
+			</tr>
+			<tr>
+				<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Produkt:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Pris:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Antal:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Totalt:</b>###GW2E###</td>
+			</tr>
+
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+		<!-- ###ITEM_CATEGORY### begin -->
+			<tr>
+				<td colspan=6><br>###CATEGORY_TITLE###<br>
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<!-- ###ITEM_SINGLE### begin-->
+				<tr>
+					<td colspan=6><img src="clear.gif" width=1 height=6></td>
+				</tr>
+				<TR>
+					<TD valign=top>###PRODUCT_IMAGE###</TD>
+					<td></td>
+					<TD valign=top>
+						###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+
+					</TD>
+					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
+					<TD valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
+					<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> ###GW1E###</td>
+				</TR>
+			<!-- ###ITEM_SINGLE### end -->
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS###  end -->
+
+
+
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Faktureringsadress:<</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=3>
+				<table cellspacing=3>
+				<tr>
+					<td>###GW1B###Namn/företag:###GW1E###</td>
+					<td>###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Address:###GW1E###</td>
+					<td>###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Telefon:###GW1E###</td>
+					<td>###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Epost:###GW1E###</td>
+					<td>###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E###</td>
+				</tr>
+				</table>
+			</td>
+			<td colspan=3></td>
+		</tr>
+
+
+
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Leveransadress:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=3>
+				<table>
+				<tr>
+					<td>###GW1B###Adress:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Kontakt:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Telefon:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_TELEPHONE###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Epost:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E###
+					###GW2B###<BR>(Den här adressen kommer få orderbekräftelsen!)###GW2E###<BR>
+					</td>
+				</tr>
+				</table>
+			</td>
+			<td colspan=3></td>
+		</tr>
+
+
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Anteckningar:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=3>
+				<table>
+				<tr>
+					<td>###GW1B###Kommentar:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_NOTE_DISPLAY###</strong>###GW1E###</td>
+				</tr>
+				</table>
+			</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Leverans/betalning:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+
+
+
+		<TR>
+			<td valign=top colspan=3>###GW1B###
+				<strong>Leveransmetod:</strong><br>
+				###SHIPPING_IMAGE### ###SHIPPING_TITLE###
+
+			###GW1E###</td>
+
+			<td valign=top align=right colspan=3>###GW1B###
+			<b>###PRICE_SHIPPING_TAX###</b><br>
+			(exkl. moms ###PRICE_SHIPPING_NO_TAX###)<br>
+
+			###GW1E###</td>
+		</TR>
+		<TR>
+			<td valign=top colspan=3>###GW1B###
+				<strong>Betalningsmetod:</strong><br>
+				###PAYMENT_IMAGE### ###PAYMENT_TITLE###
+			###GW1E###
+###GW2B###
+			<!-- ###MESSAGE_PAYMENT### begin
+				This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
+			-->
+				<!-- ###MESSAGE_PAYMENT_11### begin -->
+				<BR><B>Du kan bara använda internationella Mastercard i våran shop.</b><br>
+				<!-- ###MESSAGE_PAYMENT_11### end -->
+				<!-- ###MESSAGE_PAYMENT_12### begin -->
+				<br>
+				<B>Du kan använda utländskt VISA-kort i våran shop. VISA tar en avgift av 5,75% av transaktionsbeloppet. P.g.a. detta blir totalbeloppet kompenserat om VISA-avgiften.</b><br>
+				<!-- ###MESSAGE_PAYMENT_12### end -->
+				<!-- ###MESSAGE_PAYMENT_13### begin -->
+				<br>
+				<B>Du kan använda utländskt Diners kort i våran shop.  Diners club tar en avgift av 5,75% av transaktionsbeloppet. P.g.a. detta blir totalbeloppet kompenserat om Diners-avgiften.</b><br>
+				<!-- ###MESSAGE_PAYMENT_13### end -->				
+			<!-- ###MESSAGE_PAYMENT### end -->
+###GW2E###
+			</td>
+			<td valign=top align=right colspan=3>###GW1B###
+			<b>###PRICE_PAYMENT_TAX###</b><br>
+			(exkl. moms ###PRICE_PAYMENT_NO_TAX###)<br>
+
+			###GW1E###</td>
+		</TR>
+
+
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=6 bgcolor="###GC2###">###GW2B###<b>TOTALT:</b>###GW2E###</td>
+		</tr>
+		<TR>
+			<td valign=top colspan=3>###GW1B###
+				<strong>Totalsumma i SEK:</strong>
+			###GW1E###</td>
+
+			<td valign=top align=right colspan=3 nowrap>###GW1B###
+			<b>SEK ###PRICE_TOTAL_TAX### </b><br>
+			(utan moms: ###PRICE_TOTAL_NO_TAX###)<br>
+
+			###GW1E###</td>
+		</TR>
+	</TABLE>
+	<br>
+
+<FORM method="post" action="###FORM_URL###">
+<input type="Submit" name="products_update" value="Tillbaka till kundkorgen">&nbsp;&nbsp;
+<input type="Submit" name="products_finalize" value="Skicka beställningen" onClick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">
+</FORM>
+<BR>
+
+
+
+<!-- ###BASKET_PAYMENT_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### begin
+
+Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.
+Exact same features as BASKET_TEMPLATE
+
+-->
+
+		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=200 height=1></td>
+				<td colspan=3><img src="clear.gif" width=200 height=1></td>
+			</tr>
+
+
+
+			<tr>
+				<td colspan=6>
+				###GW1B###
+					<b>Order bekräftelse:</b><br>
+					Tack för att du handlade hos os.<br>
+					Din beställning är avslutat och har numret:<br><br>
+										&nbsp;&nbsp;&nbsp;&nbsp;<B>###ORDER_UID###</B> <br>
+								<br>
+								Använd det här numret som referens när du kontaktar oss.<br />
+								Order bekräftelse skickas också med epost till som lämnades vid "Leverans" (###DELIVERY_EMAIL###).
+								Dock så bör du ändå skriva ut den här sidan som bevis på din order.<br />
+					<br>
+
+					<!-- ###MESSAGE_PAYMENT### begin
+						This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
+					-->
+						<!-- ###MESSAGE_PAYMENT_11### begin -->
+										<B>Mastercard betalningen blev godkänd</B> och har transaktionsnumret, ###TRANSACT_CODE###.<br>
+						<br>
+						<!-- ###MESSAGE_PAYMENT_11### end -->
+						<!-- ###MESSAGE_PAYMENT_12### begin -->
+						<B>VISA transaktionen  blev godkänd</B> och har transaktionsnumret, ###TRANSACT_CODE###.<br>
+						<br>
+						<!-- ###MESSAGE_PAYMENT_12### end -->
+						<!-- ###MESSAGE_PAYMENT_13### begin -->
+						<B>Diner Club betalningen blev godkänd</B> och har transaktionsnumret, ###TRANSACT_CODE###.<br>
+						<br>
+						<!-- ###MESSAGE_PAYMENT_13### end -->
+				<!-- ###MESSAGE_PAYMENT_40### begin
+					Message for payment method 40, in this case not a credit card but plain ordering
+				-->
+				<B>Viktigt! Nästa steg:</B><br>
+				Du har valt att betala för dina varor via pengatransaktion till vårat bankkonto. Det här är den information du behöver:<br />
+				- Bank:  Superbank Clearingnummer <strong>xxxxx</strong> Kontonummer: <strong>xxxxxx</strong><br />
+				- Check: Skicka checken till vår postadrss. Se botten på den här sidan.<br />
+				Kom ihåg att skriva ordernummret, ###ORDER_UID###, som referens på överföringen.<br />
+						<br>
+						<!-- ###MESSAGE_PAYMENT_40### end -->
+						<!-- ###MESSAGE_PAYMENT_50### begin -->
+						<B>Kredit</B><br>
+				Du har previleget att vara en god kund hos oss, så du får kredit som vanligt.<br>
+						<!-- ###MESSAGE_PAYMENT_50### end -->
+					<!-- ###MESSAGE_PAYMENT### end -->
+
+			<b>Leverans och orderstatus</b><br>
+			Leverans sker enligt våran leveranspolicy. Din order är daterad ###ORDER_DATE###<br />
+			<br>
+			Du kan följa din order genom att använda ditt spårningsnummer vilket är: <br />
+			<strong>###ORDER_TRACKING_NO###</strong>. Klicka här för <a href="index.php?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###">att se statusen just nu.</a><br><br>
+			<br>
+		###GW1E###
+		###EXTERNAL_COBJECT###				
+				</td>
+			</tr>
+
+
+			<tr>
+				<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Produkt:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Pris:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Antal:</b>###GW2E###</td>
+				<td bgcolor="###GC2###">###GW2B###<b>Totalt:</b>###GW2E###</td>
+			</tr>
+
+
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+		<!-- ###ITEM_CATEGORY### begin -->
+			<tr>
+				<td colspan=6><br>###CATEGORY_TITLE###<br>
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<!-- ###ITEM_SINGLE### begin-->
+				<tr>
+					<td colspan=6><img src="clear.gif" width=1 height=6></td>
+				</tr>
+				<TR>
+					<TD valign=top>###PRODUCT_IMAGE###</TD>
+					<td></td>
+					<TD valign=top>
+						###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+
+					</TD>
+					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
+					<TD valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
+					<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> ###GW1E###</td>
+				</TR>
+			<!-- ###ITEM_SINGLE### end -->
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS###  end -->
+
+
+
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Faktureringsadress:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=3>
+				<table cellspacing=3>
+				<tr>
+					<td>###GW1B###Namn/företag:###GW1E###</td>
+					<td>###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Postadress:###GW1E###</td>
+					<td>###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Telefon:###GW1E###</td>
+					<td>###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Epost:###GW1E###</td>
+					<td>###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E###</td>
+				</tr>
+
+					<!-- ###FE_USER_SECTION###  begin -->
+				<tr>
+					<td>###GW1B###Användarnamn:###GW1E###</td>
+					<td>###GW1B###<strong>###FE_USER_USERNAME###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###AnvändarID:###GW1E###</td>
+					<td>###GW1B###<strong>###FE_USER_UID###</strong>###GW1E###</td>
+				</tr>
+					<!-- ###FE_USER_SECTION###  end -->
+
+				</table>
+			</td>
+			<td colspan=3></td>
+		</tr>
+
+
+
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Leveransadress:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=3>
+				<table>
+				<tr>
+					<td>###GW1B###Postadress:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Kontakt:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Telefon:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_TELEPHONE###</strong>###GW1E###</td>
+				</tr>
+				<tr>
+					<td>###GW1B###Epost:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E###</td>
+				</tr>
+				</table>
+			</td>
+			<td colspan=3></td>
+		</tr>
+
+
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Noteringar:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=3>
+				<table>
+				<tr>
+					<td>###GW1B###Kommentarer:###GW1E###</td>
+					<td>###GW1B###<strong>###DELIVERY_NOTE_DISPLAY###</strong>###GW1E###</td>
+				</tr>
+				</table>
+			</td>
+			<td colspan=3></td>
+		</tr>
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Leverans/betalning:</b>###GW2E###</td>
+			<td colspan=3></td>
+		</tr>
+
+
+
+		<TR>
+			<td valign=top colspan=3>###GW1B###
+				<strong>Leveransmetod:</strong><br>
+				###SHIPPING_IMAGE### ###SHIPPING_TITLE###
+
+			###GW1E###</td>
+
+			<td valign=top align=right colspan=3>###GW1B###
+			<b>###PRICE_SHIPPING_TAX###</b><br>
+			(exkl moms ###PRICE_SHIPPING_NO_TAX###)<br>
+
+			###GW1E###</td>
+		</TR>
+		<TR>
+			<td valign=top colspan=3>###GW1B###
+				<strong>Betalningsmetod:</strong><br>
+				###PAYMENT_IMAGE### ###PAYMENT_TITLE###
+			###GW1E###</td>
+
+			<td valign=top align=right colspan=3>###GW1B###
+			<b>###PRICE_PAYMENT_TAX###</b><br>
+			(###PRICE_PAYMENT_NO_TAX###)<br>
+
+			###GW1E###</td>
+		</TR>
+
+
+		<tr>
+			<td colspan=6><img src="clear.gif" width=1 height=10></td>
+		</tr>
+		<tr>
+			<td colspan=6 bgcolor="###GC2###">###GW2B###<b>TOTALT:</b>###GW2E###</td>
+		</tr>
+		<TR>
+			<td valign=top colspan=3>###GW1B###
+				<strong>Totalsumma i SEK:</strong>
+			###GW1E###</td>
+
+			<td valign=top align=right colspan=3>###GW1B###
+			<b>###PRICE_TOTAL_TAX### SEK<</b><br>
+			(utan moms: ###PRICE_TOTAL_NO_TAX###)<br>
+
+			###GW1E###</td>
+		</TR>
+			<tr>
+				<td colspan=6>
+				###GW1B###
+
+<br>
+<br>
+Vänliga hälsningar:
+<br>
+<br>
+
+&nbsp;&nbsp;&nbsp;<strong>Sven Svensson AB</strong><br>
+&nbsp;&nbsp;&nbsp;Svenssonsvägen 17 <br>
+&nbsp;&nbsp;&nbsp;999 99 Svenssonsvik<br>
+<br>
+&nbsp;&nbsp;&nbsp;Telefon: +46 xxx xxx-xxxx<br>
+
+				###GW1E###
+				</td>
+			</tr>
+	</TABLE>
+	<br>
+<BR>
+<!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###BASKET_TEMPLATE_EMPTY### begin
+
+If the basket is empty this subpart is displayed
+
+-->
+###GW1B###<B>Kundkorgen är tom.</B>###GW1E###
+<!-- ###BASKET_TEMPLATE_EMPTY### end -->
+
+
+
+
+
+
+
+<!-- ###BASKET_REQUIRED_INFO_MISSING### begin
+
+If payment is initiated but the required information fields are not filled in correctly, this happens
+
+-->
+###GW1B###<B>Du har inte fyllt i alla nödvändiga fält med adressuppgifter. Vänligen gå tillbaka och gör det.</B>###GW1E###
+
+	<FORM method="post" action="###FORM_URL###">
+	<input type="Submit" name="products_info" value="Ange adressuppgifter" onClick="document.forms[0].action='###FORM_URL_INFO###';">
+	</FORM>
+
+<!-- ###BASKET_REQUIRED_INFO_MISSING### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###TRACKING_DISPLAY_INFO### begin
+Displays the view of the order status by tracking codes.
+-->
+###GW1B###
+<B>Din order (###ORDER_UID###) har följande status:</B><br>
+(Sista linjen är aktuella statusen)<br>
+<br>
+
+<table border=1 cellpadding=0 cellspacing=4>
+	<tr>
+		<td>###GW2B### <strong>Tid:</strong> ###GW2E###</td>
+		<td>###GW2B### <strong>Kod:</strong> ###GW2E###</td>
+		<td>###GW2B### <strong>Händelse:</strong> ###GW2E###</td>
+		<td>###GW2B### <strong>Kommentar:</strong> ###GW2E###</td>
+	</tr>
+
+		<!-- ###STATUS_ITEM### begin
+
+		This part is repeated for each order status item and finally this part in the template code is substituted with the accumulated code for all order status actions.
+		-->
+	<tr>
+		<td nowrap valign=top>###GW2B### ###ORDER_STATUS_TIME### &nbsp;###GW2E###</td>
+		<td valign=top>###GW2B### ###ORDER_STATUS### &nbsp;###GW2E###</td>
+		<td nowrap valign=top>###GW2B### ###ORDER_STATUS_INFO### &nbsp;###GW2E###</td>
+		<td valign=top>###GW2B### ###ORDER_STATUS_COMMENT### &nbsp;###GW2E###</td>
+	</tr>
+		<!-- ###STATUS_ITEM### end -->
+</table>
+<br>
+
+<!-- ###ADMIN_CONTROL### begin -->		
+<table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
+	<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
+		###GW1B### <strong>Shop ADMIN:</strong><br>
+		Order: ####ORDER_UID###
+		<br>
+		###GW1B###
+
+		<!-- ###ADMIN_CONTROL_OK### begin -->		
+		<FORM method="post" action="###FORM_URL###">
+		<select name="orderRecord[status][]" size="9" multiple>
+			###STATUS_OPTIONS###
+		</select>	
+			<br>
+			###GW1B###Kommentar till den nya orderstatusen:###GW1B###<br>
+			<textarea cols="40" rows="5" name="orderRecord[status_comment]"></textarea><br>
+	
+			<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
+			<input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
+			<input type="Submit" name="submit" value="Lägg till orderstatus">
+			</FORM>
+			<hr>
+			Byta till annan beställning:
+			<FORM method="post" action="###FORM_URL###">
+				<select name="tracking" size="9">
+					###OTHER_ORDERS_OPTIONS###
+				</select><br><br>
+				<input type="Submit" name="submit" value="Välj">
+				<input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
+			</FORM>
+		<!-- ###ADMIN_CONTROL_OK### begin -->		
+		<!-- ###ADMIN_CONTROL_DENY### begin -->		
+			<FORM method="post" action="###FORM_URL###">
+			<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
+			###GW1B###Kod:###GW1B###<br>
+			<input type="password" size=40 name="update_code" value="###UPDATE_CODE###">
+			<input type="Submit" name="submit" value="Ange kod">
+			</FORM>
+		<!-- ###ADMIN_CONTROL_DENY### begin -->		
+		</td></tr></table>
+	</td></tr>
+</table><br>
+<!-- ###ADMIN_CONTROL### end -->
+
+
+<strong>Epostmeddelande:</strong><br>
+Om du önskar att få ett meddelande till angiven kontakt epostadress (###FIELD_EMAIL###) varje gång orderstatusen ändras så markera det här:<br />
+	<FORM method="post" action="###FORM_URL###">
+	
+	<input type="hidden" name="orderRecord[email_notify]" value="0">
+	<input type="checkbox" name="orderRecord[email_notify]" value="1"###FIELD_EMAIL_NOTIFY###>Få epost om orderstatusändringar.<br>
+	<input type="text" size=40 name="orderRecord[email]" value="###FIELD_EMAIL###">
+	<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
+	
+	<input type="Submit" name="submit" value="Uppdatera">
+	</FORM>
+<br><br>
+<strong>Meddelande till shopen:</strong><br>
+Du kan skicka ett meddelande till shopen rörande den här ordern.<br>
+	<FORM method="post" action="###FORM_URL###">
+	<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
+	###GW1B###Välj ärendetyp:###GW1B###<br>
+	<select name="orderRecord[status][]" size="1">
+		<!-- NOTICE: The values/topics MUST correspond with those setup in the TypoScript of the shop! -->
+		<option value=51>Meddelande från dig till affären</option>
+		<option value=50>Ansöka om avbeställning</option>
+	</select>	
+	<br>
+	###GW1B###Comment to follow:###GW1B###<br>
+	<textarea cols="40" rows="5" name="orderRecord[status_comment]"></textarea><br>
+	<input type="Submit" name="submit" value="Skicka meddelandet">
+	</FORM>
+<br>
+<br>
+<B>Detta är orginalet av orderbekräftelsen:</B><br><br>
+###GW1E###
+<HR>
+<br>
+
+###ORDER_HTML_OUTPUT###
+<!-- ###TRACKING_DISPLAY_INFO### end -->
+
+
+
+
+
+
+
+<!-- ###TRACKING_ENTER_NUMBER### begin
+Displays form for entering the tracking number.
+-->
+###GW1B###<B>Ange ditt spårningsnummer:</B>###GW1E###<br>
+	<FORM method="post" action="###FORM_URL###">
+	<input type="text" name="tracking"><br>
+	<input type="Submit" name="submit" value="Se orderstatus">
+	</FORM>
+
+<!-- ###ADMIN_CONTROL### begin -->		
+<table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
+	<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
+		###GW1B### <strong>Shop ADMIN:</strong><br>
+		<!-- ###ADMIN_CONTROL_DENY### begin -->		
+			<FORM method="post" action="###FORM_URL###">
+			###GW1B###Kod:###GW1B###<br>
+			<input type="password" size=40 name="update_code" value="">
+			<input type="Submit" name="submit" value="Ange kod">
+			</FORM>
+		<!-- ###ADMIN_CONTROL_DENY### begin -->		
+		</td></tr></table>
+	</td></tr>
+</table><br>
+<!-- ###ADMIN_CONTROL### end -->
+
+	
+	
+<!-- ###TRACKING_ENTER_NUMBER### end -->
+
+
+
+
+
+<!-- ###TRACKING_WRONG_NUMBER### begin
+	Displays error message if no tracking code.
+-->
+###GW1B###<B>Spårningsnumret finns inte, försäkra dig om att det är rätt och försök igen.</B>###GW1E###<br>
+
+	<FORM method="post" action="###FORM_URL###">
+	<input type="text" name="tracking"><br>
+	<input type="Submit" name="submit" value="Se orderstatus">
+	</FORM>
+
+<!-- ###TRACKING_WRONG_NUMBER### end -->
+
+
+<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### begin
+Subpart used as template for the notify emails
+First line is used as subject for the mail.
+-->
+
+Sven Svensson AB orderstatus (####ORDER_UID###)
+
+ORDER INFORMATION (####ORDER_UID###): 
+Statusen på din order hos oss har ändrats:
+
+Tidpunkt: ###ORDER_STATUS_TIME###
+Status: ###ORDER_STATUS_INFO###
+
+Kommentar: 
+###ORDER_STATUS_COMMENT###
+
+
+Spårning:
+Du får det här epostmeddelandet eftersom du har valt att få information om din order. Du kan följa din order status och ändra inställningar för
+orderinformationen genom att använda följande spårningsnummer:
+        ###ORDER_TRACKING_NO###
+		
+Klicka här för att se information nu:
+        http://www.myTypoShop.com/?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###
+
+
+
+Mycket vänliga hälsningar
+	Sven Svensson AB
+	Svenssonsvägen 17
+	999 99 Svenssonsvik
+
+	Telefon: +x xxx xxx-xxxx
+	
+<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
+</pre>
+
+
+
+
+
+
+
+
+
+<!-- ###EMAIL_PLAINTEXT_TEMPLATE### begin
+	Subpart used as template for the order-emails
+	First line is used as subject for the mail.
+-->
+
+Sven Svensson AB order ####ORDER_UID###
+
+ORDER BEKRÄFTELSE: 
+Din order är komplett och har ordernummer: ###ORDER_UID###.
+Använd det nummret som referens när du kontaktar oss.
+
+SPÅRNING:
+Du kan spåra din ordersstatus genom att använda följande spårningsnummer: ###ORDER_TRACKING_NO###
+        http://www.myTypoShop.com/?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###
+
+
+ORDER:
+
+1) Varor:
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+		<!-- ###ITEM_LIST### begin -->
+			<!-- ###ITEM_SINGLE### begin-->
+Produkt: ###PRODUCT_TITLE###
+Artikelnummer: ###PRODUCT_ITEMNUMBER###
+Pris: ###PRICE_TAX### SEK
+Antal: ###FIELD_QTY###        = ###PRICE_TOTAL_TAX### SEK
+			<!-- ###ITEM_SINGLE### end -->
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS###  end -->
+
+2) Faktureringsadress:
+###PERSON_NAME###
+###PERSON_ADDRESS###
+
+Telefon: ###PERSON_TELEPHONE###
+Epost: ###PERSON_EMAIL###
+
+
+3) Leveransadress:
+###DELIVERY_ADDRESS###
+att. ###DELIVERY_NAME###
+Telefon: ###DELIVERY_TELEPHONE###
+Epost: ###DELIVERY_EMAIL###
+
+
+4) Noteringar:
+###DELIVERY_NOTE_DISPLAY###
+
+
+5) Leverans:
+###SHIPPING_TITLE###				
+Pris: ###PRICE_SHIPPING_TAX### SEK (###PRICE_SHIPPING_NO_TAX### utan moms)
+
+
+6) Betalningsmetod:
+###PAYMENT_TITLE###
+Pris: ###PRICE_PAYMENT_TAX### SEK (###PRICE_PAYMENT_NO_TAX### utan moms)
+
+
+TOTALT: ________________________ ###PRICE_TOTAL_TAX### SEK
+(Utan moms: ###PRICE_TOTAL_NO_TAX###)
+
+Vänliga hälsningar, Sven Svensson AB
+
+
+
+<!-- ###EMAIL_PLAINTEXT_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
