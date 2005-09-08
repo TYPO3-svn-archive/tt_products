@@ -668,7 +668,7 @@ class tx_ttproducts extends tslib_pibase {
 			}
 			
 			if ($extVars) {
-				$this->getValuesFromVariant (&$row, $extVars);
+				$this->getValuesFromVariant ($row, $extVars);
 			}
 
 			if($row) {
@@ -2415,17 +2415,13 @@ class tx_ttproducts extends tslib_pibase {
 		$result = 0;
 
 		// to remain downwards compatible
-		if (is_string($basketElement))
-		{
+		if (is_string($basketElement))	{
         	$result = $basketElement;
         }
 
-		if(is_array($basketProperties) && count($basketProperties) > 0)
-		{
-			foreach ($basketProperties as $lowKey => $lowValue)
-			{
-				if (strlen($lowKey) > 0 && $countTotal >= $lowKey)
-				{
+		if(is_array($basketProperties) && count($basketProperties) > 0) {
+			foreach ($basketProperties as $lowKey => $lowValue)	{
+				if (strlen($lowKey) > 0 && $countTotal >= $lowKey)	{
 					$result = doubleVal($lowValue);
 				}
 			}
@@ -3244,6 +3240,14 @@ class tx_ttproducts extends tslib_pibase {
 			if (!$pid)	$pid = intval($TSFE->id);
 			
 			foreach ($this->basketExt['gift'] as $giftnumber => $rec) {
+				$amount = 0;
+				foreach ($rec['item'] as $productid => $product) {
+					foreach ($product as $variant => $count) {
+						$row = array();
+						$this->getValuesFromVariant (&$row, $variant);
+						$amount += intval($row['size']) * $count;
+					}
+				}
 				// Saving gift order data
 				$insertFields = array(
 					'pid' => $pid,
@@ -3251,12 +3255,13 @@ class tx_ttproducts extends tslib_pibase {
 					'crdate' => time(),
 					'deleted' => 0,
 					
-					'ordernumber' => $orderUid,
-					'personname'  => $rec['personname'],
-					'personemail'  => $rec['personemail'],
-					'deliveryname'  => $rec['deliveryname'],
+					'ordernumber'    => $orderUid,
+					'personname'     => $rec['personname'],
+					'personemail'    => $rec['personemail'],
+					'deliveryname'   => $rec['deliveryname'],
 					'deliveryemail'  => $rec['deliveryemail'],
-					'note'  => $rec['note'],
+					'note'           => $rec['note'],
+					'amount'         => $amount
 				);
 				// Saving the gifts order record
 				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts', $insertFields);
@@ -3268,7 +3273,7 @@ class tx_ttproducts extends tslib_pibase {
 					#debug ($product, 'product', __LINE__, __FILE__);
 					foreach ($product as $variant => $count) {
 						$row = array();
-						$this->getValuesFromVariant (&$row, $variant);
+						$this->getValuesFromVariant ($row, $variant);
 						
 						$query='uid_product=\''.intval($productid).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND gradings=\''.$row['gradings'].'\'' ;
 						$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
@@ -3671,23 +3676,30 @@ class tx_ttproducts extends tslib_pibase {
 				reset($orderRecord['status']);
 				$update=0;
 				while(list(,$val)=each($orderRecord['status']))	{
-					if ($admin || ($val>=50 && $val<69))	{// Numbers 50-59 are usermessages. 60 -69 are special messages
-						$status_log_element = array(
-							'time' => time(),
-							'info' => $this->conf['statusCodes.'][$val],
-							'status' => $val,
-							'comment' => $orderRecord['status_comment']
-						);
+					$status_log_element = array(
+						'time' => time(),
+						'info' => $this->conf['statusCodes.'][$val],
+						'status' => $val,
+						'comment' => $orderRecord['status_comment']
+					);
+
+					if ($admin || ($val>=50 && $val<59))	{// Numbers 50-59 are usermessages.
 						$recipient = $this->conf['orderEmail_to'];
-						if ($orderRow['email'] && ($orderRow['email_notify'] || ($val>=60 && $val<69)))	{ // Franz: special messages will always be sent to the order recipient 
+						if ($orderRow['email'] && ($orderRow['email_notify']))	{  
 							$recipient .= ','.$orderRow['email'];
 						}
 						$templateMarker = ($val == 60 ? 'TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE' : 'TRACKING_EMAILNOTIFY_TEMPLATE');
 						$this->sendNotifyEmail($recipient, $status_log_element, t3lib_div::_GP('tracking'), $orderRow, $templateCode, $templateMarker);
 						$status_log[] = $status_log_element;
 						$update=1;
+					} else if ($val>=60 && $val<69) { //  60 -69 are special messages
+						$query = 'ordernumber=\''.$orderRow['uid'].'\'';
+						$giftRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products_gifts', $query);
+						while ($giftRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($giftRes)) {
+							$recipient = $giftRow['deliveryemail'];
+							$this->sendGiftEmail($recipient, $giftRow, $templateCode, $templateMarker);
+						}
 					}
-
 				}
 				if ($update)	{
 					$fieldsArray['status_log']=serialize($status_log);
@@ -3989,18 +4001,75 @@ class tx_ttproducts extends tslib_pibase {
 
 
 	/**
+	 * Send notification email for gift certificates
+	 */
+	function sendGiftEmail($recipient, $giftRow, $templateCode, $templateMarker)	{
+		global $TSFE;
+
+		$sendername = ($giftRow['personname'] ? $giftRow['personname'] : $this->conf['orderEmail_fromName']);
+		$senderemail = ($giftRow['personemail'] ? $giftRow['personemail'] : $this->conf['orderEmail_from']);
+
+		$recipients = $recipient;
+		$recipients=t3lib_div::trimExplode(',',$recipients,1);
+
+		if (count($recipients))	{	// If any recipients, then compile and send the mail.
+			$emailContent=trim($this->cObj->getSubpart($templateCode,'###'.$templateMarker.'###'));
+			if ($emailContent)	{		// If there is plain text content - which is required!!
+				$parts = split(chr(10),$emailContent,2);		// First line is subject
+				$subject=trim($parts[0]);
+				$plain_message=trim($parts[1]);
+
+				$markerArray = array();
+				$markerArray['###CERTIFICATES_TOTAL###'] = $giftRow['amount'];
+				$markerArray['###CERTIFICATES_UNIQUE_CODE###'] =  $giftRow['uid'].'-'.$giftRow['crdate'];
+				$emailContent=$this->cObj->substituteMarkerArrayCached($plain_message, $markerArray);
+					
+				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
+				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
+					$HTMLmailShell=$this->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
+					$HTMLmailContent=$this->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$emailContent);
+					$HTMLmailContent=$this->cObj->substituteMarkerArray($HTMLmailContent, $this->globalMarkerArray);
+	
+					$V = array (
+						'from_email' => $senderemail,
+						'from_name'  => $sendername,
+						'attachment' => $this->conf['GiftAttachment']
+					);
+		
+					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
+					$Typo3_htmlmail->useBase64();
+					$Typo3_htmlmail->start(implode($recipients,','), $subject, $emailContent, $HTMLmailContent, $V);
+					$Typo3_htmlmail->sendtheMail();
+				} else {		// ... else just plain text...
+					// $headers variable überall entfernt!
+					$this->send_mail($this->personInfo['email'], $subject, $emailContent, $this->conf['orderEmail_from'], $sendername, $this->conf['GiftAttachment']);
+					if ($this->conf['generateCSV'])
+						$addcsv = $csvfilepath;
+					else
+						$addcsv = '';
+					$this->send_mail($this->conf['orderEmail_to'], $subject, $emailContent, $this->personInfo['email'], $sendername, $addcsv);
+				}
+			}
+		}
+
+
+	}
+
+
+	/**
 	 * Send notification email for tracking
 	 */
-	function sendNotifyEmail($recipient, $v, $tracking, $orderRow, $templateCode, $templateMarker)	{
+	function sendNotifyEmail($recipient, $v, $tracking, $orderRow, $templateCode, $templateMarker, $sendername, $senderemail)	{
 		global $TSFE;
 
 		$uid = $this->getOrderNumber($orderRow['uid']);
 			// initialize order data.
 		$orderData = unserialize($orderRow['orderData']);
+
+		$sendername = ($sendername ? $sendername : $this->conf['orderEmail_fromName']);
+		$senderemail = ($senderemail ? $senderemail : $this->conf['orderEmail_from']);
 		
 			// Notification email
-		$headers=array();
-		if ($this->conf['orderEmail_from'])	{$headers[]='FROM: '.$this->conf['orderEmail_fromName'].' <'.$this->conf['orderEmail_from'].'>';}
 
 		$recipients = $recipient;
 		$recipients=t3lib_div::trimExplode(',',$recipients,1);
@@ -4015,8 +4084,6 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
 				$markerArray['###PERSON_NAME###'] =  $orderData['personInfo']['name'];
 				$markerArray['###DELIVERY_NAME###'] =  $orderData['deliveryInfo']['name'];
-				$markerArray['###CERTIFICATES_TOTAL###'] = $orderRow['amount'];
-				$markerArray['###CERTIFICATES_UNIQUE_CODE###'] =  $tracking;
 				
 
 				$markerArray['###ORDER_TRACKING_NO###']=$tracking;
@@ -4028,8 +4095,7 @@ class tx_ttproducts extends tslib_pibase {
 				$subject=trim($parts[0]);
 				$plain_message=trim($parts[1]);
 
-//				$TSFE->plainMailEncoded(implode($recipients,','), $subject, $plain_message, implode($headers,chr(10)));
-				$this->send_mail(implode($recipients,','), $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName']);
+				$this->send_mail(implode($recipients,','), $subject, $plain_message, $senderemail, $sendername);
 			}
 		}
 	}
