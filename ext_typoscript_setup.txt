@@ -77,6 +77,7 @@ plugin.tt_products {
   PIDstoreRoot = {$plugin.tt_products.PIDstoreRoot}
   PIDmemo = {$plugin.tt_products.PIDmemo}
   PID_sys_products_orders = {$plugin.tt_products.PID_sys_products_orders}
+  PIDGiftsTable = {$plugin.tt_products.PIDGiftsTable}
   paymentActivity = {$plugin.tt_products.paymentActivity}
   
   advanceOrderNumberWithInteger = {$plugin.tt_products.advanceOrderNumberWithInteger}

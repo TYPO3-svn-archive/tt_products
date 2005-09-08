@@ -1,3 +1,6 @@
+2005-09-08  Franz Holzinger <franz@fholzinger.com>
+	* gift certificate: this can be ordered already. The data is stored in the gift tables.
+
 2005-09-07  Franz Holzinger <franz@fholzinger.com>
 	* fill in the transact code for DIBS
 

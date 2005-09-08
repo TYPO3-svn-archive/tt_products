@@ -71,6 +71,7 @@ plugin.tt_products {
     # cat=plugin.products/dims; type=int+; label= Max image width, basket display: The maximum width in pixels of an image when displayed in the shopping-basket.
   maxW_basket = 100
 
+
     # cat=plugin.products//; type=int+; label=PID for info page: This is the PID of the infoPage of the store.
   PIDinfo = 
     # cat=plugin.products//; type=int+; label=PID for finalize page
@@ -89,8 +90,11 @@ plugin.tt_products {
   PIDstoreRoot = 
     # cat=plugin.products//; type=int+; label=PID for the memo page: Needed if you want to use the memo page
   PIDmemo = 
-    # cat=plugin.products//; type=int+; label=PID for the sys_products_orders records. By default they will get the pid of the payment (finalize) page.
-  PID_sys_products_orders=0
+    # cat=plugin.products//; type=int+; label=PID for the sys_products_orders records: By default they will get the pid of the payment (finalize) page.
+  PID_sys_products_orders = 0
+    # cat=plugin.products//; type=int+; label=PID for the tt_products_gifts records: By default they will get the pid of the payment (finalize) page.
+  PIDGiftsTable = 0
+
     # cat=plugin.products//; type=string; label=When the payment shall be executed. Possible values:  'payment', 'finalize'
   paymentActivity=finalize
 

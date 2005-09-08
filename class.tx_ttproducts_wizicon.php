@@ -48,7 +48,7 @@ class tx_ttproducts_wizicon {
 			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]='.rawurlencode('HELP');
 		}
 		$wizardItems['plugins_ttproducts'] = array(
-			'icon'=>PATH_BE_ttproducts_rel.'pi/ce_wiz.gif',
+			'icon'=>PATH_BE_ttproducts_rel.'res/icons/be/ce_wiz.gif',
 			'title'=>$LANG->getLLL('plugins_title',$LL),
 			'description'=>$LANG->getLLL('plugins_description',$LL),
 			'params'=> $params	);
