@@ -1316,6 +1316,23 @@ For some functionality it is necessary that a front end user has been logged in.
 
 
 
+<!-- ###BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID### begin
+
+When someone has entere a wrong unique gift number this message will appear
+
+-->
+###GW1B###<b>The gift number is not valid.</b>###GW1E###
+
+	<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+	<input type="Submit" name="basket" value="back to the basket page" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_INFO###';">
+	</form>
+
+<!-- ###BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID### end -->
+
+
+
+
+
 
 
 <!-- ###TRACKING_DISPLAY_INFO### begin
@@ -1416,7 +1433,7 @@ Du kan indsende en besked til butikken angående denne ordre.<br>
 	<select name="orderRecord[status][]" size="1">
 		<option value=51>Besked fra kunden til butikken</option>
 		<option value=50>Kunden anmoder om annullering</option>
-		<!--###STATUS_CODE_60###--><option value=60>Send gift certificate message to receiver</option><!--###STATUS_CODE_60###-->
+		<!--###STATUS_CODE_60### begin --><option value=60>Send gift certificate message to receiver</option><!--###STATUS_CODE_60### end -->
 	</select>
 	<br>
 	###GW1B###Kommentar til beskeden:###GW1B###<br>

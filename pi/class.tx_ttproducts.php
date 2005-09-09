@@ -320,6 +320,7 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function products_basket($theCode)	{
 		global $TSFE;
+		global $TYPO3_DB;
 
 		$content = '';
 		$mainMarkerArray=array();
@@ -423,12 +424,32 @@ class tx_ttproducts extends tslib_pibase {
 						$content = $this->cObj->substituteMarkerArray($content, $this->addURLMarkers(array()));
 					}
 				break;
-				case 'products_redeem_gift':
+				case 'products_redeem_gift': 
 					$tmpl = 'BASKET_TEMPLATE';
 					if (trim($TSFE->fe_user->user['username']) == '') {
 						$tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
 					} else {
-						$creditpoints = $this->recs['tt_products']['creditpoints']*$this->conf['creditpoints.']['pricefactor'];
+						$uniqueId = t3lib_div::trimExplode ('-', $this->recs['tt_products']['gift_certificate_unique_number'], true);
+						
+						$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
+						$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
+						
+						$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
+						
+						if ($row) {
+							$money = $row['amount'];
+							$uid = $row['uid'];
+							$fieldsArray = array();
+							$fieldsArray['deleted']=1;
+								// Delete the gift record
+							$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
+							
+							$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
+							
+							$this->addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
+						} else {
+							$tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
+						}
 					}
 					$content.=$this->getBasket('###'.$tmpl.'###');
 				break;
@@ -1549,18 +1570,6 @@ class tx_ttproducts extends tslib_pibase {
 		return $returnPrice;
 	} // getResellerPrice
 
-
-	/**
-	 * Takes an array with key/value pairs and returns it for use in an UPDATE query.
-	 */
-	function getUpdateQuery($Darray)	{
-		reset($Darray);
-		$query=array();
-		while(list($field,$data)=each($Darray))	{
-			$query[]=$field.'=\''.addslashes($data).'\'';
-		}
-		return implode($query,',');
-	} // getUpdateQuery
 
 	/**
 	 * Generates a search where clause.
@@ -2770,10 +2779,7 @@ class tx_ttproducts extends tslib_pibase {
 	
 					$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
 					$wrappedSubpartArray['###LINK_ITEM###']=array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
-	
-					
-					debug ($subpartArray, '$subpartArray', __LINE__, __FILE__);
-	
+						
 						// Substitute
 					$tempContent = $this->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
 
@@ -3128,6 +3134,26 @@ class tx_ttproducts extends tslib_pibase {
 		return $creditpoints;
 	} // getCreditPoints
 
+
+	
+	/**
+	 * adds the number of creditpoints for the frontend user
+	 */
+	function addCreditPoints($username, $creditpoints)	{
+		$uid_voucher = '';
+	    // get the "old" creditpoints for the user
+	    $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, tt_products_creditpoints', 'fe_users', 'username="'.$username.'"');
+	    if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
+	        $ttproductscreditpoints = $row['tt_products_creditpoints'];
+	        $uid_voucher = $row['uid'];
+	    }
+	    $fieldsArrayFeUserCredit = array();
+	    $fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + $creditpoints;
+	    $GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$uid_voucher, $fieldsArrayFeUserCredit);
+	}
+
+
+
 	/**
 	 * Finalize an order
 	 *
@@ -3170,6 +3196,7 @@ class tx_ttproducts extends tslib_pibase {
 
 /* Added Els: update fe_user with amount of creditpoints and subtract creditpoints used in order*/
 		$fieldsArrayFeUsers = array();
+		$uid_voucher = ''; // define it here
 		/* example:
   creditpoints {
   10.where =
@@ -3192,22 +3219,16 @@ class tx_ttproducts extends tslib_pibase {
 			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				$uid_voucher = $row['uid'];
 			}
-			if (($uid_voucher != '') & ($this->deliveryInfo['feusers_uid'] != $uid_voucher) ) {
+			if (($uid_voucher != '') && ($this->deliveryInfo['feusers_uid'] != $uid_voucher) ) {
 				$fieldsArrayFeUsers['tt_products_vouchercode'] = $this->recs['tt_products']['vouchercode'];
 			}
+
 		}
-		
+
 		if ($this->deliveryInfo['feusers_uid']) {
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$this->deliveryInfo['feusers_uid'], $fieldsArrayFeUsers);
 	/* Added ELS2: update user from vouchercode with 5 credits */
-	       // get the "old" creditpoints for the user
-	       $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints', 'fe_users', 'username="'.$this->recs['tt_products']['vouchercode'].'"');
-	       if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
-	           $ttproductscreditpoints = $row['tt_products_creditpoints'];
-	       }
-	       $fieldsArrayFeUserCredit = array();
-	       $fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + 5;
-	       $GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$uid_voucher, $fieldsArrayFeUserCredit);
+			$this->addCreditPoints($this->recs['tt_products']['vouchercode'], 5);
 		}
 
 
@@ -3267,7 +3288,7 @@ class tx_ttproducts extends tslib_pibase {
 				foreach ($rec['item'] as $productid => $product) {
 					foreach ($product as $variant => $count) {
 						$row = array();
-						$this->getValuesFromVariant (&$row, $variant);
+						$this->getValuesFromVariant ($row, $variant);
 						$amount += intval($row['size']) * $count;
 					}
 				}
@@ -3558,7 +3579,6 @@ class tx_ttproducts extends tslib_pibase {
 
 		if (count($recipients))	{	// If any recipients, then compile and send the mail.
 			$emailContent=trim($this->getBasket('###EMAIL_PLAINTEXT_TEMPLATE###'));
-			debug ($emailContent, '$emailContent', __LINE__, __FILE__);
 			if ($emailContent)	{		// If there is plain text content - which is required!!
 				$parts = split(chr(10),$emailContent,2);		// First line is subject
 				$subject=trim($parts[0]);
@@ -3719,10 +3739,8 @@ class tx_ttproducts extends tslib_pibase {
 					} else if ($val>=60 && $val<69) { //  60 -69 are special messages
 						$templateMarker = 'TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE';
 						$query = 'ordernumber=\''.$orderRow['uid'].'\'';
-						debug ($query, '$query', __LINE__, __FILE__);
 						$giftRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products_gifts', $query);
 						while ($giftRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($giftRes)) {
-							debug ($giftRow, '$giftRow', __LINE__, __FILE__);
 							$recipient = $giftRow['deliveryemail'];
 							$this->sendGiftEmail($recipient, $orderRecord['status_comment'], $giftRow, $templateCode, $templateMarker);
 						}
@@ -3760,7 +3778,6 @@ class tx_ttproducts extends tslib_pibase {
 		// added by Franz begin
 		$orderPayed = false;
 		$orderClosed = false;
-		#debug ($status_log, '$status_log', __LINE__, __FILE__);
 		if (is_array($status_log)) {
 			foreach($status_log as $key=>$val)	{
 				#debug ($val, '$val', __LINE__, __FILE__);
@@ -3774,18 +3791,15 @@ class tx_ttproducts extends tslib_pibase {
 			}
 		}
 		
-		#debug ($orderPayed, '$orderPayed', __LINE__, __FILE__);
 		
 		// making status code 60 disappear if the order has not been payed yet
 		if (!$orderPayed || $orderClosed) {
 				// Fill marker arrays
-			$wrappedSubpartArray=array();
-			$wrappedSubpartArray['###STATUS_CODE_60###']= '';
-			#debug ($wrappedSubpartArray, '$wrappedSubpartArray', __LINE__, __FILE__);
 			$markerArray=Array();
 			$subpartArray=Array();
+			$subpartArray['###STATUS_CODE_60###']= '';
 	
-			$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray,$wrappedSubpartArray);
+			$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
 		}
 		
 		// added by Franz end
@@ -3851,6 +3865,8 @@ class tx_ttproducts extends tslib_pibase {
 		$content= $this->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		return $content;
 	} // getTrackingInformation
+
+
 
 	/**
 	 * Bill,Delivery Tracking
@@ -4041,7 +4057,6 @@ class tx_ttproducts extends tslib_pibase {
 		$recipients = $recipient;
 		$recipients=t3lib_div::trimExplode(',',$recipients,1);
 
-		debug ($recipients, '$recipients', __LINE__, __FILE__);
 		if (count($recipients))	{	// If any recipients, then compile and send the mail.
 			$emailContent=trim($this->cObj->getSubpart($templateCode,'###'.$templateMarker.'###'));
 			if ($emailContent)	{		// If there is plain text content - which is required!!
@@ -4072,18 +4087,15 @@ class tx_ttproducts extends tslib_pibase {
 		
 					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
 					$Typo3_htmlmail->useBase64();
-					debug ($recipients, '$recipients', __LINE__, __FILE__);
 					$Typo3_htmlmail->start(implode($recipients,','), $subject, $emailContent, $HTMLmailContent, $V);
 					$Typo3_htmlmail->sendtheMail();
 				} else {		// ... else just plain text...
 					// $headers variable überall entfernt!
-					debug ($recipients, '$recipients', __LINE__, __FILE__);
 					$this->send_mail($recipients, $subject, $emailContent, $senderemail, $sendername, $this->conf['GiftAttachment']);
 					$this->send_mail($this->conf['orderEmail_to'], $subject, $emailContent, $this->personInfo['email'], $this->personInfo['name'], $this->conf['GiftAttachment']);
 				}
 			}
 		}
-
 
 	}
 
