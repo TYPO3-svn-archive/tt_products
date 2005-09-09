@@ -564,29 +564,30 @@ class tx_ttproducts extends tslib_pibase {
 			foreach ($confExt as $k1 => $param) {
 				$type  = $param['type'];
 				$where = $param['where'];
-				switch ($type) {
-					case 'sql':					
-						if ($where) {
-							$wherelist = explode ('AND', $where);
-							$isValid = true;
-							foreach ($wherelist as $k2 => $condition) {
-								$args = explode ('=', $condition);
-								if ($row[$args[0]] != $args[1]) {
-									$isValid = false;
-								}
-							}
+				$isValid = false;
+				if ($where) {
+					$wherelist = explode ('AND', $where);
+					$isValid = true;
+					foreach ($wherelist as $k2 => $condition) {
+						$args = explode ('=', $condition);
+						if ($row[$args[0]] != $args[1]) {
+							$isValid = false;
 						}
-						if ($isValid == true) {
+					}
+				} else {
+					$isValid = true;
+				}
+
+				if ($isValid == true) {
+					switch ($type) {
+						case 'sql':					
 							$rc = $param['pid'];
 							break;
-						}
-						break;
-					case 'pid':
-						$rc = intval ($row['pid']);
-						break;
-				}
-				if ($rc > 0) {
-					break; //ready with the foreach loop
+						case 'pid':
+							$rc = intval ($row['pid']);
+							break;
+					}
+					break;  //ready with the foreach loop
 				}
 			}
 		} else
