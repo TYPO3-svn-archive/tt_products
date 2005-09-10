@@ -806,7 +806,6 @@ class tx_ttproducts extends tslib_pibase {
 										
 					$subpartArray = array();
 					$wrappedSubpartArray=array();
-					$markerArray = $this->addGiftMarkers ($markerArray);
 					foreach ($giftNumberArray as $k => $giftnumber) {
 						#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
 						$markerArray = $this->addGiftMarkers ($markerArray, $giftnumber);
@@ -1331,12 +1330,9 @@ class tx_ttproducts extends tslib_pibase {
 						$this->basketExt[$uid][$extVars] = $count;
 						if ($newGiftData) {
 							if ($sameGiftData) {
-								foreach ($newGiftData['item'] as $uid => $item) {
-									foreach ($item as $variants => $count) { 
-										$this->basketExt['gift'][$identGiftnumber]['item'][$uid][$variants] += $count; 
-									}
-								}					
-							} else {
+								$this->basketExt['gift'][$identGiftnumber]['item'][$uid][$extVars] = $count;
+							}
+							else {
 								$this->basketExt['gift'][$this->giftnumber]['item'][$uid][$extVars] = $count;
 							}
 						}
