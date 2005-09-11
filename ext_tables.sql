@@ -165,12 +165,13 @@ CREATE TABLE tt_products_gifts (
 	crdate int(11) DEFAULT '0' NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,
 	
-	ordernumber int(11) NOT NULL,
+	ordernumber int(11) DEFAULT '0' NOT NULL,
 	personname varchar(80) DEFAULT '' NOT NULL,
 	personemail varchar(80) DEFAULT '' NOT NULL,
 	deliveryname varchar(80) DEFAULT '' NOT NULL,
 	deliveryemail varchar(80) DEFAULT '' NOT NULL,
 	note text NOT NULL,
+	amount decimal(19,2) DEFAULT '0.00' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)
@@ -185,7 +186,7 @@ CREATE TABLE tt_products_gifts (
 CREATE TABLE tt_products_gifts_articles_mm (
   uid_local int(11) DEFAULT '0' NOT NULL,
   uid_foreign int(11) DEFAULT '0' NOT NULL,
-  count int(11) NOT NULL,
+  count int(11) DEFAULT '0' NOT NULL,
   KEY uid_local (uid_local),
   KEY uid_foreign (uid_foreign),
 );

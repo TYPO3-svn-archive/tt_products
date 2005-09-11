@@ -145,13 +145,14 @@ class tx_ttproducts extends tslib_pibase {
 			$this->staticInfo->init();
 		}
 
-		if ($this->config['useFlexforms']) {
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] == 1) {
 			// Converting flexform data into array:
 			$this->pi_initPIflexForm();
 			$this->config['code'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'display_mode');
 		} else {
-			$this->config['code'] = strtolower(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));
+			$this->config['code'] = strtoupper(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));		
 		}
+		
 		$this->config['limit'] = $this->config['limit'] ? $this->config['limit'] : 50;
 		$this->config['limitImage'] = t3lib_div::intInRange($this->conf['limitImage'],0,9);
 		$this->config['limitImage'] = $this->config['limitImage'] ? $this->config['limitImage'] : 1;
@@ -202,7 +203,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		$this->initCategories();
 
-		$codes=t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:$this->conf['defaultCode'],1);
+		$codes=t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:strtoupper($this->conf['defaultCode']),1);
 		if (!count($codes))     $codes=array('HELP');
 
 //		$isBasket = 0;
@@ -228,7 +229,7 @@ class tx_ttproducts extends tslib_pibase {
 		$this->$itemArray = array();
 		reset($codes);
 		while(list(,$theCode)=each($codes))	{
-			$theCode = (string)strtoupper(trim($theCode));
+			$theCode = (string) trim($theCode);
 			switch($theCode)	{
 				case 'TRACKING':
 				case 'BILL':

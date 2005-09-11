@@ -29,6 +29,11 @@ t3lib_extMgm::addUserTSConfig('
         options.saveDocNew.tt_products_cat=1
 ');
 
+t3lib_extMgm::addUserTSConfig('
+        options.saveDocNew.tt_products_articles=1
+');
+
 $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] = 0; //for page as categories:  1
+$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 1;  // set this to 1 !
 
 ?>
