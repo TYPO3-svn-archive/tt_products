@@ -54,6 +54,7 @@ require_once(PATH_tslib.'class.tslib_pibase.php');
 require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
 require_once('class.tx_ttproducts_htmlmail.php');
 
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_div.php');
 
 class tx_ttproducts extends tslib_pibase {
 	var $prefixId = 'tx_ttproducts';	// Same as class name
@@ -758,7 +759,8 @@ class tx_ttproducts extends tslib_pibase {
 				
 				$subpartArray = array();
 
-				$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];
+				$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];				
+				
 
 				$markerArray['###FORM_URL###']=$formUrl.'&tt_products='.$this->tt_product_single ;
 
@@ -955,12 +957,16 @@ class tx_ttproducts extends tslib_pibase {
 				if ($theCode=='LISTGIFTS') {
 					$markerArray = $this->addGiftMarkers ($markerArray, $this->giftnumber);
 					$markerArray['###FORM_NAME###']= 'GiftForm';
+					$markerArray['###FORM_ONSUBMIT###']='return checkEmail(this.elements[3]) && checkEmail(this.elements[5])'; 
+					tx_ttproducts_div::setJS('email'); // +++ 
 
 					$markerFramework = 'listFrameWork';
 					$t['listFrameWork'] = $this->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,array(),array());
+
 				} else {
 					$markerArray['###FORM_NAME###']= 'ShopForm';				
 				}
+				
 				$t['itemFrameWork'] = $this->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,array(),array());					
 			
 				$pageArr=explode(',',$this->pid_list);
@@ -1405,6 +1411,7 @@ class tx_ttproducts extends tslib_pibase {
 
 			$this->personInfo['address'] = $address;
 			$this->personInfo['email'] = $TSFE->fe_user->user['email'];
+			
 			$this->personInfo['telephone'] = $TSFE->fe_user->user['telephone'];
 			$this->personInfo['fax'] = $TSFE->fe_user->user['fax'];
 			$this->personInfo['zip'] = $TSFE->fe_user->user['zip'];
@@ -1418,7 +1425,6 @@ class tx_ttproducts extends tslib_pibase {
 			$this->personInfo['date_of_birth'] = date( 'd-m-Y', $TSFE->fe_user->user["date_of_birth"]); 
 			$this->personInfo['company'] = $TSFE->fe_user->user['company'];
 			$this->personInfo['tx_feuserextrafields_company_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_company_deliv'];
-			$this->personInfo['address'] = $TSFE->fe_user->user['address'];
 			$this->personInfo['tx_feuserextrafields_address_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_address_deliv'];
 			$this->personInfo['tx_feuserextrafields_housenumber'] = $TSFE->fe_user->user['tx_feuserextrafields_housenumber'];
 			$this->personInfo['tx_feuserextrafields_housenumber_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_housenumber_deliv'];
@@ -2695,6 +2701,7 @@ class tx_ttproducts extends tslib_pibase {
 
 //		$this->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 
+
 			// Getting subparts from the template code.
 		$t=array();
 		$t['basketFrameWork'] = $this->cObj->getSubpart($templateCode,$this->spMarker($subpartMarker));
@@ -2995,6 +3002,8 @@ class tx_ttproducts extends tslib_pibase {
 
 			// substitute the main subpart with the rendered content.
 		$out=$this->cObj->substituteSubpart($bFrameWork, '###ITEM_CATEGORY_AND_ITEMS###', $out);
+		
+		
 		return $out;
 	} // getBasket
 
@@ -3581,7 +3590,6 @@ class tx_ttproducts extends tslib_pibase {
 				$parts = split(chr(10),$emailContent,2);		// First line is subject
 				$subject=trim($parts[0]);
 				$plain_message=trim($parts[1]);
-
 
 				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
 				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email

@@ -113,7 +113,7 @@ This subpart is used to display the regular list of gift products.
 <table border="1" cellspacing="0" cellpadding="1" cols="4">
 <tr>
 <td>
-<form method="post" action="###FORM_URL###"  name="###FORM_NAME###">
+<form method="post" action="###FORM_URL###"  name="###FORM_NAME###"  onsubmit="###FORM_ONSUBMIT###">
 <table border="1" cellspacing="0" cellpadding="1">
 		<tr>
 			<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>previous page</b></div>###GW2E###<!--###LINK_PREV###--></td>
@@ -190,7 +190,7 @@ This subpart is used to display the regular list of gift products.
 				</tr>
 				<tr>
 					<td>###GW1B###<strong>receiver email:</strong>###GW1E###</td>
-					<td><input type="text" name="###FIELD_NAME_DELIVERY_EMAIL###" size="30" value="###GIFT_DELIVERY_EMAIL###"></td>
+					<td><input type="text" name="###FIELD_NAME_DELIVERY_EMAIL###" size="30" value="###GIFT_DELIVERY_EMAIL###"'></td>
 				</tr> 
 				<tr>
 					<td>###GW1B###<strong>message: </strong>###GW1E###</td>
@@ -579,7 +579,7 @@ Exact same features as BASKET_TEMPLATE
 
 -->
 
-	<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+	<form method="post" action="###FORM_URL###" name="###FORM_NAME###" onsubmit='###FORM_ONSUBMIT###'>
 
 	<table border="0" cellspacing="0" cellpadding="1" width=1>
 		<tr>
