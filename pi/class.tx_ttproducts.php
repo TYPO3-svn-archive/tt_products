@@ -957,7 +957,7 @@ class tx_ttproducts extends tslib_pibase {
 				if ($theCode=='LISTGIFTS') {
 					$markerArray = $this->addGiftMarkers ($markerArray, $this->giftnumber);
 					$markerArray['###FORM_NAME###']= 'GiftForm';
-					$markerArray['###FORM_ONSUBMIT###']='return checkEmail(this.elements[3]) && checkEmail(this.elements[5])'; 
+					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.GiftForm)'; 
 					tx_ttproducts_div::setJS('email'); // +++ 
 
 					$markerFramework = 'listFrameWork';

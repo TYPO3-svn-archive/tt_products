@@ -42,7 +42,6 @@
 
 class tx_ttproducts_div {
 
-
        /**
          * Sets JavaScript code in the additionalJavaScript array
          *
@@ -73,6 +72,23 @@ class tx_ttproducts_div {
 				alert("Invalid E-mail Address!\'"+element.value+"\' Please re-enter.")
 				return (false)
 			}
+
+			function checkParams (formObj) {
+				var rc = true;
+				for (var i = 0; i < formObj.length; i++) {
+					if (formObj[i].type == "text") {
+						var email = /email/i;
+						if (email.exec(formObj[i].name)) {
+							rc = checkEmail (formObj[i]);
+						}
+					}
+					if (!rc) {
+						break;
+					}
+				}
+				return rc;
+			}
+
 			';
 			break;
 		}
