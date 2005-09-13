@@ -76,7 +76,7 @@ It's also used by search-results.
 						  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
 						  <!-- ###display_variant2### -->
 					</td>
-					<td valign=top nowrap align=right>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><br>
+					<td valign=top nowrap align=right>###GW2B### quantity: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><br>
 								<input type="Submit" name="order" value="put in basket">
 					</td>
 				</tr>
@@ -167,7 +167,7 @@ This subpart is used to display the regular list of gift products.
 						  <!-- ###display_variant2### -->
 					</td>
 				<tr>
-					<td valign=top nowrap align=right>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><br>
+					<td valign=top nowrap align=right>###GW2B### quantity: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><br>
 					</td>
 				</tr>			
 				</tr>
@@ -272,7 +272,7 @@ This subpart is used to display single products.
 						<b>info:</b><br>
 						###PRODUCT_NOTE###<br>
 					###GW1E###	<br>
-						<nobr>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; 
+						<nobr>###GW2B### quantity: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; 
 						<input type="Submit" name="order" value="put in basket"
 onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 						</nobr>
@@ -362,7 +362,7 @@ This subpart is used to display single gift products.
 				<td><textarea cols=30 rows=5 name="###FIELD_NAME_GIFT_NOTE###" wrap="off">###GIFT_NOTE###</textarea></td>
 			</tr>
 			<tr> <td>
-			<nobr>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; 
+			<nobr>###GW2B### quantity: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; 
 						<input type="hidden" name="giftnumber" value="###GIFTNO###">
 						<input type="hidden" name="mode_update" value="1">
 						<input type="Submit" name="order" value="put in basket"
@@ -398,7 +398,7 @@ Subpart for the search-form
 
 -->
 <form method="post" action="###FORM_URL###" name="name="###FORM_NAME###"">
-	<INPUT size="30" maxlength="100" type="text" name="swords" value="###SWORDS###">
+	<input size="30" maxlength="100" type="text" name="swords" value="###SWORDS###">
 	<input type="Submit" name="order" value="search">
 </form>
 <!-- ###ITEM_SEARCH### -->
@@ -474,7 +474,8 @@ In addition there's a number of fields used for delivery and payment information
 
 					</td>
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
-					<td valign=top>&nbsp;<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">&nbsp;</td>
+					<td valign=top>&nbsp;<input type="hidden" name="###FIELD_SIZE_NAME###" value="###FIELD_SIZE_VALUE###">
+					<input size="3" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###">&nbsp;</td>
 					<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> ###GW1E###</td>
 				</tr>
 			<!-- ###ITEM_SINGLE### end -->
@@ -543,6 +544,7 @@ In addition there's a number of fields used for delivery and payment information
 			<form method="post" action="###FORM_URL###" name="###FORM_NAME_GIFT_CERTIFICATE###">
 			number of gift certificate:<br/>
 				<input size="30" maxlength="30" type="text" name="###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###">
+				<input type="hidden" name="products_info" value="1">
 				<input type="Submit" name="products_redeem_gift" value="redeem gift certificate">&nbsp;&nbsp;
 			</form>
 			</td>
@@ -924,6 +926,16 @@ Exact same features as BASKET_TEMPLATE
 			(###PRICE_PAYMENT_NO_TAX###)<br>
 
 			###GW1E###</td>
+		</tr>
+
+		<tr><td>
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME_GIFT_CERTIFICATE###">
+			number of gift certificate:<br/>
+				<input size="30" maxlength="30" type="text" name="###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###">
+				<input type="hidden" name="products_payment" value="1">
+				<input type="Submit" name="products_redeem_gift" value="redeem gift certificate">&nbsp;&nbsp;
+			</form>
+			</td>
 		</tr>
 
 

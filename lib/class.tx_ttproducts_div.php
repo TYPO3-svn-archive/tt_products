@@ -38,7 +38,6 @@
  *  
  */
 
-#define('GRAYTREE_DIV_DLOG', '1');
 
 class tx_ttproducts_div {
 
@@ -47,7 +46,7 @@ class tx_ttproducts_div {
          *
          * @param       string          $fieldname is the field in the table you want to create a JavaScript for
          * @return      void
-         * @see tslib_gmenu::writeMenu(), tslib_cObj::imageLinkWrap()
+         * @see
          */
     function setJS($fieldname) {
         global $TSFE;

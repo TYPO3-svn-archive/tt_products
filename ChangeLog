@@ -1,3 +1,8 @@
+2005-09-13  Franz Holzinger <franz@fholzinger.com>
+	* move parts of class.tx_ttproducts.php into separate files of lib
+	* change activity into an array to make more than one possible at a time
+	* correct error with update of entries in the basket list in the Danish template
+
 2005-09-12  Franz Holzinger <franz@fholzinger.com>
 	* correct error with the address field
 	* email validation for gift emails

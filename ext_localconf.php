@@ -36,4 +36,7 @@ t3lib_extMgm::addUserTSConfig('
 $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] = 0; //for page as categories:  1
 $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 1;  // set this to 1 !
 
+define('TT_PRODUCTS_DIV_DLOG', '0');	// for development error logging
+
+
 ?>
