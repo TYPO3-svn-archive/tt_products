@@ -38,18 +38,18 @@ plugin.tt_products {
   displayListCatHeader = 1
     # cat=plugin.products//; type=boolean; label= Display Category Header in basket: If this option is set, the category headers (page titles) will automatically be displayed in the basket lists.
   displayBasketCatHeader = 0
-    # cat=plugin.products//; type=boolean; label= Number of columns, List display: Number of columns for the items in the list
+    # cat=plugin.products//; type=int+; label= Number of columns, List display: Number of columns for the items in the list
   displayBasketColumns = 
     # cat=plugin.products//; type=boolean; label= cObj settings: If set, certain settings are manipulated in order to let the script render a single item - the $cObj->data.
   displayCurrentRecord = 
   
-    # cat=plugin.products//; type=boolean; label= CSS even rows: Cascading Stylesheets (CSS) even rows in the products listing. This works only if displayBasketColumns has been set.
+    # cat=plugin.products//; type=string; label= CSS even rows: Cascading Stylesheets (CSS) even rows in the products listing. This works only if displayBasketColumns has been set.
   CSSRowEven = 
-    # cat=plugin.products//; type=boolean; label= CSS uneven rows: Cascading Stylesheets (CSS) uneven rows in the products listing. This works only if displayBasketColumns has been set.
+    # cat=plugin.products//; type=string; label= CSS uneven rows: Cascading Stylesheets (CSS) uneven rows in the products listing. This works only if displayBasketColumns has been set.
   CSSRowUneven =
-    # cat=plugin.products//; type=boolean; label= CSS default, List display: Cascading Stylesheets (CSS) for default entries in a list view.
+    # cat=plugin.products//; type=string; label= CSS default, List display: Cascading Stylesheets (CSS) for default entries in a list view.
   CSSListDefault =
-    # cat=plugin.products//; type=boolean; label= CSS current, List display: Cascading Stylesheets (CSS) for the currently selected item a list view.
+    # cat=plugin.products//; type=string; label= CSS current, List display: Cascading Stylesheets (CSS) for the currently selected item a list view.
   CSSListCurrent =
 
     # cat=plugin.products//; type=boolean; label= single view, List display: Usually you get the link to the single item view on the display page of the LIST code. If you however want to create your own pages for single view with SINGLE code you must set this to 1.
@@ -60,7 +60,7 @@ plugin.tt_products {
   limit = 50
     # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item. 
   limitImage = 1
-    # cat=plugin.products//; type=int+; label= Separate images: Normally all images are displayed together. With separateImage=on you can use a ###PRODUCT_IMAGE3### for each image number separatly.
+    # cat=plugin.products//; type=boolean; label= Separate images: Normally all images are displayed together. With separateImage=on you can use a ###PRODUCT_IMAGE3### for each image number separatly.
   separateImage =
 
     # cat=plugin.products/dims; type=int+; label= Max image width, single display: The maximum width in pixels of an image when displayed with a single product.
@@ -108,7 +108,7 @@ plugin.tt_products {
   defaultProductID = 1
     # cat=plugin.products//; type=int+; label=recursive levels: Number of recursive levels to select tt_products from in lists.
   recursive = 
-    # cat=plugin.products//; type=int+; label=Domain ot the shop; used to replace the ###DOMAIN### marker
+    # cat=plugin.products//; type=string; label=Domain ot the shop; used to replace the ###DOMAIN### marker
   domain = nodomain.entered.yet
  
     # cat=plugin.products//; type=small; label=TAX percentage: Type= Double (means, "use . as decimal point")
@@ -195,10 +195,10 @@ plugin.tt_products {
   showNotinStock =
     # cat=plugin.products//; type=text; label=Not in Stock message: Message is displayed if inStock = 0 (means not inStock)
   notInStockMessage = not in stock
-    # cat=plugin.products//; type=text; label=Unit for pieces
+    # cat=plugin.products//; type=string; label=Unit for pieces
   inStockPieces = pieces
 
-    # cat=plugin.products//; type=text; label=New Item Days: How many days list new items in LISTNEWITEMS
+    # cat=plugin.products//; type=int+; label=New Item Days: How many days list new items in LISTNEWITEMS
   newItemDays = 7
 
     # cat=plugin.products//; type=int+; label=Substitute page title: If you set this to 1, the product title will be showed as page title in single view. If you set this to 2, the product subtitle will be displayed
