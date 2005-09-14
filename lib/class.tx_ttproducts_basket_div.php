@@ -251,11 +251,6 @@ class tx_ttproducts_basket_div {
 		global $TYPO3_DB;
 
 		$content = '';
-		$mainMarkerArray=array();
-		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';  // adding extra preprocessing CObject
-		$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
-		$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
-		$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
 		reset ($codes);
 
 		$activityArr=array();
@@ -304,6 +299,12 @@ class tx_ttproducts_basket_div {
 			reset ($activityArr);
 			$error_tmpl = '';
 			if (count($activityArr)) {
+				$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
+				$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
+				$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
+				$mainMarkerArray=array();
+				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';  // adding extra preprocessing CObject
+
 				foreach ($activityArr as $activity=>$value) {
 						// perform action
 					switch($activity)	{

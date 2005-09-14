@@ -1,4 +1,7 @@
 2005-09-14  Franz Holzinger <franz@fholzinger.com>
+	* correct error with too many pages in all product listings
+
+2005-09-14  Franz Holzinger <franz@fholzinger.com>
 	* email verification for all templates with language file support
 	* correct error messages in front end with missing parameters and empty arrays
 	* activity array for the BASKET activities
