@@ -51,6 +51,7 @@ class tx_ttproducts_div {
     function setJS($fieldname) {
         global $TSFE;
         $js = '';
+        $emailArr =  explode('|', $message = $this->pi_getLL('invalid email'));
 
 		switch ($fieldname) {
 			case 'email' :
@@ -68,7 +69,7 @@ class tx_ttproducts_div {
 				if (test(element.value)){
 					return (true)
 				}
-				alert("Invalid E-mail Address!\'"+element.value+"\' Please re-enter.")
+				alert("'.$emailArr[0].'\'"+element.value+"'.$emailArr[1].'")
 				return (false)
 			}
 
@@ -92,7 +93,6 @@ class tx_ttproducts_div {
 			break;
 		}
 
-	debug ($js, '$js', __LINE__, __FILE__);    
 	$TSFE->setJS ($fieldname, $js);
     } // setJS
 			
@@ -100,8 +100,8 @@ class tx_ttproducts_div {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_div.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_div.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_div.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_div.php']);
 }
 
 

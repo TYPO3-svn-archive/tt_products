@@ -193,9 +193,9 @@ $TCA['tt_products'] = Array (
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.weight',
 			'config' => Array (
 				'type' => 'input',
-				'size' => '6',
+				'size' => '10',
 				'max' => '20',
-				'eval' => 'trim,double2',
+				'eval' => 'trim',
 			)
 		),
 		'bulkily' => Array (

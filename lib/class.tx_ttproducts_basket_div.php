@@ -243,50 +243,60 @@ class tx_ttproducts_basket_div {
 	/**
 	 * Takes care of basket, address info, confirmation and gate to payment
      *
-     * @param       string          $fieldname is the field in the table you want to create a JavaScript for
+     * @param       array          CODEs for display mode
      * @return      void
  	 */
-	function products_basket($theCode)	{
+	function products_basket($codes)	{
 		global $TSFE;
 		global $TYPO3_DB;
 
 		$content = '';
 		$mainMarkerArray=array();
-		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
+		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';  // adding extra preprocessing CObject
 		$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
 		$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
 		$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
+		reset ($codes);
+
+		$activityArr=array();
+
+		if (t3lib_div::_GP('products_redeem_gift'))	{
+		 	$activityArr['products_redeem_gift']=true;
+		}
+		if (t3lib_div::_GP('products_overview'))	{
+			$activityArr['products_overview']=true;
+		} 
+		if (t3lib_div::_GP('products_info'))	{
+			$activityArr['products_info']=true;
+		}
+		if (t3lib_div::_GP('products_payment'))	{
+			$activityArr['products_payment']=true;
+		} 
+		if (t3lib_div::_GP('products_finalize'))	{
+			$activityArr['products_finalize']=true;
+		} 
+
+		if (is_array($codes)) {
+			foreach ($codes as $k => $code) {
+				if ($code=='BASKET')	{
+					$activityArr['products_basket']=true;
+				} elseif ($code=='INFO')	{
+					$activityArr['products_info']=true;
+				} elseif ($code=='OVERVIEW') {
+					$activityArr['products_overview']=true;
+				} elseif ($code=='PAYMENT')	{
+					$activityArr['products_payment']=true;
+				} elseif ($code=='FINALIZE')	{
+					$activityArr['products_finalize']=true;
+				}
+			}				
+		}
+
+		#debug ($activityArr, '$activityArr', __LINE__, __FILE__);
+
 		
 		if (count($this->basketExt))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
-			$activityArr=array();
-			if (t3lib_div::_GP('products_redeem_gift'))	{
-			 	$activityArr['products_redeem_gift']=true;
-			}
-			if (t3lib_div::_GP('products_overview'))	{
-				$activityArr['products_overview']=true;
-			} 
-			if (t3lib_div::_GP('products_info'))	{
-				$activityArr['products_info']=true;
-			}
-			if (t3lib_div::_GP('products_payment'))	{
-				$activityArr['products_payment']=true;
-			} 
-			if (t3lib_div::_GP('products_finalize'))	{
-				$activityArr['products_finalize']=true;
-			} 
-
-			if ($theCode=='INFO')	{
-				$activityArr['products_info']=true;
-			} elseif ($theCode=='OVERVIEW') {
-				$activityArr['products_overview']=true;
-			} elseif ($theCode=='PAYMENT')	{
-				$activityArr['products_payment']=true;
-			} elseif ($theCode=='FINALIZE')	{
-				$activityArr['products_finalize']=true;
-			}
-
-			#debug ($activityArr, '$activityArr', __LINE__, __FILE__);
 			
 			tx_ttproducts_basket_div::getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 			#debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
@@ -297,13 +307,36 @@ class tx_ttproducts_basket_div {
 				foreach ($activityArr as $activity=>$value) {
 						// perform action
 					switch($activity)	{
+						case 'products_redeem_gift': 	// this shall never be the only activity
+							if (trim($TSFE->fe_user->user['username']) == '') {
+								$error_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
+							} else {
+								$uniqueId = t3lib_div::trimExplode ('-', $this->recs['tt_products']['gift_certificate_unique_number'], true);
+								
+								$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
+								$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
+								
+								$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
+								
+								if ($row) {
+									$money = $row['amount'];
+									$uid = $row['uid'];
+									$fieldsArray = array();
+									$fieldsArray['deleted']=1;
+										// Delete the gift record
+									$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
+									
+									$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
+									
+									$this->addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
+								} else {
+									$error_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
+								}
+							}
+						break;
 						case 'products_info':
 							$this->load_noLinkExtCobj();
 							$content.=tx_ttproducts_basket_div::getBasket('###BASKET_INFO_TEMPLATE###','',$mainMarkerArray);
-						break;
-						case 'products_overview':
-							$this->load_noLinkExtCobj();
-							$content.=tx_ttproducts_basket_div::getBasket('###BASKET_OVERVIEW_TEMPLATE###');
 						break;
 						case 'products_payment':
 							$this->load_noLinkExtCobj();
@@ -360,31 +393,13 @@ class tx_ttproducts_basket_div {
 								$content = $this->cObj->substituteMarkerArray($content, $this->addURLMarkers(array()));
 							}
 						break;
-						case 'products_redeem_gift': 	// this shall never be the only activity
-							if (trim($TSFE->fe_user->user['username']) == '') {
-								$error_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
-							} else {
-								$uniqueId = t3lib_div::trimExplode ('-', $this->recs['tt_products']['gift_certificate_unique_number'], true);
-								
-								$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
-								$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
-								
-								$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
-								
-								if ($row) {
-									$money = $row['amount'];
-									$uid = $row['uid'];
-									$fieldsArray = array();
-									$fieldsArray['deleted']=1;
-										// Delete the gift record
-									$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
-									
-									$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
-									
-									$this->addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
-								} else {
-									$error_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
-								}
+						case 'products_overview':
+							$this->load_noLinkExtCobj();
+							$content.=tx_ttproducts_basket_div::getBasket('###BASKET_OVERVIEW_TEMPLATE###');
+						break;
+						case 'products_basket':
+							if (!$activityArr['products_info'] && !$activityArr['products_payment'] && !$activityArr['products_finalize'] && !$activityArr['products_redeem_gift'] ) {
+								$content.=tx_ttproducts_basket_div::getBasket();
 							}
 						break;
 						default:
@@ -397,18 +412,18 @@ class tx_ttproducts_basket_div {
 					}
 				} // foreach ($activityArr as $activity=>$value) 
 			} else { // if (count($activityArr))
-				$content.=tx_ttproducts_basket_div::getBasket();
+				// nothing. no BASKET code or similar thing
 			} 
 		} else { // if (count($this->basketExt))
-			if ($theCode=='OVERVIEW') {
+			if ($activityArr['products_basket']) {
+				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_TEMPLATE_EMPTY###'));
+			}
+			if ($activityArr['products_overview']) {
 				$this->load_noLinkExtCobj();
 				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_OVERVIEW_EMPTY###'));
 			}
-			else {
-				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_TEMPLATE_EMPTY###'));
-			}
 		}
-		$markerArray=array();
+		$markerArray=array(); 
 		$markerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject;	// adding extra preprocessing CObject
 		$content= $this->cObj->substituteMarkerArray($content, $markerArray);
 
@@ -972,8 +987,8 @@ class tx_ttproducts_basket_div {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_basket_div.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_basket_div.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_basket_div.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_basket_div.php']);
 }
 
 

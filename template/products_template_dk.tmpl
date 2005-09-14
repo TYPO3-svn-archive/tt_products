@@ -341,7 +341,7 @@ This subpart is used to display single gift products.
 			</tr>
 			<!-- ###PRODUCT_DATA### end-->
 			<!-- ###PERSON_DATA### begin-->
-			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME###" onsubmit="###FORM_ONSUBMIT###">
 			<tr>
 				<td>###GW1B###<strong>sender name: </strong>###GW1E###</td>
 				<td><input type="text" name="###FIELD_NAME_PERSON_NAME###" size="30" value="###GIFT_PERSON_NAME###"></td>
@@ -540,15 +540,6 @@ In addition there's a number of fields used for delivery and payment information
 			</td>
 			<td valign=top align=right>###GW1B### <b>###PRICE_PAYMENT_TAX###</b> <br>(###PRICE_PAYMENT_NO_TAX###) ###GW1E###</td>
 		</tr>
-		<tr><td>
-			<form method="post" action="###FORM_URL###" name="###FORM_NAME_GIFT_CERTIFICATE###">
-			number of gift certificate:<br/>
-				<input size="30" maxlength="30" type="text" name="###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###">
-				<input type="hidden" name="products_info" value="1">
-				<input type="Submit" name="products_redeem_gift" value="redeem gift certificate">&nbsp;&nbsp;
-			</form>
-			</td>
-		</tr>
 		<tr>
 			<td colspan=6><img src="clear.gif" width=1 height=10></td>
 		</tr>
@@ -564,6 +555,12 @@ In addition there's a number of fields used for delivery and payment information
 	<input type="hidden" name="mode_update" value="1">
 	<input type="Submit" name="products_update" value="update calc.">&nbsp;&nbsp;
 	<input type="Submit" name="products_info" value="continue with order/payment" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_INFO###';">
+	</form>
+	<form method="post" action="###FORM_URL###" name="###FORM_NAME_GIFT_CERTIFICATE###">
+	number of gift certificate:<br/>
+		<input size="30" maxlength="30" type="text" name="###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###">
+		<input type="hidden" name="products_info" value="1">
+		<input type="Submit" name="products_redeem_gift" value="redeem gift certificate">&nbsp;&nbsp;
 	</form>
 <br>
 <!-- ###BASKET_TEMPLATE### end -->
@@ -928,17 +925,6 @@ Exact same features as BASKET_TEMPLATE
 			###GW1E###</td>
 		</tr>
 
-		<tr><td>
-			<form method="post" action="###FORM_URL###" name="###FORM_NAME_GIFT_CERTIFICATE###">
-			number of gift certificate:<br/>
-				<input size="30" maxlength="30" type="text" name="###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###">
-				<input type="hidden" name="products_payment" value="1">
-				<input type="Submit" name="products_redeem_gift" value="redeem gift certificate">&nbsp;&nbsp;
-			</form>
-			</td>
-		</tr>
-
-
 		<tr>
 			<td colspan=6><img src="clear.gif" width=1 height=10></td>
 		</tr>
@@ -966,6 +952,12 @@ Exact same features as BASKET_TEMPLATE
 
 <br>
 
+	<form method="post" action="###FORM_URL###" name="###FORM_NAME_GIFT_CERTIFICATE###">
+	###GW1B###number of gift certificate:###GW1E###<br/>
+		<input size="30" maxlength="30" type="text" name="###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###">
+		<input type="hidden" name="products_payment" value="1">
+		<input type="Submit" name="products_redeem_gift" value="redeem gift certificate">&nbsp;&nbsp;
+	</form>
 
 
 <!-- ###BASKET_PAYMENT_TEMPLATE### end -->

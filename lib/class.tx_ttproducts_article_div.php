@@ -86,7 +86,6 @@ class tx_ttproducts_article_div {
 	 	$gradings = $tmpArr[0]; 
 	 	
 	 	$rc = $color.';'.$size.';'.intval(100*$row['accessory']).';'.$gradings;
-	 	debug ($rc, 'rc getVariantFromRow', __LINE__, __FILE__);
 	 	return $rc; 
 	 }
 
@@ -95,8 +94,8 @@ class tx_ttproducts_article_div {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_article_div.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_article_div.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_article_div.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_article_div.php']);
 }
 
 

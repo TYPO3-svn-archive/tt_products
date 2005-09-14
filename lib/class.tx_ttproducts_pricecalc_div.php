@@ -63,32 +63,6 @@ class tx_ttproducts_pricecalc_div {
 			}
 		}
 
-/*
-		if($this->conf['pricecalc.'])
-		{
-			ksort($this->conf['pricecalc.']);
-			reset($this->conf['pricecalc.']);
-			foreach ($this->conf['pricecalc.'] as $k1 => $pricecalc)
-			{
-				$k=intval($k1);
-				$this->basketExtra['pricecalc.'][$k] = $this->conf['pricecalc.'][$k1]['prod.'];
-			}
-		}
-
-		if($this->conf['discountprice.'])
-		{
-			ksort($this->conf['discountprice.']);
-			reset($this->conf['discountprice.']);
-			foreach ($this->conf['discountprice.'] as $k1 => $discountprice)
-			{
-				$k=intval($k1);
-				if ($k == 0)
-					continue;
-				$this->basketExtra['discountprice.'][$k] = $this->conf['discountprice.'][$k1]['prod.'];
-			}
-		}
-*/
-
 		$priceTotal = array();
 		$priceReduction = array();
 
@@ -227,8 +201,6 @@ class tx_ttproducts_pricecalc_div {
 				foreach ($this->itemArray as $pid=>$pidItem) {
 					foreach ($pidItem as $itemnumber=>$actItemArray) {
 						foreach ($actItemArray as $k2=>$actItem) {
-				//foreach ($this->itemArray as $pid=>$pidItem) {
-					//foreach ($pidItem as $itemnumber=>$actItem) {
 							// count all items which will apply to the discount price
 							$count2 = $actItem['count'];
 							if (($count2 > 0) && ($actItem['rec']['price'] == $pricefor1)) {
@@ -276,8 +248,8 @@ class tx_ttproducts_pricecalc_div {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_pricecalc_div.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_pricecalc_div.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_pricecalc_div.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_pricecalc_div.php']);
 }
 
 

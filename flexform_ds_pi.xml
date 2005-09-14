@@ -52,13 +52,13 @@
 							<numindex index="1">OVERVIEW</numindex>					    
 					    </numindex>		
 					    <numindex index="11">
-							<numindex index="0">LLL:EXT:tt_products/locallang_tca.php:tt_content.pi_flexform.display_mode.11</numindex>
-							<numindex index="1">PAYMENT</numindex>					    
-					    </numindex>
-					    <numindex index="12">
 							<numindex index="0">LLL:EXT:tt_products/locallang_tca.php:tt_content.pi_flexform.display_mode.12</numindex>
-							<numindex index="1">INFO</numindex>					    
+							<numindex index="1">PAYMENT</numindex>				    
 					    </numindex>	
+					    <numindex index="12">
+							<numindex index="0">LLL:EXT:tt_products/locallang_tca.php:tt_content.pi_flexform.display_mode.11</numindex>
+							<numindex index="1">INFO</numindex>					    
+					    </numindex>
 					    <numindex index="13">
 							<numindex index="0">LLL:EXT:tt_products/locallang_tca.php:tt_content.pi_flexform.display_mode.13</numindex>
 							<numindex index="1">FINALIZE</numindex>					    

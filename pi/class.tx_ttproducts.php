@@ -156,7 +156,7 @@ class tx_ttproducts extends tslib_pibase {
 			$this->config['code'] = strtoupper(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));		
 		}
 		
-		$this->config['limit'] = $this->config['limit'] ? $this->config['limit'] : 50;
+		$this->config['limit'] = $this->conf['limit'] ? $this->conf['limit'] : 50;
 		$this->config['limitImage'] = t3lib_div::intInRange($this->conf['limitImage'],0,9);
 		$this->config['limitImage'] = $this->config['limitImage'] ? $this->config['limitImage'] : 1;
 
@@ -222,22 +222,12 @@ class tx_ttproducts extends tslib_pibase {
 		// *************************************
 
 		$this->$itemArray = array();
+		$codes = $this->sort_codes($codes);
+		$content .= tx_ttproducts_basket_div::products_basket($codes);
 		reset($codes);
 		while(list(,$theCode)=each($codes))	{
 			$theCode = (string) trim($theCode);
 			switch($theCode)	{
-				case 'TRACKING':
-				case 'BILL':
-				case 'DELIVERY':
-					$content.=$this->products_tracking($theCode);
-				break;
-				case 'BASKET':
-				case 'PAYMENT':
-				case 'FINALIZE':
-				case 'OVERVIEW':
-				case 'INFO':
-					$content .= tx_ttproducts_basket_div::products_basket($theCode);
-				break;
 				case 'LIST':
 				case 'LISTGIFTS':
 				case 'LISTHIGHLIGHTS':
@@ -246,6 +236,18 @@ class tx_ttproducts extends tslib_pibase {
 				case 'SEARCH':
 				case 'SINGLE':
 					$content.=$this->products_display($theCode);
+				break;
+				case 'BASKET':
+				case 'FINALIZE':
+				case 'INFO':
+				case 'OVERVIEW':
+				case 'PAYMENT':
+						// nothing here any more
+				break;
+				case 'BILL':
+				case 'DELIVERY':
+				case 'TRACKING':
+					$content.=$this->products_tracking($theCode);
 				break;
 				case 'MEMO':
 					$content.=$this->memo_display($theCode);
@@ -274,6 +276,40 @@ class tx_ttproducts extends tslib_pibase {
 		}
 		return $this->pi_wrapInBaseClass($content);
 	}
+
+
+	/**
+	 * returns the codes in the order in which they have to be processed
+     *
+     * @param       string          $fieldname is the field in the table you want to create a JavaScript for
+     * @return      void
+ 	 */
+	function sort_codes($codes)	{
+		$retCodes = array();
+		$codeArray =  Array (
+			'1' => 'BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS', 
+			'LISTNEWITEMS', 'SINGLE', 'SEARCH', 
+			'MEMO', 'INFO',
+			'PAYMENT', 'FINALIZE', 'OVERVIEW',
+			'TRACKING', 'BILL', 'DELIVERY',
+			'CURRENCY', 'ORDERS',
+			'LISTGIFTS', 'HELP',
+			);
+
+		if (is_array($codes)) {
+			foreach ($codes as $k => $code) {
+				$theCode = trim($code);
+				$key = array_search($theCode, $codeArray);
+				if ($key!=false) {
+					$retCodes[$key] = $theCode;
+				}
+			}
+		}
+		
+		return ($retCodes);	
+	}
+
+
 
 	/**
 	 * Get External CObjects
@@ -451,9 +487,11 @@ class tx_ttproducts extends tslib_pibase {
 	function getGiftNumbers($uid, $variant)	{
 		$giftArray = array();
 		
-		foreach ($this->basketExt['gift'] as $giftnumber => $giftItem) {
-			if ($giftItem['item'][$uid][$variant]) {
-				$giftArray [] = $giftnumber;
+		if ($this->basketExt['gift']) {
+			foreach ($this->basketExt['gift'] as $giftnumber => $giftItem) {
+				if ($giftItem['item'][$uid][$variant]) {
+					$giftArray [] = $giftnumber;
+				}
 			}
 		} 
 
@@ -654,6 +692,7 @@ class tx_ttproducts extends tslib_pibase {
 						#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
 						$markerArray = $this->addGiftMarkers ($markerArray, $giftnumber);
 						$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'].'_'.$giftnumber;
+						$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')'; 
 						$markerArray['###FORM_URL###'] = $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($extVars);
 
 						#debug ($TSFE->id, '$TSFE->id', __LINE__, __FILE__);
@@ -666,6 +705,7 @@ class tx_ttproducts extends tslib_pibase {
 						$content.=$this->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 					}
 				}
+				tx_ttproducts_div::setJS('email');  // other JavaScript checks can come here
 			} else {
 				$content.='Wrong parameters, GET/POST var \'tt_products\' was missing or no product with uid = '.intval($this->tt_product_single) .' found.';
 			}
@@ -799,14 +839,16 @@ class tx_ttproducts extends tslib_pibase {
 					$markerArray = $this->addGiftMarkers ($markerArray, $this->giftnumber);
 					$markerArray['###FORM_NAME###']= 'GiftForm';
 					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.GiftForm)'; 
-					tx_ttproducts_div::setJS('email'); // +++ 
 
 					$markerFramework = 'listFrameWork';
 					$t['listFrameWork'] = $this->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,array(),array());
 
 				} else {
-					$markerArray['###FORM_NAME###']= 'ShopForm';				
+					$markerArray['###FORM_NAME###']= 'ShopForm';
+					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.ShopForm)';				
 				}
+
+				tx_ttproducts_div::setJS('email');  
 				
 				$t['itemFrameWork'] = $this->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,array(),array());					
 			
@@ -2610,6 +2652,7 @@ class tx_ttproducts extends tslib_pibase {
 						}
 						$templateMarker = 'TRACKING_EMAILNOTIFY_TEMPLATE';
 						$this->sendNotifyEmail($recipient, $status_log_element, t3lib_div::_GP('tracking'), $orderRow, $templateCode, $templateMarker);
+						
 						$status_log[] = $status_log_element;
 						$update=1;
 					} else if ($val>=60 && $val<69) { //  60 -69 are special messages
@@ -2617,8 +2660,8 @@ class tx_ttproducts extends tslib_pibase {
 						$query = 'ordernumber=\''.$orderRow['uid'].'\'';
 						$giftRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products_gifts', $query);
 						while ($giftRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($giftRes)) {
-							$recipient = $giftRow['deliveryemail'];
-							$this->sendGiftEmail($recipient, $orderRecord['status_comment'], $giftRow, $templateCode, $templateMarker);
+							$recipient = $giftRow['deliveryemail'].','.$giftRow['personemail'];
+							$this->sendGiftEmail($recipient, $orderRecord['status_comment'], $giftRow, $templateCode, $templateMarker, $giftRow['personname'], $giftRow['personemail']);
 						}
 						$status_log[] = $status_log_element;
 						$update=1;
@@ -2978,7 +3021,7 @@ class tx_ttproducts extends tslib_pibase {
 	/**
 	 * Send notification email for tracking
 	 */
-	function sendNotifyEmail($recipient, $v, $tracking, $orderRow, $templateCode, $templateMarker, $sendername, $senderemail)	{
+	function sendNotifyEmail($recipient, $v, $tracking, $orderRow, $templateCode, $templateMarker, $sendername='', $senderemail='')	{
 		global $TSFE;
 
 		$uid = $this->getOrderNumber($orderRow['uid']);

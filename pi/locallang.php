@@ -4,12 +4,14 @@ $LOCAL_LANG = Array (
 	'default' => Array (
 		'open_bill' => 'Click here to open the bill',
 		'open_delivery' => 'Click here to open the delivery sheet',
+		'invalid email' => 'Invalid E-mail Address |! Please re-enter.',
 	),
 	'dk' => Array (
 	),
 	'de' => Array (
 		'open_bill' => 'zum Öffnen der Rechnung hier klicken',
 		'open_delivery' => 'zum Öffnen des Lieferscheins hier klicken',
+		'invalid email' => 'Ungültige E-mail Addresse |! Bitte neu eingeben.',
 	),
 	'no' => Array (
 	),
