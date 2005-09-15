@@ -388,7 +388,7 @@ class tx_ttproducts_basket_div {
 							$content.=tx_ttproducts_basket_div::getBasket('###BASKET_OVERVIEW_TEMPLATE###');
 						break;
 						case 'products_basket':
-							if (!$activityArr['products_info'] && !$activityArr['products_payment'] && !$activityArr['products_finalize'] && !$activityArr['products_redeem_gift'] ) {
+							if (!$activityArr['products_overview'] && !$activityArr['products_info'] && !$activityArr['products_payment'] && !$activityArr['products_finalize'] && !$activityArr['products_redeem_gift'] ) {
 								$content.=tx_ttproducts_basket_div::getBasket();
 							}
 						break;
