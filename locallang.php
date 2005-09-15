@@ -29,7 +29,7 @@ $LOCAL_LANG = Array (
 	),
 	'nl' => Array (
 		'plugins_title' => 'Productenlijst',
-		'plugins_description' => 'Voeg een productenlijst toe op de pagina. Dit is een deel van de ingebouwde winkelmodule. De pagina dient productelementen te bevatten in de database.',
+		'plugins_description' => 'Voeg een produktenlijst toe op de pagina. Dit is een deel van de ingebouwde winkelmodule. De pagina dient produktelementen te bevatten in de database.',
 	),
 	'cz' => Array (
 		'plugins_title' => 'Seznam produktù',
