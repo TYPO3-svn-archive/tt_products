@@ -287,10 +287,10 @@ class tx_ttproducts extends tslib_pibase {
 	function sort_codes($codes)	{
 		$retCodes = array();
 		$codeArray =  Array (
-			'1' => 'BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS', 
+			'1' =>  'OVERVIEW', 'BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS', 
 			'LISTNEWITEMS', 'SINGLE', 'SEARCH', 
 			'MEMO', 'INFO',
-			'PAYMENT', 'FINALIZE', 'OVERVIEW',
+			'PAYMENT', 'FINALIZE',
 			'TRACKING', 'BILL', 'DELIVERY',
 			'CURRENCY', 'ORDERS',
 			'LISTGIFTS', 'HELP',

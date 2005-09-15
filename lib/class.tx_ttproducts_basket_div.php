@@ -248,22 +248,6 @@ class tx_ttproducts_basket_div {
 
 		$activityArr=array();
 
-		if (t3lib_div::_GP('products_redeem_gift'))	{
-		 	$activityArr['products_redeem_gift']=true;
-		}
-		if (t3lib_div::_GP('products_overview'))	{
-			$activityArr['products_overview']=true;
-		} 
-		if (t3lib_div::_GP('products_info'))	{
-			$activityArr['products_info']=true;
-		}
-		if (t3lib_div::_GP('products_payment'))	{
-			$activityArr['products_payment']=true;
-		} 
-		if (t3lib_div::_GP('products_finalize'))	{
-			$activityArr['products_finalize']=true;
-		} 
-
 		if (is_array($codes)) {
 			foreach ($codes as $k => $code) {
 				if ($code=='BASKET')	{
@@ -280,11 +264,27 @@ class tx_ttproducts_basket_div {
 			}				
 		}
 
+		if (t3lib_div::_GP('products_redeem_gift'))	{
+		 	$activityArr['products_redeem_gift']=true;
+		}
+		if (t3lib_div::_GP('products_overview'))	{
+			$activityArr['products_overview']=true;
+		} 
+		if (t3lib_div::_GP('products_info'))	{
+			$activityArr['products_info']=true;
+		}
+		if (t3lib_div::_GP('products_payment'))	{
+			$activityArr['products_payment']=true;
+		} 
+		if (t3lib_div::_GP('products_finalize'))	{
+			$activityArr['products_finalize']=true;
+		} 
+
 		if (count($this->basketExt) && count($activityArr))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
 			
 			reset ($activityArr);
-			$error_tmpl = '';
+			$basket_tmpl = '';
 			if (count($activityArr)) {
 				$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
 				$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
@@ -297,9 +297,13 @@ class tx_ttproducts_basket_div {
 				foreach ($activityArr as $activity=>$value) {
 						// perform action
 					switch($activity)	{
+						case 'products_overview':
+							$this->load_noLinkExtCobj();
+							$basket_tmpl  = 'BASKET_OVERVIEW_TEMPLATE';
+						break;
 						case 'products_redeem_gift': 	// this shall never be the only activity
 							if (trim($TSFE->fe_user->user['username']) == '') {
-								$error_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
+								$basket_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
 							} else {
 								$uniqueId = t3lib_div::trimExplode ('-', $this->recs['tt_products']['gift_certificate_unique_number'], true);
 								
@@ -320,13 +324,15 @@ class tx_ttproducts_basket_div {
 									
 									$this->addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
 								} else {
-									$error_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
+									$basket_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
 								}
 							}
 						break;
 						case 'products_info':
-							$this->load_noLinkExtCobj();
-							$content.=tx_ttproducts_basket_div::getBasket('###BASKET_INFO_TEMPLATE###','',$mainMarkerArray);
+							if (!$activityArr['products_payment'] && !$activityArr['products_finalize']) {
+								$this->load_noLinkExtCobj();
+								$content.=tx_ttproducts_basket_div::getBasket('###BASKET_INFO_TEMPLATE###','',$mainMarkerArray);
+							}
 						break;
 						case 'products_payment':
 							$this->load_noLinkExtCobj();
@@ -383,10 +389,6 @@ class tx_ttproducts_basket_div {
 								$content = $this->cObj->substituteMarkerArray($content, $this->addURLMarkers(array()));
 							}
 						break;
-						case 'products_overview':
-							$this->load_noLinkExtCobj();
-							$content.=tx_ttproducts_basket_div::getBasket('###BASKET_OVERVIEW_TEMPLATE###');
-						break;
 						case 'products_basket':
 							if (!$activityArr['products_overview'] && !$activityArr['products_info'] && !$activityArr['products_payment'] && !$activityArr['products_finalize'] && !$activityArr['products_redeem_gift'] ) {
 								$content.=tx_ttproducts_basket_div::getBasket();
@@ -396,8 +398,8 @@ class tx_ttproducts_basket_div {
 							// nothing yet							
 						break;
 					} // switch
-					if ($error_tmpl) {
-						$content.=tx_ttproducts_basket_div::getBasket('###'.$error_tmpl.'###');
+					if ($basket_tmpl) {
+						$content.=tx_ttproducts_basket_div::getBasket('###'.$basket_tmpl.'###');
 						break; // foreach
 					}
 				} // foreach ($activityArr as $activity=>$value) 
