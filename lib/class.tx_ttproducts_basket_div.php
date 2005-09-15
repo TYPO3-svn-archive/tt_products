@@ -293,7 +293,6 @@ class tx_ttproducts_basket_div {
 		if (count($this->basketExt))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
 			
-			tx_ttproducts_basket_div::getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 			#debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
 
 			reset ($activityArr);
@@ -302,6 +301,7 @@ class tx_ttproducts_basket_div {
 				$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
 				$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
 				$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
+				tx_ttproducts_basket_div::getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 				$mainMarkerArray=array();
 				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';  // adding extra preprocessing CObject
 
