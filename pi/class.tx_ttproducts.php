@@ -326,11 +326,14 @@ class tx_ttproducts extends tslib_pibase {
 	 * currency selector
 	 */
 	function currency_selector($theCode)	{
+		global $TSFE;
+		
 		$currList = $this->exchangeRate->initCurrencies($this->BaseCurrency);
 		$jScript =  '	var currlink = new Array(); '.chr(10);
 		$index = 0;
 		foreach( $currList as $key => $value)	{
-			$url = $this->getLinkUrl('','',array('C' => 'C='.$key));
+			//$url = $this->getLinkUrl('','',array('C' => 'C='.$key));
+			$url = $this->pi_getPageLink($TSFE->id,'',$this->getLinkParams('',array('C' => 'C='.$key)));
 			$jScript .= '	currlink['.$index.'] = "'.$url.'"; '.chr(10) ;
 			$index ++ ;
 		}
@@ -396,7 +399,7 @@ class tx_ttproducts extends tslib_pibase {
 			if (!$TSFE->beUserLogin)	{$content = $this->cObj->substituteSubpart($content,'###ADMIN_CONTROL###','');}
 		}
 		$markerArray=array();
-		$markerArray['###FORM_URL###'] = $this->getLinkUrl();	// Add FORM_URL to globalMarkerArray, linking to self.
+		$markerArray['###FORM_URL###'] = $this->pi_getPageLink($TSFE->id,'',$this->getLinkParams()) ; // $this->getLinkUrl();	// Add FORM_URL to globalMarkerArray, linking to self.
 		$content= $this->cObj->substituteMarkerArray($content, $markerArray);
 
 		return $content;
@@ -462,7 +465,7 @@ class tx_ttproducts extends tslib_pibase {
 							$rc = $param['pid'];
 							break;
 						case 'pid':
-							$rc = intval ($row['pid']);
+							$rc = intval ($this->pageArray[$row['pid']]['pid']);
 							break;
 					}
 					break;  //ready with the foreach loop
@@ -506,7 +509,6 @@ class tx_ttproducts extends tslib_pibase {
 	function products_display($theCode, $memoItems='')	{
 		global $TSFE;
 
-
 /*
 			$query = "select tt_products.uid,tt_products.pid";
  			$query .= ",tt_products.title,tt_products.note";
@@ -542,11 +544,12 @@ class tx_ttproducts extends tslib_pibase {
 
 */
 
-		
-		$formUrl = $this->getLinkUrl($this->conf['PIDbasket']);
-		if (!$formUrl) {
-			$formUrl = $this->getLinkUrl(t3lib_div::_GP('backPID'));
-		}
+		$pid = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : (t3lib_div::_GP('backPID') ? t3lib_div::_GP('backPID') : $TSFE->id)); 
+		$formUrl = $this->pi_getPageLink($pid,'',$this->getLinkParams());  //  $this->getLinkUrl($this->conf['PIDbasket']);
+//		if (!$formUrl) {
+//			$formUrl = $this->pi_getPageLink(t3lib_div::_GP('backPID'),'',$this->getLinkParams());  // $this->getLinkUrl(t3lib_div::_GP('backPID'));
+//			debug ($formUrl, '$formUrl', __LINE__, __FILE__);
+//		}
 		if (($theCode=='SINGLE') || ($this->tt_product_single && !$this->conf['NoSingleViewOnList'])) {
 			// List single product:
 			
@@ -624,8 +627,8 @@ class tx_ttproducts extends tslib_pibase {
 
 					// Fill marker arrays
 				$wrappedSubpartArray=array();
-				$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'.$this->getLinkUrl(t3lib_div::_GP('backPID')).'">','</a>');
-
+				$pid = ( t3lib_div::_GP('backPID') ? t3lib_div::_GP('backPID') : $TSFE->id);
+				$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pi_getPageLink($pid,'',$this->getLinkParams())  /* $this->getLinkUrl(t3lib_div::_GP('backPID'))*/ .'">','</a>');
 
 				if( $datasheetFile == '' )  {
 					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
@@ -643,7 +646,7 @@ class tx_ttproducts extends tslib_pibase {
 
 				$markerArray['###FORM_URL###']=$formUrl.'&tt_products='.$this->tt_product_single ;
 
-				$url = $this->getLinkUrl('','tt_products');
+				$url = $this->pi_getPageLink($TSFE->id,'',$this->getLinkParams()) ; // $this->getLinkUrl('','tt_products');
 
 				$queryPrevPrefix = '';
 				$queryNextPrefix = '';
@@ -693,7 +696,7 @@ class tx_ttproducts extends tslib_pibase {
 						$markerArray = $this->addGiftMarkers ($markerArray, $giftnumber);
 						$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'].'_'.$giftnumber;
 						$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')'; 
-						$markerArray['###FORM_URL###'] = $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($extVars);
+						$markerArray['###FORM_URL###'] = $this->pi_getPageLink(t3lib_div::_GP('backPID'),'',$this->getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($extVars)))); // $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($extVars);
 
 						#debug ($TSFE->id, '$TSFE->id', __LINE__, __FILE__);
 						$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$extVars.']'; // here again, because this is here in ITEM_LIST view
@@ -718,7 +721,8 @@ class tx_ttproducts extends tslib_pibase {
 				$t['search'] = $this->cObj->getSubpart($this->templateCode,$this->spMarker('###ITEM_SEARCH###'));
 					// Substitute a few markers
 				$out=$t['search'];
-				$out=$this->cObj->substituteMarker($out, '###FORM_URL###', $this->getLinkUrl($this->conf['PIDsearch']));
+				$pid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $TSFE->id);
+				$out=$this->cObj->substituteMarker($out, '###FORM_URL###', $this->pi_getPageLink($pid,'',$this->getLinkParams())); // $this->getLinkUrl($this->conf['PIDsearch']));
 				$out=$this->cObj->substituteMarker($out, '###SWORDS###', htmlspecialchars(t3lib_div::_GP('swords')));
 					// Add to content
 				$content.=$out;
@@ -922,15 +926,19 @@ class tx_ttproducts extends tslib_pibase {
 							$wrappedSubpartArray=array();
 
 							$addQueryString=array();
-							$addQueryString['tt_products']= 'tt_products='.$row['uid'];
+							$addQueryString['tt_products']= intval($row['uid']);
 							$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
-							$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'.$this->getLinkUrl($pid,'',$addQueryString).'"'.$css_current.'>','</a>');
+							
+							$dum1 = $this->getLinkParams('', $addQueryString); // delete+++
+							$dum = $this->pi_getPageLink($pid,'',$dum1); // delete+++
+							$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $this->pi_getPageLink($pid,'',$this->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); // array('<a href="'.$this->getLinkUrl($pid,'',$addQueryString).'"'.$css_current.'>','</a>');
 							
 							if( $datasheetFile == '' )  {
 								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
 							}  else  {
 								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
 							}
+							
 
 							$item = $this->getItem($row);
 /* Added Bert: in stead of listImage -> Image, reason: images are read from directory */
@@ -968,7 +976,8 @@ class tx_ttproducts extends tslib_pibase {
 							}
 							$markerArray['###ITEM_SINGLE_POST_HTML###'] = $temp;
 
-							$markerArray['###FORM_MEMO###'] = $this->getLinkUrl($this->conf['PIDmemo']);
+							$pid = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
+							$markerArray['###FORM_MEMO###'] = $this->pi_getPageLink($pid,'',$this->getLinkParams()); //$this->getLinkUrl($this->conf['PIDmemo']);
 							// cuts note in list view
 							if (strlen($markerArray['###PRODUCT_NOTE###']) > $this->conf['max_note_length'])
 								$markerArray['###PRODUCT_NOTE###'] = substr($markerArray['###PRODUCT_NOTE###'], 0, $this->conf['max_note_length']) . '...';
@@ -1004,21 +1013,26 @@ class tx_ttproducts extends tslib_pibase {
 			}
 			if ($out)	{
 				// next / prev:
-				$url = $this->getLinkUrl('','begin_at');
+				// $url = $this->getLinkUrl('','begin_at'); 
 					// Reset:
 				$subpartArray=array();
 				$wrappedSubpartArray=array();
 				$markerArray=array();
+				$splitMark = md5(microtime());
 
 				if ($more)	{
 					$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
-					$wrappedSubpartArray['###LINK_NEXT###']=array('<a href="'.$url.'&begin_at='.$next.'">','</a>');
+					$splitMark = md5(microtime());
+					$tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,$this->getLinkParams('', array('begin_at' => $next))); 
+					
+					$wrappedSubpartArray['###LINK_NEXT###']=  explode ($splitMark, $tempUrl);  // array('<a href="'.$url.'&begin_at='.$next.'">','</a>');
 				} else {
 					$subpartArray['###LINK_NEXT###']='';
 				}
 				if ($begin_at)	{
 					$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
-					$wrappedSubpartArray['###LINK_PREV###']=array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
+					$tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,$this->getLinkParams('', array('begin_at' => $prev)));
+					$wrappedSubpartArray['###LINK_PREV###']=explode ($splitMark, $tempUrl); // array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
 				} else {
 					$subpartArray['###LINK_PREV###']='';
 				}
@@ -1031,7 +1045,8 @@ class tx_ttproducts extends tslib_pibase {
 							//	you may use this if you want to link to the current page also
 							//
 						} else {
-							$markerArray['###BROWSE_LINKS###'].= ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
+							$tempUrl = $this->pi_linkToPage((string)($i+1),$TSFE->id,$this->getLinkParams('', array('begin_at' => (string)($i * $this->config['limit']))));
+							$markerArray['###BROWSE_LINKS###'].= explode ($splitMark, $tempUrl); // ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
 						}
 					}
 				} else {
@@ -1134,7 +1149,7 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function generatePageArray()	{
 			// Get pages (for category titles)
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('title,uid', 'pages', 'uid IN ('.$this->pid_list.')');
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('title,uid,pid', 'pages', 'uid IN ('.$this->pid_list.')');
 		$this->pageArray = array();
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
 			$this->pageArray[$row['uid']] = $row;
@@ -1213,61 +1228,98 @@ class tx_ttproducts extends tslib_pibase {
 		return $where;
 	} // searchWhere
 
+
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function getLinkUrl($id='',$excludeList='',$addQueryString=array())	{
+	function getLinkParams($excludeList='',$addQueryString=array()) {
 		global $TSFE;
-		$rc = '';
-
 		$queryString=array();
-		$queryString['id'] = 'id=' . ($id ? $id : $TSFE->id);
-		$queryString['type']= $TSFE->type ? 'type='.$TSFE->type : '';
-		$queryString['L']= t3lib_div::GPvar('L') ? 'L='.t3lib_div::GPvar('L') : '';
-		$queryString['C']= t3lib_div::GPvar('C') ? 'C='.t3lib_div::GPvar('C') : $this->currency ? 'C='.$this->currency : '';
-		if( isset($addQueryString['C']) )  {
-			$queryString['C'] = $addQueryString['C'] ;
-			unset( $addQueryString['C'] );
+		$queryString['backPID']= $TSFE->id;
+		$temp = t3lib_div::GPvar('C') ? t3lib_div::GPvar('C') : $this->currency;
+		if ($temp)	{
+			$queryString['C'] = $temp;
 		}
-		$queryString['backPID']= 'backPID='.$TSFE->id;
-		$queryString['begin_at']= t3lib_div::_GP('begin_at') ? 'begin_at='.t3lib_div::_GP('begin_at') : '';
-		$queryString['swords']= t3lib_div::_GP('swords') ? 'swords='.rawurlencode(t3lib_div::_GP('swords')) : '';
-		$queryString['newitemdays']= t3lib_div::GPvar('newitemdays') ? 'newitemdays='.rawurlencode(stripslashes(t3lib_div::GPvar('newitemdays'))) : '';
-
+		$temp =   t3lib_div::_GP('begin_at');
+		if ($temp) {
+			$queryString['begin_at'] = $temp;
+		}
+		$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
+		if ($temp) {
+			$queryString['swords'] = $temp;
+		} 
+		$temp = t3lib_div::GPvar('newitemdays') ? rawurlencode(stripslashes(t3lib_div::GPvar('newitemdays'))) : '';
+		if ($temp) {
+			$queryString['newitemdays'] = $temp;
+		} 
+		foreach ($addQueryString as $param => $value){
+			$queryString[$param] = $value;
+		}
 		reset($queryString);
 		while(list($key,$val)=each($queryString))	{
 			if (!$val || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
 				unset($queryString[$key]);
 			}
-		}
+		}	
+	
+		return $queryString;
+	}
 
-		if ($TSFE->config['config']['simulateStaticDocuments'])   {
-			$pageId = $id ? $id : $TSFE->id ;
-			$pageType = $TSFE->type ;
-			unset($queryString['id']);
-			unset($queryString['type']);
-
-			$allQueryString = implode($queryString,'&');
-			if( $addQueryString )	{
-				$allQueryString .= '&'.implode($addQueryString,'&');
-			}
-            $rc = $TSFE->makeSimulFileName('', $pageId, $pageType, $allQueryString ).'.html';
-            if (!$this->config['config']['simulateStaticDocuments_pEnc']) {
-            	// add the parameters
-            	$rc .= '?'.$allQueryString;
-            }
-		}
-		else	{
-			$allQueryString = implode($queryString,'&');
-			if( $addQueryString )	{
-				$allQueryString .= '&'.implode($addQueryString,'&');
-			}
-			$rc = $TSFE->absRefPrefix.'index.php?'.$allQueryString;
-		}
-		
-		return $rc;
-
-	} // getLinkUrl
+//	/**
+//	 * Returns a url for use in forms and links
+//	 */
+//	function getLinkUrl($id='',$excludeList='',$addQueryString=array())	{
+//		global $TSFE;
+//		$rc = '';
+//
+//		$queryString=array();
+//		$queryString['id'] = 'id=' . ($id ? $id : $TSFE->id);
+//		$queryString['type']= $TSFE->type ? 'type='.$TSFE->type : '';
+//		$queryString['L']= t3lib_div::GPvar('L') ? 'L='.t3lib_div::GPvar('L') : '';
+//		$queryString['C']= t3lib_div::GPvar('C') ? 'C='.t3lib_div::GPvar('C') : $this->currency ? 'C='.$this->currency : '';
+//		if( isset($addQueryString['C']) )  {
+//			$queryString['C'] = $addQueryString['C'] ;
+//			unset( $addQueryString['C'] );
+//		}
+//		$queryString['backPID']= 'backPID='.$TSFE->id;
+//		$queryString['begin_at']= t3lib_div::_GP('begin_at') ? 'begin_at='.t3lib_div::_GP('begin_at') : '';
+//		$queryString['swords']= t3lib_div::_GP('swords') ? 'swords='.rawurlencode(t3lib_div::_GP('swords')) : '';
+//		$queryString['newitemdays']= t3lib_div::GPvar('newitemdays') ? 'newitemdays='.rawurlencode(stripslashes(t3lib_div::GPvar('newitemdays'))) : '';
+//
+//		reset($queryString);
+//		while(list($key,$val)=each($queryString))	{
+//			if (!$val || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
+//				unset($queryString[$key]);
+//			}
+//		}
+//
+//		if ($TSFE->config['config']['simulateStaticDocuments'])   {
+//			$pageId = $id ? $id : $TSFE->id ;
+//			$pageType = $TSFE->type ;
+//			unset($queryString['id']);
+//			unset($queryString['type']);
+//
+//			$allQueryString = implode($queryString,'&');
+//			if( $addQueryString )	{
+//				$allQueryString .= '&'.implode($addQueryString,'&');
+//			}
+//            $rc = $TSFE->makeSimulFileName('', $pageId, $pageType, $allQueryString ).'.html';
+//            if (!$this->config['config']['simulateStaticDocuments_pEnc']) {
+//            	// add the parameters
+//            	$rc .= '?'.$allQueryString;
+//            }
+//		}
+//		else	{
+//			$allQueryString = implode($queryString,'&');
+//			if( $addQueryString )	{
+//				$allQueryString .= '&'.implode($addQueryString,'&');
+//			}
+//			$rc = $TSFE->absRefPrefix.'index.php?'.$allQueryString;
+//		}
+//		
+//		return $rc;
+//
+//	} // getLinkUrl
 
 
 	/**
@@ -1592,10 +1644,14 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function addURLMarkers($markerArray)	{
 			// Add's URL-markers to the $markerArray and returns it
-		$markerArray['###FORM_URL###'] = $this->getLinkUrl($this->conf['PIDbasket']);
-		$markerArray['###FORM_URL_INFO###'] = $this->getLinkUrl($this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $this->conf['PIDbasket']);
-		$markerArray['###FORM_URL_FINALIZE###'] = $this->getLinkUrl($this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $this->conf['PIDbasket']);
-		$markerArray['###FORM_URL_THANKS###'] = $this->getLinkUrl($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDbasket']);
+		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
+		$markerArray['###FORM_URL###'] = $this->pi_getPageLink($pid,'',$this->getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDbasket']);
+		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] :$TSFE->id));
+		$markerArray['###FORM_URL_INFO###'] = $this->pi_getPageLink($pid,'',$this->getLinkParams()) ; // $this->getLinkUrl($this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $this->conf['PIDbasket']);
+		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
+		$markerArray['###FORM_URL_FINALIZE###'] = $this->pi_getPageLink($pid,'',$this->getLinkParams()) ;// $this->getLinkUrl($this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $this->conf['PIDbasket']);
+		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
+		$markerArray['###FORM_URL_THANKS###'] = $this->pi_getPageLink($pid,'',$this->getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDbasket']);
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 		if ($this->basketExtra['payment.']['handleURL'])	{	// This handleURL is called instead of the THANKS-url in order to let handleScript process the information if payment by credit card or so.
 			$markerArray['###FORM_URL_THANKS###'] = $this->basketExtra['payment.']['handleURL'];

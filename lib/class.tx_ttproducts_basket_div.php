@@ -78,13 +78,9 @@ class tx_ttproducts_basket_div {
 		$sameGiftData = true;
 		$identGiftnumber = 0;
 		if ($newGiftData) {
-			#debug ($newGiftData, '$newGiftData', __LINE__, __FILE__);
 	 		$giftnumber = t3lib_div::_GP('giftnumber');
 			if (!$updateMode) {
 			 	if (is_array($this->basketExt['gift'])) {
-			 		#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
-			 		#debug ($updateMode, '$updateMode', __LINE__, __FILE__);
-			 		#debug ($giftnumber, '$giftnumber', __LINE__, __FILE__);
 					foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
 						$sameGiftData = true;
 						foreach ($rec as $field => $value) {
@@ -110,7 +106,6 @@ class tx_ttproducts_basket_div {
 				}
 			} else {
 				$this->basketExt['gift'][$giftnumber] = $newGiftData;
-				#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
 				$count = 0;
 				foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
 					$count += $rec['item'][$uid][$extVars];
@@ -164,8 +159,6 @@ class tx_ttproducts_basket_div {
 		// than to recreate the array
 		$basketExtNew = array();
 		reset($this->basketExt);
-		#debug ($this->basketExt, '$this->basketExt', __LINE__, __FILE__);
-		#debug ($this->basketExt['gift'][1]['item'], '$this->basketExt[\'gift\'][1][\'item\']', __LINE__, __FILE__);
 		while(list($tmpUid,$tmpSubArr)=each($this->basketExt)) {
 			while(list($tmpExtVar,$tmpCount)=each($tmpSubArr)) {
 				if ($tmpCount > 0) {
@@ -287,14 +280,9 @@ class tx_ttproducts_basket_div {
 			}				
 		}
 
-		#debug ($activityArr, '$activityArr', __LINE__, __FILE__);
-
-		
-		if (count($this->basketExt))	{	// If there is content in the shopping basket, we are going display some basket code
+		if (count($this->basketExt) && count($activityArr))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
 			
-			#debug ($this->itemArray, '$this->itemArray', __LINE__, __FILE__);
-
 			reset ($activityArr);
 			$error_tmpl = '';
 			if (count($activityArr)) {
@@ -302,6 +290,7 @@ class tx_ttproducts_basket_div {
 				$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
 				$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
 				tx_ttproducts_basket_div::getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
+
 				$mainMarkerArray=array();
 				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';  // adding extra preprocessing CObject
 
@@ -416,12 +405,12 @@ class tx_ttproducts_basket_div {
 				// nothing. no BASKET code or similar thing
 			} 
 		} else { // if (count($this->basketExt))
-			if ($activityArr['products_basket']) {
-				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_TEMPLATE_EMPTY###'));
-			}
 			if ($activityArr['products_overview']) {
 				$this->load_noLinkExtCobj();
 				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_OVERVIEW_EMPTY###'));
+			}
+			else if ($activityArr['products_basket']) {
+				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_TEMPLATE_EMPTY###'));
 			}
 		}
 		$markerArray=array(); 
@@ -757,7 +746,9 @@ class tx_ttproducts_basket_div {
 					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->priceFormat($actItem['totalNoTax']);
 	
 					$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
-					$wrappedSubpartArray['###LINK_ITEM###']=array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
+					$splitMark = md5(microtime());
+					$tempUrl = $this->pi_linkToPage($splitMark,$pid,$this->getLinkParams('', array('tt_products' => $actItem['rec']['uid'], 'ttp_extvars' => htmlspecialchars($actItem['rec']['extVars']))));
+					$wrappedSubpartArray['###LINK_ITEM###']= explode ($splitMark, $tempUrl); // array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
 						
 						// Substitute
 					$tempContent = $this->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
@@ -788,7 +779,12 @@ class tx_ttproducts_basket_div {
 		// This is for the Basketoverview
 		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->calculatedArray['count'];
 		$markerArray['###IMAGE_BASKET###'] = '<img src="'.$this->conf['basketPic'].'">';
-		$wrappedSubpartArray['###LINK_BASKET###']= array('<a href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</a>');
+		
+		$splitMark = md5(microtime());
+		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
+		$tempUrl = $this->pi_linkToPage($splitMark,$pid,$this->getLinkParams());
+		$wrappedSubpartArray['###LINK_BASKET###'] = explode ($splitMark, $tempUrl);
+		//$wrappedSubpartArray['###LINK_BASKET###']= array('<a href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</a>');
 
 		$markerArray['###PRICE_SHIPPING_PERCENT###'] = $perc;
 		$markerArray['###PRICE_SHIPPING_TAX###'] = $this->priceFormat($this->calculatedArray['priceTax']['shipping']);
