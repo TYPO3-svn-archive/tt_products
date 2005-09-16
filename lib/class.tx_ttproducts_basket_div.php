@@ -749,9 +749,11 @@ class tx_ttproducts_basket_div {
 	
 					$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
 					$splitMark = md5(microtime());
-					$tempUrl = $this->pi_linkToPage($splitMark,$pid,$this->getLinkParams('', array('tt_products' => $actItem['rec']['uid'], 'ttp_extvars' => htmlspecialchars($actItem['rec']['extVars']))));
-					$wrappedSubpartArray['###LINK_ITEM###']= explode ($splitMark, $tempUrl); // array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
-						
+					$addQueryString=array();
+					$addQueryString['tt_products'] = intval($actItem['rec']['uid']);
+					$addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
+					$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pi_getPageLink($pid,'',$this->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); // // array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
+					
 						// Substitute
 					$tempContent = $this->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
 

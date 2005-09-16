@@ -30,6 +30,8 @@ tt_content:list_type',
 		'.details' => 'Diese Tabelle enthält die Produkte, die standardmäßig im Shop System zur Verfügung stehen.',
 	),
 	'no' => Array (
+		'.description' => 'Innebygde butikkprodukter',
+		'.details' => 'Denne tabellen inneholder produktene i standardversjonen av TypoScript-butikksystemet.',
 	),
 	'it' => Array (
 	),

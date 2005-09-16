@@ -441,6 +441,7 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function getPID($conf, $confExt, $row) {
 		$rc = 0;
+		debug ($confExt, '$confExt', __LINE__, __FILE__);
 		if ($confExt) {
 			foreach ($confExt as $k1 => $param) {
 				$type  = $param['type'];
@@ -465,7 +466,9 @@ class tx_ttproducts extends tslib_pibase {
 							$rc = $param['pid'];
 							break;
 						case 'pid':
+							debug ($row['pid'], '$row[\'pid\']', __LINE__, __FILE__);
 							$rc = intval ($this->pageArray[$row['pid']]['pid']);
+							debug ($rc, '$rc', __LINE__, __FILE__);
 							break;
 					}
 					break;  //ready with the foreach loop
@@ -929,8 +932,6 @@ class tx_ttproducts extends tslib_pibase {
 							$addQueryString['tt_products']= intval($row['uid']);
 							$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
 							
-							$dum1 = $this->getLinkParams('', $addQueryString); // delete+++
-							$dum = $this->pi_getPageLink($pid,'',$dum1); // delete+++
 							$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $this->pi_getPageLink($pid,'',$this->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); // array('<a href="'.$this->getLinkUrl($pid,'',$addQueryString).'"'.$css_current.'>','</a>');
 							
 							if( $datasheetFile == '' )  {
