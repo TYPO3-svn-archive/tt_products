@@ -21,7 +21,10 @@ $LOCAL_LANG = Array (
 		'invalid email' => 'Indirizzo E-mail | invalido! Reinseriscilo.',
 	),
 	'fr' => Array (
-	),
+	    'open_bill' => 'Cliquez ici pour ouvrir la facture',
+	    'open_delivery' => 'Cliquez ici pour ouvrir le bordereau de livraison',
+	    'invalid email' => 'E-mail | non valide! réessayez svp.',
+	), 
 	'es' => Array (
 	),
 	'nl' => Array (

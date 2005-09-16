@@ -41,6 +41,8 @@ $LOCAL_LANG = Array (
 	'fi' => Array (
 	),
 	'fr' => Array (
+	    '.description' => 'Catégories du magasin.',
+	    '.details' => 'Les catégories ne sont utilisées que si le plugin est configuré.',
 	),
 	'gl' => Array (
 	),

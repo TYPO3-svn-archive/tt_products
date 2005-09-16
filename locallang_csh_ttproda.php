@@ -21,7 +21,9 @@ $LOCAL_LANG = Array (
 	'it' => Array (
 	),
 	'fr' => Array (
-	),
+	    '.description' => 'Articles du magasin.',
+	    '.details' => 'Les articles sont utilisés pour décliner les produits. Vous ne pouvez evidemment saisir l\'article qu\'une fois le produit correspondant saisi.',
+	), 
 	'es' => Array (
 	),
 	'nl' => Array (
