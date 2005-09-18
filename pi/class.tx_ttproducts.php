@@ -45,7 +45,7 @@
  * @see static_template "plugin.tt_products"
  * @see TSref.pdf
  *
- *  
+ *
  */
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
@@ -140,7 +140,7 @@ class tx_ttproducts extends tslib_pibase {
 			$result = $this->exchangeRate->getExchangeRate($this->baseCurrency, $this->currency) ;
 			$this->xrate = floatval ( $result['rate'] );
 		}
-		
+
 		if (t3lib_extMgm::isLoaded('sr_static_info')) {
 			include_once(t3lib_extMgm::extPath('sr_static_info').'pi1/class.tx_srstaticinfo_pi1.php');
 			// Initialise static info library
@@ -153,9 +153,9 @@ class tx_ttproducts extends tslib_pibase {
 			$this->pi_initPIflexForm();
 			$this->config['code'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'display_mode');
 		} else {
-			$this->config['code'] = strtoupper(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));		
+			$this->config['code'] = strtoupper(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));
 		}
-		
+
 		$this->config['limit'] = $this->conf['limit'] ? $this->conf['limit'] : 50;
 		$this->config['limitImage'] = t3lib_div::intInRange($this->conf['limitImage'],0,9);
 		$this->config['limitImage'] = $this->config['limitImage'] ? $this->config['limitImage'] : 1;
@@ -176,7 +176,7 @@ class tx_ttproducts extends tslib_pibase {
 			$this->config['code']='SINGLE';
 			$this->tt_product_single = true;
 		} else {
-			$this->tt_product_single = t3lib_div::_GP('tt_products');			
+			$this->tt_product_single = t3lib_div::_GP('tt_products');
 		}
 
 			// template file is fetched. The whole template file from which the various subpart are extracted.
@@ -214,7 +214,7 @@ class tx_ttproducts extends tslib_pibase {
 			$updateMode = 1;
 		else
 			$updateMode = 0;
-	
+
 		tx_ttproducts_basket_div::initBasket($TSFE->fe_user->getKey('ses','recs'), $updateMode); // Must do this to initialize the basket...
 
 		// *************************************
@@ -254,7 +254,7 @@ class tx_ttproducts extends tslib_pibase {
 				break;
 				case 'CURRENCY':
 					$content.=$this->currency_selector($theCode);
-				break;	
+				break;
 /* Added Els: case ORDERS line 253-255 */
 				case 'ORDERS':
 					$content.=$this->orders_display($theCode);
@@ -287,8 +287,8 @@ class tx_ttproducts extends tslib_pibase {
 	function sort_codes($codes)	{
 		$retCodes = array();
 		$codeArray =  Array (
-			'1' =>  'OVERVIEW', 'BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS', 
-			'LISTNEWITEMS', 'SINGLE', 'SEARCH', 
+			'1' =>  'OVERVIEW', 'BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS',
+			'LISTNEWITEMS', 'SINGLE', 'SEARCH',
 			'MEMO', 'INFO',
 			'PAYMENT', 'FINALIZE',
 			'TRACKING', 'BILL', 'DELIVERY',
@@ -305,8 +305,8 @@ class tx_ttproducts extends tslib_pibase {
 				}
 			}
 		}
-		
-		return ($retCodes);	
+
+		return ($retCodes);
 	}
 
 
@@ -327,7 +327,7 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function currency_selector($theCode)	{
 		global $TSFE;
-		
+
 		$currList = $this->exchangeRate->initCurrencies($this->BaseCurrency);
 		$jScript =  '	var currlink = new Array(); '.chr(10);
 		$index = 0;
@@ -462,7 +462,7 @@ class tx_ttproducts extends tslib_pibase {
 
 				if ($isValid == true) {
 					switch ($type) {
-						case 'sql':					
+						case 'sql':
 							$rc = $param['pid'];
 							break;
 						case 'pid':
@@ -485,21 +485,21 @@ class tx_ttproducts extends tslib_pibase {
 
 	/**
 	 * returns if the product has been put into the basket as a gift
-	 * 
+	 *
 	 * @param	integer		uid of the product
 	 * @param	integer		variant of the product only size is used now --> TODO
-	 * @return	array		all gift numbers for this product		
+	 * @return	array		all gift numbers for this product
 	 */
 	function getGiftNumbers($uid, $variant)	{
 		$giftArray = array();
-		
+
 		if ($this->basketExt['gift']) {
 			foreach ($this->basketExt['gift'] as $giftnumber => $giftItem) {
 				if ($giftItem['item'][$uid][$variant]) {
 					$giftArray [] = $giftnumber;
 				}
 			}
-		} 
+		}
 
 		return $giftArray;
 	}
@@ -547,7 +547,7 @@ class tx_ttproducts extends tslib_pibase {
 
 */
 
-		$pid = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : (t3lib_div::_GP('backPID') ? t3lib_div::_GP('backPID') : $TSFE->id)); 
+		$pid = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : (t3lib_div::_GP('backPID') ? t3lib_div::_GP('backPID') : $TSFE->id));
 		$formUrl = $this->pi_getPageLink($pid,'',$this->getLinkParams());  //  $this->getLinkUrl($this->conf['PIDbasket']);
 //		if (!$formUrl) {
 //			$formUrl = $this->pi_getPageLink(t3lib_div::_GP('backPID'),'',$this->getLinkParams());  // $this->getLinkUrl(t3lib_div::_GP('backPID'));
@@ -555,13 +555,13 @@ class tx_ttproducts extends tslib_pibase {
 //		}
 		if (($theCode=='SINGLE') || ($this->tt_product_single && !$this->conf['NoSingleViewOnList'])) {
 			// List single product:
-			
+
 			if (!$this->tt_product_single) {
-				$this->tt_product_single = $this->conf['defaultProductID'];	
+				$this->tt_product_single = $this->conf['defaultProductID'];
 			}
-			
-			$extVars= t3lib_div::_GP('ttp_extvars'); 
-			
+
+			$extVars= t3lib_div::_GP('ttp_extvars');
+
 				// performing query:
 			$this->setPidlist($this->config['storeRootPid']);
 			$this->initRecursive(999);
@@ -576,7 +576,7 @@ class tx_ttproducts extends tslib_pibase {
 			} else {
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 			}
-			
+
 			if ($extVars) {
 				tx_ttproducts_article_div::getRowFromVariant ($row, $extVars);
 			}
@@ -591,7 +591,7 @@ class tx_ttproducts extends tslib_pibase {
 				$giftNumberArray = $this->getGiftNumbers ($row['uid'], $extVars);
 
 		#debug ($giftNumberArray, '$giftNumberArray', __LINE__, __FILE__);
-			
+
 				if ($this->config['displayCurrentRecord'])	{
 					$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 				} else if (count($giftNumberArray)) {
@@ -600,12 +600,12 @@ class tx_ttproducts extends tslib_pibase {
 					$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
 				}
 				$itemFrameWork = $this->cObj->getSubpart($this->templateCode,$this->spMarker($itemFrameTemplate));
-				
-				
+
+
 				if (count($giftNumberArray)) {
 					$personDataFrameWork = $this->cObj->getSubpart($itemFrameWork,'###PERSON_DATA###');
 					// the itemFramework is a smaller part here
-					$itemFrameWork = $this->cObj->getSubpart($itemFrameWork,'###PRODUCT_DATA###');					
+					$itemFrameWork = $this->cObj->getSubpart($itemFrameWork,'###PRODUCT_DATA###');
 				}
 
 				// set the title of the single view
@@ -614,7 +614,6 @@ class tx_ttproducts extends tslib_pibase {
 				} elseif ($this->conf['substitutePagetitle']) {
 					$TSFE->page['title'] = $row['title'];
 				}
-
 				$catTitle= $this->pageArray[$row['pid']]['title'].($row['category']?'/'.$this->categories[$row['category']]:'');
 
 /*
@@ -642,10 +641,10 @@ class tx_ttproducts extends tslib_pibase {
 				$item = $this->getItem($row);
 				$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->tt_product_single);
 				$markerArray = $this->getItemMarkerArray ($item,$catTitle,$this->config['limitImage'],'image', $forminfoArray);
-				
+
 				$subpartArray = array();
 
-				$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];				
+				$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];
 
 				$markerArray['###FORM_URL###']=$formUrl.'&tt_products='.$this->tt_product_single ;
 
@@ -689,16 +688,16 @@ class tx_ttproducts extends tslib_pibase {
 
 					// Substitute
 				$content= $this->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
-				
+
 				if ($personDataFrameWork) {
-										
+
 					$subpartArray = array();
 					$wrappedSubpartArray=array();
 					foreach ($giftNumberArray as $k => $giftnumber) {
 						#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
 						$markerArray = $this->addGiftMarkers ($markerArray, $giftnumber);
 						$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'].'_'.$giftnumber;
-						$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')'; 
+						$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')';
 						$markerArray['###FORM_URL###'] = $this->pi_getPageLink(t3lib_div::_GP('backPID'),'',$this->getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($extVars)))); // $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($extVars);
 
 						#debug ($TSFE->id, '$TSFE->id', __LINE__, __FILE__);
@@ -755,7 +754,7 @@ class tx_ttproducts extends tslib_pibase {
 				$where = 'AND tstamp >= '.$temptime;
 			}
 			if ($theCode=='MEMO') {
-				$where = ' AND '.($memoItems != '' ? 'uid IN ('.$memoItems.')' : '1=0' ); 
+				$where = ' AND '.($memoItems != '' ? 'uid IN ('.$memoItems.')' : '1=0' );
 			}
 
 			$begin_at=t3lib_div::intInRange(t3lib_div::_GP('begin_at'),0,100000);
@@ -841,24 +840,24 @@ class tx_ttproducts extends tslib_pibase {
 
 				$markerArray=array();
 				$markerArray['###FORM_URL###']=$formUrl; // Applied later as well.
-				
+
 				if ($theCode=='LISTGIFTS') {
 					$markerArray = $this->addGiftMarkers ($markerArray, $this->giftnumber);
 					$markerArray['###FORM_NAME###']= 'GiftForm';
-					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.GiftForm)'; 
+					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.GiftForm)';
 
 					$markerFramework = 'listFrameWork';
 					$t['listFrameWork'] = $this->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,array(),array());
 
 				} else {
 					$markerArray['###FORM_NAME###']= 'ShopForm';
-					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.ShopForm)';				
+					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.ShopForm)';
 				}
 
-				tx_ttproducts_div::setJS('email');  
-				
-				$t['itemFrameWork'] = $this->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,array(),array());					
-			
+				tx_ttproducts_div::setJS('email');
+
+				$t['itemFrameWork'] = $this->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,array(),array());
+
 				$pageArr=explode(',',$this->pid_list);
 
 				$currentP='';
@@ -931,15 +930,15 @@ class tx_ttproducts extends tslib_pibase {
 							$addQueryString=array();
 							$addQueryString['tt_products']= intval($row['uid']);
 							$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
-							
+
 							$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $this->pi_getPageLink($pid,'',$this->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); // array('<a href="'.$this->getLinkUrl($pid,'',$addQueryString).'"'.$css_current.'>','</a>');
-							
+
 							if( $datasheetFile == '' )  {
 								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
 							}  else  {
 								$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
 							}
-							
+
 
 							$item = $this->getItem($row);
 /* Added Bert: in stead of listImage -> Image, reason: images are read from directory */
@@ -948,7 +947,7 @@ class tx_ttproducts extends tslib_pibase {
 							if ($theCode=='LISTGIFTS') {
 								$markerArray = $this->addGiftMarkers ($markerArray, $this->giftnumber);
 							}
-							
+
 							$subpartArray = array();
 
 							if (!$this->conf['displayBasketColumns'])
@@ -956,7 +955,7 @@ class tx_ttproducts extends tslib_pibase {
 								$markerArray['###FORM_URL###']=$formUrl; // Applied later as well.
 								$markerArray['###FORM_NAME###']='item_'.$iCount;
 							}
-														
+
 	                        // alternating css-class eg. for different background-colors
 						    $even_uneven = (($iCount & 1) == 0 ? $this->conf['CSSRowEven'] : $this->conf['CSSRowUnEven']);
 
@@ -1014,7 +1013,7 @@ class tx_ttproducts extends tslib_pibase {
 			}
 			if ($out)	{
 				// next / prev:
-				// $url = $this->getLinkUrl('','begin_at'); 
+				// $url = $this->getLinkUrl('','begin_at');
 					// Reset:
 				$subpartArray=array();
 				$wrappedSubpartArray=array();
@@ -1024,8 +1023,8 @@ class tx_ttproducts extends tslib_pibase {
 				if ($more)	{
 					$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
 					$splitMark = md5(microtime());
-					$tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,$this->getLinkParams('', array('begin_at' => $next))); 
-					
+					$tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,$this->getLinkParams('', array('begin_at' => $next)));
+
 					$wrappedSubpartArray['###LINK_NEXT###']=  explode ($splitMark, $tempUrl);  // array('<a href="'.$url.'&begin_at='.$next.'">','</a>');
 				} else {
 					$subpartArray['###LINK_NEXT###']='';
@@ -1057,7 +1056,7 @@ class tx_ttproducts extends tslib_pibase {
 				$subpartArray['###ITEM_CATEGORY_AND_ITEMS###']=$out;
 				$markerArray['###FORM_URL###']=$formUrl;      // Applied it here also...
 				$markerArray['###ITEMS_SELECT_COUNT###']=$productsCount;
-				
+
 				$content.= $this->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 			} elseif ($where)	{
 				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###ITEM_SEARCH_EMPTY###'));
@@ -1248,11 +1247,11 @@ class tx_ttproducts extends tslib_pibase {
 		$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
 		if ($temp) {
 			$queryString['swords'] = $temp;
-		} 
+		}
 		$temp = t3lib_div::GPvar('newitemdays') ? rawurlencode(stripslashes(t3lib_div::GPvar('newitemdays'))) : '';
 		if ($temp) {
 			$queryString['newitemdays'] = $temp;
-		} 
+		}
 		foreach ($addQueryString as $param => $value){
 			$queryString[$param] = $value;
 		}
@@ -1261,8 +1260,8 @@ class tx_ttproducts extends tslib_pibase {
 			if (!$val || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
 				unset($queryString[$key]);
 			}
-		}	
-	
+		}
+
 		return $queryString;
 	}
 
@@ -1317,7 +1316,7 @@ class tx_ttproducts extends tslib_pibase {
 //			}
 //			$rc = $TSFE->absRefPrefix.'index.php?'.$allQueryString;
 //		}
-//		
+//
 //		return $rc;
 //
 //	} // getLinkUrl
@@ -1509,8 +1508,18 @@ class tx_ttproducts extends tslib_pibase {
 		$markerArray['###PRODUCT_WWW###'] = $row['www'];
 		$markerArray['###PRODUCT_ID###'] = $row['uid'];
 
+/* Added Els4: cur_sym moved from after product_special to this place, necessary to put currency symbol */
+		$markerArray['###CUR_SYM###'] = ' '.($this->conf['currencySymbol'] ? $this->conf['currencySymbol'] : '');
+
 		$markerArray['###PRICE_TAX###'] = $this->printPrice($this->priceFormat($item['priceTax']));
 		$markerArray['###PRICE_NO_TAX###'] = $this->printPrice($this->priceFormat($item['priceNoTax']));
+
+/* Added els4: printing of pric_no_tax with currency symbol (used in totaal-_.tmpl and winkelwagen.tmpl) */
+		if ($row['category'] == $this->conf['creditsCategory']) {
+			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $this->printPrice($item['priceNoTax']);
+		} else {
+			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$this->printPrice($this->priceFormat($item['priceNoTax']));
+		}
 
 		$oldPrice = $this->printPrice($this->priceFormat($this->getPrice($row['price'],1,$row['tax'])));
 		$oldPriceNoTax = $this->printPrice($this->priceFormat($this->getPrice($row['price'],0,$row['tax'])));
@@ -1520,16 +1529,37 @@ class tx_ttproducts extends tslib_pibase {
 		}
 
 		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
-		/* Added els3: if oldpricenotax is empty do print other marker */
-		//$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
+
+/* Added els4: changed whole block: if OLD_PRICE_NO_TAX = 0 then print PRICE_NO_TAX and set PRICE_NO_TAX to empty,
+/* Added els4: Markers SUB_NO_DISCOUNT and SUB_DISCOUNT used in detail template
+		calculating with $item['priceNoTax'] */
+/* Added els4: Exceptions for category = kurkenshop */
 		if ($oldPriceNoTax == '0.00') {
-			$markerArray['###OLD_PRICE_NO_TAX_CLASS###'] = 'prijsvoorleeg';
-			$markerArray['###OLD_PRICE_NO_TAX###'] = '-';
+			$markerArray['###OLD_PRICE_NO_TAX_CLASS###'] = 'rightalign';
+			$markerArray['###OLD_PRICE_NO_TAX###'] = $markerArray['###PRICE_NO_TAX###'];
+			if ($row['category'] == $this->conf['creditsCategory']) {
+				$markerArray['###CUR_SYM###'] ="";
+				$markerArray['###OLD_PRICE_NO_TAX###'] = $item['priceNoTax']."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
+			}
+			$markerArray['###PRICE_NO_TAX###'] = "";
+			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = "";
+			$markerArray['###DETAIL_PRICE_ITEMLIST###'] = '<span class="flesprijs">flesprijs&nbsp;'.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###OLD_PRICE_NO_TAX###'].'</span>';
+			$markerArray['###DETAIL_PRICE_ITEMLIST_PRESENT###'] = '<span class="flesprijs">prijs&nbsp;'.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###OLD_PRICE_NO_TAX###'].'</span>';
+			$markerArray['###DETAIL_PRICE_ITEMSINGLE###'] = '<p><span class="flesprijs"><nobr>flesprijs&nbsp;'.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###OLD_PRICE_NO_TAX###'].'</nobr></span></p>';
+			$markerArray['###DETAIL_PRICE_ITEMSINGLE_PRESENT###'] = '<p><span class="flesprijs"><nobr>prijs&nbsp;'.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###OLD_PRICE_NO_TAX###'].'</nobr></span></p>';
 		} else {
 			$markerArray['###OLD_PRICE_NO_TAX_CLASS###'] = 'prijsvan';
-			$markerArray['###OLD_PRICE_NO_TAX###'] = '&euro; '.$oldPriceNoTax;
+			$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
+			if ($row['category'] == $this->conf['creditsCategory']) {
+				$markerArray['###CUR_SYM###'] ="";
+				$markerArray['###OLD_PRICE_NO_TAX###'] = $this->getPrice($row['price'],0,$row['tax'])."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
+			}
+			$markerArray['###DETAIL_PRICE_ITEMLIST###'] = '<span class="prijsvan">van&nbsp; '.$markerArray['###OLD_PRICE_NO_TAX###'].'</span> <span class="prijsvoor">voor '.$markerArray['###PRICE_NO_TAX###'].'</span>';
+			$markerArray['###DETAIL_PRICE_ITEMLIST_PRESENT###'] = '<span class="prijsvan">van&nbsp; '.$markerArray['###OLD_PRICE_NO_TAX###'].'</span> <span class="prijsvoor">voor '.$markerArray['###PRICE_NO_TAX###'].'</span>';
+			$markerArray['###DETAIL_PRICE_ITEMSINGLE###'] = '<p class="prijsvan">van&nbsp; '.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###OLD_PRICE_NO_TAX###'].'</p> <p class="prijsvoor"><nobr>voor '.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###PRICE_NO_TAX###'].'</nobr></p>';
+			$markerArray['###DETAIL_PRICE_ITEMSINGLE_PRESENT###'] = '<p class="prijsvan">van&nbsp; '.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###OLD_PRICE_NO_TAX###'].'</p> <p class="prijsvoor"><nobr>voor '.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###PRICE_NO_TAX###'].'</nobr></p>';
 		}
-		
+
 		$markerArray['###PRODUCT_INSTOCK_UNIT###'] = '';
 		if ($row['inStock'] > 0) {
 			$markerArray['###PRODUCT_INSTOCK###'] = $row['inStock'];
@@ -1545,21 +1575,29 @@ class tx_ttproducts extends tslib_pibase {
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
 		$temp = $this->basketExt[$row['uid']][tx_ttproducts_article_div::getVariantFromRow ($row)];
+
 		$markerArray['###FIELD_QTY###']= $temp ? $temp : '';
 		$markerArray['###FIELD_NAME_BASKET###']='ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
 
 		$markerArray['###FIELD_SIZE_NAME###']='ttp_basket['.$row['uid'].'][size]';
 		$markerArray['###FIELD_SIZE_VALUE###']=$row['size'];
 		$markerArray['###FIELD_SIZE_ONCHANGE']= ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
-		
+
 		$markerArray['###FIELD_COLOR_NAME###']='ttp_basket['.$row['uid'].'][color]';
 		$markerArray['###FIELD_COLOR_VALUE###']=$row['color'];
-		
+
 		$markerArray['###FIELD_ACCESSORY_NAME###']='ttp_basket['.$row['uid'].'][accessory]';
 		$markerArray['###FIELD_ACCESSORY_VALUE###']=$row['accessory'];
-		
+
 		$markerArray['###FIELD_GRADINGS_NAME###']='ttp_basket['.$row['uid'].'][gradings]';
 		$markerArray['###FIELD_GRADINGS_VALUE###']=$row['gradings'];
+
+/* Added Els4: total price is quantity multiplied with pricenottax mulitplied with unit_factor (exception for kurkenshop), _credits is necessary for "kurkenshop", without decimal and currency symbol */
+		if ($row['category'] == $this->conf['creditsCategory']) {
+			$markerArray['###PRICE_ITEM_X_QTY###'] = $this->printPrice($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']);
+		} else {
+			$markerArray['###PRICE_ITEM_X_QTY###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$this->printPrice($this->priceFormat($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']));
+		}
 
 		$prodColorText = '';
 		$prodTmp = explode(';', $row['color']);
@@ -1613,9 +1651,9 @@ class tx_ttproducts extends tslib_pibase {
 			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $this->cObj->substituteMarkerArray($this->conf['specialPreparation'],$markerArray);
 		else
 			$markerArray['###PRODUCT_SPECIAL_PREP###'] = '';
-			// Fill the Currency Symbol or not
 
-		$markerArray['###CUR_SYM###'] = ' '.($this->conf['currencySymbol'] ? $this->conf['currencySymbol'] : '');
+/* 		Added els4: cur_sym moved to above (after product_id)*/
+			// Fill the Currency Symbol or not
 
 		if ($this->conf['itemMarkerArrayFunc'])	{
 			$markerArray = $this->userProcess('itemMarkerArrayFunc',$markerArray);
@@ -1668,22 +1706,22 @@ class tx_ttproducts extends tslib_pibase {
 	 * Adds gift markers to a markerArray
 	 */
 	function addGiftMarkers($markerArray, $giftnumber)	{
-		
+
 		$markerArray['###GIFTNO###'] = $giftnumber;
-		$markerArray['###GIFT_PERSON_NAME###'] = $this->basketExt['gift'][$giftnumber]['personname']; 
-		$markerArray['###GIFT_PERSON_EMAIL###'] = $this->basketExt['gift'][$giftnumber]['personemail']; 
-		$markerArray['###GIFT_DELIVERY_NAME###'] = $this->basketExt['gift'][$giftnumber]['deliveryname']; 
-		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $this->basketExt['gift'][$giftnumber]['deliveryemail']; 
+		$markerArray['###GIFT_PERSON_NAME###'] = $this->basketExt['gift'][$giftnumber]['personname'];
+		$markerArray['###GIFT_PERSON_EMAIL###'] = $this->basketExt['gift'][$giftnumber]['personemail'];
+		$markerArray['###GIFT_DELIVERY_NAME###'] = $this->basketExt['gift'][$giftnumber]['deliveryname'];
+		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $this->basketExt['gift'][$giftnumber]['deliveryemail'];
 		$markerArray['###GIFT_NOTE###'] = $this->basketExt['gift'][$giftnumber]['note'];
 //		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]'; // here again, because this is here in ITEM_LIST view
 //		$markerArray['###FIELD_QTY###'] =  '';
-		
+
 		$markerArray['###FIELD_NAME_PERSON_NAME###']='ttp_gift[personname]';
 		$markerArray['###FIELD_NAME_PERSON_EMAIL###']='ttp_gift[personemail]';
 		$markerArray['###FIELD_NAME_DELIVERY_NAME###']='ttp_gift[deliveryname]';
 		$markerArray['###FIELD_NAME_DELIVERY_EMAIL###']='ttp_gift[deliveryemail]';
 		$markerArray['###FIELD_NAME_GIFT_NOTE###']='ttp_gift[note]';
-		
+
 		return $markerArray;
 	} // addGiftMarkers
 
@@ -1701,7 +1739,7 @@ class tx_ttproducts extends tslib_pibase {
 			 	.template	[string]	Template string for the display of radiobuttons.  Only if .radio is true. See default below
 
 			 */
-			 
+
 		$type=$this->conf[$key.'.']['radio'];
 		$active = $this->basketExtra[$key];
 		$confArr = $this->cleanConfArr($this->conf[$key.'.']);
@@ -1778,7 +1816,7 @@ class tx_ttproducts extends tslib_pibase {
 	                }
 	            }
 	        }
-	
+
 			krsort($confArr);
 			reset($confArr);
 
@@ -1808,7 +1846,7 @@ class tx_ttproducts extends tslib_pibase {
 			// compare the price to the min. price
 			if ($minPrice > $priceShipping) {
 				$priceShipping = $minPrice;
-			} 
+			}
 
 			$priceShippingTax = $this->getPrice($priceShipping,1,$tax);
 			$priceShippingNoTax = $this->getPrice($priceShipping,0,$tax);
@@ -1816,7 +1854,7 @@ class tx_ttproducts extends tslib_pibase {
 			$priceShippingTax = doubleVal($this->basketExtra['shipping.']['priceTax']);
 			$priceShippingNoTax = doubleVal($this->basketExtra['shipping.']['priceNoTax']);
 		}
-		
+
 
 		$perc = doubleVal($this->basketExtra['shipping.']['percentOfGoodstotal']);
 		if ($perc)	{
@@ -1933,7 +1971,7 @@ class tx_ttproducts extends tslib_pibase {
 		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['payment'];
 		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['shipping'];
 	} // getItem
-	
+
 /* mkl:
 	function cleanConfArr($confArr,$checkShow=0)	{
 		$outArr=array();
@@ -1973,7 +2011,7 @@ class tx_ttproducts extends tslib_pibase {
 			$subpartArray['###display_variant3###'] = '';
 		if (trim($row['gradings']) == '')
 			$subpartArray['###display_variant4###'] = '';
-		
+
 	}
 
 
@@ -1998,7 +2036,7 @@ class tx_ttproducts extends tslib_pibase {
 		if (!$pid)	$pid = intval($TSFE->id);
 
 		if ($TSFE->sys_page->getPage_noCheck ($pid))	{
-			$advanceUid = 0; 
+			$advanceUid = 0;
 			if ($this->conf['advanceOrderNumberWithInteger'] || $this->conf['alwaysAdvanceOrderNumber'])	{
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', '', '', 'uid DESC', '1');
 				list($prevUid) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
@@ -2071,7 +2109,7 @@ class tx_ttproducts extends tslib_pibase {
 		return $orderNumberPrefix.$orderUid;
 	} // getOrderNumber
 
-	
+
 	/**
 	 * Returns the number of creditpoints for the frontend user
 	 */
@@ -2093,7 +2131,7 @@ class tx_ttproducts extends tslib_pibase {
 			}
 			$dumCount = 0;
 			$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
-		
+
 			if ($type != 'price') {
 				break;
 			}
@@ -2102,7 +2140,7 @@ class tx_ttproducts extends tslib_pibase {
 
 			foreach ($priceCalcTemp['prod.'] as $k2=>$points) {
 				if ($amount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
-					$creditpoints = $points;		
+					$creditpoints = $points;
 					break; // finish
 				}
 			}
@@ -2111,7 +2149,7 @@ class tx_ttproducts extends tslib_pibase {
 	} // getCreditPoints
 
 
-	
+
 	/**
 	 * adds the number of creditpoints for the frontend user
 	 */
@@ -2142,16 +2180,18 @@ class tx_ttproducts extends tslib_pibase {
 	function finalizeOrder($orderUid, $orderConfirmationHTML)	{
 		global $TSFE;
 		global $TYPO3_DB;
-		
+
 		$content = '';
 
 			// Fix delivery address
 		$this->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
 //		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
+
+/*Added els4: uncomment next line to get the orderconfirmation template as html email and the thanks template as thank page */
 //		$orderConfirmationHTML=trim(tx_ttproducts_basket_div::getBasket('###BASKET_ORDERCONFIRMATION_TEMPLATE###','',$mainMarkerArray));		// Getting the template subpart for the order confirmation!
 
 		#debug ($this->basketExt, '$this->basketExt', __LINE__, __FILE__);
-	
+
 			// Saving order data
 		$fieldsArray=array();
 		$fieldsArray['note']=$this->deliveryInfo['note'];
@@ -2184,9 +2224,10 @@ class tx_ttproducts extends tslib_pibase {
 		 */
 		if ($this->conf['creditpoints.']) {
 			$creditpoints = $this->getCreditPoints($fieldsArray['amount']);
-			
-			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->recs['tt_products']['creditpoints'];
-		}
+/* Added els4: update fe_user with amount of creditpoints (= exisitng amount - used_creditpoints - spended_creditpoints + saved_creditpoints */
+//			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->recs['tt_products']['creditpoints'];
+			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] - $this->recs['tt_products']['creditpoints'] - t3lib_div::_GP('creditpoints_spended') + t3lib_div::_GP('creditpoints_saved');
+					}
 
 /* Added Els: update fe_user with vouchercode */
 		if ($this->recs['tt_products']['vouchercode'] != '') {
@@ -2249,6 +2290,9 @@ class tx_ttproducts extends tslib_pibase {
 		$fieldsArray['agb']		= $this->personInfo['agb'];
 /* Added Els: write creditpointvalue into sys_products_order */
 		$fieldsArray['creditpoints'] = $this->recs['tt_products']['creditpoints'];
+/* Added Els4: write creditpoint_spended and saved value into sys_products_order */
+		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
+		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
 
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
@@ -2258,7 +2302,7 @@ class tx_ttproducts extends tslib_pibase {
 		if ($this->basketExt['gift']) {
 			$pid = intval($this->conf['PIDGiftsTable']);
 			if (!$pid)	$pid = intval($TSFE->id);
-			
+
 			foreach ($this->basketExt['gift'] as $giftnumber => $rec) {
 				$amount = 0;
 				foreach ($rec['item'] as $productid => $product) {
@@ -2274,7 +2318,7 @@ class tx_ttproducts extends tslib_pibase {
 					'tstamp' => time(),
 					'crdate' => time(),
 					'deleted' => 0,
-					
+
 					'ordernumber'    => $orderUid,
 					'personname'     => $rec['personname'],
 					'personemail'    => $rec['personemail'],
@@ -2288,16 +2332,16 @@ class tx_ttproducts extends tslib_pibase {
 				$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
 				$insertFields = array();
 				$insertFields['uid_local'] = $newId;
-					
+
 				foreach ($rec['item'] as $productid => $product) {
 					#debug ($product, 'product', __LINE__, __FILE__);
 					foreach ($product as $variant => $count) {
 						$row = array();
 						tx_ttproducts_article_div::getRowFromVariant ($row, $variant);
-						
+
 						$query='uid_product=\''.intval($productid).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND gradings=\''.$row['gradings'].'\'' ;
 						$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
-						
+
 						if ($articleRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($articleRes)) {
 							$insertFields['uid_foreign'] = $articleRow['uid'];
 							$insertFields['count'] = $count;
@@ -2312,7 +2356,7 @@ class tx_ttproducts extends tslib_pibase {
 			// Fetching the orderRecord by selecing the newly saved one...
 		$this->orderRecord = $this->getOrderRecord($orderUid);
 		$content .= tx_ttproducts_basket_div::getBasket('###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
-		
+
 
 		// Is no user is logged in --> create one
 		if ($this->conf['createUsers'] && $this->personInfo['email'] != '' && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
@@ -2347,7 +2391,7 @@ class tx_ttproducts extends tslib_pibase {
 
 				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country':'country');
 				$insertFields[$countryKey] =  $this->personInfo['country'];
-				
+
 				$res = $GLOBALS['TYPO3_DB']->exec_INSERTquery('fe_users', $insertFields);
 				// send new user mail
 				if (count($this->personInfo['email'])) {
@@ -2367,7 +2411,7 @@ class tx_ttproducts extends tslib_pibase {
 		if (!$this->conf['AlwaysInStock']) {
 			// Reduce inStock
 			reset($this->itemArray);
-			
+
 			#debug ($this->itemArray, '$this->itemArray Reduce in stock', __LINE__, __FILE__);
 
 			// loop over all items in the basket indexed by page and itemnumber
@@ -2377,26 +2421,26 @@ class tx_ttproducts extends tslib_pibase {
 					if ($this->conf['useArticles']) {
 						foreach ($actItemArray as $k1=>$actItem) {
 							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
-							
+
 							$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products_articles', $query);
 								// 	TODO: Saving the order record support color, size and accessory here
 						}
-					} else {	
+					} else {
 						$query='uid=\''.intval($actItemArray[0]['rec']['uid']).'\'';
 
 						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products', $query);
-		
+
 						if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 							if ($row['inStock'] > 0) {
 								$newInStock = intval($row['inStock'])-intval($actItemArray[0]['count']);
 								if ($newInStock < 0) {
 									$newInStock = 0;
 								}
-		
+
 								$fieldsArray =array();
 											// Setting tstamp, deleted and tracking code
 								$fieldsArray['inStock']=$newInStock;
-								
+
 								$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'uid='.intval($actItemArray[0]['rec']['uid']), $fieldsArray);
 							}
 						}
@@ -2409,7 +2453,7 @@ class tx_ttproducts extends tslib_pibase {
 			// First: delete any existing. Shouldn't be any
 		$where='sys_products_orders_uid='.$orderUid;
 		$res = $GLOBALS['TYPO3_DB']->exec_DELETEquery('sys_products_orders_mm_tt_products',$where);
-	
+
 			// Second: Insert a new relation for each ordered item
 		reset($this->itemArray);
 
@@ -2420,18 +2464,18 @@ class tx_ttproducts extends tslib_pibase {
 					foreach ($actItemArray as $k1=>$actItem) {
 						// get the article uid with these colors, sizes and gradings
 						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
-							
+
 						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
-		
+
 						if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 							$insertFields = array (
 								'sys_products_orders_uid' => $orderUid,
 								'sys_products_orders_qty' => intval($actItemArray[0]['count']),
 								'tt_products_uid' => intval($actItemArray[0]['rec']['uid']),
 								'tt_products_articles_uid' => intval($row['uid'])
-							);	
+							);
 							$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
-						}						
+						}
 					}
 				} else {
 					$insertFields = array (
@@ -2652,10 +2696,10 @@ class tx_ttproducts extends tslib_pibase {
 					    10 = Shop is awaiting goods from third-party
 					    11 = Shop is awaiting customer payment
 					    12 = Shop is awaiting material from customer
-					    13 = Order has been payed    
+					    13 = Order has been payed
 					    20 = Goods shipped to customer
 					    21 = Gift certificates shipped to customer
-					    30 = Other message from store						
+					    30 = Other message from store
 						...
 					50-99:	Useable by the customer
 					50-59: General user messages, may be updated by the ordinary users.
@@ -2663,7 +2707,7 @@ class tx_ttproducts extends tslib_pibase {
 					    51 = Message from customer to shop
 					60-69:	Special user messages by the customer
 				    	60 = Send gift certificate message to receiver
-					
+
 					100-299:  Order finalized.
 					    100 = Order shipped and closed
 					    101 = Order closed
@@ -2675,7 +2719,7 @@ class tx_ttproducts extends tslib_pibase {
 		global $TSFE;
 
 		$admin = $this->shopAdmin();
-		
+
 		if ($orderRow['uid'])	{
 				// Initialize update of status...
 			$fieldsArray = array();
@@ -2704,12 +2748,12 @@ class tx_ttproducts extends tslib_pibase {
 
 					if ($admin || ($val>=50 && $val<59))	{// Numbers 50-59 are usermessages.
 						$recipient = $this->conf['orderEmail_to'];
-						if ($orderRow['email'] && ($orderRow['email_notify']))	{  
+						if ($orderRow['email'] && ($orderRow['email_notify']))	{
 							$recipient .= ','.$orderRow['email'];
 						}
 						$templateMarker = 'TRACKING_EMAILNOTIFY_TEMPLATE';
 						$this->sendNotifyEmail($recipient, $status_log_element, t3lib_div::_GP('tracking'), $orderRow, $templateCode, $templateMarker);
-						
+
 						$status_log[] = $status_log_element;
 						$update=1;
 					} else if ($val>=60 && $val<69) { //  60 -69 are special messages
@@ -2766,18 +2810,18 @@ class tx_ttproducts extends tslib_pibase {
 				}
 			}
 		}
-		
-		
+
+
 		// making status code 60 disappear if the order has not been payed yet
 		if (!$orderPayed || $orderClosed) {
 				// Fill marker arrays
 			$markerArray=Array();
 			$subpartArray=Array();
 			$subpartArray['###STATUS_CODE_60###']= '';
-	
+
 			$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
 		}
-		
+
 		// added by Franz end
 
 			// Status:
@@ -2792,7 +2836,7 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray['###ORDER_STATUS###']=$v['status'];
 				$markerArray['###ORDER_STATUS_INFO###']=$v['info'];
 				$markerArray['###ORDER_STATUS_COMMENT###']=nl2br($v['comment']);
-				
+
 				$STATUS_ITEM_c.=$this->cObj->substituteMarkerArrayCached($STATUS_ITEM, $markerArray);
 			}
 		}
@@ -2937,7 +2981,7 @@ class tx_ttproducts extends tslib_pibase {
 							// Print Category Title
 						if ($actItem['rec']['category']==$currentCategory)
 						{
-	
+
 							if ($categoryChanged == 1)
 							{
 								$markerArray=array();
@@ -2945,22 +2989,22 @@ class tx_ttproducts extends tslib_pibase {
 								$this->cObj->setCurrentVal($catTitle);
 								$markerArray['###CATEGORY_TITLE###'] = $this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 								$markerArray['###CATEGORY_QTY###'] = $categoryQty[$currentCategory];
-	
+
 								$markerArray['###PRICE_GOODS_TAX###']= $this->priceFormat($this->calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory]);
 								$markerArray['###PRICE_GOODS_NO_TAX###']= $this->priceFormat($this->calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory]);
-	
+
 								$out2 = $this->cObj->substituteMarkerArray($t['categoryTitle'], $markerArray);
 								$out.= $out2;
 							}
-	
+
 								// Print Item Title
 							$wrappedSubpartArray=array();
 	/* Added Bert: in stead of listImage -> Image, reason: images are read from directory */
 	//						$markerArray = $this->getItemMarkerArray ($actItem,$catTitle,1,'listImage');
 							$markerArray = $this->getItemMarkerArray ($actItem,$catTitle,1,'image');
-	
+
 							$markerArray['###FIELD_QTY###'] = $actItem['count'];
-	
+
 							$itemsOut = $this->cObj->substituteMarkerArrayCached($t['item'],$markerArray,array(),$wrappedSubpartArray);
 							if ($itemsOut)
 							{
@@ -2968,7 +3012,7 @@ class tx_ttproducts extends tslib_pibase {
 								$out .= $out2;
 							}
 							$itemsOut='';			// Clear the item-code var
-	
+
 						$categoryChanged = 0;
 						}
 					}
@@ -3007,7 +3051,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		$content= $this->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);
 		$reldateiname = $this->conf['outputFolder'] . '/' . $type . '/' . $tracking . '.htm';
-		
+
 		$dateiname = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $reldateiname;
 		$datei = fopen($dateiname, 'w');
 		fwrite ($datei, $content);
@@ -3044,22 +3088,22 @@ class tx_ttproducts extends tslib_pibase {
 				$markerArray['###CERTIFICATES_UNIQUE_CODE###'] =  $giftRow['uid'].'-'.$giftRow['crdate'];
 				$markerArray['###PERSON_NAME###'] = $giftRow['personname'];
 				$markerArray['###DELIVERY_NAME###'] = $giftRow['deliveryname'];
-				$markerArray['###ORDER_STATUS_COMMENT###'] = $giftRow['note'].'\n'.$comment;   
-								
+				$markerArray['###ORDER_STATUS_COMMENT###'] = $giftRow['note'].'\n'.$comment;
+
 				$emailContent = $this->cObj->substituteMarkerArrayCached($plain_message, $markerArray);
-					
+
 				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
 				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$this->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
 					$HTMLmailContent=$this->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$emailContent);
 					$HTMLmailContent=$this->cObj->substituteMarkerArray($HTMLmailContent, $this->globalMarkerArray);
-	
+
 					$V = array (
 						'from_email' => $senderemail,
 						'from_name'  => $sendername,
 						'attachment' => $this->conf['GiftAttachment']
 					);
-		
+
 					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
 					$Typo3_htmlmail->useBase64();
 					$Typo3_htmlmail->start(implode($recipients,','), $subject, $emailContent, $HTMLmailContent, $V);
@@ -3087,7 +3131,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		$sendername = ($sendername ? $sendername : $this->conf['orderEmail_fromName']);
 		$senderemail = ($senderemail ? $senderemail : $this->conf['orderEmail_from']);
-		
+
 			// Notification email
 
 		$recipients = $recipient;
@@ -3214,75 +3258,108 @@ class tx_ttproducts extends tslib_pibase {
 
 
 /* Added Els2: Displays and manages the orders */
-   function orders_display($theCode)
-   {
+/* Added Els4: message if no orders available and complete change */
+   function orders_display($theCode) {
        global $TSFE;
 
        $feusers_uid = $TSFE->fe_user->user['uid'];
 
        if (!$feusers_uid)
-           return $this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_TEMPLATE_NOT_LOGGED_IN###'));
+           return $this->cObj->getSubpart($this->templateCode,$this->spMarker('###MEMO_NOT_LOGGED_IN###'));
 
        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
 
        $content=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###ORDERS_LIST_TEMPLATE###'));
-       //$content .= '<p class=\'bodytext\'><br>';
+	   if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
 
-       $content .= "<div style='width:714px;'>
-<table border='0' cellspacing='0' cellpadding='0'>
- <tr>
-   <th width='20%' scope='col'><b>Spaarhistorie</b></th>
-   <th width='80%' scope='col' colspan='2'><b>Klantnummer: $feusers_uid</b></th>
- </tr>
- <tr>
-   <th width='20%' scope='col'>Datum</th>
-   <th width='20%' scope='col'>Factuurnr</th>
-   <th width='60%' scope='col'>Kurken</th>
- </tr>
+           $content .= "<p style='margin-left=40;'><br>U heeft nog geen bestellingen gedaan.</p>";
+	   } else {
+
+           $content .= "
+
+		      <h3 class='groupheading'>Klantnummer: $feusers_uid</h3>
+			  <table width='91%' border='0' cellpadding='0' cellspacing='0'>
+              <tr>
+                <td width='24%' class='tableheading'>Datum</td>
+                <td width='54%' class='tableheading'>Factuurnummer</td>
+                <td width='13%' class='tableheading-rightalign'>Kurken</td>
+                <td width='4%'  class='recycle-bin'>&nbsp;</td>
+                <td width='5%'  class='recycle-bin'>&nbsp;</td>
+              </tr>";
+
+           $tot_creditpoints_saved = 0;
+           $tot_creditpoints_spended= 0;
+           $this->orders = array();
+           while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+               $this->orders[$row['uid']] = $row['tracking_code'];
+               $content .= "<tr><td>".$this->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.'])."</td>";
+               $number = str_replace('mw_order', '', $row['tracking_code']);
+               $content .= "<td>".$number." | <a href=index.php?id=215&tracking=".$row['tracking_code'].">bekijk deze factuur</a> &raquo;</td>";
+               $content .= "<td class='rowtotal'>".number_format($row['creditpoints_saved'] - $row['creditpoints_spended'] - $row['creditpoints'],0)."</td>
+                 <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+                 <td class='recycle-bin'>&nbsp;</td>";
+               // total amount of saved creditpoints
+               $tot_creditpoints_saved += $row['creditpoints_saved'];
+               // total amount of spended creditpoints
+               $tot_creditpoints_spended+= $row['creditpoints_spended'];
+           }
+
+           $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
+           if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
+               $username = $row['username'];
+           }
+
+           $content .= "
+     </tr>
+     <tr>
+       <td class='noborder' colspan='5'><br></td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td ><span class='noborder'>Gespaarde kurken</span></td>
+       <td class='rowtotal'>".number_format($tot_creditpoints_saved,0)."</td>
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td class='noborder'>Besteedde kurken </td>
+       <td class='rowtotal'>- ".number_format($tot_creditpoints_spended,0)."</td>
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td><span class='noborder'>Verdiende kurken met uw vouchercode <i>".$row['username'].'</i></span></td>';
+
+           $res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
+           $num_rows = $GLOBALS['TYPO3_DB']->sql_num_rows($res2);
+
+           $content .= "<td class='lastrow'>".($num_rows * 5).'</td>';
+
+           $content .= "
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td class='subtotaal'>Uw kurkensaldo (per ".date('d M Y').")</td>";
+
+           $res3 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
+           $this->creditpoints = array();
+           while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res3)) {
+               $this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
+               $content .= "<td class='prijssubtotal'>";
+               $content .= number_format($row['tt_products_creditpoints'],0);
+               $content .= '</td>';
+           }
+           $content .= "
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+    </table>
 ";
-
-       $this->orders = array();
-       while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-           $this->orders[$row['uid']] = $row['tracking_code'];
-           $content .= "<tr><td width='20%'>".$this->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']).'</td>';
-           $number = str_replace('mw_order', '', $row['tracking_code']);
-           $content .= '<td width="20%"><a href="index.php?id=215&tracking='.$row['tracking_code'].'">'.$number.'</a></td>';
-           $creditpoints = $this->getCreditPoints($row['amount']);
-           $content .= "<td width='60%'>".($this->priceFormat($creditpoints*$row['amount']) - number_format($row['creditpoints'],0)).'</td>';
-       }
-
-       $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
-       if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
-           $username = $row['username'];
-       }
-
-       $content .= "
- <tr>
-   <th width='40%' scope='col' colspan='2'>Verdiende kurken met uw vouchercode <i>".$row['username'].'</i></th>';
-
-       $res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
-       $num_rows = $GLOBALS['TYPO3_DB']->sql_num_rows($res2);
-
-       $content .= "<th width='60%' scope='col'>".($num_rows * 5).'</th></tr>';
-
-       $res3 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
-       $content .= "
- <tr>
-   <th width='40%' scope='col' colspan='2'>Uw kurkensaldo</th>";
-
-       $this->creditpoints = array();
-       while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res3)) {
-           $this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
-           $content .= "<th width='60%' scope='col'><span class='kurkensaldo'>";
-           $content .= $this->priceFormat($row['tt_products_creditpoints']);
-           $content .= '</span></th></tr>';
-       }
-       $content .= "
-</table>
-</div>
-<div class='shopTable-content-white'>
-</div>
-       ";
+	   }
 
        return $content;
 
