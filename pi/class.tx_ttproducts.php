@@ -441,7 +441,6 @@ class tx_ttproducts extends tslib_pibase {
 	 */
 	function getPID($conf, $confExt, $row) {
 		$rc = 0;
-		debug ($confExt, '$confExt', __LINE__, __FILE__);
 		if ($confExt) {
 			foreach ($confExt as $k1 => $param) {
 				$type  = $param['type'];
@@ -466,9 +465,7 @@ class tx_ttproducts extends tslib_pibase {
 							$rc = $param['pid'];
 							break;
 						case 'pid':
-							debug ($row['pid'], '$row[\'pid\']', __LINE__, __FILE__);
 							$rc = intval ($this->pageArray[$row['pid']]['pid']);
-							debug ($rc, '$rc', __LINE__, __FILE__);
 							break;
 					}
 					break;  //ready with the foreach loop
@@ -1036,9 +1033,9 @@ class tx_ttproducts extends tslib_pibase {
 				} else {
 					$subpartArray['###LINK_PREV###']='';
 				}
+				$markerArray['###BROWSE_LINKS###']='';
 				if ($productsCount > $this->config['limit'] )	{ // there is more than one page, so let's browse
 					$wrappedSubpartArray['###LINK_BROWSE###']=array('',''); // <- this could be done better I think, or not?
-					$markerArray['###BROWSE_LINKS###']='';
 					for ($i = 0 ; $i < ($productsCount/$this->config['limit']); $i++) 	{
 						if (($begin_at >= $i*$this->config['limit']) && ($begin_at < $i*$this->config['limit']+$this->config['limit'])) 	{
 							$markerArray['###BROWSE_LINKS###'].= ' <b>'.(string)($i+1).'</b> ';
