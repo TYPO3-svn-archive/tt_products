@@ -323,8 +323,27 @@ class tx_ttproducts_basket_div {
 									$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
 
 									$this->addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
+
+/* Added els5: extra markers for inline comments */
+									// Fill marker arrays
+									$markerArray=Array();
+									$subpartArray=Array();
+									$markerArray['###GIFT_DISCOUNT###'] = $creditpoints;
+									$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
+									$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###']= '';
+									$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+
 								} else {
-									$basket_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
+/* Added els5: inline comments and errors in stead of new page */
+									//$basket_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
+
+									// Fill marker arrays
+									$markerArray=Array();
+									$subpartArray=Array();
+									$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
+									$subpartArray['###SUB_GIFTCODE_DISCOUNT###']= '';
+									$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+
 								}
 							}
 						break;
@@ -349,6 +368,7 @@ class tx_ttproducts_basket_div {
 									$this->getCalculateSums();
 									$content.= $this->includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 								}
+
 							} else {	// If not all required info-fields are filled in, this is shown instead:
 								$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 								$markerArray = $this->addURLMarkers(array());
@@ -791,16 +811,20 @@ class tx_ttproducts_basket_div {
 					$addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
 					$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pi_getPageLink($pid,'',$this->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); // // array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
 
-/* Added Els4: different display for shop-a-box and gifts (in payment_template, winkelwagen.tmpl) */
+/* Added Els5: different display for quantities and recycle output in shop-a-box and gifts (in payment_template, winkelwagen.tmpl) */
 					if ($actItem['rec']['category'] == $this->conf['shopaboxCategory']) {
 						$subpartArray['###QUANTITY_CAT###'] = "";
 						$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="index.php?id=shopabox">','</a>');
+						$subpartArray['###RECYCLE_CAT###'] = "";
+						$subpartArray['###RECYCLE_CAT_GIFT###'] = "";
 					} else {
+						$subpartArray['###RECYCLE_CAT_SHOPABOX###'] = "";
 						//  in case of gift certificates
 						if ($actItem['rec']['uid'] == $this->conf['giftID']) {
 							$subpartArray['###QUANTITY_CAT###'] = "";
 						} else {
 							$subpartArray['###QUANTITY_SHOPABOX_GIFT###'] = "";
+							$subpartArray['###RECYCLE_CAT_GIFT###'] = "";
 						}
 					}
 
@@ -956,7 +980,6 @@ class tx_ttproducts_basket_div {
 		$markerArray['###PASSWORD###'] = $this->password;
 		$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
 
-
 			// URL
 		$markerArray = $this->addURLMarkers($markerArray);
 
@@ -991,6 +1014,7 @@ class tx_ttproducts_basket_div {
 		}
 
 /* Added Els: voucher marker inclusive conditions */
+/* Added Els5: small changes in voucher marker inclusive conditions */
 		if ($TSFE->fe_user->user['tt_products_vouchercode'] == '') {
 			$subpartArray['###SUB_VOUCHERCODE###'] = '';
 			$markerArray['###INSERT_VOUCHERCODE###'] = 'recs[tt_products][vouchercode]';
@@ -1000,8 +1024,6 @@ class tx_ttproducts_basket_div {
 				$subpartArray['###SUB_VOUCHERCODE_DISCOUNTOWNID###'] = '';
 				$subpartArray['###SUB_VOUCHERCODE_DISCOUNTWRONG###'] = '';
 			} else {
-				$subpartArray['###SUB_VOUCHERCODE_NODISCOUNT###'] = '';
-
 				$res = $TYPO3_DB->exec_SELECTquery('uid', 'fe_users', 'username="'.$this->recs['tt_products']['vouchercode'].'"');
 				if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 					$uid_voucher = $row['uid'];
@@ -1015,8 +1037,9 @@ class tx_ttproducts_basket_div {
 						$subpartArray['###SUB_VOUCHERCODE_DISCOUNTOWNID###'] = '';
 						$subpartArray['###SUB_VOUCHERCODE_DISCOUNTWRONG###'] = '';
 						//$this->calculatedArray['priceTax']['voucher'] = $this->priceFormat($this->calculatedArray['priceTax']['shipping']);
-						$this->calculatedArray['priceTax']['voucher'] = 5;
+						$this->calculatedArray['priceTax']['voucher'] = $this->conf['voucherPrice'];
 						$markerArray['###VOUCHER_DISCOUNT###'] = $this->priceFormat($this->calculatedArray['priceTax']['voucher']);
+						$subpartArray['###SUB_VOUCHERCODE_NODISCOUNT###'] = '';
 					}
 				} else {
 					$subpartArray['###SUB_VOUCHERCODE_DISCOUNTOWNID###'] = '';
@@ -1032,35 +1055,14 @@ class tx_ttproducts_basket_div {
 		$markerArray['###FORM_NAME###']='BasketForm';
 		$markerArray['###FORM_NAME_GIFT_CERTIFICATE###']='BasketGiftForm';
 
-/* Added Els4 NOT USED YET: cuopon marker inclusive conditions */
-/*		$markerArray['###INSERT_COUPONCODE###'] = 'recs[tt_products][couponcode]';
-		$markerArray['###VALUE_COUPONCODE###'] = $this->recs['tt_products']['couponcode'];
-		if ($this->recs['tt_products']['couponcode'] == '') {
-			$subpartArray['###SUB_COUPONCODE_DISCOUNT###'] = '';
-			$subpartArray['###SUB_COUPONCODE_DISCOUNTWRONG###'] = '';
-		} else {
-			$subpartArray['###SUB_COUPONCODE_NODISCOUNT###'] = '';
-
-			$res = $TYPO3_DB->exec_SELECTquery('uid', 'fe_users', 'username="'.$this->recs['tt_products']['couponcode'].'"');
-			if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-				$uid_coupon = $row['uid'];
-			}
-			if ($uid_coupon != '') {
-				// first check if not inserted own couponcode
-				if ($TSFE->fe_user->user['uid'] == $uid_coupon) {
-					$subpartArray['###SUB_COUPONCODE_DISCOUNT###'] = '';
-					$subpartArray['###SUB_COUPONCODE_DISCOUNTWRONG###'] = '';
-				} else {
-					$subpartArray['###SUB_COUPONCODE_DISCOUNTWRONG###'] = '';
-					//$this->calculatedArray['priceTax']['coupon'] = $this->priceFormat($this->calculatedArray['priceTax']['shipping']);
-					$this->calculatedArray['priceTax']['coupon'] = 5;
-					$markerArray['###COUPON_DISCOUNT###'] = $this->priceFormat($this->calculatedArray['priceTax']['coupon']);
-				}
-			} else {
-				$subpartArray['###SUB_COUPONCODE_DISCOUNT###'] = '';
-			}
+/* Added els5: markerarrays for gift certificates */
+		if (t3lib_div::_GP('gift_certificate_number') == 'empty') {
+			$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###'] = '';
+			$subpartArray['###SUB_GIFTCODE_DISCOUNT###'] = '';
+			$markerArray['###VALUE_GIFTCODE###']='';
 		}
-*/
+
+
 /* Added Els: below 3 lines moved from above */
 			// This is the total for everything
 		$this->getCalculateSums();
@@ -1069,7 +1071,8 @@ class tx_ttproducts_basket_div {
 
 /* Added els4: PRICE_GOODSTOTAL_TOTUNITS_NO_TAX: sum total price (winkelwagen.tmpl) */
 		$markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] = $this->priceFormat($sum_price_total_totunits_no_tax);
-/* Added els4: CREDITPOINTS_SPENDED: creditpoint needed, check if user has this amount of creditpoints on his account (winkelwagen.tmpl) */
+
+/* Added els5: CREDITPOINTS_SPENDED: creditpoint needed, check if user has this amount of creditpoints on his account (winkelwagen.tmpl), only if user has logged in */
 		$markerArray['###CREDITPOINTS_SPENDED###'] = $sum_pricecredits_total_totunits_no_tax;
 		if ($sum_pricecredits_total_totunits_no_tax <= $markerArray['###AMOUNT_CREDITPOINTS###']) {
 			$subpartArray['###SUB_CREDITPOINTS_SPENDED_EMPTY###'] = '';
@@ -1077,8 +1080,12 @@ class tx_ttproducts_basket_div {
 			// new saldo: creditpoints
 			$markerArray['###AMOUNT_CREDITPOINTS###'] = $markerArray['###AMOUNT_CREDITPOINTS###'] - $markerArray['###CREDITPOINTS_SPENDED###'];
 		} else {
-			$markerArray['###CREDITPOINTS_SPENDED_ERROR###'] = "Wijzig de artikelen in de kurkenshop: onvoldoende kurken op uw saldo.";
-			$markerArray['###CREDITPOINTS_SPENDED###'] = '&nbsp;';
+			if (!$markerArray['###FE_USER_UID###']) {
+				$subpartArray['###SUB_CREDITPOINTS_SPENDED_EMPTY###'] = '';
+			} else {
+				$markerArray['###CREDITPOINTS_SPENDED_ERROR###'] = "Wijzig de artikelen in de kurkenshop: onvoldoende kurken op uw saldo (".$markerArray['###AMOUNT_CREDITPOINTS###'].").";
+				$markerArray['###CREDITPOINTS_SPENDED###'] = '&nbsp;';
+			}
 		}
 
 /* Added els4: CREDITPOINTS_SAVED (winkelwagen.tmpl): depends on $sum_pricecreditpoints_total_totunits and the factor defined in the typo3-setup

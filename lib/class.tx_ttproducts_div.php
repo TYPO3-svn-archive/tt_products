@@ -1,22 +1,22 @@
 <?php
 /***************************************************************
 *  Copyright notice
-*  
+*
 *  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is 
+*  This script is part of the Typo3 project. The Typo3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
 *  (at your option) any later version.
-* 
+*
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license 
+*  A copy is found in the textfile GPL.txt and important notices to the license
 *  from the author is found in LICENSE.txt distributed with these scripts.
 *
-* 
+*
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -35,7 +35,7 @@
  * @package TYPO3
  * @subpackage tt_products
  *
- *  
+ *
  */
 
 
@@ -55,7 +55,7 @@ class tx_ttproducts_div {
 
 		switch ($fieldname) {
 			case 'email' :
-						$js = 
+						$js =
 			'function test (eing) {
 				var reg = /@/;
 				var rc = true;
@@ -64,12 +64,14 @@ class tx_ttproducts_div {
 			 	}
 			 	return rc;
 			}
-				
+
 			function checkEmail(element) {
 				if (test(element.value)){
 					return (true)
 				}
-				alert("'.$emailArr[0].'\'"+element.value+"'.$emailArr[1].'")
+/* Added els5: comma after the invalid address */
+//				alert("'.$emailArr[0].'\'"+element.value+"'.$emailArr[1].'")
+				alert("'.$emailArr[0].'\'"+element.value+"\''.$emailArr[1].'")
 				return (false)
 			}
 
@@ -95,7 +97,7 @@ class tx_ttproducts_div {
 
 	$TSFE->setJS ($fieldname, $js);
     } // setJS
-			
+
 }
 
 

@@ -24,10 +24,13 @@ $LOCAL_LANG = Array (
 	    'open_bill' => 'Cliquez ici pour ouvrir la facture',
 	    'open_delivery' => 'Cliquez ici pour ouvrir le bordereau de livraison',
 	    'invalid email' => 'E-mail | non valide! réessayez svp.',
-	), 
+	),
 	'es' => Array (
 	),
 	'nl' => Array (
+		'open_bill' => 'Om de rekening te openen, klik hier',
+		'open_delivery' => 'Om de pakbon te openen, klik hier',
+		'invalid email' => 'Onjuist e-mail adres |!',
 	),
 	'cz' => Array (
 	),

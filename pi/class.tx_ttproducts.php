@@ -2160,6 +2160,7 @@ class tx_ttproducts extends tslib_pibase {
 	    }
 	    $fieldsArrayFeUserCredit = array();
 	    $fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + $creditpoints;
+
 	    $GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$uid_voucher, $fieldsArrayFeUserCredit);
 	}
 
@@ -2219,12 +2220,13 @@ class tx_ttproducts extends tslib_pibase {
   10.prod.501 = 0.06
 }
 		 */
+
 		if ($this->conf['creditpoints.']) {
 			$creditpoints = $this->getCreditPoints($fieldsArray['amount']);
 /* Added els4: update fe_user with amount of creditpoints (= exisitng amount - used_creditpoints - spended_creditpoints + saved_creditpoints */
 //			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->recs['tt_products']['creditpoints'];
 			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] - $this->recs['tt_products']['creditpoints'] - t3lib_div::_GP('creditpoints_spended') + t3lib_div::_GP('creditpoints_saved');
-					}
+		}
 
 /* Added Els: update fe_user with vouchercode */
 		if ($this->recs['tt_products']['vouchercode'] != '') {
@@ -3256,6 +3258,7 @@ class tx_ttproducts extends tslib_pibase {
 
 /* Added Els2: Displays and manages the orders */
 /* Added Els4: message if no orders available and complete change */
+/* Added Els5: minor modifications */
    function orders_display($theCode) {
        global $TSFE;
 
@@ -3313,21 +3316,21 @@ class tx_ttproducts extends tslib_pibase {
      </tr>
      <tr>
        <td class='noborder'></td>
-       <td ><span class='noborder'>Gespaarde kurken</span></td>
+       <td><span class='noborder'>Gespaarde kurken</span></td>
        <td class='rowtotal'>".number_format($tot_creditpoints_saved,0)."</td>
        <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
        <td class='recycle-bin'>&nbsp;</td>
      </tr>
      <tr>
        <td class='noborder'></td>
-       <td class='noborder'>Besteedde kurken </td>
+       <td><span class='noborder'>Besteedde kurken</span></td>
        <td class='rowtotal'>- ".number_format($tot_creditpoints_spended,0)."</td>
        <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
        <td class='recycle-bin'>&nbsp;</td>
      </tr>
      <tr>
        <td class='noborder'></td>
-       <td><span class='noborder'>Verdiende kurken met uw vouchercode <i>".$row['username'].'</i></span></td>';
+       <td>Verdiende kurken met uw vouchercode <i>".$row['username']."</i></td>";
 
            $res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
            $num_rows = $GLOBALS['TYPO3_DB']->sql_num_rows($res2);
