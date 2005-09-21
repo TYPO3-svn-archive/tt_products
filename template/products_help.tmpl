@@ -3,39 +3,50 @@
 -->
 <table border="1" cellpadding="4" cellspacing="1" bgcolor="#eeeeee">
 <tr>
-	<td colspan="2">
-
-	<div align="center"><h3>Shop Codes</h3></div>
+	<div align="center"><h3>Shop Display Methods</h3></div>
 	<font face="verdana" size="2">
-	You must insert a code in the CODE field of the "List" content element before the shop will work. The code tells the shop module what to do. You can insert multiple codes by separating them by a comma.<br>
+	You have to select one or more display modes for each page being used within the shop. Otherwise this will not work. The display mode tells the shop module what to do. <br>
+	You also have to change the number or products in your article sysfolder to at least one in the stock.
 	Here is an example:<br><BR>
-	<div align="center"><img src="###PATH###/res/icons/be/products_help1.gif" width="388" height="224" border="2" alt="Help image"></div>
+	<div align="center"><img src="###PATH###/res/icons/fe/ttproducts_help_en.png" border="2" alt="Help image"></div>
 
 
 	<HR>
-	Current CODE = "<b>###CODE###</b>"
+	The current display mode has not been set.
 	</font>
 	</td>
 </tr>
 <tr>
-	<td><font face="verdana" size="2"><strong>LIST</strong></font></td>
-	<td><font face="verdana" size="2">Inserts a list of the products on the current page. If you want a blank CODE field to act as LIST, you can set it up in the TypoScript of the shop.</font></td>
+	<td><font face="verdana" size="2"><strong>Products:</strong><br/> list<br/> list gifts<br/> list highlights<br/> list offers<br/> list new items</font></td>
+	<td><font face="verdana" size="2">Inserts a list of the products on the current page, or perhaps with special conditions. </font></td>
 </tr>
 <tr>
-	<td><font face="verdana" size="2"><strong>SINGLE</strong></font></td>
-	<td><font face="verdana" size="2">Displays a single product if a GET/POST var 'tt_products' is set.</font></td>
+	<td><font face="verdana" size="2"><strong>Products:</strong><br/> single view</strong></font></td>
+	<td><font face="verdana" size="2">Displays a single product if the script's GET/POST var 'tt_products' is set.</font></td>
 </tr>
 <tr>
-	<td><font face="verdana" size="2"><strong>SEARCH</strong></font></td>
+	<td><font face="verdana" size="2"><strong>Products:</strong><br/> search</font></td>
 	<td><font face="verdana" size="2">Displays a search dialog for searching products.</font></td>
 </tr>
 <tr>
-	<td><font face="verdana" size="2"><strong>BASKET<BR>PAYMENT<BR>FINALIZE<BR>INFO</strong></font></td>
-	<td><font face="verdana" size="2">Displays the shopping basket. <BR>The code 'BASKET' works in general but using the specific codes INFO (address form), PAYMENT (last check) and FINALIZE (thank you screen), you can split out the function over multiple pages.</font></td>
+	<td><font face="verdana" size="2"><strong>Currency:</strong><br/> selector</font></td>
+	<td><font face="verdana" size="2">Displays a currency selector for the shop.</font></td>
 </tr>
 <tr>
-	<td><font face="verdana" size="2"><strong>TRACKING</strong></font></td>
-	<td><font face="verdana" size="2">Displays tracking dialog / information for an order.</font></td>
+	<td><font face="verdana" size="2"><strong>Basket:</strong><br/>content<br/>overview<br/>input customer data<br/>input payment<br/>finalize order</br></font></td>
+	<td><font face="verdana" size="2">Displays the shopping basket. <BR>The display method 'BASKET' works in general but using the specific methods 'input customer data', 'input payment' (last check) and 'finalize order' (thank you screen), you can split out the function over multiple pages. Or you can set up a basket overview with only the totals displayed.</font></td>
+</tr>
+<tr>
+	<td><font face="verdana" size="2"><strong>Orders:</strong><br/>tracking<br/>bill</br>delivery</font></td>
+	<td><font face="verdana" size="2">Displays tracking dialog / information for an order. A bill and delivery sheet file get created.</font></td>
+</tr>
+<tr>
+	<td><font face="verdana" size="2"><strong>General:</strong><br/>memo<br/>bill</font></td>
+	<td><font face="verdana" size="2">Gives the frontend use the possibility to memorize some products.</font></td>
+</tr>
+<tr>
+	<td><font face="verdana" size="2"><strong>General:</strong><br/>memo<br/>help</font></td>
+	<td><font face="verdana" size="2">Displays this help screen.</font></td>
 </tr>
 </table>
 <!--###TEMPLATE_DEFAULT### end -->

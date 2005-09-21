@@ -722,9 +722,13 @@ Exact same features as BASKET_TEMPLATE
 		</tr>
 	</table>
 	<br>
-	<input type="Submit" name="products_update" value="back to basket">&nbsp;&nbsp;	<input type="Submit" name="products_payment" value="pay / order" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_FINALIZE###';">
-
-	</form>
+  <fieldset>
+  <legend>Videre</legend>
+	<input type="Submit" name="products_update" value="back to basket">&nbsp;&nbsp;	
+	<input type="Submit" name="products_payment" value="pay / order" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_FINALIZE###';">
+	<input type="hidden" name="products_cmd" value="cardno" />
+  </fieldset>
+</form>
 <br>
 <!-- ###BASKET_INFO_TEMPLATE### end -->
 
