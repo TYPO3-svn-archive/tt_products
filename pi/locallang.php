@@ -2,27 +2,31 @@
 
 $LOCAL_LANG = Array (
 	'default' => Array (
-		'open_bill' => 'Click here to open the bill',
-		'open_delivery' => 'Click here to open the delivery sheet',
+		'open bill' => 'Click here to open the bill',
+		'open delivery' => 'Click here to open the delivery sheet',
 		'invalid email' => 'Invalid E-mail address |! Please re-enter.',
+		'no template' => 'The shop template file has not been found. Check your settings of',
+		'accept AGB' => 'You have to accept the general trading conditions to proceed.',
 	),
 	'dk' => Array (
 	),
 	'de' => Array (
-		'open_bill' => 'zum Öffnen der Rechnung hier klicken',
-		'open_delivery' => 'zum Öffnen des Lieferscheins hier klicken',
+		'open bill' => 'zum Öffnen der Rechnung hier klicken',
+		'open delivery' => 'zum Öffnen des Lieferscheins hier klicken',
 		'invalid email' => 'Ungültige E-mail Addresse |! Bitte neu eingeben.',
+		'no template' => 'Die Shop-Template Datei wurde nicht gefunden. Überprüfen Sie die Einstellung',
+		'accept AGB' => 'Sie haben unsere AGB nicht akzeptiert.',
 	),
 	'no' => Array (
 	),
 	'it' => Array (
-		'open_bill' => 'Clicca qui per vedere il conto',
-		'open_delivery' => 'Clicca qui per vedere l\'ordine',
+		'open bill' => 'Clicca qui per vedere il conto',
+		'open delivery' => 'Clicca qui per vedere l\'ordine',
 		'invalid email' => 'Indirizzo E-mail | invalido! Reinseriscilo.',
 	),
 	'fr' => Array (
-	    'open_bill' => 'Cliquez ici pour ouvrir la facture',
-	    'open_delivery' => 'Cliquez ici pour ouvrir le bordereau de livraison',
+	    'open bill' => 'Cliquez ici pour ouvrir la facture',
+	    'open delivery' => 'Cliquez ici pour ouvrir le bordereau de livraison',
 	    'invalid email' => 'E-mail | non valide! réessayez svp.',
 	),
 	'es' => Array (

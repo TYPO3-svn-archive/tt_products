@@ -261,7 +261,7 @@ CREATE TABLE sys_products_orders (
 # added els4: creditpoints_spended
 	creditpoints_spended decimal(10,0) default '0' NOT NULL,
 # added els4: creditpoints_saved
-	creditpoints_saved decimal(10,4) default '0' NOT NULL,
+	creditpoints_saved decimal(10,4) default '0.0000' NOT NULL,
 	agb char(2) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid),
