@@ -1,3 +1,6 @@
+2005-09-22  Franz Holzinger <franz@fholzinger.com>
+	* update the DIBS script to use only the relayURL settings.
+
 2005-09-21  Franz Holzinger <franz@fholzinger.com>
 	* new help description and manual for Flexforms
 

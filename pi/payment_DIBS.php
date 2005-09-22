@@ -47,7 +47,7 @@ if (!is_object($this) || !is_object($this->cObj))	die('$this and $this->cObj mus
 // $lConf = $this->basketExtra["payment."]["handleScript."];		// Loads the handleScript TypoScript into $lConf.
 $lConf = $conf;
 
-$localTemplateCode = $this->cObj->fileResource($lConf[templateFile] ? $lConf[templateFile] : "EXT:tt_products/pi/payment_DIBS_template.tmpl");		// Fetches the DIBS template file
+$localTemplateCode = $this->cObj->fileResource($lConf[templateFile] ? $lConf[templateFile] : "EXT:tt_products/template/payment_DIBS_template.tmpl");		// Fetches the DIBS template file
 $localTemplateCode = $this->cObj->substituteMarkerArrayCached($localTemplateCode, $this->globalMarkerArray);
 
 $orderUid = $this->getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
@@ -60,7 +60,7 @@ $GLOBALS['TSFE']->fe_user->id.'-'.
 	)
 );
 
-$products_cmd = t3lib_div::_GP('products_cmd'); 
+$products_cmd = t3lib_div::_GP('products_cmd');
 switch($products_cmd)	{
 	case "cardno":
 		$tSubpart = $lConf["soloe"] ? "###DIBS_SOLOE_TEMPLATE###" : "###DIBS_CARDNO_TEMPLATE###";		// If solo-e is selected, use different subpart from template
@@ -74,15 +74,15 @@ switch($products_cmd)	{
 <input type="hidden" name="currency" value="'.$lConf["currency"].'">		<!--Valuta som angivet i ISO4217, danske kroner=208-->
 <input type="hidden" name="orderid" value="'.$this->getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type="hidden" name="uniqueoid" value="1">
-<input type="hidden" name="accepturl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1'.$param.'">
-<input type="hidden" name="declineurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1'.$param.'">';	
+<input type="hidden" name="accepturl" value="'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1'.$param.'">
+<input type="hidden" name="declineurl" value="'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1'.$param.'">';	
 		if ($lConf['soloe'] || $lConf['direct'])	{
 		$markerArray['###HIDDEN_FIELDS###'].= '
-<input type="hidden" name="cancelurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cancel&products_finalize=1'.$param.'">';
+<input type="hidden" name="cancelurl" value="'.$lConf["relayURL"].'&products_cmd=cancel&products_finalize=1'.$param.'">';
 		}
 		if ($lConf['direct'])	{
 			$markerArray['###HIDDEN_FIELDS###'].= '<input type="hidden" name="opener" value="">' .
-					'<input type="hidden" name="callbackurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1'.$param.'">';
+					'<input type="hidden" name="callbackurl" value="'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1'.$param.'">';
 			$markerArray['###WINDOW_OPENER###'] = 'onsubmit="return doPopup(this);" target="Betaling"'; // if this is empty then no popup window will be opened
 		}
 
@@ -195,10 +195,10 @@ switch($products_cmd)	{
 			$this->finalizeOrder($orderUid,$markerArray);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 		}
 	break;
-	default:	
+	default:
 		if ($lConf["relayURL"])	{
 			$markerArray=array();
-			$markerArray["###REDIRECT_URL###"] = 'https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cardno&products_finalize=1'.$param;
+			$markerArray["###REDIRECT_URL###"] = $lConf["relayURL"].'&products_cmd=cardno&products_finalize=1'.$param;
 			$content=tx_ttproducts_basket_div::getBasket("###DIBS_REDIRECT_TEMPLATE###",$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$content = "NO .relayURL given!!";
