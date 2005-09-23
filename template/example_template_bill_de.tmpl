@@ -72,10 +72,10 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
           ###ITEM_SINGLE_POST_HTML###
           <!-- ###ITEM_SINGLE### end -->
           <TR>
-            <TD colspan="3" align="CENTER"> <input type="Submit" name="order2" value="In den Warenkorb" onclick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></TD>
+            <TD colspan="3" align="CENTER"> <input type="Submit" name="order2" value="In den Warenkorb"></TD>
           </TR>
           <TR>
-            <TD colspan="3" align="CENTER"> <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=36'"></TD>
+            <TD colspan="3" align="CENTER"> <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=21'"></TD>
           </TR>
         </TABLE>
 			</FORM>
@@ -569,7 +569,10 @@ Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
 <br>
 <TABLE width="100%"><TR>
 <TD><input type="Submit" name="products_update" value="zurück zum Warenkorb"></TD>
-<TD align="right"><input type="Submit" name="products_payment" value="ABG´s akzeptiert" onclick="document.forms[0].action='###FORM_URL_FINALIZE###';"></TD>
+<TD align="right">
+<input type="Submit" name="products_payment" value="ABG´s akzeptiert" onclick="document.forms[0].action='###FORM_URL_FINALIZE###';">
+<input type="hidden" name="products_cmd" value="cardno" />
+</TD>
 </TR></TABLE>
 </FORM>
 <BR>
@@ -786,7 +789,8 @@ Exact same features as BASKET_TEMPLATE
 <br>
 <FORM method="post" action="###FORM_URL###">
 <TABLE width="100%"><TR>
-<TD><input type="Submit" name="products_update" value="zurück zum Warenkorb"></TD>
+<TD><input type="Submit" name="products_update" value="zurück zum Warenkorb">
+<input type="hidden" name="products_cmd" value="cardno" /></TD>
 <TD align="right"><input type="Submit" name="products_finalize" value="Bestellung abschliessen!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### (auch PayPal)###GW1E###</TD>
 </TR></TABLE>
 </FORM>

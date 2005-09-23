@@ -278,6 +278,9 @@ class tx_ttproducts_basket_div {
 		if (t3lib_div::_GP('products_redeem_gift'))	{
 		 	$activityArr['products_redeem_gift']=true;
 		}
+		if (t3lib_div::_GP('products_payment'))	{
+			$activityArr['products_payment']=true;
+		}
 
 		if (is_array($codes)) {
 			foreach ($codes as $k => $code) {
@@ -301,9 +304,6 @@ class tx_ttproducts_basket_div {
 		if (t3lib_div::_GP('products_info'))	{
 			$activityArr['products_info']=true;
 		}
-		if (t3lib_div::_GP('products_payment'))	{
-			$activityArr['products_payment']=true;
-		}
 		if (t3lib_div::_GP('products_finalize'))	{
 			$activityArr['products_finalize']=true;
 		}
@@ -326,7 +326,7 @@ class tx_ttproducts_basket_div {
 						// perform action
 					switch($activity)	{
 						case 'products_basket':
-							if (!$activityArr['products_overview'] && !$activityArr['products_info'] && !$activityArr['products_payment'] && !$activityArr['products_finalize'] && !$activityArr['products_redeem_gift'] ) {
+							if (count($activityArr) == 1) {
 								$content.=tx_ttproducts_basket_div::getBasket();
 							}
 						break;
@@ -436,7 +436,8 @@ class tx_ttproducts_basket_div {
 								// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 								$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 								$orderConfirmationHTML=tx_ttproducts_basket_div::getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
-								$contentTmp = tx_ttproducts_basket_div::finalizeOrder($orderUid, $orderConfirmationHTML); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+								$contentTmp = $orderConfirmationHTML;
+								tx_ttproducts_basket_div::finalizeOrder($orderUid, $orderConfirmationHTML); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 
 								if ($this->conf['PIDthanks'] > 0) {
 									$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
@@ -802,7 +803,7 @@ class tx_ttproducts_basket_div {
 					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->priceFormat($actItem['totalNoTax']);
 
 /* Added els4: calculating of price_discount necessary in winkelwagen.tmpl (articles in kurkenshop are excluded, because these articled will be payed with creditpoints) */
-					if ( ($actItem['rec']['price'] != '0.00') && $actItem['rec']['price2'] && ($actItem['rec']['category'] != $this->conf['creditsCategory']) ) {
+					if ( ($actItem['rec']['price'] != '0.00') && doubleval($actItem['rec']['price2']) && ($actItem['rec']['category'] != $this->conf['creditsCategory']) ) {
 						$pricediscount_total_tot_units = "";
 						$oldprice_total_tot_units = ($actItem['totalNoTax']/$actItem['rec']['price2'])*$actItem['rec']['price'];
 						$pricediscount_total_tot_units = ($oldprice_total_tot_units - $actItem['totalNoTax']) * $actItem['rec']['unit_factor'];

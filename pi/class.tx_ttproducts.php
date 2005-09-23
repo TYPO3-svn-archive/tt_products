@@ -1474,11 +1474,12 @@ class tx_ttproducts extends tslib_pibase {
 			} else {
 				$this->conf[$imageRenderObj.'.']['file'] = $this->conf['noImageAvailable'];
 			}
+			$i = $c;
 			if (!$this->conf['separateImage'])
 			{
-				$c = 0;  // show all images together as one image
+				$i = 0;  // show all images together as one image
 			}
-			$theImgCode[$c] .= $this->cObj->IMAGE($this->conf[$imageRenderObj.'.']);
+			$theImgCode[$i] .= $this->cObj->IMAGE($this->conf[$imageRenderObj.'.']);
 		}
 
 		$iconImgCode = $this->cObj->IMAGE($this->conf['datasheetIcon.']);
@@ -1526,7 +1527,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		while ((list($c,$val)=each($theImgCode)))
 		{
-			$markerArray['###PRODUCT_IMAGE' .  $c. '###'] = $theImgCode[$c];
+			$markerArray['###PRODUCT_IMAGE' .  intval($c + 1) . '###'] = $theImgCode[$c];
 		}
 
 			// empty all image fields with no availble image

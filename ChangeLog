@@ -1,3 +1,6 @@
+2005-09-23  Franz Holzinger <franz@fholzinger.com>
+	* after DIBS payment also the finalization text must get shown
+
 2005-09-22  Franz Holzinger <franz@fholzinger.com>
 	* update the DIBS script to use only the relayURL settings.
 
