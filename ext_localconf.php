@@ -21,6 +21,18 @@ if (!defined ('PATH_ttproducts_icon_table_rel')) {
 	define('PATH_ttproducts_icon_table_rel', PATH_BE_ttproducts_rel.'res/icons/table/');
 }
 
+if (!defined ('TABLE_EXTkey')) {
+	define('TABLE_EXTkey','table');
+}
+
+if (!defined ('PATH_BE_table')) {
+	define('PATH_BE_table', t3lib_extMgm::extPath(TABLE_EXTkey));
+}
+
+if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
+	define('TT_PRODUCTS_DIV_DLOG', '0');	// for development error logging
+}
+
 t3lib_extMgm::addUserTSConfig('
         options.saveDocNew.tt_products=1
 ');
@@ -36,7 +48,13 @@ t3lib_extMgm::addUserTSConfig('
 $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] = 0; //for page as categories:  1
 $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 1;  // set this to 1 !
 
-define('TT_PRODUCTS_DIV_DLOG', '0');	// for development error logging
 
+  ## Extending TypoScript from static template uid=43 to set up userdefined tag:
+t3lib_extMgm::addTypoScript($_EXTKEY,'editorcfg','
+	tt_content.CSS_editor.ch.tx_ttproducts_pi1 = < plugin.tx_ttproducts_pi.CSS_editor
+',43);
+
+
+t3lib_extMgm::addPItoST43($_EXTKEY,'pi1/class.tx_ttproducts_pi.php','_pi','list_type',0);
 
 ?>

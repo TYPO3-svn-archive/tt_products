@@ -53,10 +53,15 @@ require_once(PATH_tslib.'class.tslib_pibase.php');
 require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
 require_once('class.tx_ttproducts_htmlmail.php');
 
+require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
+
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_basket_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_category.php');
+
 
 class tx_ttproducts extends tslib_pibase {
 	var $prefixId = 'tx_ttproducts';	// Same as class name
@@ -106,7 +111,11 @@ class tx_ttproducts extends tslib_pibase {
 
 	var $mkl; 					// if compatible to mkl_products
 	var $errorMessage;			// if an error occurs, set the output text here.
-
+	var $tt_products;				// object of the type tx_table_db
+	var $tt_products_articles;		// object of the type tx_table_db
+	
+	var $category; 					// object of the type tx_ttproducts_category
+	var $feuserextrafields;			// exension with additional fe_users fields
 
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
@@ -114,10 +123,100 @@ class tx_ttproducts extends tslib_pibase {
 	function main_products($content,$conf)	{
 		global $TSFE;
 
+		$this->init ($content, $conf);
+
+		$codes=t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:strtoupper($this->conf['defaultCode']),1);
+		if (!count($codes))     $codes=array('HELP');
+
+
+		if (t3lib_div::_GP('mode_update'))
+			$updateMode = 1;
+		else
+			$updateMode = 0;
+
+		if (!$this->errorMessage) {
+			tx_ttproducts_basket_div::initBasket($TSFE->fe_user->getKey('ses','recs'), $updateMode, $this->category); // Must do this to initialize the basket...
+		}
+
+		// *************************************
+		// *** Listing items:
+		// *************************************
+
+		$this->$itemArray = array();
+		$codes = $this->sort_codes($codes);
+		$content .= tx_ttproducts_basket_div::products_basket($codes);
+		reset($codes);
+		while(!$this->errorMessage && list(,$theCode)=each($codes))	{
+			$theCode = (string) trim($theCode);
+			switch($theCode)	{
+				case 'LIST':
+				case 'LISTGIFTS':
+				case 'LISTHIGHLIGHTS':
+				case 'LISTNEWITEMS':
+				case 'LISTOFFERS':
+				case 'SEARCH':
+				case 'SINGLE':
+					$content.=$this->products_display($theCode);
+				break;
+				case 'BASKET':
+				case 'FINALIZE':
+				case 'INFO':
+				case 'OVERVIEW':
+				case 'PAYMENT':
+						// nothing here any more. This work is done in the call of tx_ttproducts_basket_div::products_basket($codes) before
+				break;
+				case 'BILL':
+				case 'DELIVERY':
+				case 'TRACKING':
+					$content.=$this->products_tracking($theCode);
+				break;
+				case 'MEMO':
+					$content.=$this->memo_display($theCode);
+				break;
+				case 'CURRENCY':
+					$content.=$this->currency_selector($theCode);
+				break;
+/* Added Els: case ORDERS line 253-255 */
+				case 'ORDERS':
+					$content.=$this->orders_display($theCode);
+				break;
+				default:	// 'HELP'
+					$helpTemplate = $this->cObj->fileResource('EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl');
+
+						// Get language version
+					$helpTemplate_lang='';
+					if ($this->langKey)	{$helpTemplate_lang = $this->cObj->getSubpart($helpTemplate,'###TEMPLATE_'.$this->langKey.'###');}
+					$helpTemplate = $helpTemplate_lang ? $helpTemplate_lang : $this->cObj->getSubpart($helpTemplate,'###TEMPLATE_DEFAULT###');
+
+						// Markers and substitution:
+					$markerArray['###PATH###'] = t3lib_extMgm::siteRelPath(TT_PRODUCTS_EXTkey);
+					$content.=$this->cObj->substituteMarkerArray($helpTemplate,$markerArray);
+				break;
+			}
+		}
+		
+		if ($this->errorMessage) {
+			$content = '<p><b>'.$this->errorMessage.'</b></p>';
+		}
+		return $this->pi_wrapInBaseClass($content);
+	}
+
+	/**
+	 * does the initialization stuff
+     *
+     * @param       string          content string
+     * @param       string          configuration array
+     * @return      void
+ 	 */
+	function init (&$content,&$conf) {
+		global $TSFE;
+
 			// getting configuration values:
 		$this->conf=$conf;
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
+
+		$this->initTables();
 
 		$TSFE->set_no_cache();
     	// multilanguage support
@@ -128,6 +227,9 @@ class tx_ttproducts extends tslib_pibase {
 		// *** getting configuration values:
 		// *************************************
 
+		// store if feuserextrafields is loaded
+		$this->feuserextrafields = t3lib_extMgm::isLoaded('feuserextrafields');
+		
 		// mkl - multicurrency support
 		if (t3lib_extMgm::isLoaded('mkl_currxrate')) {
 			include_once(t3lib_extMgm::extPath('mkl_currxrate').'pi1/class.tx_mklcurrxrate_pi1.php');
@@ -200,7 +302,6 @@ class tx_ttproducts extends tslib_pibase {
 			// Substitute Global Marker Array
 		$this->templateCode= $this->cObj->substituteMarkerArrayCached($this->templateCode, $globalMarkerArray);
 
-
 			// This cObject may be used to call a function which manipulates the shopping basket based on settings in an external order system. The output is included in the top of the order (HTML) on the basket-page.
 		$this->externalCObject = $this->getExternalCObject('externalProcessing');
 
@@ -209,85 +310,22 @@ class tx_ttproducts extends tslib_pibase {
 		$this->TAXpercentage = doubleval($this->conf['TAXpercentage']);		// Set the TAX percentage.
 		$this->globalMarkerArray = $globalMarkerArray;
 
-		$this->initCategories();
-
-		$codes=t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:strtoupper($this->conf['defaultCode']),1);
-		if (!count($codes))     $codes=array('HELP');
-
-
-		if (t3lib_div::_GP('mode_update'))
-			$updateMode = 1;
-		else
-			$updateMode = 0;
-
-		if (!$this->errorMessage) {
-			tx_ttproducts_basket_div::initBasket($TSFE->fe_user->getKey('ses','recs'), $updateMode); // Must do this to initialize the basket...
-		}
-
-		// *************************************
-		// *** Listing items:
-		// *************************************
-
-		$this->$itemArray = array();
-		$codes = $this->sort_codes($codes);
-		$content .= tx_ttproducts_basket_div::products_basket($codes);
-		reset($codes);
-		while(!$this->errorMessage && list(,$theCode)=each($codes))	{
-			$theCode = (string) trim($theCode);
-			switch($theCode)	{
-				case 'LIST':
-				case 'LISTGIFTS':
-				case 'LISTHIGHLIGHTS':
-				case 'LISTNEWITEMS':
-				case 'LISTOFFERS':
-				case 'SEARCH':
-				case 'SINGLE':
-					$content.=$this->products_display($theCode);
-				break;
-				case 'BASKET':
-				case 'FINALIZE':
-				case 'INFO':
-				case 'OVERVIEW':
-				case 'PAYMENT':
-						// nothing here any more. This work is done in the call of tx_ttproducts_basket_div::products_basket($codes) before
-				break;
-				case 'BILL':
-				case 'DELIVERY':
-				case 'TRACKING':
-					$content.=$this->products_tracking($theCode);
-				break;
-				case 'MEMO':
-					$content.=$this->memo_display($theCode);
-				break;
-				case 'CURRENCY':
-					$content.=$this->currency_selector($theCode);
-				break;
-/* Added Els: case ORDERS line 253-255 */
-				case 'ORDERS':
-					$content.=$this->orders_display($theCode);
-				break;
-				default:	// 'HELP'
-					$helpTemplate = $this->cObj->fileResource('EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl');
-
-						// Get language version
-					$helpTemplate_lang='';
-					if ($this->langKey)	{$helpTemplate_lang = $this->cObj->getSubpart($helpTemplate,'###TEMPLATE_'.$this->langKey.'###');}
-					$helpTemplate = $helpTemplate_lang ? $helpTemplate_lang : $this->cObj->getSubpart($helpTemplate,'###TEMPLATE_DEFAULT###');
-
-						// Markers and substitution:
-					$markerArray['###PATH###'] = t3lib_extMgm::siteRelPath(TT_PRODUCTS_EXTkey);
-					$content.=$this->cObj->substituteMarkerArray($helpTemplate,$markerArray);
-				break;
-			}
-		}
-		
-		if ($this->errorMessage) {
-			$content = '<p><b>'.$this->errorMessage.'</b></p>';
-		}
-		return $this->pi_wrapInBaseClass($content);
+		$this->category = t3lib_div::makeInstance('tx_ttproducts_category');
+		$this->category->initCategories();
 	}
 
 
+	/**
+	 * Getting the table definitions
+	 */
+	function initTables()	{
+		$this->tt_products = t3lib_div::makeInstance('tx_table_db');
+		$this->tt_products->setTCAFieldArray('tt_products');
+		$this->tt_products_articles = t3lib_div::makeInstance('tx_table_db');
+		$this->tt_products_articles->setTCAFieldArray('tt_products_articles');
+	} // initTables
+
+	
 	/**
 	 * returns the codes in the order in which they have to be processed
      *
@@ -437,12 +475,6 @@ class tx_ttproducts extends tslib_pibase {
 		}
 		return $altSPM ? $altSPM : $subpartMarker;
 	} // spMarker
-
-
-
-	function categorycomp($row1, $row2)  {
-		return strcmp($this->categories[$row1['category']], $this->categories[$row2['category']]);
-	} // categorycomp
 
 
 
@@ -618,16 +650,14 @@ class tx_ttproducts extends tslib_pibase {
 
 					// Get the subpart code
 				$itemFrameTemplate ='';
-				#debug ($extVars, '$extVars', __LINE__, __FILE__);
-				#debug ($row['uid'], '$row[\'uid\']', __LINE__, __FILE__);
 				$giftNumberArray = $this->getGiftNumbers ($row['uid'], $extVars);
-
-		#debug ($giftNumberArray, '$giftNumberArray', __LINE__, __FILE__);
 
 				if ($this->config['displayCurrentRecord'])	{
 					$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 				} else if (count($giftNumberArray)) {
 					$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
+				} else if ($row['inStock']==0 && $this->conf['showProductsNotInStock']) {
+					$itemFrameTemplate = "###ITEM_SINGLE_DISPLAY_NOT_IN_STOCK###";
 				} else {
 					$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
 				}
@@ -646,7 +676,17 @@ class tx_ttproducts extends tslib_pibase {
 				} elseif ($this->conf['substitutePagetitle']) {
 					$TSFE->page['title'] = $row['title'];
 				}
-				$catTitle= $this->pageArray[$row['pid']]['title'].($row['category']?'/'.$this->categories[$row['category']]:'');
+				$pageCatTitle = '';
+				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory'] == 1) {
+						$pageCatTitle = $this->pageArray[$row['pid']]['title'].'/';
+				}		
+				
+				$catTmp = '';
+				if ($row['category']) {
+					$catTmp = $this->category->getCategory($row['category']);
+					$catTmp = $catTmp['title'];	
+				}
+				$catTitle = $pageCatTitle.$catTmp;
 
 /*
 				$catTitle= $this->categories[$row['category']]['title'];
@@ -692,7 +732,7 @@ class tx_ttproducts extends tslib_pibase {
 					$queryNextPrefix = 'uid > '.intval($this->tt_product_single);
 				}
 				$queryprev = '';
-				$wherestock = ($this->conf['showNotinStock'] ? '' : 'AND (inStock >0) ');
+				$wherestock = ($this->conf['showNotinStock'] ? '' : 'AND (inStock <>0) ');
 				$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->cObj->enableFields('tt_products');
 				$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev);
 
@@ -726,7 +766,6 @@ class tx_ttproducts extends tslib_pibase {
 					$subpartArray = array();
 					$wrappedSubpartArray=array();
 					foreach ($giftNumberArray as $k => $giftnumber) {
-						#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__);
 						$markerArray = $this->addGiftMarkers ($markerArray, $giftnumber);
 						$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'].'_'.$giftnumber;
 						$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')';
@@ -798,7 +837,9 @@ class tx_ttproducts extends tslib_pibase {
 					// Get products
 				$selectConf = Array();
 				$selectConf['pidInList'] = $this->pid_list;
-				$wherestock = ($this->config['showNotinStock'] ? '' : 'AND (inStock > 0) ');
+			#debug ($this->pid_list, '$this->pid_list', __LINE__, __FILE__);
+				
+				$wherestock = ($this->config['showNotinStock'] ? '' : 'AND (inStock <> 0) ');
 				$selectConf['where'] = '1=1 '.$wherestock.$where;
 
 					// performing query to count all products (we need to know it for browsing):
@@ -1122,61 +1163,6 @@ class tx_ttproducts extends tslib_pibase {
 
 
 	/**
-	 * Getting all tt_products_cat categories into internal array
-	 */
-	function initCategories()	{
-			// Fetching catagories:
-	 	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products_cat', '1=1'.$this->cObj->enableFields('tt_products_cat'));
-		$this->categories = array();
-		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
-			$this->categories[$row['uid']] = $row['title'];
-		}
-	} // initCategories
-/*
-			// Fetching categories:
-	 	$query = "select tt_products_cat.uid,tt_products_cat.pid";
-	 	$query .= ",tt_products_cat.tstamp,tt_products_cat.crdate";
-	 	$query .= ",tt_products_cat.hidden,tt_products_cat.title";
-	 	$query .= ",tt_products_cat.note,tt_products_cat.image,tt_products_cat.deleted";
-	 	       // mkl: language ovelay
-		if ($this->language > 0) {
-			$query .= ",tt_products_cat_language.title AS o_title";
-			$query .= ",tt_products_cat_language.note AS o_note";
-		}
-		$query .= " FROM tt_products_cat";
-		if ($this->language > 0) {
-			$query .= " LEFT JOIN tt_products_cat_language";
-			$query .= " ON (tt_products_cat.uid=tt_products_cat_language.cat_uid";
-			$query .= " AND tt_products_cat_language.sys_language_uid=$this->language";
-			$query .= $this->cObj->enableFields("tt_products_cat_language");
-			$query .= ")";
-		}
-		$query .= " WHERE 1=1";
-		$query .= $this->cObj->enableFields("tt_products_cat");
-
-
-		$res = mysql(TYPO3_db,$query);
-		echo mysql_error();
-		$this->categories=array();
-		while($row = mysql_fetch_assoc($res))	{
-		        if ( ($this->language > 0) && $row["o_title"] )	{
-				$this->categories[$row["uid"]]["title"] = $row["o_title"];
-		        }
-		        else	{
-				$this->categories[$row["uid"]]["title"] = $row["title"];
-				}
-		        if ( ($this->language > 0) && $row["o_note"] )	{
-				$this->categories[$row["uid"]]["note"] = $this->pi_RTEcssText($row["o_note"]);
-		        }
-		        else	{
-				$this->categories[$row["uid"]]["note"] = $this->pi_RTEcssText($row["note"]);
-				}
-				$this->categories[$row["uid"]]["image"] = $row["image"];
-		}
-	}
-*/
-
-	/**
 	 * Generates an array, ->pageArray of the pagerecords from ->pid_list
 	 */
 	function generatePageArray()	{
@@ -1187,7 +1173,6 @@ class tx_ttproducts extends tslib_pibase {
 			$this->pageArray[$row['uid']] = $row;
 		}
 	} // generatePageArray
-
 
 
 
@@ -1378,7 +1363,8 @@ class tx_ttproducts extends tslib_pibase {
 			// all of the delivery address will be overwritten when no city and not email address have been filled in
 		if (!trim($this->deliveryInfo['city']) && !trim($this->deliveryInfo['email'])) {
 /* Added Els: 'feusers_uid,' and more fields */
-			$infoFields = explode(',','feusers_uid,tx_feuserextrafields_initials_name,telephone,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,email,date_of_birth,company,tx_feuserextrafields_company_deliv,address,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,city,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv'); // Fields...
+			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
+			$infoFields = explode(',','feusers_uid,telephone,name,email,date_of_birth,company,address,city'.$infoExtraFields); // Fields...
 			while(list(,$fName)=each($infoFields))	{
 				$this->deliveryInfo[$fName] = $this->personInfo[$fName];
 			}
@@ -1594,7 +1580,7 @@ class tx_ttproducts extends tslib_pibase {
 		}
 
 		$markerArray['###PRODUCT_INSTOCK_UNIT###'] = '';
-		if ($row['inStock'] > 0) {
+		if ($row['inStock'] <> 0) {
 			$markerArray['###PRODUCT_INSTOCK###'] = $row['inStock'];
 			$markerArray['###PRODUCT_INSTOCK_UNIT###'] = $this->conf['inStockPieces'];
 		} else {
@@ -2397,7 +2383,6 @@ class tx_ttproducts extends tslib_pibase {
 			// initialize order data.
 		$orderData = unserialize($orderRow['orderData']);
 
-		//$this->initCategories();
 		$basket = $orderData[''];
 
 		$markerArray = array();

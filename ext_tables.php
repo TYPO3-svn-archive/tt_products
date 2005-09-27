@@ -94,7 +94,7 @@ if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1) {
 	t3lib_div::loadTCA('tt_content');
 	$TCA['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='pi_flexform';
-	t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:'.$_EXTKEY.'/flexform_ds_pi.xml');
+	t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:'.TT_PRODUCTS_EXTkey.'/flexform_ds_pi.xml');
 }
 else if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory'] == 1) {
 	//$tempStr = 'LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.';
@@ -135,8 +135,8 @@ else if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory']
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='tt_products_code;;;;1-1-1';
 }
 
-t3lib_extMgm::addPlugin(Array('LLL:EXT:'.$_EXTKEY.'/locallang_tca.php:tt_content.list_type_pi1','5'),'list_type');
-t3lib_extMgm::addPlugin(Array('LLL:EXT:'.$_EXTKEY.'/locallang_tca.php:tt_products', '5'));
+t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:tt_content.list_type_pi1','5'),'list_type');
+t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:tt_products', '5'));
 
 t3lib_extMgm::allowTableOnStandardPages('tt_products');
 
@@ -150,14 +150,14 @@ t3lib_extMgm::allowTableOnStandardPages('tt_products_articles');
 if (TYPO3_MODE=='BE')	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = PATH_BE_ttproducts.'class.tx_ttproducts_wizicon.php';
 
 
-t3lib_extMgm::addLLrefForTCAdescr('tt_products','EXT:tt_products/locallang_csh_ttprod.php');
-t3lib_extMgm::addLLrefForTCAdescr('tt_products_cat','EXT:tt_products/locallang_csh_ttprodc.php');
-t3lib_extMgm::addLLrefForTCAdescr('tt_products_articles','EXT:tt_products/locallang_csh_ttproda.php');
+t3lib_extMgm::addLLrefForTCAdescr('tt_products','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprod.php');
+t3lib_extMgm::addLLrefForTCAdescr('tt_products_cat','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprodc.php');
+t3lib_extMgm::addLLrefForTCAdescr('tt_products_articles','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttproda.php');
 
 $tempColumns = Array (
 	'tt_products_memoItems' => Array (
 		'exclude' => 1,
-		'label' => 'LLL:EXT:tt_products/locallang_tca.php:fe_users.tt_products_memoItems',
+		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_memoItems',
 		'config' => Array (
 			'type' => 'input',
 			'size' => '10',
@@ -166,7 +166,7 @@ $tempColumns = Array (
 	),
 	'tt_products_discount' => Array (
 		'exclude' => 1,
-		'label' => 'LLL:EXT:tt_products/locallang_tca.php:fe_users.tt_products_discount',
+		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_discount',
 		'config' => Array (
 			'type' => 'input',
 			'size' => '4',
@@ -185,9 +185,5 @@ t3lib_div::loadTCA('fe_users');
 
 t3lib_extMgm::addTCAcolumns('fe_users',$tempColumns,1);
 t3lib_extMgm::addToAllTCAtypes('fe_users', 'tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1');
-
-
-
-
 
 ?>
