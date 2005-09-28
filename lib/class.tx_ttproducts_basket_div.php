@@ -1425,22 +1425,24 @@ class tx_ttproducts_basket_div {
 								// 	TODO: Saving the order record support color, size and accessory here
 						}
 					} else {
-						$query='uid=\''.intval($actItemArray[0]['rec']['uid']).'\'';
+						foreach ($actItemArray as $k1=>$actItem) {
+							$query='uid=\''.intval($actItem['rec']['uid']).'\'';
 
-						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products', $query);
+							$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products', $query);
 
-						if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-							if ($row['inStock'] > 0) {
-								$newInStock = intval($row['inStock'])-intval($actItemArray[0]['count']);
-								if ($newInStock < 0) {
-									$newInStock = 0;
-								}
+							if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+								if ($row['inStock'] > 0) {
+									$newInStock = intval($row['inStock'])-intval($actItem['count']);
+									if ($newInStock < 0) {
+										$newInStock = 0;
+									}
 
-								$fieldsArray =array();
+									$fieldsArray =array();
 											// Setting tstamp, deleted and tracking code
-								$fieldsArray['inStock']=$newInStock;
+									$fieldsArray['inStock']=$newInStock;
 
-								$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'uid='.intval($actItemArray[0]['rec']['uid']), $fieldsArray);
+									$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'uid='.intval($actItem['rec']['uid']), $fieldsArray);
+								}
 							}
 						}
 					}
@@ -1477,12 +1479,14 @@ class tx_ttproducts_basket_div {
 						}
 					}
 				} else {
-					$insertFields = array (
-						'sys_products_orders_uid' => $orderUid,
-						'sys_products_orders_qty' => intval($actItemArray[0]['count']),
-						'tt_products_uid' => intval($actItemArray[0]['rec']['uid'])
-					);	// TODO: differentiate between colors, sizes, gradings and accessory
-					$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
+					foreach ($actItemArray as $k1=>$actItem) {
+						$insertFields = array (
+							'sys_products_orders_uid' => $orderUid,
+							'sys_products_orders_qty' => intval($actItem['count']),
+							'tt_products_uid' => intval($actItem['rec']['uid'])
+						);	// TODO: differentiate between colors, sizes, gradings and accessory
+						$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
+					}
 				}
 			}
 		}
