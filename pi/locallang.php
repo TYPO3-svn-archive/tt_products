@@ -18,22 +18,27 @@ $LOCAL_LANG = Array (
 		'accept AGB' => 'Sie haben unsere AGB nicht akzeptiert.',
 	),
 	'no' => Array (
+		'open bill' => 'Klikk her for å åpne kvitteringen',
+		'open delivery' => 'Klikk her for å åpne pakkseddelen',
+		'invalid email' => 'Ugyldig epost-adresse. Vennligst skriv den inn på nytt.',
+		'no template' => 'Ingen mal ble funnet for butikken. Sjekk oppsettet.',
+		'accept AGB' => 'Du må akseptere kjøpebetingelsene for å fortsette.',
 	),
 	'it' => Array (
 		'open bill' => 'Clicca qui per vedere il conto',
 		'open delivery' => 'Clicca qui per vedere l\'ordine',
 		'invalid email' => 'Indirizzo E-mail | invalido! Reinseriscilo.',
+		'no template' => 'SHOP TEMPLATE NON TROVATO! controlla la configurazione',
+		'accept AGB' => 'Devi accettare le condizioni generali per procedere.',
 	),
 	'fr' => Array (
-	    'open bill' => 'Cliquez ici pour ouvrir la facture',
-	    'open delivery' => 'Cliquez ici pour ouvrir le bordereau de livraison',
-	    'invalid email' => 'E-mail | non valide! réessayez svp.',
+		'open bill' => 'Cliquez ici pour ouvrir la facture',
+		'open delivery' => 'Cliquez ici pour ouvrir le bordereau de livraison',
+		'invalid email' => 'E-mail | non valide! réessayez svp.',
 	),
 	'es' => Array (
 	),
 	'nl' => Array (
-		'open_bill' => 'Om de rekening te openen, klik hier',
-		'open_delivery' => 'Om de pakbon te openen, klik hier',
 		'invalid email' => 'Onjuist e-mail adres |!',
 	),
 	'cz' => Array (

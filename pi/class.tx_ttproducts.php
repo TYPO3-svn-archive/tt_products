@@ -125,7 +125,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		$this->init ($content, $conf);
 
-		$codes=t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:strtoupper($this->conf['defaultCode']),1);
+		$codes=t3lib_div::trimExplode(',', $this->config['code'],1);
 		if (!count($codes))     $codes=array('HELP');
 
 
@@ -251,12 +251,19 @@ class tx_ttproducts extends tslib_pibase {
 			$this->staticInfo->init();
 		}
 
-		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] == 1) {
-			// Converting flexform data into array:
-			$this->pi_initPIflexForm();
-			$this->config['code'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'display_mode');
+		if (empty($this->conf['code'])) {
+			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] == 1) {
+				// Converting flexform data into array:
+				$this->pi_initPIflexForm();
+				$this->config['code'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'display_mode');
+			} else {
+				$this->config['code'] = strtoupper(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));
+			}
+			if (empty($this->config['code'])) {
+				$this->config['code'] = strtoupper($this->conf['defaultCode']);
+			}
 		} else {
-			$this->config['code'] = strtoupper(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));
+			$this->config['code'] = $this->conf['code'];
 		}
 
 		$this->config['limit'] = $this->conf['limit'] ? $this->conf['limit'] : 50;

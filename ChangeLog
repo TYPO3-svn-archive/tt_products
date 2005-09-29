@@ -1,4 +1,7 @@
 2005-09-29  Franz Holzinger <franz@fholzinger.com>
+	* using always only the CODE field if it is configured in the SETUP
+
+2005-09-29  Franz Holzinger <franz@fholzinger.com>
 	* additional Parameter $target='' in all links with pi_LinkToPage
 	* email table for confirmation emails depending on the category of the bought products
 

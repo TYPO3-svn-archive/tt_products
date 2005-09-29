@@ -1,6 +1,6 @@
 <?php
 /**
-* Default  TCA_DESCR for "tt_products_articles"
+* Default  TCA_DESCR for "tt_products_emails"
 */
 
 $LOCAL_LANG = Array (
@@ -21,7 +21,7 @@ $LOCAL_LANG = Array (
 	'it' => Array (
 	),
 	'fr' => Array (
-	), 
+	),
 	'es' => Array (
 	),
 	'nl' => Array (

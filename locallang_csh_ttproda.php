@@ -17,13 +17,18 @@ $LOCAL_LANG = Array (
 		'.details' => 'Die Artikel werden dazu verwendet, um spezielle Eigenschaften für die Varianten von Produkten haben zu können. Sie können erst nach der Eingabe des zugehörigen Produktes eingegeben werden.',
 	),
 	'no' => Array (
+		'.description' => 'Butikkartikler',
+		'.details' => 'Artiklene brukes til å ha spesielle oppsett som forskjellig pris for ulike varianter av produktene. De kan legges inn etter at det tilhørende produktet har blitt lagt inn.',
 	),
 	'it' => Array (
+		'.description' => 'Articoli',
+		'.details' => 'Gli articoli sono usati per avere attributi speciali come il prezzo per le varianti dei prodotti. Possono essere inseriti solo dopo che il corrispondente prodotto è già stato registrato.',
+		'title.description' => '[COMPILA] tt_products_cat->title',
 	),
 	'fr' => Array (
-	    '.description' => 'Articles du magasin.',
-	    '.details' => 'Les articles sont utilisés pour décliner les produits. Vous ne pouvez evidemment saisir l\'article qu\'une fois le produit correspondant saisi.',
-	), 
+		'.description' => 'Articles du magasin.',
+		'.details' => 'Les articles sont utilisés pour décliner les produits. Vous ne pouvez evidemment saisir l\'article qu\'une fois le produit correspondant saisi.',
+	),
 	'es' => Array (
 	),
 	'nl' => Array (

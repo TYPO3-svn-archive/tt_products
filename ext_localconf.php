@@ -46,7 +46,7 @@ t3lib_extMgm::addUserTSConfig('
 ');
 
 $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] = 0; //for page as categories:  1
-$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 1;  // set this to 1 !
+$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 0;  // set this to 1 !
 
 
   ## Extending TypoScript from static template uid=43 to set up userdefined tag:

@@ -210,10 +210,8 @@ CREATE TABLE tt_products_emails (
 	starttime int(11) DEFAULT '0' NOT NULL,
 	endtime int(11) DEFAULT '0' NOT NULL,
 	fe_group int(11) DEFAULT '0' NOT NULL,
-
-	name  varchar(80) DEFAULT '' NOT NULL,
+	name varchar(80) DEFAULT '' NOT NULL,
 	email varchar(80) DEFAULT '' NOT NULL,
-
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );

@@ -10,99 +10,102 @@ $LOCAL_LANG = Array (
 		'_.seeAlso' => 'tt_products',
 		'title.description' => '[FILL IN] tt_products_cat->title',
 	),
-	'ar' => Array (
-	),
-	'ba' => Array (
-	),
-	'bg' => Array (
-	),
-	'br' => Array (
-	),
-	'ca' => Array (
-	),
-	'ch' => Array (
-	),
-	'cz' => Array (
+	'dk' => Array (
 	),
 	'de' => Array (
 		'.description' => 'Produktkategorien',
 		'.details' => 'Die Kategorien werden im Shop System nur dann verwendet, wenn das Shop auch dafür konfiguriert worden ist.',
 	),
-	'dk' => Array (
-	),
-	'eo' => Array (
-	),
-	'es' => Array (
-	),
-	'et' => Array (
-	),
-	'eu' => Array (
-	),
-	'fi' => Array (
-	),
-	'fr' => Array (
-	    '.description' => 'Catégories du magasin.',
-	    '.details' => 'Les catégories ne sont utilisées que si le plugin est configuré.',
-	),
-	'gl' => Array (
-	),
-	'gr' => Array (
-	),
-	'he' => Array (
-	),
-	'hi' => Array (
-	),
-	'hr' => Array (
-		'.description' => 'Kategorije ugraðenog sustava za prodaju',
-		'.details' => 'Ove se kategosije koriste samo ako je sustav za prodaju iskonfiguriran da ih koristi',
-	),
-	'hk' => Array (
-	),
-	'hu' => Array (
-	),
-	'is' => Array (
-	),
-	'it' => Array (
-	),
-	'jp' => Array (
-	),
-	'kr' => Array (
-	),
-	'lt' => Array (
-	),
-	'lv' => Array (
-	),
-	'my' => Array (
-	),
-	'nl' => Array (
-	),
 	'no' => Array (
 		'.description' => 'Kategorier for innebygde butikkprodukter.',
 		'.details' => 'Kategoriene vises bare i butikksystemet hvis det er konfigurert slik.',
 	),
+	'it' => Array (
+		'.description' => 'Categorie dello Shop',
+		'.details' => 'Le categorie sono usate solo se lo shop è adeguatamente configurato',
+		'title.description' => '[COMPILA] tt_products_cat->title',
+	),
+	'fr' => Array (
+		'.description' => 'Catégories du magasin.',
+		'.details' => 'Les catégories ne sont utilisées que si le plugin est configuré.',
+	),
+	'es' => Array (
+	),
+	'nl' => Array (
+	),
+	'cz' => Array (
+	),
 	'pl' => Array (
 	),
-	'pt' => Array (
+	'si' => Array (
 	),
-	'ro' => Array (
+	'fi' => Array (
 	),
-	'ru' => Array (
+	'tr' => Array (
 	),
 	'se' => Array (
 		'.description' => 'Kategorier för inbyggd butiksprodukter',
 		'.details' => 'Kategorierna används endast om de är konfigurerade att synas',
 	),
-	'si' => Array (
+	'pt' => Array (
+	),
+	'ru' => Array (
+	),
+	'ro' => Array (
+	),
+	'ch' => Array (
 	),
 	'sk' => Array (
 	),
+	'lt' => Array (
+	),
+	'is' => Array (
+	),
+	'hr' => Array (
+		'.description' => 'Kategorije ugraðenog sustava za prodaju',
+		'.details' => 'Ove se kategosije koriste samo ako je sustav za prodaju iskonfiguriran da ih koristi',
+	),
+	'hu' => Array (
+	),
+	'gl' => Array (
+	),
 	'th' => Array (
 	),
-	'tr' => Array (
+	'gr' => Array (
+	),
+	'hk' => Array (
+	),
+	'eu' => Array (
+	),
+	'bg' => Array (
+	),
+	'br' => Array (
+	),
+	'et' => Array (
+	),
+	'ar' => Array (
+	),
+	'he' => Array (
 	),
 	'ua' => Array (
 	),
+	'lv' => Array (
+	),
+	'jp' => Array (
+	),
 	'vn' => Array (
+	),
+	'ca' => Array (
+	),
+	'ba' => Array (
+	),
+	'kr' => Array (
+	),
+	'eo' => Array (
+	),
+	'my' => Array (
+	),
+	'hi' => Array (
 	),
 );
 ?>

@@ -38,6 +38,7 @@ plugin.tt_products {
   
   basketImage < .image
   basketImage.file.maxW = {$plugin.tt_products.maxW_basket}
+  basketImage.file.maxH = {$plugin.tt_products.maxH_basket}
   basketImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_basket}
 
   image.wrap = | <BR>
