@@ -898,7 +898,7 @@ class tx_ttproducts_basket_div {
 
 		$splitMark = md5(microtime());
 		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$tempUrl = $this->pi_linkToPage($splitMark,$pid,$this->getLinkParams());
+		$tempUrl = $this->pi_linkToPage($splitMark,$pid,'',$this->getLinkParams());
 		$wrappedSubpartArray['###LINK_BASKET###'] = explode ($splitMark, $tempUrl);
 		//$wrappedSubpartArray['###LINK_BASKET###']= array('<a href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</a>');
 
@@ -1484,7 +1484,7 @@ class tx_ttproducts_basket_div {
 							'sys_products_orders_uid' => $orderUid,
 							'sys_products_orders_qty' => intval($actItem['count']),
 							'tt_products_uid' => intval($actItem['rec']['uid'])
-						);	// TODO: differentiate between colors, sizes, gradings and accessory
+						);
 						$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
 					}
 				}
@@ -1594,11 +1594,26 @@ class tx_ttproducts_basket_div {
 			else
 				echo 'Warning: Cannot create CSV file \''.$csvfilepath.'\' for this order!';
 		}
+//+++
+//$catTmp = $this->category->getCategory($actItem['rec']['category']);
+//getCategory ($uid)
+//+++
+		//debug ($this->category, '$this->category', __LINE__, __FILE__);
 
 			// Sends order emails:
 		$recipients = $this->conf['orderEmail_to'];
 		$recipients.=','.$this->personInfo['email']; // former: deliveryInfo
+
+		$emailArray = $this->category->getCategoryEmail($this->itemArray);
+		//debug ($emailArray, '$emailArray', __LINE__, __FILE__);
+		if (count ($emailArray)) {
+			foreach ($emailArray as $key => $email) {
+				$recipients.=','.$email['email'];
+			}
+		}
 		$recipients=t3lib_div::trimExplode(',',$recipients,1);
+		//debug ($recipients, '$recipients', __LINE__, __FILE__);
+
 
 		if (count($recipients))	{	// If any recipients, then compile and send the mail.
 			$emailContent=trim(tx_ttproducts_basket_div::getBasket('###EMAIL_PLAINTEXT_TEMPLATE###'));

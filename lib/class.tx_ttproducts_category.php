@@ -40,36 +40,22 @@
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
-
+require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_email.php');
 
 class tx_ttproducts_category {
 	var $categoryArray;	// array of read in categories
 	var $tt_products_cat;			// object of the type tx_table_db
+	var $tt_products_email;						// object of the type tx_table_db
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function initCategories()	{
+	function init()	{
 		global $TYPO3_DB;
 		
 		$this->tt_products_cat = t3lib_div::makeInstance('tx_table_db');
 		$this->tt_products_cat->setTCAFieldArray('tt_products_cat');
-		
-//		$sql = t3lib_div::makeInstance('tx_table_db_access');
-//		
-//		$sql->prepareFields($this->tt_products_cat, 'select', '*');
-//		$this->tt_products_cat->enableFields('tt_products_cat');
-//		
-//			// Fetching categories:
-//	 	$res = $sql->exec_SELECTquery();
-//		$this->categories = array();
-//		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-//			debug ($row, '$row', __LINE__, __FILE__);
-//			$this->categories[$row['uid']] = $row['title'];
-//		}
-//		
-//		debug ($this->categories, '$this->categories', __LINE__, __FILE__);
-	} // initCategories
+	} // init
 
 
 
@@ -79,18 +65,47 @@ class tx_ttproducts_category {
 
 
 	function getCategory ($uid) {
-		$rc = $this->categoryArray[$uid];;
+		global $TYPO3_DB;
+		#debug ($uid, 'getCategory $uid', __LINE__, __FILE__);
+		$rc = $this->categoryArray[$uid];
+		#debug ($rc, '$rc', __LINE__, __FILE__);
 		if (!$rc) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->tt_products_cat, 'select', '*');
 			$sql->prepareFields($this->tt_products_cat, 'where', 'uid = '.$uid);
+			$sql->prepareWhereFields ($this->tt_products_cat, 'uid', '=', $uid);
 			$this->tt_products_cat->enableFields('tt_products_cat');		 
 			// Fetching the category
 		 	$res = $sql->exec_SELECTquery();
+		 	$row = $TYPO3_DB->sql_fetch_assoc($res);
+			#debug ($row, '$row', __LINE__, __FILE__);
 		 	$rc = $this->categoryArray[$row['uid']] = $row;
 		}
 		return $rc;
 	}
+
+
+	// returns the delivery email addresses from the basket`s item array with the category number as index
+	function getCategoryEmail (&$itemArray) {
+		$emailArray = array();
+		$this->tt_products_email = t3lib_div::makeInstance('tx_ttproducts_email');
+		$this->tt_products_email->init();
+		// loop over all items in the basket indexed by page and itemnumber
+		foreach ($itemArray as $pid=>$pidItem) {
+			foreach ($pidItem as $itemnumber=>$actItemArray) {
+				foreach ($actItemArray as $k1=>$actItem) {
+					#debug ($actItem, '$actItem', __LINE__, __FILE__);
+					$category = $this->getCategory ($actItem['rec']['category']);
+					#debug ($category, '$category', __LINE__, __FILE__);
+					$emailArray[$actItem['rec']['category']] = $this->tt_products_email->getEmail($category['email_uid']);
+					
+				}
+			}
+		}
+		#debug ($emailArray, '$emailArray', __LINE__, __FILE__);
+		return $emailArray;
+	}
+	
 }
 
 

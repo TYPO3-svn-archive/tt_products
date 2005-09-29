@@ -48,11 +48,11 @@ CREATE TABLE tt_products_cat (
 	pid int(11) unsigned DEFAULT '0' NOT NULL,
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+	deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	note text NOT NULL,
 	image tinyblob NOT NULL,
-# parent_cat blob NOT NULL,  
-	deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
+	email_uid int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
@@ -192,6 +192,31 @@ CREATE TABLE tt_products_gifts_articles_mm (
 );
 
 
+#
+# Table structure for table 'tt_products_emails'
+#
+CREATE TABLE tt_products_emails (
+	uid int(11) DEFAULT '0' NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	tstamp int(11) DEFAULT '0' NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+	cruser_id int(11) DEFAULT '0' NOT NULL,
+	t3ver_oid int(11) DEFAULT '0' NOT NULL,
+	t3ver_id int(11) DEFAULT '0' NOT NULL,
+	t3ver_label varchar(30) DEFAULT '' NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	hidden tinyint(4) DEFAULT '0' NOT NULL,
+	starttime int(11) DEFAULT '0' NOT NULL,
+	endtime int(11) DEFAULT '0' NOT NULL,
+	fe_group int(11) DEFAULT '0' NOT NULL,
+
+	name  varchar(80) DEFAULT '' NOT NULL,
+	email varchar(80) DEFAULT '' NOT NULL,
+
+	PRIMARY KEY (uid),
+	KEY parent (pid)
+);
 
 
 #

@@ -311,7 +311,7 @@ class tx_ttproducts extends tslib_pibase {
 		$this->globalMarkerArray = $globalMarkerArray;
 
 		$this->category = t3lib_div::makeInstance('tx_ttproducts_category');
-		$this->category->initCategories();
+		$this->category->init();
 	}
 
 
@@ -436,7 +436,7 @@ class tx_ttproducts extends tslib_pibase {
 						$content = $this->getInformation('delivery',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
 						break;
 					default:
-						debug('error in tt_products calling function products_tracking with $type = "'.$type.'"');
+						debug('error in '.TT_PRODUCTS_EXTkey.' calling function products_tracking with $type = "'.$type.'"');
 				}
 			} else {	// ... else output error page
 				$content=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###TRACKING_WRONG_NUMBER###'));
@@ -677,7 +677,7 @@ class tx_ttproducts extends tslib_pibase {
 					$TSFE->page['title'] = $row['title'];
 				}
 				$pageCatTitle = '';
-				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory'] == 1) {
+				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
 						$pageCatTitle = $this->pageArray[$row['pid']]['title'].'/';
 				}		
 				
@@ -971,7 +971,7 @@ class tx_ttproducts extends tslib_pibase {
 								if ($where || $this->conf['displayListCatHeader'])	{
 									$markerArray=array();
 									$pageCatTitle = '';
-									if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory'] == 1) {
+									if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
 										$pageCatTitle = $this->pageArray[$row['pid']]['title'].'/';
 									}
 									$catTitle= $pageCatTitle.($row['category']?$this->categories[$row['category']]:'');
@@ -1096,7 +1096,7 @@ class tx_ttproducts extends tslib_pibase {
 				if ($more)	{
 					$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
 					$splitMark = md5(microtime());
-					$tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,$this->getLinkParams('', array('begin_at' => $next)));
+					$tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,'',$this->getLinkParams('', array('begin_at' => $next)));
 
 					$wrappedSubpartArray['###LINK_NEXT###']=  explode ($splitMark, $tempUrl);  // array('<a href="'.$url.'&begin_at='.$next.'">','</a>');
 				} else {
@@ -1104,7 +1104,7 @@ class tx_ttproducts extends tslib_pibase {
 				}
 				if ($begin_at)	{
 					$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
-					$tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,$this->getLinkParams('', array('begin_at' => $prev)));
+					$tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,'',$this->getLinkParams('', array('begin_at' => $prev)));
 					$wrappedSubpartArray['###LINK_PREV###']=explode ($splitMark, $tempUrl); // array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
 				} else {
 					$subpartArray['###LINK_PREV###']='';
@@ -1118,7 +1118,7 @@ class tx_ttproducts extends tslib_pibase {
 							//	you may use this if you want to link to the current page also
 							//
 						} else {
-							$tempUrl = $this->pi_linkToPage((string)($i+1),$TSFE->id,$this->getLinkParams('', array('begin_at' => (string)($i * $this->config['limit']))));
+							$tempUrl = $this->pi_linkToPage((string)($i+1),$TSFE->id,'',$this->getLinkParams('', array('begin_at' => (string)($i * $this->config['limit']))));
 							$markerArray['###BROWSE_LINKS###'].= explode ($splitMark, $tempUrl); // ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
 						}
 					}

@@ -501,7 +501,7 @@ $TCA['tt_products_language'] = Array (
 $TCA['tt_products_cat'] = Array (
 	'ctrl' => $TCA['tt_products_cat']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,title'
+		'showRecordFieldList' => 'hidden,title, image, email_uid'
 	),
 	'feInterface' => $TCA['tt_products_cat']['feInterface'],
 	'columns' => Array (
@@ -512,10 +512,37 @@ $TCA['tt_products_cat'] = Array (
 				'size' => '40',
 				'max' => '256'
 			)
-		)
+		),
+		'image' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.image',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'file',
+				'allowed' => $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'],
+				'max_size' => '1000',
+				'uploadfolder' => 'uploads/pics',
+				'show_thumbs' => '1',
+				'size' => '3',
+				'maxitems' => '6',
+				'minitems' => '0'
+			)
+		),
+		'email_uid' => Array (		
+			'exclude' => 0,		
+			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat.email_uid',		
+			'config' => Array (
+				'type' => 'select',	
+				'foreign_table' => 'tt_products_emails',	
+				'foreign_table_where' => 'AND tt_products_emails.pid=###CURRENT_PID### ORDER BY tt_products_emails.uid',	
+				'size' => 10,	
+				'minitems' => 0,
+				'maxitems' => 1,
+			)
+		),
 	),
 	'types' => Array (
-		'0' => Array('showitem' => 'hidden;;;;1-1-1, title;;;;3-3-3')
+		'0' => Array('showitem' => 'hidden;;;;1-1-1, title, email_uid, image;;;;3-3-3')
 	)
 );
 
@@ -527,7 +554,7 @@ $TCA['tt_products_cat'] = Array (
 $TCA['tt_products_cat_language'] = Array (
 	'ctrl' => $TCA['tt_products_cat_language']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'sys_language_uid,l18n_parent,l18n_diffsource,hidden,starttime,endtime,fe_group,title,subtitle,description_extra,price_gross,price_net,tax,article_type_uid,products_uid,title,cat_uid'
+		'showRecordFieldList' => 'sys_language_uid,l18n_parent,l18n_diffsource,hidden,starttime,endtime,fe_group,title,note,cat_uid'
 	),	
 	'feInterface' => $TCA['tt_products_cat_language']['feInterface'],
 	'columns' => Array (	
@@ -606,6 +633,14 @@ $TCA['tt_products_cat_language'] = Array (
 				'max' => '256'
 			)
 		),
+		'note' => Array (
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			)
+		),
 		'cat_uid' => Array (		
 			'exclude' => 0,		
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language.cat_uid',		
@@ -621,7 +656,7 @@ $TCA['tt_products_cat_language'] = Array (
 	),
 	'types' => Array (	
 		'0' => Array('showitem' => '
-		sys_language_uid;;;;1-1-1, l18n_parent, l18n_diffsource, hidden;;1,  cat_uid;;;;2-2-2, sys_language_uid, title;;;;3-3-3')
+		sys_language_uid;;;;1-1-1, l18n_parent, l18n_diffsource, hidden;;1,  cat_uid;;;;2-2-2, sys_language_uid, title, note;;;;3-3-3')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group')
@@ -830,5 +865,94 @@ $TCA['tt_products_articles'] = Array (
 	)
 
 );
+
+
+// ******************************************************************
+// These are the email addresses which are used for sending notification emails
+// ******************************************************************
+$TCA['tt_products_emails'] = Array (
+	'ctrl' => $TCA['tt_products_emails']['ctrl'],
+	'interface' => Array (
+		'showRecordFieldList' => 'name,email,hidden,starttime,endtime,fe_group'
+	),
+	'feInterface' => $TCA['tt_products_emails']['feInterface'],
+	'columns' => Array (
+		'hidden' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.hidden',
+			'config' => Array (
+				'type' => 'check',
+				'default' => '0'
+			)
+		),
+		'starttime' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.starttime',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'default' => '0',
+				'checkbox' => '0'
+			)
+		),
+		'endtime' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.endtime',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'checkbox' => '0',
+				'default' => '0',
+				'range' => Array (
+					'upper' => mktime(0,0,0,12,31,2020),
+					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+				)
+			)
+		),
+		'fe_group' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('', 0),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.any_login', -2),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.usergroups', '--div--')
+				),
+				'foreign_table' => 'fe_groups'
+			)
+		),
+		'name' => Array (
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.name',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '40',
+				'max' => '80'
+			)
+		),
+		'email' => Array (
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.email',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '40',
+				'max' => '80'
+			)
+		),
+	),
+	'types' => Array (
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, name, email')
+	),
+	'palettes' => Array (
+		'1' => Array('showitem' => 'starttime, endtime, fe_group')
+	)
+);
+		
+
+
 
 ?>
