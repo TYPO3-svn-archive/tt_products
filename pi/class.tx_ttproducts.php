@@ -77,7 +77,6 @@ class tx_ttproducts extends tslib_pibase {
 	var $basketExt=array();				// "Basket Extension" - holds extended attributes
 
 	var $uid_list='';					// List of existing uid's from the basket, set by initBasket()
-	var $categories=array();			// Is initialized with the categories of the shopping system
 	var $pageArray=array();				// Is initialized with an array of the pages in the pid-list
 	var $orderRecord = array();			// Will hold the order record if fetched.
 
@@ -148,6 +147,7 @@ class tx_ttproducts extends tslib_pibase {
 		reset($codes);
 		while(!$this->errorMessage && list(,$theCode)=each($codes))	{
 			$theCode = (string) trim($theCode);
+			$contentTmp = '';
 			switch($theCode)	{
 				case 'LIST':
 				case 'LISTGIFTS':
@@ -156,7 +156,7 @@ class tx_ttproducts extends tslib_pibase {
 				case 'LISTOFFERS':
 				case 'SEARCH':
 				case 'SINGLE':
-					$content.=$this->products_display($theCode);
+					$contentTmp=$this->products_display($theCode);
 				break;
 				case 'BASKET':
 				case 'FINALIZE':
@@ -168,19 +168,22 @@ class tx_ttproducts extends tslib_pibase {
 				case 'BILL':
 				case 'DELIVERY':
 				case 'TRACKING':
-					$content.=$this->products_tracking($theCode);
+					$contentTmp=$this->products_tracking($theCode);
 				break;
 				case 'MEMO':
-					$content.=$this->memo_display($theCode);
+					$contentTmp=$this->memo_display($theCode);
 				break;
 				case 'CURRENCY':
-					$content.=$this->currency_selector($theCode);
+					$contentTmp=$this->currency_selector($theCode);
 				break;
 /* Added Els: case ORDERS line 253-255 */
 				case 'ORDERS':
-					$content.=$this->orders_display($theCode);
+					$contentTmp=$this->orders_display($theCode);
 				break;
 				default:	// 'HELP'
+				break;
+			}
+			if ($contentTmp == 'error') {				
 					$helpTemplate = $this->cObj->fileResource('EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl');
 
 						// Get language version
@@ -191,7 +194,9 @@ class tx_ttproducts extends tslib_pibase {
 						// Markers and substitution:
 					$markerArray['###PATH###'] = t3lib_extMgm::siteRelPath(TT_PRODUCTS_EXTkey);
 					$content.=$this->cObj->substituteMarkerArray($helpTemplate,$markerArray);
-				break;
+					break; // while
+			} else {
+				$content.=$contentTmp;
 			}
 		}
 		
@@ -271,7 +276,8 @@ class tx_ttproducts extends tslib_pibase {
 		$this->config['limitImage'] = $this->config['limitImage'] ? $this->config['limitImage'] : 1;
 
 		$this->config['pid_list'] = trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.']));
-		$this->config['pid_list'] = $this->config['pid_list'] ? $this->config['pid_list'] : $TSFE->id;
+		//$this->config['pid_list'] = $this->config['pid_list'] ? $this->config['pid_list'] : $TSFE->id;
+		$this->setPidlist($this->config['pid_list']);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
 
 		$this->config['recursive'] = $this->cObj->stdWrap($this->conf['recursive'],$this->conf['recursive.']);
 		$this->config['storeRootPid'] = $this->conf['PIDstoreRoot'] ? $this->conf['PIDstoreRoot'] : $TSFE->tmpl->rootLine[0][uid];
@@ -313,7 +319,6 @@ class tx_ttproducts extends tslib_pibase {
 		$this->externalCObject = $this->getExternalCObject('externalProcessing');
 
 			// Initializes object
-		$this->setPidlist($this->config['pid_list']);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
 		$this->TAXpercentage = doubleval($this->conf['TAXpercentage']);		// Set the TAX percentage.
 		$this->globalMarkerArray = $globalMarkerArray;
 
@@ -981,7 +986,7 @@ class tx_ttproducts extends tslib_pibase {
 									if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
 										$pageCatTitle = $this->pageArray[$row['pid']]['title'].'/';
 									}
-									$catTitle= $pageCatTitle.($row['category']?$this->categories[$row['category']]:'');
+									$catTitle= $pageCatTitle.($row['category']?$this->category->getCategory($row['category']):'');
 									// mkl: $catTitle= $this->categories[$row['category']]["title'];
 									$this->cObj->setCurrentVal($catTitle);
 									$markerArray['###CATEGORY_TITLE###']=$this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
@@ -1089,6 +1094,9 @@ class tx_ttproducts extends tslib_pibase {
 							$out.=$this->cObj->substituteMarkerArrayCached($t['itemFrameWork'], $subpartArray, array('###ITEM_SINGLE###'=>$itemsOut));
 						}
 					}
+				}
+				if (count($productsArray) == 0) {
+					$content = 'error';
 				}
 			}
 			if ($out)	{
@@ -2470,7 +2478,8 @@ class tx_ttproducts extends tslib_pibase {
 							if ($categoryChanged == 1)
 							{
 								$markerArray=array();
-								$catTitle= ($this->categories[$currentCategory] ? $this->categories[$currentCategory]:'');
+								$tmpCategory = $this->category->getCategory($currentCategory);
+								$catTitle= ($tmpCategory ? $tmpCategory: '');
 								$this->cObj->setCurrentVal($catTitle);
 								$markerArray['###CATEGORY_TITLE###'] = $this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 								$markerArray['###CATEGORY_QTY###'] = $categoryQty[$currentCategory];

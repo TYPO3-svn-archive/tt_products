@@ -11,6 +11,7 @@ $LOCAL_LANG = Array (
 		'tt_products.itemnumber' => 'Item number:',
 		'tt_products.inStock' => 'In Stock (pcs):',
 		'tt_products.datasheet' => 'Datasheet',
+		'tt_products.www' => 'WWW URL',
 		'tt_products.tax' => 'Tax:',
 		'tt_products.weight' => 'Weight (kg):',
 		'tt_products.bulkily' => 'Bulkily:',

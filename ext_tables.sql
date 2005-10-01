@@ -22,7 +22,6 @@ CREATE TABLE tt_products (
 	www varchar(80) DEFAULT '' NOT NULL,
 	category int(10) unsigned DEFAULT '0' NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
-	ordered int(10) unsigned DEFAULT '0' NOT NULL,
 	fe_group int(11) DEFAULT '0' NOT NULL,
 	tax int(11) DEFAULT '0' NOT NULL,
 	weight varchar(20) DEFAULT '' NOT NULL,

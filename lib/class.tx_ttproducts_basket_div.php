@@ -317,7 +317,9 @@ class tx_ttproducts_basket_div {
 			reset ($activityArr);
 			$basket_tmpl = '';
 			if (count($activityArr)) {
-				$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
+				if (!$this->pid_list) {
+					$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
+				}
 				$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
 				$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
 				tx_ttproducts_basket_div::getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
@@ -790,7 +792,7 @@ class tx_ttproducts_basket_div {
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
 					$markerArray['###PRODUCT_GRADINGS###'] = $actItem['rec']['gradings'];
 
-	                $catTitle= $actItem['rec']['category']?$this->categories[$actItem['rec']['category']]:'';
+	                $catTitle= $actItem['rec']['category'] ? $this->category->getCategory($actItem['rec']['category']) : '';
 					$this->cObj->setCurrentVal($catTitle);
 					$markerArray['###CATEGORY_TITLE###']=$this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 
@@ -1594,11 +1596,6 @@ class tx_ttproducts_basket_div {
 			else
 				echo 'Warning: Cannot create CSV file \''.$csvfilepath.'\' for this order!';
 		}
-//+++
-//$catTmp = $this->category->getCategory($actItem['rec']['category']);
-//getCategory ($uid)
-//+++
-		//debug ($this->category, '$this->category', __LINE__, __FILE__);
 
 			// Sends order emails:
 		$recipients = $this->conf['orderEmail_to'];
