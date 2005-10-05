@@ -141,7 +141,7 @@ class tx_ttproducts extends tslib_pibase {
 		// *** Listing items:
 		// *************************************
 
-		$this->$itemArray = array();
+		$this->itemArray = array();
 		$codes = $this->sort_codes($codes);
 		$content .= tx_ttproducts_basket_div::products_basket($codes);
 		reset($codes);
@@ -639,7 +639,9 @@ class tx_ttproducts extends tslib_pibase {
 			$extVars= t3lib_div::_GP('ttp_extvars');
 
 				// performing query:
-			$this->setPidlist($this->config['storeRootPid']);
+			if (!$this->pid_list) {
+				$this->setPidlist($this->config['storeRootPid']);
+			}
 			$this->initRecursive(999);
 			$this->generatePageArray();
 
@@ -746,7 +748,8 @@ class tx_ttproducts extends tslib_pibase {
 				$queryprev = '';
 				$wherestock = ($this->conf['showNotinStock'] ? '' : 'AND (inStock <>0) ');
 				$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->cObj->enableFields('tt_products');
-				$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev);
+				debug ($queryprev, '$queryprev', __LINE__, __FILE__);
+				$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'','uid');
 
 				if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )
 					$wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
@@ -754,6 +757,7 @@ class tx_ttproducts extends tslib_pibase {
 					$subpartArray['###LINK_PREV_SINGLE###']='';
 
 				$querynext = $queryNextPrefix.' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->cObj->enableFields('tt_products');
+				debug ($querynext, '$querynext', __LINE__, __FILE__);
 				$resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext);
 
 				if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )
@@ -986,7 +990,9 @@ class tx_ttproducts extends tslib_pibase {
 									if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
 										$pageCatTitle = $this->pageArray[$row['pid']]['title'].'/';
 									}
-									$catTitle= $pageCatTitle.($row['category']?$this->category->getCategory($row['category']):'');
+									$tmpCategory = ($row['category'] ? $this->category->getCategory($row['category']) : array ('title' => ''));
+									$catTitle= $pageCatTitle.($tmpCategory['title']);
+									
 									// mkl: $catTitle= $this->categories[$row['category']]["title'];
 									$this->cObj->setCurrentVal($catTitle);
 									$markerArray['###CATEGORY_TITLE###']=$this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
