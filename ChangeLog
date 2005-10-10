@@ -1,3 +1,7 @@
+2005-10-10  Franz Holzinger <franz@fholzinger.com>
+	* different configuration for discount
+	* in the basket template FIELD_NAME_BASKET has to be used always
+
 2005-10-05  Franz Holzinger <franz@fholzinger.com>
 	* correct error with categories in the product list
 

@@ -122,7 +122,7 @@ class tx_ttproducts_basket_div {
 				if (t3lib_div::testInt($uid))   {
 					if (!$updateMode) {
 						$count=t3lib_div::intInRange($basketItem['quantity'],0,100000,0);
-						if ($count) {
+						if ($count>=0) {
 							$this->basketExt[$uid][$variant] = $count;
 							if ($newGiftData) {
 								if ($sameGiftData) {
@@ -143,7 +143,7 @@ class tx_ttproducts_basket_div {
 								reset($this->basketExt[$uid]);
 								while(list($beVars,)=each($this->basketExt[$uid])) {
 									 // useArticles if you have different prices and therefore articles for color, size, accessory and gradings
-									if (!$this->conf['useArticles'] || md5($beVars)==$md5) {
+									if (/*!$this->conf['useArticles'] ||*/ md5($beVars)==$md5) {
 										$this->basketExt[$uid][$beVars] = $quantity;
 									}
 								}
@@ -568,12 +568,12 @@ class tx_ttproducts_basket_div {
 
 	 */
 	function getCalculatedBasket()	{
-		if (count($this->itemArray)) {// the item array contains all the data for the elements found in the basket
+		if ($this->itemArray[0]) {// the item array contains all the data for the elements found in the basket
 			return;	// this function is called in a loop from getBasket
 					// all the calculations however need to be done only once
 					// the global member variables must already be filled in
 		}
-
+		
 		$uidArr = array();
 		reset($this->basketExt);
 		while(list($uidTmp,)=each($this->basketExt))

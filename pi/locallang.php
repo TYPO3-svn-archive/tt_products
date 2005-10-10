@@ -7,6 +7,9 @@ $LOCAL_LANG = Array (
 		'invalid email' => 'Invalid E-mail address |! Please re-enter.',
 		'no template' => 'The shop template file has not been found. Check your settings of',
 		'accept AGB' => 'You have to accept the general trading conditions to proceed.',
+		'accessory no' => 'no accessory',
+		'accessory yes' => 'with accessory',
+		'wrong parameter' => 'Wrong parameters, GET/POST var \'tt_products\' was missing or no product with uid = | found.',
 	),
 	'dk' => Array (
 	),
@@ -16,6 +19,8 @@ $LOCAL_LANG = Array (
 		'invalid email' => 'Ungültige E-mail Addresse |! Bitte neu eingeben.',
 		'no template' => 'Die Shop-Template Datei wurde nicht gefunden. Überprüfen Sie die Einstellung',
 		'accept AGB' => 'Sie haben unsere AGB nicht akzeptiert.',
+		'accessory no' => 'kein Zubehör',
+		'accessory yes' => 'mit Zubehör',
 	),
 	'no' => Array (
 		'open bill' => 'Klikk her for å åpne kvitteringen',

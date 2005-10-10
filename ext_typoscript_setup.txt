@@ -16,20 +16,21 @@ plugin.tt_products {
   
   limit = {$plugin.tt_products.limit}
   limitImage = {$plugin.tt_products.limitImage}
+  limitImageSingle = {$plugin.tt_products.limitImageSingle}
   separateImage = {$plugin.tt_products.separateImage}
   image {
     file.maxW = {$plugin.tt_products.maxW_single}
     imageLinkWrap = {$plugin.tt_products.clickEnlarge}
     imageLinkWrap {
       enable = 1
-      bodyTag = <BODY bgColor=black>
+      bodyTag = <body bgColor=black leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
       wrap = <A href="javascript:close();"> | </A>
-      width = 400
-      height = 400
+      width = {$plugin.tt_products.maxW_popup}
+      height = 
 
       JSwindow = 1
       JSwindow.newWindow = 1
-      JSwindow.expand = 17,20
+      JSwindow.expand = 0,0
     }
   }
   listImage < .image
@@ -45,6 +46,9 @@ plugin.tt_products {
   image.wrap = | <BR>
 
   noImageAvailable = {$plugin.tt_products.file.noImageAvailable}
+  datasheetIcon {
+   file = {$plugin.tt_products.file.datasheetIcon}
+  }
 
   wrap1.wrap = {$plugin.tt_products.wrap1}
   wrap2.wrap = {$plugin.tt_products.wrap2}
@@ -158,7 +162,7 @@ plugin.tt_products {
       niceText = 1
     }
   }
-
+ 
   max_note_length = {$plugin.tt_products.max_note_length}
 
   bulkilyWarning = {$plugin.tt_products.bulkilyWarning}

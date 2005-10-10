@@ -262,7 +262,7 @@ In addition there's a number of fields used for delivery and payment information
 <td></td>
 <td></td>
 <td valign=top>###GW1B### <!-- ###PRICE_TAX### --> ###GW1E###</td>
-<TD valign=top> <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> </TD>
+<TD valign=top> <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </TD>
 <td valign=top align=right>###GW1B### <!--<b>###PRICE_TOTAL_TAX###</b> <BR>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###) --> ###GW1E###</td>
 </TR>
 <!-- ###ITEM_SINGLE### end -->
@@ -367,7 +367,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 <TD>
 <input type="hidden" name="mode_update" value="1">
 <input type="Submit" name="products_update" value="Warenkorb aktualisieren"></TD>
-<TD align="right"><input type="Submit" name="products_info" value="Ihre Daten eingeben" onclick="document.forms[0].action='###FORM_URL_INFO###';"></TD>
+<TD align="right"><input type="Submit" name="products_info" value="Ihre Daten eingeben" onclick="this.form.action='###FORM_URL_INFO###';"></TD>
 </TR>
 </TABLE>
 </FORM>

@@ -24,7 +24,7 @@ $feePercent = doubleval($conf["feePercent"] ? $conf["feePercent"] : 5.75);		// F
 $compPercent = 100/(1-$feePercent/100)-100;		// The compensation percentage.
 
 $this->calculatedArray['priceNoTax']['payment'] = $baseAmount/100*$compPercent;		// Add the amount to the no_tax total
-$this->calculatedArray['priceTax']['payment'] = $this->calculatedArray['priceNoTax']['payment'] * (1+$conf["feeTax"]/100);		// ..and add the amount to the tax total + tax of the amount, if any
+$this->calculatedArray['priceTax']['payment'] = $this->calculatedArray['priceNoTax']['payment'] * (1+$this->conf['payment.']['TAXpercentage']/100);		// ..and add the amount to the tax total + tax of the amount, if any
 
 
 ?>

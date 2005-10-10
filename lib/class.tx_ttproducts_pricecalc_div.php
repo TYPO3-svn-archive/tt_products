@@ -46,6 +46,9 @@ class tx_ttproducts_pricecalc_div {
 	function GetCalculatedData() { // delete countTotal if not neede any more
 		global $TSFE;
 
+		if (!$this->itemArray) {
+			return;
+		}
 		$getDiscount = 0;
 
 		$gr_list = explode (',' , $TSFE->gr_list);
@@ -68,30 +71,32 @@ class tx_ttproducts_pricecalc_div {
 
 		$additive = 0;
 		// Check if a special group price can be used
-		if (($getDiscount == 1) && ($this->conf['discountprice.'] != NULL && $this->conf['discountprice.']['prod.'] != NULL))
+		if (($getDiscount == 1) && ($this->conf['discountprice.'] != NULL))
 		{
 			$countTotal = 0;
 			$countedItems = array();
 
-			ksort($this->conf['discountprice.']['prod.']);
-			reset($this->conf['discountprice.']['prod.']);
+			ksort($this->conf['discountprice.']);
+			reset($this->conf['discountprice.']);
 
 			$type = '';
 			$field = '';
 			foreach ($this->conf['discountprice.'] as $k1=>$priceCalcTemp) {
-				if (!is_array($priceCalcTemp)) {
-					switch ($k1) {
-						case 'type':
-							$type = $priceCalcTemp;
-							break;
-						case 'field':
-							$field = $priceCalcTemp;
-							break;
-						case 'additive':
-							$additive = $priceCalcTemp;
-							break;
+				foreach ($priceCalcTemp as $k2=>$v2) {
+					if (!is_array($priceCalcTemp)) {
+						switch ($k2) {
+							case 'type':
+								$type = $v2;
+								break;
+							case 'field':
+								$field = $v2;
+								break;
+							case 'additive':
+								$additive = $v2;
+								break;
+						}
+						continue;
 					}
-					continue;
 				}
 				$dumCount = 0;
 				$pricefor1 = doubleval($priceCalcTemp['prod.']['1']);
@@ -110,20 +115,20 @@ class tx_ttproducts_pricecalc_div {
 						}
 					}
 				}
-
 				$countTotal += $dumCount;
 
 				if ($additive == 0) {
 					krsort($priceCalcTemp['prod.']);
 					reset($priceCalcTemp['prod.']);
-
 					foreach ($priceCalcTemp['prod.'] as $k2=>$price2) {
 						if ($dumCount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
 							if (intval($k2) > 1) {
 								// store the discount price in all calculated items from before
 								foreach ($countedItems as $k3=>$v3) {
-									foreach ($this->itemArray[$v3['pid']] [$v3['itemnumber']] as $k4=>$actItem) { 
-									 	$this->itemArray[$v3['pid']] [$v3['itemnumber']][$k4] ['calcprice'] = $price2;
+									foreach ($v3 as $ $k4 => $v4) {
+										foreach ($this->itemArray[$v4['pid']] [$v4['itemnumber']] as $k5=>$actItem) {
+										 	$this->itemArray[$v4['pid']] [$v4['itemnumber']][$k5] ['calcprice'] = $price2;
+										}
 									}
 								}
 								$priceReduction[$pricefor1Index] = 1; // remember the reduction in order not to calculate another price with $priceCalc

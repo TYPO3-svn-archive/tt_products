@@ -4,6 +4,9 @@ plugin.tt_products {
     # cat=plugin.products/file; type=file[IMAGE_EXT]; label= Alternative Image: This image is used if there is no image present for the product
   file.noImageAvailable =
 
+    # cat=plugin.products/file; type=file[pdf,gif,jpg]; label= datasheet icon: 
+  file.datasheetIcon =
+
     # cat=plugin.products/typo; type=wrap; label= Wrap 1: This wrap is used in the template-file.
   wrap1 = <font face="verdana" size=2 color=black> | </font>
     # cat=plugin.products/typo; type=wrap; label= Wrap 2: This wrap is used in the template-file.
@@ -58,8 +61,10 @@ plugin.tt_products {
   
     # cat=plugin.products//; type=int+; label= Max items displayed: The maximum number of items displayed on one page. 
   limit = 50
-    # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item. 
+    # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item on a list view. 
   limitImage = 1
+    # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item on a single view. 
+  limitImageSingle = 1
     # cat=plugin.products//; type=boolean; label= Separate images: Normally all images are displayed together. With separateImage=on you can use a ###PRODUCT_IMAGE3### for each image number separatly.
   separateImage =
 
@@ -73,6 +78,8 @@ plugin.tt_products {
   maxW_basket = 100
     # cat=plugin.products/dims; type=int+; label= Max image height, basket display: The maximum height in pixels of an image when displayed in the shopping-basket.
   maxH_basket = 100
+    # cat=plugin.products/dims; type=int+; label= Max image width, popup window: The maximum width in pixels of an image when displayed in the popup window.
+  maxW_popup = 400
 
 
     # cat=plugin.products//; type=int+; label=PID for info page: This is the PID of the infoPage of the store.

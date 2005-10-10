@@ -274,6 +274,8 @@ class tx_ttproducts extends tslib_pibase {
 		$this->config['limit'] = $this->conf['limit'] ? $this->conf['limit'] : 50;
 		$this->config['limitImage'] = t3lib_div::intInRange($this->conf['limitImage'],0,9);
 		$this->config['limitImage'] = $this->config['limitImage'] ? $this->config['limitImage'] : 1;
+		$this->config['limitImageSingle'] = t3lib_div::intInRange($this->conf['limitImageSingle'],0,9);
+		$this->config['limitImageSingle'] = $this->config['limitImageSingle'] ? $this->config['limitImageSingle'] : 1;
 
 		$this->config['pid_list'] = trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.']));
 		//$this->config['pid_list'] = $this->config['pid_list'] ? $this->config['pid_list'] : $TSFE->id;
@@ -527,7 +529,11 @@ class tx_ttproducts extends tslib_pibase {
 			}
 		} else
 		{
-			$rc = $conf;
+			if ($conf) {
+				$rc = $conf;
+			} else {
+				$rc = intval ($this->pageArray[$row['pid']]['pid']);
+			}
 		}
 		return $rc;
 	} // getPID
@@ -726,7 +732,7 @@ class tx_ttproducts extends tslib_pibase {
 
 				$item = $this->getItem($row);
 				$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->tt_product_single);
-				$markerArray = $this->getItemMarkerArray ($item,$catTitle,$this->config['limitImage'],'image', $forminfoArray);
+				$markerArray = $this->getItemMarkerArray ($item,$catTitle,$this->config['limitImageSingle'],'image', $forminfoArray);
 
 				$subpartArray = array();
 
@@ -748,7 +754,6 @@ class tx_ttproducts extends tslib_pibase {
 				$queryprev = '';
 				$wherestock = ($this->conf['showNotinStock'] ? '' : 'AND (inStock <>0) ');
 				$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->cObj->enableFields('tt_products');
-				debug ($queryprev, '$queryprev', __LINE__, __FILE__);
 				$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'','uid');
 
 				if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )
@@ -757,7 +762,6 @@ class tx_ttproducts extends tslib_pibase {
 					$subpartArray['###LINK_PREV_SINGLE###']='';
 
 				$querynext = $queryNextPrefix.' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->cObj->enableFields('tt_products');
-				debug ($querynext, '$querynext', __LINE__, __FILE__);
 				$resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext);
 
 				if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )
@@ -799,7 +803,8 @@ class tx_ttproducts extends tslib_pibase {
 				}
 				tx_ttproducts_div::setJS('email');  // other JavaScript checks can come here
 			} else {
-				$content.='Wrong parameters, GET/POST var \'tt_products\' was missing or no product with uid = '.intval($this->tt_product_single) .' found.';
+				$messageArr =  explode('|', $message = $this->pi_getLL('wrong parameter'));
+				$content.=$messageArr[0].intval($this->tt_product_single) .$messageArr[1];
 			}
 		} else {
 			$content='';
@@ -1021,7 +1026,6 @@ class tx_ttproducts extends tslib_pibase {
 							$addQueryString=array();
 							$addQueryString['tt_products']= intval($row['uid']);
 							$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
-
 							$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $this->pi_getPageLink($pid,'',$this->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); // array('<a href="'.$this->getLinkUrl($pid,'',$addQueryString).'"'.$css_current.'>','</a>');
 
 							if( $datasheetFile == '' )  {
@@ -1179,6 +1183,9 @@ class tx_ttproducts extends tslib_pibase {
 				$this->pid_list.=$val.','.$this->cObj->getTreeList($val,intval($recursive));
 			}
 			$this->pid_list = ereg_replace(',$','',$this->pid_list);
+			$pid_list_arr = explode(',',$this->pid_list);
+			$pid_list_arr = array_unique ($pid_list_arr);
+			$this->pid_list = implode(',', $pid_list_arr);
 		}
 	}
 
@@ -1302,62 +1309,6 @@ class tx_ttproducts extends tslib_pibase {
 
 		return $queryString;
 	}
-
-//	/**
-//	 * Returns a url for use in forms and links
-//	 */
-//	function getLinkUrl($id='',$excludeList='',$addQueryString=array())	{
-//		global $TSFE;
-//		$rc = '';
-//
-//		$queryString=array();
-//		$queryString['id'] = 'id=' . ($id ? $id : $TSFE->id);
-//		$queryString['type']= $TSFE->type ? 'type='.$TSFE->type : '';
-//		$queryString['L']= t3lib_div::GPvar('L') ? 'L='.t3lib_div::GPvar('L') : '';
-//		$queryString['C']= t3lib_div::GPvar('C') ? 'C='.t3lib_div::GPvar('C') : $this->currency ? 'C='.$this->currency : '';
-//		if( isset($addQueryString['C']) )  {
-//			$queryString['C'] = $addQueryString['C'] ;
-//			unset( $addQueryString['C'] );
-//		}
-//		$queryString['backPID']= 'backPID='.$TSFE->id;
-//		$queryString['begin_at']= t3lib_div::_GP('begin_at') ? 'begin_at='.t3lib_div::_GP('begin_at') : '';
-//		$queryString['swords']= t3lib_div::_GP('swords') ? 'swords='.rawurlencode(t3lib_div::_GP('swords')) : '';
-//		$queryString['newitemdays']= t3lib_div::GPvar('newitemdays') ? 'newitemdays='.rawurlencode(stripslashes(t3lib_div::GPvar('newitemdays'))) : '';
-//
-//		reset($queryString);
-//		while(list($key,$val)=each($queryString))	{
-//			if (!$val || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
-//				unset($queryString[$key]);
-//			}
-//		}
-//
-//		if ($TSFE->config['config']['simulateStaticDocuments'])   {
-//			$pageId = $id ? $id : $TSFE->id ;
-//			$pageType = $TSFE->type ;
-//			unset($queryString['id']);
-//			unset($queryString['type']);
-//
-//			$allQueryString = implode($queryString,'&');
-//			if( $addQueryString )	{
-//				$allQueryString .= '&'.implode($addQueryString,'&');
-//			}
-//            $rc = $TSFE->makeSimulFileName('', $pageId, $pageType, $allQueryString ).'.html';
-//            if (!$this->config['config']['simulateStaticDocuments_pEnc']) {
-//            	// add the parameters
-//            	$rc .= '?'.$allQueryString;
-//            }
-//		}
-//		else	{
-//			$allQueryString = implode($queryString,'&');
-//			if( $addQueryString )	{
-//				$allQueryString .= '&'.implode($addQueryString,'&');
-//			}
-//			$rc = $TSFE->absRefPrefix.'index.php?'.$allQueryString;
-//		}
-//
-//		return $rc;
-//
-//	} // getLinkUrl
 
 
 	/**
@@ -1659,11 +1610,14 @@ class tx_ttproducts extends tslib_pibase {
 		}
 
 		$prodAccessoryText = '';
+		$prodTmp = explode(';', $row['accessory']);
 		if ($this->conf['selectAccessory']) {
-			$prodAccessoryText =  '<OPTION value="0">no accessory</OPTION>';	// TODO put this into the locallang.php
-			$prodAccessoryText .= '<OPTION value="1">with accessory</OPTION>';
+			$message = $this->pi_getLL('accessory no');		
+			$prodAccessoryText =  '<OPTION value="0">'.$message.'</OPTION>';
+			$message = $this->pi_getLL('accessory yes');		
+			$prodAccessoryText .= '<OPTION value="1">'.$message.'</OPTION>';
 		} else {
-			$prodAccessoryText = $prodSize;
+			$prodAccessoryText = $prodTmp;
 		}
 
 		$prodGradingsText = '';
@@ -1845,8 +1799,10 @@ class tx_ttproducts extends tslib_pibase {
 		} else {
 			$priceShippingTax = doubleVal($this->basketExtra['shipping.']['priceTax']);
 			$priceShippingNoTax = doubleVal($this->basketExtra['shipping.']['priceNoTax']);
+			if ($this->conf['shipping.']['TAXpercentage']) {
+				$priceShippingNoTax = $priceShippingTax/(1+$tax/100);
+			}			
 		}
-
 
 		$perc = doubleVal($this->basketExtra['shipping.']['percentOfGoodstotal']);
 		if ($perc)	{
@@ -2469,9 +2425,6 @@ class tx_ttproducts extends tslib_pibase {
 		foreach ($category as $currentCategory=>$value)
 		{
 			$categoryChanged = 1;
-//			foreach ($this->itemArray as $pid=>$pidItem) {
-	//			foreach ($pidItem as $itemnumber=>$actItem) {
-
 			// loop over all items in the basket indexed by page and itemnumber
 			foreach ($this->itemArray as $pid=>$pidItem) {
 				foreach ($pidItem as $itemnumber=>$actItemArray) {
@@ -2499,8 +2452,6 @@ class tx_ttproducts extends tslib_pibase {
 
 								// Print Item Title
 							$wrappedSubpartArray=array();
-	/* Added Bert: in stead of listImage -> Image, reason: images are read from directory */
-	//						$markerArray = $this->getItemMarkerArray ($actItem,$catTitle,1,'listImage');
 							$markerArray = $this->getItemMarkerArray ($actItem,$catTitle,1,'image');
 
 							$markerArray['###FIELD_QTY###'] = $actItem['count'];
