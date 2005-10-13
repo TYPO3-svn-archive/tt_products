@@ -10,7 +10,6 @@ plugin.tt_products {
 
   templateFile = {$plugin.tt_products.file.templateFile}
   pid_list.field = pages
-  recursive.field = recursive
   code.field = select_key
   defaultCode = HELP
   

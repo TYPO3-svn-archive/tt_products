@@ -50,7 +50,7 @@ $lConf = $conf;
 $localTemplateCode = $this->cObj->fileResource($lConf[templateFile] ? $lConf[templateFile] : 'EXT:tt_products/template/payment_DIBS_template.tmpl');		// Fetches the DIBS template file
 $localTemplateCode = $this->cObj->substituteMarkerArrayCached($localTemplateCode, $this->globalMarkerArray);
 
-$orderUid = $this->getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
+$orderUid = tx_ttproducts_order_div::getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
 
 $param = '&FE_SESSION_KEY='.rawurlencode(
 $GLOBALS['TSFE']->fe_user->id.'-'.
@@ -72,7 +72,7 @@ switch($products_cmd)	{
 <input type="hidden" name="merchant" value="'.$lConf['merchant'].'">
 <input type="hidden" name="amount" value="'.round($this->calculatedArray['priceTax']['total'] *100).'">
 <input type="hidden" name="currency" value="'.$lConf['currency'].'">		<!--Valuta som angivet i ISO4217, danske kroner=208-->
-<input type="hidden" name="orderid" value="'.$this->getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
+<input type="hidden" name="orderid" value="'.tx_ttproducts_order_div::getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type="hidden" name="uniqueoid" value="1">
 <input type="hidden" name="accepturl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1'.$param.'">
 <input type="hidden" name="declineurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1'.$param.'">';	
@@ -147,17 +147,17 @@ switch($products_cmd)	{
 		<input type="hidden" name="ordline'.$cc.'-1" value="'.htmlspecialchars($actItem['rec']['itemnumber']).'">
 		<input type="hidden" name="ordline'.$cc.'-2" value="'.htmlspecialchars($actItem['rec']['title']).'">
 		<input type="hidden" name="ordline'.$cc.'-3" value="'.$actItem['count'].'">
-		<input type="hidden" name="ordline'.$cc.'-4" value="'.$this->priceFormat($actItem['totalTax']).'">';
+		<input type="hidden" name="ordline'.$cc.'-4" value="'.tx_ttproducts_view_div::priceFormat($actItem['totalTax']).'">';
 					}
 				}
 			}
 		
 			$theFields.='
-<input type="hidden" name="priceinfo1.Shipping" value="'.$this->priceFormat($this->calculatedArray['priceTax']['shipping']).'">';
+<input type="hidden" name="priceinfo1.Shipping" value="'.tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['shipping']).'">';
 			$theFields.='
-<input type="hidden" name="priceinfo2.Payment" value="'.$this->priceFormat($this->calculatedArray['priceTax']['payment']).'">';
+<input type="hidden" name="priceinfo2.Payment" value="'.tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['payment']).'">';
 			$theFields.='
-<input type="hidden" name="priceinfo3.Tax" value="'.$this->priceFormat( $this->calculatedArray['priceTax']['total'] - $this->calculatedArray['priceNoTax']['total']).'">';
+<input type="hidden" name="priceinfo3.Tax" value="'.tx_ttproducts_view_div::priceFormat( $this->calculatedArray['priceTax']['total'] - $this->calculatedArray['priceNoTax']['total']).'">';
 			$markerArray['###HIDDEN_FIELDS###'].=$theFields;
 		}
 		$content= $this->cObj->substituteMarkerArrayCached($content, $markerArray);
@@ -185,14 +185,14 @@ switch($products_cmd)	{
 		$authkey=t3lib_div::_GP('authkey');
 		if ($md5key != $authkey)	{
 			$content=tx_ttproducts_basket_div::getBasket("###DIBS_DECLINE_MD5_TEMPLATE###",$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
-		} elseif (t3lib_div::_GP('orderid')!=$this->getOrderNumber($orderUid)) {
+		} elseif (t3lib_div::_GP('orderid')!=tx_ttproducts_order_div::getOrderNumber($orderUid)) {
 			$content=tx_ttproducts_basket_div::getBasket("###DIBS_DECLINE_ORDERID_TEMPLATE###",$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$markerArray=array();
 			$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
 
 			$content=tx_ttproducts_basket_div::getBasket('###BASKET_ORDERCONFIRMATION_TEMPLATE###','',$markerArray);
-			$this->finalizeOrder($orderUid,$markerArray);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+			tx_ttproducts_finalize_div::finalizeOrder($orderUid,$markerArray);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 		}
 	break;
 	default:

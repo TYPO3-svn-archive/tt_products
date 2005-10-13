@@ -90,6 +90,29 @@ class tx_ttproducts_article_div {
 	 }
 
 
+	function getVariantSubpartArray (&$subpartArray, &$row, &$tempContent, $condition)  {
+		if ($condition) {
+			if (trim($row['color']) != '')
+				$subpartArray['###display_variant1###'] = $this->cObj->getSubpart($tempContent,'###display_variant1###');
+			if (trim($row['size']) != '')
+				$subpartArray['###display_variant2###'] = $this->cObj->getSubpart($tempContent,'###display_variant2###');
+			if (trim($row['accessory']) != '0')
+				$subpartArray['###display_variant3###'] = $this->cObj->getSubpart($tempContent,'###display_variant3###');
+			if (trim($row['gradings']) != '')
+				$subpartArray['###display_variant4###'] = $this->cObj->getSubpart($tempContent,'###display_variant4###');
+		}
+		if (trim($row['color']) == '')
+			$subpartArray['###display_variant1###'] =  '';
+		if (trim($row['size']) == '')
+			$subpartArray['###display_variant2###'] =  '';
+		if (trim($row['accessory']) == '0')
+			$subpartArray['###display_variant3###'] = '';
+		if (trim($row['gradings']) == '')
+			$subpartArray['###display_variant4###'] = '';
+
+	}
+
+
 }
 
 

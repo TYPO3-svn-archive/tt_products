@@ -39,7 +39,23 @@
  */
 
 
+
 class tx_ttproducts_pricecalc_div {
+
+	/**
+	 * Include calculation script which should be programmed to manipulate internal data.
+	 */
+	function includeCalcScript($calcScript,$conf)	{
+		include($calcScript);
+	} // includeCalcScript
+
+	/**
+	 * Include handle script
+	 */
+	function includeHandleScript($handleScript,$conf)	{
+		include($handleScript);
+		return $content;
+	} // includeHandleScript
 
 
 		// result: fill in the  ['calcprice'] of $itemArray['pid'] ['itemnumber']
@@ -248,7 +264,7 @@ class tx_ttproducts_pricecalc_div {
 	} // GetCalculatedData
 
 
-	
+
 }
 
 

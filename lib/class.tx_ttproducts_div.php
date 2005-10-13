@@ -98,6 +98,33 @@ class tx_ttproducts_div {
 	$TSFE->setJS ($fieldname, $js);
     } // setJS
 
+
+	// **************************
+	// Utility functions
+	// **************************
+
+	function isUserInGroup($feuser, $group)
+	{
+		$groups = explode(',', $feuser['usergroup']);
+		foreach ($groups as $singlegroup)
+			if ($singlegroup == $group)
+				return true;
+		return false;
+	} // isUserInGroup
+
+
+
+	/**
+	 * Generates a search where clause.
+	 */
+	function searchWhere($sw)	{
+		$where=$this->cObj->searchWhere($sw, $this->searchFieldList, 'tt_products');
+		return $where;
+	} // searchWhere
+
+
+
+
 }
 
 

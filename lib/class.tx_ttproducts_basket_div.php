@@ -41,6 +41,17 @@
  *
  *
  */
+ 
+
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_finalize_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentshipping_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_price_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 
 
 class tx_ttproducts_basket_div {
@@ -174,7 +185,7 @@ class tx_ttproducts_basket_div {
 			$TSFE->fe_user->setKey('ses','basketExt',array());
 		$TSFE->fe_user->storeSessionData(); // Franz: The basket shall not get lost
 
-		tx_ttproducts_basket_div::setBasketExtras($basket);
+		tx_ttproducts_paymentshipping_div::setBasketExtras($basket);
 
 		$this->personInfo = $basket['personinfo'];
 		$this->deliveryInfo = $basket['delivery'];
@@ -238,38 +249,13 @@ class tx_ttproducts_basket_div {
 
 
 	/**
-	 * Adds URL markers to a markerArray
-	 */
-	function addURLMarkers($markerArray)	{
-			// Add's URL-markers to the $markerArray and returns it
-		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$markerArray['###FORM_URL###'] = $this->pi_getPageLink($pid,'',$this->getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDbasket']);
-		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] :$TSFE->id));
-		$markerArray['###FORM_URL_INFO###'] = $this->pi_getPageLink($pid,'',$this->getLinkParams()) ; // $this->getLinkUrl($this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $this->conf['PIDbasket']);
-		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
-		$markerArray['###FORM_URL_FINALIZE###'] = $this->pi_getPageLink($pid,'',$this->getLinkParams()) ;// $this->getLinkUrl($this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $this->conf['PIDbasket']);
-		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
-		$markerArray['###FORM_URL_THANKS###'] = $this->pi_getPageLink($pid,'',$this->getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDbasket']);
-		$markerArray['###FORM_URL_TARGET###'] = '_self';
-		if ($this->basketExtra['payment.']['handleURL'])	{	// This handleURL is called instead of the THANKS-url in order to let handleScript process the information if payment by credit card or so.
-			$markerArray['###FORM_URL_THANKS###'] = $this->basketExtra['payment.']['handleURL'];
-		}
-		if ($this->basketExtra['payment.']['handleTarget'])	{	// Alternative target
-			$markerArray['###FORM_URL_TARGET###'] = $this->basketExtra['payment.']['handleTarget'];
-		}
-		return $markerArray;
-	} // addURLMarkers
-
-
-
-	/**
 	 * Takes care of basket, address info, confirmation and gate to payment
 	 * Also the 'products_...' script parameters are used here.
      *
      * @param       array          CODEs for display mode
      * @return      void
  	 */
-	function products_basket($codes)	{
+	function products_basket($codes, &$error_message)	{
 		global $TSFE;
 		global $TYPO3_DB;
 
@@ -318,10 +304,10 @@ class tx_ttproducts_basket_div {
 			$basket_tmpl = '';
 			if (count($activityArr)) {
 				if (!$this->pid_list) {
-					$this->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
+					tx_ttproducts_page_div::setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
 				}
-				$this->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
-				$this->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
+				tx_ttproducts_page_div::initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
+				tx_ttproducts_page_div::generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
 				tx_ttproducts_basket_div::getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 
 				$mainMarkerArray=array();
@@ -360,7 +346,7 @@ class tx_ttproducts_basket_div {
 
 									$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
 
-									$this->addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
+									tx_ttproducts_creditpoints_div::addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
 
 /* Added els5: extra markers for inline comments */
 									// Fill marker arrays
@@ -394,22 +380,22 @@ class tx_ttproducts_basket_div {
 						case 'products_payment':
 							$this->load_noLinkExtCobj();
 							$pidagb = intval($this->conf['PIDagb']);
-							$check = $this->checkRequired();
+							$check = tx_ttproducts_view_div::checkRequired();
 							if ($check=='' &&
 								(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
-								$this->mapPersonIntoToDelivery();
+								tx_ttproducts_view_div::mapPersonIntoToDelivery();
 								$content.=tx_ttproducts_basket_div::getBasket('###BASKET_PAYMENT_TEMPLATE###', '', $mainMarkerArray);
 
 								$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
-								$orderUid = $this->getBlankOrderUid();
+								$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
 								if (trim($this->conf['paymentActivity'])=='payment' && $handleScript)	{
-									$this->getCalculateSums();
-									$content.= $this->includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
+									tx_ttproducts_basket_div::getCalculateSums();
+									$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 								}
 
 							} else {	// If not all required info-fields are filled in, this is shown instead:
-								$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-								$markerArray = tx_ttproducts_basket_div::addURLMarkers(array());
+								$content.=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+								$markerArray = tx_ttproducts_view_div::addURLMarkers(array());
 								$label = '';
 								if ($check=='') {
 									 // so AGB has not been accepted 
@@ -426,32 +412,34 @@ class tx_ttproducts_basket_div {
 							}
 						break;
 						case 'products_finalize':
-							$check = $this->checkRequired();
+							$check = tx_ttproducts_view_div::checkRequired();
 							if ($check=='')	{
 								$this->load_noLinkExtCobj();
-								$this->mapPersonIntoToDelivery();
+								tx_ttproducts_view_div::mapPersonIntoToDelivery();
 								$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
-								$orderUid = $this->getBlankOrderUid();
+								$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
 								if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
 									//tx_ttproducts_basket_div::getCalculatedBasket();
-									$this->getCalculateSums();
-									$content = $this->includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
+									tx_ttproducts_basket_div::getCalculateSums();
+									$content = tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 								}
 
 								// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 								$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 								$orderConfirmationHTML=tx_ttproducts_basket_div::getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
 								$contentTmp = $orderConfirmationHTML;
-								tx_ttproducts_basket_div::finalizeOrder($orderUid, $orderConfirmationHTML); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+								tx_ttproducts_finalize_div::finalizeOrder($orderUid, $orderConfirmationHTML); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 
 								if ($this->conf['PIDthanks'] > 0) {
 									$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
 									$contentTmp = tx_ttproducts_basket_div::getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
 								}
 								$content.=$contentTmp;
+								// Empties the shopping basket!
+								tx_ttproducts_basket_div::clearBasket();
 							} else {	// If not all required info-fields are filled in, this is shown instead:
-								$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-								$content = $this->cObj->substituteMarkerArray($content, tx_ttproducts_basket_div::$this->addURLMarkers(array()));
+								$content.=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+								$content = $this->cObj->substituteMarkerArray($content, tx_ttproducts_view_div::$this->addURLMarkers(array()));
 							}
 						break;
 						default:
@@ -469,10 +457,10 @@ class tx_ttproducts_basket_div {
 		} else { // if (count($this->basketExt))
 			if ($activityArr['products_overview']) {
 				$this->load_noLinkExtCobj();
-				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_OVERVIEW_EMPTY###'));
+				$content.=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_OVERVIEW_EMPTY###'));
 			}
 			else if ($activityArr['products_basket']) {
-				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker('###BASKET_TEMPLATE_EMPTY###'));
+				$content.=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_TEMPLATE_EMPTY###'));
 			}
 		}
 		$markerArray=array();
@@ -483,70 +471,6 @@ class tx_ttproducts_basket_div {
 	} // products_basket
 
 
-
-	/**
-	 * Check if payment/shipping option is available
-	 */
-	function checkExtraAvailable($name,$key)	{
-		$result = false;
-
-		if (is_array($this->conf[$name.'.'][$key.'.']) && (!isset($this->conf[$name.'.'][$key.'.']['show']) || $this->conf[$name.'.'][$key.'.']['show']))	{
-			$result = true;
-		}
-
-		return $result;
-	} // checkExtraAvailable
-
-
-
-	/**
-	 * Setting shipping, payment methods
-	 */
-	function setBasketExtras($basket)	{
-		global $TSFE;
-
-			// shipping
-		ksort($this->conf['shipping.']);
-		reset($this->conf['shipping.']);
-		$k=intval($basket['tt_products']['shipping']);
-		if (!tx_ttproducts_basket_div::checkExtraAvailable('shipping',$k))	{
-			$k=intval(key($this->cleanConfArr($this->conf['shipping.'],1)));
-		}
-		$this->basketExtra['shipping'] = $k;
-		$this->basketExtra['shipping.'] = $this->conf['shipping.'][$k.'.'];
-		$excludePayment = trim($this->basketExtra['shipping.']['excludePayment']);
-
-			// payment
-		if ($excludePayment)	{
-			$exclArr = t3lib_div::intExplode(',',$excludePayment);
-			while(list(,$theVal)=each($exclArr))	{
-				unset($this->conf['payment.'][$theVal]);
-				unset($this->conf['payment.'][$theVal.'.']);
-			}
-		}
-
-		$confArr = $this->cleanConfArr($this->conf['payment.']);
-		while(list($key,$val)=each($confArr)) {
-			if ($val['show'] || !isset($val['show']))
-				if (($val['visibleForGroupID'] != '') &&
-				    (!$this->isUserInGroup($TSFE->fe_user->user, $val['visibleForGroupID'])))
-				{
-					unset($this->conf['payment.'][$key.'.']);
-				}
-		}
-
-		ksort($this->conf['payment.']);
-		reset($this->conf['payment.']);
-		$k=intval($basket['tt_products']['payment']);
-		if (!tx_ttproducts_basket_div::checkExtraAvailable('payment',$k))	{
-			$k=intval(key($this->cleanConfArr($this->conf['payment.'],1)));
-		}
-		$this->basketExtra['payment'] = $k;
-		$this->basketExtra['payment.'] = $this->conf['payment.'][$k.'.'];
-
-	} // setBasketExtras
-
-
 	/**
 	 * Returns a clear 'recs[tt_products]' array - so clears the basket.
 	 */
@@ -555,6 +479,19 @@ class tx_ttproducts_basket_div {
 		unset($this->recs['tt_products']);
 		return ($this->recs);
 	} // getClearBasketRecord
+
+
+	/**
+	 * Empties the shopping basket!
+	 */
+	function clearBasket()	{
+		global $TSFE;
+		
+			// Empties the shopping basket!
+		$TSFE->fe_user->setKey('ses','recs',tx_ttproducts_basket_div::getClearBasketRecord());
+		$TSFE->fe_user->setKey('ses','basketExt',array());
+	} // clearBasket
+
 
 
 	/**
@@ -619,7 +556,7 @@ class tx_ttproducts_basket_div {
 				reset($productsArray[$v]);
 				while(list(,$row)=each($productsArray[$v]))	{
 					// if reseller is logged in then take 'price2', default is 'price'
-					$newItem = $this->getItem($row);
+					$newItem = tx_ttproducts_basket_div::getItem($row);
 					$this->itemArray [intval($row['pid'])] [intval($row['itemnumber'])][] = $newItem;
 					$count = $newItem['count'];
 					$priceTax = $newItem['priceTax'];
@@ -628,8 +565,8 @@ class tx_ttproducts_basket_div {
 					$this->calculatedArray['count']			+= $count;
 					$this->calculatedArray['weight']		+= $row['weight']*$count;
 
-					$oldPriceTax = $this->getPrice($row['price'],1,$row['tax']);
-					$oldPriceNoTax = $this->getPrice($row['price'],0,$row['tax']);
+					$oldPriceTax = tx_ttproducts_price_div::getPrice($row['price'],1,$row['tax']);
+					$oldPriceNoTax = tx_ttproducts_price_div::getPrice($row['price'],0,$row['tax']);
 
 					/* Added Els3: if oldpricenotax is 0 -> oldpricenotax = pricenotax, otherwise price_discount doesn't calculate correctly */
 					if (doubleval($oldPriceNoTax) == 0) {
@@ -654,13 +591,13 @@ class tx_ttproducts_basket_div {
 				foreach ($actItemArray as $k1=>$actItem) {
 					// has the price been calculated before take it if it gets cheaper now
 					if (($actItem['calcprice'] > 0) && ($actItem['calcprice'] < $actItem['priceTax'])) {
-						$this->itemArray[$pid][$itemnumber][$k1]['priceTax'] = $this->getPrice($actItem['calcprice'],1,$actItem['rec']['tax']);
-						$this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] = $this->getPrice($actItem['calcprice'],0,$actItem['rec']['tax']);
+						$this->itemArray[$pid][$itemnumber][$k1]['priceTax'] = tx_ttproducts_price_div::getPrice($actItem['calcprice'],1,$actItem['rec']['tax']);
+						$this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] = tx_ttproducts_price_div::getPrice($actItem['calcprice'],0,$actItem['rec']['tax']);
 					}
 					// If accesssory has been selected, add the price of it, multiplicated with the count :
 					if($actItem['rec']['accessory'] > 0 ) {
-						$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceTax']+ $this->getPrice($actItem['rec']['accessory'],1,$actItem['rec']['tax']))*$actItem['count'];
-						$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceNoTax']+getPrice($actItem['rec']['accessory'],0,$actItem['rec']['tax']))*$actItem['count'];
+						$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceTax']+ tx_ttproducts_price_div::getPrice($actItem['rec']['accessory'],1,$actItem['rec']['tax']))*$actItem['count'];
+						$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceNoTax']+tx_ttproducts_price_div::getPrice($actItem['rec']['accessory'],0,$actItem['rec']['tax']))*$actItem['count'];
 					} else {
 						$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceTax'] * $actItem['count'];
 						$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] * $actItem['count'];
@@ -693,7 +630,7 @@ class tx_ttproducts_basket_div {
 		}
 
 			// Shipping must be at the end in order to use the calculated values from before
-		$this->GetPaymentShippingData(
+		tx_ttproducts_paymentshipping_div::GetPaymentShippingData(
 			$this->calculatedArray['count'],
 /* Added Els: necessary to calculate shipping price which depends on total no-tax price */
 			$this->calculatedArray['priceNoTax']['goodstotal'],
@@ -706,6 +643,56 @@ class tx_ttproducts_basket_div {
 	} // getCalculatedBasket
 
 
+	function getValue(&$basketElement, $basketProperties, $countTotal)
+	{
+		$result = 0;
+
+		// to remain downwards compatible
+		if (is_string($basketElement))	{
+        	$result = $basketElement;
+        }
+
+		if(is_array($basketProperties) && count($basketProperties) > 0) {
+			foreach ($basketProperties as $lowKey => $lowValue)	{
+				if (strlen($lowKey) > 0 && $countTotal >= $lowKey)	{
+					$result = doubleVal($lowValue);
+				}
+			}
+		}
+
+		return $result;
+	} // getValue
+
+
+	function &getItem (&$row) {
+		$count = intval($this->basketExt[$row['uid']][tx_ttproducts_article_div::getVariantFromRow ($row)]);
+		$priceTax = tx_ttproducts_price_div::getResellerPrice($row,1);
+		$priceNoTax = tx_ttproducts_price_div::getResellerPrice($row,0);
+		$item = array (
+			'calcprice' => 0,
+			'count' => $count,
+			'priceTax' => $priceTax,
+			'priceNoTax' => $priceNoTax,
+			'totalTax' => 0,
+			'totalNoTax' => 0,
+			'rec' => $row,
+			);
+		return $item;
+	}
+
+	// This calculates the total for everything in the basket
+	function getCalculateSums () {
+		$this->calculatedArray['priceTax']['total'] = $this->calculatedArray['priceTax']['goodstotal'];
+		$this->calculatedArray['priceTax']['total']+= $this->calculatedArray['priceTax']['payment'];
+		$this->calculatedArray['priceTax']['total']+= $this->calculatedArray['priceTax']['shipping'];
+/* Added Els: $this->calculatedArray['priceTax']['creditpoints'] and coucher */
+		$this->calculatedArray['priceTax']['total']-= $this->calculatedArray['priceTax']['creditpoints'];
+		$this->calculatedArray['priceTax']['total']-= $this->calculatedArray['priceTax']['voucher'];
+
+		$this->calculatedArray['priceNoTax']['total']  = $this->calculatedArray['priceNoTax']['goodstotal'];
+		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['payment'];
+		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['shipping'];
+	} // getItem
 
 
 	/**
@@ -729,7 +716,7 @@ class tx_ttproducts_basket_div {
 
 			// Getting subparts from the template code.
 		$t=array();
-		$t['basketFrameWork'] = $this->cObj->getSubpart($templateCode,$this->spMarker($subpartMarker));
+		$t['basketFrameWork'] = $this->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($subpartMarker));
 
 			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
 		if (trim($this->cObj->getSubpart($t['basketFrameWork'],'###BILLING_ADDRESS_LOGIN###')))	{
@@ -786,7 +773,7 @@ class tx_ttproducts_basket_div {
 						// Fill marker arrays
 					$wrappedSubpartArray=array();
 					$subpartArray=array();
-					$markerArray = $this->getItemMarkerArray ($actItem,$catTitle,1,'basketImage');
+					$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($actItem,$catTitle,1,'basketImage');
 
 					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
@@ -800,8 +787,8 @@ class tx_ttproducts_basket_div {
 					if($actItem['rec']['accessory'] > 0 ){
 						$markerArray['###PRICE_ACCESSORY_TEXT###']= $this->conf['accessoryText'];
 						$markerArray['###PRICE_ACCESSORY_COUNT###']= '<INPUT size="3" maxlength="4" type="text" class="readonly" name="'.$actItem['count'].'" value="'.$actItem['count'].'" readonly="readonly">';
-						$markerArray['###ACCESSORY_VALUE_TAX###']= $this->printPrice($this->priceFormat($this->getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],1,$actItem['rec']['tax'])));
-						$markerArray['###ACCESSORY_VALUE_NO_TAX###']= $this->printPrice($this->priceFormat($this->getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],0,$actItem['rec']['tax'])));
+						$markerArray['###ACCESSORY_VALUE_TAX###']= tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],1,$actItem['rec']['tax'])));
+						$markerArray['###ACCESSORY_VALUE_NO_TAX###']= tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],0,$actItem['rec']['tax'])));
 					}
 					else {
 						$markerArray['###PRICE_ACCESSORY_TEXT###']= '';
@@ -810,8 +797,8 @@ class tx_ttproducts_basket_div {
 						$markerArray['###ACCESSORY_VALUE_NO_TAX###']= '';
 					}
 
-					$markerArray['###PRICE_TOTAL_TAX###']=$this->priceFormat($actItem['totalTax']);
-					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->priceFormat($actItem['totalNoTax']);
+					$markerArray['###PRICE_TOTAL_TAX###']=tx_ttproducts_view_div::priceFormat($actItem['totalTax']);
+					$markerArray['###PRICE_TOTAL_NO_TAX###']=tx_ttproducts_view_div::priceFormat($actItem['totalNoTax']);
 
 /* Added els4: calculating of price_discount necessary in winkelwagen.tmpl (articles in kurkenshop are excluded, because these articled will be payed with creditpoints) */
 					if ( ($actItem['rec']['price'] != '0.00') && doubleval($actItem['rec']['price2']) && ($actItem['rec']['category'] != $this->conf['creditsCategory']) ) {
@@ -822,9 +809,9 @@ class tx_ttproducts_basket_div {
 					}
 
 /* Added els4: TOTUNITS_: both prices mulitplied by unit_factor and third line is calculating the sum, necessary in winkelwagen.tmpl. All articles in kurkenshop are payed with creditpoints*/
-					$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###']=$this->priceFormat($actItem['totalTax']*$actItem['rec']['unit_factor']);
+					$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###']=tx_ttproducts_view_div::priceFormat($actItem['totalTax']*$actItem['rec']['unit_factor']);
 					if ($actItem['rec']['category'] == $this->conf['creditsCategory']) {
-						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=$this->priceFormat($actItem['totalNoTax']*$actItem['rec']['unit_factor']);
+						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=tx_ttproducts_view_div::priceFormat($actItem['totalNoTax']*$actItem['rec']['unit_factor']);
 					} else {
 						$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###']=$actItem['totalNoTax']*$actItem['rec']['unit_factor'];
 					}
@@ -844,12 +831,12 @@ class tx_ttproducts_basket_div {
 						}
 					}
 
-					$pid = $this->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
+					$pid = tx_ttproducts_page_div::getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
 					$splitMark = md5(microtime());
 					$addQueryString=array();
 					$addQueryString['tt_products'] = intval($actItem['rec']['uid']);
 					$addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
-					$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pi_getPageLink($pid,'',$this->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); // // array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
+					$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); // // array('<a href="'.$this->getLinkUrl($pid).'&tt_products='.$actItem['rec']['uid'].'&ttp_extvars='.htmlspecialchars($actItem['rec']['extVars']).'">','</a>');
 
 /* Added Els5: different display for quantities and recycle output in shop-a-box and gifts (in payment_template, winkelwagen.tmpl) */
 					if ($actItem['rec']['category'] == $this->conf['shopaboxCategory']) {
@@ -871,7 +858,7 @@ class tx_ttproducts_basket_div {
 					// Substitute
 					$tempContent = $this->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
 
-					$this->getVariantSubpartArray ($subpartArray, $actItem['rec'], $tempContent, ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'));
+					tx_ttproducts_article_div::getVariantSubpartArray ($subpartArray, $actItem['rec'], $tempContent, ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'));
 					$tempContent = $this->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
 
 					$itemsOut .= $tempContent;
@@ -891,8 +878,8 @@ class tx_ttproducts_basket_div {
 		$markerArray=$mainMarkerArray;
 
 			// This is the total for the goods in the basket.
-		$markerArray['###PRICE_GOODSTOTAL_TAX###'] = $this->priceFormat($this->calculatedArray['priceTax']['goodstotal']);
-		$markerArray['###PRICE_GOODSTOTAL_NO_TAX###'] = $this->priceFormat($this->calculatedArray['priceNoTax']['goodstotal']);
+		$markerArray['###PRICE_GOODSTOTAL_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['goodstotal']);
+		$markerArray['###PRICE_GOODSTOTAL_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['goodstotal']);
 
 		// This is for the Basketoverview
 		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->calculatedArray['count'];
@@ -900,29 +887,29 @@ class tx_ttproducts_basket_div {
 
 		$splitMark = md5(microtime());
 		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$tempUrl = $this->pi_linkToPage($splitMark,$pid,'',$this->getLinkParams());
+		$tempUrl = $this->pi_linkToPage($splitMark,$pid,'',tx_ttproducts_view_div::getLinkParams());
 		$wrappedSubpartArray['###LINK_BASKET###'] = explode ($splitMark, $tempUrl);
 		//$wrappedSubpartArray['###LINK_BASKET###']= array('<a href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</a>');
 
 		$markerArray['###PRICE_SHIPPING_PERCENT###'] = $perc;
-		$markerArray['###PRICE_SHIPPING_TAX###'] = $this->priceFormat($this->calculatedArray['priceTax']['shipping']);
-		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->priceFormat($this->calculatedArray['priceNoTax']['shipping']);
+		$markerArray['###PRICE_SHIPPING_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['shipping']);
+		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['shipping']);
 
-		$markerArray['###SHIPPING_SELECTOR###'] = $this->generateRadioSelect('shipping', $countTotal);
+		$markerArray['###SHIPPING_SELECTOR###'] = tx_ttproducts_paymentshipping_div::generateRadioSelect('shipping', $countTotal);
 		$markerArray['###SHIPPING_IMAGE###'] = $this->cObj->IMAGE($this->basketExtra['shipping.']['image.']);
 		$markerArray['###SHIPPING_TITLE###'] = $this->basketExtra['shipping.']['title'];
 
 		$markerArray['###SHIPPING_WEIGHT###'] = doubleval($this->calculatedArray['weight']);
 
 
-		$markerArray['###DELIVERYCOSTS###']=$this->priceFormat($this->calculatedArray['priceTax']['shipping'] + $this->calculatedArray['priceTax']['payment']);
+		$markerArray['###DELIVERYCOSTS###']=tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['shipping'] + $this->calculatedArray['priceTax']['payment']);
 
 		$markerArray['###PRICE_PAYMENT_PERCENT###'] = $perc;
-		$markerArray['###PRICE_PAYMENT_TAX###'] = $this->priceFormat($this->calculatedArray['priceTax']['payment']);
-		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $this->priceFormat($this->calculatedArray['priceNoTax']['payment']);
+		$markerArray['###PRICE_PAYMENT_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['payment']);
+		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['payment']);
 
 /* Added els4: payment layout (used in basket_payment_template, winkelwagen.tmpl) */
-		$markerArray['###PAYMENT_SELECTOR###'] = $this->generateRadioSelect('payment', $countTotal);
+		$markerArray['###PAYMENT_SELECTOR###'] = tx_ttproducts_paymentshipping_div::generateRadioSelect('payment', $countTotal);
 		$markerArray['###PAYMENT_IMAGE###'] = $this->cObj->IMAGE($this->basketExtra['payment.']['image.']);
 		$markerArray['###PAYMENT_TITLE###'] = $this->basketExtra['payment.']['title'];
 		if ($markerArray['###PAYMENT_TITLE###'] == "Vooruitbetaling") {
@@ -950,15 +937,15 @@ class tx_ttproducts_basket_div {
 
 /* Added Els: below 3 lines after creditpoint calculation! */
 		// This is the total for everything
-//		$this->getCalculateSums();
-//		$markerArray['###PRICE_TOTAL_TAX###'] = $this->priceFormat($this->calculatedArray['priceTax']['total']);
-//		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->priceFormat($this->calculatedArray['priceNoTax']['total']);
+//		tx_ttproducts_basket_div::getCalculateSums();
+//		$markerArray['###PRICE_TOTAL_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['total']);
+//		$markerArray['###PRICE_TOTAL_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['total']);
 /* Added Els: marker PRICE_DISCOUNT += uw voordeel (PRICE_GOODSTOTAL_NO_TAX-oldPriceNoTax) and PRICE_VAT = BTW (= ['priceTax']['goodstotal'] - ['priceNoTax']['goodstotal']*/
-		$markerArray['###PRICE_DISCOUNT###'] = $this->priceFormat($this->calculatedArray['oldPriceNoTax']-$this->calculatedArray['priceNoTax']['goodstotal']);
-		$markerArray['###PRICE_VAT###'] = $this->priceFormat($this->calculatedArray['priceTax']['goodstotal']-$this->calculatedArray['priceNoTax']['goodstotal']);
+		$markerArray['###PRICE_DISCOUNT###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['oldPriceNoTax']-$this->calculatedArray['priceNoTax']['goodstotal']);
+		$markerArray['###PRICE_VAT###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['goodstotal']-$this->calculatedArray['priceNoTax']['goodstotal']);
 
 /* Added els4: discount based on total units (without articles in kurkenshop), necessary in winkelwagen.tmpl */
-		$markerArray['###PRICE_TOTUNITS_DISCOUNT###'] = $this->priceFormat($sum_pricediscount_total_totunits);
+		$markerArray['###PRICE_TOTUNITS_DISCOUNT###'] = tx_ttproducts_view_div::priceFormat($sum_pricediscount_total_totunits);
 
 /* Added Els4: if show_handling_cost (calculated above) then handling costs exists (winkelwagen.tmpl) */
 		if ($show_handling_cost == "1") {
@@ -1006,7 +993,7 @@ class tx_ttproducts_basket_div {
 		$markerArray['###DELIVERY_NOTE_DISPLAY###'] = nl2br($markerArray['###DELIVERY_NOTE###']);
 
 			// Order:	NOTE: Data exist only if the getBlankOrderUid() has been called. Therefore this field in the template should be used only when an order has been established
-		$markerArray['###ORDER_UID###'] = $this->getOrderNumber($this->recs['tt_products']['orderUid']);
+		$markerArray['###ORDER_UID###'] = tx_ttproducts_order_div::getOrderNumber($this->recs['tt_products']['orderUid']);
 		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($this->recs['tt_products']['orderDate'],$this->conf['orderDate_stdWrap.']);
 		$markerArray['###ORDER_TRACKING_NO###'] = $this->recs['tt_products']['orderTrackingNo'];
 
@@ -1021,7 +1008,7 @@ class tx_ttproducts_basket_div {
 		$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
 
 			// URL
-		$markerArray = tx_ttproducts_basket_div::addURLMarkers($markerArray);
+		$markerArray = tx_ttproducts_view_div::addURLMarkers($markerArray);
 
 		$agb_url=array();
 		$pidagb = intval($this->conf['PIDagb']);
@@ -1047,7 +1034,7 @@ class tx_ttproducts_basket_div {
 		} else {
 			// quantity chosen can not be larger than the amount of creditpoints
 			if ($this->recs['tt_products']['creditpoints'] > $creditpoints_integer[0]) $this->recs['tt_products']['creditpoints'] = $creditpoints_integer[0];
-			$this->calculatedArray['priceTax']['creditpoints'] = $this->priceFormat($this->recs['tt_products']['creditpoints']*$this->conf['creditpoints.']['pricefactor']);
+			$this->calculatedArray['priceTax']['creditpoints'] = tx_ttproducts_view_div::priceFormat($this->recs['tt_products']['creditpoints']*$this->conf['creditpoints.']['pricefactor']);
 			$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = $this->recs['tt_products']['creditpoints'];
 			$subpartArray['###SUB_CREDITPOINTS_DISCOUNT_EMPTY###'] = '';
 		    $markerArray['###CREDIT_DISCOUNT###'] = $this->calculatedArray['priceTax']['creditpoints'];
@@ -1076,9 +1063,9 @@ class tx_ttproducts_basket_div {
 					} else {
 						$subpartArray['###SUB_VOUCHERCODE_DISCOUNTOWNID###'] = '';
 						$subpartArray['###SUB_VOUCHERCODE_DISCOUNTWRONG###'] = '';
-						//$this->calculatedArray['priceTax']['voucher'] = $this->priceFormat($this->calculatedArray['priceTax']['shipping']);
+						//$this->calculatedArray['priceTax']['voucher'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['shipping']);
 						$this->calculatedArray['priceTax']['voucher'] = $this->conf['voucherPrice'];
-						$markerArray['###VOUCHER_DISCOUNT###'] = $this->priceFormat($this->calculatedArray['priceTax']['voucher']);
+						$markerArray['###VOUCHER_DISCOUNT###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['voucher']);
 						$subpartArray['###SUB_VOUCHERCODE_NODISCOUNT###'] = '';
 					}
 				} else {
@@ -1105,12 +1092,12 @@ class tx_ttproducts_basket_div {
 
 /* Added Els: below 3 lines moved from above */
 			// This is the total for everything
-		$this->getCalculateSums();
-		$markerArray['###PRICE_TOTAL_TAX###'] = $this->priceFormat($this->calculatedArray['priceTax']['total']);
-		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->priceFormat($this->calculatedArray['priceNoTax']['total']);
+		tx_ttproducts_basket_div::getCalculateSums();
+		$markerArray['###PRICE_TOTAL_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['total']);
+		$markerArray['###PRICE_TOTAL_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['total']);
 
 /* Added els4: PRICE_GOODSTOTAL_TOTUNITS_NO_TAX: sum total price (winkelwagen.tmpl) */
-		$markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] = $this->priceFormat($sum_price_total_totunits_no_tax);
+		$markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($sum_price_total_totunits_no_tax);
 
 /* Added els5: CREDITPOINTS_SPENDED: creditpoint needed, check if user has this amount of creditpoints on his account (winkelwagen.tmpl), only if user has logged in */
 		$markerArray['###CREDITPOINTS_SPENDED###'] = $sum_pricecredits_total_totunits_no_tax;
@@ -1146,10 +1133,10 @@ class tx_ttproducts_basket_div {
 		   $creditpoints = 0.06;
 		}
 
-		$markerArray['###CREDITPOINTS_SAVED###'] = $this->priceFormat($creditpoints * $sum_pricecreditpoints_total_totunits);
+		$markerArray['###CREDITPOINTS_SAVED###'] = tx_ttproducts_view_div::priceFormat($creditpoints * $sum_pricecreditpoints_total_totunits);
 
 /* Added Els4: total price = subtotal - bezorgkosten + voucher + coupon + giftcertificate (winkelwagen.tmpl) */
-		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = $this->priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###COUPON_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
+		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = tx_ttproducts_view_div::priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###COUPON_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
 
 		$wrappedSubpartArray['###LINK_AGB###']=array('<a href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</a>');
 
@@ -1169,512 +1156,6 @@ class tx_ttproducts_basket_div {
 		return $out;
 	} // getBasket
 
-
-
-
-	/**
-	 * Finalize an order
-	 *
-	 * This finalizes an order by saving all the basket info in the current order_record.
-	 * A finalized order is then marked 'not deleted' and with status=1
-	 * The basket is also emptied, but address info is preserved for any new orders.
-	 * $orderUid is the order-uid to finalize
-	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
-	 */
-	function finalizeOrder($orderUid, $orderConfirmationHTML)	{
-		global $TSFE;
-		global $TYPO3_DB;
-
-		$content = '';
-
-			// Fix delivery address
-		$this->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
-//		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
-
-		#debug ($this->basketExt, '$this->basketExt', __LINE__, __FILE__);
-
-			// Saving order data
-		$fieldsArray=array();
-		$fieldsArray['note']=$this->deliveryInfo['note'];
-/* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
-		$fieldsArray['feusers_uid']=$this->personInfo['feusers_uid'];
-		$fieldsArray['name']=$this->deliveryInfo['name'];
-		$fieldsArray['telephone']=$this->deliveryInfo['telephone'];
-		$fieldsArray['fax']=$this->deliveryInfo['fax'];
-		$fieldsArray['email']=$this->deliveryInfo['email'];
-//		debug ($this->conf['email_notify_default'], "this->conf['email_notify_default']", __LINE__, __FILE__);
-		$fieldsArray['email_notify']=  $this->conf['email_notify_default'];		// Email notification is set here. Default email address is delivery email contact
-
-			// can be changed after order is set.
-		$fieldsArray['payment']=$this->basketExtra['payment'].': '.$this->basketExtra['payment.']['title'];
-		$fieldsArray['shipping']=$this->basketExtra['shipping'].': '.$this->basketExtra['shipping.']['title'];
-		$fieldsArray['amount']=$this->calculatedArray['priceTax']['total'];
-		$fieldsArray['status']=1;	// This means, "Order confirmed on website, next step: confirm from shop that order is received"
-
-/* Added Els: update fe_user with amount of creditpoints and subtract creditpoints used in order*/
-		$fieldsArrayFeUsers = array();
-		$uid_voucher = ''; // define it here
-		/* example:
-  creditpoints {
-  10.where =
-  10.type = price
-  10.prod.1   = 0.02
-  10.prod.101 = 0.04
-  10.prod.501 = 0.06
-}
-		 */
-		if ($this->conf['creditpoints.']) {
-			$creditpoints = $this->getCreditPoints($fieldsArray['amount']);
-/* Added els4: update fe_user with amount of creditpoints (= exisitng amount - used_creditpoints - spended_creditpoints + saved_creditpoints */
-//			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->recs['tt_products']['creditpoints'];
-			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] - $this->recs['tt_products']['creditpoints'] - t3lib_div::_GP('creditpoints_spended') + t3lib_div::_GP('creditpoints_saved');
-					}
-
-/* Added Els: update fe_user with vouchercode */
-		if ($this->recs['tt_products']['vouchercode'] != '') {
-			// first check if vouchercode exist and is not their own vouchercode
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'fe_users', 'username="'.$this->recs['tt_products']['vouchercode'].'"');
-			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$uid_voucher = $row['uid'];
-			}
-			if (($uid_voucher != '') && ($this->deliveryInfo['feusers_uid'] != $uid_voucher) ) {
-				$fieldsArrayFeUsers['tt_products_vouchercode'] = $this->recs['tt_products']['vouchercode'];
-			}
-
-		}
-
-		if ($this->deliveryInfo['feusers_uid']) {
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$this->deliveryInfo['feusers_uid'], $fieldsArrayFeUsers);
-	/* Added ELS2: update user from vouchercode with 5 credits */
-			$this->addCreditPoints($this->recs['tt_products']['vouchercode'], 5);
-		}
-
-
-/*
-		//<-- MKL 2004.09.21
-		$fieldsArray['forename']=$this->personInfo['forename'];
-		$fieldsArray['company']=$this->personInfo['company'];
-		$fieldsArray['vat_id']=$this->personInfo['vat_id'];
-		$fieldsArray['street']=$this->deliveryInfo['street'];
-		$fieldsArray['street_n1']=$this->deliveryInfo['street_n1'];
-		$fieldsArray['street_n2']=$this->deliveryInfo['street_n2'];
-		$fieldsArray['city']=$this->deliveryInfo['city'];
-		$fieldsArray['zip']=$this->deliveryInfo['zip'];
-		$fieldsArray['country_code']=$this->personInfo['country_code'];
-		$fieldsArray['client_ip']=t3lib_div::getIndpEnv('REMOTE_ADDR');
-		//--> MKL 2004.09.21
-*/
-
-				// Default status_log entry
-		$status_log=array();
-		$status_log[] = array(
-			'time' => time(),
-			'info' => $this->conf['statusCodes.'][$fieldsArray['status']],
-			'status' => $fieldsArray['status'],
-			'comment' => $this->deliveryInfo['note']
-		);
-		$fieldsArray['status_log']=serialize($status_log);
-
-			// Order Data serialized
-		$fieldsArray['orderData']=serialize(array(
-				'html_output' 			=>	$orderConfirmationHTML,
-				'deliveryInfo' 			=>	$this->deliveryInfo,
-				'personInfo' 			=>	$this->personInfo,
-				'itemArray'				=>	$this->itemArray,
-				'calculatedArray'		=>	$this->calculatedArray
-		));
-
-			// Setting tstamp, deleted and tracking code
-		$fieldsArray['tstamp']=time();
-		$fieldsArray['deleted']=0;
-		$fieldsArray['tracking_code']=$this->recs['tt_products']['orderTrackingNo'];
-		$fieldsArray['agb']		= $this->personInfo['agb'];
-/* Added Els: write creditpointvalue into sys_products_order */
-		$fieldsArray['creditpoints'] = $this->recs['tt_products']['creditpoints'];
-/* Added Els4: write creditpoint_spended and saved value into sys_products_order */
-		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
-		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
-
-			// Saving the order record
-		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
-
-		#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__); // $this->basketExt['gift'][$this->giftnumber]['item'][$uid][$extVars] = $count;
-		// any gift orders in the extended basket?
-		if ($this->basketExt['gift']) {
-			$pid = intval($this->conf['PIDGiftsTable']);
-			if (!$pid)	$pid = intval($TSFE->id);
-
-			foreach ($this->basketExt['gift'] as $giftnumber => $rec) {
-				$amount = 0;
-				foreach ($rec['item'] as $productid => $product) {
-					foreach ($product as $variant => $count) {
-						$row = array();
-						tx_ttproducts_article_div::getRowFromVariant ($row, $variant);
-						$amount += intval($row['size']) * $count;
-					}
-				}
-				// Saving gift order data
-				$insertFields = array(
-					'pid' => $pid,
-					'tstamp' => time(),
-					'crdate' => time(),
-					'deleted' => 0,
-
-					'ordernumber'    => $orderUid,
-					'personname'     => $rec['personname'],
-					'personemail'    => $rec['personemail'],
-					'deliveryname'   => $rec['deliveryname'],
-					'deliveryemail'  => $rec['deliveryemail'],
-					'note'           => $rec['note'],
-					'amount'         => $amount
-				);
-				// Saving the gifts order record
-				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts', $insertFields);
-				$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
-				$insertFields = array();
-				$insertFields['uid_local'] = $newId;
-
-				foreach ($rec['item'] as $productid => $product) {
-					#debug ($product, 'product', __LINE__, __FILE__);
-					foreach ($product as $variant => $count) {
-						$row = array();
-						tx_ttproducts_article_div::getRowFromVariant ($row, $variant);
-
-						$query='uid_product=\''.intval($productid).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND gradings=\''.$row['gradings'].'\'' ;
-						$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
-
-						if ($articleRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($articleRes)) {
-							$insertFields['uid_foreign'] = $articleRow['uid'];
-							$insertFields['count'] = $count;
-							// Saving the gifts mm order record
-							$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts_articles_mm', $insertFields);
-						}
-					}
-				}
-			}
-		}
-
-			// Fetching the orderRecord by selecing the newly saved one...
-		$this->orderRecord = $this->getOrderRecord($orderUid);
-		$content .= tx_ttproducts_basket_div::getBasket('###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
-
-
-		// Is no user is logged in --> create one
-		if ($this->conf['createUsers'] && $this->personInfo['email'] != '' && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
-		{
-			$username = strtolower(trim($this->personInfo['email']));
-
-			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
-			$num_rows = $TYPO3_DB->sql_num_rows($res);
-
-			if (!$num_rows)
-			{
-				$this->password = substr(md5(rand()), 0, 6);
-
-				$insertFields = array(
-					'pid' => $this->conf['PIDuserFolder'],
-					'tstamp' => time(),
-					'username' => $username,
-					'password' => $this->password,
-					'usergroup' => $this->conf['memberOfGroup'],
-/* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
-					'uid' => $this->personInfo['feusers_uid'],
-					'company' => $this->personInfo['company'],
-					'name' => $this->personInfo['name'],
-					'address' => $this->personInfo['address'],
-					'telephone' => $this->personInfo['telephone'],
-					'fax' => $this->personInfo['fax'],
-					'email' => $this->personInfo['email'],
-					'zip' => $this->personInfo['zip'],
-					'city' => $this->personInfo['city'],
-					'crdate' => time()
-				);
-
-				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country':'country');
-				$insertFields[$countryKey] =  $this->personInfo['country'];
-
-				$res = $GLOBALS['TYPO3_DB']->exec_INSERTquery('fe_users', $insertFields);
-				// send new user mail
-				if (count($this->personInfo['email'])) {
-					$emailContent=trim(tx_ttproducts_basket_div::getBasket('###EMAIL_NEWUSER_TEMPLATE###'));
-					if ($emailContent) {
-						$parts = split(chr(10),$emailContent,2);
-						$subject=trim($parts[0]);
-						$plain_message=trim($parts[1]);
-
-						$this->send_mail($this->personInfo['email'], $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName']);
-					}
-				}
-			}
-		}
-
-
-		if (!$this->conf['AlwaysInStock']) {
-			// Reduce inStock
-			reset($this->itemArray);
-
-			#debug ($this->itemArray, '$this->itemArray Reduce in stock', __LINE__, __FILE__);
-
-			// loop over all items in the basket indexed by page and itemnumber
-			foreach ($this->itemArray as $pid=>$pidItem) {
-				foreach ($pidItem as $itemnumber=>$actItemArray) {
-					#error_Log ("tt_products  $this->conf['useArticles'] = ".$this->conf['useArticles']);
-					if ($this->conf['useArticles']) {
-						foreach ($actItemArray as $k1=>$actItem) {
-							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
-
-							$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products_articles', $query);
-								// 	TODO: Saving the order record support color, size and accessory here
-						}
-					} else {
-						foreach ($actItemArray as $k1=>$actItem) {
-							$query='uid=\''.intval($actItem['rec']['uid']).'\'';
-
-							$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('inStock', 'tt_products', $query);
-
-							if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-								if ($row['inStock'] > 0) {
-									$newInStock = intval($row['inStock'])-intval($actItem['count']);
-									if ($newInStock < 0) {
-										$newInStock = 0;
-									}
-
-									$fieldsArray =array();
-											// Setting tstamp, deleted and tracking code
-									$fieldsArray['inStock']=$newInStock;
-
-									$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'uid='.intval($actItem['rec']['uid']), $fieldsArray);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-			// Creates M-M relations for the products with tt_products table. Isn't really used yet, but later will be used to display stock-status by looking up how many items are already ordered.
-			// First: delete any existing. Shouldn't be any
-		$where='sys_products_orders_uid='.$orderUid;
-		$res = $GLOBALS['TYPO3_DB']->exec_DELETEquery('sys_products_orders_mm_tt_products',$where);
-
-			// Second: Insert a new relation for each ordered item
-		reset($this->itemArray);
-
-		// loop over all items in the basket indexed by page and itemnumber
-		foreach ($this->itemArray as $pid=>$pidItem) {
-			foreach ($pidItem as $itemnumber=>$actItemArray) {
-				if ($this->conf['useArticles']) {
-					foreach ($actItemArray as $k1=>$actItem) {
-						// get the article uid with these colors, sizes and gradings
-						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
-
-						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
-
-						if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-							$insertFields = array (
-								'sys_products_orders_uid' => $orderUid,
-								'sys_products_orders_qty' => intval($actItemArray[0]['count']),
-								'tt_products_uid' => intval($actItemArray[0]['rec']['uid']),
-								'tt_products_articles_uid' => intval($row['uid'])
-							);
-							$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
-						}
-					}
-				} else {
-					foreach ($actItemArray as $k1=>$actItem) {
-						$insertFields = array (
-							'sys_products_orders_uid' => $orderUid,
-							'sys_products_orders_qty' => intval($actItem['count']),
-							'tt_products_uid' => intval($actItem['rec']['uid'])
-						);
-						$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
-					}
-				}
-			}
-		}
-
-		// Generate CSV for each order
-		if ($this->conf['generateCSV'])
-		{
-			$csvfilepath = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $this->conf['CSVdestination'];
-			if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
-				$csvfilepath .= '/';
-			}
-			$csvfilepath .= $this->getOrderNumber($this->recs['tt_products']['orderUid']).'.csv';
-			$csvfile = fopen($csvfilepath, 'w');
-			if ($csvfile !== FALSE)
-			{
-				// Generate invoice and delivery address
-				$csvlinehead = '';
-				$csvlineperson = '';
-				$csvlinedelivery = '';
-/* Added Els: 'feusers_uid,' */
-				$infoFields = explode(',','feusers_uid,name,address,telephone,fax,email,company,city,zip,state,country,kk_fa,kk_nr,kk_ablauf,kk_pruefcode,agb');
-				while(list(,$fName)=each($infoFields)) {
-					if ($csvlinehead != '') {
-						$csvlinehead .= ';';
-						$csvlineperson .= ';';
-						$csvlinedelivery .= ';';
-					}
-					$csvlinehead .= '"' . $fName . '"';
-					$csvlineperson .= '"' . str_replace('\r\n', '|', $this->personInfo[$fName]) . '"';
-					$csvlinedelivery .= '"' . $this->deliveryInfo[$fName] . '"';
-				}
-
-				// Generate shipping/payment information and delivery note
-				$csvlineshipping = '"' . $this->basketExtra['shipping.']['title'] . '";"' .
-					$this->priceFormat($this->calculatedArray['priceTax']['shipping']) . '";"' .
-					$this->priceFormat($this->calculatedArray['priceNoTax']['shipping']) . '"';
-
-				$csvlinepayment = '"' . $this->basketExtra['payment.']['title'] . '";"' .
-					$this->priceFormat($this->calculatedArray['priceTax']['payment']) . '";"' .
-					$this->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '"';
-
-				$csvlinedeliverynote = '"'.$this->deliveryInfo['note'].'"';
-
-				// Build field list
-				$csvfields = explode(',', $this->conf['CSVfields']);
-				$csvfieldcount = count($csvfields);
-				for ($a=0;$a<$csvfieldcount;$a++)
-					$csvfields[$a] = trim($csvfields[$a]);
-
-				// Write description header
-				$csvdescr = '"uid";"count";"color";"size";"accessory";"gradings"';
-				reset($csvfields);
-				foreach($csvfields as $csvfield)
-					$csvdescr .= ';"'.$csvfield.'"';
-				if ($this->conf['CSVinOneLine'])
-				{
-					$csvdescr .= ';"deliverynote";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
-					$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
-				}
-				$csvdescr .= '\n';
-				fwrite($csvfile, $csvdescr);
-
-				// Write ordered product list
-				reset($this->itemArray);
-
-				$infoWritten = false;
-				// loop over all items in the basket indexed by page and itemnumber
-				foreach ($this->itemArray as $pid=>$pidItem) {
-					foreach ($pidItem as $itemnumber=>$actItemArray) {
-						foreach ($actItemArray as $k1=>$actItem) {
-							$variants = explode(';', $actItem['rec']['extVars']);
-							$csvdata = '"'.intval($actItem['rec']['uid']).'";"'.
-										intval($actItem['count']).'";"'.
-										$variants[0].'";"'.
-										$variants[1].'";"'.
-										$variants[2]/100 .'";"'.
-										$variants[3].'"';
-							reset($csvfields);
-							foreach($csvfields as $csvfield) {
-								$csvdata .= ';"'.$actItem['rec'][$csvfield].'"';
-							}
-							if ($this->conf['CSVinOneLine'] && (!$infoWritten))	{
-								$infoWritten = true;
-								$csvdata .= ';'.$csvlinedeliverynote.';'.$csvlineshipping.';'.$csvlinepayment.';'.$csvlineperson.';'.$csvlinedelivery;
-							}
-							$csvdata .= '\n';
-							fwrite($csvfile, $csvdata);
-						}
-					}
-				}
-
-				if (!$this->conf['CSVinOneLine']) {
-					fwrite($csvfile, '\n');
-					fwrite($csvfile, $csvlinehead . '\n');
-					fwrite($csvfile, $csvlineperson . '\n');
-					fwrite($csvfile, $csvlinedelivery . '\n');
-					fwrite($csvfile, '\n');
-					fwrite($csvfile, $csvlinedeliverynote. '\n');
-					fwrite($csvfile, $csvlineshipping . '\n');
-					fwrite($csvfile, $csvlinepayment . '\n');
-				}
-
-				fclose($csvfile);
-			}
-			else
-				echo 'Warning: Cannot create CSV file \''.$csvfilepath.'\' for this order!';
-		}
-
-			// Sends order emails:
-		$recipients = $this->conf['orderEmail_to'];
-		$recipients.=','.$this->personInfo['email']; // former: deliveryInfo
-
-		$emailArray = $this->category->getCategoryEmail($this->itemArray);
-		//debug ($emailArray, '$emailArray', __LINE__, __FILE__);
-		if (count ($emailArray)) {
-			foreach ($emailArray as $key => $email) {
-				$recipients.=','.$email['email'];
-			}
-		}
-		$recipients=t3lib_div::trimExplode(',',$recipients,1);
-		//debug ($recipients, '$recipients', __LINE__, __FILE__);
-
-
-		if (count($recipients))	{	// If any recipients, then compile and send the mail.
-			$emailContent=trim(tx_ttproducts_basket_div::getBasket('###EMAIL_PLAINTEXT_TEMPLATE###'));
-			if ($emailContent)	{		// If there is plain text content - which is required!!
-				$parts = split(chr(10),$emailContent,2);		// First line is subject
-				$subject=trim($parts[0]);
-				$plain_message=trim($parts[1]);
-
-				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
-				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
-					$HTMLmailShell=$this->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
-					$HTMLmailContent=$this->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$orderConfirmationHTML);
-					$HTMLmailContent=$this->cObj->substituteMarkerArray($HTMLmailContent, $this->globalMarkerArray);
-
-
-						// Remove image tags to products:
-					if ($this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix'])	{
-						$parser = t3lib_div::makeInstance('t3lib_parsehtml');
-						$htmlMailParts = $parser->splitTags('img',$HTMLmailContent);
-
-						reset($htmlMailParts);
-						while(list($kkk,$vvv)=each($htmlMailParts))	{
-							if ($kkk%2)	{
-								list($attrib) = $parser->get_tag_attributes($vvv);
-								if (t3lib_div::isFirstPartOfStr($attrib['src'],$this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix']))	{
-									$htmlMailParts[$kkk]='';
-								}
-							}
-						}
-						$HTMLmailContent=implode('',$htmlMailParts);
-					}
-
-					$V = array (
-						'from_email' => $this->conf['orderEmail_from'],
-						'from_name' => $this->conf['orderEmail_fromName'],
-						'attachment' => ($this->conf['AGBattachment'] ? $this->conf['AGBattachment'] : '')
-					);
-
-					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
-					$Typo3_htmlmail->useBase64();
-					$Typo3_htmlmail->start(implode($recipients,','), $subject, $plain_message, $HTMLmailContent, $V);
-					$Typo3_htmlmail->sendtheMail();
-				} else {		// ... else just plain text...
-					// $headers variable removed everywhere!
-					$this->send_mail($this->personInfo['email'], $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName'], $this->conf['AGBattachment']);
-					if ($this->conf['generateCSV'])
-						$addcsv = $csvfilepath;
-					else
-						$addcsv = '';
-					$this->send_mail($this->conf['orderEmail_to'], $subject, $plain_message, $this->personInfo['email'], $this->personInfo['name'], $addcsv);
-				}
-			}
-		}
-
-			// Empties the shopping basket!
-		$TSFE->fe_user->setKey('ses','recs',tx_ttproducts_basket_div::getClearBasketRecord());
-		$TSFE->fe_user->setKey('ses','basketExt',array());
-
-			// This cObject may be used to call a function which clears settings in an external order system.
-			// The output is NOT included anywhere
-		$this->getExternalCObject('externalFinalizing');
-
-		return $content;
-	} // finalizeOrder
 
 
 }

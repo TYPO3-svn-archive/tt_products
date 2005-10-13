@@ -1,6 +1,6 @@
 <!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+     "http://www.w3.org/tr/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
 <head>
 <TITLE>bananaGUARD Shop-Template</TITLE>
@@ -10,19 +10,19 @@
 
 <br>
 <H1>bananaGUARD Shop-Template</H1>
-<P> You can see the test website of this template at http://www.fholzinger.com/index.php?id=35<BR />
-The ids of this template correspond to the ids on the testsite. <BR />
+<P> You can see the test website of this template at http://www.fholzinger.com/index.php?id=35<br />
+The ids of this template correspond to the ids on the testsite. <br />
 The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 </P>
 
-<BR><HR><BR>
+<br><HR><br>
 <h3>ITEM_LIST_TEMPLATE</h3>
 <em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
 <br>
 <br>
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>ITEM_LIST_TEMPLATE</h3>
 <em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
 <br>
@@ -33,11 +33,13 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 	This subpart is used to display the regular list of products. It's also used by search-results.
 -->
 
-<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<table border="0" cellspacing="0" cellpadding="1" width=1>
 	<tr>
 		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
-		<td></td>
-		<td></td>
+		<td><!-- ###LINK_BROWSE### begin -->
+			[ ###BROWSE_LINKS### ]
+			<!-- ###LINK_BROWSE### end-->
+		</td>
 		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>nächste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 	</tr>
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
@@ -50,10 +52,10 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 			<tr>
 				<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
 			</tr>
-			<TR><TD colspan="3">
+			<tr><td colspan="3">
 			<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
 
-        <TABLE bordercolor="#003399" cellspacing="1" border="1">
+        <table bordercolor="#003399" cellspacing="1" border="1">
           <tr>
             <td><img src="clear.gif" width="150" height="1"></td>
             <td><img src="clear.gif" width="150" height="1"></td>
@@ -61,25 +63,25 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
           </tr>
           <!-- ###ITEM_SINGLE### begin-->
           ###ITEM_SINGLE_PRE_HTML###
-          <TD height="150" bgcolor="###GC1###" valign="bottom" align="center">
+          <td height="150" bgcolor="###GC1###" valign="bottom" align="center">
             <!--###LINK_ITEM###-->
             ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
             <!--###LINK_ITEM###-->
             <br>
             ###PRODUCT_IMAGE### <br>
             ###GW1B### Stückzahl: ###GW1E### <INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-            <p> </TD>
+            <p> </td>
           ###ITEM_SINGLE_POST_HTML###
           <!-- ###ITEM_SINGLE### end -->
-          <TR>
-            <TD colspan="3" align="CENTER"> <input type="Submit" name="order2" value="In den Warenkorb"></TD>
-          </TR>
-          <TR>
-            <TD colspan="3" align="CENTER"> <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=21'"></TD>
-          </TR>
-        </TABLE>
+          <tr>
+            <td colspan="3" align="CENTER"> <input type="Submit" name="order2" value="In den Warenkorb"></td>
+          </tr>
+          <tr>
+            <td colspan="3" align="CENTER"> <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=21'"></td>
+          </tr>
+        </table>
 			</FORM>
-			</TD></TR>
+			</td></tr>
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
 	<tr>
@@ -88,23 +90,23 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 		<td></td>
 		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>nächste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 	</tr>
-</TABLE>
+</table>
 ###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Befüllung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte über den Link Kontakt/Bestellung per Email. Viel Spaß beim Einkaufen! ###GW1E###
 
-<BR>
+<br>
 <table width="163">
   <tr>
     <td>&nbsp;</td>
   </tr>
 </table>
-<BR>
+<br>
 <!-- ###ITEM_LIST_TEMPLATE### end -->
 
 
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>ITEM_SINGLE_DISPLAY</h3>
 <em>This subpart is used to display single products.</em><br>
 <br>
@@ -113,14 +115,14 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 <!-- ###ITEM_SINGLE_DISPLAY### begin
 	This subpart is used to display single products.
 -->
-<TABLE border="0" cellspacing="0" cellpadding="1" width="100%">
+<table border="0" cellspacing="0" cellpadding="1" width="100%">
 	<tr>
 		<td align="left"><!--###LINK_PREV_SINGLE###-->###GW2B###&lt;&lt; voriger Artikel###GW2E###<!--###LINK_PREV_SINGLE###--></td>
 		<td align="right"><!--###LINK_NEXT_SINGLE###-->###GW2B###nächster Artikel &gt;&gt;###GW2E###<!--###LINK_NEXT_SINGLE###--></td>
 	</tr>
-</TABLE>
+</table>
 
-<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<table border="0" cellspacing="0" cellpadding="1" width=1>
 <FORM method="post" action="###FORM_URL###">
 	<tr>
 		<td><img src="clear.gif" width="100" height="1"></td>
@@ -133,10 +135,10 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 	<tr>
 		<td colspan=3 bgcolor="###GC1###"><!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--></td>
 	</tr>
-	<TR>
-		<TD valign=top>###PRODUCT_IMAGE###</TD>
+	<tr>
+		<td valign=top>###PRODUCT_IMAGE###</td>
 		<td></td>
-		<TD valign=top>
+		<td valign=top>
 			###GW1B###
 
 				<B>Info:</B><br>
@@ -146,10 +148,10 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 				<input type="Submit" name="order" value="in den Warenkorb"
 onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 				</nobr>
-		</TD>
-	</TR>
+		</td>
+	</tr>
 </form>
-</TABLE>
+</table>
 <br>
 <br>
 
@@ -165,7 +167,7 @@ onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){do
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>ITEM_SEARCH</h3>
 <em>Subpart for the search-form.</em><br>
 <br>
@@ -189,7 +191,7 @@ Subpart for the search-form
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>ITEM_SEARCH_EMPTY</h3>
 <em>Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.</em><br>
 <br>
@@ -211,7 +213,7 @@ Subpart displayed if the search was empty. If the search was successfull, the IT
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>BASKET_TEMPLATE</h3>
 <em>
 Subpart used to display the content of the shopping basket.<br>
@@ -228,7 +230,7 @@ In addition there's a number of fields used for delivery and payment information
 ###EXTERNAL_COBJECT###
 <FORM method="post" action="###FORM_URL###">
 
-<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<table border="0" cellspacing="0" cellpadding="1" width=1>
 <tr>
 <td><img src="clear.gif" width="100" height="1"></td>
 <td><img src="clear.gif" width="5" height="1"></td>
@@ -253,18 +255,18 @@ In addition there's a number of fields used for delivery and payment information
 <tr>
 <td colspan=6><img src="clear.gif" width="1" height="6"></td>
 </tr>
-<TR>
+<tr>
 
-<TD valign=top>
+<td valign=top>
 <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###-->
 
-</TD>
+</td>
 <td></td>
 <td></td>
 <td valign=top>###GW1B### <!-- ###PRICE_TAX### --> ###GW1E###</td>
-<TD valign=top> <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </TD>
-<td valign=top align=right>###GW1B### <!--<b>###PRICE_TOTAL_TAX###</b> <BR>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###) --> ###GW1E###</td>
-</TR>
+<td valign=top> <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </td>
+<td valign=top align=right>###GW1B### <!--<b>###PRICE_TOTAL_TAX###</b> <br>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###) --> ###GW1E###</td>
+</tr>
 <!-- ###ITEM_SINGLE### end -->
 <!-- ###ITEM_LIST### end -->
 <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
@@ -284,19 +286,19 @@ In addition there's a number of fields used for delivery and payment information
 </tr>
 
 
-<TR>
+<tr>
 <td colspan=5>
 ###GW1B###Pauschale: <b>###SHIPPING_TITLE###</B>###GW1E###<br><br>
 
-<TABLE><TR>
-            <TD valign="middle">###GW1B######SHIPPING_SELECTOR######GW1E###</TD>
-</TR></TABLE>
+<table><tr>
+            <td valign="middle">###GW1B######SHIPPING_SELECTOR######GW1E###</td>
+</tr></table>
 
 </td>
       <td valign=top align=right>###GW1B### <b>###PRICE_SHIPPING_TAX###</b>
-        <!-- <BR>(###PRICE_SHIPPING_NO_TAX###) -->
+        <!-- <br>(###PRICE_SHIPPING_NO_TAX###) -->
         ###GW1E###</td>
-</TR>
+</tr>
 
 <tr>
 </tr>
@@ -314,7 +316,7 @@ In addition there's a number of fields used for delivery and payment information
 <tr>
 <td colspan=6><img src="clear.gif" width="1" height="6"></td>
 </tr>
-<TR>
+<tr>
 <td colspan=5>
 ###GW1B###
 
@@ -327,7 +329,7 @@ In addition there's a number of fields used for delivery and payment information
 This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
 -->
 <!-- ###MESSAGE_PAYMENT_11### -->
-<BR><B>Du kan kun bruge udenlandske Mastercard i vores butik. Desuden tager MasterCard 5,75% af transaktionsbeløbet i gebyr. Derfor bliver der kompenseret for dette beløb her.</b><br>
+<br><B>Du kan kun bruge udenlandske Mastercard i vores butik. Desuden tager MasterCard 5,75% af transaktionsbeløbet i gebyr. Derfor bliver der kompenseret for dette beløb her.</b><br>
 <!-- ###MESSAGE_PAYMENT_11### -->
 <!-- ###MESSAGE_PAYMENT_12### -->
 <br>
@@ -342,9 +344,9 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 
 </td>
 <td valign=top align=right>###GW1B###
-<b>###PRICE_PAYMENT_TAX###</b><BR>
+<b>###PRICE_PAYMENT_TAX###</b><br>
 <!-- (###PRICE_PAYMENT_NO_TAX###) -->###GW1E###</td>
-</TR>
+</tr>
 <tr>
 <td colspan=6><img src="clear.gif" width="1" height="10"></td>
 </tr>
@@ -357,21 +359,21 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 <tr>
 <td colspan=6 bgcolor="###GC2###">###GW2B###<b>Gesamtbetrag:</b>###GW2E###</td>
 </tr>
-<TR>
+<tr>
 <td valign=top colspan=5></td>
 <td valign=top align=right nowrap>###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b><br>
       (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)<br> ###GW1E###</td>
-</TR>
-</TABLE><BR>
-<TABLE width="100%"><TR>
-<TD>
+</tr>
+</table><br>
+<table width="100%"><tr>
+<td>
 <input type="hidden" name="mode_update" value="1">
-<input type="Submit" name="products_update" value="Warenkorb aktualisieren"></TD>
-<TD align="right"><input type="Submit" name="products_info" value="Ihre Daten eingeben" onclick="this.form.action='###FORM_URL_INFO###';"></TD>
-</TR>
-</TABLE>
+<input type="Submit" name="products_update" value="Warenkorb aktualisieren"></td>
+<td align="right"><input type="Submit" name="products_info" value="Ihre Daten eingeben" onclick="this.form.action='###FORM_URL_INFO###';"></td>
+</tr>
+</table>
 </FORM>
-<BR>
+<br>
 <!-- ###BASKET_TEMPLATE### end -->
 
 
@@ -382,11 +384,11 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>BASKET_INFO_TEMPLATE</h3>
 <em>
-Subpart used if the GPvar "products_info" was set. This is normally used to let people enter address information separately from the real basket.<BR>
-Exact same features as BASKET_TEMPLATE<BR>
+Subpart used if the GPvar "products_info" was set. This is normally used to let people enter address information separately from the real basket.<br>
+Exact same features as BASKET_TEMPLATE<br>
 </em><br>
 
 <!-- ###BASKET_INFO_TEMPLATE### begin
@@ -394,7 +396,7 @@ Subpart used if the GPvar "products_info" was set. This is normally used to let 
 Exact same features as BASKET_TEMPLATE
 -->
 <FORM method="post" action="###FORM_URL###" name="###FORM_NAME###" id="registrationForm">
-<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<table border="0" cellspacing="0" cellpadding="1" width=1>
 <tr>
 <td><img src="clear.gif" width="100" height="1"></td>
 <td><img src="clear.gif" width="5" height="1"></td>
@@ -565,17 +567,17 @@ Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
         die AGB´s von Marcel Schwarz - Online Vertrieb gelesen haben und diese akzeptieren.
         ###GW1E### </td>
 </tr>
-</TABLE>
+</table>
 <br>
-<TABLE width="100%"><TR>
-<TD><input type="Submit" name="products_update" value="zurück zum Warenkorb"></TD>
-<TD align="right">
+<table width="100%"><tr>
+<td><input type="Submit" name="products_update" value="zurück zum Warenkorb"></td>
+<td align="right">
 <input type="Submit" name="products_payment" value="ABG´s akzeptiert" onclick="document.forms[0].action='###FORM_URL_FINALIZE###';">
 <input type="hidden" name="products_cmd" value="cardno" />
-</TD>
-</TR></TABLE>
+</td>
+</tr></table>
 </FORM>
-<BR>
+<br>
 <!-- ###BASKET_INFO_TEMPLATE### end -->
 
 
@@ -592,11 +594,11 @@ Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>BASKET_PAYMENT_TEMPLATE</h3>
 <em>
-Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.<BR>
-Exact same features as BASKET_TEMPLATE<BR>
+Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.<br>
+Exact same features as BASKET_TEMPLATE<br>
 </em><br>
 <br>
 <br>
@@ -605,7 +607,7 @@ Subpart used if the GPvar "products_payment" was set. This displays the final in
 Exact same features as BASKET_TEMPLATE
 -->
 ###EXTERNAL_COBJECT###
-<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<table border="0" cellspacing="0" cellpadding="1" width=1>
   <tr>
     <td><img src="clear.gif" width="100" height="1"></td>
     <!--
@@ -635,21 +637,21 @@ Exact same features as BASKET_TEMPLATE
   <tr>
     <td colspan=5><img src="clear.gif" width="1" height="6"></td>
   </tr>
-  <TR>
-    <TD valign=top colspan=3> ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E### </TD>
+  <tr>
+    <td valign=top colspan=3> ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E### </td>
     <!--
 <td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
 -->
-    <TD valign=top align=center>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
+    <td valign=top align=center>###GW1B### ###FIELD_QTY### ###GW1E###</td>
     <td valign=top align=right>###GW1B###
       <!--
 <b>###PRICE_TOTAL_TAX###</b>
 -->
       <!--
-<BR>(###PRICE_TOTAL_NO_TAX###) ###GW1E###
+<br>(###PRICE_TOTAL_NO_TAX###) ###GW1E###
 -->
     </td>
-  </TR>
+  </tr>
   <!-- ###ITEM_SINGLE### end -->
   <!-- ###ITEM_LIST### end -->
   <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
@@ -684,8 +686,8 @@ Exact same features as BASKET_TEMPLATE
         </tr>
         <tr>
           <td valign="TOP">###GW1B###Email:###GW1E###</td>
-          <td>###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E### ###GW2B###<BR>
-            (An diese Email-Adresse wird die Bestätigung Ihrer Bestellung geschickt!)###GW2E###<BR>
+          <td>###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E### ###GW2B###<br>
+            (An diese Email-Adresse wird die Bestätigung Ihrer Bestellung geschickt!)###GW2E###<br>
           </td>
         </tr>
       </table></td>
@@ -723,8 +725,8 @@ Exact same features as BASKET_TEMPLATE
 	</tr>
         <tr>
           <td valign="TOP">###GW1B###Email:###GW1E###</td>
-          <td>###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E### ###GW2B###<BR>
-            (An diese Email-Adresse wird die Bestätigung Ihrer Bestellung geschickt!)###GW2E###<BR>
+          <td>###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E### ###GW2B###<br>
+            (An diese Email-Adresse wird die Bestätigung Ihrer Bestellung geschickt!)###GW2E###<br>
           </td>
         </tr>
       </table></td>
@@ -756,45 +758,45 @@ Exact same features as BASKET_TEMPLATE
     <td colspan=3>###GW1B###Pauschale: <b>###SHIPPING_TITLE###</B>###GW1E###<br></td>
     <td valign=top align=right colspan=2>###GW1B###<b>###PRICE_SHIPPING_TAX###</b>###GW1E###</td>
   </tr>
-  <TR>
+  <tr>
     <td colspan=5 height="12"><img src="clear.gif" width="1" height="10"></td>
-  </TR>
-  <TR>
+  </tr>
+  <tr>
     <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Zahlungsweise:</b>###GW2E###</td>
     <td valign=top align=right colspan=3>&nbsp;</td>
-  </TR>
-  <TR>
+  </tr>
+  <tr>
     <td valign=top colspan=3> ###GW1B######PAYMENT_IMAGE### ###PAYMENT_TITLE###
       ###GW1E###</td>
     <td valign=top align=right colspan=3>###GW1B### <b>###PRICE_PAYMENT_TAX###</b>
       <!-- (###PRICE_PAYMENT_NO_TAX###)<br>
 -->
       ###GW1E###</td>
-  </TR>
+  </tr>
   <tr>
     <td colspan=5><img src="clear.gif" width="1" height="10"></td>
   </tr>
   <tr>
     <td colspan=5 bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
   </tr>
-  <TR>
+  <tr>
     <td valign=top colspan=3>###GW1B### <strong>Gesamtbetrag in EURO:</strong>
       ###GW1E###</td>
     <td valign=top align=right colspan=2 nowrap>###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b>
       <br>
       (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)<br>
       ###GW1E###</td>
-  </TR>
-</TABLE>
+  </tr>
+</table>
 <br>
 <FORM method="post" action="###FORM_URL###">
-<TABLE width="100%"><TR>
-<TD><input type="Submit" name="products_update" value="zurück zum Warenkorb">
-<input type="hidden" name="products_cmd" value="cardno" /></TD>
-<TD align="right"><input type="Submit" name="products_finalize" value="Bestellung abschliessen!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### (auch PayPal)###GW1E###</TD>
-</TR></TABLE>
+<table width="100%"><tr>
+<td><input type="Submit" name="products_update" value="zurück zum Warenkorb">
+<input type="hidden" name="products_cmd" value="cardno" /></td>
+<td align="right"><input type="Submit" name="products_finalize" value="Bestellung abschliessen!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### (auch PayPal)###GW1E###</td>
+</tr></table>
 </FORM>
-<BR>
+<br>
 <!-- ###BASKET_PAYMENT_TEMPLATE### end -->
 
 
@@ -804,7 +806,7 @@ Exact same features as BASKET_TEMPLATE
 <!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### begin
 Subpart used if the order is finalized and this is thus the confirmation shown.
 -->
-<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<table border="0" cellspacing="0" cellpadding="1" width=1>
 <tr>
 <td><img src="clear.gif" width="100" height="1"></td>
 <td><img src="clear.gif" width="5" height="1"></td>
@@ -868,10 +870,10 @@ Message for payment method 10, Paypal
 	<!-- ###MESSAGE_PAYMENT### -->
    <br>
         <b>Liefer- und Bestellstatus</b><br>
-        Die Ware bleibt bis zur vollständigen Bezahlung unser Eigentum.<BR>
+        Die Ware bleibt bis zur vollständigen Bezahlung unser Eigentum.<br>
         Ihr Bestelldatum: ###ORDER_DATE###.<br>
         <br>
-        Sie können Ihren Bestellstatus jederzeit mittels Ihres Bestellstatus-Codes<BR>
+        Sie können Ihren Bestellstatus jederzeit mittels Ihres Bestellstatus-Codes<br>
         <strong>###ORDER_TRACKING_NO###</strong> nachvollziehen. <br>
         Klicken Sie hier <a href="index.php?id=38&tracking=###ORDER_TRACKING_NO###"><strong>
         um den Status jetzt zu sehen.</strong></a> <br>
@@ -902,17 +904,17 @@ Message for payment method 10, Paypal
 <tr>
 <td colspan=6><img src="clear.gif" width="1" height="6"></td>
 </tr>
-<TR>
-<TD valign=top>###PRODUCT_IMAGE###</TD>
+<tr>
+<td valign=top>###PRODUCT_IMAGE###</td>
 <td></td>
-<TD valign=top>
+<td valign=top>
 ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
 
-</TD>
+</td>
 <td valign=top><!--###GW1B### ###PRICE_TAX### ###GW1E###--></td>
-<TD valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
-<td valign=top align=right>###GW1B### <b><!--###PRICE_TOTAL_TAX###--></b><BR><!--(###PRICE_TOTAL_NO_TAX###) ###GW1E###--></td>
-</TR>
+<td valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</td>
+<td valign=top align=right>###GW1B### <b><!--###PRICE_TOTAL_TAX###--></b><br><!--(###PRICE_TOTAL_NO_TAX###) ###GW1E###--></td>
+</tr>
 <!-- ###ITEM_SINGLE### end -->
 <!-- ###ITEM_LIST### end -->
 <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
@@ -1029,7 +1031,7 @@ Message for payment method 10, Paypal
 <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Versand und Verpackung:</b>###GW2E###</td>
     <td valign=top align=right colspan=3>###GW1B###<b>###PRICE_SHIPPING_TAX###</b>###GW1E###</td>
 </tr>
-<TR>
+<tr>
 <td valign=top colspan=3>###GW1B###
 <strong>Zahlungsweise:</strong><br>
 ###PAYMENT_IMAGE### ###PAYMENT_TITLE###
@@ -1041,14 +1043,14 @@ Message for payment method 10, Paypal
 -->
 
 ###GW1E###</td>
-</TR>
+</tr>
 <tr>
 <td colspan=6><img src="clear.gif" width="1" height="10"></td>
 </tr>
 <tr>
 <td colspan=6 bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
 </tr>
-<TR>
+<tr>
 <td valign=top colspan=3>###GW1B###
 <strong>Gesamtpreis in EUR:</strong>
 ###GW1E###</td>
@@ -1058,7 +1060,7 @@ Message for payment method 10, Paypal
  (exkl. MwSt.: ###PRICE_TOTAL_NO_TAX###)<br>
 
 ###GW1E###</td>
-</TR>
+</tr>
 <tr>
     <td colspan=6> <p>###GW1B### <br>
         <br>
@@ -1073,9 +1075,9 @@ Message for payment method 10, Paypal
         ###GW1E### </p>
       </td>
 </tr>
-</TABLE>
+</table>
 <br>
-<BR>
+<br>
 <!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### end -->
 
 
@@ -1084,7 +1086,7 @@ Message for payment method 10, Paypal
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>BASKET_TEMPLATE_EMPTY</h3>
 <em><br>
 <br>
@@ -1131,7 +1133,7 @@ If payment is initiated but the required information fields are not filled in co
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>TRACKING_DISPLAY_INFO</h3>
 <em>
 Displays the view of the order status by tracking codes.<br>
@@ -1264,7 +1266,7 @@ Hier können Sie uns eine Nachricht bezüglich Ihrer Bestellung schicken.<br>
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>TRACKING_ENTER_NUMBER</h3>
 <em>
 Displays form for entering the tracking number.<br>
@@ -1305,7 +1307,7 @@ Displays form for entering the tracking number.
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>TRACKING_WRONG_NUMBER</h3>
 <em>
 Displays error message if no tracking code.<br>
@@ -1336,7 +1338,7 @@ Displays error message if no tracking code.
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>TRACKING_EMAILNOTIFY_TEMPLATE</h3>
 <em>
 Subpart used as template for the notify emails.<br>
@@ -1379,8 +1381,8 @@ D- 71364 Winnenden
 Tel.: +49 (0)7195 583372
 Email: info@bananaguard.de<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
 </pre>
-<BR>
-<BR><BR><BR><HR><BR><BR><BR>
+<br>
+<br><br><br><HR><br><br><br>
 <h3>EMAIL_PLAINTEXT_TEMPLATE</h3>
 <em>
 Subpart used as template for the order-emails.<br>
@@ -1509,7 +1511,7 @@ Email: info@bananaguard.de
 <!-- ###BILL_TEMPLATE### start -->
 
 
-<TABLE border="0" cellspacing="0" cellpadding="1" width=672>
+<table border="0" cellspacing="0" cellpadding="1" width=672>
   <tr>
     <td colspan="2"> <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -1556,37 +1558,37 @@ Email: info@bananaguard.de
   <tr>
     <td colspan="2"><img src="clear.gif" width="1" height="2"></td>
   </tr>
-  <TR>
-    <TD valign="top" colspan="2"> ###FIELD_QTY###x ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
-    </TD>
-  </TR>
+  <tr>
+    <td valign="top" colspan="2"> ###FIELD_QTY###x ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+    </td>
+  </tr>
   <!-- ###ITEM_SINGLE### end -->
   <!-- ###ITEM_LIST### end -->
   <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
   <tr>
     <td colspan="2"><img src="clear.gif" width="1" height="10"></td>
   </tr>
-  <TR>
+  <tr>
     <td valign="top" colspan="1">###GW1B### Zahlungsart: ###PAYMENT_TITLE### ###GW1E###</td>
     <td valign="top" align="right">###GW1B### <b>EUR ###PRICE_PAYMENT_TAX###</b><br>
       ###GW1E###</td>
-  </TR>
-  <TR>
+  </tr>
+  <tr>
     <td valign=top>###GW1B### Verpackung und Versand###GW1E###</td>
     <td valign=top align=right>###GW1B### <b>EUR ###PRICE_SHIPPING_TAX###</b><br>
       ###GW1E###</td>
-  </TR>
+  </tr>
   <tr>
     <td colspan=2><img src="clear.gif" width="1" height="10"></td>
   </tr>
   <tr>
     <td colspan=2>--------------------------------------------------------------------------------------------------------------------------</td>
   </tr>
-  <TR>
+  <tr>
     <td valign=top colspan=1 height="59">###GW1B### <strong>Gesamt</strong> ###GW1E###</td>
     <td valign=top align=right colspan=1>###GW1B### <b>EUR ###PRICE_TOTAL_TAX### <br>(ohne MWSt. EUR ###PRICE_TOTAL_NO_TAX###)</b><br>
       ###GW1E###</td>
-  </TR>
+  </tr>
   <tr>
     <td colspan=2>&nbsp;</td>
   </tr>
@@ -1613,7 +1615,7 @@ Email: info@bananaguard.de
   <tr>
     <td colspan=2>&nbsp;</td>
   </tr>
-</TABLE>
+</table>
 
 
 <!-- ###BILL_TEMPLATE### end -->
@@ -1622,7 +1624,7 @@ Email: info@bananaguard.de
 <!-- ###DELIVERY_TEMPLATE### start -->
 
 
-<TABLE border="0" cellspacing="0" cellpadding="1" width=672>
+<table border="0" cellspacing="0" cellpadding="1" width=672>
   <tr>
     <td colspan="2"> <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -1675,11 +1677,11 @@ Email: info@bananaguard.de
 <tr>
 <td colspan=2><img src="clear.gif" width="1" height="2"></td>
 </tr>
-<TR>
-<TD valign=top colspan=2>
+<tr>
+<td valign=top colspan=2>
  ###FIELD_QTY###x ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
-</TD>
-</TR>
+</td>
+</tr>
 <!-- ###ITEM_SINGLE### end -->
 <!-- ###ITEM_LIST### end -->
 <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
@@ -1719,7 +1721,7 @@ Email: info@bananaguard.de
   </tr>
 
 </tr>
-</TABLE>
+</table>
 
 
 <!-- ###DELIVERY_TEMPLATE### end -->

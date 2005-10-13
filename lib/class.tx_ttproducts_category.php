@@ -58,7 +58,6 @@ class tx_ttproducts_category {
 	} // init
 
 
-
 	function categorycomp($row1, $row2)  {
 		return strcmp($this->getCategory[$row1['category']], $this->getCategory[$row2['category']]);
 	} // categorycomp

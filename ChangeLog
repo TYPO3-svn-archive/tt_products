@@ -1,3 +1,11 @@
+2005-10-13  Franz Holzinger <franz@fholzinger.com>
+	* Danish flexform
+	* correct error with to early deleted basket in finalize
+	* split into more smaller files
+
+2005-10-12  Franz Holzinger <franz@fholzinger.com>
+	* make HELP working again
+
 2005-10-10  Franz Holzinger <franz@fholzinger.com>
 	* different configuration for discount
 	* in the basket template FIELD_NAME_BASKET has to be used always

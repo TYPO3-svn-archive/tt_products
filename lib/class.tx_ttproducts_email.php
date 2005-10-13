@@ -43,7 +43,7 @@ require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
 
 class tx_ttproducts_email {
-	var $emailArray;	// array of read in categories
+	var $emailArray;	// array of read in emails
 	var $tt_products_emails;			// object of the type tx_table_db
 
 	/**
@@ -74,7 +74,8 @@ class tx_ttproducts_email {
 		}
 		return $rc;
 	}
-	
+
+
 }
 
 

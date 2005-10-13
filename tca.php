@@ -529,13 +529,16 @@ $TCA['tt_products_cat'] = Array (
 			)
 		),
 		'email_uid' => Array (		
-			'exclude' => 0,		
+			'exclude' => 1,		
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat.email_uid',		
 			'config' => Array (
 				'type' => 'select',	
+				'items' => Array (
+					Array('',0),
+				),
 				'foreign_table' => 'tt_products_emails',	
 				'foreign_table_where' => 'AND tt_products_emails.pid=###CURRENT_PID### ORDER BY tt_products_emails.uid',	
-				'size' => 10,	
+				'size' => 6,	
 				'minitems' => 0,
 				'maxitems' => 1,
 			)
