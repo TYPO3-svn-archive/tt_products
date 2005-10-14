@@ -279,11 +279,14 @@ CREATE TABLE sys_products_orders (
 #  zip varchar(10) DEFAULT '' NOT NULL,
 #  country_code char(3) DEFAULT '' NOT NULL,
 #  client_ip varchar(15) DEFAULT '' NOT NULL,
-	creditpoints decimal(10,4) default '0.0000' NOT NULL,
+# added els6: changed decimal 10,4 into 10,0
+	creditpoints decimal(10,0) default '0' NOT NULL,
 # added els4: creditpoints_spended
 	creditpoints_spended decimal(10,0) default '0' NOT NULL,
-# added els4: creditpoints_saved
-	creditpoints_saved decimal(10,4) default '0.0000' NOT NULL,
+# added els6: changed decimal 10,4 into 10,0
+	creditpoints_saved decimal(10,0) default '0' NOT NULL,
+# added els6: creditpoints_gifts (creditpoints gained with redeeming a gift certificate)
+	creditpoints_gifts decimal(10,0) default '0' NOT NULL,
 	agb char(2) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid),
@@ -311,7 +314,8 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 CREATE TABLE fe_users (
 	tt_products_memoItems tinytext NOT NULL,
 	tt_products_discount int(11) DEFAULT '0' NOT NULL
-	tt_products_creditpoints decimal(10,4) DEFAULT '0.0000' NOT NULL,
+/* Added els6: changed decimal 10,4 into 10,0 */
+	tt_products_creditpoints decimal(10,0) DEFAULT '0' NOT NULL,
 	tt_products_vouchercode varchar(50) DEFAULT ''
 );
 

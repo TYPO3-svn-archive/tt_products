@@ -35,9 +35,9 @@
  * @package TYPO3
  * @subpackage tt_products
  *
- *  
+ *
  */
- 
+
 
 class tx_ttproducts_db {
 	var $row;	// database data
@@ -45,16 +45,16 @@ class tx_ttproducts_db {
 	var $table_alias = 'prod';
 	var $table_lang;	// language table name
 	var $table_lang_alias = 'prodlang';
- 
+
  	// constructor
  	function tx_ttproducts_db() {
 		$this->table = TT_PRODUCTS_EXTkey;
 		$this->table_lang = TT_PRODUCTS_EXTkey.'_language';
- 	} 
- 	
- 	
+ 	}
+
+
  	function getRow ($uid) {
- 		
+
  		return $this->row;
  	}
 }
@@ -66,4 +66,3 @@ if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_prod
 
 
 ?>
- 

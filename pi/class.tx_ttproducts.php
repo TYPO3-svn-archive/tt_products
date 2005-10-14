@@ -128,7 +128,7 @@ class tx_ttproducts extends tslib_pibase {
 	var $errorMessage;			// if an error occurs, set the output text here.
 	var $tt_products;				// object of the type tx_table_db
 	var $tt_products_articles;		// object of the type tx_table_db
-	
+
 	var $category; 					// object of the type tx_ttproducts_category
 	var $feuserextrafields;			// exension with additional fe_users fields
 
@@ -202,7 +202,7 @@ class tx_ttproducts extends tslib_pibase {
 					$contentTmp = 'error';
 				break;
 			}
-			if ($contentTmp == 'error') {				
+			if ($contentTmp == 'error') {
 					$helpTemplate = $this->cObj->fileResource('EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl');
 
 						// Get language version
@@ -219,7 +219,7 @@ class tx_ttproducts extends tslib_pibase {
 				$content.=$contentTmp;
 			}
 		}
-		
+
 		if ($this->errorMessage) {
 			$content = '<p><b>'.$this->errorMessage.'</b></p>';
 		}
@@ -255,7 +255,7 @@ class tx_ttproducts extends tslib_pibase {
 
 		// store if feuserextrafields is loaded
 		$this->feuserextrafields = t3lib_extMgm::isLoaded('feuserextrafields');
-		
+
 		// mkl - multicurrency support
 		if (t3lib_extMgm::isLoaded('mkl_currxrate')) {
 			include_once(t3lib_extMgm::extPath('mkl_currxrate').'pi1/class.tx_mklcurrxrate_pi1.php');
@@ -360,7 +360,7 @@ class tx_ttproducts extends tslib_pibase {
 		$this->tt_products_articles->setTCAFieldArray('tt_products_articles');
 	} // initTables
 
-	
+
 	/**
 	 * returns the codes in the order in which they have to be processed
      *
@@ -475,7 +475,7 @@ class tx_ttproducts extends tslib_pibase {
 			if (!$this->pid_list) {
 				tx_ttproducts_page_div::setPidlist($this->config['storeRootPid']);
 			}
-			
+
 			tx_ttproducts_page_div::initRecursive(999);
 			tx_ttproducts_page_div::generatePageArray();
 
@@ -527,12 +527,12 @@ class tx_ttproducts extends tslib_pibase {
 				$pageCatTitle = '';
 				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
 						$pageCatTitle = $this->pageArray[$row['pid']]['title'].'/';
-				}		
-				
+				}
+
 				$catTmp = '';
 				if ($row['category']) {
 					$catTmp = $this->category->getCategory($row['category']);
-					$catTmp = $catTmp['title'];	
+					$catTmp = $catTmp['title'];
 				}
 				$catTitle = $pageCatTitle.$catTmp;
 
@@ -634,7 +634,7 @@ class tx_ttproducts extends tslib_pibase {
 				$messageArr =  explode('|', $message = $this->pi_getLL('wrong parameter'));
 				$content.=$messageArr[0].intval($this->tt_product_single) .$messageArr[1];
 			}
-		} else {		
+		} else {
 			$content='';
 	// List products:
 			$where='';
@@ -686,7 +686,7 @@ class tx_ttproducts extends tslib_pibase {
 				$selectConf = Array();
 				$selectConf['pidInList'] = $this->pid_list;
 			#debug ($this->pid_list, '$this->pid_list', __LINE__, __FILE__);
-				
+
 				$wherestock = ($this->config['showNotinStock'] ? '' : 'AND (inStock <> 0) ');
 				$selectConf['where'] = '1=1 '.$wherestock.$where;
 
@@ -824,7 +824,7 @@ class tx_ttproducts extends tslib_pibase {
 									}
 									$tmpCategory = ($row['category'] ? $this->category->getCategory($row['category']) : array ('title' => ''));
 									$catTitle= $pageCatTitle.($tmpCategory['title']);
-									
+
 									// mkl: $catTitle= $this->categories[$row['category']]["title'];
 									$this->cObj->setCurrentVal($catTitle);
 									$markerArray['###CATEGORY_TITLE###']=$this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
@@ -979,6 +979,10 @@ class tx_ttproducts extends tslib_pibase {
 
 				$subpartArray['###ITEM_CATEGORY_AND_ITEMS###']=$out;
 				$markerArray['###FORM_URL###']=$formUrl;      // Applied it here also...
+
+/* Added els6: needed to display creditpoints in the credits category on the list page */
+                $markerArray['###AMOUNT_CREDITPOINTS###'] = number_format($TSFE->fe_user->user['tt_products_creditpoints'],0);
+
 				$markerArray['###ITEMS_SELECT_COUNT###']=$productsCount;
 
 				$content.= $this->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);

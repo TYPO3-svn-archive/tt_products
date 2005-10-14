@@ -140,6 +140,7 @@ class tx_ttproducts_order_div {
 /* Added Els2: Displays and manages the orders */
 /* Added Els4: message if no orders available and complete change */
 /* Added Els5: minor modifications */
+/* Added Els6: minor modifications */
    function orders_display($theCode) {
        global $TSFE;
 
@@ -151,7 +152,7 @@ class tx_ttproducts_order_div {
        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
 
        $content=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###ORDERS_LIST_TEMPLATE###'));
-	   if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
+       if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
 
            $content .= "<p style='margin-left=40;'><br>U heeft nog geen bestellingen gedaan.</p>";
 	   } else {
@@ -170,19 +171,22 @@ class tx_ttproducts_order_div {
 
            $tot_creditpoints_saved = 0;
            $tot_creditpoints_spended= 0;
+           $tot_creditpoints_gifts= 0;
            $this->orders = array();
            while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
                $this->orders[$row['uid']] = $row['tracking_code'];
                $content .= "<tr><td>".$this->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.'])."</td>";
-               $number = str_replace('mw_order', '', $row['tracking_code']);
-               $content .= "<td>".$number." | <a href=index.php?id=215&tracking=".$row['tracking_code'].">bekijk deze factuur</a> &raquo;</td>";
-               $content .= "<td class='rowtotal'>".number_format($row['creditpoints_saved'] - $row['creditpoints_spended'] - $row['creditpoints'],0)."</td>
+/* Added Els6: ordernummer dynamically */
+               $content .= "<td>".tx_ttproducts_order_div::getOrderNumber($row['uid'])." | <a href=index.php?id=215&tracking=".$row['tracking_code'].">bekijk deze factuur</a> &raquo;</td>";
+               $content .= "<td class='rowtotal'>".($row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'])."</td>
                  <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
                  <td class='recycle-bin'>&nbsp;</td>";
                // total amount of saved creditpoints
                $tot_creditpoints_saved += $row['creditpoints_saved'];
                // total amount of spended creditpoints
                $tot_creditpoints_spended+= $row['creditpoints_spended'];
+               // total amount of creditpoints from gifts
+               $tot_creditpoints_gifts+= $row['creditpoints_gifts'];
            }
 
            $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
@@ -211,7 +215,14 @@ class tx_ttproducts_order_div {
      </tr>
      <tr>
        <td class='noborder'></td>
-       <td>Verdiende kurken met uw vouchercode <i>".$row['username']."</i></td>";
+       <td><span class='noborder'>Verdiende kurken met cadeaubonnnen</span></td>
+       <td class='rowtotal'>".$tot_creditpoints_gifts."</td>
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td class='noborder'>Verdiende kurken met uw vouchercode <i>".$row['username']."</i></td>";
 
            $res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
            $num_rows = $GLOBALS['TYPO3_DB']->sql_num_rows($res2);
@@ -231,7 +242,7 @@ class tx_ttproducts_order_div {
            while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res3)) {
                $this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
                $content .= "<td class='prijssubtotal'>";
-               $content .= number_format($row['tt_products_creditpoints'],0);
+               $content .= $row['tt_products_creditpoints'];
                $content .= '</td>';
            }
            $content .= "

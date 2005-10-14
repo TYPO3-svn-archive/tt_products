@@ -41,7 +41,7 @@
  *
  *
  */
- 
+
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
@@ -175,6 +175,8 @@ class tx_ttproducts_finalize_div {
 /* Added Els4: write creditpoint_spended and saved value into sys_products_order */
 		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
 		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
+/* Added Els6: write creditpoint_gifts value into sys_products_order */
+		$fieldsArray['creditpoints_gifts'] = t3lib_div::_GP('creditpoints_gifts');
 
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
