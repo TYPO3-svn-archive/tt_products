@@ -314,7 +314,7 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 CREATE TABLE fe_users (
 	tt_products_memoItems tinytext NOT NULL,
 	tt_products_discount int(11) DEFAULT '0' NOT NULL
-/* Added els6: changed decimal 10,4 into 10,0 */
+# Added els6: changed decimal 10,4 into 10,0
 	tt_products_creditpoints decimal(10,0) DEFAULT '0' NOT NULL,
 	tt_products_vouchercode varchar(50) DEFAULT ''
 );
