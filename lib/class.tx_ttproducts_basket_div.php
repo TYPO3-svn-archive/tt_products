@@ -129,12 +129,11 @@ class tx_ttproducts_basket_div {
 							break;
 						}
 					}
-
 			 	} else {
 					$sameGiftData = false;
 				}
 				if (!$sameGiftData) {
-					$this->basketExt['gift'][$this->giftnumber] = $newGiftData;
+					$this->basketExt['gift'][$this->giftnumber] = $newGiftData; 
 				}
 			} else {
 				$this->basketExt['gift'][$giftnumber] = $newGiftData;
@@ -155,20 +154,24 @@ class tx_ttproducts_basket_div {
 					if (!$updateMode) {
 						$count=t3lib_div::intInRange($basketItem['quantity'],0,100000,0);
 						if ($count>=0) {
-							$this->basketExt[$uid][$variant] = $count;
+							$newcount = $count;
+							$oldcount = intval($this->basketExt[$uid][$variant]);
 							if ($newGiftData) {
 								$giftnumber = 0;
 								if ($sameGiftData) {
 									$giftnumber = $identGiftnumber;
+									$oldcount -= intval($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant]);
 								}
 								else {
 									$giftnumber = $this->giftnumber;
 								}
+								$newcount += $oldcount;
 								$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $count;
 								if ($count == 0) {
 									tx_ttproducts_basket_div::removeGift($giftnumber, $uid, $variant);
 								}
 							}
+							$this->basketExt[$uid][$variant] = $newcount;
 						}
 					}
 					else {
