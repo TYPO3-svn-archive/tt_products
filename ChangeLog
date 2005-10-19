@@ -1,4 +1,7 @@
 2005-10-19  Franz Holzinger <franz@fholzinger.com>
+	* when entering 0 amount for gift certificates nothing shall be in the basket
+
+2005-10-19  Franz Holzinger <franz@fholzinger.com>
 	* sorting of activities
 
 2005-10-14  Els Verberne <verberne@bendoo.nl>

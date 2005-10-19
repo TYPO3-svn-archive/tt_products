@@ -41,6 +41,7 @@
 
 class tx_ttproducts_gifts_div {
 
+	
 
 	/**
 	 * returns if the product has been put into the basket as a gift

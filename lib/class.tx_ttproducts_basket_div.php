@@ -57,6 +57,26 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 class tx_ttproducts_basket_div {
 
 	/**
+	 * Removes a gift from the basket
+     *
+     * @param       int         index of the gift
+     * @param 		int			uid of the product
+     * @param		string		variant of the product
+     * @return      void
+ 	 */
+	function removeGift($giftnumber, $uid, $variant) {
+		if($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] >= 0) {
+		unset($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant]);
+		if (!count($this->basketExt['gift'][$giftnumber]['item'][$uid])) {
+			unset($this->basketExt['gift'][$giftnumber]['item'][$uid]);
+		}
+		if (!($this->basketExt['gift'][$giftnumber]['item'])) {
+			unset($this->basketExt['gift'][$giftnumber]);
+			}
+		}
+	}
+
+	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
 	 * $basket is the TYPO3 default shopping basket array from ses-data
      *
@@ -137,11 +157,16 @@ class tx_ttproducts_basket_div {
 						if ($count>=0) {
 							$this->basketExt[$uid][$variant] = $count;
 							if ($newGiftData) {
+								$giftnumber = 0;
 								if ($sameGiftData) {
-									$this->basketExt['gift'][$identGiftnumber]['item'][$uid][$variant] = $count;
+									$giftnumber = $identGiftnumber;
 								}
 								else {
-									$this->basketExt['gift'][$this->giftnumber]['item'][$uid][$variant] = $count;
+									$giftnumber = $this->giftnumber;
+								}
+								$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $count;
+								if ($count == 0) {
+									tx_ttproducts_basket_div::removeGift($giftnumber, $uid, $variant);
 								}
 							}
 						}
@@ -163,15 +188,7 @@ class tx_ttproducts_basket_div {
 									 		$restQuantity = $quantity;
 									 		for ($giftnumber = 1; $giftnumber <= $count; ++$giftnumber) {
 									 			if ($restQuantity == 0) {
-									 				if($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant]) {
-									 					unset($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant]);
-									 					if (!count($this->basketExt['gift'][$giftnumber]['item'][$uid])) {
-									 						unset($this->basketExt['gift'][$giftnumber]['item'][$uid]);
-									 					}
-									 					if (!($this->basketExt['gift'][$giftnumber]['item'])) {
-									 						unset($this->basketExt['gift'][$giftnumber]);
-									 					}
-									 				}
+									 				tx_ttproducts_basket_div::removeGift($giftnumber, $uid, $variant);
 									 			} else {
 										 			if ($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] > $restQuantity) {
 										 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
