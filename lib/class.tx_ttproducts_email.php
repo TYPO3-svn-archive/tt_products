@@ -60,7 +60,6 @@ class tx_ttproducts_email {
 
 	function getEmail ($uid) {
 		global $TYPO3_DB;
-		#debug ($uid, 'getEmail: $uid', __LINE__, __FILE__);
 		$rc = $this->emailArray[$uid];;
 		if (!$rc) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');

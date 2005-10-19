@@ -1,3 +1,6 @@
+2005-10-19  Franz Holzinger <franz@fholzinger.com>
+	* sorting of activities
+
 2005-10-14  Els Verberne <verberne@bendoo.nl>
 	* modifications for calculating with creditpoints
 	* write creditpoint_gifts value into sys_products_order table

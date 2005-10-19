@@ -158,7 +158,7 @@ class tx_ttproducts extends tslib_pibase {
 		// *************************************
 
 		$this->itemArray = array();
-		$codes = $this->sort_codes($codes);
+		$codes = $this->sortCodes($codes);
 		if (!$this->errorMessage) {
 			$content .= tx_ttproducts_basket_div::products_basket($codes, $this->errorMessage);
 		}
@@ -277,20 +277,21 @@ class tx_ttproducts extends tslib_pibase {
 			$this->staticInfo->init();
 		}
 
-		if (empty($this->conf['code'])) {
-			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] == 1) {
-				// Converting flexform data into array:
-				$this->pi_initPIflexForm();
-				$this->config['code'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'display_mode');
-			} else {
-				$this->config['code'] = strtoupper(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));
-			}
-			if (empty($this->config['code'])) {
-				$this->config['code'] = strtoupper($this->conf['defaultCode']);
-			}
-		} else {
-			$this->config['code'] = $this->conf['code'];
-		}
+		$this->config['code'] = $this->getCodes($this->conf['code'], $this->conf['code.'], $this->conf['defaultCode'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']);
+//		if (empty($this->conf['code'])) {
+//			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] == 1) {
+//				// Converting flexform data into array:
+//				$this->pi_initPIflexForm();
+//				$this->config['code'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'display_mode');
+//			} else {
+//				$this->config['code'] = strtoupper(trim($this->cObj->stdWrap($this->conf['code'],$this->conf['code.'])));
+//			}
+//			if (empty($this->config['code'])) {
+//				$this->config['code'] = strtoupper($this->conf['defaultCode']);
+//			}
+//		} else {
+//			$this->config['code'] = $this->conf['code'];
+//		}
 
 		$this->config['limit'] = $this->conf['limit'] ? $this->conf['limit'] : 50;
 		$this->config['limitImage'] = t3lib_div::intInRange($this->conf['limitImage'],0,15);
@@ -351,6 +352,29 @@ class tx_ttproducts extends tslib_pibase {
 
 
 	/**
+	 * Getting the CODEs
+	 */
+	function getCodes($code, $codeExt, $defaultCode, $useFlexforms=1) {
+		$rc;
+		if (empty($code)) {
+			if ($useFlexforms) {
+				// Converting flexform data into array:
+				$this->pi_initPIflexForm();
+				$rc = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'display_mode');
+			} else {
+				$rc = strtoupper(trim($this->cObj->stdWrap($code,$codeExt)));
+			}
+			if (empty($rc)) {
+				$rc = strtoupper($defaultCode);
+			}
+		} else {
+			$rc = $code;
+		}
+		return $rc;
+	}
+
+
+	/**
 	 * Getting the table definitions
 	 */
 	function initTables()	{
@@ -367,7 +391,7 @@ class tx_ttproducts extends tslib_pibase {
      * @param       string          $fieldname is the field in the table you want to create a JavaScript for
      * @return      void
  	 */
-	function sort_codes($codes)	{
+	function sortCodes($codes)	{
 		$retCodes = array();
 		$codeArray =  Array (
 			'1' =>  'OVERVIEW', 'BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS',
@@ -1009,21 +1033,6 @@ class tx_ttproducts extends tslib_pibase {
 		return $passVar;
 	} // userProcess
 
-
-	function cleanConfArr($confArr,$checkShow=0)	{
-		$outArr=array();
-		if (is_array($confArr))	{
-			reset($confArr);
-			while(list($key,$val)=each($confArr))	{
-				if (!t3lib_div::testInt($key) && intval($key) && is_array($val) && (!$checkShow || $val['show'] || !isset($val['show'])))	{
-					$outArr[intval($key)]=$val;
-				}
-			}
-		}
-		ksort($outArr);
-		reset($outArr);
-		return $outArr;
-	} // cleanConfArr
 
 
 

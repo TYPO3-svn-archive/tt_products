@@ -88,6 +88,7 @@ class tx_ttproducts_basket_div {
 
 		$sameGiftData = true;
 		$identGiftnumber = 0;
+		
 		if ($newGiftData) {
 	 		$giftnumber = t3lib_div::_GP('giftnumber');
 			if (!$updateMode) {
@@ -152,10 +153,37 @@ class tx_ttproducts_basket_div {
 							if (is_array($this->basketExt[$uid]))
 							{
 								reset($this->basketExt[$uid]);
-								while(list($beVars,)=each($this->basketExt[$uid])) {
+								while(list($variant,)=each($this->basketExt[$uid])) {
 									 // useArticles if you have different prices and therefore articles for color, size, accessory and gradings
-									if (/*!$this->conf['useArticles'] ||*/ md5($beVars)==$md5) {
-										$this->basketExt[$uid][$beVars] = $quantity;
+									if (md5($variant)==$md5) {
+										$this->basketExt[$uid][$variant] = $quantity;
+									 	if (is_array($this->basketExt['gift'])) {
+									 		$count = count($this->basketExt['gift']);
+									 		$giftCount = 0;
+									 		$restQuantity = $quantity;
+									 		for ($giftnumber = 1; $giftnumber <= $count; ++$giftnumber) {
+									 			if ($restQuantity == 0) {
+									 				if($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant]) {
+									 					unset($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant]);
+									 					if (!count($this->basketExt['gift'][$giftnumber]['item'][$uid])) {
+									 						unset($this->basketExt['gift'][$giftnumber]['item'][$uid]);
+									 					}
+									 					if (!($this->basketExt['gift'][$giftnumber]['item'])) {
+									 						unset($this->basketExt['gift'][$giftnumber]);
+									 					}
+									 				}
+									 			} else {
+										 			if ($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] > $restQuantity) {
+										 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
+										 				$restQuantity = 0;
+										 			} else if ($giftnumber < $count) {
+										 				$restQuantity -= $this->basketExt['gift'][$giftnumber]['item'][$uid][$variant];
+										 			} else {
+										 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
+										 			}
+									 			}
+									 		}
+									 	}
 									}
 								}
 							}
@@ -249,6 +277,45 @@ class tx_ttproducts_basket_div {
 
 
 	/**
+	 * returns the activities in the order in which they have to be processed
+     *
+     * @param       string          $fieldname is the field in the table you want to create a JavaScript for
+     * @return      void
+ 	 */
+	function transfromActivities($activities)	{
+		$retActivities = array();
+		$activityArray =  Array (
+			'1' =>  'products_basket', 'products_info', 'products_overview', 'products_payment', 'products_finalize',
+			);
+
+		if (is_array($activities)) {
+			foreach ($activityArray as $k => $activity) {
+				if ($activities[$activity]) {
+					$retActivities[$activity] = true;
+				}
+			}
+		}
+
+		if ($retActivities['products_info']) {
+			if($retActivities['products_payment']) {
+				$retActivities['products_payment'] = false;
+			}
+			if($retActivities['products_finalize']) {
+				$retActivities['products_finalize'] = false;
+			}
+		}
+		if ($retActivities['products_payment']) {
+			if($retActivities['products_finalize']) {
+				$retActivities['products_finalize'] = false;
+			}
+		}
+
+		return ($retActivities);
+	}
+
+
+
+	/**
 	 * Takes care of basket, address info, confirmation and gate to payment
 	 * Also the 'products_...' script parameters are used here.
      *
@@ -285,18 +352,20 @@ class tx_ttproducts_basket_div {
 		}
 
 /* Added els6: product_payment placed here, originally before 'is_array(codes)' */
-		if (t3lib_div::_GP('products_payment'))	{
-			$activityArr['products_payment']=true;
-		}
 		if (t3lib_div::_GP('products_overview'))	{
 			$activityArr['products_overview']=true;
 		}
 		if (t3lib_div::_GP('products_info'))	{
 			$activityArr['products_info']=true;
 		}
+		if (t3lib_div::_GP('products_payment'))	{
+			$activityArr['products_payment']=true;
+		}
 		if (t3lib_div::_GP('products_finalize'))	{
 			$activityArr['products_finalize']=true;
 		}
+		
+		$activityArr = tx_ttproducts_basket_div::transfromActivities($activityArr);
 
 		if (count($this->basketExt) && count($activityArr))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
@@ -315,138 +384,140 @@ class tx_ttproducts_basket_div {
 				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';  // adding extra preprocessing CObject
 
 				foreach ($activityArr as $activity=>$value) {
-						// perform action
-					switch($activity)	{
-						case 'products_basket':
-							if (count($activityArr) == 1) {
-								$content.=tx_ttproducts_basket_div::getBasket();
-							}
-						break;
-						case 'products_overview':
-							$this->load_noLinkExtCobj();
-							$basket_tmpl  = 'BASKET_OVERVIEW_TEMPLATE';
-						break;
-						case 'products_redeem_gift': 	// this shall never be the only activity
-							if (trim($TSFE->fe_user->user['username']) == '') {
-								$basket_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
-							} else {
-								$uniqueId = t3lib_div::trimExplode ('-', $this->recs['tt_products']['gift_certificate_unique_number'], true);
-
-								$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
-								$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
-
-								$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
-
-								if ($row) {
-									$money = $row['amount'];
-									$uid = $row['uid'];
-									$fieldsArray = array();
-									$fieldsArray['deleted']=1;
-										// Delete the gift record
-									$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
-
-									$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
-
-									tx_ttproducts_creditpoints_div::addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
-
-/* Added els5: extra markers for inline comments */
-									// Fill marker arrays
-									$markerArray=Array();
-									$subpartArray=Array();
-									$markerArray['###GIFT_DISCOUNT###'] = $creditpoints;
-									$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
-									$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###']= '';
-									$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
-
-								} else {
-/* Added els5: inline comments and errors in stead of new page */
-									//$basket_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
-
-									// Fill marker arrays
-									$markerArray=Array();
-									$subpartArray=Array();
-									$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
-									$subpartArray['###SUB_GIFTCODE_DISCOUNT###']= '';
-									$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
-
+					if ($value) {
+							// perform action
+						switch($activity)	{
+							case 'products_basket':
+								if (count($activityArr) == 1) {
+									$content.=tx_ttproducts_basket_div::getBasket();
 								}
-							}
-						break;
-						case 'products_info':
-							if (!$activityArr['products_payment'] && !$activityArr['products_finalize']) {
+							break;
+							case 'products_overview':
 								$this->load_noLinkExtCobj();
-								$content.=tx_ttproducts_basket_div::getBasket('###BASKET_INFO_TEMPLATE###','',$mainMarkerArray);
-							}
-						break;
-						case 'products_payment':
-							$this->load_noLinkExtCobj();
-							$pidagb = intval($this->conf['PIDagb']);
-							$check = tx_ttproducts_view_div::checkRequired();
-							if ($check=='' &&
-								(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
-								tx_ttproducts_view_div::mapPersonIntoToDelivery();
-								$content.=tx_ttproducts_basket_div::getBasket('###BASKET_PAYMENT_TEMPLATE###', '', $mainMarkerArray);
-
-								$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
-								$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
-								if (trim($this->conf['paymentActivity'])=='payment' && $handleScript)	{
-									tx_ttproducts_basket_div::getCalculateSums();
-									$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
-								}
-
-							} else {	// If not all required info-fields are filled in, this is shown instead:
-								$content.=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-								$markerArray = tx_ttproducts_view_div::addURLMarkers(array());
-								$label = '';
-								if ($check=='') {
-									 // so AGB has not been accepted
-									$label = $this->pi_getLL('accept AGB');
+								$basket_tmpl  = 'BASKET_OVERVIEW_TEMPLATE';
+							break;
+							case 'products_redeem_gift': 	// this shall never be the only activity
+								if (trim($TSFE->fe_user->user['username']) == '') {
+									$basket_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
 								} else {
-									if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-										$label = $TSFE->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
+									$uniqueId = t3lib_div::trimExplode ('-', $this->recs['tt_products']['gift_certificate_unique_number'], true);
+	
+									$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
+									$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
+	
+									$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
+	
+									if ($row) {
+										$money = $row['amount'];
+										$uid = $row['uid'];
+										$fieldsArray = array();
+										$fieldsArray['deleted']=1;
+											// Delete the gift record
+										$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
+	
+										$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
+	
+										tx_ttproducts_creditpoints_div::addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
+	
+	/* Added els5: extra markers for inline comments */
+										// Fill marker arrays
+										$markerArray=Array();
+										$subpartArray=Array();
+										$markerArray['###GIFT_DISCOUNT###'] = $creditpoints;
+										$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
+										$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###']= '';
+										$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+	
 									} else {
-										$label = 'field: '.$check;
+	/* Added els5: inline comments and errors in stead of new page */
+										//$basket_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
+	
+										// Fill marker arrays
+										$markerArray=Array();
+										$subpartArray=Array();
+										$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
+										$subpartArray['###SUB_GIFTCODE_DISCOUNT###']= '';
+										$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+	
 									}
 								}
-								$markerArray['###ERROR_DETAILS###'] = $label;
-								$content = $this->cObj->substituteMarkerArray($content, $markerArray);
-							}
-						break;
-						case 'products_finalize':
-							$check = tx_ttproducts_view_div::checkRequired();
-							if ($check=='')	{
+							break;
+							case 'products_info':
+								// if (!$activityArr['products_payment'] && !$activityArr['products_finalize']) {
 								$this->load_noLinkExtCobj();
+								$content.=tx_ttproducts_basket_div::getBasket('###BASKET_INFO_TEMPLATE###','',$mainMarkerArray);
+								// }
+							break;
+							case 'products_payment':
+								$this->load_noLinkExtCobj();
+								$pidagb = intval($this->conf['PIDagb']);
 								tx_ttproducts_view_div::mapPersonIntoToDelivery();
-								$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
-								$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
-								if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
-									//tx_ttproducts_basket_div::getCalculatedBasket();
-									tx_ttproducts_basket_div::getCalculateSums();
-									$content = tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
+								$check = tx_ttproducts_view_div::checkRequired();
+								if ($check=='' &&
+									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
+									$content.=tx_ttproducts_basket_div::getBasket('###BASKET_PAYMENT_TEMPLATE###', '', $mainMarkerArray);
+	
+									$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
+									$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
+									if (trim($this->conf['paymentActivity'])=='payment' && $handleScript)	{
+										tx_ttproducts_basket_div::getCalculateSums();
+										$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
+									}
+	
+								} else {	// If not all required info-fields are filled in, this is shown instead:
+									$content.=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+									$markerArray = tx_ttproducts_view_div::addURLMarkers(array());
+									$label = '';
+									if ($check=='') {
+										 // so AGB has not been accepted
+										$label = $this->pi_getLL('accept AGB');
+									} else {
+										if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
+											$label = $TSFE->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
+										} else {
+											$label = 'field: '.$check;
+										}
+									}
+									$markerArray['###ERROR_DETAILS###'] = $label;
+									$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 								}
-
-								// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
-								$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
-								$orderConfirmationHTML=tx_ttproducts_basket_div::getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
-								$contentTmp = $orderConfirmationHTML;
-								tx_ttproducts_finalize_div::finalizeOrder($orderUid, $orderConfirmationHTML); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
-
-								if ($this->conf['PIDthanks'] > 0) {
-									$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
-									$contentTmp = tx_ttproducts_basket_div::getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
+							break;
+							case 'products_finalize':
+								tx_ttproducts_view_div::mapPersonIntoToDelivery();
+								$check = tx_ttproducts_view_div::checkRequired();
+								if ($check=='')	{
+									$this->load_noLinkExtCobj();
+									$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
+									$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
+									if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
+										//tx_ttproducts_basket_div::getCalculatedBasket();
+										tx_ttproducts_basket_div::getCalculateSums();
+										$content = tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
+									}
+	
+									// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
+									$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
+									$orderConfirmationHTML=tx_ttproducts_basket_div::getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
+									$contentTmp = $orderConfirmationHTML;
+									tx_ttproducts_finalize_div::finalizeOrder($orderUid, $orderConfirmationHTML); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+	
+									if ($this->conf['PIDthanks'] > 0) {
+										$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
+										$contentTmp = tx_ttproducts_basket_div::getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
+									}
+									$content.=$contentTmp;
+									// Empties the shopping basket!
+									tx_ttproducts_basket_div::clearBasket();
+								} else {	// If not all required info-fields are filled in, this is shown instead:
+									$content.=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+									$content = $this->cObj->substituteMarkerArray($content, tx_ttproducts_view_div::addURLMarkers(array()));
 								}
-								$content.=$contentTmp;
-								// Empties the shopping basket!
-								tx_ttproducts_basket_div::clearBasket();
-							} else {	// If not all required info-fields are filled in, this is shown instead:
-								$content.=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-								$content = $this->cObj->substituteMarkerArray($content, tx_ttproducts_view_div::$this->addURLMarkers(array()));
-							}
-						break;
-						default:
-							// nothing yet
-						break;
-					} // switch
+							break;
+							default:
+								// nothing yet
+							break;
+						} // switch
+					}	// if ($value)
 					if ($basket_tmpl) {
 						$content.=tx_ttproducts_basket_div::getBasket('###'.$basket_tmpl.'###');
 						break; // foreach

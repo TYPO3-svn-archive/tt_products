@@ -51,6 +51,8 @@ class tx_ttproducts_view_div {
 	 * Adds URL markers to a markerArray
 	 */
 	function addURLMarkers($markerArray)	{
+		global $TSFE;
+
 			// Add's URL-markers to the $markerArray and returns it
 		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
 		$markerArray['###FORM_URL###'] = $this->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDbasket']);
@@ -391,8 +393,9 @@ class tx_ttproducts_view_div {
 	 * Fills in all empty fields in the delivery info array
 	 */
 	function mapPersonIntoToDelivery()	{
-			// all of the delivery address will be overwritten when no city and not email address have been filled in
-		if (!trim($this->deliveryInfo['city']) && !trim($this->deliveryInfo['email'])) {
+		
+			// all of the delivery address will be overwritten when no address and no email address have been filled in
+		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
 /* Added Els: 'feusers_uid,' and more fields */
 			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
 			$infoFields = explode(',','feusers_uid,telephone,name,email,date_of_birth,company,address,city'.$infoExtraFields); // Fields...
@@ -400,7 +403,10 @@ class tx_ttproducts_view_div {
 				$this->deliveryInfo[$fName] = $this->personInfo[$fName];
 			}
 		}
+
 	} // mapPersonIntoToDelivery
+
+
 
 	/**
 	 * Checks if required fields are filled in
@@ -414,7 +420,7 @@ class tx_ttproducts_view_div {
 		if ($requiredInfoFields)	{
 			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
 			while(list(,$fName)=each($infoFields))	{
-				if (trim($this->personInfo[$fName])=='')	{
+				if (trim($this->personInfo[$fName])=='' || trim($this->deliveryInfo[$fName])=='')	{
 					$flag=$fName;
 					break;
 				}

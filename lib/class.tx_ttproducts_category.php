@@ -95,13 +95,10 @@ class tx_ttproducts_category {
 				foreach ($actItemArray as $k1=>$actItem) {
 					#debug ($actItem, '$actItem', __LINE__, __FILE__);
 					$category = $this->getCategory ($actItem['rec']['category']);
-					#debug ($category, '$category', __LINE__, __FILE__);
 					$emailArray[$actItem['rec']['category']] = $this->tt_products_email->getEmail($category['email_uid']);
-					
 				}
 			}
 		}
-		#debug ($emailArray, '$emailArray', __LINE__, __FILE__);
 		return $emailArray;
 	}
 	

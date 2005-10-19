@@ -62,7 +62,7 @@ class tx_ttproducts_paymentshipping_div {
 		reset($this->conf['shipping.']);
 		$k=intval($basket['tt_products']['shipping']);
 		if (!tx_ttproducts_paymentshipping_div::checkExtraAvailable('shipping',$k))	{
-			$k=intval(key($this->cleanConfArr($this->conf['shipping.'],1)));
+			$k=intval(key(tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['shipping.'],1)));
 		}
 		$this->basketExtra['shipping'] = $k;
 		$this->basketExtra['shipping.'] = $this->conf['shipping.'][$k.'.'];
@@ -77,7 +77,7 @@ class tx_ttproducts_paymentshipping_div {
 			}
 		}
 
-		$confArr = $this->cleanConfArr($this->conf['payment.']);
+		$confArr = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.']);
 		while(list($key,$val)=each($confArr)) {
 			if ($val['show'] || !isset($val['show']))
 				if (($val['visibleForGroupID'] != '') &&
@@ -91,7 +91,7 @@ class tx_ttproducts_paymentshipping_div {
 		reset($this->conf['payment.']);
 		$k=intval($basket['tt_products']['payment']);
 		if (!tx_ttproducts_paymentshipping_div::checkExtraAvailable('payment',$k))	{
-			$k=intval(key($this->cleanConfArr($this->conf['payment.'],1)));
+			$k=intval(key(tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.'],1)));
 		}
 		$this->basketExtra['payment'] = $k;
 		$this->basketExtra['payment.'] = $this->conf['payment.'][$k.'.'];
@@ -131,7 +131,7 @@ class tx_ttproducts_paymentshipping_div {
 
 		$type=$this->conf[$key.'.']['radio'];
 		$active = $this->basketExtra[$key];
-		$confArr = $this->cleanConfArr($this->conf[$key.'.']);
+		$confArr = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf[$key.'.']);
 		$out='';
 
 		$template = $this->conf[$key.'.']['template'] ? ereg_replace('\' *\. *\$key *\. *\'',$key, $this->conf[$key.'.']['template']) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$key.']" onClick="submit()" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
@@ -159,6 +159,23 @@ class tx_ttproducts_paymentshipping_div {
 		}
 		return $out;
 	} // generateRadioSelect
+
+
+
+	function cleanConfArr($confArr,$checkShow=0)	{
+		$outArr=array();
+		if (is_array($confArr))	{
+			reset($confArr);
+			while(list($key,$val)=each($confArr))	{
+				if (!t3lib_div::testInt($key) && intval($key) && is_array($val) && (!$checkShow || $val['show'] || !isset($val['show'])))	{
+					$outArr[intval($key)]=$val;
+				}
+			}
+		}
+		ksort($outArr);
+		reset($outArr);
+		return $outArr;
+	} // cleanConfArr
 
 
 
