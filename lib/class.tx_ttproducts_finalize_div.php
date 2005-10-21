@@ -72,8 +72,6 @@ class tx_ttproducts_finalize_div {
 		tx_ttproducts_view_div::mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
 //		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
 
-		#debug ($this->basketExt, '$this->basketExt', __LINE__, __FILE__);
-
 			// Saving order data
 		$fieldsArray=array();
 		$fieldsArray['note']=$this->deliveryInfo['note'];
@@ -83,7 +81,6 @@ class tx_ttproducts_finalize_div {
 		$fieldsArray['telephone']=$this->deliveryInfo['telephone'];
 		$fieldsArray['fax']=$this->deliveryInfo['fax'];
 		$fieldsArray['email']=$this->deliveryInfo['email'];
-//		debug ($this->conf['email_notify_default'], "this->conf['email_notify_default']", __LINE__, __FILE__);
 		$fieldsArray['email_notify']=  $this->conf['email_notify_default'];		// Email notification is set here. Default email address is delivery email contact
 
 			// can be changed after order is set.
@@ -181,7 +178,6 @@ class tx_ttproducts_finalize_div {
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
 
-		#debug ($this->basketExt['gift'], '$this->basketExt[\'gift\']', __LINE__, __FILE__); // $this->basketExt['gift'][$this->giftnumber]['item'][$uid][$extVars] = $count;
 		// any gift orders in the extended basket?
 		if ($this->basketExt['gift']) {
 			$pid = intval($this->conf['PIDGiftsTable']);
@@ -218,7 +214,6 @@ class tx_ttproducts_finalize_div {
 				$insertFields['uid_local'] = $newId;
 
 				foreach ($rec['item'] as $productid => $product) {
-					#debug ($product, 'product', __LINE__, __FILE__);
 					foreach ($product as $variant => $count) {
 						$row = array();
 						tx_ttproducts_article_div::getRowFromVariant ($row, $variant);
@@ -295,8 +290,6 @@ class tx_ttproducts_finalize_div {
 		if (!$this->conf['AlwaysInStock']) {
 			// Reduce inStock
 			reset($this->itemArray);
-
-			#debug ($this->itemArray, '$this->itemArray Reduce in stock', __LINE__, __FILE__);
 
 			// loop over all items in the basket indexed by page and itemnumber
 			foreach ($this->itemArray as $pid=>$pidItem) {
@@ -485,7 +478,6 @@ class tx_ttproducts_finalize_div {
 		$recipients.=','.$this->personInfo['email']; // former: deliveryInfo
 
 		$emailArray = $this->category->getCategoryEmail($this->itemArray);
-		//debug ($emailArray, '$emailArray', __LINE__, __FILE__);
 		if (count ($emailArray)) {
 			foreach ($emailArray as $key => $email) {
 				$recipients.=','.$email['email'];
@@ -499,6 +491,10 @@ class tx_ttproducts_finalize_div {
 				$parts = split(chr(10),$emailContent,2);		// First line is subject
 				$subject=trim($parts[0]);
 				$plain_message=trim($parts[1]);
+				if (empty($plain_message)) {	// the user did not use the subject field
+					$plain_message = $subject;
+					$subject = $this->conf['orderEmail_subject'];
+				}
 
 				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
 				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email

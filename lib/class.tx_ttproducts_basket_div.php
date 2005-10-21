@@ -105,13 +105,25 @@ class tx_ttproducts_basket_div {
 		$newGiftData = t3lib_div::_GP('ttp_gift');
 		$extVars= t3lib_div::_GP('ttp_extvars');
 		$uid = t3lib_div::_GP('tt_products');
-
+		
 		$sameGiftData = true;
 		$identGiftnumber = 0;
 		
 		if ($newGiftData) {
 	 		$giftnumber = t3lib_div::_GP('giftnumber');
-			if (!$updateMode) {
+			if ($updateMode) {
+				$this->basketExt['gift'][$giftnumber] = $newGiftData;
+				$giftcount = intval($this->basketExt['gift'][$giftnumber]['item'][$uid][$extVars]);
+				if ($giftcount == 0) {
+					tx_ttproducts_basket_div::removeGift($giftnumber, $uid, $extVars);
+				}
+				$count = 0;
+				foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
+					$count += $rec['item'][$uid][$extVars];
+				}
+				// update the general basket entry for this product
+				$this->basketExt[$uid][$extVars] = $count;
+			} else {
 			 	if (is_array($this->basketExt['gift'])) {
 					foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
 						$sameGiftData = true;
@@ -135,16 +147,7 @@ class tx_ttproducts_basket_div {
 				if (!$sameGiftData) {
 					$this->basketExt['gift'][$this->giftnumber] = $newGiftData; 
 				}
-			} else {
-				$this->basketExt['gift'][$giftnumber] = $newGiftData;
-				$count = 0;
-				foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
-					$count += $rec['item'][$uid][$extVars];
-				}
-				// update the general basket entry for this product
-				$this->basketExt[$uid][$extVars] = $count;
 			}
-
 		}
 
 		if (is_array($basketExtRaw)) {
@@ -329,6 +332,9 @@ class tx_ttproducts_basket_div {
 				$retActivities['products_finalize'] = false;
 			}
 		}
+		if ($retActivities['products_basket'] && count($retActivities)>1) {
+			$retActivities['products_basket'] = false;
+		}
 
 		return ($retActivities);
 	}
@@ -347,6 +353,7 @@ class tx_ttproducts_basket_div {
 		global $TYPO3_DB;
 
 		$content = '';
+		
 		reset ($codes);
 
 		$activityArr=array();
@@ -389,7 +396,6 @@ class tx_ttproducts_basket_div {
 
 		if (count($this->basketExt) && count($activityArr))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
-
 			reset ($activityArr);
 			$basket_tmpl = '';
 			if (count($activityArr)) {
@@ -833,7 +839,6 @@ class tx_ttproducts_basket_div {
 		foreach ($this->itemArray as $pid=>$pidItem) {
 			foreach ($pidItem as $itemnumber=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
-
 					$pidcategory = ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory'] == 1 ? $pid : '');
 					$currentPnew = $pidcategory.'_'.$actItem['rec']['category'];
 						// Print Category Title
@@ -957,7 +962,7 @@ class tx_ttproducts_basket_div {
 
 					tx_ttproducts_article_div::getVariantSubpartArray ($subpartArray, $actItem['rec'], $tempContent, ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'));
 					$tempContent = $this->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
-
+					
 					$itemsOut .= $tempContent;
 				}
 				if ($itemsOut)	{

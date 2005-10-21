@@ -57,44 +57,50 @@ class tx_ttproducts_paymentshipping_div {
 	function setBasketExtras($basket)	{
 		global $TSFE;
 
+
 			// shipping
-		ksort($this->conf['shipping.']);
-		reset($this->conf['shipping.']);
-		$k=intval($basket['tt_products']['shipping']);
-		if (!tx_ttproducts_paymentshipping_div::checkExtraAvailable('shipping',$k))	{
-			$k=intval(key(tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['shipping.'],1)));
+		if ($this->conf['shipping.']) {
+			ksort($this->conf['shipping.']);
+			reset($this->conf['shipping.']);
+			$k=intval($basket['tt_products']['shipping']);
+			if (!tx_ttproducts_paymentshipping_div::checkExtraAvailable('shipping',$k))	{
+				$temp = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['shipping.'],1);
+				$k=intval(key($temp));
+			}
+			$this->basketExtra['shipping'] = $k;
+			$this->basketExtra['shipping.'] = $this->conf['shipping.'][$k.'.'];
+			$excludePayment = trim($this->basketExtra['shipping.']['excludePayment']);
 		}
-		$this->basketExtra['shipping'] = $k;
-		$this->basketExtra['shipping.'] = $this->conf['shipping.'][$k.'.'];
-		$excludePayment = trim($this->basketExtra['shipping.']['excludePayment']);
 
 			// payment
-		if ($excludePayment)	{
-			$exclArr = t3lib_div::intExplode(',',$excludePayment);
-			while(list(,$theVal)=each($exclArr))	{
-				unset($this->conf['payment.'][$theVal]);
-				unset($this->conf['payment.'][$theVal.'.']);
-			}
-		}
-
-		$confArr = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.']);
-		while(list($key,$val)=each($confArr)) {
-			if ($val['show'] || !isset($val['show']))
-				if (($val['visibleForGroupID'] != '') &&
-				    (!tx_ttproducts_div::isUserInGroup($TSFE->fe_user->user, $val['visibleForGroupID'])))
-				{
-					unset($this->conf['payment.'][$key.'.']);
+		if ($this->conf['payment.']) {
+			if ($excludePayment)	{
+				$exclArr = t3lib_div::intExplode(',',$excludePayment);
+				while(list(,$theVal)=each($exclArr))	{
+					unset($this->conf['payment.'][$theVal]);
+					unset($this->conf['payment.'][$theVal.'.']);
 				}
+			}
+	
+			$confArr = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.']);
+			while(list($key,$val)=each($confArr)) {
+				if ($val['show'] || !isset($val['show']))
+					if (($val['visibleForGroupID'] != '') &&
+					    (!tx_ttproducts_div::isUserInGroup($TSFE->fe_user->user, $val['visibleForGroupID'])))
+					{
+						unset($this->conf['payment.'][$key.'.']);
+					}
+			}
+	
+			ksort($this->conf['payment.']);
+			reset($this->conf['payment.']);
+			$k=intval($basket['tt_products']['payment']);
+			if (!tx_ttproducts_paymentshipping_div::checkExtraAvailable('payment',$k))	{
+				$k=intval(key(tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.'],1)));
+			}
+			$this->basketExtra['payment'] = $k;
+			$this->basketExtra['payment.'] = $this->conf['payment.'][$k.'.'];
 		}
-
-		ksort($this->conf['payment.']);
-		reset($this->conf['payment.']);
-		$k=intval($basket['tt_products']['payment']);
-		if (!tx_ttproducts_paymentshipping_div::checkExtraAvailable('payment',$k))	{
-			$k=intval(key(tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.'],1)));
-		}
-		$this->basketExtra['payment'] = $k;
-		$this->basketExtra['payment.'] = $this->conf['payment.'][$k.'.'];
 
 	} // setBasketExtras
 

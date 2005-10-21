@@ -164,7 +164,6 @@ class tx_ttproducts_tracking_div {
 				// Initialize update of status...
 			$fieldsArray = array();
 			$orderRecord = t3lib_div::_GP('orderRecord');
-			#debug ($orderRecord, '$orderRecord', __LINE__, __FILE__);
 			if (isset($orderRecord['email_notify']))	{
 				$fieldsArray['email_notify']=$orderRecord['email_notify'];
 				$orderRow['email_notify'] = $fieldsArray['email_notify'];
@@ -240,7 +239,6 @@ class tx_ttproducts_tracking_div {
 		$orderClosed = false;
 		if (is_array($status_log)) {
 			foreach($status_log as $key=>$val)	{
-				#debug ($val, '$val', __LINE__, __FILE__);
 				if ($val['status'] == 13)	{// Numbers 13 means order has been payed
 					$orderPayed = true;
 				}

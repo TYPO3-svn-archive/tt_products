@@ -46,7 +46,7 @@ plugin.tt_products {
 
   noImageAvailable = {$plugin.tt_products.file.noImageAvailable}
   datasheetIcon {
-   file = {$plugin.tt_products.file.datasheetIcon}
+  file = {$plugin.tt_products.file.datasheetIcon}
   }
 
   wrap1.wrap = {$plugin.tt_products.wrap1}
@@ -113,6 +113,7 @@ plugin.tt_products {
   orderEmail_from = {$plugin.tt_products.orderEmail_from}
   orderEmail_fromName = {$plugin.tt_products.orderEmail_fromName}
   orderEmail_to = {$plugin.tt_products.orderEmail_to}
+  orderEmail_subject = {$plugin.tt_products.orderEmail_subject}
   orderEmail_htmlmail = {$plugin.tt_products.orderEmail_htmlmail}
   email_notify_default = {$plugin.tt_products.email_notify_default}
   statusCodes {
@@ -185,6 +186,7 @@ plugin.tt_products {
   CSVinOneLine = {$plugin.tt_products.CSVinOneLine}
 
   AlwaysInStock  = {$plugin.tt_products.AlwaysInStock}
+  alwaysInStock  = {$plugin.tt_products.AlwaysInStock}
   showNotinStock = {$plugin.tt_products.showNotinStock}
   notInStockMessage = {$plugin.tt_products.notInStockMessage}
   inStockPieces = {$plugin.tt_products.inStockPieces}
@@ -195,6 +197,14 @@ plugin.tt_products {
   
   whereGift = {$plugin.tt_products.whereGift}  
 
+  creditpoints {
+  pricefactor = 0.5
+  10.where =
+  10.type = price
+  10.prod.1   = 0.02
+  10.prod.101 = 0.04
+  10.prod.501 = 0.06
+  }
 }
 
 ## EXAMPLE payment config:

@@ -65,9 +65,7 @@ class tx_ttproducts_attribute {
 
 	function getAttribute ($uid) {
 		global $TYPO3_DB;
-		#debug ($uid, 'getCategory $uid', __LINE__, __FILE__);
 		$rc = $this->attributeArray[$uid];
-		#debug ($rc, '$rc', __LINE__, __FILE__);
 		if (!$rc) {
 			$rc = $this->attributeArray[$uid] = $uid;
 		}

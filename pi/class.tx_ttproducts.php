@@ -143,7 +143,6 @@ class tx_ttproducts extends tslib_pibase {
 		$codes=t3lib_div::trimExplode(',', $this->config['code'],1);
 		if (!count($codes))     $codes=array('HELP');
 
-
 		if (t3lib_div::_GP('mode_update'))
 			$updateMode = 1;
 		else
@@ -322,7 +321,8 @@ class tx_ttproducts extends tslib_pibase {
 		if ($this->conf['templateFile']) {
 			// template file is fetched. The whole template file from which the various subpart are extracted.
 			$this->templateCode = $this->cObj->fileResource($this->conf['templateFile']);
-		} else {
+		}
+		if (!$this->conf['templateFile'] || empty($this->templateCode)) {
 			$this->errorMessage = $this->pi_getLL('no template').' tt_products.file.templateFile.';
 		}
 
@@ -484,7 +484,6 @@ class tx_ttproducts extends tslib_pibase {
 		$formUrl = $this->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams());  //  $this->getLinkUrl($this->conf['PIDbasket']);
 //		if (!$formUrl) {
 //			$formUrl = $this->pi_getPageLink(t3lib_div::_GP('backPID'),'',tx_ttproducts_view_div::getLinkParams());  // $this->getLinkUrl(t3lib_div::_GP('backPID'));
-//			debug ($formUrl, '$formUrl', __LINE__, __FILE__);
 //		}
 		if (($theCode=='SINGLE') || ($this->tt_product_single && !$this->conf['NoSingleViewOnList'])) {
 			// List single product:
@@ -643,11 +642,7 @@ class tx_ttproducts extends tslib_pibase {
 						$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')';
 						$markerArray['###FORM_URL###'] = $this->pi_getPageLink(t3lib_div::_GP('backPID'),'',tx_ttproducts_view_div::getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($extVars)))); // $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($extVars);
 
-						#debug ($TSFE->id, '$TSFE->id', __LINE__, __FILE__);
 						$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$extVars.']'; // here again, because this is here in ITEM_LIST view
-						#debug ($this->basketExt['gift'][$giftnumber]['item'], '$this->basketExt[\'gift\'][$giftnumber][\'item\']', __LINE__, __FILE__);
-						#debug ($extVars, '$extVars', __LINE__, __FILE__);
-						#debug ($this->basketExt['gift'][$giftnumber]['item'][$extVars], '$this->basketExt[\'gift\'][$giftnumber][\'item\'][$extVars]', __LINE__, __FILE__);
 						$markerArray['###FIELD_QTY###'] = $this->basketExt['gift'][$giftnumber]['item'][$row['uid']][$extVars];
 
 						$content.=$this->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
@@ -709,7 +704,6 @@ class tx_ttproducts extends tslib_pibase {
 					// Get products
 				$selectConf = Array();
 				$selectConf['pidInList'] = $this->pid_list;
-			#debug ($this->pid_list, '$this->pid_list', __LINE__, __FILE__);
 
 				$wherestock = ($this->config['showNotinStock'] ? '' : 'AND (inStock <> 0) ');
 				$selectConf['where'] = '1=1 '.$wherestock.$where;
@@ -728,14 +722,13 @@ class tx_ttproducts extends tslib_pibase {
 				$selectConf['selectFields'] = '*';
 				$selectConf['max'] = ($this->config['limit']+1);
 				$selectConf['begin'] = $begin_at;
-
+				
 			 	$res = $this->cObj->exec_getQuery('tt_products',$selectConf);
 
 				$productsArray=array();
 				while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
 					$productsArray[$row['pid']][]=$row;
 				}
-
 
 /*
 				// Fetching products:

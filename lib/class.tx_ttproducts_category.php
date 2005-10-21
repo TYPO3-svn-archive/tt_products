@@ -65,9 +65,7 @@ class tx_ttproducts_category {
 
 	function getCategory ($uid) {
 		global $TYPO3_DB;
-		#debug ($uid, 'getCategory $uid', __LINE__, __FILE__);
 		$rc = $this->categoryArray[$uid];
-		#debug ($rc, '$rc', __LINE__, __FILE__);
 		if (!$rc) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->tt_products_cat, 'select', '*');
@@ -77,7 +75,6 @@ class tx_ttproducts_category {
 			// Fetching the category
 		 	$res = $sql->exec_SELECTquery();
 		 	$row = $TYPO3_DB->sql_fetch_assoc($res);
-			#debug ($row, '$row', __LINE__, __FILE__);
 		 	$rc = $this->categoryArray[$row['uid']] = $row;
 		}
 		return $rc;
@@ -93,7 +90,6 @@ class tx_ttproducts_category {
 		foreach ($itemArray as $pid=>$pidItem) {
 			foreach ($pidItem as $itemnumber=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
-					#debug ($actItem, '$actItem', __LINE__, __FILE__);
 					$category = $this->getCategory ($actItem['rec']['category']);
 					$emailArray[$actItem['rec']['category']] = $this->tt_products_email->getEmail($category['email_uid']);
 				}

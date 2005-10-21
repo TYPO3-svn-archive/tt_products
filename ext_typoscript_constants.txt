@@ -151,6 +151,8 @@ plugin.tt_products {
   orderEmail_fromName = My Typo3 Shop
     # cat=plugin.products//; type=string; label=to email addresses: Comma separated list of recipients of the order email. Shop and administrator/supervisor email addresses go here!
   orderEmail_to = shop@myTypo3Shop.com
+    # cat=plugin.products//; type=string; label=subject of email: The topic of your email. Or the first line in EMAIL_PLAINTEXT_TEMPLATE is used!
+  orderEmail_subject = this is the subject
     # cat=plugin.products//; type=boolean; label=HTML email: If set, the order confirmation email is sent as HTML
   orderEmail_htmlmail = 0
     # cat=plugin.products//; type=boolean; label=email notify: If email-notification for the customer is enabled by default (he can change it himself in the tracking module later)

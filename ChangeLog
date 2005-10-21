@@ -1,3 +1,6 @@
+2005-10-21  Franz Holzinger <franz@fholzinger.com>
+	* send order confirmation even if subject line in ###EMAIL_PLAINTEXT_TEMPLATE### has been empty
+
 2005-10-19  Franz Holzinger <franz@fholzinger.com>
 	* when entering 0 amount for gift certificates nothing shall be in the basket
 

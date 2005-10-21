@@ -38,7 +38,7 @@
  */
 
 
-require_once (PATH_t3lib."class.t3lib_htmlmail.php");
+require_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 
 class tx_ttproducts_htmlmail extends t3lib_htmlmail {
 	
@@ -49,26 +49,26 @@ class tx_ttproducts_htmlmail extends t3lib_htmlmail {
 		
 			$this->subject = $subject;
 			
-			$this->from_email = ($V["from_email"]) ? $V["from_email"] : (($V["email"])?$V["email"]:'');
-			$this->from_name = ($V["from_name"]) ? $V["from_name"] : (($V["name"])?$V["name"]:'');
-			$this->replyto_email = ($V["replyto_email"]) ? $V["replyto_email"] : $this->from_email;
-			$this->replyto_name = ($V["replyto_name"]) ? $V["replyto_name"] : $this->from_name;
-			$this->organisation = ($V["organisation"]) ? $V["organisation"] : '';
-			$this->priority = ($V["priority"]) ? intInRange($V["priority"],1,5) : 3;
+			$this->from_email = ($V['from_email']) ? $V['from_email'] : (($V['email'])?$V['email']:'');
+			$this->from_name = ($V['from_name']) ? $V['from_name'] : (($V['name'])?$V['name']:'');
+			$this->replyto_email = ($V['replyto_email']) ? $V['replyto_email'] : $this->from_email;
+			$this->replyto_name = ($V['replyto_name']) ? $V['replyto_name'] : $this->from_name;
+			$this->organisation = ($V['organisation']) ? $V['organisation'] : '';
+			$this->priority = ($V['priority']) ? intInRange($V['priority'],1,5) : 3;
 			
-			if ($V['attachment'] != "")
+			if ($V['attachment'] != '')
 				$this->addAttachment($V['attachment']);
 
 			if ($html)	{
-				$this->theParts["html"]["content"] = $html;	// Fetches the content of the page
-				$this->theParts["html"]["path"] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
+				$this->theParts['html']['content'] = $html;	// Fetches the content of the page
+				$this->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
 				
 				$this->extractMediaLinks();
 				$this->extractHyperLinks();
 				$this->fetchHTMLMedia();
 				$this->substMediaNamesInHTML(0);	// 0 = relative
 				$this->substHREFsInHTML();	
-				$this->setHTML($this->encodeMsg($this->theParts["html"]["content"]));
+				$this->setHTML($this->encodeMsg($this->theParts['html']['content']));
 			}
 			$this->addPlain($plain);
 	
@@ -79,8 +79,8 @@ class tx_ttproducts_htmlmail extends t3lib_htmlmail {
 	}	
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_products/pi/class.tx_ttproducts_htmlmail.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_products/pi/class.tx_ttproducts_htmlmail.php"]);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_htmlmail.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi/class.tx_ttproducts_htmlmail.php']);
 }
 
 ?>

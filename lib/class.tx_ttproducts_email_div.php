@@ -38,7 +38,9 @@
  *
  */
 
+require_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
+require_once (PATH_BE_ttproducts.'pi/class.tx_ttproducts_htmlmail.php');
 
 
 class tx_ttproducts_email_div {
@@ -47,11 +49,9 @@ class tx_ttproducts_email_div {
 	/**
 	 * Extended mail function
 	 */
-	function send_mail($email,$subject,$message,$fromEMail,$fromName,$attachment='')
-	{
+	function send_mail($email,$subject,$message,$fromEMail,$fromName,$attachment='') {
 		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
-		if (class_exists($cls))
-		{
+		if (class_exists($cls))	{
 			$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
 			$Typo3_htmlmail->start();
 			$Typo3_htmlmail->useBase64();
@@ -71,7 +71,7 @@ class tx_ttproducts_email_div {
 			$Typo3_htmlmail->setHeaders();
 			$Typo3_htmlmail->setContent();
 			$Typo3_htmlmail->setRecipient(explode(',', $email));
-			$Typo3_htmlmail->sendtheMail();
+			$Typo3_htmlmail->sendTheMail();
 		}
 	}
 
