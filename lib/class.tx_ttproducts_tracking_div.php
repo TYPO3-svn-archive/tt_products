@@ -56,7 +56,7 @@ class tx_ttproducts_tracking_div {
 	 * @see enableFields()
 	 */
 
-	function products_tracking($theCode)	{
+	function products_tracking(&$pibase, $theCode)	{
 		global $TSFE;
 
 		if (strcmp($theCode, 'TRACKING')!=0) { // bill and delivery tracking need more data
@@ -77,10 +77,10 @@ class tx_ttproducts_tracking_div {
 						$content = tx_ttproducts_tracking_div::getTrackingInformation($orderRow,$this->templateCode);
 						break;
 					case 'BILL':
-						$content = tx_ttproducts_billdelivery_div::getInformation('bill',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
+						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,'bill',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
 						break;
 					case 'DELIVERY':
-						$content = tx_ttproducts_billdelivery_div::getInformation('delivery',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
+						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,'delivery',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
 						break;
 					default:
 						debug('error in '.TT_PRODUCTS_EXTkey.' calling function products_tracking with $type = "'.$type.'"');

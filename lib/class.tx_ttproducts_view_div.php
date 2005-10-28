@@ -100,7 +100,7 @@ class tx_ttproducts_view_div {
 	 * @return	string
 	 * @access private
 	 */
-	function &getItemMarkerArray (&$item,$catTitle, $imageNum=0, $imageRenderObj='image', $forminfoArray = array())	{
+	function &getItemMarkerArray (&$pibase, &$item, &$basketExt, $catTitle, $imageNum=0, $imageRenderObj='image', $forminfoArray = array())	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 
 		$row = &$item['rec'];
@@ -122,10 +122,10 @@ class tx_ttproducts_view_div {
 			{
 				$i = 0;  // show all images together as one image
 			}
-			$theImgCode[$i] .= $this->cObj->IMAGE($this->conf[$imageRenderObj.'.']);
+			$theImgCode[$i] .= $pibase->cObj->IMAGE($this->conf[$imageRenderObj.'.']);
 		}
 
-		$iconImgCode = $this->cObj->IMAGE($this->conf['datasheetIcon.']);
+		$iconImgCode = $pibase->cObj->IMAGE($this->conf['datasheetIcon.']);
 
 			// Subst. fields
 /* mkl:
@@ -162,7 +162,7 @@ class tx_ttproducts_view_div {
 //		}
 
 		if (is_array($this->conf['parseFunc.']))	{
-			$markerArray['###PRODUCT_NOTE###'] = $this->cObj->parseFunc($markerArray['###PRODUCT_NOTE###'],$this->conf['parseFunc.']);
+			$markerArray['###PRODUCT_NOTE###'] = $pibase->cObj->parseFunc($markerArray['###PRODUCT_NOTE###'],$this->conf['parseFunc.']);
 		}
 		$markerArray['###PRODUCT_ITEMNUMBER###'] = $row['itemnumber'];
 
@@ -250,7 +250,7 @@ class tx_ttproducts_view_div {
 
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
-		$temp = $this->basketExt[$row['uid']][tx_ttproducts_article_div::getVariantFromRow ($row)];
+		$temp = $basketExt[$row['uid']][tx_ttproducts_article_div::getVariantFromRow ($row)];
 
 		$markerArray['###FIELD_QTY###']= $temp ? $temp : '';
 		$markerArray['###FIELD_NAME_BASKET###']='ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
@@ -327,7 +327,7 @@ class tx_ttproducts_view_div {
 		$markerArray['###PRICE_WITH_ACCESSORY_NO_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$this->conf['priceNoReseller']]+$row['price'.$this->config['priceNoReseller']],0,$row['tax'])));
 
 		if ($row['special_preparation'])
-			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $this->cObj->substituteMarkerArray($this->conf['specialPreparation'],$markerArray);
+			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $pibase->cObj->substituteMarkerArray($this->conf['specialPreparation'],$markerArray);
 		else
 			$markerArray['###PRODUCT_SPECIAL_PREP###'] = '';
 

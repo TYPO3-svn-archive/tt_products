@@ -1,8 +1,6 @@
 <?php
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
-
-
 $TCA['tt_products'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products',
@@ -11,6 +9,7 @@ $TCA['tt_products'] = Array (
 		'default_sortby' => 'ORDER BY title',
 		'tstamp' => 'tstamp',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
+		'crdate' => 'crdate',
 		'delete' => 'deleted',
 		'enablecolumns' => Array (
 			'disabled' => 'hidden',
@@ -23,8 +22,12 @@ $TCA['tt_products'] = Array (
 		'mainpalette' => 1,
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
+	),
+	'feInterface' => Array (
+		'fe_admin_fieldList' => 'hidden,title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,gradings,accessory,accessory2,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',
 	)
 );
+
 $TCA['tt_products_cat'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat',
@@ -35,6 +38,9 @@ $TCA['tt_products_cat'] = Array (
 		'crdate' => 'crdate',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_cat.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
+	),
+	'feInterface' => Array (
+		'fe_admin_fieldList' => 'hidden,title,note,image,email',
 	)
 );
 
@@ -51,7 +57,7 @@ $TCA['tt_products_language'] = Array (
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden,cat_uid, sys_language_uid,title',
+		'fe_admin_fieldList' => 'title,subtitle,prod_uid,note,unit,www,datasheet,hidden,starttime,endtime',
 	)
 );
 

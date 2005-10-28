@@ -1,3 +1,10 @@
+2005-10-28  Franz Holzinger <franz@fholzinger.com>
+	* correct error with bulkily pricing
+	* enable caching
+
+2005-10-22  Franz Holzinger <franz@fholzinger.com>
+	* crdate and cruser_id for tt_products and tt_products_cat
+
 2005-10-21  Franz Holzinger <franz@fholzinger.com>
 	* send order confirmation even if subject line in ###EMAIL_PLAINTEXT_TEMPLATE### has been empty
 

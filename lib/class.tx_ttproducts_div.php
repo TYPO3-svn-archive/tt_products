@@ -48,10 +48,10 @@ class tx_ttproducts_div {
          * @return      void
          * @see
          */
-    function setJS($fieldname) {
+    function setJS(&$pibase, $fieldname) {
         global $TSFE;
         $js = '';
-        $emailArr =  explode('|', $message = $this->pi_getLL('invalid email'));
+        $emailArr =  explode('|', $message = $pibase->pi_getLL('invalid email'));
 
 		switch ($fieldname) {
 			case 'email' :

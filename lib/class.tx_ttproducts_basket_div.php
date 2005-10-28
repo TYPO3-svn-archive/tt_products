@@ -308,7 +308,7 @@ class tx_ttproducts_basket_div {
 	function transfromActivities($activities)	{
 		$retActivities = array();
 		$activityArray =  Array (
-			'1' =>  'products_basket', 'products_info', 'products_overview', 'products_payment', 'products_finalize',
+			'1' =>  'products_overview', 'products_basket', 'products_info', 'products_payment', 'products_finalize',
 			);
 
 		if (is_array($activities)) {
@@ -348,7 +348,7 @@ class tx_ttproducts_basket_div {
      * @param       array          CODEs for display mode
      * @return      void
  	 */
-	function products_basket($codes, &$error_message)	{
+	function products_basket(&$pibase, $codes, &$error_message)	{
 		global $TSFE;
 		global $TYPO3_DB;
 
@@ -415,7 +415,7 @@ class tx_ttproducts_basket_div {
 						switch($activity)	{
 							case 'products_basket':
 								if (count($activityArr) == 1) {
-									$content.=tx_ttproducts_basket_div::getBasket();
+									$content.=tx_ttproducts_basket_div::getBasket($pibase);
 								}
 							break;
 							case 'products_overview':
@@ -471,7 +471,7 @@ class tx_ttproducts_basket_div {
 							case 'products_info':
 								// if (!$activityArr['products_payment'] && !$activityArr['products_finalize']) {
 								$this->load_noLinkExtCobj();
-								$content.=tx_ttproducts_basket_div::getBasket('###BASKET_INFO_TEMPLATE###','',$mainMarkerArray);
+								$content.=tx_ttproducts_basket_div::getBasket($pibase,'###BASKET_INFO_TEMPLATE###','',$mainMarkerArray);
 								// }
 							break;
 							case 'products_payment':
@@ -481,7 +481,7 @@ class tx_ttproducts_basket_div {
 								$check = tx_ttproducts_view_div::checkRequired();
 								if ($check=='' &&
 									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
-									$content.=tx_ttproducts_basket_div::getBasket('###BASKET_PAYMENT_TEMPLATE###', '', $mainMarkerArray);
+									$content.=tx_ttproducts_basket_div::getBasket($pibase,'###BASKET_PAYMENT_TEMPLATE###', '', $mainMarkerArray);
 	
 									$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
 									$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
@@ -523,13 +523,13 @@ class tx_ttproducts_basket_div {
 	
 									// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 									$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
-									$orderConfirmationHTML=tx_ttproducts_basket_div::getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
+									$orderConfirmationHTML=tx_ttproducts_basket_div::getBasket($pibase,'###'.$tmpl.'###', '', $mainMarkerArray);
 									$contentTmp = $orderConfirmationHTML;
-									tx_ttproducts_finalize_div::finalizeOrder($orderUid, $orderConfirmationHTML); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+									tx_ttproducts_finalize_div::finalizeOrder($pibase, $orderUid, $orderConfirmationHTML); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 	
 									if ($this->conf['PIDthanks'] > 0) {
 										$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
-										$contentTmp = tx_ttproducts_basket_div::getBasket('###'.$tmpl.'###', '', $mainMarkerArray);
+										$contentTmp = tx_ttproducts_basket_div::getBasket($pibase,'###'.$tmpl.'###', '', $mainMarkerArray);
 									}
 									$content.=$contentTmp;
 									// Empties the shopping basket!
@@ -545,7 +545,7 @@ class tx_ttproducts_basket_div {
 						} // switch
 					}	// if ($value)
 					if ($basket_tmpl) {
-						$content.=tx_ttproducts_basket_div::getBasket('###'.$basket_tmpl.'###');
+						$content.=tx_ttproducts_basket_div::getBasket($pibase,'###'.$basket_tmpl.'###');
 						break; // foreach
 					}
 				} // foreach ($activityArr as $activity=>$value)
@@ -724,7 +724,7 @@ class tx_ttproducts_basket_div {
 
 		// TAXpercentage replaces priceNoTax
 		if ($this->conf['shipping.']['TAXpercentage']) {
-			$this->calculatedArray['priceNoTax']['shipping'] = $this->calculatedArray['priceTax']['shipping']/(1+doubleVal($this->conf['shipping.']['TAXpercentage'])/100);
+			$this->calculatedArray['priceNoTax']['shipping'] += $this->calculatedArray['priceTax']['shipping']/(1+doubleVal($this->conf['shipping.']['TAXpercentage'])/100);
 		}
 
 			// Shipping must be at the end in order to use the calculated values from before
@@ -796,7 +796,7 @@ class tx_ttproducts_basket_div {
 	/**
 	 * This generates the shopping basket layout and also calculates the totals. Very important function.
 	 */
-	function getBasket($subpartMarker='###BASKET_TEMPLATE###', $templateCode='', 		$mainMarkerArray=array())	{
+	function getBasket(&$pibase, $subpartMarker='###BASKET_TEMPLATE###', $templateCode='', 		$mainMarkerArray=array())	{
 			/*
 				Very central function in the library.
 				By default it extracts the subpart, ###BASKET_TEMPLATE###, from the $templateCode (if given, else the default $this->templateCode)
@@ -870,7 +870,7 @@ class tx_ttproducts_basket_div {
 						// Fill marker arrays
 					$wrappedSubpartArray=array();
 					$subpartArray=array();
-					$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($actItem,$catTitle,1,'basketImage');
+					$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($pibase,$actItem,$this->basketExt, $catTitle,1,'basketImage');
 
 					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];

@@ -49,7 +49,7 @@ class tx_ttproducts_billdelivery_div {
 	/**
 	 * Bill,Delivery Tracking
 	 */
-	function getInformation($type, $orderRow, $templateCode, $tracking)
+	function getInformation(&$pibase,$type, $orderRow, $templateCode, $tracking)
 	{
 			/*
 
@@ -155,7 +155,7 @@ class tx_ttproducts_billdelivery_div {
 
 								// Print Item Title
 							$wrappedSubpartArray=array();
-							$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($actItem,$catTitle,1,'image');
+							$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($pibase,$actItem,$this->basketExt, $catTitle,1,'image');
 
 							$markerArray['###FIELD_QTY###'] = $actItem['count'];
 

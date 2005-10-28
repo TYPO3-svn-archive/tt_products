@@ -65,7 +65,7 @@ switch($products_cmd)	{
 	case "cardno":
 		$tSubpart = $lConf['soloe'] ? '###DIBS_SOLOE_TEMPLATE###' : '###DIBS_CARDNO_TEMPLATE###';		// If solo-e is selected, use different subpart from template
 		$tSubpart = $lConf['direct'] ? '###DIBS_DIRECT_TEMPLATE###' : $tSubpart;		// If direct is selected, use different subpart from template
-		$content=tx_ttproducts_basket_div::getBasket($tSubpart,$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=tx_ttproducts_basket_div::getBasket($this,$tSubpart,$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 
 		$markerArray=array();
 		$markerArray['###HIDDEN_FIELDS###'] = '
@@ -165,13 +165,13 @@ switch($products_cmd)	{
 	case "decline":
 		$markerArray=array();
 		$markerArray['###REASON_CODE###'] = t3lib_div::_GP('reason');
-		$content=tx_ttproducts_basket_div::getBasket('###DIBS_DECLINE_TEMPLATE###',$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_DECLINE_TEMPLATE###',$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 	break;
 	case 'cancel':
-		$content=tx_ttproducts_basket_div::getBasket('###DIBS_SOLOE_CANCEL_TEMPLATE###',$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_SOLOE_CANCEL_TEMPLATE###',$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 	break;
 	case 'accept':
-		$content=tx_ttproducts_basket_div::getBasket('###DIBS_ACCEPT_TEMPLATE###',$localTemplateCode);		// This is just done to calculate stuff
+		$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_ACCEPT_TEMPLATE###',$localTemplateCode);		// This is just done to calculate stuff
 
 			// DIBS md5 keys
 		$k1=$lConf['k1'];
@@ -184,14 +184,14 @@ switch($products_cmd)	{
 		$md5key= md5($k2.md5($k1.'transact='.$transact.'&amount='.$amount.'&currency='.$currency));
 		$authkey=t3lib_div::_GP('authkey');
 		if ($md5key != $authkey)	{
-			$content=tx_ttproducts_basket_div::getBasket("###DIBS_DECLINE_MD5_TEMPLATE###",$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_DECLINE_MD5_TEMPLATE###',$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} elseif (t3lib_div::_GP('orderid')!=tx_ttproducts_order_div::getOrderNumber($orderUid)) {
-			$content=tx_ttproducts_basket_div::getBasket("###DIBS_DECLINE_ORDERID_TEMPLATE###",$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_DECLINE_ORDERID_TEMPLATE###',$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$markerArray=array();
 			$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
 
-			$content=tx_ttproducts_basket_div::getBasket('###BASKET_ORDERCONFIRMATION_TEMPLATE###','',$markerArray);
+			$content=tx_ttproducts_basket_div::getBasket($this,'###BASKET_ORDERCONFIRMATION_TEMPLATE###','',$markerArray);
 			tx_ttproducts_finalize_div::finalizeOrder($orderUid,$markerArray);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 		}
 	break;
@@ -199,7 +199,7 @@ switch($products_cmd)	{
 		if ($lConf['relayURL'])	{
 			$markerArray=array();
 			$markerArray['###REDIRECT_URL###'] = 'https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=cardno&products_finalize=1'.$param;
-			$content=tx_ttproducts_basket_div::getBasket("###DIBS_REDIRECT_TEMPLATE###",$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_REDIRECT_TEMPLATE###',$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$content = 'NO .relayURL given!!';
 		}

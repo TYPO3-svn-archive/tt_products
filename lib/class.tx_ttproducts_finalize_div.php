@@ -62,7 +62,7 @@ class tx_ttproducts_finalize_div {
 	 * $orderUid is the order-uid to finalize
 	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
 	 */
-	function finalizeOrder($orderUid, $orderConfirmationHTML)	{
+	function finalizeOrder(&$pibase, $orderUid, $orderConfirmationHTML)	{
 		global $TSFE;
 		global $TYPO3_DB;
 
@@ -234,7 +234,7 @@ class tx_ttproducts_finalize_div {
 
 			// Fetching the orderRecord by selecing the newly saved one...
 		$this->orderRecord = tx_ttproducts_order_div::getOrderRecord($orderUid);
-		$content .= tx_ttproducts_basket_div::getBasket('###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
+		$content .= tx_ttproducts_basket_div::getBasket($pibase,'###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
 
 
 		// Is no user is logged in --> create one
@@ -274,7 +274,7 @@ class tx_ttproducts_finalize_div {
 				$res = $GLOBALS['TYPO3_DB']->exec_INSERTquery('fe_users', $insertFields);
 				// send new user mail
 				if (count($this->personInfo['email'])) {
-					$emailContent=trim(tx_ttproducts_basket_div::getBasket('###EMAIL_NEWUSER_TEMPLATE###'));
+					$emailContent=trim(tx_ttproducts_basket_div::getBasket($pibase,'###EMAIL_NEWUSER_TEMPLATE###'));
 					if ($emailContent) {
 						$parts = split(chr(10),$emailContent,2);
 						$subject=trim($parts[0]);
@@ -486,9 +486,9 @@ class tx_ttproducts_finalize_div {
 		$recipients=t3lib_div::trimExplode(',',$recipients,1);
 
 		if (count($recipients))	{	// If any recipients, then compile and send the mail.
-			$emailContent=trim(tx_ttproducts_basket_div::getBasket('###EMAIL_PLAINTEXT_TEMPLATE###'));
+			$emailContent=trim(tx_ttproducts_basket_div::getBasket($pibase,'###EMAIL_PLAINTEXT_TEMPLATE###'));
 			if ($emailContent)	{		// If there is plain text content - which is required!!
-				$parts = split(chr(10),$emailContent,2);		// First line is subject
+				$parts = split(chr(13),$emailContent,2);		// First line is subject
 				$subject=trim($parts[0]);
 				$plain_message=trim($parts[1]);
 				if (empty($plain_message)) {	// the user did not use the subject field

@@ -96,7 +96,8 @@ class tx_ttproducts_paymentshipping_div {
 			reset($this->conf['payment.']);
 			$k=intval($basket['tt_products']['payment']);
 			if (!tx_ttproducts_paymentshipping_div::checkExtraAvailable('payment',$k))	{
-				$k=intval(key(tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.'],1)));
+				$temp = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.'],1);
+				$k=intval(key($temp));
 			}
 			$this->basketExtra['payment'] = $k;
 			$this->basketExtra['payment.'] = $this->conf['payment.'][$k.'.'];
@@ -197,7 +198,8 @@ class tx_ttproducts_paymentshipping_div {
 		global $TSFE;
 
 			// shipping
-		$priceShipping = $priceShippingTax = $priceShippingNoTax = 0;
+		// $priceShipping = $priceShippingTax = $priceShippingNoTax = 0;
+
 		$confArr = $this->basketExtra['shipping.']['priceTax.'];
 		$tax = doubleVal($this->conf['shipping.']['TAXpercentage']);
 
@@ -208,7 +210,7 @@ class tx_ttproducts_paymentshipping_div {
 	                // if they match, get the min. price
 	                // if more than one entry for priceTaxWherePIDMinPrice exists, the highest is value will be taken into account
 	            foreach ($this->basketExtra['shipping.']['priceTax.']['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
-	                if (is_array($this->itemArray[$pid]) && $minPrice<doubleval($minPriceValue)) {
+	                if (is_array($this->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
 	                    $minPrice=$minPriceValue;
 	                }
 	            }
@@ -245,11 +247,11 @@ class tx_ttproducts_paymentshipping_div {
 				$priceShipping = $minPrice;
 			}
 
-			$priceShippingTax = tx_ttproducts_price_div::getPrice($priceShipping,1,$tax);
-			$priceShippingNoTax = tx_ttproducts_price_div::getPrice($priceShipping,0,$tax);
+			$priceShippingTax += tx_ttproducts_price_div::getPrice($priceShipping,1,$tax);
+			$priceShippingNoTax += tx_ttproducts_price_div::getPrice($priceShipping,0,$tax);
 		} else {
-			$priceShippingTax = doubleVal($this->basketExtra['shipping.']['priceTax']);
-			$priceShippingNoTax = doubleVal($this->basketExtra['shipping.']['priceNoTax']);
+			$priceShippingTax += doubleVal($this->basketExtra['shipping.']['priceTax']);
+			$priceShippingNoTax += doubleVal($this->basketExtra['shipping.']['priceNoTax']);
 			if ($this->conf['shipping.']['TAXpercentage']) {
 				$priceShippingNoTax = $priceShippingTax/(1+$tax/100);
 			}			

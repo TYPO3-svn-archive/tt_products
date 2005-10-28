@@ -80,6 +80,13 @@ class tx_ttproducts_category {
 		return $rc;
 	}
 
+	// returns the Path of all categories above, separated by '/'
+	function getCategoryPath ($uid) {
+		$rc = '';
+		
+		return $rc;
+	}
+
 
 	// returns the delivery email addresses from the basket`s item array with the category number as index
 	function getCategoryEmail (&$itemArray) {

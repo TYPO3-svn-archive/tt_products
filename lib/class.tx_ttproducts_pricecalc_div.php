@@ -53,6 +53,7 @@ class tx_ttproducts_pricecalc_div {
 	 * Include handle script
 	 */
 	function includeHandleScript($handleScript,$conf)	{
+		$content = '';
 		include($handleScript);
 		return $content;
 	} // includeHandleScript
