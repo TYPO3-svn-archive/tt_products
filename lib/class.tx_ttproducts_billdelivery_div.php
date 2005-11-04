@@ -140,7 +140,7 @@ class tx_ttproducts_billdelivery_div {
 							if ($categoryChanged == 1)
 							{
 								$markerArray=array();
-								$tmpCategory = $this->category->getCategory($currentCategory);
+								$tmpCategory = $this->category->get($currentCategory);
 								$catTitle= ($tmpCategory ? $tmpCategory: '');
 								$this->cObj->setCurrentVal($catTitle);
 								$markerArray['###CATEGORY_TITLE###'] = $this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
@@ -155,7 +155,7 @@ class tx_ttproducts_billdelivery_div {
 
 								// Print Item Title
 							$wrappedSubpartArray=array();
-							$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($pibase,$actItem,$this->basketExt, $catTitle,1,'image');
+							$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($pibase,$this->conf, $actItem,$this->basketExt, $catTitle,$this->content,1,'image');
 
 							$markerArray['###FIELD_QTY###'] = $actItem['count'];
 
@@ -181,7 +181,7 @@ class tx_ttproducts_billdelivery_div {
 			// Personal and delivery info:
 
 /* Added Els: 'feusers_uid,'*/
-		$infoFields = explode(',','feusers_uid,name,address,telephone,fax,email,company,city,zip,state,country');		// Fields...
+		$infoFields = explode(',','feusers_uid,name,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country');		// Fields...
 		while(list(,$fName)=each($infoFields))
 		{
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['personInfo'][$fName];

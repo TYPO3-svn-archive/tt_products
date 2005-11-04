@@ -200,7 +200,6 @@ CREATE TABLE tt_products_emails (
 	pid int(11) DEFAULT '0' NOT NULL,
 	tstamp int(11) DEFAULT '0' NOT NULL,
 	crdate int(11) DEFAULT '0' NOT NULL,
-	crdate int(11) DEFAULT '0' NOT NULL,
 	cruser_id int(11) DEFAULT '0' NOT NULL,
 	t3ver_oid int(11) DEFAULT '0' NOT NULL,
 	t3ver_id int(11) DEFAULT '0' NOT NULL,
@@ -289,6 +288,7 @@ CREATE TABLE sys_products_orders (
 # added els6: creditpoints_gifts (creditpoints gained with redeeming a gift certificate)
 	creditpoints_gifts decimal(10,0) default '0' NOT NULL,
 	agb char(2) DEFAULT '0' NOT NULL,
+	desired_date varchar(30) DEFAULT '' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid),
 	KEY tracking (tracking_code),

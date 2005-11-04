@@ -1,5 +1,6 @@
 ## Includes the productsLib:
-includeLibs.ts_products = EXT:tt_products/pi/class.tx_ttproducts.php
+includeLibs.tt_products = EXT:tt_products/pi/class.tx_ttproducts.php
+#vorher: includeLibs.ts_products = EXT:tt_products/pi/class.tx_ttproducts.php
 
 
 ## This enables the tt_content.list item to display the guestbook:
@@ -16,6 +17,7 @@ plugin.tt_products {
   limit = {$plugin.tt_products.limit}
   limitImage = {$plugin.tt_products.limitImage}
   limitImageSingle = {$plugin.tt_products.limitImageSingle}
+  usePageContentImage = {$plugin.tt_products.usePageContentImage}
   separateImage = {$plugin.tt_products.separateImage}
   image {
     file.maxW = {$plugin.tt_products.maxW_single}
@@ -186,7 +188,7 @@ plugin.tt_products {
   CSVinOneLine = {$plugin.tt_products.CSVinOneLine}
 
   AlwaysInStock  = {$plugin.tt_products.AlwaysInStock}
-  alwaysInStock  = {$plugin.tt_products.AlwaysInStock}
+  alwaysInStock  = {$plugin.tt_products.alwaysInStock}
   showNotinStock = {$plugin.tt_products.showNotinStock}
   notInStockMessage = {$plugin.tt_products.notInStockMessage}
   inStockPieces = {$plugin.tt_products.inStockPieces}

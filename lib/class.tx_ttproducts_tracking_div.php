@@ -40,7 +40,7 @@
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 
 
@@ -60,10 +60,10 @@ class tx_ttproducts_tracking_div {
 		global $TSFE;
 
 		if (strcmp($theCode, 'TRACKING')!=0) { // bill and delivery tracking need more data
-			tx_ttproducts_view_div::mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
-			tx_ttproducts_page_div::setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
-			tx_ttproducts_page_div::initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
-			tx_ttproducts_page_div::generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
+			$this->page->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
+			$this->page->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
+			$this->page->initRecursive(999, $this);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
+			//tx_ttproducts_page_div::generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
 		}
 		$admin = tx_ttproducts_tracking_div::shopAdmin();
 		if (t3lib_div::_GP('tracking') || $admin)	{		// Tracking number must be set

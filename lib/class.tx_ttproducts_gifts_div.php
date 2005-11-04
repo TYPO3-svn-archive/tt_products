@@ -40,9 +40,6 @@
 
 
 class tx_ttproducts_gifts_div {
-
-	
-
 	/**
 	 * returns if the product has been put into the basket as a gift
 	 *
@@ -90,6 +87,65 @@ class tx_ttproducts_gifts_div {
 	} // addGiftMarkers
 
 
+
+	/**
+	 * Saves the orderRecord and returns the result
+	 * 
+	 */
+	function saveOrderRecord($orderUid, $pid, &$giftBasket)	{
+		global $TYPO3_DB;
+		$rc = '';
+
+		foreach ($giftBasket as $giftnumber => $rec) {
+			$amount = 0;
+			foreach ($rec['item'] as $productid => $product) {
+				foreach ($product as $variant => $count) {
+					$row = array();
+					tx_ttproducts_article_div::getRowFromVariant ($row, $variant);
+					$amount += intval($row['size']) * $count;
+				}
+			}
+			// Saving gift order data
+			$insertFields = array(
+				'pid' => $pid,
+				'tstamp' => time(),
+				'crdate' => time(),
+				'deleted' => 0,
+
+				'ordernumber'    => $orderUid,
+				'personname'     => $rec['personname'],
+				'personemail'    => $rec['personemail'],
+				'deliveryname'   => $rec['deliveryname'],
+				'deliveryemail'  => $rec['deliveryemail'],
+				'note'           => $rec['note'],
+				'amount'         => $amount
+			);
+			// Saving the gifts order record
+			$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts', $insertFields);
+			$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
+			$insertFields = array();
+			$insertFields['uid_local'] = $newId;
+
+			foreach ($rec['item'] as $productid => $product) {
+				foreach ($product as $variant => $count) {
+					$row = array();
+					tx_ttproducts_article_div::getRowFromVariant ($row, $variant);
+
+					$query='uid_product=\''.intval($productid).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND gradings=\''.$row['gradings'].'\'' ;
+					$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
+
+					if ($articleRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($articleRes)) {
+						$insertFields['uid_foreign'] = $articleRow['uid'];
+						$insertFields['count'] = $count;
+						// Saving the gifts mm order record
+						$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts_articles_mm', $insertFields);
+					}
+				}
+			}
+		}
+
+	return $rc;
+	}
 
 }
 

@@ -27,7 +27,7 @@
 /**
  * Part of the tt_products (Shopping System) extension.
  *
- * view functions
+ * product single view functions
  *
  * $Id$
  *
@@ -43,30 +43,31 @@
 
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page.php');
 
 
 
 class tx_ttproducts_single_view {
+	var $pibase; // reference to object of pibase
 	var $conf;
 	var $config;
 	var $uid; 	// product id
 	var $variants; 	// different attributes
-	var $pid_list;	// comma separated list of page ids (pid)
 	var $pid; // basket pid
+	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
-	var $pibase; // reference to object of pibase
 	var $formUrl; // URL of the form
 	var $basketExt;
 
- 	function init(&$pibase, &$conf, &$config, $uid, $extVars, $pid_list, $tt_products, $tt_products_cat, $pid, &$formUrl, &$basketExt) {
+ 	function init(&$pibase, &$conf, &$config, &$page, &$content, &$tt_products, &$tt_products_cat, $uid, $extVars, $pid, &$formUrl, &$basketExt) {
  		$this->pibase = $pibase;
  		$this->conf = $conf;
  		$this->config = $config;
+ 		$this->page = $page;
+ 		$this->content = $content;
  		$this->uid = $uid;
  		$this->variants = $extVars;
- 		$this->pid_list = $pid_list;
  		$this->pid = $pid;
  		$this->tt_products = $tt_products;
  		$this->tt_products_cat = $tt_products_cat;
@@ -74,7 +75,8 @@ class tx_ttproducts_single_view {
  		$this->basketExt = $basketExt;
  	}
 
-	function printView(&$templateCode, &$pageArray, &$error_code) {
+	// returns the single view
+	function &printView(&$templateCode, &$basketExt, &$error_code) {
 		global $TSFE;
 		
 		$content = '';
@@ -82,8 +84,8 @@ class tx_ttproducts_single_view {
 
 		$where = 'uid='.intval($this->uid);
 
-		$this->tt_products->enableFields();
-	 	$res = $this->tt_products->exec_SELECTquery('*', $where .' AND pid IN ('.$this->pid_list.')');
+		$this->tt_products->table->enableFields();
+	 	$res = $this->tt_products->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
 	 	$row = '';
 		if ($this->config['displayCurrentRecord'])	{
 			$row=$this->pibase->cObj->data;
@@ -127,12 +129,13 @@ class tx_ttproducts_single_view {
 			}
 			$pageCatTitle = '';
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
-					$pageCatTitle = $pageArray[$row['pid']]['title'].'/';
+					$pageTmp = $this->page->get($row['pid']);
+					$pageCatTitle = $pageTmp['title'].'/';
 			}
 
 			$catTmp = '';
 			if ($row['category']) {
-				$catTmp = $this->tt_products_cat->getCategory($row['category']);
+				$catTmp = $this->tt_products_cat->get($row['category']);
 				$catTmp = $catTmp['title'];
 			}
 			$catTitle = $pageCatTitle.$catTmp;
@@ -161,7 +164,7 @@ class tx_ttproducts_single_view {
 
 			$item = tx_ttproducts_basket_div::getItem($row);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
-			$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$item,$this->basketExt, $catTitle,$this->config['limitImageSingle'],'image', $forminfoArray);
+			$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf, $item,$basketExt, $catTitle,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
 
 			$subpartArray = array();
 
@@ -182,7 +185,7 @@ class tx_ttproducts_single_view {
 			}
 			$queryprev = '';
 			$wherestock = ($conf['showNotinStock'] ? '' : 'AND (inStock <>0) ');
-			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields('tt_products');
+			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields('tt_products');
 			$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'','uid');
 
 			if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )
@@ -190,7 +193,7 @@ class tx_ttproducts_single_view {
 			else
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 
-			$querynext = $queryNextPrefix.' AND pid IN ('.$this->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields('tt_products');
+			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields('tt_products');
 			$resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext);
 
 			if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )
@@ -221,7 +224,7 @@ class tx_ttproducts_single_view {
 					$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink(t3lib_div::_GP('backPID'),'',tx_ttproducts_view_div::getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants)))); // $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($this->variants);
 
 					$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$this->variants.']'; // here again, because this is here in ITEM_LIST view
-					$markerArray['###FIELD_QTY###'] = $this->basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];
+					$markerArray['###FIELD_QTY###'] = $basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];
 
 					$content.=$this->pibase->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 				}

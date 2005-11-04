@@ -43,7 +43,6 @@ require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
 class tx_ttproducts_attribute {
 	var $attributeArray;	// array of read in attributes
-	// var $tt_products_cat;	// object of the type tx_table_db
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -55,9 +54,9 @@ class tx_ttproducts_attribute {
 	} // init
 
 
-	function categorycomp($row1, $row2)  {
-		return strcmp($this->getCategory[$row1['category']], $this->getCategory[$row2['category']]);
-	} // categorycomp
+	function comp($row1, $row2)  {
+		return strcmp($this->get[$row1['category']], $this->get[$row2['category']]);
+	} // comp
 
 	function hasAttribute ($uid) {
 		return ($this->attributeArray[$uid] > 0);

@@ -100,7 +100,7 @@ class tx_ttproducts_view_div {
 	 * @return	string
 	 * @access private
 	 */
-	function &getItemMarkerArray (&$pibase, &$item, &$basketExt, $catTitle, $imageNum=0, $imageRenderObj='image', $forminfoArray = array())	{
+	function getItemMarkerArray (&$pibase, &$conf, &$item, &$basketExt, $catTitle, &$contentTable, $imageNum=0, $imageRenderObj='image', $forminfoArray = array())	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 
 		$row = &$item['rec'];
@@ -108,24 +108,35 @@ class tx_ttproducts_view_div {
 			// Get image
 		$theImgCode=array();
 
-		$imgs = explode(',',$row['image']);
-
+		$imgs = array();
+		
+		if ($conf['usePageContentImage']) {
+			$pageContent = $contentTable->getFromPid($row['pid']);
+			foreach ($pageContent as $pid => $contentRow) {
+				if ($contentRow['image']) {
+					$imgs[] = $contentRow['image']; 				
+				} 
+			}
+		} else {
+			$imgs = explode(',',$row['image']);		
+		}
+		
 		while(list($c,$val)=each($imgs))	{
 			if ($c==$imageNum)	break;
 			if ($val)	{
-				$this->conf[$imageRenderObj.'.']['file'] = 'uploads/pics/'.$val;
+				$conf[$imageRenderObj.'.']['file'] = 'uploads/pics/'.$val;
 			} else {
-				$this->conf[$imageRenderObj.'.']['file'] = $this->conf['noImageAvailable'];
+				$conf[$imageRenderObj.'.']['file'] = $this->conf['noImageAvailable'];
 			}
 			$i = $c;
-			if (!$this->conf['separateImage'])
+			if (!$conf['separateImage'])
 			{
 				$i = 0;  // show all images together as one image
 			}
-			$theImgCode[$i] .= $pibase->cObj->IMAGE($this->conf[$imageRenderObj.'.']);
+			$theImgCode[$i] .= $pibase->cObj->IMAGE($conf[$imageRenderObj.'.']);
 		}
 
-		$iconImgCode = $pibase->cObj->IMAGE($this->conf['datasheetIcon.']);
+		$iconImgCode = $pibase->cObj->IMAGE($conf['datasheetIcon.']);
 
 			// Subst. fields
 /* mkl:
@@ -161,8 +172,8 @@ class tx_ttproducts_view_div {
 //			$markerArray['###PRODUCT_NOTE###'] = $this->pi_RTEcssText($row['note']);
 //		}
 
-		if (is_array($this->conf['parseFunc.']))	{
-			$markerArray['###PRODUCT_NOTE###'] = $pibase->cObj->parseFunc($markerArray['###PRODUCT_NOTE###'],$this->conf['parseFunc.']);
+		if (is_array($conf['parseFunc.']))	{
+			$markerArray['###PRODUCT_NOTE###'] = $pibase->cObj->parseFunc($markerArray['###PRODUCT_NOTE###'],$conf['parseFunc.']);
 		}
 		$markerArray['###PRODUCT_ITEMNUMBER###'] = $row['itemnumber'];
 
@@ -185,13 +196,13 @@ class tx_ttproducts_view_div {
 		$markerArray['###PRODUCT_ID###'] = $row['uid'];
 
 /* Added Els4: cur_sym moved from after product_special to this place, necessary to put currency symbol */
-		$markerArray['###CUR_SYM###'] = ' '.($this->conf['currencySymbol'] ? $this->conf['currencySymbol'] : '');
+		$markerArray['###CUR_SYM###'] = ' '.($conf['currencySymbol'] ? $conf['currencySymbol'] : '');
 
 		$markerArray['###PRICE_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat($item['priceTax']));
 		$markerArray['###PRICE_NO_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat($item['priceNoTax']));
 
 /* Added els4: printing of pric_no_tax with currency symbol (used in totaal-_.tmpl and winkelwagen.tmpl) */
-		if ($row['category'] == $this->conf['creditsCategory']) {
+		if ($row['category'] == $conf['creditsCategory']) {
 			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = tx_ttproducts_price_div::printPrice($item['priceNoTax']);
 		} else {
 			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat($item['priceNoTax']));
@@ -199,7 +210,7 @@ class tx_ttproducts_view_div {
 
 		$oldPrice = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['price'],1,$row['tax'])));
 		$oldPriceNoTax = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['price'],0,$row['tax'])));
-		$priceNo = intval($this->config['priceNoReseller']);
+		$priceNo = intval($config['priceNoReseller']);
 		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
 			$oldPrice = $oldPriceNoTax = '';
 		}
@@ -213,7 +224,7 @@ class tx_ttproducts_view_div {
 		if ($oldPriceNoTax == '0.00') {
 			$markerArray['###OLD_PRICE_NO_TAX_CLASS###'] = 'rightalign';
 			$markerArray['###OLD_PRICE_NO_TAX###'] = $markerArray['###PRICE_NO_TAX###'];
-			if ($row['category'] == $this->conf['creditsCategory']) {
+			if ($row['category'] == $conf['creditsCategory']) {
 				$markerArray['###CUR_SYM###'] ="";
 				$markerArray['###OLD_PRICE_NO_TAX###'] = $item['priceNoTax']."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
 			}
@@ -226,7 +237,7 @@ class tx_ttproducts_view_div {
 		} else {
 			$markerArray['###OLD_PRICE_NO_TAX_CLASS###'] = 'prijsvan';
 			$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
-			if ($row['category'] == $this->conf['creditsCategory']) {
+			if ($row['category'] == $conf['creditsCategory']) {
 				$markerArray['###CUR_SYM###'] ="";
 				$markerArray['###OLD_PRICE_NO_TAX###'] = tx_ttproducts_price_div::getPrice($row['price'],0,$row['tax'])."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
 			}
@@ -239,9 +250,9 @@ class tx_ttproducts_view_div {
 		$markerArray['###PRODUCT_INSTOCK_UNIT###'] = '';
 		if ($row['inStock'] <> 0) {
 			$markerArray['###PRODUCT_INSTOCK###'] = $row['inStock'];
-			$markerArray['###PRODUCT_INSTOCK_UNIT###'] = $this->conf['inStockPieces'];
+			$markerArray['###PRODUCT_INSTOCK_UNIT###'] = $conf['inStockPieces'];
 		} else {
-			$markerArray['###PRODUCT_INSTOCK###'] = $this->conf['notInStockMessage'];
+			$markerArray['###PRODUCT_INSTOCK###'] = $conf['notInStockMessage'];
 		}
 
 		$markerArray['###CATEGORY_TITLE###'] = $catTitle;
@@ -250,7 +261,8 @@ class tx_ttproducts_view_div {
 
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
-		$temp = $basketExt[$row['uid']][tx_ttproducts_article_div::getVariantFromRow ($row)];
+		$temp = tx_ttproducts_article_div::getVariantFromRow ($row);
+		$temp = $basketExt[$row['uid']][$temp];
 
 		$markerArray['###FIELD_QTY###']= $temp ? $temp : '';
 		$markerArray['###FIELD_NAME_BASKET###']='ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
@@ -269,7 +281,7 @@ class tx_ttproducts_view_div {
 		$markerArray['###FIELD_GRADINGS_VALUE###']=$row['gradings'];
 
 /* Added Els4: total price is quantity multiplied with pricenottax mulitplied with unit_factor (exception for kurkenshop), _credits is necessary for "kurkenshop", without decimal and currency symbol */
-		if ($row['category'] == $this->conf['creditsCategory']) {
+		if ($row['category'] == $conf['creditsCategory']) {
 			$markerArray['###PRICE_ITEM_X_QTY###'] = tx_ttproducts_price_div::printPrice($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']);
 		} else {
 			$markerArray['###PRICE_ITEM_X_QTY###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']));
@@ -277,7 +289,7 @@ class tx_ttproducts_view_div {
 
 		$prodColorText = '';
 		$prodTmp = explode(';', $row['color']);
-		if ($this->conf['selectColor']) {
+		if ($conf['selectColor']) {
 			foreach ($prodTmp as $prodCol)
 				$prodColorText = $prodColorText . '<OPTION value="'.$prodCol.'">'.$prodCol.'</OPTION>';
 		} else {
@@ -286,7 +298,7 @@ class tx_ttproducts_view_div {
 
 		$prodSizeText = '';
 		$prodTmp = explode(';', $row['size']);
-		if ($this->conf['selectSize']) {
+		if ($conf['selectSize']) {
 			foreach ($prodTmp as $prodSize) {
 				$prodSizeText = $prodSizeText . '<OPTION value="'.$prodSize.'">'.$prodSize.'</OPTION>';
 			}
@@ -294,20 +306,20 @@ class tx_ttproducts_view_div {
 			$prodSizeText = $prodTmp[0];
 		}
 
-		$prodAccessoryText = '';
-		$prodTmp = explode(';', $row['accessory']);
-		if ($this->conf['selectAccessory']) {
-			$message = $this->pi_getLL('accessory no');		
-			$prodAccessoryText =  '<OPTION value="0">'.$message.'</OPTION>';
-			$message = $this->pi_getLL('accessory yes');		
-			$prodAccessoryText .= '<OPTION value="1">'.$message.'</OPTION>';
-		} else {
-			$prodAccessoryText = $prodTmp;
-		}
+//		$prodAccessoryText = '';
+//		$prodTmp = explode(';', $row['accessory']);
+//		if ($conf['selectAccessory']) {
+//			$message = $this->pi_getLL('accessory no');		
+//			$prodAccessoryText =  '<OPTION value="0">'.$message.'</OPTION>';
+//			$message = $this->pi_getLL('accessory yes');		
+//			$prodAccessoryText .= '<OPTION value="1">'.$message.'</OPTION>';
+//		} else {
+//			$prodAccessoryText = $prodTmp;
+//		}
 
 		$prodGradingsText = '';
 		$prodTmp = explode(';', $row['gradings']);
-		if ($this->conf['selectGradings']) {
+		if ($conf['selectGradings']) {
 			foreach ($prodTmp as $prodGradings) {
 				$prodGradingsText = $prodGradingsText . '<OPTION value="'.$prodGradings.'">'.$prodGradings.'</OPTION>';
 			}
@@ -316,28 +328,27 @@ class tx_ttproducts_view_div {
 		}
 
 		$markerArray['###PRODUCT_WEIGHT###'] = doubleval($row['weight']);
-		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $this->conf['bulkilyWarning'] : '';
+		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $conf['bulkilyWarning'] : '';
 		$markerArray['###PRODUCT_COLOR###'] = $prodColorText;
 		$markerArray['###PRODUCT_SIZE###'] = $prodSizeText;
-		$markerArray['###PRODUCT_ACCESSORY###'] = $prodAccessoryText;
+		//$markerArray['###PRODUCT_ACCESSORY###'] = $prodAccessoryText;
 		$markerArray['###PRODUCT_GRADINGS###'] = $prodGradingsText;
-		$markerArray['###PRICE_ACCESSORY_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$this->config['priceNoReseller']],1,$row['tax'])));
-		$markerArray['###PRICE_ACCESSORY_NO_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$this->config['priceNoReseller']],0,$row['tax'])));
-		$markerArray['###PRICE_WITH_ACCESSORY_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$this->conf['priceNoReseller']]+$row['price'.$this->config['priceNoReseller']],1,$row['tax'])));
-		$markerArray['###PRICE_WITH_ACCESSORY_NO_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$this->conf['priceNoReseller']]+$row['price'.$this->config['priceNoReseller']],0,$row['tax'])));
+	//	$markerArray['###PRICE_ACCESSORY_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$config['priceNoReseller']],1,$row['tax'])));
+	//	$markerArray['###PRICE_ACCESSORY_NO_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$config['priceNoReseller']],0,$row['tax'])));
+	//	$markerArray['###PRICE_WITH_ACCESSORY_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$conf['priceNoReseller']]+$row['price'.$tconfig['priceNoReseller']],1,$row['tax'])));
+	//	$markerArray['###PRICE_WITH_ACCESSORY_NO_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$conf['priceNoReseller']]+$row['price'.$config['priceNoReseller']],0,$row['tax'])));
 
 		if ($row['special_preparation'])
-			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $pibase->cObj->substituteMarkerArray($this->conf['specialPreparation'],$markerArray);
+			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $pibase->cObj->substituteMarkerArray($conf['specialPreparation'],$markerArray);
 		else
 			$markerArray['###PRODUCT_SPECIAL_PREP###'] = '';
 
 /* 		Added els4: cur_sym moved to above (after product_id)*/
 			// Fill the Currency Symbol or not
 
-		if ($this->conf['itemMarkerArrayFunc'])	{
+		if ($conf['itemMarkerArrayFunc'])	{
 			$markerArray = $this->userProcess('itemMarkerArrayFunc',$markerArray);
 		}
-
 		return $markerArray;
 	} // getItemMarkerArray
 
@@ -398,7 +409,7 @@ class tx_ttproducts_view_div {
 		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
 /* Added Els: 'feusers_uid,' and more fields */
 			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
-			$infoFields = explode(',','feusers_uid,telephone,name,email,date_of_birth,company,address,city'.$infoExtraFields); // Fields...
+			$infoFields = explode(',','feusers_uid,telephone,name,first_name,last_name,email,date_of_birth,company,address,city,zip'.$infoExtraFields); // Fields...
 			while(list(,$fName)=each($infoFields))	{
 				$this->deliveryInfo[$fName] = $this->personInfo[$fName];
 			}

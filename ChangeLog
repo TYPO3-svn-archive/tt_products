@@ -1,3 +1,7 @@
+2005-11-04  Franz Holzinger <franz@fholzinger.com>
+	* new feature: take images from tt_content of the products page
+	* activate cache also for BASKET views if no product is in the basket
+
 2005-10-28  Franz Holzinger <franz@fholzinger.com>
 	* correct error with bulkily pricing
 	* enable caching

@@ -75,10 +75,11 @@ class tx_ttproducts_order_div {
 				}
 			}
 
+			$time = time();
 			$insertFields = array(
 				'pid' => $pid,
-				'tstamp' => time(),
-				'crdate' => time(),
+				'tstamp' => $time,
+				'crdate' => $time,
 				'deleted' => 1
 			);
 			if ($advanceUid > 0)	{
@@ -91,6 +92,7 @@ class tx_ttproducts_order_div {
 		}
 		return $newId;
 	} // createOrder
+
 
 	/**
 	 * Returns a blank order uid. If there was no order id already, a new one is created.
@@ -115,6 +117,7 @@ class tx_ttproducts_order_div {
 		return $orderUid;
 	} // getBlankOrderUid
 
+
 	/**
 	 * Returns the orderRecord if $orderUid.
 	 * If $tracking is set, then the order with the tracking number is fetched instead.
@@ -123,6 +126,7 @@ class tx_ttproducts_order_div {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', ($tracking ? 'tracking_code="'.$GLOBALS['TYPO3_DB']->quoteStr($tracking, 'sys_products_orders').'"' : 'uid='.intval($orderUid)).' AND NOT deleted');
 		return $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 	} //getOrderRecord
+
 
 	/**
 	 * This returns the order-number (opposed to the order_uid) for display in the shop, confirmation notes and so on.
@@ -135,6 +139,176 @@ class tx_ttproducts_order_div {
 		return $orderNumberPrefix.$orderUid;
 	} // getOrderNumber
 
+
+	/**
+	 * Saves the orderRecord and returns the result
+	 * 
+	 */
+	function putOrderRecord($orderUid,&$deliveryInfo, $feusers_uid, $email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML)	{
+		global $TYPO3_DB;
+		
+			// Fix delivery address
+		tx_ttproducts_view_div::mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
+//		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
+
+			// Saving order data
+		$fieldsArray=array();
+		$fieldsArray['note']=$deliveryInfo['note'];
+/* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
+		$fieldsArray['feusers_uid']=$feusers_uid;
+		$fieldsArray['name']=$deliveryInfo['name'];
+		$fieldsArray['telephone']=$deliveryInfo['telephone'];
+		$fieldsArray['fax']=$deliveryInfo['fax'];
+		$fieldsArray['email']=$deliveryInfo['email'];
+		$fieldsArray['email_notify']= $email_notify;
+
+			// can be changed after order is set.
+		$fieldsArray['payment']=$payment;
+		$fieldsArray['shipping']=$shipping;
+		$fieldsArray['amount']=$amount;
+		$fieldsArray['desired_date']=$deliveryInfo['desired_date'];
+		$fieldsArray['status']=1;	// This means, "Order confirmed on website, next step: confirm from shop that order is received"
+
+/* Added Els: update fe_user with amount of creditpoints and subtract creditpoints used in order*/
+		$fieldsArrayFeUsers = array();
+		$uid_voucher = ''; // define it here
+		/* example:
+  creditpoints {
+  10.where =
+  10.type = price
+  10.prod.1   = 0.02
+  10.prod.101 = 0.04
+  10.prod.501 = 0.06
+}
+		 */
+		if ($this->conf['creditpoints.']) {
+			$creditpoints = tx_ttproducts_creditpoints_div::getCreditPoints($fieldsArray['amount']);
+/* Added els4: update fe_user with amount of creditpoints (= exisitng amount - used_creditpoints - spended_creditpoints + saved_creditpoints */
+//			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->recs['tt_products']['creditpoints'];
+			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] - $this->recs['tt_products']['creditpoints'] - t3lib_div::_GP('creditpoints_spended') + t3lib_div::_GP('creditpoints_saved');
+		}
+
+/* Added Els: update fe_user with vouchercode */
+		if ($this->recs['tt_products']['vouchercode'] != '') {
+			// first check if vouchercode exist and is not their own vouchercode
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'fe_users', 'username="'.$this->recs['tt_products']['vouchercode'].'"');
+			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				$uid_voucher = $row['uid'];
+			}
+			if (($uid_voucher != '') && ($this->deliveryInfo['feusers_uid'] != $uid_voucher) ) {
+				$fieldsArrayFeUsers['tt_products_vouchercode'] = $this->recs['tt_products']['vouchercode'];
+			}
+		}
+
+		if ($this->deliveryInfo['feusers_uid']) {
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$this->deliveryInfo['feusers_uid'], $fieldsArrayFeUsers);
+	/* Added ELS2: update user from vouchercode with 5 credits */
+			tx_ttproducts_creditpoints_div::addCreditPoints($this->recs['tt_products']['vouchercode'], 5);
+		}
+
+
+/*
+		//<-- MKL 2004.09.21
+		$fieldsArray['forename']=$this->personInfo['forename'];
+		$fieldsArray['company']=$this->personInfo['company'];
+		$fieldsArray['vat_id']=$this->personInfo['vat_id'];
+		$fieldsArray['street']=$this->deliveryInfo['street'];
+		$fieldsArray['street_n1']=$this->deliveryInfo['street_n1'];
+		$fieldsArray['street_n2']=$this->deliveryInfo['street_n2'];
+		$fieldsArray['city']=$this->deliveryInfo['city'];
+		$fieldsArray['zip']=$this->deliveryInfo['zip'];
+		$fieldsArray['country_code']=$this->personInfo['country_code'];
+		$fieldsArray['client_ip']=t3lib_div::getIndpEnv('REMOTE_ADDR');
+		//--> MKL 2004.09.21
+*/
+
+				// Default status_log entry
+		$status_log=array();
+		$status_log[] = array(
+			'time' => time(),
+			'info' => $this->conf['statusCodes.'][$fieldsArray['status']],
+			'status' => $fieldsArray['status'],
+			'comment' => $this->deliveryInfo['note']
+		);
+		$fieldsArray['status_log']=serialize($status_log);
+
+			// Order Data serialized
+		$fieldsArray['orderData']=serialize(array(
+				'html_output' 			=>	$orderConfirmationHTML,
+				'deliveryInfo' 			=>	$this->deliveryInfo,
+				'personInfo' 			=>	$this->personInfo,
+				'itemArray'				=>	$this->itemArray,
+				'calculatedArray'		=>	$this->calculatedArray
+		));
+
+			// Setting tstamp, deleted and tracking code
+		$fieldsArray['tstamp']=time();
+		$fieldsArray['deleted']=0;
+		$fieldsArray['tracking_code']=$this->recs['tt_products']['orderTrackingNo'];
+		$fieldsArray['agb']		= $this->personInfo['agb'];
+/* Added Els: write creditpointvalue into sys_products_order */
+		$fieldsArray['creditpoints'] = $this->recs['tt_products']['creditpoints'];
+/* Added Els4: write creditpoint_spended and saved value into sys_products_order */
+		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
+		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
+/* Added Els6: write creditpoint_gifts value into sys_products_order */
+		$fieldsArray['creditpoints_gifts'] = t3lib_div::_GP('creditpoints_gifts');
+
+			// Saving the order record
+		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
+		
+	} //putOrderRecord
+
+
+
+
+	/**
+	 * Creates M-M relations for the products with tt_products table. Isn't really used yet, but later will be used to display stock-status by looking up how many items are already ordered.
+	 * 
+	 */
+	function createMM($orderUid, &$itemArray)	{
+		global $TYPO3_DB;
+
+			// First: delete any existing. Shouldn't be any
+		$where='sys_products_orders_uid='.$orderUid;
+		$res = $TYPO3_DB->exec_DELETEquery('sys_products_orders_mm_tt_products',$where);
+
+			// Second: Insert a new relation for each ordered item
+		reset($itemArray);
+
+		// loop over all items in the basket indexed by page and itemnumber
+		foreach ($itemArray as $pid=>$pidItem) {
+			foreach ($pidItem as $itemnumber=>$actItemArray) {
+				if ($this->conf['useArticles']) {
+					foreach ($actItemArray as $k1=>$actItem) {
+						// get the article uid with these colors, sizes and gradings
+						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
+
+						$res = $TYPO3_DB->exec_SELECTquery('uid', 'tt_products_articles', $query);
+
+						if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+							$insertFields = array (
+								'sys_products_orders_uid' => $orderUid,
+								'sys_products_orders_qty' => intval($actItem['count']),
+								'tt_products_uid' => intval($actItem['rec']['uid']),
+								'tt_products_articles_uid' => intval($row['uid'])
+							);
+							$TYPO3_DB->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
+						}
+					}
+				} else {
+					foreach ($actItemArray as $k1=>$actItem) {
+						$insertFields = array (
+							'sys_products_orders_uid' => $orderUid,
+							'sys_products_orders_qty' => intval($actItem['count']),
+							'tt_products_uid' => intval($actItem['rec']['uid'])
+						);
+						$TYPO3_DB->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
+					}
+				}
+			}
+		}
+	}
 
 
 /* Added Els2: Displays and manages the orders */

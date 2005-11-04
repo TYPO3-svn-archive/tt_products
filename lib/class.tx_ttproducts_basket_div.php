@@ -47,7 +47,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_finalize_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentshipping_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_price_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_div.php');
@@ -97,7 +97,6 @@ class tx_ttproducts_basket_div {
 		} else {
 			$this->basketExt = array();
 		}
-
 		$basketExtRaw = t3lib_div::_GP('ttp_basket');
 
 		$this->giftnumber = count ($this->basketExt['gift']) + 1;
@@ -259,6 +258,8 @@ class tx_ttproducts_basket_div {
 /* Added Els: getting the field uid form fe_users and introducing the field feusers_uid into sys_products_orders */
 			$this->personInfo['feusers_uid'] = $TSFE->fe_user->user['uid'];
 			$this->personInfo['name'] = $TSFE->fe_user->user['name'];
+			$this->personInfo['first_name'] = $TSFE->fe_user->user['first_name'];
+			$this->personInfo['last_name'] = $TSFE->fe_user->user['last_name'];
 
 			$this->personInfo['address'] = $address;
 			$this->personInfo['email'] = $TSFE->fe_user->user['email'];
@@ -399,11 +400,11 @@ class tx_ttproducts_basket_div {
 			reset ($activityArr);
 			$basket_tmpl = '';
 			if (count($activityArr)) {
-				if (!$this->pid_list) {
-					tx_ttproducts_page_div::setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
+				if (!$this->page->pid_list) {
+					$this->page->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
 				}
-				tx_ttproducts_page_div::initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
-				tx_ttproducts_page_div::generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
+				$this->page->initRecursive(999, $this);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
+				// $this->page->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
 				tx_ttproducts_basket_div::getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 
 				$mainMarkerArray=array();
@@ -525,7 +526,7 @@ class tx_ttproducts_basket_div {
 									$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 									$orderConfirmationHTML=tx_ttproducts_basket_div::getBasket($pibase,'###'.$tmpl.'###', '', $mainMarkerArray);
 									$contentTmp = $orderConfirmationHTML;
-									tx_ttproducts_finalize_div::finalizeOrder($pibase, $orderUid, $orderConfirmationHTML); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+									tx_ttproducts_finalize_div::finalizeOrder($pibase, $this->product, $orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 	
 									if ($this->conf['PIDthanks'] > 0) {
 										$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
@@ -618,7 +619,7 @@ class tx_ttproducts_basket_div {
 		if (count($uidArr) == 0) {
 			return;
 		}
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->pid_list.')'.$this->cObj->enableFields('tt_products'));
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->cObj->enableFields('tt_products'));
 
 		$this->productsArray = array(); // TODO: use only local products array
 		$productsArray = &$this->productsArray;
@@ -644,7 +645,7 @@ class tx_ttproducts_basket_div {
 			}
 		}
 
-		$pageArr=explode(',',$this->pid_list);
+		$pageArr=explode(',',$this->page->pid_list);
 
 		$this->itemArray = array(); // array of the items in the basket
 		$this->calculatedArray = array(); // this array is usede for all calculated things
@@ -852,11 +853,12 @@ class tx_ttproducts_basket_div {
 							$markerArray=array();
 							$pageCatTitle = '';
 							if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory'] == 1) {
-									$pageCatTitle = $this->pageArray[$pid]['title'].'/';
+								$pageTmp = $this->page->get($pid);
+								$pageCatTitle = $pageTmp['title'].'/';
 							}
 							$catTmp = '';
 							if ($actItem['rec']['category']) {
-								$catTmp = $this->category->getCategory($actItem['rec']['category']);
+								$catTmp = $this->category->get($actItem['rec']['category']);
 								$catTmp = $catTmp['title'];
 							}
 							$catTitle = $pageCatTitle.$catTmp;
@@ -870,13 +872,13 @@ class tx_ttproducts_basket_div {
 						// Fill marker arrays
 					$wrappedSubpartArray=array();
 					$subpartArray=array();
-					$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($pibase,$actItem,$this->basketExt, $catTitle,1,'basketImage');
+					$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($pibase,$this->conf, $actItem,$this->basketExt, $catTitle, $this->content,1,'basketImage');
 
 					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
 					$markerArray['###PRODUCT_GRADINGS###'] = $actItem['rec']['gradings'];
 
-	                $catTitle= $actItem['rec']['category'] ? $this->category->getCategory($actItem['rec']['category']) : '';
+	                $catTitle= $actItem['rec']['category'] ? $this->category->get($actItem['rec']['category']) : '';
 					$this->cObj->setCurrentVal($catTitle);
 					$markerArray['###CATEGORY_TITLE###']=$this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 
@@ -928,7 +930,7 @@ class tx_ttproducts_basket_div {
 						}
 					}
 
-					$pid = tx_ttproducts_page_div::getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
+					$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
 					$splitMark = md5(microtime());
 					$addQueryString=array();
 					$addQueryString['tt_products'] = intval($actItem['rec']['uid']);
@@ -1058,9 +1060,9 @@ class tx_ttproducts_basket_div {
 
 			// Personal and delivery info:
 /* Add ELS: more fields */
-		$list = 'name,address,telephone,fax,email,company,city,zip,state,country';
+		$list = 'name,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country';
 		if ($this->feuserextrafields) {
-			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,address,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,city,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
+			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,address,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
 		}
 		$infoFields = explode(',',$list); // Fields...
 // mkl: 	$infoFields = explode(',','forename,name,address,telephone,fax,email,company,city,zip,state,street,street_n1,street_n2,country_code,vat_id');
@@ -1093,6 +1095,9 @@ class tx_ttproducts_basket_div {
 			// Delivery note.
 		$markerArray['###DELIVERY_NOTE###'] = $this->deliveryInfo['note'];
 		$markerArray['###DELIVERY_NOTE_DISPLAY###'] = nl2br($markerArray['###DELIVERY_NOTE###']);
+		
+			// Desired delivery date.
+		$markerArray['###DELIVERY_DESIRED_DATE###'] = $this->deliveryInfo['desired_date'];
 
 			// Order:	NOTE: Data exist only if the getBlankOrderUid() has been called. Therefore this field in the template should be used only when an order has been established
 		$markerArray['###ORDER_UID###'] = tx_ttproducts_order_div::getOrderNumber($this->recs['tt_products']['orderUid']);

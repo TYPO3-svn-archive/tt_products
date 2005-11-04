@@ -29,6 +29,15 @@ if (!defined ('PATH_BE_table')) {
 	define('PATH_BE_table', t3lib_extMgm::extPath(TABLE_EXTkey));
 }
 
+if (!defined ('FH_LIBRARY_EXTkey')) {
+	define('FH_LIBRARY_EXTkey','fh_library');
+}
+
+if (!defined ('PATH_BE_fh_library')) {
+	define('PATH_BE_fh_library', t3lib_extMgm::extPath(FH_LIBRARY_EXTkey));
+}
+
+
 if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
 	define('TT_PRODUCTS_DIV_DLOG', '0');	// for development error logging
 }

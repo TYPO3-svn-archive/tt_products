@@ -65,6 +65,8 @@ plugin.tt_products {
   limitImage = 1
     # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item on a single view. 
   limitImageSingle = 1
+    # cat=plugin.products//; type=boolean; label= Images from the page content used: The image of the page contents can be used instead of the images of the products table.
+  usePageContentImage =
     # cat=plugin.products//; type=boolean; label= Separate images: Normally all images are displayed together. With separateImage=on you can use a ###PRODUCT_IMAGE3### for each image number separatly.
   separateImage =
 
@@ -202,7 +204,7 @@ plugin.tt_products {
   CSVinOneLine = 0
 
     # cat=plugin.products//; type=boolean; label=Always in Stock: The stock will never get reduced.
-  AlwaysInStock = 1
+  alwaysInStock = 1
     # cat=plugin.products//; type=boolean; label=Show not in stock items: If set the items will be shown even if no product is in the stock.
   showNotinStock =
     # cat=plugin.products//; type=text; label=Not in Stock message: Message is displayed if inStock = 0 (means not inStock)
