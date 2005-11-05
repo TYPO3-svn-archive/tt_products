@@ -18,13 +18,13 @@ TypoScript properties:
 */
 
 
-$baseAmount = $this->calculatedArray['priceTax']['goodstotal']+$this->calculatedArray['priceTax']['shipping'];		// The fee is calculated from the total of the goods AND shipping
+$baseAmount = $basket->calculatedArray['priceTax']['goodstotal']+$basket->calculatedArray['priceTax']['shipping'];		// The fee is calculated from the total of the goods AND shipping
 $feePercent = doubleval($conf["feePercent"] ? $conf["feePercent"] : 5.75);		// Fee percent is by default 5.75 %
 	# Calculate conpensating percentage by:   100/(1-pFee/100)-100 = pComp, where pFee is the percentage, eg. Mastercard is taking (5,75%) and pComp will thus be 6.1 %
 $compPercent = 100/(1-$feePercent/100)-100;		// The compensation percentage.
 
-$this->calculatedArray['priceNoTax']['payment'] = $baseAmount/100*$compPercent;		// Add the amount to the no_tax total
-$this->calculatedArray['priceTax']['payment'] = $this->calculatedArray['priceNoTax']['payment'] * (1+$this->conf['payment.']['TAXpercentage']/100);		// ..and add the amount to the tax total + tax of the amount, if any
+$basket->calculatedArray['priceNoTax']['payment'] = $baseAmount/100*$compPercent;		// Add the amount to the no_tax total
+$basket->calculatedArray['priceTax']['payment'] = $basket->calculatedArray['priceNoTax']['payment'] * (1+$basket->conf['payment.']['TAXpercentage']/100);		// ..and add the amount to the tax total + tax of the amount, if any
 
 
 ?>

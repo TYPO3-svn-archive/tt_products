@@ -56,7 +56,7 @@ class tx_ttproducts_tracking_div {
 	 * @see enableFields()
 	 */
 
-	function products_tracking(&$pibase, $theCode)	{
+	function products_tracking(&$pibase, &$conf, &$config, &$basket, &$content, &$category, $theCode)	{
 		global $TSFE;
 
 		if (strcmp($theCode, 'TRACKING')!=0) { // bill and delivery tracking need more data
@@ -74,16 +74,16 @@ class tx_ttproducts_tracking_div {
 				}
 				switch ($theCode) {
 					case 'TRACKING':
-						$content = tx_ttproducts_tracking_div::getTrackingInformation($orderRow,$this->templateCode);
+						$content = tx_ttproducts_tracking_div::getTrackingInformation($pibase,$orderRow,$this->templateCode);
 						break;
 					case 'BILL':
-						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,'bill',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
+						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,$conf,$config,$basket,$content,$category,'bill',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
 						break;
 					case 'DELIVERY':
-						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,'delivery',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
+						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,$conf,$config,$basket,$content,$category,'delivery',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
 						break;
 					default:
-						debug('error in '.TT_PRODUCTS_EXTkey.' calling function products_tracking with $type = "'.$type.'"');
+						debug('error in '.TT_PRODUCTS_EXTkey.' calling function products_tracking with $theCode = "'.$theCode.'"');
 				}
 			} else {	// ... else output error page
 				$content=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###TRACKING_WRONG_NUMBER###'));
@@ -122,7 +122,7 @@ class tx_ttproducts_tracking_div {
 	/**
 	 * Tracking administration
 	 */
-	function getTrackingInformation($orderRow, $templateCode)	{
+	function getTrackingInformation(&$pibase,$orderRow, $templateCode)	{
 			/*
 
 					Tracking information display and maintenance.
@@ -319,7 +319,7 @@ class tx_ttproducts_tracking_div {
 		$markerArray['###TRACKING_NUMBER###'] = t3lib_div::_GP('tracking');
 		$markerArray['###UPDATE_CODE###'] = t3lib_div::_GP('update_code');
 
-		$content= $this->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
+		$content= $pibase->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		return $content;
 	} // getTrackingInformation
 

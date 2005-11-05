@@ -41,14 +41,14 @@
  */
 
 
-if (!is_object($this) || !is_object($this->cObj))	die('$this and $this->cObj must be objects!');
+if (!is_object($pibase) || !is_object($pibase->cObj))	die('$pibase and $pibase->cObj must be objects!');
 
 
 // $lConf = $this->basketExtra["payment."]["handleScript."];		// Loads the handleScript TypoScript into $lConf.
 $lConf = $conf;
 
-$localTemplateCode = $this->cObj->fileResource($lConf[templateFile] ? $lConf[templateFile] : 'EXT:tt_products/template/payment_DIBS_template.tmpl');		// Fetches the DIBS template file
-$localTemplateCode = $this->cObj->substituteMarkerArrayCached($localTemplateCode, $this->globalMarkerArray);
+$localTemplateCode = $pibase->cObj->fileResource($lConf[templateFile] ? $lConf[templateFile] : 'EXT:tt_products/template/payment_DIBS_template.tmpl');		// Fetches the DIBS template file
+$localTemplateCode = $pibase->cObj->substituteMarkerArrayCached($localTemplateCode, $pibase->globalMarkerArray);
 
 $orderUid = tx_ttproducts_order_div::getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
 
@@ -65,12 +65,12 @@ switch($products_cmd)	{
 	case "cardno":
 		$tSubpart = $lConf['soloe'] ? '###DIBS_SOLOE_TEMPLATE###' : '###DIBS_CARDNO_TEMPLATE###';		// If solo-e is selected, use different subpart from template
 		$tSubpart = $lConf['direct'] ? '###DIBS_DIRECT_TEMPLATE###' : $tSubpart;		// If direct is selected, use different subpart from template
-		$content=tx_ttproducts_basket_div::getBasket($this,$tSubpart,$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=$basket->getBasket($localTemplateCode,$tSubpart);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 
 		$markerArray=array();
 		$markerArray['###HIDDEN_FIELDS###'] = '
 <input type="hidden" name="merchant" value="'.$lConf['merchant'].'">
-<input type="hidden" name="amount" value="'.round($this->calculatedArray['priceTax']['total'] *100).'">
+<input type="hidden" name="amount" value="'.round($basket->calculatedArray['priceTax']['total'] *100).'">
 <input type="hidden" name="currency" value="'.$lConf['currency'].'">		<!--Valuta som angivet i ISO4217, danske kroner=208-->
 <input type="hidden" name="orderid" value="'.tx_ttproducts_order_div::getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type="hidden" name="uniqueoid" value="1">
@@ -118,9 +118,9 @@ switch($products_cmd)	{
 		if ($lConf['addOrderInfo'])	{	
 			$theFields="";
 				// Delivery info
-			reset($this->deliveryInfo);
+			reset($basket->deliveryInfo);
 			$cc=0;
-			while(list($field,$value)=each($this->deliveryInfo))		{
+			while(list($field,$value)=each($basket->deliveryInfo))		{
 				$value = trim($value);
 				if ($value)	{
 					$cc++;
@@ -129,7 +129,7 @@ switch($products_cmd)	{
 			}
 			
 				// Order items
-			reset($this->itemArray);
+			reset($basket->itemArray);
 			$theFields.='
 <input type="hidden" name="ordline1-1" value="Varenummer">
 <input type="hidden" name="ordline1-2" value="Beskrivelse">
@@ -137,9 +137,9 @@ switch($products_cmd)	{
 <input type="hidden" name="ordline1-4" value="Pris">
 ';				
 			$cc=1;
-			//while(list(,$rec)=each($this->calculatedBasket))		{
+			//while(list(,$rec)=each($basket->calculatedBasket))		{
 			// loop over all items in the basket indexed by page and itemnumber
-			foreach ($this->itemArray as $pid=>$pidItem) {
+			foreach ($basket->itemArray as $pid=>$pidItem) {
 				foreach ($pidItem as $itemnumber=>$actItemArray) {
 					foreach ($actItemArray as $k1=>$actItem) {
 						$cc++;
@@ -153,53 +153,54 @@ switch($products_cmd)	{
 			}
 		
 			$theFields.='
-<input type="hidden" name="priceinfo1.Shipping" value="'.tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['shipping']).'">';
+<input type="hidden" name="priceinfo1.Shipping" value="'.tx_ttproducts_view_div::priceFormat($basket->calculatedArray['priceTax']['shipping']).'">';
 			$theFields.='
-<input type="hidden" name="priceinfo2.Payment" value="'.tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['payment']).'">';
+<input type="hidden" name="priceinfo2.Payment" value="'.tx_ttproducts_view_div::priceFormat($basket->calculatedArray['priceTax']['payment']).'">';
 			$theFields.='
-<input type="hidden" name="priceinfo3.Tax" value="'.tx_ttproducts_view_div::priceFormat( $this->calculatedArray['priceTax']['total'] - $this->calculatedArray['priceNoTax']['total']).'">';
+<input type="hidden" name="priceinfo3.Tax" value="'.tx_ttproducts_view_div::priceFormat( $basket->calculatedArray['priceTax']['total'] - $basket->calculatedArray['priceNoTax']['total']).'">';
 			$markerArray['###HIDDEN_FIELDS###'].=$theFields;
 		}
-		$content= $this->cObj->substituteMarkerArrayCached($content, $markerArray);
+		$content= $basket->cObj->substituteMarkerArrayCached($content, $markerArray);
 	break;		
 	case "decline":
 		$markerArray=array();
 		$markerArray['###REASON_CODE###'] = t3lib_div::_GP('reason');
-		$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_DECLINE_TEMPLATE###',$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=$basket->getBasket($localTemplateCode, '###DIBS_DECLINE_TEMPLATE###',$markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 	break;
 	case 'cancel':
-		$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_SOLOE_CANCEL_TEMPLATE###',$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=$basket->getBasket($localTemplateCode, '###DIBS_SOLOE_CANCEL_TEMPLATE###',$markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 	break;
 	case 'accept':
-		$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_ACCEPT_TEMPLATE###',$localTemplateCode);		// This is just done to calculate stuff
+		$content=$basket->getBasket($localTemplateCode,'###DIBS_ACCEPT_TEMPLATE###');		// This is just done to calculate stuff
 
 			// DIBS md5 keys
 		$k1=$lConf['k1'];
 		$k2=$lConf['k2'];
 	
 			// Checking transaction
-		$amount=round($this->calculatedArray['priceTax']['total'] *100);
+		$amount=round($basket->calculatedArray['priceTax']['total'] *100);
 		$currency='208';
 		$transact=t3lib_div::_GP("transact");
 		$md5key= md5($k2.md5($k1.'transact='.$transact.'&amount='.$amount.'&currency='.$currency));
 		$authkey=t3lib_div::_GP('authkey');
 		if ($md5key != $authkey)	{
-			$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_DECLINE_MD5_TEMPLATE###',$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=$basket->getBasket($localTemplateCode, '###DIBS_DECLINE_MD5_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} elseif (t3lib_div::_GP('orderid')!=tx_ttproducts_order_div::getOrderNumber($orderUid)) {
-			$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_DECLINE_ORDERID_TEMPLATE###',$localTemplateCode);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=$basket->getBasket($localTemplateCode, '###DIBS_DECLINE_ORDERID_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$markerArray=array();
 			$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
 
-			$content=tx_ttproducts_basket_div::getBasket($this,'###BASKET_ORDERCONFIRMATION_TEMPLATE###','',$markerArray);
-			tx_ttproducts_finalize_div::finalizeOrder($orderUid,$markerArray);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+			$content=$basket->getBasket($tmp='','###BASKET_ORDERCONFIRMATION_TEMPLATE###',$markerArray);
+			$error=''; // TODO
+			tx_ttproducts_finalize_div::finalizeOrder($pibase,$basket->conf,$basket->templateCode, $basket,$basket->product /* TODO */,$basket->category, $orderUid,$content,$error);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 		}
 	break;
 	default:
 		if ($lConf['relayURL'])	{
 			$markerArray=array();
 			$markerArray['###REDIRECT_URL###'] = 'https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=cardno&products_finalize=1'.$param;
-			$content=tx_ttproducts_basket_div::getBasket($this,'###DIBS_REDIRECT_TEMPLATE###',$localTemplateCode, $markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=$basket->getBasket($localTemplateCode, '###DIBS_REDIRECT_TEMPLATE###',$markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$content = 'NO .relayURL given!!';
 		}

@@ -50,18 +50,18 @@ class tx_ttproducts_view_div {
 	/**
 	 * Adds URL markers to a markerArray
 	 */
-	function addURLMarkers($markerArray)	{
+	function addURLMarkers(&$pibase,&$conf,&$basket,$markerArray)	{
 		global $TSFE;
 
 			// Add's URL-markers to the $markerArray and returns it
-		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$markerArray['###FORM_URL###'] = $this->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDbasket']);
-		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] :$TSFE->id));
-		$markerArray['###FORM_URL_INFO###'] = $this->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ; // $this->getLinkUrl($this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $this->conf['PIDbasket']);
-		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
-		$markerArray['###FORM_URL_FINALIZE###'] = $this->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;// $this->getLinkUrl($this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $this->conf['PIDbasket']);
-		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
-		$markerArray['###FORM_URL_THANKS###'] = $this->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDbasket']);
+		$pid = ( $conf['PIDbasket'] ? $conf['PIDbasket'] : $TSFE->id);
+		$markerArray['###FORM_URL###'] = $pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDbasket']);
+		$pid = ( $conf['PIDinfo'] ? $conf['PIDinfo'] : ($conf['PIDbasket'] ? $conf['PIDbasket'] :$TSFE->id));
+		$markerArray['###FORM_URL_INFO###'] = $pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ; // $this->getLinkUrl($this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $this->conf['PIDbasket']);
+		$pid = ( $conf['PIDfinalize'] ? $conf['PIDfinalize'] : ($conf['PIDbasket'] ? $conf['PIDbasket'] : $TSFE->id));
+		$markerArray['###FORM_URL_FINALIZE###'] = $pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;// $this->getLinkUrl($this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $this->conf['PIDbasket']);
+		$pid = ( $conf['PIDthanks'] ? $conf['PIDthanks'] : ($conf['PIDbasket'] ? $conf['PIDbasket'] : $TSFE->id));
+		$markerArray['###FORM_URL_THANKS###'] = $pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDbasket']);
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 		if ($this->basketExtra['payment.']['handleURL'])	{	// This handleURL is called instead of the THANKS-url in order to let handleScript process the information if payment by credit card or so.
 			$markerArray['###FORM_URL_THANKS###'] = $this->basketExtra['payment.']['handleURL'];
@@ -69,6 +69,7 @@ class tx_ttproducts_view_div {
 		if ($this->basketExtra['payment.']['handleTarget'])	{	// Alternative target
 			$markerArray['###FORM_URL_TARGET###'] = $this->basketExtra['payment.']['handleTarget'];
 		}
+		
 		return $markerArray;
 	} // addURLMarkers
 

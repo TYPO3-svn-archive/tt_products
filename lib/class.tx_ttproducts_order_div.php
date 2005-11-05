@@ -144,7 +144,7 @@ class tx_ttproducts_order_div {
 	 * Saves the orderRecord and returns the result
 	 * 
 	 */
-	function putOrderRecord($orderUid,&$deliveryInfo, $feusers_uid, $email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML)	{
+	function putOrderRecord($orderUid,&$basket,&$deliveryInfo, $feusers_uid, $email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML)	{
 		global $TYPO3_DB;
 		
 			// Fix delivery address
@@ -235,10 +235,10 @@ class tx_ttproducts_order_div {
 			// Order Data serialized
 		$fieldsArray['orderData']=serialize(array(
 				'html_output' 			=>	$orderConfirmationHTML,
-				'deliveryInfo' 			=>	$this->deliveryInfo,
-				'personInfo' 			=>	$this->personInfo,
-				'itemArray'				=>	$this->itemArray,
-				'calculatedArray'		=>	$this->calculatedArray
+				'deliveryInfo' 			=>	$basket->deliveryInfo,
+				'personInfo' 			=>	$basket->personInfo,
+				'itemArray'				=>	$basket->itemArray,
+				'calculatedArray'		=>	$basket->calculatedArray
 		));
 
 			// Setting tstamp, deleted and tracking code
@@ -266,7 +266,7 @@ class tx_ttproducts_order_div {
 	 * Creates M-M relations for the products with tt_products table. Isn't really used yet, but later will be used to display stock-status by looking up how many items are already ordered.
 	 * 
 	 */
-	function createMM($orderUid, &$itemArray)	{
+	function createMM($conf, $orderUid, &$itemArray)	{
 		global $TYPO3_DB;
 
 			// First: delete any existing. Shouldn't be any

@@ -49,58 +49,55 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 
 class tx_ttproducts_paymentshipping_div {
 
-
-
 	/**
 	 * Setting shipping, payment methods
 	 */
-	function setBasketExtras($basket)	{
+	function setBasketExtras(&$conf, &$basket, &$basketRec)	{
 		global $TSFE;
 
-
 			// shipping
-		if ($this->conf['shipping.']) {
-			ksort($this->conf['shipping.']);
-			reset($this->conf['shipping.']);
-			$k=intval($basket['tt_products']['shipping']);
+		if ($conf['shipping.']) {
+			ksort($conf['shipping.']);
+			reset($conf['shipping.']);
+			$k=intval($basketRec['tt_products']['shipping']);
 			if (!tx_ttproducts_paymentshipping_div::checkExtraAvailable('shipping',$k))	{
-				$temp = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['shipping.'],1);
+				$temp = tx_ttproducts_paymentshipping_div::cleanConfArr($conf['shipping.'],1);
 				$k=intval(key($temp));
 			}
-			$this->basketExtra['shipping'] = $k;
-			$this->basketExtra['shipping.'] = $this->conf['shipping.'][$k.'.'];
-			$excludePayment = trim($this->basketExtra['shipping.']['excludePayment']);
+			$basket->basketExtra['shipping'] = $k;
+			$basket->basketExtra['shipping.'] = $conf['shipping.'][$k.'.'];
+			$excludePayment = trim($basket->basketExtra['shipping.']['excludePayment']);
 		}
 
 			// payment
-		if ($this->conf['payment.']) {
+		if ($conf['payment.']) {
 			if ($excludePayment)	{
 				$exclArr = t3lib_div::intExplode(',',$excludePayment);
 				while(list(,$theVal)=each($exclArr))	{
-					unset($this->conf['payment.'][$theVal]);
-					unset($this->conf['payment.'][$theVal.'.']);
+					unset($conf['payment.'][$theVal]);
+					unset($conf['payment.'][$theVal.'.']);
 				}
 			}
 	
-			$confArr = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.']);
+			$confArr = tx_ttproducts_paymentshipping_div::cleanConfArr($conf['payment.']);
 			while(list($key,$val)=each($confArr)) {
 				if ($val['show'] || !isset($val['show']))
 					if (($val['visibleForGroupID'] != '') &&
 					    (!tx_ttproducts_div::isUserInGroup($TSFE->fe_user->user, $val['visibleForGroupID'])))
 					{
-						unset($this->conf['payment.'][$key.'.']);
+						unset($conf['payment.'][$key.'.']);
 					}
 			}
 	
-			ksort($this->conf['payment.']);
-			reset($this->conf['payment.']);
-			$k=intval($basket['tt_products']['payment']);
+			ksort($conf['payment.']);
+			reset($conf['payment.']);
+			$k=intval($basketRec['tt_products']['payment']);
 			if (!tx_ttproducts_paymentshipping_div::checkExtraAvailable('payment',$k))	{
-				$temp = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf['payment.'],1);
+				$temp = tx_ttproducts_paymentshipping_div::cleanConfArr($conf['payment.'],1);
 				$k=intval(key($temp));
 			}
-			$this->basketExtra['payment'] = $k;
-			$this->basketExtra['payment.'] = $this->conf['payment.'][$k.'.'];
+			$basket->basketExtra['payment'] = $k;
+			$basket->basketExtra['payment.'] = $conf['payment.'][$k.'.'];
 		}
 
 	} // setBasketExtras
@@ -125,7 +122,7 @@ class tx_ttproducts_paymentshipping_div {
 	/**
 	 * Generates a radio or selector box for payment shipping
 	 */
-	function generateRadioSelect($key)	{
+	function generateRadioSelect(&$pibase, &$conf, &$basket, $key)	{
 			/*
 			 The conf-array for the payment/shipping configuration has numeric keys for the elements
 			 But there are also these properties:
@@ -136,33 +133,33 @@ class tx_ttproducts_paymentshipping_div {
 
 			 */
 
-		$type=$this->conf[$key.'.']['radio'];
-		$active = $this->basketExtra[$key];
-		$confArr = tx_ttproducts_paymentshipping_div::cleanConfArr($this->conf[$key.'.']);
+		$type=$conf[$key.'.']['radio'];
+		$active = $basket->basketExtra[$key];
+		$confArr = tx_ttproducts_paymentshipping_div::cleanConfArr($conf[$key.'.']);
 		$out='';
 
-		$template = $this->conf[$key.'.']['template'] ? ereg_replace('\' *\. *\$key *\. *\'',$key, $this->conf[$key.'.']['template']) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$key.']" onClick="submit()" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
+		$template = $conf[$key.'.']['template'] ? ereg_replace('\' *\. *\$key *\. *\'',$key, $conf[$key.'.']['template']) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$key.']" onClick="submit()" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
 
-		$wrap = $this->conf[$key."."]["wrap"] ? $this->conf[$key."."]["wrap"] :'<select name="recs[tt_products]['.$key.']" onChange="submit()">|</select>';
+		$wrap = $conf[$key."."]["wrap"] ? $conf[$key."."]["wrap"] :'<select name="recs[tt_products]['.$key.']" onChange="submit()">|</select>';
 
 		while(list($key,$val)=each($confArr))	{
 			if (($val['show'] || !isset($val['show'])) &&
-				(doubleval($val['showLimit']) >= doubleval($this->calculatedArray['count']) || !isset($val['showLimit']) ||
+				(doubleval($val['showLimit']) >= doubleval($basket->calculatedArray['count']) || !isset($val['showLimit']) ||
 				 intval($val['showLimit']) == 0)) {
 				if ($type)	{	// radio
 					$markerArray=array();
 					$markerArray['###VALUE###']=intval($key);
 					$markerArray['###CHECKED###']=(intval($key)==$active?' checked':'');
 					$markerArray['###TITLE###']=$val['title'];
-					$markerArray['###IMAGE###']=$this->cObj->IMAGE($val['image.']);
-					$out.=$this->cObj->substituteMarkerArrayCached($template, $markerArray);
+					$markerArray['###IMAGE###']=$pibase->cObj->IMAGE($val['image.']);
+					$out.=$pibase->cObj->substituteMarkerArrayCached($template, $markerArray);
 				} else {
 					$out.='<option value="'.intval($key).'"'.(intval($key)==$active?' selected':'').'>'.htmlspecialchars($val['title']).'</option>';
 				}
 			}
 		}
 		if (!$type)	{
-			$out=$this->cObj->wrap($out,$wrap);
+			$out=$pibase->cObj->wrap($out,$wrap);
 		}
 		return $out;
 	} // generateRadioSelect
@@ -187,6 +184,9 @@ class tx_ttproducts_paymentshipping_div {
 
 
 	function GetPaymentShippingData(
+			&$pibase,
+			&$conf,
+			&$basket,
 			$countTotal,
 /* Added Els: necessary to calculate shipping price which depends on total no-tax price */
 			&$priceTotalNoTax,
@@ -200,17 +200,17 @@ class tx_ttproducts_paymentshipping_div {
 			// shipping
 		// $priceShipping = $priceShippingTax = $priceShippingNoTax = 0;
 
-		$confArr = $this->basketExtra['shipping.']['priceTax.'];
-		$tax = doubleVal($this->conf['shipping.']['TAXpercentage']);
+		$confArr = $basket->basketExtra['shipping.']['priceTax.'];
+		$tax = doubleVal($conf['shipping.']['TAXpercentage']);
 
 		if ($confArr) {
 	        $minPrice=0;
-	        if ($this->basketExtra['shipping.']['priceTax.']['WherePIDMinPrice.']) {
+	        if ($basket->basketExtra['shipping.']['priceTax.']['WherePIDMinPrice.']) {
 	                // compare PIDList with values set in priceTaxWherePIDMinPrice in the SETUP
 	                // if they match, get the min. price
 	                // if more than one entry for priceTaxWherePIDMinPrice exists, the highest is value will be taken into account
-	            foreach ($this->basketExtra['shipping.']['priceTax.']['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
-	                if (is_array($this->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
+	            foreach ($basket->basketExtra['shipping.']['priceTax.']['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
+	                if (is_array($basket->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
 	                    $minPrice=$minPriceValue;
 	                }
 	            }
@@ -228,7 +228,7 @@ class tx_ttproducts_paymentshipping_div {
 				}
 			} else if ($confArr['type'] == 'weight') {
 				while (list ($k1, $price1) = each ($confArr)) {
-					if ($this->calculatedArray['weight'] * 1000 >= intval($k1)) {
+					if ($basket->calculatedArray['weight'] * 1000 >= intval($k1)) {
 						$priceShipping = $price1;
 						break;
 					}
@@ -250,71 +250,76 @@ class tx_ttproducts_paymentshipping_div {
 			$priceShippingTax += tx_ttproducts_price_div::getPrice($priceShipping,1,$tax);
 			$priceShippingNoTax += tx_ttproducts_price_div::getPrice($priceShipping,0,$tax);
 		} else {
-			$priceShippingTax += doubleVal($this->basketExtra['shipping.']['priceTax']);
-			$priceShippingNoTax += doubleVal($this->basketExtra['shipping.']['priceNoTax']);
-			if ($this->conf['shipping.']['TAXpercentage']) {
+			$priceShippingTax += doubleVal($basket->basketExtra['shipping.']['priceTax']);
+			$priceShippingNoTax += doubleVal($basket->basketExtra['shipping.']['priceNoTax']);
+			if ($conf['shipping.']['TAXpercentage']) {
 				$priceShippingNoTax = $priceShippingTax/(1+$tax/100);
 			}			
 		}
 
-		$perc = doubleVal($this->basketExtra['shipping.']['percentOfGoodstotal']);
+		$perc = doubleVal($basket->basketExtra['shipping.']['percentOfGoodstotal']);
 		if ($perc)	{
-			$priceShipping = doubleVal(($this->calculatedArray['priceTax']['goodstotal']/100)*$perc);
+			$priceShipping = doubleVal(($basket->calculatedArray['priceTax']['goodstotal']/100)*$perc);
 			$dum = tx_ttproducts_price_div::getPrice($priceShipping,1,$tax);
 			$priceShippingTax = $priceShippingTax + tx_ttproducts_price_div::getPrice($priceShipping,1,$tax);
 			$priceShippingNoTax = $priceShippingNoTax + tx_ttproducts_price_div::getPrice($priceShipping,0,$tax);
 		}
 
-		$weigthFactor = doubleVal($this->basketExtra['shipping.']['priceFactWeight']);
+		$weigthFactor = doubleVal($basket->basketExtra['shipping.']['priceFactWeight']);
 		if($weigthFactor > 0) {
-			$priceShipping = $this->calculatedArray['weight'] * $weigthFactor;
+			$priceShipping = $basket->calculatedArray['weight'] * $weigthFactor;
 			$priceShippingTax += tx_ttproducts_price_div::getPrice($priceShipping,1,$tax);
 			$priceShippingNoTax += tx_ttproducts_price_div::getPrice($priceShipping,0,$tax);
 		}
 
-		if ($this->basketExtra['shipping.']['calculationScript'])	{
-			$calcScript = $TSFE->tmpl->getFileName($this->basketExtra['shipping.']['calculationScript']);
+		if ($basket->basketExtra['shipping.']['calculationScript'])	{
+			$calcScript = $TSFE->tmpl->getFileName($basket->basketExtra['shipping.']['calculationScript']);
 			if ($calcScript)	{
-				tx_ttproducts_pricecalc_div::includeCalcScript($calcScript,$this->basketExtra['shipping.']['calculationScript.']);
+				tx_ttproducts_pricecalc_div::includeCalcScript(
+					$calcScript,
+					$pibase,
+					$basket->basketExtra['shipping.']['calculationScript.'],
+					$basket
+				);
 			}
 		}
 
 			// Payment
 		$pricePayment = $pricePaymentTax = $pricePaymentNoTax = 0;
 		// TAXpercentage replaces priceNoTax
-		$tax = doubleVal($this->conf['payment.']['TAXpercentage']);
+		$tax = doubleVal($conf['payment.']['TAXpercentage']);
 
-		$pricePaymentTax = tx_ttproducts_basket_div::getValue($this->basketExtra['payment.']['priceTax'],
-		                  		$this->basketExtra['payment.']['priceTax.'],
-		                  		$this->calculatedArray['count']);
+		$pricePaymentTax = $basket->getValue($basket->basketExtra['payment.']['priceTax'],
+		                  		$basket->basketExtra['payment.']['priceTax.'],
+		                  		$basket->calculatedArray['count']);
 		if ($tax) {
 			$pricePaymentNoTax = tx_ttproducts_price_div::getPrice($pricePaymentTax,0,$tax);
 
 		} else {
-			$pricePaymentNoTax = tx_ttproducts_basket_div::getValue($this->basketExtra['payment.']['priceNoTax'],
-		                  		$this->basketExtra['payment.']['priceNoTax.'],
-		                  		$this->calculatedArray['count']);
+			$pricePaymentNoTax = $basket->getValue($basket->basketExtra['payment.']['priceNoTax'],
+		                  		$basket->basketExtra['payment.']['priceNoTax.'],
+		                  		$basket->calculatedArray['count']);
 		}
 
-		$perc = doubleVal($this->basketExtra['payment.']['percentOfTotalShipping']);
+		$perc = doubleVal($basket->basketExtra['payment.']['percentOfTotalShipping']);
 		if ($perc)	{
 
-			$payment = ($this->calculatedArray['priceTax']['goodstotal'] + $this->calculatedArray['priceTax']['shipping'] ) * doubleVal($perc);
+			$payment = ($basket->calculatedArray['priceTax']['goodstotal'] + $basket->calculatedArray['priceTax']['shipping'] ) * doubleVal($perc);
 
 			$pricePaymentTax = tx_ttproducts_price_div::getPrice($payment,1,$tax);
 			$pricePaymentNoTax = tx_ttproducts_price_div::getPrice($payment,0,$tax);
 		}
 
-		$perc = doubleVal($this->basketExtra['payment.']['percentOfGoodstotal']);
+		$perc = doubleVal($basket->basketExtra['payment.']['percentOfGoodstotal']);
 		if ($perc)	{
-			$pricePaymentTax += ($this->calculatedArray['priceTax']['goodstotal']/100)*$perc;
-			$pricePaymentNoTax += ($this->calculatedArray['priceNoTax']['goodstotal']/100)*$perc;
+			$pricePaymentTax += ($basket->calculatedArray['priceTax']['goodstotal']/100)*$perc;
+			$pricePaymentNoTax += ($basket->calculatedArray['priceNoTax']['goodstotal']/100)*$perc;
 		}
 
-		if ($this->basketExtra['payment.']['calculationScript'])	{
-			$calcScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['calculationScript']);
+		if ($basket->basketExtra['payment.']['calculationScript'])	{
+			$calcScript = $TSFE->tmpl->getFileName($basket->basketExtra['payment.']['calculationScript']);
 			if ($calcScript)	{
-				tx_ttproducts_pricecalc_div::includeCalcScript($calcScript,$this->basketExtra['payment.']['calculationScript.']);
+				tx_ttproducts_pricecalc_div::includeCalcScript($calcScript,$pibase,$basket->basketExtra['payment.']['calculationScript.'],$basket);
 			}
 		}
 

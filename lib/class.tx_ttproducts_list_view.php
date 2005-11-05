@@ -53,9 +53,9 @@ class tx_ttproducts_list_view {
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
+	var $formUrl; // URL of the form
 
-
-	function init(&$pibase, &$conf, &$config, &$page, &$tt_content, &$tt_products, &$tt_products_cat) {
+	function init(&$pibase, &$conf, &$config, &$page, &$tt_content, &$tt_products, &$tt_products_cat, &$formUrl) {
  		$this->pibase = $pibase;
  		$this->conf = $conf;
  		$this->config = $config;
@@ -63,10 +63,11 @@ class tx_ttproducts_list_view {
  		$this->tt_content = $tt_content;
  		$this->tt_products = $tt_products;
  		$this->tt_products_cat = $tt_products_cat;
+ 		$this->formUrl = $formUrl;	
 	}
 
 	// returns the products list view
-	function &printView(&$templateCode, &$theCode, &$basketExt, &$memoItems, &$error_code) {
+	function &printView(&$templateCode, &$theCode, &$basket, &$memoItems, &$error_code) {
 		$content='';
 		$out='';
 		$more=0;
@@ -159,7 +160,7 @@ class tx_ttproducts_list_view {
 			$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
 	
 			$markerArray=array();
-			$markerArray['###FORM_URL###']=$formUrl; // Applied later as well.
+			$markerArray['###FORM_URL###']=$this->formUrl; // Applied later as well.
 	
 			if ($theCode=='LISTGIFTS') {
 				$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($markerArray, $this->giftnumber);
@@ -251,8 +252,6 @@ class tx_ttproducts_list_view {
 	
 						$addQueryString=array();
 						$addQueryString['tt_products']= intval($row['uid']);
-	//							debug ($this->conf['PIDitemDisplay'], '$this->conf[\'PIDitemDisplay\']', __LINE__, __FILE__);
-	//							debug ($this->conf['PIDitemDisplay.'], '$this->conf[\'PIDitemDisplay.\']', __LINE__, __FILE__);
 						$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
 						$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); // array('<a href="'.$this->getLinkUrl($pid,'',$addQueryString).'"'.$css_current.'>','</a>');
 	
@@ -262,17 +261,17 @@ class tx_ttproducts_list_view {
 							$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
 						}
 	
-						$item = tx_ttproducts_basket_div::getItem($row);
-						$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase, $this->conf, $item, $basketExt , $catTitle, $this->tt_content, $this->config['limitImage'],'listImage');
+						$item = $basket->getItem($row);
+						$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase, $this->conf, $item, $basket->basketExt , $catTitle, $this->tt_content, $this->config['limitImage'],'listImage');
 						if ($theCode=='LISTGIFTS') {
-							$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($markerArray, $this->giftnumber);
+							$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($markerArray, $basket->giftnumber);
 						}
 							
 						$subpartArray = array();
 	
 						if (!$this->conf['displayBasketColumns'])
 						{
-							$markerArray['###FORM_URL###']=$formUrl; // Applied later as well.
+							$markerArray['###FORM_URL###']=$this->formUrl; // Applied later as well.
 							$markerArray['###FORM_NAME###']='item_'.$iCount;
 						}
 	
@@ -378,7 +377,7 @@ class tx_ttproducts_list_view {
 			}
 
 			$subpartArray['###ITEM_CATEGORY_AND_ITEMS###']=$out;
-			$markerArray['###FORM_URL###']=$formUrl;      // Applied it here also...
+			$markerArray['###FORM_URL###']=$this->formUrl;      // Applied it here also...
 
 /* Added els6: needed to display creditpoints in the credits category on the list page */
             $markerArray['###AMOUNT_CREDITPOINTS###'] = number_format($TSFE->fe_user->user['tt_products_creditpoints'],0);

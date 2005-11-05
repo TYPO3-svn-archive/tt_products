@@ -45,14 +45,14 @@ class tx_ttproducts_pricecalc_div {
 	/**
 	 * Include calculation script which should be programmed to manipulate internal data.
 	 */
-	function includeCalcScript($calcScript,$conf)	{
+	function includeCalcScript($calcScript,&$pibase,&$conf,&$basket)	{
 		include($calcScript);
 	} // includeCalcScript
 
 	/**
 	 * Include handle script
 	 */
-	function includeHandleScript($handleScript,$conf)	{
+	function includeHandleScript($handleScript,&$pibase,&$conf,&$basket)	{
 		$content = '';
 		include($handleScript);
 		return $content;
@@ -60,10 +60,10 @@ class tx_ttproducts_pricecalc_div {
 
 
 		// result: fill in the  ['calcprice'] of $itemArray['pid'] ['itemnumber']
-	function GetCalculatedData() { // delete countTotal if not neede any more
+	function GetCalculatedData(&$basket) { // delete countTotal if not neede any more
 		global $TSFE;
 
-		if (!$this->itemArray) {
+		if (!$basket->itemArray) {
 			return;
 		}
 		$getDiscount = 0;
@@ -120,7 +120,7 @@ class tx_ttproducts_pricecalc_div {
 				$pricefor1Index = 100*$pricefor1;
 
 				// loop over all items in the basket indexed by page and itemnumber
-				foreach ($this->itemArray as $pid=>$pidItem) {
+				foreach ($basket->itemArray as $pid=>$pidItem) {
 					foreach ($pidItem as $itemnumber=>$actItemArray) {
 						foreach ($actItemArray as $k2=>$actItem) {
 					// count all items which will apply to the discount price
@@ -143,8 +143,8 @@ class tx_ttproducts_pricecalc_div {
 								// store the discount price in all calculated items from before
 								foreach ($countedItems as $k3=>$v3) {
 									foreach ($v3 as $ $k4 => $v4) {
-										foreach ($this->itemArray[$v4['pid']] [$v4['itemnumber']] as $k5=>$actItem) {
-										 	$this->itemArray[$v4['pid']] [$v4['itemnumber']][$k5] ['calcprice'] = $price2;
+										foreach ($basket->itemArray[$v4['pid']] [$v4['itemnumber']] as $k5=>$actItem) {
+										 	$basket->itemArray[$v4['pid']] [$v4['itemnumber']][$k5] ['calcprice'] = $price2;
 										}
 									}
 								}
@@ -178,8 +178,8 @@ class tx_ttproducts_pricecalc_div {
 							if (intval($k2) > 1) {
 								// store the discount price in all calculated items from before
 								foreach ($countedItems[$pricefor1Index] as $k3=>$v3) {
-									foreach ($this->itemArray[$v3['pid']] [$v3['itemnumber']] as $k1=>$actItem) { 
-									 	$this->itemArray[$v3['pid']] [$v3['itemnumber']][$k1] ['calcprice'] = $price2;
+									foreach ($basket->itemArray[$v3['pid']] [$v3['itemnumber']] as $k1=>$actItem) { 
+									 	$basket->itemArray[$v3['pid']] [$v3['itemnumber']][$k1] ['calcprice'] = $price2;
 									}
 								}
 								$priceReduction[$pricefor1Index] = 1; // remember the reduction in order not to calculate another price with $priceCalc later
@@ -218,9 +218,9 @@ class tx_ttproducts_pricecalc_div {
 				}
 				$dumCount = 0;
 
-				reset($this->itemArray);
+				reset($basket->itemArray);
 				// loop over all items in the basket indexed by page and itemnumber
-				foreach ($this->itemArray as $pid=>$pidItem) {
+				foreach ($basket->itemArray as $pid=>$pidItem) {
 					foreach ($pidItem as $itemnumber=>$actItemArray) {
 						foreach ($actItemArray as $k2=>$actItem) {
 							// count all items which will apply to the discount price
@@ -255,8 +255,8 @@ class tx_ttproducts_pricecalc_div {
 
 				$priceProduct = ($dumCount > 0 ? ($priceTotalTemp / $dumCount) : 0);
 				foreach ($countedItems[$pricefor1Index] as $k3=>$v3) {
-					foreach ($this->itemArray[$v3['pid']] [$v3['itemnumber']] as $k4=>$actItem) {
-						$this->itemArray[$v3['pid']] [$v3['itemnumber']] [$k4] ['calcprice'] = $priceProduct;
+					foreach ($basket->itemArray[$v3['pid']] [$v3['itemnumber']] as $k4=>$actItem) {
+						$basket->itemArray[$v3['pid']] [$v3['itemnumber']] [$k4] ['calcprice'] = $priceProduct;
 					}
 				}
 			}

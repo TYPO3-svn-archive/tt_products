@@ -53,14 +53,12 @@ class tx_ttproducts_single_view {
 	var $config;
 	var $uid; 	// product id
 	var $variants; 	// different attributes
-	var $pid; // basket pid
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
 	var $formUrl; // URL of the form
-	var $basketExt;
 
- 	function init(&$pibase, &$conf, &$config, &$page, &$content, &$tt_products, &$tt_products_cat, $uid, $extVars, $pid, &$formUrl, &$basketExt) {
+ 	function init(&$pibase, &$conf, &$config, &$page, &$content, &$tt_products, &$tt_products_cat, $uid, $extVars, &$formUrl) {
  		$this->pibase = $pibase;
  		$this->conf = $conf;
  		$this->config = $config;
@@ -68,15 +66,13 @@ class tx_ttproducts_single_view {
  		$this->content = $content;
  		$this->uid = $uid;
  		$this->variants = $extVars;
- 		$this->pid = $pid;
  		$this->tt_products = $tt_products;
  		$this->tt_products_cat = $tt_products_cat;
  		$this->formUrl = $formUrl;
- 		$this->basketExt = $basketExt;
  	}
 
 	// returns the single view
-	function &printView(&$templateCode, &$basketExt, &$error_code) {
+	function &printView(&$templateCode, &$basket, &$error_code) {
 		global $TSFE;
 		
 		$content = '';
@@ -162,9 +158,9 @@ class tx_ttproducts_single_view {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
 			}
 
-			$item = tx_ttproducts_basket_div::getItem($row);
+			$item = $basket->getItem($row);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
-			$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf, $item,$basketExt, $catTitle,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
+			$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf, $item,$basket->basketExt, $catTitle,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
 
 			$subpartArray = array();
 
@@ -224,7 +220,7 @@ class tx_ttproducts_single_view {
 					$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink(t3lib_div::_GP('backPID'),'',tx_ttproducts_view_div::getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants)))); // $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($this->variants);
 
 					$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$this->variants.']'; // here again, because this is here in ITEM_LIST view
-					$markerArray['###FIELD_QTY###'] = $basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];
+					$markerArray['###FIELD_QTY###'] = $basket->basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];
 
 					$content.=$this->pibase->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 				}
