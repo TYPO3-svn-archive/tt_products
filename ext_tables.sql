@@ -143,9 +143,9 @@ CREATE TABLE tt_products_articles (
 	price2 varchar(20) DEFAULT '' NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
 
-	color varchar(20) DEFAULT '' NOT NULL,
-	size varchar(20) DEFAULT '' NOT NULL,
-	gradings varchar(20) DEFAULT '' NOT NULL,
+	color varchar(60) DEFAULT '' NOT NULL,
+	size varchar(60) DEFAULT '' NOT NULL,
+	gradings varchar(60) DEFAULT '' NOT NULL,
 	
 	uid_product int(11) DEFAULT '0' NOT NULL,
 
