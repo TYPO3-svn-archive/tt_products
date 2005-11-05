@@ -167,6 +167,7 @@ onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){do
 
 
 
+
 <br><br><br><br><HR><br><br><br>
 <h3>ITEM_SEARCH</h3>
 <em>Subpart for the search-form.</em><br>
@@ -546,6 +547,14 @@ Wenn Ihre Bestellung zu einer anderen Anschrift geliefert werden soll, so geben 
 </tr>
 <tr>
 <td colspan=3>
+###GW1B###Gewünschtes Lieferdatum###GW1E###
+</td>
+</tr>
+<tr>
+<td><input name="recs[delivery][desired_date]" value="###DELIVERY_DESIRED_DATE###"></td>
+</tr>
+<tr>
+<td colspan=3>
 ###GW1B###
 Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
 ###GW1E###
@@ -734,6 +743,15 @@ Exact same features as BASKET_TEMPLATE
   </tr>
   <tr>
     <td colspan=5><img src="clear.gif" width="1" height="10"></td>
+  </tr>
+  <tr>
+    <td colspan=3> <table>
+        <tr>
+          <td>###GW1B###gewünschtes Lieferdatum:###GW1E###</td>
+          <td>###GW1B###<strong>###DELIVERY_DESIRED_DATE###</strong>###GW1E###</td>
+        </tr>
+      </table></td>
+    <td colspan=2></td>
   </tr>
   <tr>
     <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Bemerkungen:</b>###GW2E###</td>
@@ -1016,6 +1034,10 @@ Message for payment method 10, Paypal
 <tr>
 <td colspan=3>
 <table>
+<tr>
+<td>###GW1B###gewünschtes Lieferdatum:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_DESIRED_DATE###</strong>###GW1E###</td>
+</tr>
 <tr>
 <td>###GW1B###Kommentar:###GW1E###</td>
 <td>###GW1B###<strong>###DELIVERY_NOTE_DISPLAY###</strong>###GW1E###</td>
@@ -1431,11 +1453,13 @@ Email: ###PERSON_EMAIL###
 att. ###DELIVERY_NAME###
 Telefon: ###DELIVERY_TELEPHONE###
 Email: ###DELIVERY_EMAIL###
-4) BEMERKUNG:
+4) GEWÜNSCHTER LIEFERTERMIN:
+###DELIVERY_DESIRED_DATE###
+5) BEMERKUNG:
 ###DELIVERY_NOTE_DISPLAY###
-5) VERSAND UND VERPACKUNG:
+6) VERSAND UND VERPACKUNG:
 Preis: ###PRICE_SHIPPING_TAX### EUR
-6) ZAHLUNGSWEISE:
+7) ZAHLUNGSWEISE:
 ###PAYMENT_TITLE###
 Preis: ###PRICE_PAYMENT_TAX### EUR
 
