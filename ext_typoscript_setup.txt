@@ -1,5 +1,5 @@
 ## Includes the productsLib:
-includeLibs.tt_products = EXT:tt_products/pi/class.tx_ttproducts.php
+includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
 #vorher: includeLibs.ts_products = EXT:tt_products/pi/class.tx_ttproducts.php
 
 
@@ -7,7 +7,7 @@ includeLibs.tt_products = EXT:tt_products/pi/class.tx_ttproducts.php
 plugin.tt_products >
 plugin.tt_products = USER
 plugin.tt_products {
-  userFunc = tx_ttproducts->main_products
+  userFunc = tx_ttproducts_pi1->main_products
 
   templateFile = {$plugin.tt_products.file.templateFile}
   pid_list.field = pages
@@ -216,7 +216,7 @@ plugin.tt_products.payment {
   10.title = MasterCard
   10.image.file = media/logos/mastercard.gif
   10.priceTax = 
-  10.calculationScript = EXT:tt_products/pi/products_comp_calcScript.inc
+  10.calculationScript = EXT:tt_products/pi1/products_comp_calcScript.inc
 
   40.title = Money transfer
   40.image.file = media/logos/money.gif
