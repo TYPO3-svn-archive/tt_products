@@ -47,11 +47,11 @@ class tx_ttproducts_gifts_div {
 	 * @param	integer		variant of the product only size is used now --> TODO
 	 * @return	array		all gift numbers for this product
 	 */
-	function getGiftNumbers($uid, $variant)	{
+	function getGiftNumbers(&$basket, $uid, $variant)	{
 		$giftArray = array();
 
-		if ($this->basketExt['gift']) {
-			foreach ($this->basketExt['gift'] as $giftnumber => $giftItem) {
+		if ($basket->basketExt['gift']) {
+			foreach ($basket->basketExt['gift'] as $giftnumber => $giftItem) {
 				if ($giftItem['item'][$uid][$variant]) {
 					$giftArray [] = $giftnumber;
 				}
@@ -66,14 +66,14 @@ class tx_ttproducts_gifts_div {
 	/**
 	 * Adds gift markers to a markerArray
 	 */
-	function addGiftMarkers($markerArray, $giftnumber)	{
+	function addGiftMarkers(&$basket, $markerArray, $giftnumber)	{
 
 		$markerArray['###GIFTNO###'] = $giftnumber;
-		$markerArray['###GIFT_PERSON_NAME###'] = $this->basketExt['gift'][$giftnumber]['personname'];
-		$markerArray['###GIFT_PERSON_EMAIL###'] = $this->basketExt['gift'][$giftnumber]['personemail'];
-		$markerArray['###GIFT_DELIVERY_NAME###'] = $this->basketExt['gift'][$giftnumber]['deliveryname'];
-		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $this->basketExt['gift'][$giftnumber]['deliveryemail'];
-		$markerArray['###GIFT_NOTE###'] = $this->basketExt['gift'][$giftnumber]['note'];
+		$markerArray['###GIFT_PERSON_NAME###'] = $basket->basketExt['gift'][$giftnumber]['personname'];
+		$markerArray['###GIFT_PERSON_EMAIL###'] = $basket->basketExt['gift'][$giftnumber]['personemail'];
+		$markerArray['###GIFT_DELIVERY_NAME###'] = $basket->basketExt['gift'][$giftnumber]['deliveryname'];
+		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $basket->basketExt['gift'][$giftnumber]['deliveryemail'];
+		$markerArray['###GIFT_NOTE###'] = $basket->basketExt['gift'][$giftnumber]['note'];
 //		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]'; // here again, because this is here in ITEM_LIST view
 //		$markerArray['###FIELD_QTY###'] =  '';
 

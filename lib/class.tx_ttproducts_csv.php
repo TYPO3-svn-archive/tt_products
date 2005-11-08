@@ -47,20 +47,21 @@ class tx_ttproducts_csv {
 	var $pibase; // reference to object of pibase
 	var $calculatedArray; // reference to calculated basket array
 	var $itemArray; // reference to the bakset item array
+	var $price;	 					// object for price functions
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$itemArray, &$calculatedArray)	{
+	function init(&$pibase, &$itemArray, &$calculatedArray, &$price)	{
 		global $TYPO3_DB;
  		$this->pibase = &$pibase;
  		$this->calculatedArray = &$calculatedArray;
  		$this->itemArray = &$itemArray;
-		
+ 		$this->price = &$price;
 	} // init
 
 
-	function create($csvorderuid, $csvfilepath, &$error_message) {
+	function create(&$basket, $csvorderuid, $csvfilepath, &$error_message) {
 		if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
 			$csvfilepath .= '/';
 		}
@@ -87,13 +88,13 @@ class tx_ttproducts_csv {
 			}
 
 			// Generate shipping/payment information and delivery note
-			$csvlineshipping = '"' . $this->basketExtra['shipping.']['title'] . '";"' .
-				tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['shipping']) . '";"' .
-				tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['shipping']) . '"';
+			$csvlineshipping = '"' . $basket->basketExtra['shipping.']['title'] . '";"' .
+				$this->price->priceFormat($this->conf,$this->calculatedArray['priceTax']['shipping']) . '";"' .
+				$this->price->priceFormat($this->conf,$this->calculatedArray['priceNoTax']['shipping']) . '"';
 
-			$csvlinepayment = '"' . $this->basketExtra['payment.']['title'] . '";"' .
-				tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['payment']) . '";"' .
-				tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['payment']) . '"';
+			$csvlinepayment = '"' . $basket->basketExtra['payment.']['title'] . '";"' .
+				$this->price->priceFormat($this->conf,$this->calculatedArray['priceTax']['payment']) . '";"' .
+				$this->price->priceFormat($this->conf,$this->calculatedArray['priceNoTax']['payment']) . '"';
 
 			$csvlinedeliverynote = '"'.$this->deliveryInfo['note'].'"';
 			
@@ -162,7 +163,7 @@ class tx_ttproducts_csv {
 			fclose($csvfile);
 		}
 		else {
-			$message = $this->pi_getLL('no csv creation');
+			$message = $this->pibase->pi_getLL('no csv creation');
 			$messageArr =  explode('|', $message);
 			$error_message=$messageArr[0]. $csvfilepath .$messageArr[1];
 		}

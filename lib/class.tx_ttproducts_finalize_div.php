@@ -63,7 +63,7 @@ class tx_ttproducts_finalize_div {
 	 * $orderUid is the order-uid to finalize
 	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
 	 */
-	function finalizeOrder(&$pibase, &$conf, $templateCode, &$basket, &$tt_products, &$tt_products_cat, $orderUid, $orderConfirmationHTML, &$error_message)	{
+	function finalizeOrder(&$pibase, &$conf, $templateCode, &$basket, &$tt_products, &$tt_products_cat, &$price, $orderUid, $orderConfirmationHTML, &$error_message)	{
 		global $TSFE;
 		global $TYPO3_DB;
 
@@ -101,7 +101,7 @@ class tx_ttproducts_finalize_div {
 		if ($conf['createUsers'] && $this->personInfo['email'] != '' && $conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
 		{
 			$username = strtolower(trim($this->personInfo['email']));
-
+			
 			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 
@@ -133,7 +133,7 @@ class tx_ttproducts_finalize_div {
 				$countryKey = ($conf['useStaticInfoCountry'] ? 'static_info_country':'country');
 				$insertFields[$countryKey] =  $basket->personInfo['country'];
 
-				$res = $TYPO3->exec_INSERTquery('fe_users', $insertFields);
+				$res = $TYPO3_DB->exec_INSERTquery('fe_users', $insertFields);
 				// send new user mail
 				if (count($basket->personInfo['email'])) {
 					$emailContent=trim($basket->getBasket($tmp='','###EMAIL_NEWUSER_TEMPLATE###'));
@@ -159,11 +159,11 @@ class tx_ttproducts_finalize_div {
 		if ($conf['generateCSV'])
 		{
 			$csv = t3lib_div::makeInstance('tx_ttproducts_csv');
-			$csv->init($this,$basket->itemArray,$this->calculatedArray);
+			$csv->init($this,$basket->itemArray,$basket->calculatedArray,$price);
 			$csvfilepath = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $conf['CSVdestination'];
 			$csvorderuid = $this->recs['tt_products']['orderUid'];
 						
-			$csv->create($csvorderuid, $csvfilepath, $error_message);
+			$csv->create($basket, $csvorderuid, $csvfilepath, $error_message);
 		}
 
 			// Sends order emails:

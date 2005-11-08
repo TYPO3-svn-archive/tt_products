@@ -40,7 +40,7 @@
 
 require_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
-require_once (PATH_BE_ttproducts.'pi/class.tx_ttproducts_htmlmail.php');
+require_once (PATH_BE_ttproducts.'pi1/class.tx_ttproducts_htmlmail.php');
 
 
 class tx_ttproducts_email_div {

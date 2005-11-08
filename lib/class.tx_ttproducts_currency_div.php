@@ -61,7 +61,7 @@ class tx_ttproducts_currency_div {
 			$index ++ ;
 		}
 
-		$content = $this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###CURRENCY_SELECTOR###'));
+		$content = $this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###CURRENCY_SELECTOR###'));
 		$content = $this->cObj->substituteMarker( $content, '###CURRENCY_FORM_NAME###', 'tt_products_currsel_form' );
 		$onChange = 'if (!document.tt_products_currsel_form.C.options[document.tt_products_currsel_form.C.selectedIndex].value) return; top.location.replace(currlink[document.tt_products_currsel_form.C.selectedIndex] );';
 		$selector = $this->exchangeRate->buildCurrSelector($this->BaseCurrency,'C','',$this->currency, $onChange);

@@ -148,7 +148,7 @@ class tx_ttproducts_order_div {
 		global $TYPO3_DB;
 		
 			// Fix delivery address
-		tx_ttproducts_view_div::mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
+		$basket->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
 //		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
 
 			// Saving order data
@@ -321,11 +321,11 @@ class tx_ttproducts_order_div {
        $feusers_uid = $TSFE->fe_user->user['uid'];
 
        if (!$feusers_uid)
-           return $this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###MEMO_NOT_LOGGED_IN###'));
+           return $this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###MEMO_NOT_LOGGED_IN###'));
 
        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
 
-       $content=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###ORDERS_LIST_TEMPLATE###'));
+       $content=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###ORDERS_LIST_TEMPLATE###'));
        if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
 
            $content .= "<p style='margin-left=40;'><br>U heeft nog geen bestellingen gedaan.</p>";

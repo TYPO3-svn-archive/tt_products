@@ -98,7 +98,7 @@ class tx_ttproducts_single_view {
 
 				// Get the subpart code
 			$itemFrameTemplate ='';
-			$giftNumberArray = tx_ttproducts_gifts_div::getGiftNumbers ($row['uid'], $this->variants);
+			$giftNumberArray = tx_ttproducts_gifts_div::getGiftNumbers ($basket, $row['uid'], $this->variants);
 
 			if ($this->config['displayCurrentRecord'])	{
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
@@ -109,7 +109,7 @@ class tx_ttproducts_single_view {
 			} else {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
 			}
-			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($itemFrameTemplate));
+			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, $itemFrameTemplate));
 
 			if (count($giftNumberArray)) {
 				$personDataFrameWork = $this->pibase->cObj->getSubpart($itemFrameWork,'###PERSON_DATA###');
@@ -149,7 +149,8 @@ class tx_ttproducts_single_view {
 
 				// Fill marker arrays
 			$wrappedSubpartArray=array();
-			$pid = ( t3lib_div::_GP('backPID') ? t3lib_div::_GP('backPID') : $TSFE->id);
+			$backPID =t3lib_div::_GP('backPID');
+			$pid = ( $backPID ? $backPID : $TSFE->id);
 			$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) .'">','</a>');
 
 			if( $datasheetFile == '' )  {
@@ -214,7 +215,7 @@ class tx_ttproducts_single_view {
 				$subpartArray = array();
 				$wrappedSubpartArray=array();
 				foreach ($giftNumberArray as $k => $giftnumber) {
-					$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($markerArray, $giftnumber);
+					$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($basket, $markerArray, $giftnumber);
 					$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'].'_'.$giftnumber;
 					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')';
 					$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink(t3lib_div::_GP('backPID'),'',tx_ttproducts_view_div::getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants)))); // $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($this->variants);

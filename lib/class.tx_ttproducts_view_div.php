@@ -41,7 +41,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_price_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_price.php');
 
 
 class tx_ttproducts_view_div {
@@ -63,11 +63,11 @@ class tx_ttproducts_view_div {
 		$pid = ( $conf['PIDthanks'] ? $conf['PIDthanks'] : ($conf['PIDbasket'] ? $conf['PIDbasket'] : $TSFE->id));
 		$markerArray['###FORM_URL_THANKS###'] = $pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDbasket']);
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
-		if ($this->basketExtra['payment.']['handleURL'])	{	// This handleURL is called instead of the THANKS-url in order to let handleScript process the information if payment by credit card or so.
-			$markerArray['###FORM_URL_THANKS###'] = $this->basketExtra['payment.']['handleURL'];
+		if ($basket->basketExtra['payment.']['handleURL'])	{	// This handleURL is called instead of the THANKS-url in order to let handleScript process the information if payment by credit card or so.
+			$markerArray['###FORM_URL_THANKS###'] = $basket->basketExtra['payment.']['handleURL'];
 		}
-		if ($this->basketExtra['payment.']['handleTarget'])	{	// Alternative target
-			$markerArray['###FORM_URL_TARGET###'] = $this->basketExtra['payment.']['handleTarget'];
+		if ($basket->basketExtra['payment.']['handleTarget'])	{	// Alternative target
+			$markerArray['###FORM_URL_TARGET###'] = $basket->basketExtra['payment.']['handleTarget'];
 		}
 		
 		return $markerArray;
@@ -78,11 +78,11 @@ class tx_ttproducts_view_div {
 	/**
 	 * Returning template subpart marker
 	 */
-	function spMarker($subpartMarker)	{
+	function spMarker(&$pibase,&$conf,$subpartMarker)	{
 		$sPBody = substr($subpartMarker,3,-3);
 		$altSPM = '';
-		if (isset($this->conf['altMainMarkers.']))	{
-			$altSPM = trim($this->cObj->stdWrap($this->conf['altMainMarkers.'][$sPBody],$this->conf['altMainMarkers.'][$sPBody.'.']));
+		if (isset($conf['altMainMarkers.']))	{
+			$altSPM = trim($this->cObj->stdWrap($conf['altMainMarkers.'][$sPBody],$conf['altMainMarkers.'][$sPBody.'.']));
 			$GLOBALS['TT']->setTSlogMessage('Using alternative subpart marker for "'.$subpartMarker.'": '.$altSPM,1);
 		}
 		return $altSPM ? $altSPM : $subpartMarker;
@@ -199,24 +199,28 @@ class tx_ttproducts_view_div {
 /* Added Els4: cur_sym moved from after product_special to this place, necessary to put currency symbol */
 		$markerArray['###CUR_SYM###'] = ' '.($conf['currencySymbol'] ? $conf['currencySymbol'] : '');
 
-		$markerArray['###PRICE_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat($item['priceTax']));
-		$markerArray['###PRICE_NO_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat($item['priceNoTax']));
+		$markerArray['###PRICE_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($item['priceTax']));
+		$markerArray['###PRICE_NO_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($item['priceNoTax']));
 
 /* Added els4: printing of pric_no_tax with currency symbol (used in totaal-_.tmpl and winkelwagen.tmpl) */
 		if ($row['category'] == $conf['creditsCategory']) {
-			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = tx_ttproducts_price_div::printPrice($item['priceNoTax']);
+			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $pibase->price->printPrice($item['priceNoTax']);
 		} else {
-			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat($item['priceNoTax']));
+			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$pibase->price->printPrice($pibase->price->priceFormat($item['priceNoTax']));
 		}
 
-		$oldPrice = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['price'],1,$row['tax'])));
-		$oldPriceNoTax = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['price'],0,$row['tax'])));
+		$oldPrice = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['price'],1,$row['tax'])));
+		$oldPriceNoTax = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['price'],0,$row['tax'])));
+		$pricezwei = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['rice2'],1,$row['tax']))); // TODO: +++
+		$pricezweiNoTax = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['rice2'],0,$row['tax']))); // TODO: +++
 		$priceNo = intval($config['priceNoReseller']);
 		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
 			$oldPrice = $oldPriceNoTax = '';
 		}
 
 		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
+		$markerArray['###PRICE2_TAX###'] = $price2;
+		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
 
 /* Added els4: changed whole block: if OLD_PRICE_NO_TAX = 0 then print PRICE_NO_TAX and set PRICE_NO_TAX to empty,
 /* Added els4: Markers SUB_NO_DISCOUNT and SUB_DISCOUNT used in detail template
@@ -240,7 +244,7 @@ class tx_ttproducts_view_div {
 			$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
 			if ($row['category'] == $conf['creditsCategory']) {
 				$markerArray['###CUR_SYM###'] ="";
-				$markerArray['###OLD_PRICE_NO_TAX###'] = tx_ttproducts_price_div::getPrice($row['price'],0,$row['tax'])."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
+				$markerArray['###OLD_PRICE_NO_TAX###'] = $pibase->price->getPrice($row['price'],0,$row['tax'])."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
 			}
 			$markerArray['###DETAIL_PRICE_ITEMLIST###'] = '<span class="prijsvan">van&nbsp; '.$markerArray['###OLD_PRICE_NO_TAX###'].'</span> <span class="prijsvoor">voor '.$markerArray['###PRICE_NO_TAX###'].'</span>';
 			$markerArray['###DETAIL_PRICE_ITEMLIST_PRESENT###'] = '<span class="prijsvan">van&nbsp; '.$markerArray['###OLD_PRICE_NO_TAX###'].'</span> <span class="prijsvoor">voor '.$markerArray['###PRICE_NO_TAX###'].'</span>';
@@ -283,9 +287,9 @@ class tx_ttproducts_view_div {
 
 /* Added Els4: total price is quantity multiplied with pricenottax mulitplied with unit_factor (exception for kurkenshop), _credits is necessary for "kurkenshop", without decimal and currency symbol */
 		if ($row['category'] == $conf['creditsCategory']) {
-			$markerArray['###PRICE_ITEM_X_QTY###'] = tx_ttproducts_price_div::printPrice($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']);
+			$markerArray['###PRICE_ITEM_X_QTY###'] = $pibase->price->printPrice($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']);
 		} else {
-			$markerArray['###PRICE_ITEM_X_QTY###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']));
+			$markerArray['###PRICE_ITEM_X_QTY###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$pibase->price->printPrice($pibase->price->priceFormat($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']));
 		}
 
 		$prodColorText = '';
@@ -334,10 +338,10 @@ class tx_ttproducts_view_div {
 		$markerArray['###PRODUCT_SIZE###'] = $prodSizeText;
 		//$markerArray['###PRODUCT_ACCESSORY###'] = $prodAccessoryText;
 		$markerArray['###PRODUCT_GRADINGS###'] = $prodGradingsText;
-	//	$markerArray['###PRICE_ACCESSORY_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$config['priceNoReseller']],1,$row['tax'])));
-	//	$markerArray['###PRICE_ACCESSORY_NO_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$config['priceNoReseller']],0,$row['tax'])));
-	//	$markerArray['###PRICE_WITH_ACCESSORY_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$conf['priceNoReseller']]+$row['price'.$tconfig['priceNoReseller']],1,$row['tax'])));
-	//	$markerArray['###PRICE_WITH_ACCESSORY_NO_TAX###'] = tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($row['accessory'.$conf['priceNoReseller']]+$row['price'.$config['priceNoReseller']],0,$row['tax'])));
+	//	$markerArray['###PRICE_ACCESSORY_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['accessory'.$config['priceNoReseller']],1,$row['tax'])));
+	//	$markerArray['###PRICE_ACCESSORY_NO_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['accessory'.$config['priceNoReseller']],0,$row['tax'])));
+	//	$markerArray['###PRICE_WITH_ACCESSORY_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['accessory'.$conf['priceNoReseller']]+$row['price'.$tconfig['priceNoReseller']],1,$row['tax'])));
+	//	$markerArray['###PRICE_WITH_ACCESSORY_NO_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['accessory'.$conf['priceNoReseller']]+$row['price'.$config['priceNoReseller']],0,$row['tax'])));
 
 		if ($row['special_preparation'])
 			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $pibase->cObj->substituteMarkerArray($conf['specialPreparation'],$markerArray);
@@ -390,56 +394,6 @@ class tx_ttproducts_view_div {
 
 		return $queryString;
 	}
-
-
-	/**
-	 * Formatting a price
-	 */
-	function priceFormat($double)	{
-		return number_format($double,intval($this->conf['priceDec']),$this->conf['priceDecPoint'],$this->conf['priceThousandPoint']);
-	} // priceFormat
-
-
-
-	/**
-	 * Fills in all empty fields in the delivery info array
-	 */
-	function mapPersonIntoToDelivery()	{
-		
-			// all of the delivery address will be overwritten when no address and no email address have been filled in
-		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
-/* Added Els: 'feusers_uid,' and more fields */
-			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
-			$infoFields = explode(',','feusers_uid,telephone,name,first_name,last_name,email,date_of_birth,company,address,city,zip'.$infoExtraFields); // Fields...
-			while(list(,$fName)=each($infoFields))	{
-				$this->deliveryInfo[$fName] = $this->personInfo[$fName];
-			}
-		}
-
-	} // mapPersonIntoToDelivery
-
-
-
-	/**
-	 * Checks if required fields are filled in
-	 */
-	function checkRequired()	{
-		$flag = '';
-		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
-		if ($this->basketExtra['payment.']['addRequiredInfoFields'] != '')
-			$requiredInfoFields .= ','.trim($this->basketExtra['payment.']['addRequiredInfoFields']);
-
-		if ($requiredInfoFields)	{
-			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
-			while(list(,$fName)=each($infoFields))	{
-				if (trim($this->personInfo[$fName])=='' || trim($this->deliveryInfo[$fName])=='')	{
-					$flag=$fName;
-					break;
-				}
-			}
-		}
-		return $flag;
-	} // checkRequired
 
 
 

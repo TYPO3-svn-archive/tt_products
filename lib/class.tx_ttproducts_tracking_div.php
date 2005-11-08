@@ -56,11 +56,11 @@ class tx_ttproducts_tracking_div {
 	 * @see enableFields()
 	 */
 
-	function products_tracking(&$pibase, &$conf, &$config, &$basket, &$content, &$category, $theCode)	{
+	function products_tracking(&$pibase, &$conf, &$config, &$basket, &$content, &$category, &$price, $theCode)	{
 		global $TSFE;
 
 		if (strcmp($theCode, 'TRACKING')!=0) { // bill and delivery tracking need more data
-			$this->page->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
+			$basket->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
 			$this->page->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
 			$this->page->initRecursive(999, $this);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
 			//tx_ttproducts_page_div::generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
@@ -77,20 +77,20 @@ class tx_ttproducts_tracking_div {
 						$content = tx_ttproducts_tracking_div::getTrackingInformation($pibase,$orderRow,$this->templateCode);
 						break;
 					case 'BILL':
-						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,$conf,$config,$basket,$content,$category,'bill',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
+						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,$conf,$config,$basket,$content,$category,$price,'bill',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
 						break;
 					case 'DELIVERY':
-						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,$conf,$config,$basket,$content,$category,'delivery',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
+						$content = tx_ttproducts_billdelivery_div::getInformation($pibase,$conf,$config,$basket,$content,$category,$price,'delivery',$orderRow, $this->templateCode,t3lib_div::_GP('tracking'));
 						break;
 					default:
 						debug('error in '.TT_PRODUCTS_EXTkey.' calling function products_tracking with $theCode = "'.$theCode.'"');
 				}
 			} else {	// ... else output error page
-				$content=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###TRACKING_WRONG_NUMBER###'));
+				$content=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###TRACKING_WRONG_NUMBER###'));
 				if (!$TSFE->beUserLogin)	{$content = $this->cObj->substituteSubpart($content,'###ADMIN_CONTROL###','');}
 			}
 		} else {	// No tracking number - show form with tracking number
-			$content=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###TRACKING_ENTER_NUMBER###'));
+			$content=$this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###TRACKING_ENTER_NUMBER###'));
 			if (!$TSFE->beUserLogin)	{$content = $this->cObj->substituteSubpart($content,'###ADMIN_CONTROL###','');}
 		}
 		$markerArray=array();
@@ -322,8 +322,6 @@ class tx_ttproducts_tracking_div {
 		$content= $pibase->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		return $content;
 	} // getTrackingInformation
-
-
 
 
 

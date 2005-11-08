@@ -48,8 +48,8 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php')
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_finalize_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentshipping_div.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_price_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentshipping.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_price.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 
@@ -65,6 +65,9 @@ class tx_ttproducts_basket {
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
+
+	var $pice; // price object
+	var $paymentshipping; // paymentshipping object
 
 		// Internal: initBasket():
 	var $basket=array();				// initBasket() sets this array based on the registered items
@@ -109,7 +112,7 @@ class tx_ttproducts_basket {
      * @return      void
  	 */
 
-	function init(&$pibase, &$conf, &$config, &$templateCode, $basket, $updateMode, &$page, &$tt_content, &$tt_products, &$tt_products_cat)	{
+	function init(&$pibase, &$conf, &$config, &$templateCode, $basket, $updateMode, &$page, &$tt_content, &$tt_products, &$tt_products_cat, &$price, &$paymentshipping)	{
 		global $TSFE;
 
  		$this->pibase = &$pibase;
@@ -123,6 +126,9 @@ class tx_ttproducts_basket {
 
 		$this->recs = $basket;	// Sets it internally
 		$this->basket=array();
+
+		$this->price = &$price;
+		$this->paymentshipping = $paymentshipping;
 
 		$this->itemArray = array();
 
@@ -271,7 +277,7 @@ class tx_ttproducts_basket {
 			$TSFE->fe_user->setKey('ses','basketExt',array());
 		$TSFE->fe_user->storeSessionData(); // Franz: The basket shall not get lost
 
-		tx_ttproducts_paymentshipping_div::setBasketExtras($conf, $this, $basket);
+		$this->paymentshipping->setBasketExtras($this, $basket);
 
 		$this->personInfo = $basket['personinfo'];
 		$this->deliveryInfo = $basket['delivery'];
@@ -375,6 +381,49 @@ class tx_ttproducts_basket {
 
 		return ($retActivities);
 	}
+
+
+
+	/**
+	 * Checks if required fields are filled in
+	 */
+	function checkRequired()	{
+		$flag = '';
+		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
+		if ($this->basketExtra['payment.']['addRequiredInfoFields'] != '')
+			$requiredInfoFields .= ','.trim($this->basketExtra['payment.']['addRequiredInfoFields']);
+
+		if ($requiredInfoFields)	{
+			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
+			while(list(,$fName)=each($infoFields))	{
+				if (trim($this->personInfo[$fName])=='' || trim($this->deliveryInfo[$fName])=='')	{
+					$flag=$fName;
+					break;
+				}
+			}
+		}
+		return $flag;
+	} // checkRequired
+
+
+
+	/**
+	 * Fills in all empty fields in the delivery info array
+	 */
+	function mapPersonIntoToDelivery()	{
+		
+			// all of the delivery address will be overwritten when no address and no email address have been filled in
+		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
+/* Added Els: 'feusers_uid,' and more fields */
+			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
+			$infoFields = explode(',','feusers_uid,telephone,name,first_name,last_name,email,date_of_birth,company,address,city,zip'.$infoExtraFields); // Fields...
+			while(list(,$fName)=each($infoFields))	{
+				$this->deliveryInfo[$fName] = $this->personInfo[$fName];
+			}
+		}
+
+	} // mapPersonIntoToDelivery
+
 
 
 
@@ -514,8 +563,8 @@ class tx_ttproducts_basket {
 							case 'products_payment':
 								$this->pibase->load_noLinkExtCobj();	// TODO
 								$pidagb = intval($this->conf['PIDagb']);
-								tx_ttproducts_view_div::mapPersonIntoToDelivery();
-								$check = tx_ttproducts_view_div::checkRequired();
+								$this->mapPersonIntoToDelivery();
+								$check = $this->checkRequired();
 								if ($check=='' &&
 									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
 									$content.=$this->getBasket($tmp='', '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
@@ -523,17 +572,17 @@ class tx_ttproducts_basket {
 									$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
 									$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
 									if (trim($this->conf['paymentActivity'])=='payment' && $handleScript)	{
-										$this->getCalculateSums();
+										$this->getCalculatedSums();
 										$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 									}
 	
 								} else {	// If not all required info-fields are filled in, this is shown instead:
-									$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+									$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###BASKET_REQUIRED_INFO_MISSING###'));
 									$markerArray = tx_ttproducts_view_div::addURLMarkers($this->pibase, $this->conf, $this, array());
 									$label = '';
 									if ($check=='') {
 										 // so AGB has not been accepted
-										$label = $this->pi_getLL('accept AGB');
+										$label = $this->pibase->pi_getLL('accept AGB');
 									} else {
 										if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
 											$label = $TSFE->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
@@ -546,15 +595,15 @@ class tx_ttproducts_basket {
 								}
 							break;
 							case 'products_finalize':
-								tx_ttproducts_view_div::mapPersonIntoToDelivery();
-								$check = tx_ttproducts_view_div::checkRequired();
+								$this->mapPersonIntoToDelivery();
+								$check = $this->checkRequired();
 								if ($check=='')	{
 									$this->pibase->load_noLinkExtCobj();	// TODO
 									$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
 									$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
 									if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
 										//$this->etCalculatedBasket();
-										$this->getCalculateSums();
+										$this->getCalculatedSums();
 										$content = tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 									}
 	
@@ -562,7 +611,7 @@ class tx_ttproducts_basket {
 									$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 									$orderConfirmationHTML=$this->getBasket($tmp='', '###'.$tmpl.'###', $mainMarkerArray);
 									$contentTmp = $orderConfirmationHTML;
-									tx_ttproducts_finalize_div::finalizeOrder($this->pibase, $this->conf, $this->templateCode, $this, $this->tt_products, $this->tt_products_cat, $orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+									tx_ttproducts_finalize_div::finalizeOrder($this->pibase, $this->conf, $this->templateCode, $this, $this->tt_products, $this->tt_products_cat, $this->price, $orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 	
 									if ($this->conf['PIDthanks'] > 0) {
 										$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
@@ -572,7 +621,7 @@ class tx_ttproducts_basket {
 									// Empties the shopping basket!
 									$this->clearBasket();
 								} else {	// If not all required info-fields are filled in, this is shown instead:
-									$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+									$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf,'###BASKET_REQUIRED_INFO_MISSING###'));
 									$content = $this->pibase->cObj->substituteMarkerArray($content, tx_ttproducts_view_div::addURLMarkers($this->pibase, $this->conf, $this, array()));
 								}
 							break;
@@ -592,10 +641,10 @@ class tx_ttproducts_basket {
 		} else { // if (count($this->basketExt))
 			if ($activityArr['products_overview']) {
 				$this->pibase->load_noLinkExtCobj();	//
-				$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_OVERVIEW_EMPTY###'));
+				$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###BASKET_OVERVIEW_EMPTY###'));
 			}
 			else if ($activityArr['products_basket']) {
-				$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker('###BASKET_TEMPLATE_EMPTY###'));
+				$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###BASKET_TEMPLATE_EMPTY###'));
 			}
 		}
 		$markerArray=array();
@@ -700,16 +749,22 @@ class tx_ttproducts_basket {
 					$this->calculatedArray['count']			+= $count;
 					$this->calculatedArray['weight']		+= $row['weight']*$count;
 
-					$oldPriceTax = tx_ttproducts_price_div::getPrice($row['price'],1,$row['tax']);
-					$oldPriceNoTax = tx_ttproducts_price_div::getPrice($row['price'],0,$row['tax']);
+				// Franz: is this needed? 
+				//	$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
+				//	$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
 
-					/* Added Els3: if oldpricenotax is 0 -> oldpricenotax = pricenotax, otherwise price_discount doesn't calculate correctly */
-					if (doubleval($oldPriceNoTax) == 0) {
-					   $oldPriceNoTax = $priceNoTax;
-					}
+					$price2Tax = $this->price->getPrice($row['price2'],1,$row['tax']);
+					$price2NoTax = $this->price->getPrice($row['price2'],0,$row['tax']);
 
-					$this->calculatedArray['oldPriceTax']	+= $oldPriceTax * $count;
-					$this->calculatedArray['oldPriceNoTax']	+= $oldPriceNoTax * $count;
+//					/* Added Els3: if oldpricenotax is 0 -> oldpricenotax = pricenotax, otherwise price_discount doesn't calculate correctly */
+//					if (doubleval($oldPriceNoTax) == 0) {
+//					   $oldPriceNoTax = $priceNoTax;
+//					}
+//
+//					$this->calculatedArray['oldPriceTax']	+= $oldPriceTax * $count;
+//					$this->calculatedArray['oldPriceNoTax']	+= $oldPriceNoTax * $count;
+					$this->calculatedArray['pricezweiTax']['goodstotal']	+= $price2Tax * $count; // TODO: +++
+					$this->calculatedArray['pricezweiNoTax']['goodstotal']	+= $price2NoTax * $count;
 				}
 			}
 		}
@@ -726,13 +781,13 @@ class tx_ttproducts_basket {
 				foreach ($actItemArray as $k1=>$actItem) {
 					// has the price been calculated before take it if it gets cheaper now
 					if (($actItem['calcprice'] > 0) && ($actItem['calcprice'] < $actItem['priceTax'])) {
-						$this->itemArray[$pid][$itemnumber][$k1]['priceTax'] = tx_ttproducts_price_div::getPrice($actItem['calcprice'],1,$actItem['rec']['tax']);
-						$this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] = tx_ttproducts_price_div::getPrice($actItem['calcprice'],0,$actItem['rec']['tax']);
+						$this->itemArray[$pid][$itemnumber][$k1]['priceTax'] = $this->price->getPrice($actItem['calcprice'],1,$actItem['rec']['tax']);
+						$this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] = $this->price->getPrice($actItem['calcprice'],0,$actItem['rec']['tax']);
 					}
 					// If accesssory has been selected, add the price of it, multiplicated with the count :
 					if($actItem['rec']['accessory'] > 0 ) {
-						$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceTax']+ tx_ttproducts_price_div::getPrice($actItem['rec']['accessory'],1,$actItem['rec']['tax']))*$actItem['count'];
-						$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceNoTax']+tx_ttproducts_price_div::getPrice($actItem['rec']['accessory'],0,$actItem['rec']['tax']))*$actItem['count'];
+						$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceTax']+ $this->price->getPrice($actItem['rec']['accessory'],1,$actItem['rec']['tax']))*$actItem['count'];
+						$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceNoTax']+$this->price->getPrice($actItem['rec']['accessory'],0,$actItem['rec']['tax']))*$actItem['count'];
 					} else {
 						$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceTax'] * $actItem['count'];
 						$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] * $actItem['count'];
@@ -765,9 +820,7 @@ class tx_ttproducts_basket {
 		}
 
 			// Shipping must be at the end in order to use the calculated values from before
-		tx_ttproducts_paymentshipping_div::GetPaymentShippingData(
-			$this->pibase,
-			$this->conf,
+		$this->paymentshipping->GetPaymentShippingData(
 			$this,
 			$this->calculatedArray['count'],
 /* Added Els: necessary to calculate shipping price which depends on total no-tax price */
@@ -803,8 +856,8 @@ class tx_ttproducts_basket {
 
 	function &getItem (&$row) {
 		$count = intval($this->basketExt[$row['uid']][tx_ttproducts_article_div::getVariantFromRow ($row)]);
-		$priceTax = tx_ttproducts_price_div::getResellerPrice($row,1);
-		$priceNoTax = tx_ttproducts_price_div::getResellerPrice($row,0);
+		$priceTax = $this->price->getResellerPrice($row,1);
+		$priceNoTax = $this->price->getResellerPrice($row,0);
 		$item = array (
 			'calcprice' => 0,
 			'count' => $count,
@@ -817,8 +870,9 @@ class tx_ttproducts_basket {
 		return $item;
 	}
 
+
 	// This calculates the total for everything in the basket
-	function getCalculateSums () {
+	function getCalculatedSums () {
 		$this->calculatedArray['priceTax']['total'] = $this->calculatedArray['priceTax']['goodstotal'];
 		$this->calculatedArray['priceTax']['total']+= $this->calculatedArray['priceTax']['payment'];
 		$this->calculatedArray['priceTax']['total']+= $this->calculatedArray['priceTax']['shipping'];
@@ -853,7 +907,7 @@ class tx_ttproducts_basket {
 
 			// Getting subparts from the template code.
 		$t=array();
-		$t['basketFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($subpartMarker));
+		$t['basketFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, $subpartMarker));
 
 			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
 		if (trim($this->pibase->cObj->getSubpart($t['basketFrameWork'],'###BILLING_ADDRESS_LOGIN###')))	{
@@ -910,7 +964,7 @@ class tx_ttproducts_basket {
 						// Fill marker arrays
 					$wrappedSubpartArray=array();
 					$subpartArray=array();
-					$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf, $actItem,$this->basketExt, $catTitle, $this->content,1,'basketImage');
+					$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf, $actItem,$this->basketExt, $catTitle, $this->tt_content,1,'basketImage');
 
 					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
@@ -924,8 +978,8 @@ class tx_ttproducts_basket {
 					if($actItem['rec']['accessory'] > 0 ){
 						$markerArray['###PRICE_ACCESSORY_TEXT###']= $this->conf['accessoryText'];
 						$markerArray['###PRICE_ACCESSORY_COUNT###']= '<INPUT size="3" maxlength="4" type="text" class="readonly" name="'.$actItem['count'].'" value="'.$actItem['count'].'" readonly="readonly">';
-						$markerArray['###ACCESSORY_VALUE_TAX###']= tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],1,$actItem['rec']['tax'])));
-						$markerArray['###ACCESSORY_VALUE_NO_TAX###']= tx_ttproducts_price_div::printPrice(tx_ttproducts_view_div::priceFormat(tx_ttproducts_price_div::getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],0,$actItem['rec']['tax'])));
+						$markerArray['###ACCESSORY_VALUE_TAX###']= $this->price->printPrice($this->price->priceFormat($this->price->getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],1,$actItem['rec']['tax'])));
+						$markerArray['###ACCESSORY_VALUE_NO_TAX###']= $this->price->printPrice($this->price->priceFormat($this->price->getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],0,$actItem['rec']['tax'])));
 					}
 					else {
 						$markerArray['###PRICE_ACCESSORY_TEXT###']= '';
@@ -934,8 +988,8 @@ class tx_ttproducts_basket {
 						$markerArray['###ACCESSORY_VALUE_NO_TAX###']= '';
 					}
 
-					$markerArray['###PRICE_TOTAL_TAX###']=tx_ttproducts_view_div::priceFormat($actItem['totalTax']);
-					$markerArray['###PRICE_TOTAL_NO_TAX###']=tx_ttproducts_view_div::priceFormat($actItem['totalNoTax']);
+					$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
+					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);
 
 /* Added els4: calculating of price_discount necessary in winkelwagen.tmpl (articles in kurkenshop are excluded, because these articled will be payed with creditpoints) */
 					if ( ($actItem['rec']['price'] != '0.00') && doubleval($actItem['rec']['price2']) && ($actItem['rec']['category'] != $this->conf['creditsCategory']) ) {
@@ -946,9 +1000,9 @@ class tx_ttproducts_basket {
 					}
 
 /* Added els4: TOTUNITS_: both prices mulitplied by unit_factor and third line is calculating the sum, necessary in winkelwagen.tmpl. All articles in kurkenshop are payed with creditpoints*/
-					$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###']=tx_ttproducts_view_div::priceFormat($actItem['totalTax']*$actItem['rec']['unit_factor']);
+					$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###']=$this->price->priceFormat($actItem['totalTax']*$actItem['rec']['unit_factor']);
 					if ($actItem['rec']['category'] == $this->conf['creditsCategory']) {
-						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=tx_ttproducts_view_div::priceFormat($actItem['totalNoTax']*$actItem['rec']['unit_factor']);
+						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']*$actItem['rec']['unit_factor']);
 					} else {
 						$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###']=$actItem['totalNoTax']*$actItem['rec']['unit_factor'];
 					}
@@ -1020,8 +1074,11 @@ class tx_ttproducts_basket {
 		$markerArray=$mainMarkerArray;
 
 			// This is the total for the goods in the basket.
-		$markerArray['###PRICE_GOODSTOTAL_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['goodstotal']);
-		$markerArray['###PRICE_GOODSTOTAL_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['goodstotal']);
+		$markerArray['###PRICE_GOODSTOTAL_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['goodstotal']);
+		$markerArray['###PRICE_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['goodstotal']);
+
+		$markerArray['###PRICE2_GOODSTOTAL_TAX###'] = $this->price->priceFormat($this->calculatedArray['price2Tax']['goodsfatal']); // TODO: +++
+		$markerArray['###PRICE2_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['price2NoTax']['goodsfatal']);		// TODO: +++
 
 		// This is for the Basketoverview
 		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->calculatedArray['count'];
@@ -1034,24 +1091,24 @@ class tx_ttproducts_basket {
 		//$wrappedSubpartArray['###LINK_BASKET###']= array('<a href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</a>');
 
 		$markerArray['###PRICE_SHIPPING_PERCENT###'] = $perc;
-		$markerArray['###PRICE_SHIPPING_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['shipping']);
-		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['shipping']);
+		$markerArray['###PRICE_SHIPPING_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['shipping']);
+		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['shipping']);
 
-		$markerArray['###SHIPPING_SELECTOR###'] = tx_ttproducts_paymentshipping_div::generateRadioSelect($this->pibase, $this->conf,$this,'shipping', $countTotal);
+		$markerArray['###SHIPPING_SELECTOR###'] = $this->paymentshipping->generateRadioSelect($this,'shipping', $countTotal);
 		$markerArray['###SHIPPING_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basketExtra['shipping.']['image.']);
 		$markerArray['###SHIPPING_TITLE###'] = $this->basketExtra['shipping.']['title'];
 
 		$markerArray['###SHIPPING_WEIGHT###'] = doubleval($this->calculatedArray['weight']);
 
 
-		$markerArray['###DELIVERYCOSTS###']=tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['shipping'] + $this->calculatedArray['priceTax']['payment']);
+		$markerArray['###DELIVERYCOSTS###']=$this->price->priceFormat($this->calculatedArray['priceTax']['shipping'] + $this->calculatedArray['priceTax']['payment']);
 
 		$markerArray['###PRICE_PAYMENT_PERCENT###'] = $perc;
-		$markerArray['###PRICE_PAYMENT_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['payment']);
-		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['payment']);
+		$markerArray['###PRICE_PAYMENT_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['payment']);
+		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['payment']);
 
 /* Added els4: payment layout (used in basket_payment_template, winkelwagen.tmpl) */
-		$markerArray['###PAYMENT_SELECTOR###'] = tx_ttproducts_paymentshipping_div::generateRadioSelect($this->pibase, $this->conf,$this,'payment', $countTotal);
+		$markerArray['###PAYMENT_SELECTOR###'] = $this->paymentshipping->generateRadioSelect($this,'payment', $countTotal);
 		$markerArray['###PAYMENT_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basketExtra['payment.']['image.']);
 		$markerArray['###PAYMENT_TITLE###'] = $this->basketExtra['payment.']['title'];
 		if ($markerArray['###PAYMENT_TITLE###'] == "Vooruitbetaling") {
@@ -1079,15 +1136,15 @@ class tx_ttproducts_basket {
 
 /* Added Els: below 3 lines after creditpoint calculation! */
 		// This is the total for everything
-//		$this->getCalculateSums();
-//		$markerArray['###PRICE_TOTAL_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['total']);
-//		$markerArray['###PRICE_TOTAL_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['total']);
+//		$this->getCalculatedSums();
+//		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['total']);
+//		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['total']);
 /* Added Els: marker PRICE_DISCOUNT += uw voordeel (PRICE_GOODSTOTAL_NO_TAX-oldPriceNoTax) and PRICE_VAT = BTW (= ['priceTax']['goodstotal'] - ['priceNoTax']['goodstotal']*/
-		$markerArray['###PRICE_DISCOUNT###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['oldPriceNoTax']-$this->calculatedArray['priceNoTax']['goodstotal']);
-		$markerArray['###PRICE_VAT###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['goodstotal']-$this->calculatedArray['priceNoTax']['goodstotal']);
+		$markerArray['###PRICE_DISCOUNT###'] = $this->price->priceFormat($this->calculatedArray['oldPriceNoTax']-$this->calculatedArray['priceNoTax']['goodstotal']);
+		$markerArray['###PRICE_VAT###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['goodstotal']-$this->calculatedArray['priceNoTax']['goodstotal']);
 
 /* Added els4: discount based on total units (without articles in kurkenshop), necessary in winkelwagen.tmpl */
-		$markerArray['###PRICE_TOTUNITS_DISCOUNT###'] = tx_ttproducts_view_div::priceFormat($sum_pricediscount_total_totunits);
+		$markerArray['###PRICE_TOTUNITS_DISCOUNT###'] = $this->price->priceFormat($sum_pricediscount_total_totunits);
 
 /* Added Els4: if show_handling_cost (calculated above) then handling costs exists (winkelwagen.tmpl) */
 		if ($show_handling_cost == "1") {
@@ -1165,12 +1222,12 @@ class tx_ttproducts_basket {
 
 /* Added Els: below 3 lines moved from above */
 			// This is the total for everything
-		$this->getCalculateSums();
-		$markerArray['###PRICE_TOTAL_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['total']);
-		$markerArray['###PRICE_TOTAL_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceNoTax']['total']);
+		$this->getCalculatedSums();
+		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['total']);
+		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['total']);
 
 /* Added els4: PRICE_GOODSTOTAL_TOTUNITS_NO_TAX: sum total price (winkelwagen.tmpl) */
-		$markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] = tx_ttproducts_view_div::priceFormat($sum_price_total_totunits_no_tax);
+		$markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($sum_price_total_totunits_no_tax);
 
 /* Added Els: voucher marker inclusive conditions */
 /* Added Els5: small changes in voucher marker inclusive conditions */
@@ -1195,9 +1252,9 @@ class tx_ttproducts_basket {
 					} else {
 						$subpartArray['###SUB_VOUCHERCODE_DISCOUNTOWNID###'] = '';
 						$subpartArray['###SUB_VOUCHERCODE_DISCOUNTWRONG###'] = '';
-						//$this->calculatedArray['priceTax']['voucher'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['shipping']);
+						//$this->calculatedArray['priceTax']['voucher'] = $this->price->priceFormat($this->calculatedArray['priceTax']['shipping']);
 						$this->calculatedArray['priceTax']['voucher'] = $this->conf['voucherPrice'];
-						$markerArray['###VOUCHER_DISCOUNT###'] = tx_ttproducts_view_div::priceFormat($this->calculatedArray['priceTax']['voucher']);
+						$markerArray['###VOUCHER_DISCOUNT###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['voucher']);
 						$subpartArray['###SUB_VOUCHERCODE_NODISCOUNT###'] = '';
 					}
 				} else {
@@ -1301,7 +1358,7 @@ class tx_ttproducts_basket {
 		} else {
 			// quantity chosen can not be larger than the maximum amount, above calculated
 			if ($this->recs['tt_products']['creditpoints'] > number_format( min ($max1_creditpoints,$max2_creditpoints[0]),0)) $this->recs['tt_products']['creditpoints'] = number_format( min ($max1_creditpoints,$max2_creditpoints[0]),0);
-			$this->calculatedArray['priceTax']['creditpoints'] = tx_ttproducts_view_div::priceFormat($this->recs['tt_products']['creditpoints']*$this->conf['creditpoints.']['pricefactor']);
+			$this->calculatedArray['priceTax']['creditpoints'] = $this->price->priceFormat($this->recs['tt_products']['creditpoints']*$this->conf['creditpoints.']['pricefactor']);
 			$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = $this->recs['tt_products']['creditpoints'];
 			$subpartArray['###SUB_CREDITPOINTS_DISCOUNT_EMPTY###'] = '';
 			$markerArray['###CREDIT_DISCOUNT###'] = $this->calculatedArray['priceTax']['creditpoints'];
@@ -1344,7 +1401,7 @@ class tx_ttproducts_basket {
 		$markerArray['###CREDITPOINTS_SAVED###'] = number_format($creditpoints * $sum_pricecreditpoints_total_totunits,'0');
 
 /* Added Els4: total price = subtotal - bezorgkosten + voucher + gift + giftcertificate (winkelwagen.tmpl) */
-		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = tx_ttproducts_view_div::priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###GIFT_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
+		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = $this->price->priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###GIFT_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
 
 		$wrappedSubpartArray['###LINK_AGB###']=array('<a href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</a>');
 
