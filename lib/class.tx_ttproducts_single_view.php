@@ -59,15 +59,15 @@ class tx_ttproducts_single_view {
 	var $formUrl; // URL of the form
 
  	function init(&$pibase, &$conf, &$config, &$page, &$content, &$tt_products, &$tt_products_cat, $uid, $extVars, &$formUrl) {
- 		$this->pibase = $pibase;
- 		$this->conf = $conf;
- 		$this->config = $config;
- 		$this->page = $page;
- 		$this->content = $content;
+ 		$this->pibase = &$pibase;
+ 		$this->conf = &$conf;
+ 		$this->config = &$config;
+ 		$this->page = &$page;
+ 		$this->content = &$content;
  		$this->uid = $uid;
  		$this->variants = $extVars;
- 		$this->tt_products = $tt_products;
- 		$this->tt_products_cat = $tt_products_cat;
+ 		$this->tt_products = &$tt_products;
+ 		$this->tt_products_cat = &$tt_products_cat;
  		$this->formUrl = $formUrl;
  	}
 
@@ -161,7 +161,7 @@ class tx_ttproducts_single_view {
 
 			$item = $basket->getItem($row);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
-			$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf, $item,$basket->basketExt, $catTitle,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
+			$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf, $this->config, $item,$basket->basketExt, $catTitle,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
 
 			$subpartArray = array();
 

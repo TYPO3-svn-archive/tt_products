@@ -83,6 +83,8 @@ class tx_ttproducts_basket {
 	var $itemArray;						// the items in the basket; database row, how many (quantity, count) and the price; this has replaced the former $calculatedBasket
 	var $calculatedArray;				// all calculated totals from the basket e.g. priceTax and weight
 
+	var $feuserextrafields;			// exension with additional fe_users fields
+
 
 	/**
 	 * Removes a gift from the basket
@@ -130,7 +132,11 @@ class tx_ttproducts_basket {
 		$this->price = &$price;
 		$this->paymentshipping = $paymentshipping;
 
+		// store if feuserextrafields is loaded
+		$this->feuserextrafields = t3lib_extMgm::isLoaded('feuserextrafields');
+
 		$this->itemArray = array();
+
 
 		$tmpBasketExt = $TSFE->fe_user->getKey('ses','basketExt');
 
@@ -964,7 +970,7 @@ class tx_ttproducts_basket {
 						// Fill marker arrays
 					$wrappedSubpartArray=array();
 					$subpartArray=array();
-					$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf, $actItem,$this->basketExt, $catTitle, $this->tt_content,1,'basketImage');
+					$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf,$this->config, $actItem,$this->basketExt, $catTitle, $this->tt_content,1,'basketImage');
 
 					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];

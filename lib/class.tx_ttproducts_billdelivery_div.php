@@ -149,7 +149,7 @@ class tx_ttproducts_billdelivery_div {
 
 								// Print Item Title
 							$wrappedSubpartArray=array();
-							$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($pibase,$conf, $actItem,$basket->basketExt, $catTitle,$tt_content,1,'image');
+							$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($pibase,$conf, $config, $actItem,$basket->basketExt, $catTitle,$tt_content,1,'image');
 
 							$markerArray['###FIELD_QTY###'] = $actItem['count'];
 

@@ -101,7 +101,7 @@ class tx_ttproducts_view_div {
 	 * @return	string
 	 * @access private
 	 */
-	function getItemMarkerArray (&$pibase, &$conf, &$item, &$basketExt, $catTitle, &$contentTable, $imageNum=0, $imageRenderObj='image', $forminfoArray = array())	{
+	function getItemMarkerArray (&$pibase, &$conf, &$config, &$item, &$basketExt, $catTitle, &$contentTable, $imageNum=0, $imageRenderObj='image', $forminfoArray = array())	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 
 		$row = &$item['rec'];

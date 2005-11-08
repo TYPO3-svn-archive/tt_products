@@ -56,14 +56,14 @@ class tx_ttproducts_list_view {
     var $formUrl; // URL of the form
 
     function init(&$pibase, &$conf, &$config, &$page, &$tt_content, &$tt_products, &$tt_products_cat, &$formUrl) {
-         $this->pibase = $pibase;
-         $this->conf = $conf;
-         $this->config = $config;
-         $this->page = $page;
-         $this->tt_content = $tt_content;
-         $this->tt_products = $tt_products;
-         $this->tt_products_cat = $tt_products_cat;
-         $this->formUrl = $formUrl;    
+         $this->pibase = &$pibase;
+         $this->conf = &$conf;
+         $this->config = &$config;
+         $this->page = &$page;
+         $this->tt_content = &$tt_content;
+         $this->tt_products = &$tt_products;
+         $this->tt_products_cat = &$tt_products_cat;
+         $this->formUrl = &$formUrl;    
     }
 
     // returns the products list view
@@ -139,7 +139,8 @@ class tx_ttproducts_list_view {
             $selectConf['max'] = ($this->config['limit']+1);
             $selectConf['begin'] = $begin_at;
             
-             $res = $this->pibase->cObj->exec_getQuery('tt_products',$selectConf);
+            debug ($selectConf, '$selectConf', __LINE__, __FILE__);
+            $res = $this->pibase->cObj->exec_getQuery('tt_products',$selectConf);
     
             $productsArray=array();
             while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))        {
@@ -255,7 +256,7 @@ class tx_ttproducts_list_view {
                         }
     
                         $item = $basket->getItem($row);
-                        $markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase, $this->conf, $item, $basket->basketExt , $catTitle, $this->tt_content, $this->config['limitImage'],'listImage');
+                        $markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase, $this->conf, $this->config, $item, $basket->basketExt , $catTitle, $this->tt_content, $this->config['limitImage'],'listImage');
                         if ($theCode=='LISTGIFTS') {
                             $markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($basket, $markerArray, $basket->giftnumber);
                         }
