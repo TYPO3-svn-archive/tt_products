@@ -152,10 +152,10 @@ class tx_ttproducts_basket {
 		$newGiftData = t3lib_div::_GP('ttp_gift');
 		$extVars= t3lib_div::_GP('ttp_extvars');
 		$uid = t3lib_div::_GP('tt_products');
-		
+
 		$sameGiftData = true;
 		$identGiftnumber = 0;
-		
+
 		if ($newGiftData) {
 	 		$giftnumber = t3lib_div::_GP('giftnumber');
 			if ($updateMode) {
@@ -192,7 +192,7 @@ class tx_ttproducts_basket {
 					$sameGiftData = false;
 				}
 				if (!$sameGiftData) {
-					$this->basketExt['gift'][$this->giftnumber] = $newGiftData; 
+					$this->basketExt['gift'][$this->giftnumber] = $newGiftData;
 				}
 			}
 		}
@@ -241,7 +241,8 @@ class tx_ttproducts_basket {
 									 		$restQuantity = $quantity;
 									 		for ($giftnumber = 1; $giftnumber <= $count; ++$giftnumber) {
 									 			if ($restQuantity == 0) {
-									 				tx_ttproducts_basket_div::removeGift($giftnumber, $uid, $variant);
+									 	/* Added els7: change of tx_ttproducts_basket_div::removeGift _.into-> $this->removeGift*/
+									 				$this->removeGift($giftnumber, $uid, $variant);
 									 			} else {
 										 			if ($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] > $restQuantity) {
 										 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
@@ -417,7 +418,7 @@ class tx_ttproducts_basket {
 	 * Fills in all empty fields in the delivery info array
 	 */
 	function mapPersonIntoToDelivery()	{
-		
+
 			// all of the delivery address will be overwritten when no address and no email address have been filled in
 		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
 /* Added Els: 'feusers_uid,' and more fields */
@@ -445,7 +446,7 @@ class tx_ttproducts_basket {
 		global $TYPO3_DB;
 
 		$content = '';
-		
+
 		reset ($codes);
 
 		$activityArr=array();
@@ -483,7 +484,7 @@ class tx_ttproducts_basket {
 		if (t3lib_div::_GP('products_finalize'))	{
 			$activityArr['products_finalize']=true;
 		}
-		
+
 		$activityArr = $this->transfromActivities($activityArr);
 
 		if (count($this->basketExt) && count($activityArr))	{	// If there is content in the shopping basket, we are going display some basket code
@@ -519,12 +520,12 @@ class tx_ttproducts_basket {
 									$basket_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
 								} else {
 									$uniqueId = t3lib_div::trimExplode ('-', $this->recs['tt_products']['gift_certificate_unique_number'], true);
-	
+
 									$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
 									$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
-	
+
 									$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
-	
+
 									if ($row) {
 										$money = $row['amount'];
 										$uid = $row['uid'];
@@ -532,11 +533,11 @@ class tx_ttproducts_basket {
 										$fieldsArray['deleted']=1;
 											// Delete the gift record
 										$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
-	
+
 										$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
-	
+
 										tx_ttproducts_creditpoints_div::addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
-	
+
 	/* Added els5: extra markers for inline comments */
 										// Fill marker arrays
 										$markerArray=Array();
@@ -545,18 +546,18 @@ class tx_ttproducts_basket {
 										$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
 										$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###']= '';
 										$content = $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
-	
+
 									} else {
 	/* Added els5: inline comments and errors in stead of new page */
 										//$basket_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
-	
+
 										// Fill marker arrays
 										$markerArray=Array();
 										$subpartArray=Array();
 										$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
 										$subpartArray['###SUB_GIFTCODE_DISCOUNT###']= '';
 										$content = $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
-	
+
 									}
 								}
 							break;
@@ -574,14 +575,14 @@ class tx_ttproducts_basket {
 								if ($check=='' &&
 									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
 									$content.=$this->getBasket($tmp='', '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
-	
+
 									$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
 									$orderUid = tx_ttproducts_order_div::getBlankOrderUid();
 									if (trim($this->conf['paymentActivity'])=='payment' && $handleScript)	{
 										$this->getCalculatedSums();
 										$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 									}
-	
+
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###BASKET_REQUIRED_INFO_MISSING###'));
 									$markerArray = tx_ttproducts_view_div::addURLMarkers($this->pibase, $this->conf, $this, array());
@@ -612,13 +613,13 @@ class tx_ttproducts_basket {
 										$this->getCalculatedSums();
 										$content = tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 									}
-	
+
 									// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 									$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 									$orderConfirmationHTML=$this->getBasket($tmp='', '###'.$tmpl.'###', $mainMarkerArray);
 									$contentTmp = $orderConfirmationHTML;
 									tx_ttproducts_finalize_div::finalizeOrder($this->pibase, $this->conf, $this->templateCode, $this, $this->tt_products, $this->tt_products_cat, $this->price, $orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
-	
+
 									if ($this->conf['PIDthanks'] > 0) {
 										$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
 										$contentTmp = $this->getBasket($tmp='', '###'.$tmpl.'###', $mainMarkerArray);
@@ -755,9 +756,9 @@ class tx_ttproducts_basket {
 					$this->calculatedArray['count']			+= $count;
 					$this->calculatedArray['weight']		+= $row['weight']*$count;
 
-				// Franz: is this needed? 
-				//	$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
-				//	$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
+				// Franz: is this needed?
+//					$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
+//					$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
 
 					$price2Tax = $this->price->getPrice($row['price2'],1,$row['tax']);
 					$price2NoTax = $this->price->getPrice($row['price2'],0,$row['tax']);
@@ -906,7 +907,7 @@ class tx_ttproducts_basket {
 		global $TSFE;
 /* ADDED Els: need for vouchercode conditions */
 		global $TYPO3_DB;
-		
+
 		$templateCode = $templateCode ? $templateCode : $this->templateCode;
 
 //		$this->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
@@ -924,7 +925,7 @@ class tx_ttproducts_basket {
 				$t['basketFrameWork'] = $this->pibase->cObj->substituteSubpart($t['basketFrameWork'], '###BILLING_ADDRESS_LOGIN###', '');
 			}
 		}
-		
+
 		$t['categoryTitle'] = $this->pibase->cObj->getSubpart($t['basketFrameWork'],'###ITEM_CATEGORY###');
 		$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['basketFrameWork'],'###ITEM_LIST###');
 		$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
@@ -1000,17 +1001,22 @@ class tx_ttproducts_basket {
 /* Added els4: calculating of price_discount necessary in winkelwagen.tmpl (articles in kurkenshop are excluded, because these articled will be payed with creditpoints) */
 					if ( ($actItem['rec']['price'] != '0.00') && doubleval($actItem['rec']['price2']) && ($actItem['rec']['category'] != $this->conf['creditsCategory']) ) {
 						$pricediscount_total_tot_units = "";
-						$oldprice_total_tot_units = ($actItem['totalNoTax']/$actItem['rec']['price2'])*$actItem['rec']['price'];
-						$pricediscount_total_tot_units = ($oldprice_total_tot_units - $actItem['totalNoTax']) * $actItem['rec']['unit_factor'];
+/* Added els7: different calculation of pricediscount_total_tot_units */
+//						$oldprice_total_tot_units = ($actItem['totalNoTax']/$actItem['rec']['price2'])*$actItem['rec']['price'];
+//						$pricediscount_total_tot_units = ($oldprice_total_tot_units - $actItem['totalNoTax']) * $actItem['rec']['unit_factor'];
+						$pricediscount_total_tot_units = ($actItem['rec']['price'] - $actItem['rec']['price2']) * $actItem['rec']['unit_factor'] * $actItem['count'];
 						$sum_pricediscount_total_totunits += $pricediscount_total_tot_units;
 					}
-
 /* Added els4: TOTUNITS_: both prices mulitplied by unit_factor and third line is calculating the sum, necessary in winkelwagen.tmpl. All articles in kurkenshop are payed with creditpoints*/
 					$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###']=$this->price->priceFormat($actItem['totalTax']*$actItem['rec']['unit_factor']);
 					if ($actItem['rec']['category'] == $this->conf['creditsCategory']) {
-						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']*$actItem['rec']['unit_factor']);
+/* Added els7: different calculation of PRICECREDITS_TOTAL_TOTUNITS_NO_TAX */
+//						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']*$actItem['rec']['unit_factor']);
+						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=$this->price->priceFormat($actItem['rec']['price2']*$actItem['rec']['unit_factor']) * $actItem['count'];
 					} else {
-						$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###']=$actItem['totalNoTax']*$actItem['rec']['unit_factor'];
+/* Added els7: different calculation of PRICECREDITS_TOTAL_TOTUNITS_NO_TAX */
+//						$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###']=$actItem['totalNoTax']*$actItem['rec']['unit_factor'];
+						$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###']=$actItem['rec']['price2']*$actItem['rec']['unit_factor'] * $actItem['count'];
 					}
 					$sum_pricecredits_total_totunits_no_tax += $markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'];
 					$sum_price_total_totunits_no_tax += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
@@ -1062,7 +1068,7 @@ class tx_ttproducts_basket {
 
 					tx_ttproducts_article_div::getVariantSubpartArray ($this->pibase, $subpartArray, $actItem['rec'], $tempContent, ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'));
 					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
-					
+
 					$itemsOut .= $tempContent;
 				}
 				if ($itemsOut)	{
@@ -1196,7 +1202,7 @@ class tx_ttproducts_basket {
 			// Delivery note.
 		$markerArray['###DELIVERY_NOTE###'] = $this->deliveryInfo['note'];
 		$markerArray['###DELIVERY_NOTE_DISPLAY###'] = nl2br($markerArray['###DELIVERY_NOTE###']);
-		
+
 			// Desired delivery date.
 		$markerArray['###DELIVERY_DESIRED_DATE###'] = $this->deliveryInfo['desired_date'];
 
@@ -1406,8 +1412,9 @@ class tx_ttproducts_basket {
 
 		$markerArray['###CREDITPOINTS_SAVED###'] = number_format($creditpoints * $sum_pricecreditpoints_total_totunits,'0');
 
-/* Added Els4: total price = subtotal - bezorgkosten + voucher + gift + giftcertificate (winkelwagen.tmpl) */
-		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = $this->price->priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###GIFT_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
+/* Added Els4: total price = subtotal + bezorgkosten - voucher - changed credits (winkelwagen.tmpl) */
+/* Added Els7: error in calcualtion */
+		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = $this->price->priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
 
 		$wrappedSubpartArray['###LINK_AGB###']=array('<a href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</a>');
 

@@ -142,11 +142,12 @@ class tx_ttproducts_order_div {
 
 	/**
 	 * Saves the orderRecord and returns the result
-	 * 
+	 *
 	 */
 	function putOrderRecord($orderUid,&$basket,&$deliveryInfo, $feusers_uid, $email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML)	{
 		global $TYPO3_DB;
-		
+/* Added Els7: global tsfe to calculate the initial amount of creditpoints */
+		global $TSFE;
 			// Fix delivery address
 		$basket->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
 //		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
@@ -256,7 +257,7 @@ class tx_ttproducts_order_div {
 
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
-		
+
 	} //putOrderRecord
 
 
@@ -264,7 +265,7 @@ class tx_ttproducts_order_div {
 
 	/**
 	 * Creates M-M relations for the products with tt_products table. Isn't really used yet, but later will be used to display stock-status by looking up how many items are already ordered.
-	 * 
+	 *
 	 */
 	function createMM($conf, $orderUid, &$itemArray)	{
 		global $TYPO3_DB;
@@ -315,6 +316,7 @@ class tx_ttproducts_order_div {
 /* Added Els4: message if no orders available and complete change */
 /* Added Els5: minor modifications */
 /* Added Els6: minor modifications */
+/* Added Els7: minor modifications */
    function orders_display($theCode) {
        global $TSFE;
 
@@ -344,6 +346,7 @@ class tx_ttproducts_order_div {
               </tr>";
 
            $tot_creditpoints_saved = 0;
+           $tot_creditpoints_changed= 0;
            $tot_creditpoints_spended= 0;
            $tot_creditpoints_gifts= 0;
            $this->orders = array();
@@ -357,6 +360,8 @@ class tx_ttproducts_order_div {
                  <td class='recycle-bin'>&nbsp;</td>";
                // total amount of saved creditpoints
                $tot_creditpoints_saved += $row['creditpoints_saved'];
+               // total amount of changed creditpoints
+               $tot_creditpoints_changed+= $row['creditpoints'];
                // total amount of spended creditpoints
                $tot_creditpoints_spended+= $row['creditpoints_spended'];
                // total amount of creditpoints from gifts
@@ -384,6 +389,13 @@ class tx_ttproducts_order_div {
        <td class='noborder'></td>
        <td><span class='noborder'>Besteedde kurken</span></td>
        <td class='rowtotal'>- ".number_format($tot_creditpoints_spended,0)."</td>
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td><span class='noborder'>Ingeruilde kurken</span></td>
+       <td class='rowtotal'>- ".number_format($tot_creditpoints_changed,0)."</td>
        <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
        <td class='recycle-bin'>&nbsp;</td>
      </tr>

@@ -1,3 +1,7 @@
+2005-11-09  Els Verberne <verberne@bendoo.nl>
+	* using price2
+	* make calculation of creditpoints and money totals working again
+
 2005-11-08  Franz Holzinger <franz@fholzinger.com>
 	* change path from pi to pi1
 	* make gift certificates working again

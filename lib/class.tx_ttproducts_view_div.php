@@ -69,7 +69,7 @@ class tx_ttproducts_view_div {
 		if ($basket->basketExtra['payment.']['handleTarget'])	{	// Alternative target
 			$markerArray['###FORM_URL_TARGET###'] = $basket->basketExtra['payment.']['handleTarget'];
 		}
-		
+
 		return $markerArray;
 	} // addURLMarkers
 
@@ -110,18 +110,18 @@ class tx_ttproducts_view_div {
 		$theImgCode=array();
 
 		$imgs = array();
-		
+
 		if ($conf['usePageContentImage']) {
 			$pageContent = $contentTable->getFromPid($row['pid']);
 			foreach ($pageContent as $pid => $contentRow) {
 				if ($contentRow['image']) {
-					$imgs[] = $contentRow['image']; 				
-				} 
+					$imgs[] = $contentRow['image'];
+				}
 			}
 		} else {
-			$imgs = explode(',',$row['image']);		
+			$imgs = explode(',',$row['image']);
 		}
-		
+
 		while(list($c,$val)=each($imgs))	{
 			if ($c==$imageNum)	break;
 			if ($val)	{
@@ -202,36 +202,34 @@ class tx_ttproducts_view_div {
 		$markerArray['###PRICE_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($item['priceTax']));
 		$markerArray['###PRICE_NO_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($item['priceNoTax']));
 
-/* Added els4: printing of pric_no_tax with currency symbol (used in totaal-_.tmpl and winkelwagen.tmpl) */
-		if ($row['category'] == $conf['creditsCategory']) {
-			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $pibase->price->printPrice($item['priceNoTax']);
-		} else {
-			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$pibase->price->printPrice($pibase->price->priceFormat($item['priceNoTax']));
-		}
-
 		$oldPrice = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['price'],1,$row['tax'])));
 		$oldPriceNoTax = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['price'],0,$row['tax'])));
-		$pricezwei = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['rice2'],1,$row['tax']))); // TODO: +++
-		$pricezweiNoTax = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['rice2'],0,$row['tax']))); // TODO: +++
-		$priceNo = intval($config['priceNoReseller']);
+		$price2 = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['price2'],1,$row['tax']))); // TODO: +++
+		$price2NoTax = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['price2'],0,$row['tax']))); // TODO: +++
+/* Added els7: */
+		//$priceNo = intval($config['priceNoReseller']);
+		$priceNo = intval($this->config['priceNoReseller']);
 		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
 			$oldPrice = $oldPriceNoTax = '';
 		}
 
 		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
+		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
 		$markerArray['###PRICE2_TAX###'] = $price2;
 		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
+
 
 /* Added els4: changed whole block: if OLD_PRICE_NO_TAX = 0 then print PRICE_NO_TAX and set PRICE_NO_TAX to empty,
 /* Added els4: Markers SUB_NO_DISCOUNT and SUB_DISCOUNT used in detail template
 		calculating with $item['priceNoTax'] */
 /* Added els4: Exceptions for category = kurkenshop */
+/* Added els7: working now with $price2NoTax */
 		if ($oldPriceNoTax == '0.00') {
 			$markerArray['###OLD_PRICE_NO_TAX_CLASS###'] = 'rightalign';
-			$markerArray['###OLD_PRICE_NO_TAX###'] = $markerArray['###PRICE_NO_TAX###'];
+			$markerArray['###OLD_PRICE_NO_TAX###'] = $price2NoTax;
 			if ($row['category'] == $conf['creditsCategory']) {
 				$markerArray['###CUR_SYM###'] ="";
-				$markerArray['###OLD_PRICE_NO_TAX###'] = $item['priceNoTax']."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
+				$markerArray['###OLD_PRICE_NO_TAX###'] = number_format($price2NoTax,0)."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
 			}
 			$markerArray['###PRICE_NO_TAX###'] = "";
 			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = "";
@@ -246,6 +244,15 @@ class tx_ttproducts_view_div {
 				$markerArray['###CUR_SYM###'] ="";
 				$markerArray['###OLD_PRICE_NO_TAX###'] = $pibase->price->getPrice($row['price'],0,$row['tax'])."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
 			}
+			$markerArray['###PRICE_NO_TAX###'] = $price2NoTax;
+
+/* Added els7: printing of pric_no_tax with currency symbol (used in totaal-_.tmpl and winkelwagen.tmpl) */
+			if ($row['category'] == $conf['creditsCategory']) {
+				$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = number_format($price2NoTax,0);
+			} else {
+				$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$price2NoTax;
+			}
+
 			$markerArray['###DETAIL_PRICE_ITEMLIST###'] = '<span class="prijsvan">van&nbsp; '.$markerArray['###OLD_PRICE_NO_TAX###'].'</span> <span class="prijsvoor">voor '.$markerArray['###PRICE_NO_TAX###'].'</span>';
 			$markerArray['###DETAIL_PRICE_ITEMLIST_PRESENT###'] = '<span class="prijsvan">van&nbsp; '.$markerArray['###OLD_PRICE_NO_TAX###'].'</span> <span class="prijsvoor">voor '.$markerArray['###PRICE_NO_TAX###'].'</span>';
 			$markerArray['###DETAIL_PRICE_ITEMSINGLE###'] = '<p class="prijsvan">van&nbsp; '.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###OLD_PRICE_NO_TAX###'].'</p> <p class="prijsvoor"><nobr>voor '.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###PRICE_NO_TAX###'].'</nobr></p>';
@@ -287,11 +294,11 @@ class tx_ttproducts_view_div {
 
 /* Added Els4: total price is quantity multiplied with pricenottax mulitplied with unit_factor (exception for kurkenshop), _credits is necessary for "kurkenshop", without decimal and currency symbol */
 		if ($row['category'] == $conf['creditsCategory']) {
-			$markerArray['###PRICE_ITEM_X_QTY###'] = $pibase->price->printPrice($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']);
+/* added els7: changed */
+			$markerArray['###PRICE_ITEM_X_QTY###'] = $pibase->price->printPrice($markerArray['###FIELD_QTY###']*$price2NoTax*$row['unit_factor']);
 		} else {
-			$markerArray['###PRICE_ITEM_X_QTY###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$pibase->price->printPrice($pibase->price->priceFormat($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']));
+			$markerArray['###PRICE_ITEM_X_QTY###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$pibase->price->printPrice($pibase->price->priceFormat($markerArray['###FIELD_QTY###']*$price2NoTax*$row['unit_factor']));
 		}
-
 		$prodColorText = '';
 		$prodTmp = explode(';', $row['color']);
 		if ($conf['selectColor']) {
@@ -314,9 +321,9 @@ class tx_ttproducts_view_div {
 //		$prodAccessoryText = '';
 //		$prodTmp = explode(';', $row['accessory']);
 //		if ($conf['selectAccessory']) {
-//			$message = $this->pi_getLL('accessory no');		
+//			$message = $this->pi_getLL('accessory no');
 //			$prodAccessoryText =  '<OPTION value="0">'.$message.'</OPTION>';
-//			$message = $this->pi_getLL('accessory yes');		
+//			$message = $this->pi_getLL('accessory yes');
 //			$prodAccessoryText .= '<OPTION value="1">'.$message.'</OPTION>';
 //		} else {
 //			$prodAccessoryText = $prodTmp;
