@@ -1,3 +1,8 @@
+2005-11-10 Franz Holzinger <franz@fholzinger.com>
+	* markers for price2: PRICE2_GOODSTOTAL_TAX, PRICE2_GOODSTOTAL_NO_TAX, PRICE2_TAX, PRICE2_NO_TAX
+	* use order as an object
+	* error corrections for $this object
+
 2005-11-09  Els Verberne <verberne@bendoo.nl>
 	* using price2
 	* make calculation of creditpoints and money totals working again

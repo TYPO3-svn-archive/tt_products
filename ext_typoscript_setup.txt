@@ -108,6 +108,7 @@ plugin.tt_products {
 
   lockLoginUserInfo = {$plugin.tt_products.lockLoginUserInfo}
   loginUserInfoAddress = {$plugin.tt_products.loginUserInfoAddress}
+  orderBy = {$plugin.tt_products.orderBy}
   orderByCategoryTitle = {$plugin.tt_products.orderByCategoryTitle}
   orderByItemNumberSg = {$plugin.tt_products.orderByItemNumberSg}
   orderNumberPrefix = {$plugin.tt_products.orderNumberPrefix}

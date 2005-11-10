@@ -141,6 +141,8 @@ plugin.tt_products {
   lockLoginUserInfo = 0
     # cat=plugin.products//; type=boolean; label=lock login user address: If lockLoginUserInfo is set, this switch makes that the address field is filled in from address, country, zip and city of the fe_user
   loginUserInfoAddress =
+    # cat=plugin.products//; type=boolean; label=order by after page: If you want to define the order of the list. It is always ordered by the page id at first.
+  orderBy = 
     # cat=plugin.products//; type=boolean; label=order by category title: If you want the list to be ordered by the title of the tt_products_cat. This overwrites any settings of orderBy.
   orderByCategoryTitle = 
     # cat=plugin.products//; type=boolean; label=oder by item number: If the single item display should be sorted by ItemNumber instead of uid; used for ###LINK_NEXT_SINGLE### and ###LINK_PREV_SINGLE### 
@@ -176,7 +178,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=text; label=Special preparation: Message displayed at items marked as special preparation
   specialPreparation = Special preparation possible! <A HREF="?id=999&tt_products=###PRODUCT_ID###">Order here</A>.
 
-    # cat=plugin.products//; type=int+; label=Max note length: Max. length of note text in list view
+    # cat=plugin.products//; type=int+; label=Max note length: Max. number of characters of the note text in the list view
   max_note_length = 100
 
     # cat=plugin.products//; type=boolean; label=Create Users: Create an user account for each new customer
