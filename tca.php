@@ -6,7 +6,7 @@
 $TCA['tt_products'] = Array (
 	'ctrl' => $TCA['tt_products']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime'
+		'showRecordFieldList' => 'title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,gradings,accessory,accessory2,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime'
 	),
 	'columns' => Array (
 		'hidden' => Array (
@@ -59,6 +59,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'title' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
 			'config' => Array (
 				'type' => 'input',
@@ -67,6 +68,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'subtitle' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.subtitle',
 			'config' => Array (
 				'type' => 'input',
@@ -75,6 +77,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'itemnumber' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.itemnumber',
 			'config' => Array (
 				'type' => 'input',
@@ -84,6 +87,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'note' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
 			'config' => Array (
 				'type' => 'text',
@@ -92,6 +96,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'price' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.price',
 			'config' => Array (
 				'type' => 'input',
@@ -111,6 +116,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'unit_factor' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.unit_factor',
 			'config' => Array (
 				'type' => 'input',
@@ -121,6 +127,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'unit' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.unit',
 			'config' => Array (
 				'type' => 'input',
@@ -151,6 +158,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'inStock' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.inStock',
 			'config' => Array (
 				'type' => 'input',
@@ -302,15 +310,25 @@ $TCA['tt_products'] = Array (
 			)
 		)
 	),
+/*
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;3;;3-3-3, itemnumber, inStock, category, price;;2, weight;;4,unit;;5, note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;5-5-5,datasheet')
+//		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;3;;3-3-3, subtitle, www, category, price;;2, price2, color, size, special_preparation, unit_factor, weight;;4, accessory;;5,unit;;6, note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;5-5-5,datasheet')
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, starttime, endtime, title;;;;2-2-2, subtitle, inStock, itemnumber, www, category, price;;;;3-3-3, price2, tax, weight, bulkily, offer, highlight, directcost, color, size, gradings, special_preparation, accessory, accessory2, unit, unit_factor, note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image, datasheet')
+	),
+	'palettes' => Array (
+		'1' => Array('showitem' => '')
+	)
+*/
+	'types' => Array (
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;3;;3-3-3, category, price;;2, color;;4, accessory;;5, note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;5-5-5,datasheet')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
-		'2' => Array('showitem' => 'price2, directcost, tax, offer, highlight'),
-		'3' => Array('showitem' => 'subtitle, www'),
-		'4' => Array('showitem' => 'bulkily, color, size, gradings, special_preparation'),
-		'5' => Array('showitem' => 'unit_factor'),
+		'2' => Array('showitem' => 'price2, special_preparation, directcost, tax, offer, highlight'),
+		'3' => Array('showitem' => 'subtitle, www, itemnumber, inStock'),
+		'4' => Array('showitem' => 'size, unit, unit_factor, gradings, bulkily, weight'),
+		'5' => Array('showitem' => 'accessory2'),
+		'6' => Array('showitem' => ''),
 	)
 
 );

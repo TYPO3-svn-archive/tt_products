@@ -1,3 +1,6 @@
+2005-11-10  Els Verberne <verberne@bendoo.nl>
+	* changes in ext_tables.php and locallang_tca.php to make fe_users.tt_products_creditpoints and fe_users.tt_products_vouchercode visible in the backend
+
 2005-11-10 Franz Holzinger <franz@fholzinger.com>
 	* markers for price2: PRICE2_GOODSTOTAL_TAX, PRICE2_GOODSTOTAL_NO_TAX, PRICE2_TAX, PRICE2_NO_TAX
 	* use order as an object

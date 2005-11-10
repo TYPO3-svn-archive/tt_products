@@ -69,7 +69,7 @@ class tx_ttproducts_view_div {
 		if ($basket->basketExtra['payment.']['handleTarget'])	{	// Alternative target
 			$markerArray['###FORM_URL_TARGET###'] = $basket->basketExtra['payment.']['handleTarget'];
 		}
-		
+
 		return $markerArray;
 	} // addURLMarkers
 
@@ -110,18 +110,18 @@ class tx_ttproducts_view_div {
 		$theImgCode=array();
 
 		$imgs = array();
-		
+
 		if ($conf['usePageContentImage']) {
 			$pageContent = $contentTable->getFromPid($row['pid']);
 			foreach ($pageContent as $pid => $contentRow) {
 				if ($contentRow['image']) {
-					$imgs[] = $contentRow['image']; 				
-				} 
+					$imgs[] = $contentRow['image'];
+				}
 			}
 		} else {
-			$imgs = explode(',',$row['image']);		
+			$imgs = explode(',',$row['image']);
 		}
-		
+
 		while(list($c,$val)=each($imgs))	{
 			if ($c==$imageNum)	break;
 			if ($val)	{
@@ -235,12 +235,8 @@ class tx_ttproducts_view_div {
 				$markerArray['###OLD_PRICE_NO_TAX###'] = number_format($price2NoTax,0)."&nbsp;<img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'>";
 			}
 			$markerArray['###PRICE_NO_TAX###'] = "";
-/* Added els7: printing of pric_no_tax with currency symbol (used in totaal-_.tmpl and winkelwagen.tmpl) */
-			if ($row['category'] == $conf['creditsCategory']) {
-				$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = number_format($priceNoTax,0);
-			} else {
-				$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$priceNoTax;
-			}
+/* Added els8: pric_no_tax with currency symbol empty (used in totaal-_.tmpl and winkelwagen.tmpl) */
+			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = '';
 
 			$markerArray['###DETAIL_PRICE_ITEMLIST###'] = '<span class="flesprijs">flesprijs&nbsp;'.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###OLD_PRICE_NO_TAX###'].'</span>';
 			$markerArray['###DETAIL_PRICE_ITEMLIST_PRESENT###'] = '<span class="flesprijs">prijs&nbsp;'.$markerArray['###CUR_SYM###'].'&nbsp;'.$markerArray['###OLD_PRICE_NO_TAX###'].'</span>';
@@ -321,9 +317,9 @@ class tx_ttproducts_view_div {
 //		$prodAccessoryText = '';
 //		$prodTmp = explode(';', $row['accessory']);
 //		if ($conf['selectAccessory']) {
-//			$message = $this->pi_getLL('accessory no');		
+//			$message = $this->pi_getLL('accessory no');
 //			$prodAccessoryText =  '<OPTION value="0">'.$message.'</OPTION>';
-//			$message = $this->pi_getLL('accessory yes');		
+//			$message = $this->pi_getLL('accessory yes');
 //			$prodAccessoryText .= '<OPTION value="1">'.$message.'</OPTION>';
 //		} else {
 //			$prodAccessoryText = $prodTmp;

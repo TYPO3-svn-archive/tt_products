@@ -114,7 +114,7 @@ $TCA['tt_products_emails'] = Array (
 );
 
 
-if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1) { 
+if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1) {
 	t3lib_div::loadTCA('tt_content');
 	$TCA['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='pi_flexform';
@@ -206,10 +206,28 @@ $tempColumns = Array (
 			'default' => 0
 		)
 	),
+	'tt_products_creditpoints' => Array (
+		'exclude' => 1,
+		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_creditpoints',
+		'config' => Array (
+			'type' => 'input',
+			'size' => '5',
+			'max' => '20'
+		)
+	),
+	'tt_products_vouchercode' => Array (
+		'exclude' => 1,
+		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_vouchercode',
+		'config' => Array (
+			'type' => 'input',
+			'size' => '20',
+			'max' => '256'
+		)
+	),
 );
 t3lib_div::loadTCA('fe_users');
 
 t3lib_extMgm::addTCAcolumns('fe_users',$tempColumns,1);
-t3lib_extMgm::addToAllTCAtypes('fe_users', 'tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1');
+t3lib_extMgm::addToAllTCAtypes('fe_users', 'tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1');
 
 ?>
