@@ -10,7 +10,7 @@
 ########################################################################
 
 $EM_CONF[$_EXTKEY] = Array (
-	'title' => 'Shop system',
+	'title' => 'Shop System',
 	'description' => 'Simple shop system with categories.',
 	'category' => 'plugin',
 	'shy' => 0,

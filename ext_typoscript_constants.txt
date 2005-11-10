@@ -119,7 +119,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=int+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
   defaultProductID = 1
     # cat=plugin.products//; type=int+; label=recursive levels: Number of recursive levels to select tt_products from in lists.
-  recursive = 
+  recursive = 1
     # cat=plugin.products//; type=string; label=Domain ot the shop; used to replace the ###DOMAIN### marker
   domain = nodomain.entered.yet
  

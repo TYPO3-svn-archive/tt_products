@@ -441,6 +441,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 //		if (!$formUrl) {
 //			$formUrl = $this->pi_getPageLink(t3lib_div::_GP('backPID'),'',tx_ttproducts_view_div::getLinkParams());  // $this->getLinkUrl(t3lib_div::_GP('backPID'));
 //		}
+
 		$error_code = '';
 		if (($theCode=='SINGLE') || ($this->tt_product_single && !$this->conf['NoSingleViewOnList'])) {
 			$error_code = '';

@@ -60,7 +60,7 @@ class tx_ttproducts_pricecalc_div {
 
 
 		// result: fill in the  ['calcprice'] of $itemArray['pid'] ['itemnumber']
-	function GetCalculatedData(&$basket) { // delete countTotal if not neede any more
+	function GetCalculatedData(&$conf, &$basket) { // delete countTotal if not neede any more
 		global $TSFE;
 
 		if (!$basket->itemArray) {
@@ -70,12 +70,12 @@ class tx_ttproducts_pricecalc_div {
 
 		$gr_list = explode (',' , $TSFE->gr_list);
 
-		if ($this->conf['getDiscountPrice']) {
+		if ($conf['getDiscountPrice']) {
 			$getDiscount = 1;
 		} else {
 			while (list(,$val) = each ($gr_list)) {
 				if ((intval($val) > 0) && ($getDiscount == 0)) {
-					$getDiscount = 1 - strcmp($TSFE->fe_user->groupData->title, $this->conf['discountGroupName '] );
+					$getDiscount = 1 - strcmp($TSFE->fe_user->groupData->title, $conf['discountGroupName '] );
 
 					if (strlen($TSFE->fe_user->groupData['title']) == 0)	// repair result of strcmp
 						$getDiscount = 0;
@@ -88,17 +88,17 @@ class tx_ttproducts_pricecalc_div {
 
 		$additive = 0;
 		// Check if a special group price can be used
-		if (($getDiscount == 1) && ($this->conf['discountprice.'] != NULL))
+		if (($getDiscount == 1) && ($conf['discountprice.'] != NULL))
 		{
 			$countTotal = 0;
 			$countedItems = array();
 
-			ksort($this->conf['discountprice.']);
-			reset($this->conf['discountprice.']);
+			ksort($conf['discountprice.']);
+			reset($conf['discountprice.']);
 
 			$type = '';
 			$field = '';
-			foreach ($this->conf['discountprice.'] as $k1=>$priceCalcTemp) {
+			foreach ($conf['discountprice.'] as $k1=>$priceCalcTemp) {
 				foreach ($priceCalcTemp as $k2=>$v2) {
 					if (!is_array($priceCalcTemp)) {
 						switch ($k2) {
@@ -141,13 +141,13 @@ class tx_ttproducts_pricecalc_div {
 						if ($dumCount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
 							if (intval($k2) > 1) {
 								// store the discount price in all calculated items from before
-								foreach ($countedItems as $k3=>$v3) {
-									foreach ($v3 as $ $k4 => $v4) {
-										foreach ($basket->itemArray[$v4['pid']] [$v4['itemnumber']] as $k5=>$actItem) {
-										 	$basket->itemArray[$v4['pid']] [$v4['itemnumber']][$k5] ['calcprice'] = $price2;
-										}
+//								foreach ($countedItems as $pricefor1Index=>$v3) {
+								foreach ($countedItems[$pricefor1Index] as $ $k4 => $v4) {
+									foreach ($basket->itemArray[$v4['pid']] [$v4['itemnumber']] as $k5=>$actItem) {
+									 	$basket->itemArray[$v4['pid']] [$v4['itemnumber']][$k5] ['calcprice'] = $price2;
 									}
 								}
+//								}
 								$priceReduction[$pricefor1Index] = 1; // remember the reduction in order not to calculate another price with $priceCalc
 							}
 							else {
@@ -158,11 +158,12 @@ class tx_ttproducts_pricecalc_div {
 					}
 				}
 			}
+
 			if ($additive == 1) {
 
-				reset($this->conf['discountprice.']);
+				reset($conf['discountprice.']);
 
-				foreach ($this->conf['discountprice.'] as $k1=>$priceCalcTemp) {
+				foreach ($conf['discountprice.'] as $k1=>$priceCalcTemp) {
 					if (!is_array($priceCalcTemp)) {
 						continue;
 					}
@@ -197,13 +198,13 @@ class tx_ttproducts_pricecalc_div {
 			}
 		}
 
-		if ($this->conf['pricecalc.']) {
+		if ($conf['pricecalc.']) {
 			$countTotal = 0;
 
-			ksort($this->conf['pricecalc.']);
-			reset($this->conf['pricecalc.']);
+			ksort($conf['pricecalc.']);
+			reset($conf['pricecalc.']);
 
-			foreach ($this->conf['pricecalc.'] as $k1=>$priceCalcTemp) {
+			foreach ($conf['pricecalc.'] as $k1=>$priceCalcTemp) {
 				if (!is_array($priceCalcTemp)) {
 					continue;
 				}

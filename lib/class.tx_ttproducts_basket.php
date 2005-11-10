@@ -421,8 +421,6 @@ class tx_ttproducts_basket {
 	 */
 	function mapPersonIntoToDelivery()	{
 		
-		debug ($this->deliveryInfo, '$this->deliveryInfo', __LINE__, __FILE__);
-		debug ($this->personInfo, '$this->personInfo', __LINE__, __FILE__);
 			// all of the delivery address will be overwritten when no address and no email address have been filled in
 		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
 /* Added Els: 'feusers_uid,' and more fields */
@@ -783,7 +781,7 @@ class tx_ttproducts_basket {
 		// set the 'calcprice' in itemArray
 		if ($this->conf['pricecalc.'] || $this->conf['discountprice.']) {
 			// do the price calculation
-			tx_ttproducts_pricecalc_div::GetCalculatedData($this);
+			tx_ttproducts_pricecalc_div::GetCalculatedData($this->conf,$this);
 		}
 
 		// loop over all items in the basket indexed by page and itemnumber

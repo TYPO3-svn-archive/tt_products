@@ -168,6 +168,7 @@ class tx_ttproducts_page {
 			$this->pid_list = implode(',', $pid_list_arr);
 		}
 		
+		
 	}
 
 	

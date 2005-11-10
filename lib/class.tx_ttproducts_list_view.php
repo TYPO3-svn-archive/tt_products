@@ -114,7 +114,7 @@ class tx_ttproducts_list_view {
         }
         if ($theCode=='LISTNEWITEMS') {
             $temptime = time() - 86400*intval(trim($this->conf['newItemDays']));
-            $where = 'AND tstamp >= '.$temptime;
+            $where .= 'AND tstamp >= '.$temptime;
         }
         if ($theCode=='MEMO') {
             $where = ' AND '.($memoItems != '' ? 'uid IN ('.$memoItems.')' : '1=0' );

@@ -124,7 +124,7 @@ class tx_ttproducts_email_div {
 	/**
 	 * Send notification email for gift certificates
 	 */
-	function sendGiftEmail(&$pibase,$conf,&$basket, $recipient, $comment, $giftRow, $templateCode, $templateMarker)	{
+	function sendGiftEmail(&$pibase,&$conf,&$basket, $recipient, $comment, $giftRow, $templateCode, $templateMarker)	{
 		global $TSFE;
 
 		$sendername = ($giftRow['personname'] ? $giftRow['personname'] : $conf['orderEmail_fromName']);
