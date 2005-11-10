@@ -48,7 +48,7 @@ class tx_ttproducts_currency_div {
 	/**
 	 * currency selector
 	 */
-	function currency_selector($theCode)	{
+	function currency_selector(&$pibase, $theCode)	{
 		global $TSFE;
 
 		$currList = $this->exchangeRate->initCurrencies($this->BaseCurrency);
@@ -56,16 +56,16 @@ class tx_ttproducts_currency_div {
 		$index = 0;
 		foreach( $currList as $key => $value)	{
 			//$url = $this->getLinkUrl('','',array('C' => 'C='.$key));
-			$url = $this->pi_getPageLink($TSFE->id,'',tx_ttproducts_view_div::getLinkParams('',array('C' => 'C='.$key)));
+			$url = $pibase->pi_getPageLink($TSFE->id,'',tx_ttproducts_view_div::getLinkParams('',array('C' => 'C='.$key)));
 			$jScript .= '	currlink['.$index.'] = "'.$url.'"; '.chr(10) ;
 			$index ++ ;
 		}
 
-		$content = $this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###CURRENCY_SELECTOR###'));
-		$content = $this->cObj->substituteMarker( $content, '###CURRENCY_FORM_NAME###', 'tt_products_currsel_form' );
+		$content = $pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###CURRENCY_SELECTOR###'));
+		$content = $pibase->cObj->substituteMarker( $content, '###CURRENCY_FORM_NAME###', 'tt_products_currsel_form' );
 		$onChange = 'if (!document.tt_products_currsel_form.C.options[document.tt_products_currsel_form.C.selectedIndex].value) return; top.location.replace(currlink[document.tt_products_currsel_form.C.selectedIndex] );';
 		$selector = $this->exchangeRate->buildCurrSelector($this->BaseCurrency,'C','',$this->currency, $onChange);
-		$content = $this->cObj->substituteMarker( $content, '###SELECTOR###', $selector );
+		$content = $pibase->cObj->substituteMarker( $content, '###SELECTOR###', $selector );
 
 		// javascript to submit correct get parameters for each currency
 		$GLOBALS['TSFE']->additionalHeaderData['tx_ttproducts'] = '<script type="text/javascript">'.chr(10).$jScript.'</script>';

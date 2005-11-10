@@ -50,7 +50,7 @@ $lConf = $conf;
 $localTemplateCode = $pibase->cObj->fileResource($lConf[templateFile] ? $lConf[templateFile] : 'EXT:tt_products/template/payment_DIBS_template.tmpl');		// Fetches the DIBS template file
 $localTemplateCode = $pibase->cObj->substituteMarkerArrayCached($localTemplateCode, $pibase->globalMarkerArray);
 
-$orderUid = tx_ttproducts_order_div::getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
+$orderUid = $basket->order->getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
 
 $param = '&FE_SESSION_KEY='.rawurlencode(
 $GLOBALS['TSFE']->fe_user->id.'-'.
@@ -72,7 +72,7 @@ switch($products_cmd)	{
 <input type="hidden" name="merchant" value="'.$lConf['merchant'].'">
 <input type="hidden" name="amount" value="'.round($basket->calculatedArray['priceTax']['total'] *100).'">
 <input type="hidden" name="currency" value="'.$lConf['currency'].'">		<!--Valuta som angivet i ISO4217, danske kroner=208-->
-<input type="hidden" name="orderid" value="'.tx_ttproducts_order_div::getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
+<input type="hidden" name="orderid" value="'.$basket->order->getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type="hidden" name="uniqueoid" value="1">
 <input type="hidden" name="accepturl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1'.$param.'">
 <input type="hidden" name="declineurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1'.$param.'">';	
@@ -160,7 +160,7 @@ switch($products_cmd)	{
 <input type="hidden" name="priceinfo3.Tax" value="'.tx_ttproducts_view_div::priceFormat( $basket->calculatedArray['priceTax']['total'] - $basket->calculatedArray['priceNoTax']['total']).'">';
 			$markerArray['###HIDDEN_FIELDS###'].=$theFields;
 		}
-		$content= $basket->cObj->substituteMarkerArrayCached($content, $markerArray);
+		$content= $pibase->cObj->substituteMarkerArrayCached($content, $markerArray);
 	break;		
 	case "decline":
 		$markerArray=array();
@@ -185,7 +185,7 @@ switch($products_cmd)	{
 		$authkey=t3lib_div::_GP('authkey');
 		if ($md5key != $authkey)	{
 			$content=$basket->getBasket($localTemplateCode, '###DIBS_DECLINE_MD5_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
-		} elseif (t3lib_div::_GP('orderid')!=tx_ttproducts_order_div::getOrderNumber($orderUid)) {
+		} elseif (t3lib_div::_GP('orderid')!=$basket->order->getOrderNumber($orderUid)) {
 			$content=$basket->getBasket($localTemplateCode, '###DIBS_DECLINE_ORDERID_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$markerArray=array();

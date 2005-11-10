@@ -117,8 +117,8 @@ class tx_ttproducts_div {
 	/**
 	 * Generates a search where clause.
 	 */
-	function searchWhere($sw)	{
-		$where=$this->cObj->searchWhere($sw, $this->searchFieldList, 'tt_products');
+	function searchWhere(&$pibase, &$searchFieldList, $sw)	{
+		$where=$pibase->cObj->searchWhere($sw, $searchFieldList, 'tt_products');
 		return $where;
 	} // searchWhere
 

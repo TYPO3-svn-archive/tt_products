@@ -41,15 +41,19 @@
 
 
 class tx_ttproducts_price {
+	var $pibase;
 	var $conf;					// original configuration
+	var $config;				// modified configuration
 
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$conf)	{
+	function init(&$pibase, &$conf, &$config)	{
+		$this->pibase = &$pibase;
  		$this->conf = &$conf;
-	
+ 		$this->config = &$config;
+ 		
 	} // init
 
 
@@ -60,7 +64,7 @@ class tx_ttproducts_price {
 		global $TSFE;
 
 		if ($taxpercentage==0)
-			$taxFactor = 1+$this->TAXpercentage/100;
+			$taxFactor = 1 + doubleval($this->conf['TAXpercentage'])/100;
 		else
 			$taxFactor = 1+$taxpercentage/100;
 
@@ -93,7 +97,7 @@ class tx_ttproducts_price {
 		$priceNo = intval($this->config['priceNoReseller']);
 
 		if ($priceNo > 0) {
-			$returnPrice = $this->price->getPrice($row['price'.$priceNo],$tax,$row['tax']);
+			$returnPrice = $this->getPrice($row['price'.$priceNo],$tax,$row['tax']);
 		}
 		// normal price; if reseller price is zero then also the normal price applies
 		if ($returnPrice == 0) {
@@ -107,22 +111,22 @@ class tx_ttproducts_price {
 	 * For shop inside EU country: check if TAX should be included
 	 */
 	function checkVatInclude()	{
-		$include = 1;
-		if( $this->conf['TAXeu'] )   {
-			if( ($this->personInfo['country_code'] != '') && ($this->personInfo['country_code'] != $this->conf['countryCode']) )    {
-				$whereString =  'cn_iso_3 = "'.$this->personInfo['country_code'].'"';
-				$euMember = 0 ;
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','static_countries', $whereString);
-				if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
-					$euMember = $row['cn_eu_member'];
-				}
-				// exclude VAT for EU companies with valid VAT id and for everyone outside EU
-				if( !$euMember  ||  ($euMember && $this->personInfo['vat_id'] != '') )   {
-					$include = 0;
-				}
-			}
-		}
-		return $include ;
+//		$include = 1;
+//		if( $this->conf['TAXeu'] )   {
+//			if( ($this->personInfo['country_code'] != '') && ($this->personInfo['country_code'] != $this->conf['countryCode']) )    {
+//				$whereString =  'cn_iso_3 = "'.$this->personInfo['country_code'].'"';
+//				$euMember = 0 ;
+//				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','static_countries', $whereString);
+//				if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
+//					$euMember = $row['cn_eu_member'];
+//				}
+//				// exclude VAT for EU companies with valid VAT id and for everyone outside EU
+//				if( !$euMember  ||  ($euMember && $this->personInfo['vat_id'] != '') )   {
+//					$include = 0;
+//				}
+//			}
+//		}
+//		return $include ;
 	} // checkVatInclude
 
 
@@ -137,8 +141,8 @@ class tx_ttproducts_price {
 			$ptconf = $this->conf['priceTagObj.'];
 			$markContentArray = array();
 			$markContentArray['###PRICE###'] = $priceText;
-			$this->cObj->substituteMarkerInObject($ptconf, $markContentArray);
-			return $this->cObj->cObjGetSingle($this->conf['priceTagObj'], $ptconf);
+			$this->pibase->cObj->substituteMarkerInObject($ptconf, $markContentArray);
+			return $this->pibase->cObj->cObjGetSingle($this->conf['priceTagObj'], $ptconf);
 		}
 		else
 			return $priceText;

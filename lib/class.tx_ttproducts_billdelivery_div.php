@@ -39,7 +39,7 @@
  */
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_billdelivery_div.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentshipping.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 
@@ -179,7 +179,7 @@ class tx_ttproducts_billdelivery_div {
 		while(list(,$fName)=each($infoFields))
 		{
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['personInfo'][$fName];
-			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['deliveryInfo'][$fName]; // $this->deliveryInfo[$fName];
+			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['deliveryInfo'][$fName]; // $this->basket->deliveryInfo[$fName];
 		}
 
 		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
@@ -194,7 +194,7 @@ class tx_ttproducts_billdelivery_div {
 		$markerArray['###PRICE_TOTAL_TAX###'] = $price->priceFormat($conf,$basket->calculatedArray['priceTax']['total']);
 		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $price->priceFormat($conf,$basket->calculatedArray['priceNoTax']['total']);
 
-		$markerArray['###ORDER_UID###'] = tx_ttproducts_order_div::getOrderNumber($orderRow['uid']);
+		$markerArray['###ORDER_UID###'] = $basket->order->getOrderNumber($orderRow['uid']);
 		$markerArray['###ORDER_DATE###'] = $pibase->cObj->stdWrap($orderRow['crdate'],$conf['orderDate_stdWrap.']);
 
 		$content= $pibase->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);

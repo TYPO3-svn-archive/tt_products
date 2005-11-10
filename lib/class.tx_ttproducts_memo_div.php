@@ -47,13 +47,13 @@ class tx_ttproducts_memo_div {
 	/**
 	 * Displays and manages the memo
 	 */
-	function memo_display($theCode, &$errorMessage)
+	function memo_display(&$pibase, $theCode, &$errorMessage)
 	{
 		global $TSFE;
 
 		$fe_user_uid = $TSFE->fe_user->user['uid'];
 		if (!$fe_user_uid)
-			return $this->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###MEMO_NOT_LOGGED_IN###'));
+			return $pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###MEMO_NOT_LOGGED_IN###'));
 
 		if ($TSFE->fe_user->user['tt_products_memoItems'] != '')
 			$memoItems = explode(',', $TSFE->fe_user->user['tt_products_memoItems']);

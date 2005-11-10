@@ -47,7 +47,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_csv.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 
 
@@ -69,10 +69,9 @@ class tx_ttproducts_finalize_div {
 
 		$content = '';
 
-		$rc = tx_ttproducts_order_div::putOrderRecord(
+		$rc = $basket->order->putOrderRecord(
 			$orderUid,
-			$basket,
-			$this->deliveryInfo, 
+			$basket->deliveryInfo, 
 			$basket->personInfo['feusers_uid'],
 			$conf['email_notify_default'],		// Email notification is set here. Default email address is delivery email contact
 			$basket->basketExtra['payment'].': '.$basket->basketExtra['payment.']['title'],
@@ -93,14 +92,14 @@ class tx_ttproducts_finalize_div {
 		}
 
 			// Fetching the orderRecord by selecing the newly saved one...
-		$this->orderRecord = tx_ttproducts_order_div::getOrderRecord($orderUid);
+		$this->orderRecord = $basket->order->getOrderRecord($orderUid);
 		$content .= $basket->getBasket($tmp='','###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
 
 
 		// Is no user is logged in --> create one
-		if ($conf['createUsers'] && $this->personInfo['email'] != '' && $conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
+		if ($conf['createUsers'] && $basket->personInfo['email'] != '' && $conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
 		{
-			$username = strtolower(trim($this->personInfo['email']));
+			$username = strtolower(trim($basket->personInfo['email']));
 			
 			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
@@ -153,15 +152,15 @@ class tx_ttproducts_finalize_div {
 			$rc = $tt_products->reduceInStock($basket->itemArray, $conf['useArticles']);
 		}
 
-		tx_ttproducts_order_div::createMM($conf,$orderUid, $basket->itemArray);
+		$basket->order->createMM($conf,$orderUid, $basket->itemArray);
 
 		// Generate CSV for each order
 		if ($conf['generateCSV'])
 		{
 			$csv = t3lib_div::makeInstance('tx_ttproducts_csv');
-			$csv->init($this,$basket->itemArray,$basket->calculatedArray,$price);
+			$csv->init($this,$conf,$basket->itemArray,$basket->calculatedArray,$price);
 			$csvfilepath = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $conf['CSVdestination'];
-			$csvorderuid = $this->recs['tt_products']['orderUid'];
+			$csvorderuid = $basket->recs['tt_products']['orderUid'];
 						
 			$csv->create($basket, $csvorderuid, $csvfilepath, $error_message);
 		}

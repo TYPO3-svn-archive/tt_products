@@ -39,7 +39,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 
 
@@ -48,13 +48,15 @@ class tx_ttproducts_csv {
 	var $calculatedArray; // reference to calculated basket array
 	var $itemArray; // reference to the bakset item array
 	var $price;	 					// object for price functions
+	var $conf;
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$itemArray, &$calculatedArray, &$price)	{
+	function init(&$pibase, &$conf, &$itemArray, &$calculatedArray, &$price)	{
 		global $TYPO3_DB;
  		$this->pibase = &$pibase;
+ 		$this->conf = &$conf;
  		$this->calculatedArray = &$calculatedArray;
  		$this->itemArray = &$itemArray;
  		$this->price = &$price;
@@ -65,7 +67,7 @@ class tx_ttproducts_csv {
 		if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
 			$csvfilepath .= '/';
 		}
-		$csvfilepath .= tx_ttproducts_order_div::getOrderNumber($csvorderuid).'.csv';
+		$csvfilepath .= $basket->order->getOrderNumber($csvorderuid).'.csv';
 		
 		$csvfile = fopen($csvfilepath, 'w');
 		if ($csvfile !== FALSE)
@@ -83,8 +85,8 @@ class tx_ttproducts_csv {
 					$csvlinedelivery .= ';';
 				}
 				$csvlinehead .= '"' . $fName . '"';
-				$csvlineperson .= '"' . str_replace('\r\n', '|', $this->personInfo[$fName]) . '"';
-				$csvlinedelivery .= '"' . $this->deliveryInfo[$fName] . '"';
+				$csvlineperson .= '"' . str_replace('\r\n', '|', $basket->personInfo[$fName]) . '"';
+				$csvlinedelivery .= '"' . $basket->deliveryInfo[$fName] . '"';
 			}
 
 			// Generate shipping/payment information and delivery note
@@ -96,9 +98,9 @@ class tx_ttproducts_csv {
 				$this->price->priceFormat($this->conf,$this->calculatedArray['priceTax']['payment']) . '";"' .
 				$this->price->priceFormat($this->conf,$this->calculatedArray['priceNoTax']['payment']) . '"';
 
-			$csvlinedeliverynote = '"'.$this->deliveryInfo['note'].'"';
+			$csvlinedeliverynote = '"'.$basket->deliveryInfo['note'].'"';
 			
-			$csvlinedeliverydesireddate = '"'.$this->deliveryInfo['desired_date'].'"';
+			$csvlinedeliverydesireddate = '"'.$basket->deliveryInfo['desired_date'].'"';
 
 			// Build field list
 			$csvfields = explode(',', $this->conf['CSVfields']);

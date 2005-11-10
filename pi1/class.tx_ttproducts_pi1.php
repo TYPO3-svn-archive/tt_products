@@ -71,7 +71,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_finalize_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_gifts_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_list_view.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_memo_div.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentshipping.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_div.php');
@@ -89,8 +89,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
 
 	var $cObj;		// The backReference to the mother cObj object set at call time
-
-	var $searchFieldList='title,note,itemnumber';
 
 		// Internal
 	//var $pid_list='';
@@ -120,10 +118,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 	var $category; 					// object of the type tx_ttproducts_category
 	var $content; 					// object of the type tx_ttproducts_content
+	var $order;	 					// object of the type tx_ttproducts_page
 	var $page;	 					// object of the type tx_ttproducts_page
 	var $paymentshipping; 			// object of the type tx_ttproducts_paymentshipping
 	var $price;	 					// object for price functions
-	var $feuserextrafields;			// exension with additional fe_users fields
 
 	var $basket;				// basket object
 	
@@ -146,7 +144,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$updateMode = 0;
 
 		if (!$this->errorMessage) {
-			$this->basket->init($this, $this->conf, $this->config, $this->templateCode, $TSFE->fe_user->getKey('ses','recs'), $updateMode, $this->page, $this->content, $this->tt_products, $this->category, $this->price, $this->paymentshipping); // Must do this to initialize the basket...
+			$this->basket->init($this, $this->conf, $this->config, $this->templateCode, $TSFE->fe_user->getKey('ses','recs'), $updateMode, 
+						$this->page, $this->content, $this->tt_products, $this->category, $this->price, $this->paymentshipping, $this->order); // Must do this to initialize the basket...
 		}
 
 		// *************************************
@@ -191,7 +190,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				case 'INFO':
 				case 'PAYMENT':
 					$TSFE->set_no_cache();
-						// nothing here any more. This work is done in the call of tx_ttproducts_basket_div::products_basket($codes) before
+						// nothing here any more. This work is done in the call of $this->basket->products_basket($codes) before
 				break;
 				case 'BILL':
 				case 'DELIVERY':
@@ -201,7 +200,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				break;
 				case 'MEMO':
 					$TSFE->set_no_cache();
-					$contentTmp=tx_ttproducts_memo_div::memo_display($theCode, $this->errorMessage);
+					$contentTmp=tx_ttproducts_memo_div::memo_display($this, $theCode, $this->errorMessage);
 					break;
 				case 'CURRENCY':
 					$TSFE->set_no_cache();
@@ -210,7 +209,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 /* Added Els: case ORDERS line 253-255 */
 				case 'ORDERS':
 					$TSFE->set_no_cache();
-					$contentTmp=tx_ttproducts_order_div::orders_display($theCode);
+					$contentTmp=$this->order->orders_display($theCode);
 				break;
 				default:	// 'HELP'
 					$contentTmp = 'error';
@@ -266,8 +265,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		// *** getting configuration values:
 		// *************************************
 
-		// store if feuserextrafields is loaded
-		$this->feuserextrafields = t3lib_extMgm::isLoaded('feuserextrafields');
 
 		// mkl - multicurrency support
 		if (t3lib_extMgm::isLoaded('mkl_currxrate')) {
@@ -306,9 +303,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$this->config['storeRootPid'] = $this->conf['PIDstoreRoot'] ? $this->conf['PIDstoreRoot'] : $TSFE->tmpl->rootLine[0][uid];
 		$this->config['priceNoReseller'] = $this->conf['priceNoReseller'] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
 
-			//extend standard search fields with user setup
-		$this->searchFieldList = trim($this->conf['stdSearchFieldExt']) ? implode(',', array_unique(t3lib_div::trimExplode(',',$this->searchFieldList.','.trim($this->conf['stdSearchFieldExt']),1))) : $this->searchFieldList;
-
 			// If the current record should be displayed.
 		$this->config['displayCurrentRecord'] = $this->conf['displayCurrentRecord'];
 		if ($this->config['displayCurrentRecord'])	{
@@ -343,16 +337,20 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$this->externalCObject = $this->getExternalCObject('externalProcessing');
 
 			// Initializes object
-		$this->TAXpercentage = doubleval($this->conf['TAXpercentage']);		// Set the TAX percentage.
 		$this->globalMarkerArray = $globalMarkerArray;
 
 			// price
 		$this->price = t3lib_div::makeInstance('tx_ttproducts_price');
-		$this->price->init($this->conf);
+		$this->price->init($this, $this->conf, $this->config);
 	
-			// $paymentshipping
+			// paymentshipping
 		$this->paymentshipping = t3lib_div::makeInstance('tx_ttproducts_paymentshipping');
 		$this->paymentshipping->init($this, $this->conf, $this->price);
+
+			// order
+		$this->order = t3lib_div::makeInstance('tx_ttproducts_order');
+		$this->order->init($this, $this->conf, $this->basket);
+
 	} // init
 
 
