@@ -64,6 +64,13 @@ if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProduct
 	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'] = '';
 }
 
+
+//$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products'][0] = array(
+//    'fList' => 'title,subtitle,price,inStock',
+//    'icon' => TRUE
+//);
+
+
   ## Extending TypoScript from static template uid=43 to set up userdefined tag:
 t3lib_extMgm::addTypoScript($_EXTKEY,'editorcfg','
 	tt_content.CSS_editor.ch.tx_ttproducts_pi1 = < plugin.tx_ttproducts_pi1.CSS_editor

@@ -72,6 +72,12 @@ class tx_ttproducts_list_view {
 		$this->searchFieldList = trim($this->conf['stdSearchFieldExt']) ? implode(',', array_unique(t3lib_div::trimExplode(',',$this->searchFieldList.','.trim($this->conf['stdSearchFieldExt']),1))) : $this->searchFieldList;
     }
 
+  
+	function categorycomp($row1, $row2)  {
+		return strcmp($this->tt_products_cat->get[$row1['category']], $this->tt_products_cat->get[$row2['category']]);
+	} // comp
+
+
     // returns the products list view
     function &printView(&$templateCode, &$theCode, &$basket, &$memoItems, &$error_code) {
     	global $TSFE;
@@ -155,14 +161,22 @@ class tx_ttproducts_list_view {
             }
             
             // Getting various subparts we're going to use here:
+            $area = '';
             if ($memoItems != '') {
-                $t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###MEMO_TEMPLATE###'));
+                $area = '###MEMO_TEMPLATE###';
             } else if ($theCode=='LISTGIFTS') {
-                $t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###ITEM_LIST_GIFTS_TEMPLATE###'));
+                $area = '###ITEM_LIST_GIFTS_TEMPLATE###';
             } else {
-                $t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###ITEM_LIST_TEMPLATE###'));
+                $area = '###ITEM_LIST_TEMPLATE###';
             }
+            $t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, $area));
     
+    		if (!$t['listFrameWork']) {
+				$error_code[0] = 'no subtemplate';
+				$error_code[1] = $area;
+				$error_code[2] = $this->conf['templateFile'];
+    		}
+ 
             $t['categoryTitle'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_CATEGORY###');
             $t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_LIST###');
             $t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
@@ -196,7 +210,7 @@ class tx_ttproducts_list_view {
             while(list(,$v)=each($pageArr))    {
                 if (is_array($productsArray[$v]))    {
                     if ($this->conf['orderByCategoryTitle'] >= 1) { // category means it should be sorted by the category title in this case
-                        uasort ($productsArray[$v], array(&$this, 'tx_ttproducts_category::comp'));
+                        uasort ($productsArray[$v], array(&$this, '$this->categorycomp'));
                     }
     
                     reset($productsArray[$v]);
@@ -350,7 +364,7 @@ class tx_ttproducts_list_view {
             if ($more)    {
                 $next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
                 $splitMark = md5(microtime());
-                $tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,'',tx_ttproducts_view_div::getLinkParams('', array('begin_at' => $next)));
+                $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',tx_ttproducts_view_div::getLinkParams('', array('begin_at' => $next)));
 
                 $wrappedSubpartArray['###LINK_NEXT###']=  explode ($splitMark, $tempUrl);  // array('<a href="'.$url.'&begin_at='.$next.'">','</a>');
             } else {
@@ -358,7 +372,7 @@ class tx_ttproducts_list_view {
             }
             if ($begin_at)    {
                 $prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
-                $tempUrl = $this->pi_linkToPage($splitMark,$TSFE->id,'',tx_ttproducts_view_div::getLinkParams('', array('begin_at' => $prev)));
+                $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',tx_ttproducts_view_div::getLinkParams('', array('begin_at' => $prev)));
                 $wrappedSubpartArray['###LINK_PREV###']=explode ($splitMark, $tempUrl); // array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
             } else {
                 $subpartArray['###LINK_PREV###']='';
@@ -372,7 +386,7 @@ class tx_ttproducts_list_view {
                         //    you may use this if you want to link to the current page also
                         //
                     } else {
-                        $tempUrl = $this->pi_linkToPage((string)($i+1),$TSFE->id,'',tx_ttproducts_view_div::getLinkParams('', array('begin_at' => (string)($i * $this->config['limit']))));
+                        $tempUrl = $this->pibase->pi_linkToPage((string)($i+1),$TSFE->id,'',tx_ttproducts_view_div::getLinkParams('', array('begin_at' => (string)($i * $this->config['limit']))));
                         $markerArray['###BROWSE_LINKS###'].= $tempUrl; // ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
                     }
                 }

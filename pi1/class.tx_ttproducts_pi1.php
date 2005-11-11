@@ -329,6 +329,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$globalMarkerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'],$this->conf['color2.']);
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'],$this->conf['color3.']);
 		$globalMarkerArray['###DOMAIN###'] = $this->conf['domain'];
+            // Shopadmin eMail by WEBcoast.ch
+        $globalMarkerArray['###SHOPADMIN_EMAIL###'] = $this->conf['orderEmail_from'];
 
 			// Substitute Global Marker Array
 		$this->templateCode= $this->cObj->substituteMarkerArrayCached($this->templateCode, $globalMarkerArray);
@@ -442,16 +444,15 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 //			$formUrl = $this->pi_getPageLink(t3lib_div::_GP('backPID'),'',tx_ttproducts_view_div::getLinkParams());  // $this->getLinkUrl(t3lib_div::_GP('backPID'));
 //		}
 
-		$error_code = '';
+		$error_code = array();
 		if (($theCode=='SINGLE') || ($this->tt_product_single && !$this->conf['NoSingleViewOnList'])) {
-			$error_code = '';
 			if (!$this->tt_product_single) {
 				$this->tt_product_single = $this->conf['defaultProductID'];
 			}
 			$extVars= t3lib_div::_GP('ttp_extvars');
 				// performing query:
 			if (!$this->page->pid_list) {
-				tx_ttproducts_page_div::setPidlist($this->config['storeRootPid']);
+				$this->page->setPidlist($this->config['storeRootPid']);
 			}
 		
 			$this->page->initRecursive(999, $this);
@@ -467,13 +468,24 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
 			$listView->init ($this, $this->conf, $this->config, $this->page, $this->content, $this->tt_products, $this->category, $formUrl);
 			
-			$error_code = '';
 			$content = $listView->printView($this->templateCode, $theCode, $this->basket, $memoItems, $error_code);
 		}
 		
-		if ($error_code) {
-			$messageArr =  explode('|', $message = $this->pi_getLL($error_code));
-			$content.=$messageArr[0].intval($this->uid) .$messageArr[1];
+		if ($error_code[0]) {
+			$messageArr = array(); 
+			if ($error_code[1]) {
+				$i = 0;
+				foreach ($error_code as $key => $indice) {
+					if ($key == 0) {
+						$messageArr =  explode('|', $message = $this->pi_getLL($indice));
+						$content.=$messageArr[0];
+					} else {
+						$content.=$indice.$messageArr[$i];
+					}
+					$i++;
+				}
+			}
+			// $content.=$messageArr[0].intval($this->uid) .$messageArr[1];
 		}
 
 		return $content;

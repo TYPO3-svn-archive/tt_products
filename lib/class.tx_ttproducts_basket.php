@@ -424,8 +424,8 @@ class tx_ttproducts_basket {
 			// all of the delivery address will be overwritten when no address and no email address have been filled in
 		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
 /* Added Els: 'feusers_uid,' and more fields */
-			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
-			$infoFields = explode(',','feusers_uid,telephone,name,first_name,last_name,email,date_of_birth,company,address,city,zip'.$infoExtraFields); // Fields...
+			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
+			$infoFields = explode(',','feusers_uid,telephone,name,first_name,last_name,email,date_of_birth,company,address,city,zip,country'.$infoExtraFields); // Fields...
 			while(list(,$fName)=each($infoFields))	{
 				$this->deliveryInfo[$fName] = $this->personInfo[$fName];
 			}
@@ -1220,7 +1220,7 @@ class tx_ttproducts_basket {
 		$markerArray['###FE_USER_USERNAME###'] = $TSFE->fe_user->user['username'];
 		$markerArray['###FE_USER_UID###'] = $TSFE->fe_user->user['uid'];
 
-		$markerArray['###PERSON_AGB###'] = $TSFE->fe_user->user['agb'] ? ' checked' : '';
+		$markerArray['###PERSON_AGB###'] = $this->personInfo['agb'] ? ' checked' : '';
 
 		$markerArray['###USERNAME###'] = $this->personInfo['email'];
 		$markerArray['###PASSWORD###'] = $this->password;

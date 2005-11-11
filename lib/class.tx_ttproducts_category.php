@@ -58,10 +58,6 @@ class tx_ttproducts_category {
 	} // init
 
 
-	function comp($row1, $row2)  {
-		return strcmp($this->get[$row1['category']], $this->get[$row2['category']]);
-	} // comp
-
 
 	function get ($uid) {
 		global $TYPO3_DB;

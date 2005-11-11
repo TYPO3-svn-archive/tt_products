@@ -228,7 +228,8 @@ class tx_ttproducts_single_view {
 			}
 			tx_ttproducts_div::setJS($this->pibase, 'email');  // other JavaScript checks can come here
 		} else {
-			$error_code = 'wrong parameter';
+			$error_code[0] = 'wrong parameter';
+			$error_code[1] = intval($this->uid);
 		}
 	return $content;
 	} // print
