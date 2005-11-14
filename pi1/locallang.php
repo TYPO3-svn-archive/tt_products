@@ -45,7 +45,14 @@ $LOCAL_LANG = Array (
 		'open bill' => 'Cliquez ici pour ouvrir la facture',
 		'open delivery' => 'Cliquez ici pour ouvrir le bordereau de livraison',
 		'invalid email' => 'E-mail | non valide! réessayez svp.',
-	),
+		'no template' => 'Impossible de trouver le gabarit du magasin. Vérifiez votre configuration',
+		'no subtemplate' => 'La partie | ou le fichier gabarit | n\'a pas été trouvé',
+		'accept AGB' => 'Vous devez accepter les conditions de ventes pour continuer',
+		'accessory no' => 'sans accessoires',
+		'accessory yes' => 'avec accessoires',
+		'wrong parameter' => 'Mauvais paramètres, GET/POST var \'tt_products\' inexistante ou pas de produit correspondant à l\'uid = | trouvé.',
+		'no csv creation' => 'Alerte: Impossible de créer le fichier CSV  \'|\' pour cette commande!',
+	), 
 	'es' => Array (
 	),
 	'nl' => Array (

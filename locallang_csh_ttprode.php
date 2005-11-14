@@ -21,6 +21,8 @@ $LOCAL_LANG = Array (
 	'it' => Array (
 	),
 	'fr' => Array (
+		'.description' => 'Emails du magasin.',
+		'.details' => 'Ces adresses emails sont utilisées pour envoyer des notifications sur la base des catégories des produits.',
 	),
 	'es' => Array (
 	),

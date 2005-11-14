@@ -36,6 +36,8 @@ tt_content:list_type',
 	'it' => Array (
 	),
 	'fr' => Array (
+		'.description' => 'Articles du magasin',
+		'.details' => 'Cette table contient les produits disponibles dans le magasin par défaut',
 	),
 	'es' => Array (
 	),

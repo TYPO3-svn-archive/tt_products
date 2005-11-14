@@ -49,7 +49,7 @@ class tx_ttproducts_billdelivery_div {
 	/**
 	 * Bill,Delivery Tracking
 	 */
-	function getInformation(&$pibase,&$conf,&$config,&$basket, &$tt_content, &$category, &$price, $type, $orderRow, $templateCode, $tracking)
+	function getInformation(&$pibase,&$conf,&$config,&$basket, &$tt_content, &$tt_products_cat, &$price, $type, $orderRow, $templateCode, $tracking)
 	{
 			/*
 
@@ -90,7 +90,7 @@ class tx_ttproducts_billdelivery_div {
 
 		$categoryQty = array();
 //		$categoryPrice = array();
-		$category = array();
+		$categoryArray = array();
 
 //		$countTotal = 0;
 //
@@ -101,7 +101,7 @@ class tx_ttproducts_billdelivery_div {
 			foreach ($pidItem as $itemnumber=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
 					$currentCategory=$actItem['rec']['category'];
-					$category[$currentCategory] = 1;
+					$categoryArray[$currentCategory] = 1;
 	//			$countTotal += $actBasket['count'];
 					$categoryQty[$currentCategory] += intval($actItem['count']);
 	//			$categoryPrice[$currentCategory] += doubleval($actBasket['priceTax']) * intval($actBasket['count']);
@@ -115,11 +115,11 @@ class tx_ttproducts_billdelivery_div {
 //			$priceShippingTax);
 
 		reset($basket->itemArray);
-		reset($category);
+		reset($categoryArray);
 		$itemsOut='';
 		$out='';
 
-		foreach ($category as $currentCategory=>$value)
+		foreach ($categoryArray as $currentCategory=>$value)
 		{
 			$categoryChanged = 1;
 			// loop over all items in the basket indexed by page and itemnumber
@@ -134,7 +134,7 @@ class tx_ttproducts_billdelivery_div {
 							if ($categoryChanged == 1)
 							{
 								$markerArray=array();
-								$tmpCategory = $category->get($currentCategory);
+								$tmpCategory = $tt_products_cat->get($currentCategory);
 								$catTitle= ($tmpCategory ? $tmpCategory: '');
 								$pibase->cObj->setCurrentVal($catTitle);
 								$markerArray['###CATEGORY_TITLE###'] = $pibase->cObj->cObjGetSingle($conf['categoryHeader'],$conf['categoryHeader.'], 'categoryHeader');

@@ -798,7 +798,7 @@ Exact same features as BASKET_TEMPLATE
 			Leverans sker enligt våran leveranspolicy. Din order är daterad ###ORDER_DATE###<br />
 			<br>
 			Du kan följa din order genom att använda ditt spårningsnummer vilket är: <br />
-			<strong>###ORDER_TRACKING_NO###</strong>. Klicka här för <a href="index.php?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###">att se statusen just nu.</a><br><br>
+			<strong>###ORDER_TRACKING_NO###</strong>. Klicka här för <a href="index.php?id=###PID_TRACKING###&type=1&tracking=###ORDER_TRACKING_NO###">att se statusen just nu.</a><br><br>
 			<br>
 		###GW1E###
 		###EXTERNAL_COBJECT###				
@@ -1252,7 +1252,7 @@ orderinformationen genom att använda följande spårningsnummer:
         ###ORDER_TRACKING_NO###
 		
 Klicka här för att se information nu:
-        http://www.myTypoShop.com/?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###
+        http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=1&tracking=###ORDER_TRACKING_NO###
 
 
 
@@ -1286,7 +1286,7 @@ Använd det nummret som referens när du kontaktar oss.
 
 SPÅRNING:
 Du kan spåra din ordersstatus genom att använda följande spårningsnummer: ###ORDER_TRACKING_NO###
-        http://www.myTypoShop.com/?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###
+        http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=1&tracking=###ORDER_TRACKING_NO###
 
 
 ORDER:

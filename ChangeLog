@@ -1,3 +1,8 @@
+2005-14-11 Franz Holzinger <franz@fholzinger.com>
+	* correct error with bill creation
+	* French template is now available
+	* French translations of the language files
+
 2005-11-11 Franz Holzinger <franz@fholzinger.com>
 	* better display of errors in tt_products
 

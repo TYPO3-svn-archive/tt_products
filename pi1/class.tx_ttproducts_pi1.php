@@ -97,7 +97,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	//var $pageArray=array();				// Is initialized with an array of the pages in the pid-list
 	var $orderRecord = array();			// Will hold the order record if fetched.
 
-
 		// Internal: init():
 	var $templateCode='';				// In init(), set to the content of the templateFile. Used by default in getBasket()
 
@@ -113,10 +112,11 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 	var $mkl; 					// if compatible to mkl_products
 	var $errorMessage;			// if an error occurs, set the output text here.
-	var $tt_products; 				// object of the type tx_table_db
+	var $tt_products; 				// object of the type tx_ttproducts_product
 	var $tt_products_articles;		// object of the type tx_table_db
+	var $tt_products_cat; 					// object of the type tx_ttproducts_category
 
-	var $category; 					// object of the type tx_ttproducts_category
+
 	var $content; 					// object of the type tx_ttproducts_content
 	var $order;	 					// object of the type tx_ttproducts_page
 	var $page;	 					// object of the type tx_ttproducts_page
@@ -145,7 +145,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 		if (!$this->errorMessage) {
 			$this->basket->init($this, $this->conf, $this->config, $this->templateCode, $TSFE->fe_user->getKey('ses','recs'), $updateMode, 
-						$this->page, $this->content, $this->tt_products, $this->category, $this->price, $this->paymentshipping, $this->order); // Must do this to initialize the basket...
+						$this->page, $this->content, $this->tt_products, $this->tt_products_cat, $this->price, $this->paymentshipping, $this->order); // Must do this to initialize the basket...
 		}
 
 		// *************************************
@@ -196,7 +196,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				case 'DELIVERY':
 				case 'TRACKING':
 					$TSFE->set_no_cache();
-					$contentTmp=tx_ttproducts_tracking_div::products_tracking($this, $this->conf, $this->config, $this->basket, $this->content, $this->category, $this->price, $theCode);
+					$contentTmp=tx_ttproducts_tracking_div::products_tracking($this, $this->conf, $this->config, $this->basket, $this->content, $this->tt_products_cat, $this->price, $theCode);
 				break;
 				case 'MEMO':
 					$TSFE->set_no_cache();
@@ -265,28 +265,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		// *** getting configuration values:
 		// *************************************
 
-
-		// mkl - multicurrency support
-		if (t3lib_extMgm::isLoaded('mkl_currxrate')) {
-			include_once(t3lib_extMgm::extPath('mkl_currxrate').'pi1/class.tx_mklcurrxrate_pi1.php');
-			$this->baseCurrency = $TSFE->tmpl->setup['plugin.']['tx_mklcurrxrate_pi1.']['currencyCode'];
-			$this->currency = t3lib_div::GPvar('C') ? 	t3lib_div::GPvar('C') : $this->baseCurrency;
-
-			// mkl - Initialise exchange rate library and get
-
-			$this->exchangeRate = t3lib_div::makeInstance('tx_mklcurrxrate_pi1');
-			$this->exchangeRate->init();
-			$result = $this->exchangeRate->getExchangeRate($this->baseCurrency, $this->currency) ;
-			$this->xrate = floatval ( $result['rate'] );
-		}
-
-		if (t3lib_extMgm::isLoaded('sr_static_info')) {
-			include_once(t3lib_extMgm::extPath('sr_static_info').'pi1/class.tx_srstaticinfo_pi1.php');
-			// Initialise static info library
-			$this->staticInfo = t3lib_div::makeInstance('tx_srstaticinfo_pi1');
-			$this->staticInfo->init();
-		}
-
 		$config['code'] = $this->getCodes($this->conf['code'], $this->conf['code.'], $this->conf['defaultCode'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']);
 
 		$this->config['limit'] = $this->conf['limit'] ? $this->conf['limit'] : 50;
@@ -316,8 +294,31 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// template file is fetched. The whole template file from which the various subpart are extracted.
 			$this->templateCode = $this->cObj->fileResource($this->conf['templateFile']);
 		}
+
 		if (!$this->conf['templateFile'] || empty($this->templateCode)) {
-			$this->errorMessage = $this->pi_getLL('no template').' tt_products.file.templateFile.';
+			$this->errorMessage .= $this->pi_getLL('no template').' tt_products.file.templateFile.';
+			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '');
+		}
+
+		// mkl - multicurrency support
+		if (t3lib_extMgm::isLoaded('mkl_currxrate')) {
+			include_once(t3lib_extMgm::extPath('mkl_currxrate').'pi1/class.tx_mklcurrxrate_pi1.php');
+			$this->baseCurrency = $TSFE->tmpl->setup['plugin.']['tx_mklcurrxrate_pi1.']['currencyCode'];
+			$this->currency = t3lib_div::GPvar('C') ? 	t3lib_div::GPvar('C') : $this->baseCurrency;
+
+			// mkl - Initialise exchange rate library and get
+
+			$this->exchangeRate = t3lib_div::makeInstance('tx_mklcurrxrate_pi1');
+			$this->exchangeRate->init();
+			$result = $this->exchangeRate->getExchangeRate($this->baseCurrency, $this->currency) ;
+			$this->xrate = floatval ( $result['rate'] );
+		}
+
+		if (t3lib_extMgm::isLoaded('sr_static_info')) {
+			include_once(t3lib_extMgm::extPath('sr_static_info').'pi1/class.tx_srstaticinfo_pi1.php');
+			// Initialise static info library
+			$this->staticInfo = t3lib_div::makeInstance('tx_srstaticinfo_pi1');
+			$this->staticInfo->init();
 		}
 
 			// globally substituted markers, fonts and colors.
@@ -366,8 +367,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$this->tt_products_articles = t3lib_div::makeInstance('tx_table_db');
 		$this->tt_products_articles->setTCAFieldArray('tt_products_articles','articles');
 
-		$this->category = t3lib_div::makeInstance('tx_ttproducts_category');
-		$this->category->init();
+		$this->tt_products_cat = t3lib_div::makeInstance('tx_ttproducts_category');
+		$this->tt_products_cat->init();
 		$this->content = t3lib_div::makeInstance('tx_ttproducts_content');
 		$this->content->init();
 		$this->page = t3lib_div::makeInstance('tx_ttproducts_page');
@@ -460,13 +461,13 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 			// List single product:
 			$singleView = t3lib_div::makeInstance('tx_ttproducts_single_view');
-			$singleView->init ($this, $this->conf, $this->config, $this->page, $this->content, $this->tt_products, $this->category, $this->tt_product_single, $extVars, $formUrl);
+			$singleView->init ($this, $this->conf, $this->config, $this->page, $this->content, $this->tt_products, $this->tt_products_cat, $this->tt_product_single, $extVars, $formUrl);
 			
 			$content = $singleView->printView($this->templateCode, $this->basket, $error_code);
 		} else {
 			// List all products:
 			$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
-			$listView->init ($this, $this->conf, $this->config, $this->page, $this->content, $this->tt_products, $this->category, $formUrl);
+			$listView->init ($this, $this->conf, $this->config, $this->page, $this->content, $this->tt_products, $this->tt_products_cat, $formUrl);
 			
 			$content = $listView->printView($this->templateCode, $theCode, $this->basket, $memoItems, $error_code);
 		}
