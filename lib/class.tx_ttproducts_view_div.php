@@ -156,10 +156,10 @@ class tx_ttproducts_view_div {
 		}
 
 */
-		$markerArray['###UNIT###'] = $row['unit'];
-		$markerArray['###UNIT_FACTOR###'] = $row['unit_factor'];
+		$markerArray['###PRODUCT_UNIT###'] = $row['unit'];
+		$markerArray['###PRODUCT_UNIT_FACTOR###'] = $row['unit_factor'];
 
-		$markerArray['###ICON_DATASHEET###']=$iconImgCode;
+		$markerArray['###PRODUCT_DATASHEET###']=$iconImgCode;
 
 		$markerArray['###PRODUCT_TITLE###'] = $row['title'];
 		$markerArray['###PRODUCT_NOTE###'] = nl2br($row['note']);
