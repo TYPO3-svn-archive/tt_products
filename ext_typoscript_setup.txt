@@ -78,6 +78,9 @@ plugin.tt_products {
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
   PIDthanks = {$plugin.tt_products.PIDthanks}
   PIDtracking = {$plugin.tt_products.PIDtracking}
+  PIDstatus = {$plugin.tt_products.PIDstatus}
+  PIDbilling = {$plugin.tt_products.PIDbilling}
+  PIDdelivery = {$plugin.tt_products.PIDdelivery}
   PIDitemDisplay = {$plugin.tt_products.PIDitemDisplay}
   PIDsearch = {$plugin.tt_products.PIDsearch}
   PIDbasket = {$plugin.tt_products.PIDbasket}

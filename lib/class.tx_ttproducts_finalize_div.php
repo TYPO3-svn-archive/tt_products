@@ -68,39 +68,12 @@ class tx_ttproducts_finalize_div {
 		global $TYPO3_DB;
 
 		$content = '';
-
-		$rc = $basket->order->putOrderRecord(
-			$orderUid,
-			$basket->deliveryInfo, 
-			$basket->personInfo['feusers_uid'],
-			$conf['email_notify_default'],		// Email notification is set here. Default email address is delivery email contact
-			$basket->basketExtra['payment'].': '.$basket->basketExtra['payment.']['title'],
-			$basket->basketExtra['shipping'].': '.$basket->basketExtra['shipping.']['title'],
-			$basket->calculatedArray['priceTax']['total'],
-			$orderConfirmationHTML
-			);
-
-		// any gift orders in the extended basket?
-		if ($basket->basketExt['gift']) {
-			$pid = intval($conf['PIDGiftsTable']);
-			if (!$pid)	$pid = intval($TSFE->id);
-			$rc = tx_ttproducts_gifts_div::saveOrderRecord(
-				$orderUid,
-				$pid, 
-				$basket->basketExt['gift']
-			);
-		}
-
-			// Fetching the orderRecord by selecing the newly saved one...
-		$this->orderRecord = $basket->order->getOrderRecord($orderUid);
-		$content .= $basket->getBasket($tmp='','###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
-
-
+		// CBY 11/11/2005 I moved the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
 		// Is no user is logged in --> create one
 		if ($conf['createUsers'] && $basket->personInfo['email'] != '' && $conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
 		{
 			$username = strtolower(trim($basket->personInfo['email']));
-			
+
 			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 
@@ -144,9 +117,41 @@ class tx_ttproducts_finalize_div {
 						tx_ttproducts_email_div::send_mail($basket->personInfo['email'], $subject, $plain_message, $conf['orderEmail_from'], $conf['orderEmail_fromName']);
 					}
 				}
+				$res = $TYPO3_DB->exec_SELECTquery(uid, 'fe_users', 'username="'.$username . '" AND deleted=0');
+           				while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+             					 $basket->personInfo['feusers_uid']= $row['uid'];
+            				}
+
 			}
 		}
+		// CBY 11/11/2005 modifcation end
 
+		//t3lib_div::debug($basket->personInfo);
+		$rc = $basket->order->putOrderRecord(
+			$orderUid,
+			$basket->deliveryInfo,
+			$basket->personInfo['feusers_uid'],
+			$conf['email_notify_default'],		// Email notification is set here. Default email address is delivery email contact
+			$basket->basketExtra['payment'].': '.$basket->basketExtra['payment.']['title'],
+			$basket->basketExtra['shipping'].': '.$basket->basketExtra['shipping.']['title'],
+			$basket->calculatedArray['priceTax']['total'],
+			$orderConfirmationHTML
+			);
+
+		// any gift orders in the extended basket?
+		if ($basket->basketExt['gift']) {
+			$pid = intval($conf['PIDGiftsTable']);
+			if (!$pid)	$pid = intval($TSFE->id);
+			$rc = tx_ttproducts_gifts_div::saveOrderRecord(
+				$orderUid,
+				$pid,
+				$basket->basketExt['gift']
+			);
+		}
+
+			// Fetching the orderRecord by selecing the newly saved one...
+		$this->orderRecord = $basket->order->getOrderRecord($orderUid);
+		$content .= $basket->getBasket($tmp='','###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
 
 		if (!$conf['alwaysInStock'] && !$conf['AlwaysInStock']) {
 			$rc = $tt_products->reduceInStock($basket->itemArray, $conf['useArticles']);
@@ -161,7 +166,7 @@ class tx_ttproducts_finalize_div {
 			$csv->init($this,$conf,$basket->itemArray,$basket->calculatedArray,$price);
 			$csvfilepath = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $conf['CSVdestination'];
 			$csvorderuid = $basket->recs['tt_products']['orderUid'];
-						
+
 			$csv->create($basket, $csvorderuid, $csvfilepath, $error_message);
 		}
 
@@ -227,7 +232,7 @@ class tx_ttproducts_finalize_div {
 						// $headers variable removed everywhere!
 						// is it the customer ?
 						if ($recipient == $basket->personInfo['email']) { // customer
-							tx_ttproducts_email_div::send_mail($recipient, $subject, $plain_message, $conf['orderEmail_from'], $conf['orderEmail_fromName'], $conf['AGBattachment']);					
+							tx_ttproducts_email_div::send_mail($recipient, $subject, $plain_message, $conf['orderEmail_from'], $conf['orderEmail_fromName'], $conf['AGBattachment']);
 						} else { // others dependant on category
 							$addcsv = '';
 							if ($conf['generateCSV']) {

@@ -9,11 +9,6 @@
 <H1>meer wijn  Shop-Template Winkelwagen</H1>
 <BR><BR><BR><BR><HR><BR><BR><BR>
 
-<h3>ORDERS_LIST_TEMPLATE</h3>
-<em>This subpart is used to display the list of orders. </em><br>
-<br>
-<br>
-
 <!-- ###BASKET_TEMPLATE### begin (Page meer wijn = winkelwagen, CODE = basket)
 Subpart used to display the content of the shopping basket.
 The product list part has the exact same features as the regular LIST_ITEM_TEMPLATE subpart.
@@ -61,7 +56,7 @@ In addition there's a number of fields used for delivery and payment information
     <td style="padding-left:30;">###FIELD_QTY###<input type="hidden" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"></td>
     <!-- ###QUANTITY_SHOPABOX_GIFT### end  -->
 
-    <td class="rowtotal">###PRICE_ITEM_X_QTY###</td>
+    <td class="rowtotal"><nobr>###PRICE_ITEM_X_QTY###</nobr></td>
 
     <td class="recycle-bin">###PRODUCT_SPECIAL_PREP###&nbsp;</td>
 
@@ -184,7 +179,7 @@ Exact same features as BASKET_TEMPLATE
     <td style="padding-left:30;">###FIELD_QTY###</td>
     <!-- ###QUANTITY_SHOPABOX_GIFT### end  -->
 
-    <td class="rowtotal">###PRICE_ITEM_X_QTY###</td>
+    <td class="rowtotal"><nobr>###PRICE_ITEM_X_QTY###</nobr></td>
 
     <td class="recycle-bin">###PRODUCT_SPECIAL_PREP###&nbsp;</td>
 
@@ -320,7 +315,7 @@ Exact same features as BASKET_TEMPLATE
     <td class="###OLD_PRICE_NO_TAX_CLASS###"><nobr>###CUR_SYM###&nbsp;###OLD_PRICE_NO_TAX###</nobr></td>
     <td class="prijsvoor"><nobr>&nbsp;###PRICE_NO_TAX_CUR_SYM###</nobr></td>
     <td class="rightalign">###FIELD_QTY###</td>
-    <td class="rowtotal">&nbsp;&nbsp;###PRICE_ITEM_X_QTY###</td>
+    <td class="rowtotal"><nobr>&nbsp;&nbsp;###PRICE_ITEM_X_QTY###</nobr></td>
     <td class="recycle-bin">###PRODUCT_SPECIAL_PREP###&nbsp;</td>
   </tr>
        <!-- ###ITEM_SINGLE### end -->
@@ -611,11 +606,78 @@ Email: info@meerwijn.nl</p>
 <!-- ###BASKET_ORDERTHANKS_TEMPLATE### end -->
 
 
-<!-- ###ORDERS_LIST_TEMPLATE### begin  (Page meer wijn = orders, CODE = orders)
-This subpart is used to display the list of orders. PAGE orders-->
+<!-- ###ORDERS_LIST_TEMPLATE### begin This subpart is used to display the list of orders. PAGE orders-->
+
+<h3 class='groupheading'>Welkom ###CLIENT_NAME###    Uw klantnummer <b>###CLIENT_NUMBER###</b></h3>
+            <table width='91%' border='0' cellpadding='0' cellspacing='0'>
+              <tr>
+                <td width='24%' class='tableheading'>Datum</td>
+                <td width='54%' class='tableheading'>Factuurnummer</td>
+                <td width='13%' class='tableheading-rightalign'>Kurken</td>
+                <td width='4%'  class='recycle-bin'>&nbsp;</td>
+                <td width='5%'  class='recycle-bin'>&nbsp;</td>
+              </tr>
+    <!-- ###ORDER_LIST### begin -->
+      <!-- ###ORDER_ITEM### begin -->
+              <tr>
+                <td>###ORDER_DATE###</td>
+                <td>###ORDER_NUMBER### | <a href=index.php?id=###PID_TRACKING###&tracking=###TRACKING_CODE###>Bekijk deze order</a></td>
+                <td class='rowtotal'>###ORDER_CREDITS###</td>
+                 <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+                 <td class='recycle-bin'>&nbsp;</td>
+              </tr>
+      <!-- ###ORDER_ITEM### end -->
+    <!-- ###ORDER_LIST### end -->
+     <tr>
+       <td class='noborder' colspan='5'><br></td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td><span class='noborder'>Gespaarde kurken</span></td>
+       <td class='rowtotal'>###CREDIT_POINTS_SAVED###</td>
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td><span class='noborder'>Gebruikte kurken</span></td>
+       <td class='rowtotal'>- ###CREDIT_POINTS_USED###</td>
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td><span class='noborder'>Verdiende kurken met cadeaubonnen</span></td>
+       <td class='rowtotal'>###CREDIT_POINTS_GIFTS###</td>
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td class='noborder'>Verdiende kurken met uw vouchercode <i>###CLIENT_NAME###</i></td>
+       <td class='lastrow'>###CREDIT_POINTS_VOUCHER###</td>
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+     <tr>
+       <td class='noborder'></td>
+       <td class='subtotaal'>Uw kurkensaldo (per ###CALC_DATE###)</td>
+       <td class='prijssubtotal'>###CREDIT_POINTS_TOTAL###</td>
+       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
+       <td class='recycle-bin'>&nbsp;</td>
+     </tr>
+
+     <!-- ###ORDER_NOROWS### begin -->
+     <tr>
+       <td colspan=5><p style='margin-left=40;'><br>U heeft nog geen bestellingen gedaan.</p></td>
+     </tr>
+     <!-- ###ORDER_NOROWS### end -->
+   </table>
 
 
 <!-- ###ORDERS_LIST_TEMPLATE### end -->
+
+
 
 
  
@@ -663,20 +725,6 @@ If payment is initiated but the required information fields are not filled in co
 	</form>
 
 <!-- ###BASKET_TEMPLATE_NOT_LOGGED_IN### end -->
-
-
-
-
-<!-- ###BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID### begin When someone has entere a wrong unique gift number this message will appear -->
-<p style="margin-left=40;"><b>The gift number is not valid.</b>
-
-	<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
-	<input type="Submit" name="basket" value="back to the basket page" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_INFO###';">
-	</form>
-
-<!-- ###BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID### end -->
-
-
 
 
 
@@ -751,7 +799,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown a
     <td class="###OLD_PRICE_NO_TAX_CLASS###"><nobr>###CUR_SYM###&nbsp;###OLD_PRICE_NO_TAX###</nobr></td>
     <td class="prijsvoor"><nobr>&nbsp;###PRICE_NO_TAX_CUR_SYM###</nobr></td>
     <td class="rightalign">###FIELD_QTY###</td>
-    <td class="rowtotal">&nbsp;&nbsp;###PRICE_ITEM_X_QTY###</td>
+    <td class="rowtotal"><nobr>&nbsp;&nbsp;###PRICE_ITEM_X_QTY###</nobr></td>
     <td class="recycle-bin">###PRODUCT_SPECIAL_PREP###&nbsp;</td>
   </tr>
        <!-- ###ITEM_SINGLE### end -->
@@ -910,7 +958,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown a
      <td colspan="4" class="noborder">&nbsp;</td>
    </tr>
  </table>
-</div>
+<!--</div>--->
 <!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### end -->
 
 
@@ -922,7 +970,9 @@ First line is used as subject for the mail.
 -->
 Bestelling ####ORDER_UID###
 
-Bestelingsbevestiging:
+Bestelling ####ORDER_UID###
+
+Bestellingsbevestiging:
 Uw bestelling is verwerkt en heeft de volgende code: ###ORDER_TRACKING_NO###.
 Verwijs bij elk contact hierover naar dit nummer.
 
@@ -931,11 +981,10 @@ U kunt de status van uw bestelling hier opvragen:
 http://###DOMAIN###/index.php?id=###PID_TRACKING###&tracking=###ORDER_TRACKING_NO###
 
 Uw bestelling:
-
 <!-- ###ITEM_CATEGORY_AND_ITEMS### -->
-<!-- ###ITEM_CATEGORY### begin -->
-Categorie: ###CATEGORY_TITLE###<!-- ###ITEM_CATEGORY### end --><!-- ###ITEM_LIST### begin --><!-- ###ITEM_SINGLE### begin-->
-###PRODUCT_TITLE### (###PRODUCT_SIZE###), ###FIELD_QTY###x, bedrag ###PRICE_ITEM_X_QTY###<!-- ###ITEM_SINGLE### end --><!-- ###ITEM_LIST### end --><!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+<!-- ###ITEM_CATEGORY### begin -->Categorie: ###CATEGORY_TITLE###<!-- ###ITEM_CATEGORY### end --><!-- ###ITEM_LIST### begin --><!-- ###ITEM_SINGLE### begin-->
+###PRODUCT_TITLE### (###PRODUCT_SIZE###), ###FIELD_QTY###x, bedrag ###PRICE_ITEM_X_QTY###<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end --><!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
 
 Shop-a-box handlingkosten: ###CUR_SYM### ###CAT3_HANDLING_COSTS###
 Bezorgkosten: ###CUR_SYM### ###PRICE_SHIPPING_NO_TAX###
@@ -945,7 +994,6 @@ Totaal bedrag: ###CUR_SYM### ###PRICE_TOTAL_MEERWIJN###
 
 Besteedde kurken: ###CREDITPOINTS_SPENDED###
 Gespaarde kurken: ###CREDITPOINTS_SAVED###
-Besteedde kurken: ###CREDITPOINTS_SPENDED###
 
 Persoonlijke gegevens:
 ###PERSON_NAME### (###PERSON_TX_FEUSEREXTRAFIELDS_INITIALS_NAME###)
@@ -954,17 +1002,12 @@ Persoonlijke gegevens:
 ###PERSON_EMAIL###
 
 Factuuradres:
-###PERSON_COMPANY###
-###PERSON_ADDRESS### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBER### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBERADD###
-###PERSON_TX_FEUSEREXTRAFIELDS_POBOX###
-###PERSON_ZIP### ###PERSON_CITY###
-###PERSON_TX_FEUSEREXTRAFIELDS_COUNTRY###
+###PERSON_COMPANY### ###PERSON_ADDRESS### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBER### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBERADD###
+###PERSON_TX_FEUSEREXTRAFIELDS_POBOX### ###PERSON_ZIP### ###PERSON_CITY### ###PERSON_TX_FEUSEREXTRAFIELDS_COUNTRY###
 
 Bezorgadres
-###DELIVERY_TX_FEUSEREXTRAFIELDS_COMPANY_DELIV###
-###DELIVERY_TX_FEUSEREXTRAFIELDS_ADDRESS_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_HOUSENUMBER_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_HOUSENUMBERADD_DELIV###
-###DELIVERY_TX_FEUSEREXTRAFIELDS_ZIP_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_CITY_DELIV###
-###DELIVERY_TX_FEUSEREXTRAFIELDS_COUNTRY_DELIV###
+###DELIVERY_TX_FEUSEREXTRAFIELDS_COMPANY_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_ADDRESS_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_HOUSENUMBER_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_HOUSENUMBERADD_DELIV###
+###DELIVERY_TX_FEUSEREXTRAFIELDS_ZIP_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_CITY_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_COUNTRY_DELIV###
 
 Betaalwijze: ###PAYMENT_TITLE###
 (Post)bankrekening: ###PAYMENT_NUMBER###, Naam rekeninghouder: ###PAYMENT_NAME###, Plaats: ###PAYMENT_CITY###
@@ -1035,133 +1078,6 @@ Email: info@meerwijn.nl
 </body></html>
 
 <!-- ###EMAIL_HTML_SHELL### end -->
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-
-<!-- TRACKING TEMPLATES  -->
-
-
-<!-- ###TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE### begin
-
-Subpart used as template for the notify of gift emails
-First line is used as subject for the mail.
--->
-You have received a certificate
-
-Sender:     ###PERSON_NAME###
-Receiver:   ###DELIVERY_NAME###
-
-Comment:  
-###ORDER_STATUS_COMMENT###
-
-value certificate in Euros:
-###CERTIFICATES_TOTAL###
-
-unique code certificate:
-###CERTIFICATES_UNIQUE_CODE###
-
-<a href="http://###DOMAIN###/index.php?">You have to create a user account here</a>
-
-Med venlig hilsen
-	Inter Photo A/S
-	Torvet 14
-	8600 Silkeborg
-
-	Tlf.nr.: 86804142
-
-<!-- ###TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE### end -->
-
-
-
-<!-- ###TRACKING_DISPLAY_INFO### begin
-Displays the view of the order status by tracking codes.
--->
-<p>Uw order met No. <b>###ORDER_UID###</b> besteld op <!-- ###STATUS_ITEM### begin--> <b>###ORDER_STATUS_TIME###</b><!-- ###STATUS_ITEM### end -->.</p>
-
-###ORDER_HTML_OUTPUT###
-<!-- ###TRACKING_DISPLAY_INFO### end -->
-
-
-<!-- ###TRACKING_ENTER_NUMBER### begin
-Displays form for entering the tracking number.
--->
-###GW1B###<B>Bestellstatus-code invoeren:</B>###GW1E###<br>
-<FORM method="post" action="###FORM_URL###">
-<input type="text" name="tracking"><br>
-<input type="Submit" name="submit" value="status bekijken">
-</FORM>
-
-<!-- ###ADMIN_CONTROL### begin -->
-<table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
-<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
-###GW1B### <strong>Shop beheerder:</strong><br>
-<!-- ###ADMIN_CONTROL_DENY### begin -->
-<FORM method="post" action="###FORM_URL###">
-###GW1B###Code:###GW1B###<br>
-<input type="password" size=40 name="update_code" value="">
-<input type="Submit" name="submit" value="code invoeren">
-</FORM>
-<!-- ###ADMIN_CONTROL_DENY### begin -->
-</td></tr></table>
-</td></tr>
-</table><br>
-<!-- ###ADMIN_CONTROL### end -->
-
-<!-- ###TRACKING_ENTER_NUMBER### end -->
-
-<!-- ###TRACKING_WRONG_NUMBER### begin
-Displays error message if no tracking code.
--->
-###GW1B###<B>De bestelstatus-code bestaat niet! Probeer het opnieuw!</B>###GW1E###<br>
-
-<FORM method="post" action="###FORM_URL###">
-<input type="text" name="tracking"><br>
-<input type="Submit" name="submit" value="bestelstatus opvragen">
-</FORM>
-
-<!-- ###TRACKING_WRONG_NUMBER### end -->
-
-
-
-<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### begin
-Subpart used as template for the notify emails
-First line is used as subject for the mail.
--->
-
-meerwijn.nl bestelstatus (####ORDER_UID###)
-
-BESTELINFORMATION (####ORDER_UID###):
-De status van uw bestelling wordt gewijzigd:
-
-Tijd: ###ORDER_STATUS_TIME###
-Status: ###ORDER_STATUS_INFO###
-
-Opmerking:
-###ORDER_STATUS_COMMENT###
-
-
-BESTELSTATUS:
-Bewaar deze informatie goed voor later:
-###ORDER_TRACKING_NO###
-
-Klik hier om uw gegevens op te vragen:
-http://meerwijn.nl/meerwijn/index.php?id=215&tracking=###ORDER_TRACKING_NO###
-
-Met vriendelijke groet.
-meerwijn.nl
-Meer Wijn
-Wijngaard 7
-Den Haag
-Tel.: +49 (0)7195 583372
-Email: info@meerwijn.nl
-<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
-
-
-
-
-
-
 
 
 

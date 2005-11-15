@@ -115,7 +115,7 @@ class tx_ttproducts_basket {
      * @return      void
  	 */
 
-	function init(&$pibase, &$conf, &$config, &$templateCode, $formerBasket, $updateMode, 
+	function init(&$pibase, &$conf, &$config, &$templateCode, $formerBasket, $updateMode,
 				&$page, &$tt_content, &$tt_products, &$tt_products_cat, &$price, &$paymentshipping, &$order)	{
 		global $TSFE;
 
@@ -155,10 +155,10 @@ class tx_ttproducts_basket {
 		$newGiftData = t3lib_div::_GP('ttp_gift');
 		$extVars= t3lib_div::_GP('ttp_extvars');
 		$uid = t3lib_div::_GP('tt_products');
-		
+
 		$sameGiftData = true;
 		$identGiftnumber = 0;
-		
+
 		if ($newGiftData) {
 	 		$giftnumber = t3lib_div::_GP('giftnumber');
 			if ($updateMode) {
@@ -195,7 +195,7 @@ class tx_ttproducts_basket {
 					$sameGiftData = false;
 				}
 				if (!$sameGiftData) {
-					$this->basketExt['gift'][$this->giftnumber] = $newGiftData; 
+					$this->basketExt['gift'][$this->giftnumber] = $newGiftData;
 				}
 			}
 		}
@@ -420,7 +420,7 @@ class tx_ttproducts_basket {
 	 * Fills in all empty fields in the delivery info array
 	 */
 	function mapPersonIntoToDelivery()	{
-		
+
 			// all of the delivery address will be overwritten when no address and no email address have been filled in
 		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
 /* Added Els: 'feusers_uid,' and more fields */
@@ -448,7 +448,7 @@ class tx_ttproducts_basket {
 		global $TYPO3_DB;
 
 		$content = '';
-		
+
 		reset ($codes);
 
 		$activityArr=array();
@@ -486,7 +486,7 @@ class tx_ttproducts_basket {
 		if (t3lib_div::_GP('products_finalize'))	{
 			$activityArr['products_finalize']=true;
 		}
-		
+
 		$activityArr = $this->transfromActivities($activityArr);
 
 		if (count($this->basketExt) && count($activityArr))	{	// If there is content in the shopping basket, we are going display some basket code
@@ -522,12 +522,12 @@ class tx_ttproducts_basket {
 									$basket_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
 								} else {
 									$uniqueId = t3lib_div::trimExplode ('-', $this->recs['tt_products']['gift_certificate_unique_number'], true);
-	
+
 									$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
 									$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
-	
+
 									$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
-	
+
 									if ($row) {
 										$money = $row['amount'];
 										$uid = $row['uid'];
@@ -535,11 +535,11 @@ class tx_ttproducts_basket {
 										$fieldsArray['deleted']=1;
 											// Delete the gift record
 										$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
-	
+
 										$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
-	
+
 										tx_ttproducts_creditpoints_div::addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
-	
+
 	/* Added els5: extra markers for inline comments */
 										// Fill marker arrays
 										$markerArray=Array();
@@ -548,18 +548,18 @@ class tx_ttproducts_basket {
 										$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
 										$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###']= '';
 										$content = $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
-	
+
 									} else {
 	/* Added els5: inline comments and errors in stead of new page */
 										//$basket_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
-	
+
 										// Fill marker arrays
 										$markerArray=Array();
 										$subpartArray=Array();
 										$markerArray['###VALUE_GIFTCODE###'] = $this->recs['tt_products']['gift_certificate_unique_number'];
 										$subpartArray['###SUB_GIFTCODE_DISCOUNT###']= '';
 										$content = $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
-	
+
 									}
 								}
 							break;
@@ -577,14 +577,14 @@ class tx_ttproducts_basket {
 								if ($check=='' &&
 									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
 									$content.=$this->getBasket($tmp='', '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
-	
+
 									$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
 									$orderUid = $this->order->getBlankOrderUid();
 									if (trim($this->conf['paymentActivity'])=='payment' && $handleScript)	{
 										$this->getCalculatedSums();
 										$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 									}
-	
+
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$content.=$this->pibase->cObj->getSubpart($this->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###BASKET_REQUIRED_INFO_MISSING###'));
 									$markerArray = tx_ttproducts_view_div::addURLMarkers($this->pibase, $this->conf, $this, array());
@@ -615,13 +615,13 @@ class tx_ttproducts_basket {
 										$this->getCalculatedSums();
 										$content = tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
 									}
-	
+
 									// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 									$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 									$orderConfirmationHTML=$this->getBasket($tmp='', '###'.$tmpl.'###', $mainMarkerArray);
 									$contentTmp = $orderConfirmationHTML;
 									tx_ttproducts_finalize_div::finalizeOrder($this->pibase, $this->conf, $this->templateCode, $this, $this->tt_products, $this->tt_products_cat, $this->price, $orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
-	
+
 									if ($this->conf['PIDthanks'] > 0) {
 										$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
 										$contentTmp = $this->getBasket($tmp='', '###'.$tmpl.'###', $mainMarkerArray);
@@ -758,7 +758,7 @@ class tx_ttproducts_basket {
 					$this->calculatedArray['count']			+= $count;
 					$this->calculatedArray['weight']		+= $row['weight']*$count;
 
-// Franz: is this needed? 
+// Franz: is this needed?
 //					$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
 //					$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
 
@@ -909,7 +909,7 @@ class tx_ttproducts_basket {
 		global $TSFE;
 /* ADDED Els: need for vouchercode conditions */
 		global $TYPO3_DB;
-		
+
 		$templateCode = $templateCode ? $templateCode : $this->templateCode;
 
 //		$this->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
@@ -927,7 +927,7 @@ class tx_ttproducts_basket {
 				$t['basketFrameWork'] = $this->pibase->cObj->substituteSubpart($t['basketFrameWork'], '###BILLING_ADDRESS_LOGIN###', '');
 			}
 		}
-		
+
 		$t['categoryTitle'] = $this->pibase->cObj->getSubpart($t['basketFrameWork'],'###ITEM_CATEGORY###');
 		$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['basketFrameWork'],'###ITEM_LIST###');
 		$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
@@ -1073,7 +1073,7 @@ class tx_ttproducts_basket {
 
 					tx_ttproducts_article_div::getVariantSubpartArray ($this->pibase, $subpartArray, $actItem['rec'], $tempContent, ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'));
 					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
-					
+
 					$itemsOut .= $tempContent;
 				}
 				if ($itemsOut)	{
@@ -1168,6 +1168,8 @@ class tx_ttproducts_basket {
 		   $markerArray['###CAT3_HANDLING_COSTS###'] = $this->conf['shopaboxPrice'];
 		} else {
 			$subpartArray['###SUB_CAT3_HANDLING_COSTS###'] = '';
+/* Added Els8: put cat3_handling_costs 0 for plain text email */
+		    $markerArray['###CAT3_HANDLING_COSTS###'] = '0.00';
 		}
 
 			// Personal and delivery info:
@@ -1207,7 +1209,7 @@ class tx_ttproducts_basket {
 			// Delivery note.
 		$markerArray['###DELIVERY_NOTE###'] = $this->deliveryInfo['note'];
 		$markerArray['###DELIVERY_NOTE_DISPLAY###'] = nl2br($markerArray['###DELIVERY_NOTE###']);
-		
+
 			// Desired delivery date.
 		$markerArray['###DELIVERY_DESIRED_DATE###'] = $this->deliveryInfo['desired_date'];
 
@@ -1246,6 +1248,13 @@ class tx_ttproducts_basket {
 /* Added els4: PRICE_GOODSTOTAL_TOTUNITS_NO_TAX: sum total price (winkelwagen.tmpl) */
 		$markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($sum_price_total_totunits_no_tax);
 
+/* Added els8: shipping project meerwijn depends on subtotal amount, below shipping.NoTaxPrice, shipping price is shipping.fixprice, above no shiiping price */
+		if ($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] <= $this->conf['shipping.']['NoTaxPrice']) {
+		   $markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->conf['shipping.']['fixprice'];
+		} else {
+		   $markerArray['###PRICE_SHIPPING_NO_TAX###'] = '0.00';
+		}
+
 /* Added Els: voucher marker inclusive conditions */
 /* Added Els5: small changes in voucher marker inclusive conditions */
 		if ($TSFE->fe_user->user['tt_products_vouchercode'] == '') {
@@ -1281,6 +1290,8 @@ class tx_ttproducts_basket {
 			}
 		} else {
 			$subpartArray['###SUB_VOUCHERCODE_EMPTY###'] = '';
+/* Added Els8: put voucher_discount 0 for plain text email */
+		    $markerArray['###VOUCHER_DISCOUNT###'] = '0.00';
 		}
 
 /* Added Els: creditpoint inclusive conditions*/
@@ -1372,6 +1383,8 @@ class tx_ttproducts_basket {
 		if ($this->recs['tt_products']['creditpoints'] == '') {
 			$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = 0;
 			$subpartArray['###SUB_CREDITPOINTS_DISCOUNT###'] = '';
+/* Added Els8: put credit_discount 0 for plain text email */
+		    $markerArray['###CREDIT_DISCOUNT###'] = '0.00';
 		} else {
 			// quantity chosen can not be larger than the maximum amount, above calculated
 			if ($this->recs['tt_products']['creditpoints'] > number_format( min ($max1_creditpoints,$max2_creditpoints[0]),0)) $this->recs['tt_products']['creditpoints'] = number_format( min ($max1_creditpoints,$max2_creditpoints[0]),0);

@@ -292,7 +292,8 @@ class tx_ttproducts_view_div {
 		if ($row['category'] == $conf['creditsCategory']) {
 			$markerArray['###PRICE_ITEM_X_QTY###'] = $pibase->price->printPrice($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']);
 		} else {
-			$markerArray['###PRICE_ITEM_X_QTY###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$pibase->price->printPrice($pibase->price->priceFormat($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']));
+/* Added Els8: &nbsp; -> space */
+			$markerArray['###PRICE_ITEM_X_QTY###'] = $markerArray['###CUR_SYM###'].' '.$pibase->price->printPrice($pibase->price->priceFormat($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']));
 		}
 
 		$prodColorText = '';

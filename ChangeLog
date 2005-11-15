@@ -1,3 +1,7 @@
+2005-15-11 Els Verberne <verberne@bendoo.nl>
+	* _order.php: integrating order list template
+	* _finalize_div: moved the user creation into the front
+
 2005-15-11 Franz Holzinger <franz@fholzinger.com>
 	* correct error with order by itemnumber in single view
 

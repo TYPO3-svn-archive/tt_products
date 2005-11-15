@@ -59,8 +59,8 @@ class tx_ttproducts_order {
          $this->pibase = &$pibase;
          $this->conf = &$conf;
          $this->basket = &$basket;
-         
-         
+
+
          $this->config = &$config;
          $this->page = &$page;
          $this->tt_content = &$tt_content;
@@ -168,12 +168,12 @@ class tx_ttproducts_order {
 
 	/**
 	 * Saves the orderRecord and returns the result
-	 * 
+	 *
 	 */
 	function putOrderRecord($orderUid,&$deliveryInfo, $feusers_uid, $email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML)	{
 		global $TYPO3_DB;
 		global $TSFE;
-		
+
 			// Fix delivery address
 		$this->basket->mapPersonIntoToDelivery();	// This maps the billing address into the blank fields of the delivery address
 //		$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->externalCObject.'';
@@ -283,7 +283,7 @@ class tx_ttproducts_order {
 
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
-		
+
 	} //putOrderRecord
 
 
@@ -291,7 +291,7 @@ class tx_ttproducts_order {
 
 	/**
 	 * Creates M-M relations for the products with tt_products table. Isn't really used yet, but later will be used to display stock-status by looking up how many items are already ordered.
-	 * 
+	 *
 	 */
 	function createMM($conf, $orderUid, &$itemArray)	{
 		global $TYPO3_DB;
@@ -353,37 +353,37 @@ class tx_ttproducts_order {
        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
 
        $content=$this->pibase->cObj->getSubpart($this->basket->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###ORDERS_LIST_TEMPLATE###'));
+ //CBY 11/11/2005 modifications : integrating order list template start
+      //$orderlist=$this->pibase->cObj->getSubpart($content,'###ORDER_LIST###');
+       $orderitem=$this->pibase->cObj->getSubpart($content,'###ORDER_ITEM###');
        if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
+       $norows=$this->pibase->cObj->getSubpart($content,'###ORDER_NOROWS###');
 
-           $content .= "<p style='margin-left=40;'><br>U heeft nog geen bestellingen gedaan.</p>";
+           $content = $norows;
 	   } else {
 
-           $content .= "
 
-		      <h3 class='groupheading'>Klantnummer: $feusers_uid</h3>
-			  <table width='91%' border='0' cellpadding='0' cellspacing='0'>
-              <tr>
-                <td width='24%' class='tableheading'>Datum</td>
-                <td width='54%' class='tableheading'>Factuurnummer</td>
-                <td width='13%' class='tableheading-rightalign'>Kurken</td>
-                <td width='4%'  class='recycle-bin'>&nbsp;</td>
-                <td width='5%'  class='recycle-bin'>&nbsp;</td>
-              </tr>";
+	// Fill marker arrays
 
+           $markerArray=Array();
+           $subpartArray=Array();
            $tot_creditpoints_saved = 0;
            $tot_creditpoints_changed= 0;
            $tot_creditpoints_spended= 0;
            $tot_creditpoints_gifts= 0;
            $this->orders = array();
            while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-               $this->orders[$row['uid']] = $row['tracking_code'];
-               $content .= "<tr><td>".$this->pibase->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.'])."</td>";
-/* Added Els6: ordernummer dynamically */
-               $content .= "<td>".$this->getOrderNumber($row['uid'])." | <a href=index.php?id=215&tracking=".$row['tracking_code'].">bekijk deze factuur</a> &raquo;</td>";
-               $content .= "<td class='rowtotal'>".($row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'])."</td>
-                 <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
-                 <td class='recycle-bin'>&nbsp;</td>";
-               // total amount of saved creditpoints
+               //$this->orders[$row['uid']] = $row['tracking_code'];
+               $markerArray['###TRACKING_CODE###']=$row['tracking_code'];
+               $markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']);
+               $markerArray['###ORDER_NUMBER###'] = $this->getOrderNumber($row['uid']);
+               $markerArray['###PID_TRACKING###']=$this->conf['PIDtracking'];
+               $markerArray['###PIDbilling###']=$this->conf['PIDbilling'];
+               $markerArray['###PIDdelivery###']=$this->conf['PIDdelivery'];
+               $markerArray['###PIDstatus###']=$this->conf['PIDstatus'];
+               //$rt= $row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
+               $markerArray['###ORDER_CREDITS###']=$row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
+                // total amount of saved creditpoints
                $tot_creditpoints_saved += $row['creditpoints_saved'];
                // total amount of changed creditpoints
                $tot_creditpoints_changed+= $row['creditpoints'];
@@ -391,78 +391,47 @@ class tx_ttproducts_order {
                $tot_creditpoints_spended+= $row['creditpoints_spended'];
                // total amount of creditpoints from gifts
                $tot_creditpoints_gifts+= $row['creditpoints_gifts'];
-           }
+               $orderlistc.= $this->pibase->cObj->substituteMarkerArray($orderitem,$markerArray);
+          }
 
-           $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
-           if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
-               $username = $row['username'];
-           }
+          $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
+          if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
+                $username = $row['username'];
+             }
 
-           $content .= "
-     </tr>
-     <tr>
-       <td class='noborder' colspan='5'><br></td>
-     </tr>
-     <tr>
-       <td class='noborder'></td>
-       <td><span class='noborder'>Gespaarde kurken</span></td>
-       <td class='rowtotal'>".number_format($tot_creditpoints_saved,0)."</td>
-       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
-       <td class='recycle-bin'>&nbsp;</td>
-     </tr>
-     <tr>
-       <td class='noborder'></td>
-       <td><span class='noborder'>Besteedde kurken</span></td>
-       <td class='rowtotal'>- ".number_format($tot_creditpoints_spended,0)."</td>
-       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
-       <td class='recycle-bin'>&nbsp;</td>
-     </tr>
-     <tr>
-       <td class='noborder'></td>
-       <td><span class='noborder'>Ingeruilde kurken</span></td>
-       <td class='rowtotal'>- ".number_format($tot_creditpoints_changed,0)."</td>
-       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
-       <td class='recycle-bin'>&nbsp;</td>
-     </tr>
-     <tr>
-       <td class='noborder'></td>
-       <td><span class='noborder'>Verdiende kurken met cadeaubonnnen</span></td>
-       <td class='rowtotal'>".$tot_creditpoints_gifts."</td>
-       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
-       <td class='recycle-bin'>&nbsp;</td>
-     </tr>
-     <tr>
-       <td class='noborder'></td>
-       <td class='noborder'>Verdiende kurken met uw vouchercode <i>".$row['username']."</i></td>";
+          $res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
+          $num_rows = $GLOBALS['TYPO3_DB']->sql_num_rows($res2) * 5;
 
-           $res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
-           $num_rows = $GLOBALS['TYPO3_DB']->sql_num_rows($res2);
 
-           $content .= "<td class='lastrow'>".($num_rows * 5).'</td>';
+          $res3 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
+          $this->creditpoints = array();
+          while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res3)) {
+            $this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
+            $totalcreditpoints= $row['tt_products_creditpoints'];
+          }
 
-           $content .= "
-       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
-       <td class='recycle-bin'>&nbsp;</td>
-     </tr>
-     <tr>
-       <td class='noborder'></td>
-       <td class='subtotaal'>Uw kurkensaldo (per ".date('d M Y').")</td>";
 
-           $res3 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
-           $this->creditpoints = array();
-           while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res3)) {
-               $this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
-               $content .= "<td class='prijssubtotal'>";
-               $content .= $row['tt_products_creditpoints'];
-               $content .= '</td>';
-           }
-           $content .= "
-       <td class='recycle-bin'><img src='fileadmin/html/img/bullets/kurk.gif' width='17' height='17'></td>
-       <td class='recycle-bin'>&nbsp;</td>
-     </tr>
-    </table>
-";
-	   }
+          $markerArray=Array();
+          $subpartArray=Array();
+
+	$markerArray['###CLIENT_NUMBER###'] =$feusers_uid;
+	$markerArray['###CLIENT_NAME###'] =$username;
+	$markerArray['###CREDIT_POINTS_SAVED###']=number_format($tot_creditpoints_saved,0);
+	$markerArray['###CREDIT_POINTS_SPENT###']=number_format($tot_creditpoints_spended,0);
+	$markerArray['###CREDIT_POINTS_CHANGED###']=number_format($tot_creditpoints_changed,0);
+	$markerArray['###CREDIT_POINTS_USED###']=number_format($tot_creditpoints_spended,0) + number_format($tot_creditpoints_changed,0);
+	$markerArray['###CREDIT_POINTS_GIFTS###']=number_format($tot_creditpoints_gifts,0);
+	$markerArray['###CREDIT_POINTS_TOTAL###']=number_format($totalcreditpoints,0);
+	$markerArray['###CREDIT_POINTS_VOUCHER###'] =$num_rows;
+	$markerArray['###CALC_DATE###']=date('d M Y');
+	$subpartArray['###ORDER_LIST###'] =$orderlistc;
+ 	$subpartArray['###ORDER_NOROWS###'] ='';
+         	$content= $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+
+//CBY 11/11/2005 modifications : integrating order list template end
+
+
+ 	   }
 
        return $content;
 
