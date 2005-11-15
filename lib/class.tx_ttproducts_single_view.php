@@ -104,7 +104,7 @@ class tx_ttproducts_single_view {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 			} else if (count($giftNumberArray)) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
-			} else if ($row['inStock']==0 && $conf['showProductsNotInStock']) {
+			} else if ($row['inStock']==0 && $this->conf['showProductsNotInStock']) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_NOT_IN_STOCK###';
 			} else {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
@@ -118,9 +118,9 @@ class tx_ttproducts_single_view {
 			}
 
 			// set the title of the single view
-			if($conf['substitutePagetitle']== 2) {
+			if($this->conf['substitutePagetitle']== 2) {
 				$TSFE->page['title'] = $row['subtitle'] ? $row['subtitle'] : $row['title'];
-			} elseif ($conf['substitutePagetitle']) {
+			} elseif ($this->conf['substitutePagetitle']) {
 				$TSFE->page['title'] = $row['title'];
 			}
 			$pageCatTitle = '';
@@ -173,17 +173,23 @@ class tx_ttproducts_single_view {
 
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
-			if ($conf['orderByItemNumberSg']) {
+			$prevOrderby = '';
+			$nextOrderby = ''; 
+			if ($this->conf['orderByItemNumberSg']) {
 				$queryPrevPrefix = 'itemnumber < '.intval($row['itemnumber']);
 				$queryNextPrefix = 'itemnumber > '.intval($row['itemnumber']);
+				$prevOrderby= 'itemnumber DESC';
+				$nextOrderby= 'itemnumber ASC';
 			} else {
 				$queryPrevPrefix = 'uid < '.intval($this->uid);
 				$queryNextPrefix = 'uid > '.intval($this->uid);
+				$prevOrderby = 'uid DESC';
+				$nextOrderby = 'uid ASC';
 			}
 			$queryprev = '';
-			$wherestock = ($conf['showNotinStock'] ? '' : 'AND (inStock <>0) ');
+			$wherestock = ($this->conf['showNotinStock'] ? '' : 'AND (inStock <>0) ');
 			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields('tt_products');
-			$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'','uid');
+			$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
 
 			if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )
 				$wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
@@ -191,7 +197,7 @@ class tx_ttproducts_single_view {
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 
 			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields('tt_products');
-			$resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext);
+			$resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
 
 			if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )
 				$wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rownext['uid'].'">','</a>');

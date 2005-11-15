@@ -1,3 +1,6 @@
+2005-15-11 Franz Holzinger <franz@fholzinger.com>
+	* correct error with order by itemnumber in single view
+
 2005-14-11 Franz Holzinger <franz@fholzinger.com>
 	* correct error with bill creation
 	* French template is now available

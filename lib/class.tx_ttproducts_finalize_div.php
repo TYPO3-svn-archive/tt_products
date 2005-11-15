@@ -223,13 +223,19 @@ class tx_ttproducts_finalize_div {
 					$Typo3_htmlmail->start(implode($recipients,','), $subject, $plain_message, $HTMLmailContent, $V);
 					$Typo3_htmlmail->sendtheMail();
 				} else {		// ... else just plain text...
-					// $headers variable removed everywhere!
-					tx_ttproducts_email_div::send_mail($basket->personInfo['email'], $subject, $plain_message, $conf['orderEmail_from'], $conf['orderEmail_fromName'], $conf['AGBattachment']);
-					if ($conf['generateCSV'])
-						$addcsv = $csvfilepath;
-					else
-						$addcsv = '';
-					tx_ttproducts_email_div::send_mail($conf['orderEmail_to'], $subject, $plain_message, $basket->personInfo['email'], $basket->personInfo['name'], $addcsv);
+					foreach ($recipients as $key => $recipient) {
+						// $headers variable removed everywhere!
+						// is it the customer ?
+						if ($recipient == $basket->personInfo['email']) { // customer
+							tx_ttproducts_email_div::send_mail($recipient, $subject, $plain_message, $conf['orderEmail_from'], $conf['orderEmail_fromName'], $conf['AGBattachment']);					
+						} else { // others dependant on category
+							$addcsv = '';
+							if ($conf['generateCSV']) {
+								$addcsv = $csvfilepath;
+							}
+							tx_ttproducts_email_div::send_mail($recipient, $subject, $plain_message, $basket->personInfo['email'], $basket->personInfo['name'], $addcsv);
+						}
+					}
 				}
 			}
 		}
