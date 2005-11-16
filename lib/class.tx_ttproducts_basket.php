@@ -582,7 +582,7 @@ class tx_ttproducts_basket {
 									$orderUid = $this->order->getBlankOrderUid();
 									if (trim($this->conf['paymentActivity'])=='payment' && $handleScript)	{
 										$this->getCalculatedSums();
-										$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
+										$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->pibase,$this->basketExtra['payment.']['handleScript.'],$this);
 									}
 
 								} else {	// If not all required info-fields are filled in, this is shown instead:
@@ -613,7 +613,7 @@ class tx_ttproducts_basket {
 									if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
 										//$this->etCalculatedBasket();
 										$this->getCalculatedSums();
-										$content = tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->basketExtra['payment.']['handleScript.']);
+										$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->pibase, $this->basketExtra['payment.']['handleScript.'], $this);
 									}
 
 									// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page

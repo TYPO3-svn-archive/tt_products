@@ -48,11 +48,11 @@ class tx_ttproducts_order {
 	var $basket;
 
 
-    var $config;
-    var $page;
-    var $tt_content; // element of class tx_table_db
-    var $tt_products; // element of class tx_table_db
-    var $tt_products_cat; // element of class tx_table_db
+//    var $config;
+//    var $page;
+//    var $tt_content; // element of class tx_table_db
+//    var $tt_products; // element of class tx_table_db
+//    var $tt_products_cat; // element of class tx_table_db
 
 
     function init(&$pibase, &$conf, &$basket) {
@@ -61,11 +61,11 @@ class tx_ttproducts_order {
          $this->basket = &$basket;
 
 
-         $this->config = &$config;
-         $this->page = &$page;
-         $this->tt_content = &$tt_content;
-         $this->tt_products = &$tt_products;
-         $this->tt_products_cat = &$tt_products_cat;
+//         $this->config = &$config;
+//         $this->page = &$page;
+//         $this->tt_content = &$tt_content;
+//         $this->tt_products = &$tt_products;
+//         $this->tt_products_cat = &$tt_products_cat;
 
    }
 
@@ -378,9 +378,9 @@ class tx_ttproducts_order {
                $markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']);
                $markerArray['###ORDER_NUMBER###'] = $this->getOrderNumber($row['uid']);
                $markerArray['###PID_TRACKING###']=$this->conf['PIDtracking'];
-               $markerArray['###PIDbilling###']=$this->conf['PIDbilling'];
-               $markerArray['###PIDdelivery###']=$this->conf['PIDdelivery'];
-               $markerArray['###PIDstatus###']=$this->conf['PIDstatus'];
+               $markerArray['###PID_BILLING###']=$this->conf['PIDbilling'];
+               $markerArray['###PID_DELIVERY###']=$this->conf['PIDdelivery'];
+               $markerArray['###PID_STATUS###']=$this->conf['PIDstatus'];
                //$rt= $row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
                $markerArray['###ORDER_CREDITS###']=$row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
                 // total amount of saved creditpoints
