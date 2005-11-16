@@ -1,0 +1,267 @@
+
+
+<!-- ###BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID### begin
+
+When someone has entere a wrong unique gift number this message will appear
+
+-->
+###GW1B###<b>The gift number is not valid.</b>###GW1E###
+
+
+	<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+	<input type="Submit" name="basket" value="back to the basket page" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_INFO###';">
+	</form>
+
+<!-- ###BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID### end -->
+
+
+<!-- ###TRACKING_DISPLAY_INFO### begin
+Displays the view of the order status by tracking codes.
+-->
+<div class="tracking" style="padding:10px;">
+	
+	###GW1B###
+	<h2>Geselecteerde order: ###ORDER_UID###</h2>
+	<div style="border: solid 1px #61002B;">###ORDER_HTML_OUTPUT###</div>
+<br/><br/>	
+	<table border="0" cellpadding=0 cellspacing=0>
+		<tr>
+			<td>###GW2B### <strong><i>Datum:</i></strong> ###GW2E###</td>
+			<td>###GW2B### <strong><i>Status-code:</i></strong> ###GW2E###</td>
+			<td>###GW2B### <strong><i>Status:</i></strong> ###GW2E###</td>
+			<td>###GW2B### <strong><i>Kommentaar:</i></strong> ###GW2E###</td>
+		</tr>
+	
+			<!-- ###STATUS_ITEM### begin
+	
+			This part is repeated for each order status item and finally this part in the template code is substituted with the accumulated code for all order status actions.
+			-->
+		<tr>
+			<td nowrap valign=top>###GW2B### ###ORDER_STATUS_TIME### &nbsp;###GW2E###</td>
+			<td valign=top>###GW2B### ###ORDER_STATUS### &nbsp;###GW2E###</td>
+			<td nowrap valign=top>###GW2B### ###ORDER_STATUS_INFO### &nbsp;###GW2E###</td>
+			<td valign=top>###GW2B### ###ORDER_STATUS_COMMENT### &nbsp;###GW2E###</td>
+		</tr>
+			<!-- ###STATUS_ITEM### end -->
+	</table>
+	
+	<!-- ###ADMIN_CONTROL### begin -->
+	<table border=0 cellpadding=10 cellspacing=0<tr><td>
+	<!-- ###ADMIN_CONTROL_OK### begin -->
+		<i>Kies andere order:</i><br>
+		<form method="post" action="###FORM_URL###">
+			<select name="tracking" rows="2" class="dropdown" style="width:400px; color: #61002B;">
+				###OTHER_ORDERS_OPTIONS###
+			</select><br/>
+			<input type="Submit" name="submit" class="buttonShopLeft" value="selecteer">
+			<input type="hidden" name="update_code" class="buttonShopLeft" value="###UPDATE_CODE###"><br>
+		</form>
+		<br/><br/>
+		###GW1B###<i>Kies een nieuwe status:</i>###GW1B###
+		<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+		<select name="orderRecord[status][]" rows="2" class="dropdown" style="width:400px; color: #61002B;">
+			###STATUS_OPTIONS###
+	   </select>
+		<br/>
+		###GW1B###<i>Eventueel kommentaar bij deze order:</i>###GW1B###
+		<br/>
+		<textarea cols="40" rows="5" name="orderRecord[status_comment]" class="textarea"></textarea><br>
+		<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
+		<input type="hidden" name="update_code" value="###UPDATE_CODE###">
+		<input type="Submit" name="submit" class="buttonShopLeft" value="bevestig">
+		</form>
+	<!-- ###ADMIN_CONTROL_OK### end -->
+
+	<!-- ###ADMIN_CONTROL_DENY### begin -->
+	
+		<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+			<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
+		###GW1B###Paswoord beheerder:###GW1B###<br>
+			<input type="password" size=40 name="update_code" value="###UPDATE_CODE###">
+			<input type="Submit" name="submit" class="buttonShopLeft" value="bevestig">
+		</form>
+
+	<!-- ###ADMIN_CONTROL_DENY### end -->
+		</td></tr></table>
+		
+	<!-- ###ADMIN_CONTROL### end -->
+
+	<!-- ###ADMIN_CONTROL_DENY### begin -->
+	<table border=0 cellpadding=10 cellspacing=0><tr><td>
+
+   <strong>Stuur een boodschap naar de beheerder van de wijnshop:</strong><br>
+	<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+	<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
+	###GW1B###Actie:###GW1B###<br>
+	<select name="orderRecord[status][]" rows="2" size="1" class="dropdown" style="width:400px;	color: #61002B;">
+		<option value=51>Boodschap voor shop-beheer</option>
+		<option value=50>Verzoek om bestelling te annuleren</option>
+		<!--###STATUS_CODE_60### begin --><option value=60>Verstuur een cadeaubon</option><!--###STATUS_CODE_60### end -->
+	</select>
+	<br>
+	###GW1B###Opmerkingen:###GW1B###<br>
+	<textarea cols="40" rows="5" name="orderRecord[status_comment]" class="textarea"></textarea><br>
+	<input type="Submit" name="submit" class="buttonShopLeft" value="verstuur">
+	</form>
+	</td></tr></table>
+	<!-- ###ADMIN_CONTROL_DENY### end -->
+
+</div>
+
+<!-- ###TRACKING_DISPLAY_INFO### end -->
+
+
+
+<!-- ###TRACKING_ENTER_NUMBER### begin
+Displays form for entering the tracking number.
+-->
+<table border=0 cellpadding=10 cellspacing=10>
+<tr>
+ <td><strong>Klant</strong></td>
+ <td><strong>Shopbeheerder</strong></td>
+</tr>
+<tr>
+<td>
+###GW1B###Code voor opvragen bestelstatus invoeren:###GW1B###<br>
+<form method="post" action="###FORM_URL###">
+<input type="text" size=40 name="tracking" class="field">
+<input type="Submit" name="submit" class="buttonShopLeft" value="status bekijken">
+</form>
+</td>
+<td>
+<!-- ###ADMIN_CONTROL### begin -->
+###GW1B###Paswoord voor shop-beheer invoeren:###GW1B###<br>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+<form method="post" action="###FORM_URL###">
+<input type="password" size=40 name="update_code" value="" class="field">
+<input type="Submit" name="submit" class="buttonShopLeft" value="paswoord invoeren">
+</form>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+<!-- ###ADMIN_CONTROL### end -->
+</td>
+</tr></table>
+
+<!-- ###TRACKING_ENTER_NUMBER### end -->
+
+
+
+
+<!-- ###TRACKING_WRONG_NUMBER### begin
+Displays error message if no tracking code.
+-->
+###GW1B###<b>De code welke u invoert is niet bij ons bekent!</b>###GW1E###<br>
+	<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+	<input type="text" name="tracking"><br>
+	<input type="Submit" name="submit" value="Status">
+	</form>
+
+<!-- ###TRACKING_WRONG_NUMBER### end -->
+
+
+
+
+
+
+<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### begin
+
+Subpart used as template for the notify emails
+First line is used as subject for the mail.
+-->
+
+Meer wijn order status (###ORDER_UID###): ###ORDER_TRACKING_NO###
+
+
+ORDER INFORMATIE (###ORDER_UID###):
+
+Tijd: ###ORDER_STATUS_TIME###
+Status: ###ORDER_STATUS_INFO###
+
+Uw kommentaar:
+###ORDER_STATUS_COMMENT###
+
+TRACKING:
+Gebruik altijd onderstaand nummer voor opvragen van informatie m.b.t. uw meer wijn order:
+###ORDER_TRACKING_NO###
+
+Klik hier om deze information op te vragen:
+http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###
+
+Meer Wijn
+Gouda
+Tel.nr.: 23486804142
+
+<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
+
+
+
+
+
+
+
+<!-- ###TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE### begin Subpart used as template for the notify of gift emails First line is used as subject for the mail.-->
+
+Cadeaubon van meer wijn voor jou!
+U heeft een kadobon ontvangen!
+
+Van:     ###PERSON_NAME###
+Ontvanger:   ###DELIVERY_NAME###
+Commentaar:  
+###ORDER_STATUS_COMMENT###
+Waarde certificaat in Euros:
+###CERTIFICATES_TOTAL###
+
+Unieke code van het certificaat (nodig voor inwisselen):
+###CERTIFICATES_UNIQUE_CODE###
+Als U nog geen klant bent, dient u eerst klant te worden:
+http://###DOMAIN###/index.php?id=klantworden
+
+Meer Wijn
+
+<!-- ###TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE### end -->
+
+
+
+
+
+
+<!-- ###EMAIL_HTML_SHELL### begin -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+
+<title>Meer Wijn</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="generator" content="Typo 3.s1 CMS">
+
+<script language="javascript">
+<!--
+	browserName = navigator.appName;
+	browserVer = parseInt(navigator.appVersion);
+	var msie4 = (browserName == "Microsoft Internet Explorer" && browserVer >= 4);
+	if ((browserName == "Netscape" && browserVer >= 3) || msie4) {version = "n3";} else {version = "n2";}
+
+	function openPic(url,winName,winParams)	{
+		var theWindow = window.open(url,winName,winParams);
+		if (theWindow)	{theWindow.focus();}
+	}
+	function blurLink(theObject)	{
+		if (msie4)	{
+			theObject.blur();
+		}
+	}
+
+
+// End Hiding Script -->
+</script>
+
+</head>
+<BODY bgColor="#FBF9F7" link="black" vlink="black" alink="black" leftmargin="10" topmargin="10" marginwidth="10" marginheight="10">
+
+###HTML_BODY###
+
+</body></html>
+
+<!-- ###EMAIL_HTML_SHELL### end -->
+
+
+ 
