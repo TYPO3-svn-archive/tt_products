@@ -1,9 +1,12 @@
+2005-18-11 Franz Holzinger <franz@fholzinger.com>
+	* markers for the tax
+
 2005-16-11 Franz Holzinger <franz@fholzinger.com>
 	* correct PID markers for orders with uppercase letters
 	* correct error with handle script wrong parameters
 
 2005-15-11 Franz Holzinger <franz@fholzinger.com>
-	* correct marker for unit to ###PRODUCT_UNIT### and ###PRODUCT_DATASHEET###
+	* correct marker for unit to ###PRODUCT_UNIT###
 
 2005-15-11 Els Verberne <verberne@bendoo.nl>
 	* _order.php: integrating order list template

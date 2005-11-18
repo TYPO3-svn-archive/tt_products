@@ -348,7 +348,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	
 			// paymentshipping
 		$this->paymentshipping = t3lib_div::makeInstance('tx_ttproducts_paymentshipping');
-		$this->paymentshipping->init($this, $this->conf, $this->price);
+		$this->paymentshipping->init($this, $this->conf, $this->config);
 
 			// order
 		$this->order = t3lib_div::makeInstance('tx_ttproducts_order');
@@ -402,6 +402,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$key = array_search($theCode, $codeArray);
 				if ($key!=false) {
 					$retCodes[$key-1] = $theCode;
+				} else { // retain the wrong code to get an error message later
+					$retCodes[-100] = $theCode;
 				}
 			}
 		}

@@ -159,7 +159,7 @@ class tx_ttproducts_view_div {
 		$markerArray['###PRODUCT_UNIT###'] = $row['unit'];
 		$markerArray['###PRODUCT_UNIT_FACTOR###'] = $row['unit_factor'];
 
-		$markerArray['###PRODUCT_DATASHEET###']=$iconImgCode;
+		$markerArray['###ICON_DATASHEET###']=$iconImgCode;
 
 		$markerArray['###PRODUCT_TITLE###'] = $row['title'];
 		$markerArray['###PRODUCT_NOTE###'] = nl2br($row['note']);
@@ -201,6 +201,7 @@ class tx_ttproducts_view_div {
 
 		$markerArray['###PRICE_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($item['priceTax']));
 		$markerArray['###PRICE_NO_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($item['priceNoTax']));
+		$markerArray['###PRICE_ONLY_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
 
 /* Added els4: printing of pric_no_tax with currency symbol (used in totaal-_.tmpl and winkelwagen.tmpl) */
 		if ($row['category'] == $conf['creditsCategory']) {

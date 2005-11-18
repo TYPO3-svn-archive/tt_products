@@ -30,7 +30,7 @@
  * This script handles payment via the danish payment gateway, DIBS.
  * Support: DIBS premium with Credit-cards  and Unibank Solo-E
  *
- * This script is used as a "handleScript" with the default productsLib.inc shopping system.
+ * This script is used as a "handleScript" with the default class.tx_ttproducts_pi1.php shopping system.
  *
  * DIBS:	http://www.dibs.dk
  * 
@@ -147,22 +147,22 @@ switch($products_cmd)	{
 		<input type="hidden" name="ordline'.$cc.'-1" value="'.htmlspecialchars($actItem['rec']['itemnumber']).'">
 		<input type="hidden" name="ordline'.$cc.'-2" value="'.htmlspecialchars($actItem['rec']['title']).'">
 		<input type="hidden" name="ordline'.$cc.'-3" value="'.$actItem['count'].'">
-		<input type="hidden" name="ordline'.$cc.'-4" value="'.tx_ttproducts_view_div::priceFormat($actItem['totalTax']).'">';
+		<input type="hidden" name="ordline'.$cc.'-4" value="'.$pibase->price->priceFormat($actItem['totalTax']).'">';
 					}
 				}
 			}
 		
 			$theFields.='
-<input type="hidden" name="priceinfo1.Shipping" value="'.tx_ttproducts_view_div::priceFormat($basket->calculatedArray['priceTax']['shipping']).'">';
+<input type="hidden" name="priceinfo1.Shipping" value="'.$pibase->price->priceFormat($basket->calculatedArray['priceTax']['shipping']).'">';
 			$theFields.='
-<input type="hidden" name="priceinfo2.Payment" value="'.tx_ttproducts_view_div::priceFormat($basket->calculatedArray['priceTax']['payment']).'">';
+<input type="hidden" name="priceinfo2.Payment" value="'.$pibase->price->priceFormat($basket->calculatedArray['priceTax']['payment']).'">';
 			$theFields.='
-<input type="hidden" name="priceinfo3.Tax" value="'.tx_ttproducts_view_div::priceFormat( $basket->calculatedArray['priceTax']['total'] - $basket->calculatedArray['priceNoTax']['total']).'">';
+<input type="hidden" name="priceinfo3.Tax" value="'.$pibase->price->priceFormat( $basket->calculatedArray['priceTax']['total'] - $basket->calculatedArray['priceNoTax']['total']).'">';
 			$markerArray['###HIDDEN_FIELDS###'].=$theFields;
 		}
 		$content= $pibase->cObj->substituteMarkerArrayCached($content, $markerArray);
 	break;		
-	case "decline":
+	case 'decline':
 		$markerArray=array();
 		$markerArray['###REASON_CODE###'] = t3lib_div::_GP('reason');
 		$content=$basket->getBasket($localTemplateCode, '###DIBS_DECLINE_TEMPLATE###',$markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!

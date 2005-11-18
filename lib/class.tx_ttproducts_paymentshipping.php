@@ -53,12 +53,12 @@ class tx_ttproducts_paymentshipping {
 	var $conf;
 
 
-	function init(&$pibase, &$conf, &$price)	{
+	function init(&$pibase, &$conf, &$config)	{
 		global $TSFE;
 
  		$this->pibase = &$pibase;
  		$this->conf = &$conf;
- 		$this->price = &$price;
+ 		$this->config = &$config;
 	}
 
 
@@ -208,11 +208,14 @@ class tx_ttproducts_paymentshipping {
 			) {
 		global $TSFE;
 
-			// shipping
-		// $priceShipping = $priceShippingTax = $priceShippingNoTax = 0;
+			// price
+		$price = t3lib_div::makeInstance('tx_ttproducts_price');
+
+		// Shipping
 
 		$confArr = $basket->basketExtra['shipping.']['priceTax.'];
 		$tax = doubleVal($this->conf['shipping.']['TAXpercentage']);
+		$price->init($this, $this->conf['shipping.'], $this->config);
 
 		if ($confArr) {
 	        $minPrice=0;
@@ -258,8 +261,8 @@ class tx_ttproducts_paymentshipping {
 				$priceShipping = $minPrice;
 			}
 
-			$priceShippingTax += $this->price->getPrice($priceShipping,1,$tax);
-			$priceShippingNoTax += $this->price->getPrice($priceShipping,0,$tax);
+			$priceShippingTax += $price->getPrice($priceShipping,1,$tax);
+			$priceShippingNoTax += $price->getPrice($priceShipping,0,$tax);
 		} else {
 			$priceShippingTax += doubleVal($basket->basketExtra['shipping.']['priceTax']);
 			$priceShippingNoTax += doubleVal($basket->basketExtra['shipping.']['priceNoTax']);
@@ -271,16 +274,16 @@ class tx_ttproducts_paymentshipping {
 		$perc = doubleVal($basket->basketExtra['shipping.']['percentOfGoodstotal']);
 		if ($perc)	{
 			$priceShipping = doubleVal(($basket->calculatedArray['priceTax']['goodstotal']/100)*$perc);
-			$dum = $this->price->getPrice($priceShipping,1,$tax);
-			$priceShippingTax = $priceShippingTax + $this->price->getPrice($priceShipping,1,$tax);
-			$priceShippingNoTax = $priceShippingNoTax + $this->price->getPrice($priceShipping,0,$tax);
+			$dum = $price->getPrice($priceShipping,1,$tax);
+			$priceShippingTax = $priceShippingTax + $price->getPrice($priceShipping,1,$tax);
+			$priceShippingNoTax = $priceShippingNoTax + $price->getPrice($priceShipping,0,$tax);
 		}
 
 		$weigthFactor = doubleVal($basket->basketExtra['shipping.']['priceFactWeight']);
 		if($weigthFactor > 0) {
 			$priceShipping = $basket->calculatedArray['weight'] * $weigthFactor;
-			$priceShippingTax += $this->price->getPrice($priceShipping,1,$tax);
-			$priceShippingNoTax += $this->price->getPrice($priceShipping,0,$tax);
+			$priceShippingTax += $price->getPrice($priceShipping,1,$tax);
+			$priceShippingNoTax += $price->getPrice($priceShipping,0,$tax);
 		}
 
 		if ($basket->basketExtra['shipping.']['calculationScript'])	{
@@ -299,12 +302,13 @@ class tx_ttproducts_paymentshipping {
 		$pricePayment = $pricePaymentTax = $pricePaymentNoTax = 0;
 		// TAXpercentage replaces priceNoTax
 		$tax = doubleVal($this->conf['payment.']['TAXpercentage']);
+		$price->init($this, $this->conf['payment.'], $this->config);
 
 		$pricePaymentTax = $basket->getValue($basket->basketExtra['payment.']['priceTax'],
 		                  		$basket->basketExtra['payment.']['priceTax.'],
 		                  		$basket->calculatedArray['count']);
 		if ($tax) {
-			$pricePaymentNoTax = $this->price->getPrice($pricePaymentTax,0,$tax);
+			$pricePaymentNoTax = $price->getPrice($pricePaymentTax,0,$tax);
 
 		} else {
 			$pricePaymentNoTax = $basket->getValue($basket->basketExtra['payment.']['priceNoTax'],
@@ -317,8 +321,8 @@ class tx_ttproducts_paymentshipping {
 
 			$payment = ($basket->calculatedArray['priceTax']['goodstotal'] + $basket->calculatedArray['priceTax']['shipping'] ) * doubleVal($perc);
 
-			$pricePaymentTax = $this->price->getPrice($payment,1,$tax);
-			$pricePaymentNoTax = $this->price->getPrice($payment,0,$tax);
+			$pricePaymentTax = $price->getPrice($payment,1,$tax);
+			$pricePaymentNoTax = $price->getPrice($payment,0,$tax);
 		}
 
 		$perc = doubleVal($basket->basketExtra['payment.']['percentOfGoodstotal']);

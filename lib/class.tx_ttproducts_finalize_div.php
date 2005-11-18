@@ -120,13 +120,12 @@ class tx_ttproducts_finalize_div {
 				$res = $TYPO3_DB->exec_SELECTquery(uid, 'fe_users', 'username="'.$username . '" AND deleted=0');
            				while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
              					 $basket->personInfo['feusers_uid']= $row['uid'];
-            				}
+            			}
 
 			}
 		}
-		// CBY 11/11/2005 modifcation end
+		// CBY 11/11/2005 modification end
 
-		//t3lib_div::debug($basket->personInfo);
 		$rc = $basket->order->putOrderRecord(
 			$orderUid,
 			$basket->deliveryInfo,

@@ -135,13 +135,13 @@ class tx_ttproducts_billdelivery_div {
 							{
 								$markerArray=array();
 								$tmpCategory = $tt_products_cat->get($currentCategory);
-								$catTitle= ($tmpCategory ? $tmpCategory: '');
+								$catTitle= ($tmpCategory ? $tmpCategory['title']: '');
 								$pibase->cObj->setCurrentVal($catTitle);
 								$markerArray['###CATEGORY_TITLE###'] = $pibase->cObj->cObjGetSingle($conf['categoryHeader'],$conf['categoryHeader.'], 'categoryHeader');
 								$markerArray['###CATEGORY_QTY###'] = $categoryQty[$currentCategory];
 
-								$markerArray['###PRICE_GOODS_TAX###']= $price->priceFormat($this->conf,$basket->calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory]);
-								$markerArray['###PRICE_GOODS_NO_TAX###']= $price->priceFormat($this->conf,$basket->calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory]);
+								$markerArray['###PRICE_GOODS_TAX###']= $price->priceFormat($basket->calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory]);
+								$markerArray['###PRICE_GOODS_NO_TAX###']= $price->priceFormat($basket->calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory]);
 
 								$out2 = $pibase->cObj->substituteMarkerArray($t['categoryTitle'], $markerArray);
 								$out.= $out2;
@@ -187,12 +187,12 @@ class tx_ttproducts_billdelivery_div {
 
 		$temp = explode(' ', $orderRow['payment']);
 		$markerArray['###PAYMENT_TITLE###'] = $temp[1];
-		$markerArray['###PRICE_SHIPPING_TAX###'] = $price->priceFormat($conf,$basket->calculatedArray['priceTax']['shipping']);
-		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $price->priceFormat($conf,$basket->calculatedArray['priceNoTax']['shipping']);
-		$markerArray['###PRICE_PAYMENT_TAX###'] = $price->priceFormat($conf,$basket->calculatedArray['priceTax']['payment']);
-		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $price->priceFormat($conf,$basket->calculatedArray['priceNoTax']['payment']);
-		$markerArray['###PRICE_TOTAL_TAX###'] = $price->priceFormat($conf,$basket->calculatedArray['priceTax']['total']);
-		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $price->priceFormat($conf,$basket->calculatedArray['priceNoTax']['total']);
+		$markerArray['###PRICE_SHIPPING_TAX###'] = $price->priceFormat($basket->calculatedArray['priceTax']['shipping']);
+		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $price->priceFormat($basket->calculatedArray['priceNoTax']['shipping']);
+		$markerArray['###PRICE_PAYMENT_TAX###'] = $price->priceFormat($basket->calculatedArray['priceTax']['payment']);
+		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $price->priceFormat($basket->calculatedArray['priceNoTax']['payment']);
+		$markerArray['###PRICE_TOTAL_TAX###'] = $price->priceFormat($basket->calculatedArray['priceTax']['total']);
+		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $price->priceFormat($basket->calculatedArray['priceNoTax']['total']);
 
 		$markerArray['###ORDER_UID###'] = $basket->order->getOrderNumber($orderRow['uid']);
 		$markerArray['###ORDER_DATE###'] = $pibase->cObj->stdWrap($orderRow['crdate'],$conf['orderDate_stdWrap.']);

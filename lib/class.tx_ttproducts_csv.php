@@ -91,12 +91,12 @@ class tx_ttproducts_csv {
 
 			// Generate shipping/payment information and delivery note
 			$csvlineshipping = '"' . $basket->basketExtra['shipping.']['title'] . '";"' .
-				$this->price->priceFormat($this->conf,$this->calculatedArray['priceTax']['shipping']) . '";"' .
-				$this->price->priceFormat($this->conf,$this->calculatedArray['priceNoTax']['shipping']) . '"';
+				$this->price->priceFormat($this->calculatedArray['priceTax']['shipping']) . '";"' .
+				$this->price->priceFormat($this->calculatedArray['priceNoTax']['shipping']) . '"';
 
 			$csvlinepayment = '"' . $basket->basketExtra['payment.']['title'] . '";"' .
-				$this->price->priceFormat($this->conf,$this->calculatedArray['priceTax']['payment']) . '";"' .
-				$this->price->priceFormat($this->conf,$this->calculatedArray['priceNoTax']['payment']) . '"';
+				$this->price->priceFormat($this->calculatedArray['priceTax']['payment']) . '";"' .
+				$this->price->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '"';
 
 			$csvlinedeliverynote = '"'.$basket->deliveryInfo['note'].'"';
 			

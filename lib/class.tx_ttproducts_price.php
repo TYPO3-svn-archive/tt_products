@@ -67,7 +67,7 @@ class tx_ttproducts_price {
 			$taxFactor = 1 + doubleval($this->conf['TAXpercentage'])/100;
 		else
 			$taxFactor = 1+$taxpercentage/100;
-
+	
 		if ($TSFE->fe_user->user['tt_products_discount'] != 0) {
 			$price = $price - ($price * ($TSFE->fe_user->user['tt_products_discount'] / 100));
 		}

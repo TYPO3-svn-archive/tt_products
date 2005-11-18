@@ -438,7 +438,6 @@ class tx_ttproducts_order {
    }
 
 
-
 }
 
 

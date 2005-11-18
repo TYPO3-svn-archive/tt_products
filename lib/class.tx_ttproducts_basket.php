@@ -999,6 +999,7 @@ class tx_ttproducts_basket {
 
 					$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
 					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);
+					$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$this->price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
 
 /* Added els4: calculating of price_discount necessary in winkelwagen.tmpl (articles in kurkenshop are excluded, because these articled will be payed with creditpoints) */
 					if ( ($actItem['rec']['price'] != '0.00') && doubleval($actItem['rec']['price2']) && ($actItem['rec']['category'] != $this->conf['creditsCategory']) ) {
@@ -1093,9 +1094,11 @@ class tx_ttproducts_basket {
 			// This is the total for the goods in the basket.
 		$markerArray['###PRICE_GOODSTOTAL_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['goodstotal']);
 		$markerArray['###PRICE_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['goodstotal']);
+		$markerArray['###PRICE_GOODSTOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['goodstotal']-$this->calculatedArray['priceNoTax']['goodstotal']);
 
 		$markerArray['###PRICE2_GOODSTOTAL_TAX###'] = $this->price->priceFormat($this->calculatedArray['price2Tax']['goodstotal']);
 		$markerArray['###PRICE2_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['price2NoTax']['goodstotal']);
+		$markerArray['###PRICE2_GOODSTOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->calculatedArray['price2Tax']['goodstotal']-$this->calculatedArray['price2NoTax']['goodstotal']);
 
 		// This is for the Basketoverview
 		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->calculatedArray['count'];
@@ -1110,6 +1113,7 @@ class tx_ttproducts_basket {
 		$markerArray['###PRICE_SHIPPING_PERCENT###'] = $perc;
 		$markerArray['###PRICE_SHIPPING_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['shipping']);
 		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['shipping']);
+		$markerArray['###PRICE_SHIPPING_ONLY_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['shipping']-$this->calculatedArray['priceNoTax']['shipping']);
 
 		$markerArray['###SHIPPING_SELECTOR###'] = $this->paymentshipping->generateRadioSelect($this,'shipping', $countTotal);
 		$markerArray['###SHIPPING_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basketExtra['shipping.']['image.']);
@@ -1123,6 +1127,7 @@ class tx_ttproducts_basket {
 		$markerArray['###PRICE_PAYMENT_PERCENT###'] = $perc;
 		$markerArray['###PRICE_PAYMENT_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['payment']);
 		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['payment']);
+		$markerArray['###PRICE_PAYMENT_ONLY_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['payment']-$this->calculatedArray['priceNoTax']['payment'] );
 
 /* Added els4: payment layout (used in basket_payment_template, winkelwagen.tmpl) */
 		$markerArray['###PAYMENT_SELECTOR###'] = $this->paymentshipping->generateRadioSelect($this,'payment', $countTotal);
@@ -1244,6 +1249,7 @@ class tx_ttproducts_basket {
 		$this->getCalculatedSums();
 		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['total']);
 		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['total']);
+		$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['total']-$this->calculatedArray['priceNoTax']['total']);
 
 /* Added els4: PRICE_GOODSTOTAL_TOTUNITS_NO_TAX: sum total price (winkelwagen.tmpl) */
 		$markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($sum_price_total_totunits_no_tax);
@@ -1254,6 +1260,7 @@ class tx_ttproducts_basket {
 		} else {
 		   $markerArray['###PRICE_SHIPPING_NO_TAX###'] = '0.00';
 		}
+		
 
 /* Added Els: voucher marker inclusive conditions */
 /* Added Els5: small changes in voucher marker inclusive conditions */
