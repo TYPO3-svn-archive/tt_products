@@ -528,7 +528,8 @@ class tx_ttproducts_basket {
 
 									$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
 
-									if ($row) {
+									$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
+									if ($row && $pricefactor > 0) {
 										$money = $row['amount'];
 										$uid = $row['uid'];
 										$fieldsArray = array();
@@ -536,7 +537,7 @@ class tx_ttproducts_basket {
 											// Delete the gift record
 										$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
 
-										$creditpoints = $money / $this->conf['creditpoints.']['pricefactor'];
+										$creditpoints = $money / $pricefactor;
 
 										tx_ttproducts_creditpoints_div::addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
 
@@ -1332,8 +1333,9 @@ class tx_ttproducts_basket {
 				$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
 
 				$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
+				$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
 
-				if ($row) {
+				if ($row && $pricefactor > 0) {
 					$money = $row['amount'];
 					$uid = $row['uid'];
 					$fieldsArray = array();
@@ -1341,7 +1343,7 @@ class tx_ttproducts_basket {
 						// Delete the gift record
 					$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
 
-					$creditpoints_gift = $money / $this->conf['creditpoints.']['pricefactor'];
+					$creditpoints_gift = $money / $pricefactor;
 
 					tx_ttproducts_creditpoints_div::addCreditPoints($TSFE->fe_user->user['username'], $creditpoints_gift);
 
@@ -1374,7 +1376,10 @@ class tx_ttproducts_basket {
 		// maximum1 amount of creditpoint to change is amount on account minus amount already spended in the credit-shop
 		$max1_creditpoints = $TSFE->fe_user->user['tt_products_creditpoints']+$creditpoints_gift - $sum_pricecredits_total_totunits_no_tax;
 		// maximum2 amount of creditpoint to change is amount bought multiplied with creditpointfactor
-		$max2_creditpoints = explode (".",($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'])/$this->conf['creditpoints.']['pricefactor'] );
+		$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
+		if ($pricefactor > 0) {
+			$max2_creditpoints = explode (".",($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'])/$pricefactor );
+		}
 		// real maximum amount of creditpoint to change is minimum of both maximums
 		$markerArray['###AMOUNT_CREDITPOINTS_MAX###'] = number_format( min ($max1_creditpoints,$max2_creditpoints[0]),0);
 
@@ -1395,7 +1400,7 @@ class tx_ttproducts_basket {
 		} else {
 			// quantity chosen can not be larger than the maximum amount, above calculated
 			if ($this->recs['tt_products']['creditpoints'] > number_format( min ($max1_creditpoints,$max2_creditpoints[0]),0)) $this->recs['tt_products']['creditpoints'] = number_format( min ($max1_creditpoints,$max2_creditpoints[0]),0);
-			$this->calculatedArray['priceTax']['creditpoints'] = $this->price->priceFormat($this->recs['tt_products']['creditpoints']*$this->conf['creditpoints.']['pricefactor']);
+			$this->calculatedArray['priceTax']['creditpoints'] = $this->price->priceFormat($this->recs['tt_products']['creditpoints']*$pricefactor);
 			$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = $this->recs['tt_products']['creditpoints'];
 			$subpartArray['###SUB_CREDITPOINTS_DISCOUNT_EMPTY###'] = '';
 			$markerArray['###CREDIT_DISCOUNT###'] = $this->calculatedArray['priceTax']['creditpoints'];
@@ -1427,13 +1432,20 @@ class tx_ttproducts_basket {
      10.prod.501 = 0.06
    }
 */
-		if ($sum_pricecreditpoints_total_totunits <= 100) {
+
+/* remarked 17.11.2005 by s.rasch because ist Config-Value, hardcoding
+overwrites 
+	    if ($sum_pricecreditpoints_total_totunits <= 100) {
 		   $creditpoints = 0.02;
-		} elseif ($sum_pricecreditpoints_total_totunits <= 500) {
+		} elseif ($sum_pricecreditpoints_total_totunits <= 500)
+{
 		   $creditpoints = 0.04;
 		} else {
 		   $creditpoints = 0.06;
-		}
+		} */
+        /* 17.11.2005 by s.rasch - inserted for the above deletet code
+*/
+	    $creditpoints = tx_ttproducts_creditpoints_div::getCreditPoints($sum_pricecreditpoints_total_totunits);
 
 		$markerArray['###CREDITPOINTS_SAVED###'] = number_format($creditpoints * $sum_pricecreditpoints_total_totunits,'0');
 
