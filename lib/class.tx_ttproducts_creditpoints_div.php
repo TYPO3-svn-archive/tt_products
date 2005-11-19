@@ -47,33 +47,33 @@ class tx_ttproducts_creditpoints_div {
 	 */
 	function getCreditPoints($amount)	{
 		$type = '';
-		$where = '';
 		$creditpoints = 0;
 		foreach ($this->conf['creditpoints.'] as $k1=>$priceCalcTemp) {
-			if (!is_array($priceCalcTemp)) {
-				switch ($k1) {
-					case 'type':
-						$type = $priceCalcTemp;
-						break;
-					case 'where':
-						$where = $priceCalcTemp;
-						break;
+			if (is_array($priceCalcTemp)) {
+				foreach ($priceCalcTemp as $k2=>$v2) {
+					if (!is_array($v2)) {
+						switch ($k2) {
+							case 'type':
+								$type = $v2;
+								break;
+						}
+					}
 				}
-				continue;
-			}
-			$dumCount = 0;
-			$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
 
-			if ($type != 'price') {
-				break;
-			}
-			krsort($priceCalcTemp['prod.']);
-			reset($priceCalcTemp['prod.']);
-
-			foreach ($priceCalcTemp['prod.'] as $k2=>$points) {
-				if ($amount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
-					$creditpoints = $points;
-					break; // finish
+				$dumCount = 0;
+				$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
+	
+				if ($type != 'price') {
+					break;
+				}
+				krsort($priceCalcTemp['prod.']);
+				reset($priceCalcTemp['prod.']);
+	
+				foreach ($priceCalcTemp['prod.'] as $k2=>$points) {
+					if ($amount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
+						$creditpoints = $points;
+						break; // finish
+					}
 				}
 			}
 		}
