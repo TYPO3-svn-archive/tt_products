@@ -1,3 +1,6 @@
+2005-19-11 Franz Holzinger <franz@fholzinger.com>
+	* correct error with creditpoint pricefactor = 0
+
 2005-18-11 Franz Holzinger <franz@fholzinger.com>
 	* markers for the tax
 
