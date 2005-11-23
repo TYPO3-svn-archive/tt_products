@@ -87,44 +87,48 @@ class tx_ttproducts_list_view {
 // List products:
         $where='';
 
-        if ($theCode=='SEARCH')    {
-                // Get search subpart
-            $t['search'] = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###ITEM_SEARCH###'));
-                // Substitute a few markers
-            $out=$t['search'];
-            $pid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $TSFE->id);
-            $out=$this->pibase->cObj->substituteMarker($out, '###FORM_URL###', $this->pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams())); // $this->getLinkUrl($this->conf['PIDsearch']));
-            $out=$this->pibase->cObj->substituteMarker($out, '###SWORDS###', htmlspecialchars(t3lib_div::_GP('swords')));
-                // Add to content
-            $content.=$out;
-            if (t3lib_div::_GP('swords'))    {
-                $where = tx_ttproducts_div::searchWhere($this->pibase, $this->searchFieldList, trim(t3lib_div::_GP('swords')));
-            }
-
-            // if parameter 'newitemdays' is specified, only new items from the last X days are displayed
-            if (t3lib_div::_GP('newitemdays')) {
-                $temptime = time() - 86400*intval(trim(t3lib_div::_GP('newitemdays')));
-                $where = 'AND tstamp >= '.$temptime;
-            }
-
+		switch ($theCode) {
+			case 'SEARCH':
+	                // Get search subpart
+	            $t['search'] = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###ITEM_SEARCH###'));
+	                // Substitute a few markers
+	            $out=$t['search'];
+	            $pid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $TSFE->id);
+	            $out=$this->pibase->cObj->substituteMarker($out, '###FORM_URL###', $this->pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams())); // $this->getLinkUrl($this->conf['PIDsearch']));
+	            $out=$this->pibase->cObj->substituteMarker($out, '###SWORDS###', htmlspecialchars(t3lib_div::_GP('swords')));
+	                // Add to content
+	            $content.=$out;
+	            if (t3lib_div::_GP('swords'))    {
+	                $where = tx_ttproducts_div::searchWhere($this->pibase, $this->searchFieldList, trim(t3lib_div::_GP('swords')));
+	            }
+	
+	            // if parameter 'newitemdays' is specified, only new items from the last X days are displayed
+	            if (t3lib_div::_GP('newitemdays')) {
+	                $temptime = time() - 86400*intval(trim(t3lib_div::_GP('newitemdays')));
+	                $where = 'AND tstamp >= '.$temptime;
+	            }			 
+			break;
+			case 'LISTGIFTS':
+				$where .= ' AND '.($this->conf['whereGift'] ? $this->conf['whereGift'] : '1=0');
+			break;
+			case 'LISTOFFERS':
+            	$where .= ' AND offer';
+            break;
+            case 'LISTHIGHLIGHTS':
+            	$where .= ' AND highlight';
+            break;
+            case 'LISTNEWITEMS':
+	            $temptime = time() - 86400*intval(trim($this->conf['newItemDays']));
+    	        $where .= 'AND tstamp >= '.$temptime;
+			break;
+			case 'MEMO':
+				$where = ' AND '.($memoItems != '' ? 'uid IN ('.$memoItems.')' : '1=0' );
+			break;
+			default:
+				// nothing here
+			break;
         }
-
-        if ($theCode=='LISTGIFTS') {
-            $where .= ' AND '.($this->conf['whereGift'] ? $this->conf['whereGift'] : '1=0');
-        }
-        if ($theCode=='LISTOFFERS') {
-            $where .= ' AND offer';
-        }
-        if ($theCode=='LISTHIGHLIGHTS') {
-            $where .= ' AND highlight';
-        }
-        if ($theCode=='LISTNEWITEMS') {
-            $temptime = time() - 86400*intval(trim($this->conf['newItemDays']));
-            $where .= 'AND tstamp >= '.$temptime;
-        }
-        if ($theCode=='MEMO') {
-            $where = ' AND '.($memoItems != '' ? 'uid IN ('.$memoItems.')' : '1=0' );
-        }
+			
 
         $begin_at=t3lib_div::intInRange(t3lib_div::_GP('begin_at'),0,100000);
         if (($theCode!='SEARCH' && !t3lib_div::_GP('swords')) || $where)    {
@@ -180,7 +184,6 @@ class tx_ttproducts_list_view {
             $t['categoryTitle'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_CATEGORY###');
             $t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_LIST###');
             $t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
-    
     
             $markerArray=array();
             $markerArray['###FORM_URL###']=$this->formUrl; // Applied later as well.
@@ -318,14 +321,7 @@ class tx_ttproducts_list_view {
                             $markerArray['###PRODUCT_NOTE###'] = substr($markerArray['###PRODUCT_NOTE###'], 0, $this->conf['max_note_length']) . '...';
                         }
     
-                        if (trim($row['color']) == '')
-                            $subpartArray['###display_variant1###'] = '';
-                        if (trim($row['size']) == '')
-                            $subpartArray['###display_variant2###'] = '';
-                        if (trim($row['accessory']) == '0')
-                            $subpartArray['###display_variant3###'] = '';
-                        if (trim($row['gradings']) == '')
-                            $subpartArray['###display_variant4###'] = '';
+    					tx_ttproducts_article_div::removeEmptySubpartArray($this->pibase, $this->tt_products, $subpartArray, $row);
     
                         $tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
                         $itemsOut .= $tempContent;

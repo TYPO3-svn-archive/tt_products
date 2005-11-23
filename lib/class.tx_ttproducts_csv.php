@@ -77,7 +77,7 @@ class tx_ttproducts_csv {
 			$csvlineperson = '';
 			$csvlinedelivery = '';
 /* Added Els: 'feusers_uid,' */
-			$infoFields = explode(',','feusers_uid,name,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country,kk_fa,kk_nr,kk_ablauf,kk_pruefcode,agb');
+			$infoFields = explode(',','feusers_uid,name,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country,agb');
 			while(list(,$fName)=each($infoFields)) {
 				if ($csvlinehead != '') {
 					$csvlinehead .= ';';
@@ -109,7 +109,7 @@ class tx_ttproducts_csv {
 				$csvfields[$a] = trim($csvfields[$a]);
 
 			// Write description header
-			$csvdescr = '"uid";"count";"color";"size";"accessory";"gradings"';
+			$csvdescr = '"uid";"count";"color";"size";"additional";"gradings"';
 			reset($csvfields);
 			foreach($csvfields as $csvfield)
 				$csvdescr .= ';"'.$csvfield.'"';
@@ -134,7 +134,7 @@ class tx_ttproducts_csv {
 									intval($actItem['count']).'";"'.
 									$variants[0].'";"'.
 									$variants[1].'";"'.
-									$variants[2]/100 .'";"'.
+									$variants[2].'";"'.
 									$variants[3].'"';
 						reset($csvfields);
 						foreach($csvfields as $csvfield) {

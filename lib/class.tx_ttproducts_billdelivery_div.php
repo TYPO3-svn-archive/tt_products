@@ -152,6 +152,9 @@ class tx_ttproducts_billdelivery_div {
 							$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($pibase,$conf, $config, $actItem,$basket->basketExt, $catTitle,$tt_content,1,'image');
 
 							$markerArray['###FIELD_QTY###'] = $actItem['count'];
+							$markerArray['###PRICE_TOTAL_TAX###']=$price->priceFormat($actItem['totalTax']);
+							$markerArray['###PRICE_TOTAL_NO_TAX###']=$price->priceFormat($actItem['totalNoTax']);
+							$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
 
 							$itemsOut = $pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,array(),$wrappedSubpartArray);
 							if ($itemsOut)

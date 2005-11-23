@@ -27,7 +27,7 @@
 /**
  * Part of the tt_products (Shopping System) extension.
  *
- * functions for the category
+ * functions for the product
  *
  * $Id$
  *
@@ -101,7 +101,7 @@ class tx_ttproducts_product {
 						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
 
 						$res = $TYPO3_DB->exec_SELECTquery('inStock', 'tt_products_articles', $query);
-							// 	TODO: Saving the order record support color, size and accessory here
+							// 	TODO: Saving the order record support color, size and gradings here
 					}
 				} else {
 					foreach ($actItemArray as $k1=>$actItem) {
@@ -130,6 +130,29 @@ class tx_ttproducts_product {
 		return $rc;
 	}
 
+
+	/**
+	 * Returns true if the product is a single product
+	 * 
+	 */
+	function isSingle(&$pibase, &$row)	{
+		$additional = t3lib_div::xml2array($row['additional']);
+		$isSingle = $pibase->pi_getFFvalue($additional, 'isSingle');
+		return $isSingle; 
+	}
+
+
+	/**
+	 * Returns true if the product is a single product
+	 * 
+	 */
+	function hasAdditional(&$pibase, &$row)	{
+		$rc = false;
+		if ($this->isSingle($pibase, $row)) {
+			$rc = true;
+		}
+		return $rc; 
+	}
 
 }
 

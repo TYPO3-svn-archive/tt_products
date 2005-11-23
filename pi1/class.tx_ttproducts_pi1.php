@@ -174,11 +174,16 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				case 'LISTHIGHLIGHTS':
 				case 'LISTNEWITEMS':
 				case 'LISTOFFERS':
-				case 'SINGLE':
 					if (count($this->basket->itemArray)) {
 						$TSFE->set_no_cache();
 					}
 					$contentTmp=$this->products_display($theCode, $this->errorMessage);
+				break;
+				case 'SINGLE':
+					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList']) {
+						$TSFE->set_no_cache();
+					}
+					$contentTmp=$this->products_display($theCode, $this->errorMessage);				
 				break;
 				case 'OVERVIEW':
 					if (count($this->basket->itemArray)) {
@@ -265,7 +270,16 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		// *** getting configuration values:
 		// *************************************
 
-		$config['code'] = $this->getCodes($this->conf['code'], $this->conf['code.'], $this->conf['defaultCode'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']);
+		$this->pi_initPIflexForm();
+		$config['code'] = 
+			$this->pi_getSetupOrFFvalue(
+	 			$this->conf['code'], 
+	 			$this->conf['code.'], 
+				$this->conf['defaultCode'], 
+				$this->cObj->data['pi_flexform'],
+				'display_mode',
+				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
+				);
 
 		$this->config['limit'] = $this->conf['limit'] ? $this->conf['limit'] : 50;
 		$this->config['limitImage'] = t3lib_div::intInRange($this->conf['limitImage'],0,15);

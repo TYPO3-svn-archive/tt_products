@@ -32,10 +32,8 @@ plugin.tt_products {
   selectSize = 1
     # cat=plugin.products//; type=boolean; label= Gradings selectable, List display: Make the gradings selectable in the list
   selectGradings = 1
-    # cat=plugin.products//; type=boolean; label= Accessory selectable, List display: If true the accessory of a product is selectable in a check box.
-  selectAccessory = 0
-    # cat=plugin.products//; type=string; label= Accessory text, List display: Text for accessory in ###PRICE_ACCESSORY_TEXT###
-  accessoryText = 
+    # cat=plugin.products//; type=boolean; label= Additional selectable, List display: Make the additional settings selectable in the list
+  selectAdditional = 1
   
     # cat=plugin.products//; type=boolean; label= Display Category Header in list: If this option is set, the category headers (page titles) will automatically be displayed in the product lists. This is not always convenient because you might have chosen a header-title for the "list" content element.
   displayListCatHeader = 1
@@ -45,6 +43,8 @@ plugin.tt_products {
   displayBasketColumns = 
     # cat=plugin.products//; type=boolean; label= cObj settings: If set, certain settings are manipulated in order to let the script render a single item - the $cObj->data.
   displayCurrentRecord = 
+    # cat=plugin.products//; type=string; label= URL of the basket image
+  basketPic =
   
     # cat=plugin.products//; type=string; label= CSS even rows: Cascading Stylesheets (CSS) even rows in the products listing. This works only if displayBasketColumns has been set.
   CSSRowEven = 

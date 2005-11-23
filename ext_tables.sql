@@ -31,10 +31,10 @@ CREATE TABLE tt_products (
 	offer int(11) DEFAULT '0' NOT NULL,
 	highlight int(11) DEFAULT '0' NOT NULL,
 	directcost varchar(20) DEFAULT '' NOT NULL,
-	accessory varchar(10) DEFAULT '' NOT NULL,
-	accessory2 varchar(10) DEFAULT '' NOT NULL,
 	color varchar(255) DEFAULT '' NOT NULL,
 	size varchar(255) DEFAULT '' NOT NULL,
+	additional_type varchar(36) DEFAULT '' NOT NULL,
+	additional mediumtext DEFAULT '' NOT NULL,
 	gradings varchar(255) DEFAULT '' NOT NULL,
 	special_preparation int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
@@ -85,6 +85,7 @@ CREATE TABLE tt_products_language (
 	unit varchar(20) DEFAULT '' NOT NULL,  
 	datasheet tinyblob NOT NULL,  
 	www varchar(80) DEFAULT '' NOT NULL,
+	color varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
@@ -145,6 +146,8 @@ CREATE TABLE tt_products_articles (
 
 	color varchar(60) DEFAULT '' NOT NULL,
 	size varchar(60) DEFAULT '' NOT NULL,
+	additional_type varchar(36) DEFAULT '' NOT NULL,
+	additional mediumtext DEFAULT '' NOT NULL,
 	gradings varchar(60) DEFAULT '' NOT NULL,
 	
 	uid_product int(11) DEFAULT '0' NOT NULL,

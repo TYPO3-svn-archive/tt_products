@@ -204,14 +204,7 @@ class tx_ttproducts_single_view {
 			else
 				$subpartArray['###LINK_NEXT_SINGLE###']='';
 
-			if (trim($row['color']) == '')
-				$subpartArray['###display_variant1###'] = '';
-			if (trim($row['size']) == '')
-				$subpartArray['###display_variant2###'] = '';
-			if (trim($row['accessory']) == '0')
-				$subpartArray['###display_variant3###'] = '';
-			if (trim($row['gradings']) == '')
-				$subpartArray['###display_variant4###'] = '';
+			tx_ttproducts_article_div::removeEmptySubpartArray($this->pibase, $this->tt_products, $subpartArray, $row);
 
 				// Substitute
 			$content= $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);

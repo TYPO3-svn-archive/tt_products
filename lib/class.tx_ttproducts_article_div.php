@@ -39,15 +39,8 @@
  */
 
 
-class tx_ttproducts_article_div {
 
-       /**
-         * Sets JavaScript code in the additionalJavaScript array
-         *
-         * @param       string          $fieldname is the field in the table you want to create a JavaScript for
-         * @return      void
-         * @see 
-         */
+class tx_ttproducts_article_div {
 
 	/**
 	 * fills in the row fields from the variant extVar string
@@ -62,7 +55,7 @@ class tx_ttproducts_article_div {
 		$variantArray = explode(';', $variant);
 		$row['color'] = $variantArray[0];
 		$row['size'] = $variantArray[1];
-		$row['accessory'] = floatval($variantArray[2]);
+		$row['additional'] = $variantArray[2];
 		$row['gradings'] = $variantArray[3];
 	 }
 
@@ -82,36 +75,50 @@ class tx_ttproducts_article_div {
 	 	$color = $tmpArr[0]; 
 	 	$tmpArr = explode(';', $row['size']);
 	 	$size = $tmpArr[0]; 
+	 	$tmpArr = explode(';', $row['additional']);
+	 	$additional = $tmpArr[0]; 
 	 	$tmpArr = explode(';', $row['gradings']);
 	 	$gradings = $tmpArr[0]; 
 	 	
-	 	$rc = $color.';'.$size.';'.intval(100*$row['accessory']).';'.$gradings;
+	 	$rc = $color.';'.$size.';'.$additional.';'.$gradings;
 	 	return $rc; 
 	 }
 
 
-	function getVariantSubpartArray (&$pibase, &$subpartArray, &$row, &$tempContent, $condition)  {
+	function getVariantSubpartArray (&$pibase, &$tt_products, &$subpartArray, &$row, &$tempContent, $condition)  {
 		if ($condition) {
 			if (trim($row['color']) != '')
 				$subpartArray['###display_variant1###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant1###');
 			if (trim($row['size']) != '')
 				$subpartArray['###display_variant2###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant2###');
-			if (trim($row['accessory']) != '0')
-				$subpartArray['###display_variant3###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant3###');
 			if (trim($row['gradings']) != '')
 				$subpartArray['###display_variant4###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant4###');
+				
+			if ($tt_products->isSingle($pibase, $row)) {
+				$subpartArray['###display_variant5_isSingle###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant5_isSingle###');
+			} else {
+				$subpartArray['###display_variant5_isNotSingle###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant5_isNotSingle###');
+			}
+			
 		}
-		if (trim($row['color']) == '')
-			$subpartArray['###display_variant1###'] =  '';
-		if (trim($row['size']) == '')
-			$subpartArray['###display_variant2###'] =  '';
-		if (trim($row['accessory']) == '0')
-			$subpartArray['###display_variant3###'] = '';
-		if (trim($row['gradings']) == '')
-			$subpartArray['###display_variant4###'] = '';
-
+		tx_ttproducts_article_div::removeEmptySubpartArray($pibase, $tt_products, $subpartArray, $row);
 	}
 
+
+	function removeEmptySubpartArray (&$pibase, &$tt_products, &$subpartArray, &$row) {
+        if (trim($row['color']) == '')
+            $subpartArray['###display_variant1###'] = '';
+        if (trim($row['size']) == '')
+            $subpartArray['###display_variant2###'] = '';
+        if (trim($row['gradings']) == '')
+            $subpartArray['###display_variant4###'] = '';
+
+		if ($tt_products->isSingle($pibase, $row)) {
+            $subpartArray['###display_variant5_isNotSingle###'] = '';
+		} else {
+			$subpartArray['###display_variant5_isSingle###'] = '';
+		}
+	}
 
 }
 

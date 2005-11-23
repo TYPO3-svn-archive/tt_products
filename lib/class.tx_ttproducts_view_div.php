@@ -140,22 +140,6 @@ class tx_ttproducts_view_div {
 		$iconImgCode = $pibase->cObj->IMAGE($conf['datasheetIcon.']);
 
 			// Subst. fields
-/* mkl:
-		if ( ($this->language > 0) && $row['o_title'] )	{
-			$markerArray['###PRODUCT_TITLE###'] = $row['o_title'];
-		}
-		else  {
-			$markerArray['###PRODUCT_TITLE###'] = $row['title'];
-		}
-
-		if ( ($this->language > 0) && $row['o_unit'] )	{
-			$markerArray['###UNIT###'] = $row['o_unit'];
-		}
-		else  {
-			$markerArray['###UNIT###'] = $row['unit'];
-		}
-
-*/
 		$markerArray['###PRODUCT_UNIT###'] = $row['unit'];
 		$markerArray['###PRODUCT_UNIT_FACTOR###'] = $row['unit_factor'];
 
@@ -164,16 +148,10 @@ class tx_ttproducts_view_div {
 		$markerArray['###PRODUCT_TITLE###'] = $row['title'];
 		$markerArray['###PRODUCT_NOTE###'] = nl2br($row['note']);
 
-//		if ( ($this->language > 0) && $row['o_note'] )	{
-////			$markerArray['###PRODUCT_NOTE###'] = nl2br($row['o_note']);
-//			$markerArray['###PRODUCT_NOTE###'] = $this->pi_RTEcssText($row['o_note']);
-//		}
-//		else  {
-////			$markerArray['###PRODUCT_NOTE###'] = nl2br($row['note']);
-//			$markerArray['###PRODUCT_NOTE###'] = $this->pi_RTEcssText($row['note']);
-//		}
-
-		if (is_array($conf['parseFunc.']))	{
+			// Extension CSS styled content
+		if (t3lib_extMgm::isLoaded('css_styled_content')) {
+			$markerArray['###PRODUCT_NOTE###'] = $pibase->pi_RTEcssText($markerArray['###PRODUCT_NOTE###']);
+		} else if (is_array($conf['parseFunc.']))	{
 			$markerArray['###PRODUCT_NOTE###'] = $pibase->cObj->parseFunc($markerArray['###PRODUCT_NOTE###'],$conf['parseFunc.']);
 		}
 		$markerArray['###PRODUCT_ITEMNUMBER###'] = $row['itemnumber'];
@@ -266,7 +244,8 @@ class tx_ttproducts_view_div {
 
 		$markerArray['###CATEGORY_TITLE###'] = $catTitle;
 
-		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]';
+		$basketQuantityName = 'ttp_basket['.$row['uid'].'][quantity]';
+		$markerArray['###FIELD_NAME###']=$basketQuantityName;
 
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
@@ -283,8 +262,8 @@ class tx_ttproducts_view_div {
 		$markerArray['###FIELD_COLOR_NAME###']='ttp_basket['.$row['uid'].'][color]';
 		$markerArray['###FIELD_COLOR_VALUE###']=$row['color'];
 
-		$markerArray['###FIELD_ACCESSORY_NAME###']='ttp_basket['.$row['uid'].'][accessory]';
-		$markerArray['###FIELD_ACCESSORY_VALUE###']=$row['accessory'];
+		$markerArray['###FIELD_ADDITIONAL_NAME###']='ttp_basket['.$row['uid'].'][additional]';
+		$markerArray['###FIELD_ADDITIONAL_VALUE###']=$row['additional'];
 
 		$markerArray['###FIELD_GRADINGS_NAME###']='ttp_basket['.$row['uid'].'][gradings]';
 		$markerArray['###FIELD_GRADINGS_VALUE###']=$row['gradings'];
@@ -316,16 +295,17 @@ class tx_ttproducts_view_div {
 			$prodSizeText = $prodTmp[0];
 		}
 
-//		$prodAccessoryText = '';
-//		$prodTmp = explode(';', $row['accessory']);
-//		if ($conf['selectAccessory']) {
-//			$message = $this->pi_getLL('accessory no');
-//			$prodAccessoryText =  '<OPTION value="0">'.$message.'</OPTION>';
-//			$message = $this->pi_getLL('accessory yes');
-//			$prodAccessoryText .= '<OPTION value="1">'.$message.'</OPTION>';
-//		} else {
-//			$prodAccessoryText = $prodTmp;
-//		}
+		$prodAdditionalText['single'] = '';
+		
+		if ($conf['selectAdditional']) {
+			$isSingleProduct = $pibase->tt_products->isSingle($pibase, $row);
+			$message = $pibase->pi_getLL('additional single');
+			$prodAdditionalText['single']  = $message.'<input type="checkbox" name="'.$basketQuantityName.'" value="1">'; 
+//			$message = $pibase->pi_getLL('additional no');
+//			$prodAdditionalText =  '<OPTION value="0">'.$message.'</OPTION>';
+//			$message = $pibase->pi_getLL('additional yes');
+//			$prodAdditionalText .= '<OPTION value="1">'.$message.'</OPTION>';
+		}
 
 		$prodGradingsText = '';
 		$prodTmp = explode(';', $row['gradings']);
@@ -341,12 +321,8 @@ class tx_ttproducts_view_div {
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $conf['bulkilyWarning'] : '';
 		$markerArray['###PRODUCT_COLOR###'] = $prodColorText;
 		$markerArray['###PRODUCT_SIZE###'] = $prodSizeText;
-		//$markerArray['###PRODUCT_ACCESSORY###'] = $prodAccessoryText;
+		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
 		$markerArray['###PRODUCT_GRADINGS###'] = $prodGradingsText;
-	//	$markerArray['###PRICE_ACCESSORY_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['accessory'.$config['priceNoReseller']],1,$row['tax'])));
-	//	$markerArray['###PRICE_ACCESSORY_NO_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['accessory'.$config['priceNoReseller']],0,$row['tax'])));
-	//	$markerArray['###PRICE_WITH_ACCESSORY_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['accessory'.$conf['priceNoReseller']]+$row['price'.$tconfig['priceNoReseller']],1,$row['tax'])));
-	//	$markerArray['###PRICE_WITH_ACCESSORY_NO_TAX###'] = $pibase->price->printPrice($pibase->price->priceFormat($pibase->price->getPrice($row['accessory'.$conf['priceNoReseller']]+$row['price'.$config['priceNoReseller']],0,$row['tax'])));
 
 		if ($row['special_preparation'])
 			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $pibase->cObj->substituteMarkerArray($conf['specialPreparation'],$markerArray);

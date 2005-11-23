@@ -6,7 +6,7 @@
 $TCA['tt_products'] = Array (
 	'ctrl' => $TCA['tt_products']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,gradings,accessory,accessory2,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime'
+		'showRecordFieldList' => 'title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,additional,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime'
 	),
 	'columns' => Array (
 		'hidden' => Array (
@@ -257,6 +257,47 @@ $TCA['tt_products'] = Array (
 				'max' => '255'
 			)
 		),
+		'additional_type' => Array (
+			'label' => 'LLL:EXT:cms/locallang_ttc.php:list_type',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('','')
+				),
+				'default' => '',
+				'authMode' => $GLOBALS['TYPO3_CONF_VARS']['BE']['explicitADmode'],
+			)
+		),
+		'additional' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.additional',
+			'config' => Array (
+				'type' => 'flex',
+				'ds_pointerField' => 'additional_type',
+				'ds' => array (
+					'default' => '
+						<T3DataStructure>
+							<ROOT>
+								<type>array</type>
+								<el>
+								<isSingle>
+									<TCEforms>
+										<label>LLL:EXT:tt_products/locallang_tca.php:tt_products.additional.once</label>
+										<config>
+											<type>check</type>
+										</config>
+									</TCEforms>
+								</isSingle>
+								</el>
+							</ROOT>
+							<meta>
+								<langDisable>1</langDisable>
+							</meta>
+						</T3DataStructure>
+						',
+				)
+			)
+		),
 		'gradings' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.gradings',
@@ -265,26 +306,6 @@ $TCA['tt_products'] = Array (
 				'size' => '20',
 				'eval' => 'trim',
 				'max' => '255'
-			)
-		),
-		'accessory' => Array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.accessory',
-			'config' => Array (
-				'type' => 'input',
-				'size' => '6',
-				'eval' => 'trim,double2',
-				'max' => '10'
-			)
-		),
-		'accessory2' => Array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.accessory2',
-			'config' => Array (
-				'type' => 'input',
-				'size' => '6',
-				'eval' => 'trim,double2',
-				'max' => '10'
 			)
 		),
 		'special_preparation' => Array (
@@ -320,24 +341,26 @@ $TCA['tt_products'] = Array (
 	)
 */
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;3;;3-3-3, category, price;;2, color;;4, accessory;;5, note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;5-5-5,datasheet')
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;4;;3-3-3, itemnumber;;2, category, price;;3, color;;5,additional,weight;;7, note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;4-4-4,datasheet')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
-		'2' => Array('showitem' => 'price2, special_preparation, directcost, tax, offer, highlight'),
-		'3' => Array('showitem' => 'subtitle, www, itemnumber, inStock'),
-		'4' => Array('showitem' => 'size, unit, unit_factor, gradings, bulkily, weight'),
-		'5' => Array('showitem' => 'accessory2'),
-		'6' => Array('showitem' => ''),
+		'2' => Array('showitem' => 'inStock'),
+		'3' => Array('showitem' => 'price2, directcost, tax, offer, highlight'),
+		'4' => Array('showitem' => 'subtitle, www'),
+		'5' => Array('showitem' => 'size, gradings'),
+		'6' => Array('showitem' => 'bulkily, special_preparation, unit, unit_factor'),
+		'7' => Array('showitem' => ''),
 	)
 
 );
 
 
+
 $TCA['tt_products_language'] = Array (
 	'ctrl' => $TCA['tt_products_language']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'sys_language_uid,l18n_parent,l18n_diffsource,hidden,starttime,endtime,prod_uid,title,subtitle,unit,note,datasheet,color,size,www'
+		'showRecordFieldList' => 'sys_language_uid,l18n_parent,l18n_diffsource,hidden,starttime,endtime,prod_uid,title,subtitle,unit,note,datasheet,color,additional,www'
 	),
 
 	'feInterface' => $TCA['tt_products_language']['feInterface'],
@@ -479,9 +502,9 @@ $TCA['tt_products_language'] = Array (
 				'max' => '255'
 			)
 		),
-		'size' => Array (
+		'additional' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.size',
+			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.additional',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '20',
@@ -501,7 +524,7 @@ $TCA['tt_products_language'] = Array (
 		),
 	),
 	'types' => Array (
-		'0' => Array('showitem' => 'hidden;;;;1-1-1, prd_uid;;;;2-2-2, sys_language_uid,title,unit;;;;3-3-3,note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],datasheet,www')
+		'0' => Array('showitem' => 'hidden;;;;1-1-1, prod_uid;;;;2-2-2, sys_language_uid,title,subtitle,unit,note,datasheet,color,additional,www;;;;3-3-3,note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],datasheet,www')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => '')
@@ -689,7 +712,7 @@ $TCA['tt_products_cat_language'] = Array (
 $TCA['tt_products_articles'] = Array (
 	'ctrl' => $TCA['tt_products_articles']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'sys_language_uid,l18n_parent,l18n_diffsource,hidden,starttime,endtime,fe_group,title,subtitle,itemnumber,price,price2,inStock,color,size,gradings,products_uid'
+		'showRecordFieldList' => 'sys_language_uid,l18n_parent,l18n_diffsource,hidden,starttime,endtime,fe_group,title,subtitle,itemnumber,price,price2,inStock,color,size,additional,gradings,uid_product'
 	),
 	'feInterface' => $TCA['tt_products_articles']['feInterface'],
 	'columns' => Array (
@@ -840,7 +863,7 @@ $TCA['tt_products_articles'] = Array (
 				'type' => 'input',
 				'size' => '20',
 				'eval' => 'trim',
-				'max' => '255'
+				'max' => '60'
 			)
 		),
 		'size' => Array (
@@ -850,7 +873,17 @@ $TCA['tt_products_articles'] = Array (
 				'type' => 'input',
 				'size' => '20',
 				'eval' => 'trim',
-				'max' => '255'
+				'max' => '60'
+			)
+		),
+		'additional' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.additional',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '20',
+				'eval' => 'trim',
+				'max' => '60'
 			)
 		),
 		'gradings' => Array (
@@ -860,12 +893,12 @@ $TCA['tt_products_articles'] = Array (
 				'type' => 'input',
 				'size' => '20',
 				'eval' => 'trim',
-				'max' => '255'
+				'max' => '60'
 			)
 		),
 		'uid_product' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_articles.products_uid',
+			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_articles.uid_product',
 			'config' => Array (
 				'type' => 'group',
 				'internal_type' => 'db',
@@ -877,7 +910,7 @@ $TCA['tt_products_articles'] = Array (
 		)
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;3;;3-3-3, itemnumber, inStock, price;;2, price2, color, size, gradings')
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;3;;3-3-3, itemnumber, inStock, price;;2, price2, color, size, additional, gradings')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),

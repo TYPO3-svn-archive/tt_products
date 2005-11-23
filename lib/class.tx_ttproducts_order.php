@@ -280,7 +280,7 @@ class tx_ttproducts_order {
 		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
 /* Added Els6: write creditpoint_gifts value into sys_products_order */
 		$fieldsArray['creditpoints_gifts'] = t3lib_div::_GP('creditpoints_gifts');
-
+		
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
 

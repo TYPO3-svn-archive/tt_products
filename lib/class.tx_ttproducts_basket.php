@@ -235,7 +235,7 @@ class tx_ttproducts_basket {
 							{
 								reset($this->basketExt[$uid]);
 								while(list($variant,)=each($this->basketExt[$uid])) {
-									 // useArticles if you have different prices and therefore articles for color, size, accessory and gradings
+									 // useArticles if you have different prices and therefore articles for color, size, additional and gradings
 									if (md5($variant)==$md5) {
 										$this->basketExt[$uid][$variant] = $quantity;
 									 	if (is_array($this->basketExt['gift'])) {
@@ -290,7 +290,7 @@ class tx_ttproducts_basket {
 
 		$this->personInfo = $formerBasket['personinfo'];
 		$this->deliveryInfo = $formerBasket['delivery'];
-		if ($TSFE->loginUser && !$this->personInfo && $this->conf['lockLoginUserInfo'])	{
+		if ($TSFE->loginUser && (!$this->personInfo || !$this->personInfo['name']) && $this->conf['lockLoginUserInfo'])	{
 			$address = '';
 
 			if ($this->conf['loginUserInfoAddress']) {
@@ -320,7 +320,7 @@ class tx_ttproducts_basket {
 			$this->personInfo['zip'] = $TSFE->fe_user->user['zip'];
 			$this->personInfo['city'] = $TSFE->fe_user->user['city'];
 			$this->personInfo['country'] = ($this->conf['useStaticInfoCountry'] ? $TSFE->fe_user->user['static_info_country']:$TSFE->fe_user->user['country']);
-			$this->personInfo['agb'] = $TSFE->fe_user->user['agb'];
+			$this->personInfo['agb'] = (isset($this->personInfo['agb']) ? $this->personInfo['agb'] : $TSFE->fe_user->user['agb']);
 			$this->personInfo['date_of_birth'] = date( 'd-m-Y', $TSFE->fe_user->user["date_of_birth"]);
 			$this->personInfo['company'] = $TSFE->fe_user->user['company'];
 
@@ -347,6 +347,7 @@ class tx_ttproducts_basket {
 			$this->personInfo['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'];
 			$this->personInfo['tt_products_vouchercode'] = $TSFE->fe_user->user['tt_products_vouchercode'];
 		}
+		
 	} // initBasket
 
 
@@ -794,14 +795,9 @@ class tx_ttproducts_basket {
 						$this->itemArray[$pid][$itemnumber][$k1]['priceTax'] = $this->price->getPrice($actItem['calcprice'],1,$actItem['rec']['tax']);
 						$this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] = $this->price->getPrice($actItem['calcprice'],0,$actItem['rec']['tax']);
 					}
-					// If accesssory has been selected, add the price of it, multiplicated with the count :
-					if($actItem['rec']['accessory'] > 0 ) {
-						$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceTax']+ $this->price->getPrice($actItem['rec']['accessory'],1,$actItem['rec']['tax']))*$actItem['count'];
-						$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = ($this->itemArray[$pid][$itemnumber][$k1]['priceNoTax']+$this->price->getPrice($actItem['rec']['accessory'],0,$actItem['rec']['tax']))*$actItem['count'];
-					} else {
-						$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceTax'] * $actItem['count'];
-						$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] * $actItem['count'];
-					}
+					//  multiplicate it with the count :
+					$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceTax'] * $actItem['count'];
+					$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] * $actItem['count'];
 							// Fills this array with the product records. Reason: Sorting them by category (based on the page, they reside on)
 					$this->calculatedArray['priceTax']['goodstotal'] += $this->itemArray[$pid][$itemnumber][$k1]['totalTax'];
 					$this->calculatedArray['priceNoTax']['goodstotal'] += $this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'];
@@ -817,7 +813,7 @@ class tx_ttproducts_basket {
 			{
 				if ($prodSingle['bulkily'])
 				{
-					$value = ($this->conf['bulkilyAddition'] * $this->basketExt[$prodSingle['uid']][$prodSingle['color'].';'.$prodSingle['size'].';'.intval(100*$prodSingle['accessory']).';'.$prodSingle['gradings']]);
+					$value = ($this->conf['bulkilyAddition'] * $this->basketExt[$prodSingle['uid']][$prodSingle['color'].';'.$prodSingle['size'].';'.$prodSingle['additional'].';'.$prodSingle['gradings']]);
 					$this->calculatedArray['priceTax']['shipping'] += $value  * (1+$conf['bulkilyFeeTax']/100);
 					$this->calculatedArray['priceNoTax']['shipping'] += $value;
 				}
@@ -978,25 +974,12 @@ class tx_ttproducts_basket {
 
 					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
+					$markerArray['###PRODUCT_ADDITIONAL###'] = $actItem['rec']['additional'];
 					$markerArray['###PRODUCT_GRADINGS###'] = $actItem['rec']['gradings'];
 
 	                $catTitle= $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : '';
 					$this->pibase->cObj->setCurrentVal($catTitle);
 					$markerArray['###CATEGORY_TITLE###']=$this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
-
-					// If accesssory has been selected, add the price of it, multiplicated with the count :
-					if($actItem['rec']['accessory'] > 0 ){
-						$markerArray['###PRICE_ACCESSORY_TEXT###']= $this->conf['accessoryText'];
-						$markerArray['###PRICE_ACCESSORY_COUNT###']= '<INPUT size="3" maxlength="4" type="text" class="readonly" name="'.$actItem['count'].'" value="'.$actItem['count'].'" readonly="readonly">';
-						$markerArray['###ACCESSORY_VALUE_TAX###']= $this->price->printPrice($this->price->priceFormat($this->price->getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],1,$actItem['rec']['tax'])));
-						$markerArray['###ACCESSORY_VALUE_NO_TAX###']= $this->price->printPrice($this->price->priceFormat($this->price->getPrice($actItem['rec']['accessory'.$this->config['priceNoReseller']],0,$actItem['rec']['tax'])));
-					}
-					else {
-						$markerArray['###PRICE_ACCESSORY_TEXT###']= '';
-						$markerArray['###PRICE_ACCESSORY_COUNT###']= '';
-						$markerArray['###ACCESSORY_VALUE_TAX###']= '';
-						$markerArray['###ACCESSORY_VALUE_NO_TAX###']= '';
-					}
 
 					$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
 					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);
@@ -1073,7 +1056,7 @@ class tx_ttproducts_basket {
 					// Substitute
 					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
 
-					tx_ttproducts_article_div::getVariantSubpartArray ($this->pibase, $subpartArray, $actItem['rec'], $tempContent, ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'));
+					tx_ttproducts_article_div::getVariantSubpartArray ($this->pibase, $this->tt_products, $subpartArray, $actItem['rec'], $tempContent, ($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'));
 					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
 
 					$itemsOut .= $tempContent;

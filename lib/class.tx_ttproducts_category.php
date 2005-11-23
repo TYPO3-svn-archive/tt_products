@@ -76,6 +76,7 @@ class tx_ttproducts_category {
 		return $rc;
 	}
 
+
 	// returns the Path of all categories above, separated by '/'
 	function getPath ($uid) {
 		$rc = '';
@@ -100,9 +101,7 @@ class tx_ttproducts_category {
 		}
 		return $emailArray;
 	}
-	
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_category.php'])	{

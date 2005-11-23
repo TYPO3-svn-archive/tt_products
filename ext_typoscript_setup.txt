@@ -60,12 +60,12 @@ plugin.tt_products {
   selectColor = {$plugin.tt_products.selectColor}
   selectSize = {$plugin.tt_products.selectSize}
   selectGradings = {$plugin.tt_products.selectGradings}
-  selectAccessory = {$plugin.tt_products.selectAccessory}
-  accessoryText = {$plugin.tt_products.accessoryText}
+  selectAdditional = {$plugin.tt_products.selectAdditional}
 
   displayListCatHeader = {$plugin.tt_products.displayListCatHeader}
   displayBasketCatHeader = {$plugin.tt_products.displayBasketCatHeader}
   displayBasketColumns = {$plugin.tt_products.displayBasketColumns}
+  basketPic = {$plugin.tt_products.basketPic}
   
   CSSRowEven = {$plugin.tt_products.CSSRowEven}
   CSSRowUneven = {$plugin.tt_products.CSSRowUneven}

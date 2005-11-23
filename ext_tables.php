@@ -24,7 +24,7 @@ $TCA['tt_products'] = Array (
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden,title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,gradings,accessory,accessory2,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',
+		'fe_admin_fieldList' => 'hidden,title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',
 	)
 );
 
