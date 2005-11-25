@@ -1,6 +1,7 @@
-2005-23-11 Franz Holzinger <franz@fholzinger.com>
+2005-25-11 Franz Holzinger <franz@fholzinger.com>
 	* additional as variant 5, accessory has been deleted
 	* new flexform used by additional
+	* the single view shall be displayed only once with one CODE
 
 2005-19-11 Franz Holzinger <franz@fholzinger.com>
 	* correct error with creditpoint pricefactor = 0

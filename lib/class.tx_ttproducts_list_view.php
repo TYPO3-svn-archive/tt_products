@@ -43,8 +43,6 @@
 
 
 
-
-
 class tx_ttproducts_list_view {
     var $pibase; // reference to object of pibase
     var $conf;
@@ -131,7 +129,7 @@ class tx_ttproducts_list_view {
 			
 
         $begin_at=t3lib_div::intInRange(t3lib_div::_GP('begin_at'),0,100000);
-        if (($theCode!='SEARCH' && !t3lib_div::_GP('swords')) || $where)    {
+        if ($where || ($theCode!='SEARCH' && !t3lib_div::_GP('swords')))    {
             $this->page->initRecursive($this->config['recursive'], $this->pibase);
             //tx_ttproducts_page_div::generatePageArray();
 
@@ -412,6 +410,5 @@ class tx_ttproducts_list_view {
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_list_view.php'])    {
     include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_list_view.php']);
 }
-
 
 ?>

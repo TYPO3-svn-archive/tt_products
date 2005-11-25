@@ -124,6 +124,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $price;	 					// object for price functions
 
 	var $basket;				// basket object
+        var $singleView;                       // single view object
 	
 	var $pi_checkCHash = TRUE;
 
@@ -166,7 +167,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$TSFE->set_no_cache();
 					// no break!
 				case 'LIST':
-					if ($this->conf['PIDbasket']) {
+					if ($this->tt_product_single || !$this->conf['NoSingleViewOnList']) {
 						$TSFE->set_no_cache();
 					}
 					// no break!
@@ -174,7 +175,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				case 'LISTHIGHLIGHTS':
 				case 'LISTNEWITEMS':
 				case 'LISTOFFERS':
-					if (count($this->basket->itemArray)) {
+					if (count($this->basket->itemArray) || $this->tt_product_single) {
 						$TSFE->set_no_cache();
 					}
 					$contentTmp=$this->products_display($theCode, $this->errorMessage);
@@ -475,11 +476,13 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->page->initRecursive(999, $this);
 			//tx_ttproducts_page_div::generatePageArray();
 
-			// List single product:
-			$singleView = t3lib_div::makeInstance('tx_ttproducts_single_view');
-			$singleView->init ($this, $this->conf, $this->config, $this->page, $this->content, $this->tt_products, $this->tt_products_cat, $this->tt_product_single, $extVars, $formUrl);
+			if (!is_object($this->singleView)) {
+				// List single product:
+				$this->singleView = t3lib_div::makeInstance('tx_ttproducts_single_view');
+				$this->singleView->init ($this, $this->conf, $this->config, $this->page, $this->content, $this->tt_products, $this->tt_products_cat, $this->tt_product_single, $extVars, $formUrl);
 			
-			$content = $singleView->printView($this->templateCode, $this->basket, $error_code);
+				$content = $this->singleView->printView($this->templateCode, $this->basket, $error_code);
+			}
 		} else {
 			// List all products:
 			$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');

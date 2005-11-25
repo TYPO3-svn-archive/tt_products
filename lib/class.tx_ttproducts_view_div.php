@@ -376,15 +376,11 @@ class tx_ttproducts_view_div {
 		return $queryString;
 	}
 
-
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_view_div.php'])	{
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_view_div.php']);
 }
-
 
 ?>
