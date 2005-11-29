@@ -48,12 +48,18 @@ class tx_ttproducts_product {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init()	{
-		global $TYPO3_DB;
+	function init($LLkey)	{
+		global $TYPO3_DB,$TSFE;
 		
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray('tt_products');
+		
+ 		if ($TSFE->config['config']['sys_language_uid']) {
+ 			$this->table->setLanguage ($LLkey);
+			$this->table->setTCAFieldArray('tt_products_language');
+ 		}
 	} // init
+
 
 
 	function get ($uid) {
@@ -72,6 +78,7 @@ class tx_ttproducts_product {
 		}
 		return $rc;
 	}
+
 
 	// returns the Path of all categories above, separated by '/'
 	function getPath ($uid) {
@@ -131,6 +138,7 @@ class tx_ttproducts_product {
 	}
 
 
+
 	/**
 	 * Returns true if the product is a single product
 	 * 
@@ -140,6 +148,7 @@ class tx_ttproducts_product {
 		$isSingle = $pibase->pi_getFFvalue($additional, 'isSingle');
 		return $isSingle; 
 	}
+
 
 
 	/**
@@ -153,6 +162,7 @@ class tx_ttproducts_product {
 		}
 		return $rc; 
 	}
+
 
 }
 

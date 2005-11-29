@@ -7,10 +7,11 @@ CREATE TABLE tt_products (
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) DEFAULT '0' NOT NULL,
 	cruser_id int(11) DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
 	deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
 	hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
+	starttime int(11) unsigned DEFAULT '0' NOT NULL,
+	endtime int(11) unsigned DEFAULT '0' NOT NULL,
+	fe_group int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	subtitle tinytext NOT NULL,
 	itemnumber varchar(40) DEFAULT '' NOT NULL,
@@ -24,7 +25,6 @@ CREATE TABLE tt_products (
 	www varchar(80) DEFAULT '' NOT NULL,
 	category int(10) unsigned DEFAULT '0' NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
-	fe_group int(11) DEFAULT '0' NOT NULL,
 	tax int(11) DEFAULT '0' NOT NULL,
 	weight varchar(20) DEFAULT '' NOT NULL,
 	bulkily int(11) DEFAULT '0' NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE tt_products (
 	color varchar(255) DEFAULT '' NOT NULL,
 	size varchar(255) DEFAULT '' NOT NULL,
 	additional_type varchar(36) DEFAULT '' NOT NULL,
-	additional mediumtext DEFAULT '' NOT NULL,
+	additional mediumtext NOT NULL,
 	gradings varchar(255) DEFAULT '' NOT NULL,
 	special_preparation int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
@@ -59,6 +59,7 @@ CREATE TABLE tt_products_cat (
 	KEY parent (pid)
 );
 
+
 #
 # Table structure for table 'tt_products_language'
 #
@@ -72,12 +73,11 @@ CREATE TABLE tt_products_language (
 	t3ver_id int(11) DEFAULT '0' NOT NULL,
 	t3ver_label varchar(30) DEFAULT '' NOT NULL,
 	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l18n_parent int(11) DEFAULT '0' NOT NULL,
-	l18n_diffsource mediumblob NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,
 	hidden tinyint(4) DEFAULT '0' NOT NULL,
 	starttime int(11) DEFAULT '0' NOT NULL,
 	endtime int(11) DEFAULT '0' NOT NULL,
+	fe_group int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	subtitle tinytext NOT NULL,
 	prod_uid int(11) DEFAULT '0' NOT NULL,
@@ -85,7 +85,6 @@ CREATE TABLE tt_products_language (
 	unit varchar(20) DEFAULT '' NOT NULL,  
 	datasheet tinyblob NOT NULL,  
 	www varchar(80) DEFAULT '' NOT NULL,
-	color varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
@@ -103,12 +102,11 @@ CREATE TABLE tt_products_cat_language (
 	t3ver_id int(11) DEFAULT '0' NOT NULL,
 	t3ver_label varchar(30) DEFAULT '' NOT NULL,
 	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l18n_parent int(11) DEFAULT '0' NOT NULL,
-	l18n_diffsource mediumblob NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,
 	hidden tinyint(4) DEFAULT '0' NOT NULL,
 	starttime int(11) DEFAULT '0' NOT NULL,
 	endtime int(11) DEFAULT '0' NOT NULL,
+	fe_group int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	note text NOT NULL,  
 	cat_uid int(11) DEFAULT '0' NOT NULL,
@@ -129,9 +127,6 @@ CREATE TABLE tt_products_articles (
 	t3ver_oid int(11) DEFAULT '0' NOT NULL,
 	t3ver_id int(11) DEFAULT '0' NOT NULL,
 	t3ver_label varchar(30) DEFAULT '' NOT NULL,
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l18n_parent int(11) DEFAULT '0' NOT NULL,
-	l18n_diffsource mediumblob NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,
 	hidden tinyint(4) DEFAULT '0' NOT NULL,
 	starttime int(11) DEFAULT '0' NOT NULL,
@@ -146,8 +141,6 @@ CREATE TABLE tt_products_articles (
 
 	color varchar(60) DEFAULT '' NOT NULL,
 	size varchar(60) DEFAULT '' NOT NULL,
-	additional_type varchar(36) DEFAULT '' NOT NULL,
-	additional mediumtext DEFAULT '' NOT NULL,
 	gradings varchar(60) DEFAULT '' NOT NULL,
 	
 	uid_product int(11) DEFAULT '0' NOT NULL,

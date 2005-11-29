@@ -353,6 +353,48 @@ class tx_ttproducts_basket {
 
 
 	/**
+	 * Checks if required fields are filled in
+	 */
+	function checkRequired()	{
+		$flag = '';
+		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
+		if ($this->basketExtra['payment.']['addRequiredInfoFields'] != '')
+			$requiredInfoFields .= ','.trim($this->basketExtra['payment.']['addRequiredInfoFields']);
+
+		if ($requiredInfoFields)	{
+			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
+			while(list(,$fName)=each($infoFields))	{
+				if (trim($this->personInfo[$fName])=='' || trim($this->deliveryInfo[$fName])=='')	{
+					$flag=$fName;
+					break;
+				}
+			}
+		}
+		return $flag;
+	} // checkRequired
+
+
+
+	/**
+	 * Fills in all empty fields in the delivery info array
+	 */
+	function mapPersonIntoToDelivery()	{
+
+			// all of the delivery address will be overwritten when no address and no email address have been filled in
+		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
+/* Added Els: 'feusers_uid,' and more fields */
+			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
+			$infoFields = explode(',','feusers_uid,telephone,name,first_name,last_name,email,date_of_birth,company,address,city,zip,country'.$infoExtraFields); // Fields...
+			while(list(,$fName)=each($infoFields))	{
+				$this->deliveryInfo[$fName] = $this->personInfo[$fName];
+			}
+		}
+
+	} // mapPersonIntoToDelivery
+
+
+
+	/**
 	 * returns the activities in the order in which they have to be processed
      *
      * @param       string          $fieldname is the field in the table you want to create a JavaScript for
@@ -395,49 +437,6 @@ class tx_ttproducts_basket {
 
 
 	/**
-	 * Checks if required fields are filled in
-	 */
-	function checkRequired()	{
-		$flag = '';
-		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
-		if ($this->basketExtra['payment.']['addRequiredInfoFields'] != '')
-			$requiredInfoFields .= ','.trim($this->basketExtra['payment.']['addRequiredInfoFields']);
-
-		if ($requiredInfoFields)	{
-			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
-			while(list(,$fName)=each($infoFields))	{
-				if (trim($this->personInfo[$fName])=='' || trim($this->deliveryInfo[$fName])=='')	{
-					$flag=$fName;
-					break;
-				}
-			}
-		}
-		return $flag;
-	} // checkRequired
-
-
-
-	/**
-	 * Fills in all empty fields in the delivery info array
-	 */
-	function mapPersonIntoToDelivery()	{
-
-			// all of the delivery address will be overwritten when no address and no email address have been filled in
-		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
-/* Added Els: 'feusers_uid,' and more fields */
-			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
-			$infoFields = explode(',','feusers_uid,telephone,name,first_name,last_name,email,date_of_birth,company,address,city,zip,country'.$infoExtraFields); // Fields...
-			while(list(,$fName)=each($infoFields))	{
-				$this->deliveryInfo[$fName] = $this->personInfo[$fName];
-			}
-		}
-
-	} // mapPersonIntoToDelivery
-
-
-
-
-	/**
 	 * Takes care of basket, address info, confirmation and gate to payment
 	 * Also the 'products_...' script parameters are used here.
      *
@@ -449,6 +448,7 @@ class tx_ttproducts_basket {
 		global $TYPO3_DB;
 
 		$content = '';
+		$empty = '';
 
 		reset ($codes);
 
@@ -511,7 +511,7 @@ class tx_ttproducts_basket {
 						switch($activity)	{
 							case 'products_basket':
 								if (count($activityArr) == 1) {
-									$content.=$this->getBasket($tmp='');
+									$content.=$this->getBasket($empty);
 								}
 							break;
 							case 'products_overview':
@@ -568,7 +568,7 @@ class tx_ttproducts_basket {
 							case 'products_info':
 								// if (!$activityArr['products_payment'] && !$activityArr['products_finalize']) {
 								$this->pibase->load_noLinkExtCobj(); // TODO
-								$content .= $this->getBasket($tmp='','###BASKET_INFO_TEMPLATE###',$mainMarkerArray);
+								$basket_tmpl  = 'BASKET_INFO_TEMPLATE';
 								// }
 							break;
 							case 'products_payment':
@@ -613,20 +613,20 @@ class tx_ttproducts_basket {
 									$handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
 									$orderUid = $this->order->getBlankOrderUid();
 									if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
-										//$this->etCalculatedBasket();
+										//$this->getCalculatedBasket();
 										$this->getCalculatedSums();
 										$content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->pibase, $this->basketExtra['payment.']['handleScript.'], $this);
 									}
 
 									// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 									$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
-									$orderConfirmationHTML=$this->getBasket($tmp='', '###'.$tmpl.'###', $mainMarkerArray);
+									$orderConfirmationHTML=$this->getBasket($empty, '###'.$tmpl.'###', $mainMarkerArray);
 									$contentTmp = $orderConfirmationHTML;
 									tx_ttproducts_finalize_div::finalizeOrder($this->pibase, $this->conf, $this->templateCode, $this, $this->tt_products, $this->tt_products_cat, $this->price, $orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 
 									if ($this->conf['PIDthanks'] > 0) {
 										$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
-										$contentTmp = $this->getBasket($tmp='', '###'.$tmpl.'###', $mainMarkerArray);
+										$contentTmp = $this->getBasket($empty, '###'.$tmpl.'###', $mainMarkerArray);
 									}
 									$content.=$contentTmp;
 									// Empties the shopping basket!
@@ -642,7 +642,7 @@ class tx_ttproducts_basket {
 						} // switch
 					}	// if ($value)
 					if ($basket_tmpl) {
-						$content.=$this->getBasket($tmp = '', '###'.$basket_tmpl.'###');
+						$content.=$this->getBasket($empty, '###'.$basket_tmpl.'###',$mainMarkerArray);
 						break; // foreach
 					}
 				} // foreach ($activityArr as $activity=>$value)
@@ -715,7 +715,8 @@ class tx_ttproducts_basket {
 		if (count($uidArr) == 0) {
 			return;
 		}
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->pibase->cObj->enableFields('tt_products'));
+		//$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->pibase->cObj->enableFields('tt_products'));
+		$res = $this->tt_products->table->exec_SELECTquery('*','uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->pibase->cObj->enableFields('tt_products'));
 
 		$this->productsArray = array(); // TODO: use only local products array
 		$productsArray = &$this->productsArray;
@@ -1117,13 +1118,13 @@ class tx_ttproducts_basket {
 		$markerArray['###PAYMENT_SELECTOR###'] = $this->paymentshipping->generateRadioSelect($this,'payment', $countTotal);
 		$markerArray['###PAYMENT_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basketExtra['payment.']['image.']);
 		$markerArray['###PAYMENT_TITLE###'] = $this->basketExtra['payment.']['title'];
-		if ($markerArray['###PAYMENT_TITLE###'] == "Vooruitbetaling") {
+		if ($markerArray['###PAYMENT_TITLE###'] == "Vooruitbetaling") { // TODO start
  		   $subpartArray['###SUB_PAYMENT_MACHT###'] = '';
  		} elseif ($markerArray['###PAYMENT_TITLE###'] == "Eénmalige machtiging") {
  		   $subpartArray['###SUB_PAYMENT_VOORUIT###'] = '';
  		} elseif ($markerArray['###PAYMENT_TITLE###'] == "Factuur") {
  		   $subpartArray['###SUB_PAYMENT_MACHT###'] = '';
- 		   $subpartArray['###SUB_PAYMENT_VOORUIT###'] = '';
+ 		   $subpartArray['###SUB_PAYMENT_VOORUIT###'] = ''; // TODO end
  		}
 
 /* Added els4: output for payment (used in basket_payment_template, winkelwagen.tmpl)*/
@@ -1131,6 +1132,7 @@ class tx_ttproducts_basket {
 		$markerArray['###PAYMENT_NAME###'] = t3lib_div::_GP('payment_name');
 		$markerArray['###PAYMENT_CITY###'] = t3lib_div::_GP('payment_city');
 
+		// for receipt from DIBS script
 		$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
 
 			// Fill the Currency Symbol or not
@@ -1400,7 +1402,7 @@ class tx_ttproducts_basket {
 			if (!$markerArray['###FE_USER_UID###']) {
 				$subpartArray['###SUB_CREDITPOINTS_SPENDED_EMPTY###'] = '';
 			} else {
-				$markerArray['###CREDITPOINTS_SPENDED_ERROR###'] = "Wijzig de artikelen in de kurkenshop: onvoldoende kurken op uw saldo (".$markerArray['###AMOUNT_CREDITPOINTS###'].").";
+				$markerArray['###CREDITPOINTS_SPENDED_ERROR###'] = "Wijzig de artikelen in de kurkenshop: onvoldoende kurken op uw saldo (".$markerArray['###AMOUNT_CREDITPOINTS###'].")."; // TODO
 				$markerArray['###CREDITPOINTS_SPENDED###'] = '&nbsp;';
 			}
 		}

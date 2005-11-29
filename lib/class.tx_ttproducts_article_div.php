@@ -55,8 +55,9 @@ class tx_ttproducts_article_div {
 		$variantArray = explode(';', $variant);
 		$row['color'] = $variantArray[0];
 		$row['size'] = $variantArray[1];
-		$row['additional'] = $variantArray[2];
+		$row['description'] = $variantArray[2];
 		$row['gradings'] = $variantArray[3];
+		$row['additional'] = $variantArray[4];
 	 }
 
 
@@ -75,12 +76,14 @@ class tx_ttproducts_article_div {
 	 	$color = $tmpArr[0]; 
 	 	$tmpArr = explode(';', $row['size']);
 	 	$size = $tmpArr[0]; 
-	 	$tmpArr = explode(';', $row['additional']);
+	 	$tmpArr = explode(';', $row['description']);
 	 	$additional = $tmpArr[0]; 
 	 	$tmpArr = explode(';', $row['gradings']);
 	 	$gradings = $tmpArr[0]; 
+	 	$tmpArr = explode(';', $row['additional']);
+	 	$additional = $tmpArr[0]; 
 	 	
-	 	$rc = $color.';'.$size.';'.$additional.';'.$gradings;
+	 	$rc = $color.';'.$size.';'.$additional.';'.$gradings.';'.$additional;
 	 	return $rc; 
 	 }
 
@@ -91,6 +94,8 @@ class tx_ttproducts_article_div {
 				$subpartArray['###display_variant1###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant1###');
 			if (trim($row['size']) != '')
 				$subpartArray['###display_variant2###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant2###');
+			if (trim($row['description']) != '')
+				$subpartArray['###display_variant3###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant3###');
 			if (trim($row['gradings']) != '')
 				$subpartArray['###display_variant4###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant4###');
 				
@@ -110,6 +115,8 @@ class tx_ttproducts_article_div {
             $subpartArray['###display_variant1###'] = '';
         if (trim($row['size']) == '')
             $subpartArray['###display_variant2###'] = '';
+        if (trim($row['description']) == '')
+            $subpartArray['###display_variant3###'] = '';
         if (trim($row['gradings']) == '')
             $subpartArray['###display_variant4###'] = '';
 

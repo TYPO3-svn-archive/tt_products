@@ -47,14 +47,19 @@ class tx_ttproducts_category {
 	var $table;			// object of the type tx_table_db
 	var $tt_products_email;						// object of the type tx_table_db
 
+
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init()	{
+	function init($LLkey)	{
 		global $TYPO3_DB;
 		
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray('tt_products_cat');
+ 		if ($TSFE->config['config']['sys_language_uid']) {
+			$this->table->setLanguage ($LLkey);
+			$this->table->setTCAFieldArray('tt_products_cat_language');
+ 		}
 	} // init
 
 

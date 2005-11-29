@@ -1,3 +1,7 @@
+2005-29-11 Franz Holzinger <franz@fholzinger.com>
+	* the language tables are used now
+	* show the sys_products_orders in the backend
+
 2005-25-11 Franz Holzinger <franz@fholzinger.com>
 	* additional as variant 5, accessory has been deleted
 	* new flexform used by additional

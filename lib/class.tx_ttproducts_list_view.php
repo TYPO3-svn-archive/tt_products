@@ -142,7 +142,8 @@ class tx_ttproducts_list_view {
     
                 // performing query to count all products (we need to know it for browsing):
             $selectConf['selectFields'] = 'count(*)';
-            $res = $this->pibase->cObj->exec_getQuery('tt_products',$selectConf);
+            $queryParts = $this->pibase->cObj->getQuery('tt_products', $selectConf, TRUE);
+            $res = $this->tt_products->table->exec_SELECT_queryArray($queryParts);
             $row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
             $productsCount = $row[0];
     
@@ -155,7 +156,9 @@ class tx_ttproducts_list_view {
             $selectConf['max'] = ($this->config['limit']+1);
             $selectConf['begin'] = $begin_at;
             
-            $res = $this->pibase->cObj->exec_getQuery('tt_products',$selectConf);
+            $queryParts = $this->pibase->cObj->getQuery('tt_products', $selectConf, TRUE);
+            $res = $this->tt_products->table->exec_SELECT_queryArray($queryParts);
+            //$res = $this->pibase->cObj->exec_getQuery('tt_products',$selectConf);
     
             $productsArray=array();
             while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))        {

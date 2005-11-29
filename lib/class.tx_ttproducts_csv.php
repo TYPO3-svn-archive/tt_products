@@ -136,6 +136,7 @@ class tx_ttproducts_csv {
 									$variants[1].'";"'.
 									$variants[2].'";"'.
 									$variants[3].'"';
+									$variants[4].'"';
 						reset($csvfields);
 						foreach($csvfields as $csvfield) {
 							$csvdata .= ';"'.$actItem['rec'][$csvfield].'"';

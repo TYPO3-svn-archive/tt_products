@@ -114,6 +114,26 @@ $TCA['tt_products_emails'] = Array (
 );
 
 
+$TCA['sys_products_orders'] = Array (
+	'ctrl' => Array (
+		'title' => 'LLL:EXT:tt_products/locallang_tca.php:sys_products_orders',
+		'label' => 'name',
+		'default_sortby' => 'ORDER BY name',
+		'tstamp' => 'tstamp',
+		'delete' => 'deleted',
+		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
+		'crdate' => 'crdate',
+		'mainpalette' => 1,
+		'iconfile' => PATH_ttproducts_icon_table_rel.'sys_products_orders.gif',
+		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
+	),
+	'feInterface' => Array (
+		'fe_admin_fieldList' => 'hidden',
+	)
+);
+
+
+
 if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1) {
 	t3lib_div::loadTCA('tt_content');
 	$TCA['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
@@ -170,6 +190,9 @@ t3lib_extMgm::allowTableOnStandardPages('tt_products_cat_language');
 t3lib_extMgm::allowTableOnStandardPages('tt_products_articles');
 t3lib_extMgm::allowTableOnStandardPages('tt_products_emails');
 
+t3lib_extMgm::allowTableOnStandardPages('sys_products_orders');
+
+
 //t3lib_extMgm::addToInsertRecords('tt_products');
 
 if (TYPO3_MODE=='BE')	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = PATH_BE_ttproducts.'class.tx_ttproducts_wizicon.php';
@@ -179,6 +202,7 @@ t3lib_extMgm::addLLrefForTCAdescr('tt_products','EXT:'.TT_PRODUCTS_EXTkey.'//loc
 t3lib_extMgm::addLLrefForTCAdescr('tt_products_cat','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprodc.php');
 t3lib_extMgm::addLLrefForTCAdescr('tt_products_articles','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttproda.php');
 t3lib_extMgm::addLLrefForTCAdescr('tt_products_emails','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprode.php');
+t3lib_extMgm::addLLrefForTCAdescr('sys_products_orders','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprodo.php');
 
 
 $tempColumns = Array (

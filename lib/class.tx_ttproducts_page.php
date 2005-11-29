@@ -157,10 +157,11 @@ class tx_ttproducts_page {
 			$this->pid_list = $TSFE->id;
 		}
 		if ($recursive)	{		// get pid-list if recursivity is enabled
+			$recursive = intval($recursive);
 			$pid_list_arr = explode(',',$this->pid_list);
 			$this->pid_list='';
 			while(list(,$val)=each($pid_list_arr))	{
-				$this->pid_list.=$val.','.$pibase->cObj->getTreeList($val,intval($recursive));
+				$this->pid_list.=$val.','.$pibase->cObj->getTreeList($val,$recursive);
 			}
 			$this->pid_list = ereg_replace(',$','',$this->pid_list);
 			$pid_list_arr = explode(',',$this->pid_list);
@@ -171,7 +172,6 @@ class tx_ttproducts_page {
 		
 	}
 
-	
 }
 
 

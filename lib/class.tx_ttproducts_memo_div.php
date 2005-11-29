@@ -85,8 +85,8 @@ class tx_ttproducts_memo_div {
 			$fieldsArray['tt_products_memoItems']=implode(',', $memoItems);
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
 		}
-
-		return $this->products_display($theCode, $errorMessage, implode(',', $memoItems));
+		
+		return $pibase->products_display($theCode, $errorMessage, implode(',', $memoItems));
 	}
 
 
