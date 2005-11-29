@@ -28,7 +28,8 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 <br>
 <br>
 
-
+<!-- ###MEMO_TEMPLATE### begin
+-->
 <!-- ###ITEM_LIST_TEMPLATE### begin
 	This subpart is used to display the regular list of products. It's also used by search-results.
 -->
@@ -74,6 +75,7 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
             <!-- ###display_variant5_isSingle### -->
             <!-- ###display_variant5_isNotSingle### -->
             ###GW1B### Stückzahl: ###GW1E### <INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+            <input type="button" name="addtomemo" value="auf die Merkliste" onclick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&addmemo=###PRODUCT_ID###';">
             <p> </td>
             <!-- ###display_variant5_isNotSingle### -->
           ###ITEM_SINGLE_POST_HTML###
@@ -84,6 +86,7 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
           <tr>
             <td colspan="3" align="CENTER"> <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=21'"></td>
           </tr>
+          
         </table>
 			</FORM>
 			</td></tr>
@@ -106,7 +109,7 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 </table>
 <br>
 <!-- ###ITEM_LIST_TEMPLATE### end -->
-
+<!-- ###MEMO_TEMPLATE### end -->
 
 
 
