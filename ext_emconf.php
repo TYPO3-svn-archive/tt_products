@@ -3,7 +3,7 @@
 ########################################################################
 # Extension Manager/Repository config file for ext: "tt_products"
 # 
-# Auto generated 29-11-2005 11:46
+# Auto generated 29-11-2005 12:18
 # 
 # Manual updates:
 # Only the data in the array - anything else is removed by next write

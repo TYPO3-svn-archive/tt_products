@@ -193,7 +193,7 @@ switch($products_cmd)	{
 
 			$content=$basket->getBasket($tmp='','###BASKET_ORDERCONFIRMATION_TEMPLATE###',$markerArray);
 			$error=''; // TODO
-			tx_ttproducts_finalize_div::finalizeOrder($pibase,$basket->conf,$basket->templateCode, $basket,$basket->product /* TODO */,$basket->category, $basket->price, $orderUid,$content,$error);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+			tx_ttproducts_finalize_div::finalizeOrder($pibase,$basket->conf,$basket->templateCode, $basket,$basket->tt_products /* TODO */,$basket->tt_products_cat, $basket->price, $orderUid,$content,$error);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 		}
 	break;
 	default:
