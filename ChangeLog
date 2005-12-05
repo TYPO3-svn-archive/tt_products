@@ -1,3 +1,9 @@
+2005-05-12 Franz Holzinger <franz@fholzinger.com>
+	* set ###FORM_URL_INFO### in case of missing address fields to the editPID of sr_feuser_register
+	* change error with different languages for category
+	* make the page module list configurable for TYPO3 4.0
+	* make the receiver of the notification email configurable
+
 2005-29-11 Franz Holzinger <franz@fholzinger.com>
 	* the language tables are used now
 	* show the sys_products_orders in the backend

@@ -597,6 +597,12 @@ class tx_ttproducts_basket {
 									} else {
 										if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
 											$label = $TSFE->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
+											$editPID = $TSFE->tmpl->setup['plugin.']['tx_srfeuserregister_pi1.']['editPID'];
+											if ($TSFE->loginUser && $editPID) {
+												$srfeuserParams = array('tx_srfeuserregister_pi1[control]' => '0815');
+												$addParams = tx_ttproducts_view_div::getLinkParams('',$srfeuserParams);
+												$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($editPID,'',$addParams);
+											}
 										} else {
 											$label = 'field: '.$check;
 										}
@@ -1100,7 +1106,7 @@ class tx_ttproducts_basket {
 		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceNoTax']['shipping']);
 		$markerArray['###PRICE_SHIPPING_ONLY_TAX###'] = $this->price->priceFormat($this->calculatedArray['priceTax']['shipping']-$this->calculatedArray['priceNoTax']['shipping']);
 
-		$markerArray['###SHIPPING_SELECTOR###'] = $this->paymentshipping->generateRadioSelect($this,'shipping', $countTotal);
+		$markerArray['###SHIPPING_SELECTOR###'] = $this->paymentshipping->generateRadioSelect($this,'shipping', $this->calculatedArray);
 		$markerArray['###SHIPPING_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basketExtra['shipping.']['image.']);
 		$markerArray['###SHIPPING_TITLE###'] = $this->basketExtra['shipping.']['title'];
 
@@ -1218,6 +1224,8 @@ class tx_ttproducts_basket {
 		$markerArray['###USERNAME###'] = $this->personInfo['email'];
 		$markerArray['###PASSWORD###'] = $this->password;
 		$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
+		$markerArray['###PID_BILLING###'] = $this->conf['PIDbilling'];
+		$markerArray['###PID_DELIVERY###'] = $this->conf['PIDdelivery'];
 
 			// URL
 		$markerArray = tx_ttproducts_view_div::addURLMarkers($this->pibase, $this->conf, $this, $markerArray);

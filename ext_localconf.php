@@ -64,6 +64,41 @@ if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProduct
 	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'] = '';
 }
 
+$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
+
+if ($typoVersion >= 3009000 && !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
+	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = 
+		array ('default' => array(
+					'MENU' => 'LLL:EXT:tt_products/locallang.php:m_default',
+					'fList' =>  'title,itemnumber,price,image',
+					// 'fList' =>  'title;itemnumber;price;price2;inStock;category,image,note',
+					'icon' => TRUE),
+				'ext' => array (
+					'MENU' => 'LLL:EXT:tt_products/locallang.php:m_ext',
+					'fList' =>  'title,price2,category;inStock;weight;tax',
+					'icon' => TRUE),
+				'variants' => array (
+					'MENU' => 'LLL:EXT:tt_products/locallang.php:m_variants',
+					'fList' =>  'title,color;size;gradings',
+					'icon' => TRUE)
+				);							
+	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articles'] = 
+		array ('default' => array(
+					'MENU' => 'LLL:EXT:tt_products/locallang.php:m_default',
+					'fList' =>  'title,itemnumber,price,inStock',
+					'icon' => TRUE),
+				'ext' => array (
+					'MENU' => 'LLL:EXT:tt_products/locallang.php:m_ext',
+					'fList' =>  'title;price2,color;size;gradings',
+					'icon' => TRUE)
+				);							
+	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] = 
+		array ('default' => array(
+					'MENU' => 'LLL:EXT:tt_products/locallang.php:m_default',
+					'fList' =>  'title,image',
+					'icon' => TRUE));
+}
+
 
 //$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products'][0] = array(
 //    'fList' => 'title,subtitle,price,inStock',

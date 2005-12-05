@@ -599,7 +599,7 @@ Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
 
 <td><input type="Submit" name="products_update" value="zurück zum Warenkorb"></td>
 <td align="right">
-<input type="Submit" name="products_payment" value="ABG´s akzeptiert" onclick="document.forms[0].action='###FORM_URL_FINALIZE###';">
+<input type="Submit" name="products_payment" value="ABGs akzeptiert" onclick="document.forms[0].action='###FORM_URL_FINALIZE###';">
 <input type="hidden" name="products_cmd" value="cardno" />
 </td>
 </tr></table>
@@ -911,11 +911,11 @@ Message for payment method 10, Paypal
         <br>
         Sie können Ihren Bestellstatus jederzeit mittels Ihres Bestellstatus-Codes<br>
         <strong>###ORDER_TRACKING_NO###</strong> nachvollziehen. <br>
-        Klicken Sie hier <a href="index.php?id=38&tracking=###ORDER_TRACKING_NO###"><strong>
+        Klicken Sie hier <a href="index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###"><strong>
         um den Status jetzt zu sehen.</strong></a> <br>
-        Klicken Sie hier <a href="index.php?id=100&tracking=###ORDER_TRACKING_NO###"><strong>
+        Klicken Sie hier <a href="index.php?id=###PID_BILLING###&type=0&tracking=###ORDER_TRACKING_NO###"><strong>
         um die Rechnung jetzt zu sehen.</strong></a><br>
-        Klicken Sie hier <a href="index.php?id=140&tracking=###ORDER_TRACKING_NO###"><strong>
+        Klicken Sie hier <a href="index.php?id=###PID_DELIVERY###&type=0&tracking=###ORDER_TRACKING_NO###"><strong>
 	        um den Lieferschein jetzt zu sehen.</strong></a><br>
         <br>
         <br>

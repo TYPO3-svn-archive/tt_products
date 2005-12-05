@@ -119,6 +119,7 @@ plugin.tt_products {
   orderEmail_from = {$plugin.tt_products.orderEmail_from}
   orderEmail_fromName = {$plugin.tt_products.orderEmail_fromName}
   orderEmail_to = {$plugin.tt_products.orderEmail_to}
+  orderEmail_toDelivery = {$plugin.tt_products.orderEmail_toDelivery}
   orderEmail_subject = {$plugin.tt_products.orderEmail_subject}
   orderEmail_htmlmail = {$plugin.tt_products.orderEmail_htmlmail}
   email_notify_default = {$plugin.tt_products.email_notify_default}

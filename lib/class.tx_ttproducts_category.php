@@ -52,7 +52,7 @@ class tx_ttproducts_category {
 	 * Getting all tt_products_cat categories into internal array
 	 */
 	function init($LLkey)	{
-		global $TYPO3_DB;
+		global $TYPO3_DB,$TSFE;
 		
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray('tt_products_cat');
