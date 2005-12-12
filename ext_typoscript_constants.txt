@@ -45,6 +45,8 @@ plugin.tt_products {
   displayCurrentRecord = 
     # cat=plugin.products//; type=string; label= URL of the basket image
   basketPic =
+    # cat=plugin.products//; type=boolean; label= Click into basket: If set the basket page will be shown after a product has been put there. PIDbasket needs to be set.
+  clickIntoBasket =
   
     # cat=plugin.products//; type=string; label= CSS even rows: Cascading Stylesheets (CSS) even rows in the products listing. This works only if displayBasketColumns has been set.
   CSSRowEven = 

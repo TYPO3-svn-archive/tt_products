@@ -33,9 +33,10 @@ CREATE TABLE tt_products (
 	directcost varchar(20) DEFAULT '' NOT NULL,
 	color varchar(255) DEFAULT '' NOT NULL,
 	size varchar(255) DEFAULT '' NOT NULL,
+	description mediumtext NOT NULL,
+	gradings varchar(255) DEFAULT '' NOT NULL,
 	additional_type varchar(36) DEFAULT '' NOT NULL,
 	additional mediumtext NOT NULL,
-	gradings varchar(255) DEFAULT '' NOT NULL,
 	special_preparation int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
@@ -141,6 +142,7 @@ CREATE TABLE tt_products_articles (
 
 	color varchar(60) DEFAULT '' NOT NULL,
 	size varchar(60) DEFAULT '' NOT NULL,
+	description mediumtext NOT NULL,
 	gradings varchar(60) DEFAULT '' NOT NULL,
 	
 	uid_product int(11) DEFAULT '0' NOT NULL,

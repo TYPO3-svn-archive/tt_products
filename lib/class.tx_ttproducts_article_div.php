@@ -57,7 +57,7 @@ class tx_ttproducts_article_div {
 		$row['size'] = $variantArray[1];
 		$row['description'] = $variantArray[2];
 		$row['gradings'] = $variantArray[3];
-		$row['additional'] = $variantArray[4];
+		//$row['additional'] = $variantArray[4];
 	 }
 
 
@@ -80,8 +80,8 @@ class tx_ttproducts_article_div {
 	 	$additional = $tmpArr[0]; 
 	 	$tmpArr = explode(';', $row['gradings']);
 	 	$gradings = $tmpArr[0]; 
-	 	$tmpArr = explode(';', $row['additional']);
-	 	$additional = $tmpArr[0]; 
+//	 	$tmpArr = explode(';', $row['additional']);
+//	 	$additional = $tmpArr[0]; 
 	 	
 	 	$rc = $color.';'.$size.';'.$additional.';'.$gradings.';'.$additional;
 	 	return $rc; 

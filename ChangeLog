@@ -1,3 +1,6 @@
+2005-12-12 Franz Holzinger <franz@fholzinger.com>
+	* separate email template for shop admin
+
 2005-05-12 Franz Holzinger <franz@fholzinger.com>
 	* set ###FORM_URL_INFO### in case of missing address fields to the editPID of sr_feuser_register
 	* change error with different languages for category

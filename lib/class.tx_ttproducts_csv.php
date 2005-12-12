@@ -109,7 +109,7 @@ class tx_ttproducts_csv {
 				$csvfields[$a] = trim($csvfields[$a]);
 
 			// Write description header
-			$csvdescr = '"uid";"count";"color";"size";"additional";"gradings"';
+			$csvdescr = '"uid";"count";"color";"size";"description";"gradings"';
 			reset($csvfields);
 			foreach($csvfields as $csvfield)
 				$csvdescr .= ';"'.$csvfield.'"';

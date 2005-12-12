@@ -599,7 +599,10 @@ class tx_ttproducts_basket {
 											$label = $TSFE->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
 											$editPID = $TSFE->tmpl->setup['plugin.']['tx_srfeuserregister_pi1.']['editPID'];
 											if ($TSFE->loginUser && $editPID) {
-												$srfeuserParams = array('tx_srfeuserregister_pi1[control]' => '0815');
+												$addParams = array ('products_payment' => 1);
+												$addParams = tx_ttproducts_view_div::getLinkParams('',$addParams);
+												$srfeuserBackUrl = $this->pibase->pi_getPageLink($TSFE->id,'',$addParams);
+												$srfeuserParams = array('tx_srfeuserregister_pi1[backURL]' => $srfeuserBackUrl);
 												$addParams = tx_ttproducts_view_div::getLinkParams('',$srfeuserParams);
 												$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($editPID,'',$addParams);
 											}
@@ -733,7 +736,7 @@ class tx_ttproducts_basket {
 				$row['extVars'] = $bextVars;
 				if ($this->conf['useArticles']) {
 					// get the article uid with these colors, sizes and gradings
-					$query='uid_product=\''.intval($row['uid']).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND gradings=\''.$row['gradings'].'\'';
+					$query='uid_product=\''.intval($row['uid']).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND description=\''.$row['description'].'\' AND gradings=\''.$row['gradings'].'\'';
 					$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products_articles', $query);
 					if ($articleRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($articleRes)) {
 							// use the fields of the article instead of the product
@@ -820,7 +823,7 @@ class tx_ttproducts_basket {
 			{
 				if ($prodSingle['bulkily'])
 				{
-					$value = ($this->conf['bulkilyAddition'] * $this->basketExt[$prodSingle['uid']][$prodSingle['color'].';'.$prodSingle['size'].';'.$prodSingle['additional'].';'.$prodSingle['gradings']]);
+					$value = ($this->conf['bulkilyAddition'] * $this->basketExt[$prodSingle['uid']][$prodSingle['color'].';'.$prodSingle['size'].';'.$prodSingle['description'].';'.$prodSingle['gradings']]);
 					$this->calculatedArray['priceTax']['shipping'] += $value  * (1+$conf['bulkilyFeeTax']/100);
 					$this->calculatedArray['priceNoTax']['shipping'] += $value;
 				}
@@ -889,7 +892,7 @@ class tx_ttproducts_basket {
 		$this->calculatedArray['priceTax']['total'] = $this->calculatedArray['priceTax']['goodstotal'];
 		$this->calculatedArray['priceTax']['total']+= $this->calculatedArray['priceTax']['payment'];
 		$this->calculatedArray['priceTax']['total']+= $this->calculatedArray['priceTax']['shipping'];
-/* Added Els: $this->calculatedArray['priceTax']['creditpoints'] and coucher */
+
 		$this->calculatedArray['priceTax']['total']-= $this->calculatedArray['priceTax']['creditpoints'];
 		$this->calculatedArray['priceTax']['total']-= $this->calculatedArray['priceTax']['voucher'];
 
@@ -981,8 +984,9 @@ class tx_ttproducts_basket {
 
 					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
-					$markerArray['###PRODUCT_ADDITIONAL###'] = $actItem['rec']['additional'];
+					$markerArray['###PRODUCT_DESCRIPTION###'] = $actItem['rec']['description'];
 					$markerArray['###PRODUCT_GRADINGS###'] = $actItem['rec']['gradings'];
+					//$markerArray['###PRODUCT_ADDITIONAL###'] = $actItem['rec']['additional'];
 
 	                $catTitle= $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : '';
 					$this->pibase->cObj->setCurrentVal($catTitle);
@@ -1223,9 +1227,6 @@ class tx_ttproducts_basket {
 
 		$markerArray['###USERNAME###'] = $this->personInfo['email'];
 		$markerArray['###PASSWORD###'] = $this->password;
-		$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
-		$markerArray['###PID_BILLING###'] = $this->conf['PIDbilling'];
-		$markerArray['###PID_DELIVERY###'] = $this->conf['PIDdelivery'];
 
 			// URL
 		$markerArray = tx_ttproducts_view_div::addURLMarkers($this->pibase, $this->conf, $this, $markerArray);

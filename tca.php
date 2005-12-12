@@ -6,7 +6,7 @@
 $TCA['tt_products'] = Array (
 	'ctrl' => $TCA['tt_products']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime'
 	),
 	'columns' => Array (
 		'hidden' => Array (
@@ -257,6 +257,15 @@ $TCA['tt_products'] = Array (
 				'max' => '255'
 			)
 		),
+		'description' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products.description',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			)
+		),
 		'additional_type' => Array (
 			'label' => 'LLL:EXT:cms/locallang_ttc.php:list_type',
 			'config' => Array (
@@ -348,7 +357,7 @@ $TCA['tt_products'] = Array (
 		'2' => Array('showitem' => 'inStock'),
 		'3' => Array('showitem' => 'price2, directcost, tax, offer, highlight'),
 		'4' => Array('showitem' => 'subtitle, www'),
-		'5' => Array('showitem' => 'size, gradings'),
+		'5' => Array('showitem' => 'size, description, gradings'),
 		'6' => Array('showitem' => 'bulkily, special_preparation, unit, unit_factor'),
 		'7' => Array('showitem' => ''),
 	)

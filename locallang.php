@@ -10,12 +10,12 @@ $LOCAL_LANG = Array (
 	),
 	'dk' => Array (
 		'plugins_description' => 'Tilføjer en butiks produktliste til siden. Dette er en del af den indbyggede butik og kræver, at siden indeholder produktelementer i databasen.',
-		'm_default' => 'Standard',
-		'm_ext' => 'Erweitert',
-		'm_variants' => 'Varianten',
 	),
 	'de' => Array (
 		'plugins_description' => 'Fügt ein Plugin für das Shop System ein. Das ist ein Bestandteil des integrierten Online-Shops und benötigt Produktdatensätze in der Datenbank.',
+		'm_default' => 'Standard',
+		'm_ext' => 'Erweitert',
+		'm_variants' => 'Varianten',
 	),
 	'no' => Array (
 		'plugins_description' => 'Setter inn en butikks produktliste på siden. Dette er en del av den innebygde butikken (webshopen) og krever at siden inneholder produktelementer i databasen.',

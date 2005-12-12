@@ -309,7 +309,7 @@ class tx_ttproducts_order {
 				if ($this->conf['useArticles']) {
 					foreach ($actItemArray as $k1=>$actItem) {
 						// get the article uid with these colors, sizes and gradings
-						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
+						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND description=\''.$actItem['rec']['description'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
 
 						$res = $TYPO3_DB->exec_SELECTquery('uid', 'tt_products_articles', $query);
 

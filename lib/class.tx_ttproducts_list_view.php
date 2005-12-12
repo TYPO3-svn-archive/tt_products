@@ -84,6 +84,11 @@ class tx_ttproducts_list_view {
         $more=0;
 // List products:
         $where='';
+        // if parameter 'newitemdays' is specified, only new items from the last X days are displayed
+        if (t3lib_div::_GP('newitemdays')) {
+            $temptime = time() - 86400*intval(trim(t3lib_div::_GP('newitemdays')));
+            $where = 'AND tstamp >= '.$temptime;
+        }			 
 
 		switch ($theCode) {
 			case 'SEARCH':
@@ -97,14 +102,9 @@ class tx_ttproducts_list_view {
 	                // Add to content
 	            $content.=$out;
 	            if (t3lib_div::_GP('swords'))    {
-	                $where = tx_ttproducts_div::searchWhere($this->pibase, $this->searchFieldList, trim(t3lib_div::_GP('swords')));
+	                $where .= tx_ttproducts_div::searchWhere($this->pibase, $this->searchFieldList, trim(t3lib_div::_GP('swords')));
 	            }
 	
-	            // if parameter 'newitemdays' is specified, only new items from the last X days are displayed
-	            if (t3lib_div::_GP('newitemdays')) {
-	                $temptime = time() - 86400*intval(trim(t3lib_div::_GP('newitemdays')));
-	                $where = 'AND tstamp >= '.$temptime;
-	            }			 
 			break;
 			case 'LISTGIFTS':
 				$where .= ' AND '.($this->conf['whereGift'] ? $this->conf['whereGift'] : '1=0');

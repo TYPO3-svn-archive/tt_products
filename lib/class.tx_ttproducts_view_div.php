@@ -54,13 +54,13 @@ class tx_ttproducts_view_div {
 		global $TSFE;
 
 			// Add's URL-markers to the $markerArray and returns it
-		$pid = ( $conf['PIDbasket'] ? $conf['PIDbasket'] : $TSFE->id);
-		$markerArray['###FORM_URL###'] = $pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDbasket']);
-		$pid = ( $conf['PIDinfo'] ? $conf['PIDinfo'] : ($conf['PIDbasket'] ? $conf['PIDbasket'] :$TSFE->id));
+		$pidBasket = ( $conf['PIDbasket'] ? $conf['PIDbasket'] : $TSFE->id);
+		$markerArray['###FORM_URL###'] = $pibase->pi_getPageLink($pidBasket,'',tx_ttproducts_view_div::getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDbasket']);
+		$pid = ( $conf['PIDinfo'] ? $conf['PIDinfo'] : $pidBasket);
 		$markerArray['###FORM_URL_INFO###'] = $pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ; // $this->getLinkUrl($this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $this->conf['PIDbasket']);
-		$pid = ( $conf['PIDfinalize'] ? $conf['PIDfinalize'] : ($conf['PIDbasket'] ? $conf['PIDbasket'] : $TSFE->id));
+		$pid = ( $conf['PIDfinalize'] ? $conf['PIDfinalize'] : $pidBasket);
 		$markerArray['###FORM_URL_FINALIZE###'] = $pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;// $this->getLinkUrl($this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $this->conf['PIDbasket']);
-		$pid = ( $conf['PIDthanks'] ? $conf['PIDthanks'] : ($conf['PIDbasket'] ? $conf['PIDbasket'] : $TSFE->id));
+		$pid = ( $conf['PIDthanks'] ? $conf['PIDthanks'] : $pidBasket);
 		$markerArray['###FORM_URL_THANKS###'] = $pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) ;	 // $this->getLinkUrl($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDbasket']);
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 		if ($basket->basketExtra['payment.']['handleURL'])	{	// This handleURL is called instead of the THANKS-url in order to let handleScript process the information if payment by credit card or so.
@@ -262,11 +262,14 @@ class tx_ttproducts_view_div {
 		$markerArray['###FIELD_COLOR_NAME###']='ttp_basket['.$row['uid'].'][color]';
 		$markerArray['###FIELD_COLOR_VALUE###']=$row['color'];
 
-		$markerArray['###FIELD_ADDITIONAL_NAME###']='ttp_basket['.$row['uid'].'][additional]';
-		$markerArray['###FIELD_ADDITIONAL_VALUE###']=$row['additional'];
+		$markerArray['###FIELD_DESCRIPTION_NAME###']='ttp_basket['.$row['uid'].'][description]';
+		$markerArray['###FIELD_DESCRIPTION_VALUE###']=$row['description'];
 
 		$markerArray['###FIELD_GRADINGS_NAME###']='ttp_basket['.$row['uid'].'][gradings]';
 		$markerArray['###FIELD_GRADINGS_VALUE###']=$row['gradings'];
+
+		$markerArray['###FIELD_ADDITIONAL_NAME###']='ttp_basket['.$row['uid'].'][additional]';
+//		$markerArray['###FIELD_ADDITIONAL_VALUE###']=$row['additional'];
 
 /* Added Els4: total price is quantity multiplied with pricenottax mulitplied with unit_factor (exception for kurkenshop), _credits is necessary for "kurkenshop", without decimal and currency symbol */
 		if ($row['category'] == $conf['creditsCategory']) {
@@ -295,16 +298,14 @@ class tx_ttproducts_view_div {
 			$prodSizeText = $prodTmp[0];
 		}
 
-		$prodAdditionalText['single'] = '';
-		
-		if ($conf['selectAdditional']) {
-			$isSingleProduct = $pibase->tt_products->isSingle($pibase, $row);
-			$message = $pibase->pi_getLL('additional single');
-			$prodAdditionalText['single']  = $message.'<input type="checkbox" name="'.$basketQuantityName.'" value="1">'; 
-//			$message = $pibase->pi_getLL('additional no');
-//			$prodAdditionalText =  '<OPTION value="0">'.$message.'</OPTION>';
-//			$message = $pibase->pi_getLL('additional yes');
-//			$prodAdditionalText .= '<OPTION value="1">'.$message.'</OPTION>';
+		$prodDescriptionText = '';
+		$prodTmp = explode(';', $row['size']);
+		if ($conf['selectDescription']) {
+			foreach ($prodTmp as $prodDescription) {
+				$prodDescriptionText = $prodDescriptionText . '<OPTION value="'.$prodDescription.'">'.$prodDescription.'</OPTION>';
+			}
+		} else {
+			$prodDescriptionText = $prodTmp[0];
 		}
 
 		$prodGradingsText = '';
@@ -317,12 +318,27 @@ class tx_ttproducts_view_div {
 			$prodGradingsText = $prodTmp[0];
 		}
 
+		$prodAdditionalText['single'] = '';
+		
+		if ($conf['selectAdditional']) {
+//			$isSingleProduct = $pibase->tt_products->isSingle($pibase, $row);
+//			$message = $pibase->pi_getLL('additional single');
+//			$prodAdditionalText['single']  = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($isSingleProduct ? 'checked':'').' value="1">';
+ 
+//			$message = $pibase->pi_getLL('additional no');
+//			$prodAdditionalText =  '<OPTION value="0">'.$message.'</OPTION>';
+//			$message = $pibase->pi_getLL('additional yes');
+//			$prodAdditionalText .= '<OPTION value="1">'.$message.'</OPTION>';
+		}
+
+
 		$markerArray['###PRODUCT_WEIGHT###'] = doubleval($row['weight']);
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $conf['bulkilyWarning'] : '';
 		$markerArray['###PRODUCT_COLOR###'] = $prodColorText;
 		$markerArray['###PRODUCT_SIZE###'] = $prodSizeText;
-		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
+		$markerArray['###PRODUCT_DESCRIPTION###'] = $prodDescriptionText;
 		$markerArray['###PRODUCT_GRADINGS###'] = $prodGradingsText;
+		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
 
 		if ($row['special_preparation'])
 			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $pibase->cObj->substituteMarkerArray($conf['specialPreparation'],$markerArray);

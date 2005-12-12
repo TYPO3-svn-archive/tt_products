@@ -66,6 +66,7 @@ plugin.tt_products {
   displayBasketCatHeader = {$plugin.tt_products.displayBasketCatHeader}
   displayBasketColumns = {$plugin.tt_products.displayBasketColumns}
   basketPic = {$plugin.tt_products.basketPic}
+  clickIntoBasket = {$plugin.tt_products.clickIntoBasket}
   
   CSSRowEven = {$plugin.tt_products.CSSRowEven}
   CSSRowUneven = {$plugin.tt_products.CSSRowUneven}

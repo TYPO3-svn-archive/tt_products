@@ -100,7 +100,10 @@ class tx_ttproducts_category {
 			foreach ($pidItem as $itemnumber=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
 					$category = $this->get($actItem['rec']['category']);
-					$emailArray[$actItem['rec']['category']] = $this->tt_products_email->getEmail($category['email_uid']);
+					$tmp = $this->tt_products_email->getEmail($category['email_uid']);
+					if ($tmp) {
+						$emailArray[$actItem['rec']['category']] = $tmp;
+					} 
 				}
 			}
 		}

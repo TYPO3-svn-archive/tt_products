@@ -334,6 +334,11 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$globalMarkerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'],$this->conf['color2.']);
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'],$this->conf['color3.']);
 		$globalMarkerArray['###DOMAIN###'] = $this->conf['domain'];
+		$globalMarkerArray['###PID_BASKET###'] = $this->conf['PIDbasket'];
+		$globalMarkerArray['###PID_BILLING###'] = $this->conf['PIDbilling'];
+		$globalMarkerArray['###PID_DELIVERY###'] = $this->conf['PIDdelivery'];
+		$globalMarkerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
+
             // Shopadmin eMail by WEBcoast.ch
         $globalMarkerArray['###SHOPADMIN_EMAIL###'] = $this->conf['orderEmail_from'];
 
@@ -445,8 +450,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	function products_display($theCode, &$errorMessage, $memoItems='')	{
 		global $TSFE;
 
-
-		$pid = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : (t3lib_div::_GP('backPID') ? t3lib_div::_GP('backPID') : $TSFE->id));
+		$pid = ($this->conf['PIDbasket'] && $this->conf['clickIntoBasket'] ? $this->conf['PIDbasket'] : (t3lib_div::_GP('backPID') ? t3lib_div::_GP('backPID') : $TSFE->id));
 		$formUrl = $this->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams());  //  $this->getLinkUrl($this->conf['PIDbasket']);
 //		if (!$formUrl) {
 //			$formUrl = $this->pi_getPageLink(t3lib_div::_GP('backPID'),'',tx_ttproducts_view_div::getLinkParams());  // $this->getLinkUrl(t3lib_div::_GP('backPID'));

@@ -105,10 +105,10 @@ class tx_ttproducts_product {
 				#error_Log ("tt_products  $this->conf['useArticles'] = ".$this->conf['useArticles']);
 				if ($useArticles) {
 					foreach ($actItemArray as $k1=>$actItem) {
-						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
+						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND description=\''.$actItem['rec']['description'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
 
 						$res = $TYPO3_DB->exec_SELECTquery('inStock', 'tt_products_articles', $query);
-							// 	TODO: Saving the order record support color, size and gradings here
+							// 	TODO: Saving the order record support color, size, description and gradings here
 					}
 				} else {
 					foreach ($actItemArray as $k1=>$actItem) {

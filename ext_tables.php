@@ -24,7 +24,7 @@ $TCA['tt_products'] = Array (
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden,title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',
+		'fe_admin_fieldList' => 'hidden,title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',
 	)
 );
 
@@ -113,7 +113,6 @@ $TCA['tt_products_emails'] = Array (
 	)
 );
 
-
 $TCA['sys_products_orders'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:tt_products/locallang_tca.php:sys_products_orders',
@@ -131,8 +130,6 @@ $TCA['sys_products_orders'] = Array (
 		'fe_admin_fieldList' => 'hidden',
 	)
 );
-
-
 
 if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1) {
 	t3lib_div::loadTCA('tt_content');
