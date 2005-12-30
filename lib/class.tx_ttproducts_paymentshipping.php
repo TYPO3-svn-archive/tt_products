@@ -195,6 +195,56 @@ class tx_ttproducts_paymentshipping {
 	} // cleanConfArr
 
 
+	function getConfiguredPrice(&$price, &$tax, &$confArr, &$countTotal, &$priceTotalNoTax, &$priceTax, &$priceNoTax) {
+        $minPrice=0;
+        $priceNew=0;
+        if ($confArr['WherePIDMinPrice.']) {
+                // compare PIDList with values set in priceTaxWherePIDMinPrice in the SETUP
+                // if they match, get the min. price
+                // if more than one entry for priceTaxWherePIDMinPrice exists, the highest is value will be taken into account
+            foreach ($confArr['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
+                if (is_array($basket->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
+                    $minPrice=$minPriceValue;
+                }
+            }
+        }
+
+		krsort($confArr);
+		reset($confArr);
+
+		if ($confArr['type'] == 'count') {
+			while (list ($k1, $price1) = each ($confArr)) {
+				if ($countTotal >= intval($k1)) {
+					$priceNew = $price1;
+					break;
+				}
+			}
+		} else if ($confArr['type'] == 'weight') {
+			while (list ($k1, $price1) = each ($confArr)) {
+				if ($basket->calculatedArray['weight'] * 1000 >= intval($k1)) {
+					$priceNew = $price1;
+					break;
+				}
+			}
+		/* Added Els: shipping price (verzendkosten) depends on price of goodstotal */
+		} else if ($confArr['type'] == 'price') {
+			while (list ($k1, $price1) = each ($confArr)) {
+				if ($priceTotalNoTax >= intval($k1)) {
+					$priceNew = $price1;
+					break;
+				}
+			}
+		}
+
+		// compare the price to the min. price
+		if ($minPrice > $priceNew) {
+			$priceNew = $minPrice;
+		}
+
+		$priceTax += $price->getPrice($priceNew,1,$tax);
+		$priceNoTax += $price->getPrice($priceNew,0,$tax);
+	}
+
 
 	function GetPaymentShippingData(
 			&$basket,
@@ -212,63 +262,20 @@ class tx_ttproducts_paymentshipping {
 		$price = t3lib_div::makeInstance('tx_ttproducts_price');
 
 		// Shipping
-
 		$confArr = $basket->basketExtra['shipping.']['priceTax.'];
 		$tax = doubleVal($this->conf['shipping.']['TAXpercentage']);
 		$price->init($this, $this->conf['shipping.'], $this->config);
 
 		if ($confArr) {
-	        $minPrice=0;
-	        if ($basket->basketExtra['shipping.']['priceTax.']['WherePIDMinPrice.']) {
-	                // compare PIDList with values set in priceTaxWherePIDMinPrice in the SETUP
-	                // if they match, get the min. price
-	                // if more than one entry for priceTaxWherePIDMinPrice exists, the highest is value will be taken into account
-	            foreach ($basket->basketExtra['shipping.']['priceTax.']['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
-	                if (is_array($basket->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
-	                    $minPrice=$minPriceValue;
-	                }
-	            }
-	        }
-
-			krsort($confArr);
-			reset($confArr);
-
-			if ($confArr['type'] == 'count') {
-				while (list ($k1, $price1) = each ($confArr)) {
-					if ($countTotal >= intval($k1)) {
-						$priceShipping = $price1;
-						break;
-					}
-				}
-			} else if ($confArr['type'] == 'weight') {
-				while (list ($k1, $price1) = each ($confArr)) {
-					if ($basket->calculatedArray['weight'] * 1000 >= intval($k1)) {
-						$priceShipping = $price1;
-						break;
-					}
-				}
-			/* Added Els: shipping price (verzendkosten) depends on price of goodstotal */
-			} else if ($confArr['type'] == 'price') {
-				while (list ($k1, $price1) = each ($confArr)) {
-					if ($priceTotalNoTax >= intval($k1)) {
-						$priceShipping = $price1;
-						break;
-					}
-				}
-			}
-			// compare the price to the min. price
-			if ($minPrice > $priceShipping) {
-				$priceShipping = $minPrice;
-			}
-
-			$priceShippingTax += $price->getPrice($priceShipping,1,$tax);
-			$priceShippingNoTax += $price->getPrice($priceShipping,0,$tax);
+			$this->getConfiguredPrice($price, $tax, $confArr, $countTotal, $priceTotalNoTax, $priceShippingTax, $priceShippingNoTax); 
 		} else {
 			$priceShippingTax += doubleVal($basket->basketExtra['shipping.']['priceTax']);
 			$priceShippingNoTax += doubleVal($basket->basketExtra['shipping.']['priceNoTax']);
-			if ($this->conf['shipping.']['TAXpercentage']) {
+			if ($tax) {
 				$priceShippingNoTax = $priceShippingTax/(1+$tax/100);
-			}			
+			} else if (!$priceShippingNoTax) {
+				$priceShippingNoTax = $priceShippingTax; 
+			}
 		}
 
 		$perc = doubleVal($basket->basketExtra['shipping.']['percentOfGoodstotal']);
@@ -300,20 +307,20 @@ class tx_ttproducts_paymentshipping {
 
 			// Payment
 		$pricePayment = $pricePaymentTax = $pricePaymentNoTax = 0;
-		// TAXpercentage replaces priceNoTax
+		$confArr = $basket->basketExtra['payment.']['priceTax.'];
 		$tax = doubleVal($this->conf['payment.']['TAXpercentage']);
 		$price->init($this, $this->conf['payment.'], $this->config);
 
-		$pricePaymentTax = $basket->getValue($basket->basketExtra['payment.']['priceTax'],
-		                  		$basket->basketExtra['payment.']['priceTax.'],
-		                  		$basket->calculatedArray['count']);
-		if ($tax) {
-			$pricePaymentNoTax = $price->getPrice($pricePaymentTax,0,$tax);
-
+		if ($confArr) {
+			$this->getConfiguredPrice($price, $tax, $confArr, $countTotal, $priceTotalNoTax, $pricePaymentTax, $pricePaymentNoTax); 
 		} else {
-			$pricePaymentNoTax = $basket->getValue($basket->basketExtra['payment.']['priceNoTax'],
-		                  		$basket->basketExtra['payment.']['priceNoTax.'],
-		                  		$basket->calculatedArray['count']);
+			$pricePaymentTax += doubleVal($basket->basketExtra['payment.']['priceTax']);
+			$pricePaymentNoTax += doubleVal($basket->basketExtra['payment.']['priceNoTax']);	
+			if ($tax) {
+				$pricePaymentNoTax = $pricePaymentTax/(1+$tax/100);
+			} else if (!$pricePaymentNoTax) {
+				$pricePaymentNoTax = $pricePaymentTax; 
+			}
 		}
 
 		$perc = doubleVal($basket->basketExtra['payment.']['percentOfTotalShipping']);
@@ -321,8 +328,8 @@ class tx_ttproducts_paymentshipping {
 
 			$payment = ($basket->calculatedArray['priceTax']['goodstotal'] + $basket->calculatedArray['priceTax']['shipping'] ) * doubleVal($perc);
 
-			$pricePaymentTax = $price->getPrice($payment,1,$tax);
-			$pricePaymentNoTax = $price->getPrice($payment,0,$tax);
+			$pricePaymentTax += $price->getPrice($payment,1,$tax);
+			$pricePaymentNoTax += $price->getPrice($payment,0,$tax);
 		}
 
 		$perc = doubleVal($basket->basketExtra['payment.']['percentOfGoodstotal']);

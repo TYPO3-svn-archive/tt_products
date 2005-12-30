@@ -322,7 +322,7 @@ class tx_ttproducts_view_div {
 		
 		if ($conf['selectAdditional']) {
 //			$isSingleProduct = $pibase->tt_products->isSingle($pibase, $row);
-//			$message = $pibase->pi_getLL('additional single');
+//			$message = $pibase->pi_getLL('additional_single');
 //			$prodAdditionalText['single']  = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($isSingleProduct ? 'checked':'').' value="1">';
  
 //			$message = $pibase->pi_getLL('additional no');

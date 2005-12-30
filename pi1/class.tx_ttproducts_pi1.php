@@ -62,6 +62,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_billdelivery_div.php')
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_category.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_content.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_csv.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_currency_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email.php');
@@ -300,7 +301,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		}
 
 		if (!$this->conf['templateFile'] || empty($this->templateCode)) {
-			$this->errorMessage .= $this->pi_getLL('no template').' tt_products.file.templateFile.';
+			$this->errorMessage .= $this->pi_getLL('no_template').' tt_products.file.templateFile.';
 			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '');
 		}
 

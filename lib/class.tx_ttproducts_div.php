@@ -51,7 +51,7 @@ class tx_ttproducts_div {
     function setJS(&$pibase, $fieldname) {
         global $TSFE;
         $js = '';
-        $emailArr =  explode('|', $message = $pibase->pi_getLL('invalid email'));
+        $emailArr =  explode('|', $message = $pibase->pi_getLL('invalid_email'));
 
 		switch ($fieldname) {
 			case 'email' :

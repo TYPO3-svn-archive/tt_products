@@ -63,7 +63,7 @@ class tx_ttproducts_csv {
 	} // init
 
 
-	function create(&$basket, $csvorderuid, $csvfilepath, &$error_message) {
+	function create(&$basket, $csvorderuid, &$csvfilepath, &$error_message) {
 		if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
 			$csvfilepath .= '/';
 		}
@@ -166,7 +166,7 @@ class tx_ttproducts_csv {
 			fclose($csvfile);
 		}
 		else {
-			$message = $this->pibase->pi_getLL('no csv creation');
+			$message = $this->pibase->pi_getLL('no_csv_creation');
 			$messageArr =  explode('|', $message);
 			$error_message=$messageArr[0]. $csvfilepath .$messageArr[1];
 		}

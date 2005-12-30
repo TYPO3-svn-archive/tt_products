@@ -1,3 +1,8 @@
+2005-12-29 Franz Holzinger <franz@fholzinger.com>
+	* correct error with CSV as attachement of emails
+	* correct error with sending of email confirmations
+	* correct error with tax zero for shipping
+
 2005-12-12 Franz Holzinger <franz@fholzinger.com>
 	* separate email template for shop admin
 

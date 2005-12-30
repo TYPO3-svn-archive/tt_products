@@ -178,6 +178,7 @@ class tx_ttproducts_finalize_div {
 		$recipientsArray['customer'][] = ($conf['orderEmail_toDelivery'] ? $basket->deliveryInfo['email'] : $basket->personInfo['email']); // former: deliveryInfo
 		$recipientsArray['shop'] = $tt_products_cat->getEmail($basket->itemArray);
 		$recipientsArray['shop'][] = $conf['orderEmail_to'];
+		$recipientsGroupsArray = array ('shop', 'customer');
 
 		if ($recipientsArray['customer'])	{	// If there is a customer as recipient, then compile and send the mail.
 			$emailTemplateArray = array();
@@ -201,6 +202,11 @@ class tx_ttproducts_finalize_div {
 						$subjectArray[$key] = $conf['orderEmail_subject'];
 					}
 				}
+			}
+
+			if (!$plainMessageArray['shop'])	{
+				$plainMessageArray['shop'] = $plainMessageArray['customer'];
+				$subjectArray['shop'] = $subjectArray['customer'];
 			}
 	
 			if ($emailContentArray['customer'])	{		// If there is plain text content - which is required!!	
@@ -227,43 +233,33 @@ class tx_ttproducts_finalize_div {
 						$HTMLmailContent=implode('',$htmlMailParts);
 					}
 
-					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
-					$Typo3_htmlmail->useBase64();
+					foreach ($recipientsGroupsArray as $key => $group)	{
+						$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
+						$Typo3_htmlmail->useBase64();
+	
+						$V = array ();
+						if ($group == 'shop')	{
+							$V['from_email'] = $basket->personInfo['email'];
+							$V['from_name'] = $basket->personInfo['name'];
+							$V['attachment'] = $addcsv;
+						} else	{
+							$V['from_email'] = $conf['orderEmail_from'];
+							$V['from_name'] = $conf['orderEmail_fromName'];							
+							$V['attachment'] = ($conf['AGBattachment'] ? $conf['AGBattachment'] : '');
+						}
 
-					if ($emailContentArray['shop']) {
-						$V = array (
-							'from_email' => $basket->personInfo['email'],
-							'from_name' => $basket->personInfo['name']
-						);
-						$V['attachment'] = $addcsv;
-						$Typo3_htmlmail->start(implode($recipientsArray['shop'],','), $subjectArray['shop'], $plainMessageArray['shop'], $HTMLmailContent, $V);
+						$Typo3_htmlmail->start(implode($recipientsArray[$group],','), $subjectArray[$group], $plainMessageArray[$group], $HTMLmailContent, $V);
 						$Typo3_htmlmail->sendtheMail();
-					} else {
-						$recipientsArray['customer']=array_merge($recipientsArray['customer'], $recipientsArray['shop']);
 					}
-					$V = array (
-						'from_email' => $conf['orderEmail_from'],
-						'from_name' => $conf['orderEmail_fromName']
-					);
-					$V['attachment'] = ($conf['AGBattachment'] ? $conf['AGBattachment'] : '');
-					$Typo3_htmlmail->start(implode($recipientsArray['customer'],','), $subjectArray['customer'], $plainMessageArray['customer'], $HTMLmailContent, $V);
-					$Typo3_htmlmail->sendtheMail();
 
 				} else {		// ... else just plain text...
-					$plainMessageShop = '';
-					if ($plainMessageArray['shop'])	{
-						$plainMessageShop = $plainMessageArray['shop'];
-					} else {
-						$plainMessageShop = $plainMessageArray['customer'];
-						$recipientsArray['customer']=array_merge($recipientsArray['customer'], $recipientsArray['shop']);
-						$subjectArray['shop'] = $subjectArray['customer'];
-					}
+
 					foreach ($recipientsArray['customer'] as $key => $recipient) {
 						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['customer'], $plainMessageArray['customer'], $conf['orderEmail_from'], $conf['orderEmail_fromName'], $conf['AGBattachment']);
 					}
 					foreach ($recipientsArray['shop'] as $key => $recipient) {
 						// $headers variable removed everywhere!
-						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['shop'], $plainMessageShop, $basket->personInfo['email'], $basket->personInfo['name'], $addcsv);
+						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['shop'], $plainMessageArray['shop'], $basket->personInfo['email'], $basket->personInfo['name'], $addcsv);
 					}
 				}
 			}

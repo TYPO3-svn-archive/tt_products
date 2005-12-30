@@ -77,18 +77,21 @@ class tx_ttproducts_list_view {
 
 
     // returns the products list view
-    function &printView(&$templateCode, &$theCode, &$basket, &$memoItems, &$error_code) {
-    	global $TSFE;
-        $content='';
-        $out='';
-        $more=0;
-// List products:
-        $where='';
-        // if parameter 'newitemdays' is specified, only new items from the last X days are displayed
-        if (t3lib_div::_GP('newitemdays')) {
-            $temptime = time() - 86400*intval(trim(t3lib_div::_GP('newitemdays')));
-            $where = 'AND tstamp >= '.$temptime;
-        }			 
+	function &printView(&$templateCode, &$theCode, &$basket, &$memoItems, &$error_code) {
+		global $TSFE;
+		$content='';
+		$out='';
+		$more=0;
+		$where='';
+
+		// if parameter 'newitemdays' is specified, only new items from the last X days are displayed
+		if (t3lib_div::_GP('newitemdays')) {
+			$temptime = time() - 86400*intval(trim(t3lib_div::_GP('newitemdays')));
+			$where = ' AND tstamp >= '.$temptime;
+		}			 
+		if(isset($this->pibase->piVars['cat'])){
+			$where .= ' AND category IN ('.implode(",",t3lib_div::intExplode(',', $this->pibase->piVars['cat'])).')';
+		} 
 
 		switch ($theCode) {
 			case 'SEARCH':
@@ -177,7 +180,7 @@ class tx_ttproducts_list_view {
             $t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, $area));
     
     		if (!$t['listFrameWork']) {
-				$error_code[0] = 'no subtemplate';
+				$error_code[0] = 'no_subtemplate';
 				$error_code[1] = $area;
 				$error_code[2] = $this->conf['templateFile'];
     		}

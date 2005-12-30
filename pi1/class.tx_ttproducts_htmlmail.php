@@ -45,7 +45,7 @@ class tx_ttproducts_htmlmail extends t3lib_htmlmail {
 	function start($recipient,$subject,$plain,$html,$V)	{
 		if ($recipient)	{
 				// Sets the message id
-			$this->messageid = '<'.md5(microtime()).'@domain.tld>';
+			$this->messageid = md5(microtime()).'@domain.tld'; // formerly:  '<'.md5(microtime()).'@domain.tld>';
 		
 			$this->subject = $subject;
 			

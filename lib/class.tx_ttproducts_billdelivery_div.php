@@ -208,7 +208,7 @@ class tx_ttproducts_billdelivery_div {
 		fwrite ($datei, $content);
 		fclose ($datei);
 
-		$message = $pibase->pi_getLL('open '.$type);
+		$message = $pibase->pi_getLL('open_'.$type);
 		$content = '<a href="' . $reldateiname . '" >'.$message.'</a>';
 
 		return $content;

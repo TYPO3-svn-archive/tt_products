@@ -350,16 +350,17 @@ $TCA['tt_products'] = Array (
 	)
 */
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;4;;3-3-3, itemnumber;;2, category, price;;3, color;;5,additional,weight;;7, note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;4-4-4,datasheet')
+		'0' => Array('showitem' => ';;;;1-1-1,hidden;;1, title;;4;;3-3-3, itemnumber;;2, category, price;;3,weight;;6, note;;;richtext[*]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],image;;;;4-4-4,datasheet,' .
+				'--div--;LLL:EXT:tt_products/locallang_tca.php:tt_products.select_variants,  color;;7,description,additional')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
 		'2' => Array('showitem' => 'inStock'),
 		'3' => Array('showitem' => 'price2, directcost, tax, offer, highlight'),
 		'4' => Array('showitem' => 'subtitle, www'),
-		'5' => Array('showitem' => 'size, description, gradings'),
-		'6' => Array('showitem' => 'bulkily, special_preparation, unit, unit_factor'),
-		'7' => Array('showitem' => ''),
+		'5' => Array('showitem' => 'bulkily, special_preparation, unit, unit_factor'),
+		'6' => Array('showitem' => ''),
+		'7' => Array('showitem' => 'size, gradings'),
 	)
 
 );

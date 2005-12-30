@@ -120,11 +120,21 @@ class tx_ttproducts_single_view {
 
 
 			// set the title of the single view
-			if($this->conf['substitutePagetitle']== 2) {
-				$TSFE->page['title'] = $row['subtitle'] ? $row['subtitle'] : $row['title'];
-			} elseif ($this->conf['substitutePagetitle']) {
-				$TSFE->page['title'] = $row['title'];
+			switch ($this->conf['substitutePagetitle']) {
+				case 1:
+					$TSFE->page['title'] = $row['title'];
+					break;
+				case 2:
+					$TSFE->page['title'] = $row['subtitle'] ? $row['subtitle'] : $row['title'];
+					break;
+				case 12:
+					$TSFE->page['title'] = $row['title'] . ' / ' . $row['subtitle'];
+					break;
+				case 21:
+					$TSFE->page['title'] = $row['subtitle'] . ' / ' . $row['title'];
+					break;
 			}
+
 			$pageCatTitle = '';
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
 					$pageTmp = $this->page->get($row['pid']);
@@ -137,17 +147,6 @@ class tx_ttproducts_single_view {
 				$catTmp = $catTmp['title'];
 			}
 			$catTitle = $pageCatTitle.$catTmp;
-
-
-/*
-				$catTitle= $this->categories[$row['category']]['title'];
-				if ($this->language > 0 && $row['o_datasheet'] != '') {
-					$datasheetFile = $row['o_datasheet'] ;
-				} else  {
-					$datasheetFile = $row['datasheet'] ;
-				}
-*/
-
 
 			$datasheetFile = $row['datasheet'];
 
@@ -233,7 +232,7 @@ class tx_ttproducts_single_view {
 			}
 			tx_ttproducts_div::setJS($this->pibase, 'email');  // other JavaScript checks can come here
 		} else {
-			$error_code[0] = 'wrong parameter';
+			$error_code[0] = 'wrong_parameter';
 			$error_code[1] = intval($this->uid);
 		}
 	return $content;

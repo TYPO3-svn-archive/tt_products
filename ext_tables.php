@@ -20,8 +20,9 @@ $TCA['tt_products'] = Array (
 		'thumbnail' => 'image',
 		'useColumnsForDefaultValues' => 'category',
 		'mainpalette' => 1,
+		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products.gif',
-		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
+		'dividers2tabs' => '1',
 	),
 	'feInterface' => Array (
 		'fe_admin_fieldList' => 'hidden,title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',

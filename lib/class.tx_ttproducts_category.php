@@ -102,7 +102,7 @@ class tx_ttproducts_category {
 					$category = $this->get($actItem['rec']['category']);
 					$tmp = $this->tt_products_email->getEmail($category['email_uid']);
 					if ($tmp) {
-						$emailArray[$actItem['rec']['category']] = $tmp;
+						$emailArray[$actItem['rec']['category']] = $tmp['name'].' <'.$tmp['email'].'>';
 					} 
 				}
 			}

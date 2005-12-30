@@ -403,7 +403,7 @@ class tx_ttproducts_basket {
 	function transfromActivities($activities)	{
 		$retActivities = array();
 		$activityArray =  Array (
-			'1' =>  'products_overview', 'products_basket', 'products_info', 'products_payment', 'products_finalize',
+			'1' =>  'products_overview', 'products_basket', 'products_info', 'products_payment', 'products_customized_payment', 'products_finalize',
 			);
 
 		if (is_array($activities)) {
@@ -483,6 +483,9 @@ class tx_ttproducts_basket {
 		}
 		if (t3lib_div::_GP('products_payment'))	{
 			$activityArr['products_payment']=true;
+		}
+		if (t3lib_div::_GP('products_customized_payment'))	{
+			$activityArr['products_customized_payment']=true;
 		}
 		if (t3lib_div::_GP('products_finalize'))	{
 			$activityArr['products_finalize']=true;
@@ -593,7 +596,7 @@ class tx_ttproducts_basket {
 									$label = '';
 									if ($check=='') {
 										 // so AGB has not been accepted
-										$label = $this->pibase->pi_getLL('accept AGB');
+										$label = $this->pibase->pi_getLL('accept_AGB');
 									} else {
 										if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
 											$label = $TSFE->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
@@ -614,6 +617,16 @@ class tx_ttproducts_basket {
 									$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
 								}
 							break;
+							case 'products_customized_payment':
+							    $this->mapPersonIntoToDelivery();
+							    $this->pibase->load_noLinkExtCobj();    // TODO
+							    $handleScript = $TSFE->tmpl->getFileName($this->basketExtra['payment.']['handleScript']);
+							    $orderUid = $this->order->getBlankOrderUid();
+							    if (trim($this->conf['paymentActivity'])=='customized' && $handleScript)    {
+							        $this->getCalculatedSums();
+							        $content.= tx_ttproducts_pricecalc_div::includeHandleScript($handleScript,$this->pibase, $this->basketExtra['payment.']['handleScript.'], $this);
+							    }
+							break; 
 							case 'products_finalize':
 								$this->mapPersonIntoToDelivery();
 								$check = $this->checkRequired();
@@ -849,27 +862,6 @@ class tx_ttproducts_basket {
 	} // getCalculatedBasket
 
 
-	function getValue(&$basketElement, $basketProperties, $countTotal)
-	{
-		$result = 0;
-
-		// to remain downwards compatible
-		if (is_string($basketElement))	{
-        	$result = $basketElement;
-        }
-
-		if(is_array($basketProperties) && count($basketProperties) > 0) {
-			foreach ($basketProperties as $lowKey => $lowValue)	{
-				if (strlen($lowKey) > 0 && $countTotal >= $lowKey)	{
-					$result = doubleVal($lowValue);
-				}
-			}
-		}
-
-		return $result;
-	} // getValue
-
-
 	function &getItem (&$row) {
 		$count = intval($this->basketExt[$row['uid']][tx_ttproducts_article_div::getVariantFromRow ($row)]);
 		$priceTax = $this->price->getResellerPrice($row,1);
@@ -1036,6 +1028,7 @@ class tx_ttproducts_basket {
 					}
 
 					$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
+
 					$splitMark = md5(microtime());
 					$addQueryString=array();
 					$addQueryString['tt_products'] = intval($actItem['rec']['uid']);
