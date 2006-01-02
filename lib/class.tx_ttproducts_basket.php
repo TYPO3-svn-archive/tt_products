@@ -853,7 +853,7 @@ class tx_ttproducts_basket {
 			$this,
 			$this->calculatedArray['count'],
 /* Added Els: necessary to calculate shipping price which depends on total no-tax price */
-			$this->calculatedArray['priceNoTax']['goodstotal'],
+			$this->calculatedArray['priceTax']['goodstotal'],
 			$this->calculatedArray['priceTax']['shipping'],
 			$this->calculatedArray['priceNoTax']['shipping'],
 			$this->calculatedArray['priceTax']['payment'],
@@ -1245,9 +1245,10 @@ class tx_ttproducts_basket {
 /* Added els8: shipping project meerwijn depends on subtotal amount, below shipping.NoTaxPrice, shipping price is shipping.fixprice, above no shiiping price */
 		if ($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] <= $this->conf['shipping.']['NoTaxPrice']) {
 		   $markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->conf['shipping.']['fixprice'];
-		} else {
-		   $markerArray['###PRICE_SHIPPING_NO_TAX###'] = '0.00';
 		}
+//		} else { Franz: This is wrong here!
+//		   $markerArray['###PRICE_SHIPPING_NO_TAX###'] = '0.00';
+//		}
 		
 
 /* Added Els: voucher marker inclusive conditions */

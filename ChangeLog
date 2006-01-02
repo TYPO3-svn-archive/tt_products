@@ -1,3 +1,7 @@
+2006-01-02 Franz Holzinger <franz@fholzinger.com>
+	* correct error with ###PRICE_SHIPPING_TAX### and ###PRICE_SHIPPING_NO_TAX###
+	* The prices in the payment shipping pricecalculation always include the tax
+
 2005-12-29 Franz Holzinger <franz@fholzinger.com>
 	* correct error with CSV as attachement of emails
 	* correct error with sending of email confirmations

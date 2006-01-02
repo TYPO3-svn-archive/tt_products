@@ -146,7 +146,7 @@ class tx_ttproducts_view_div {
 		$markerArray['###ICON_DATASHEET###']=$iconImgCode;
 
 		$markerArray['###PRODUCT_TITLE###'] = $row['title'];
-		$markerArray['###PRODUCT_NOTE###'] = nl2br($row['note']);
+		$markerArray['###PRODUCT_NOTE###'] = ($conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
 
 			// Extension CSS styled content
 		if (t3lib_extMgm::isLoaded('css_styled_content')) {
@@ -349,7 +349,7 @@ class tx_ttproducts_view_div {
 			// Fill the Currency Symbol or not
 
 		if ($conf['itemMarkerArrayFunc'])	{
-			$markerArray = $this->userProcess('itemMarkerArrayFunc',$markerArray);
+			$markerArray = $pibase->userProcess('itemMarkerArrayFunc',$markerArray);
 		}
 		return $markerArray;
 	} // getItemMarkerArray
