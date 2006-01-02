@@ -10,7 +10,7 @@
 
 <br>
 <H1>bananaGUARD Shop-Template</H1>
-<P> You can see the test website of this template at http://www.fholzinger.com/index.php?id=35<br />
+<P> You can see the test website of this template at http://tt-products.zedwoo.de<br />
 The ids of this template correspond to the ids on the testsite. <br />
 The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 </P>
@@ -132,7 +132,7 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 </table>
 
 <table border="0" cellspacing="0" cellpadding="1" width=1>
-<FORM method="post" action="###FORM_URL###">
+<FORM method="post" name="###FORM_NAME###" action="###FORM_URL###">
 	<tr>
 		<td><img src="clear.gif" width="100" height="1"></td>
 		<td><img src="clear.gif" width="5" height="1"></td>
@@ -855,11 +855,11 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 <tr>
     <td colspan=6> <p>###GW1B###<b>Bestellbestätigung:</b><br>
         Vielen Dank für Ihre Bestellung!<br>
-        Ihre Bestellung ist nun abgeschlossen und hat folgende Nummer:<br>
+        Ihre DEMO-Bestellung ist nun abgeschlossen und hat folgende Nummer:<br>
         <br>
         &nbsp;&nbsp;&nbsp;&nbsp;<B>###ORDER_UID###</B> <br>
         <br>
-        Verwenden Sie diese Nummer wenn Sie mit uns in Kontakt treten.<br>
+		<font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font><br>
         Die Bestellbestätigung wird auch an die Emailadresse im Feld "Lieferung"
         geschickt. (###DELIVERY_EMAIL###). <br></p>
 	<p><font color=red><em><strong>Zahlungsart:</strong></em></font></p>
@@ -1104,6 +1104,7 @@ Message for payment method 10, Paypal
 </tr>
 <tr>
     <td colspan=6> <p>###GW1B### <br>
+    <font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
         <br>
         Mit freundlichen Grüssen: <br>
         <br>
@@ -1270,6 +1271,7 @@ Wenn Sie sich über den Status Ihrer Bestellung informieren lassen wollen (###FIE
 <!--
 <strong>Nachricht an bananaGUARD.de:</strong><br>
 Hier können Sie uns eine Nachricht bezüglich Ihrer Bestellung schicken.<br>
+<font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
 <FORM method="post" action="###FORM_URL###">
 <input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
 ###GW1B###Betreff auswählen:###GW1B###<br>
@@ -1406,13 +1408,13 @@ Bemerkung:
 
 
 BESTELLSTATUS:
-Auf Ihren Wunsch hin, erhalten Sie diese E-mail bzgl. Ihrer Bestellung bei bananaGUARD.de. Mit Ihrem Bestellstatus-Code können Sie jederzeit den Bestellstatus einsehen und evtl. Bestellinformationen ändern:
+Auf Ihren Wunsch hin, erhalten Sie diese E-mail bzgl. Ihrer DEMO-Bestellung bei bananaGUARD.de. Mit Ihrem Bestellstatus-Code können Sie jederzeit den Bestellstatus einsehen und evtl. Bestellinformationen ändern:
 ###ORDER_TRACKING_NO###
 
 Klicken Sie um Ihre Daten jetzt einzusehen:
 http://###DOMAIN###/index.php?id=###PID_TRACKING###&tracking=###ORDER_TRACKING_NO###
 
-
+<font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
 
 Mit freundlichen Grüssen,
 bananaGUARD.de
@@ -1441,7 +1443,7 @@ Bestellung ####ORDER_UID###
 Bestellung ####ORDER_UID###
 
 Bestellbestätigung:
-Ihre Bestellung ist abgeschlossen und hat die Nummer ###ORDER_UID###.
+Ihre DEMO-Bestellung ist abgeschlossen und hat die Nummer ###ORDER_UID###.
 Verweisen Sie bitte bei jedem Kontakt mit uns auf diese Bestellnummer.
 
 BESTELLSTATUS:
@@ -1453,7 +1455,7 @@ Ihre Bestellung:
 <!-- ###ITEM_CATEGORY_AND_ITEMS### -->
 <!-- ###ITEM_LIST### begin -->
 <!-- ###ITEM_SINGLE### begin-->
-###PRODUCT_TITLE###
+###PRODUCT_TITLE### ###PRODUCT_IMAGE###
 Anzahl: ###FIELD_QTY###
 <!-- ###ITEM_SINGLE### end -->
 <!-- ###ITEM_LIST### end -->
@@ -1509,7 +1511,7 @@ Email: info@bananaguard.de
 
 Ihre Zugangsdaten bei meintypo3shop.com
 
-Wir freuen uns, Sie bei uns als neuen Kunden begrüßen zu dürfen.
+Wir freuen uns, Sie bei uns als neuen DEMO-Kunden begrüßen zu dürfen.
 
 Ihr Benutzername lautet: ###USERNAME###
 Ihr Passwort lautet: ###PASSWORD###
@@ -1517,6 +1519,8 @@ Ihr Passwort lautet: ###PASSWORD###
 In zukünftigen Bestellungen können Sie sich mit Ihrem Benutzernamen und
 Ihrem Passwort anmelden, und auf Rechnung bestellen.
 Bitte bewahren Sie diese E-Mail gut auf.
+
+Dies ist nur ein Test!
 
 Mit freundlichen Grüßen,
 Mein Typo3 Shop
@@ -1618,7 +1622,7 @@ Mein Typo3 Shop
       </table>
   <tr>
     <td colspan=2> ###GW1B###<b>Rechnung Nr. ###ORDER_UID###:</b>###GW1E###<br>
-      <br> </tr>
+      <br><font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font> </tr>
   <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
   <!-- ###ITEM_CATEGORY### begin -->
   <tr>
@@ -1736,6 +1740,7 @@ Mein Typo3 Shop
 <td colspan=2>
 ###GW1B###<b>Lieferschein für Rechnung Nr. ###ORDER_UID###:</b>###GW1E###<br><br>
 <br>
+<font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
 </tr>
 <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
 <!-- ###ITEM_CATEGORY### begin -->
