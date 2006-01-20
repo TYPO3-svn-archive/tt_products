@@ -1,4 +1,4 @@
-2006-20-02 Franz Holzinger <franz@fholzinger.com>
+2006-01-20 Franz Holzinger <franz@fholzinger.com>
 	* convert language files into Unicode-UTF8 XML files
 	* correct error with missing products in list view
 	* list items with checkboxes for single products
