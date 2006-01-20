@@ -580,7 +580,27 @@ In addition there's a number of fields used for delivery and payment information
 
 
 
-
+<h3>BASKET_OVERVIEW_TEMPLATE</h3>
+<em>The basket overview</em>
+ 
+ 
+<!-- ###BASKET_OVERVIEW_TEMPLATE### begin -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
+<div>###FIELD_QTY### x <!--###LINK_ITEM###-->###PRODUCT_TITLE###<!-- ###display_variant2### -->, ###FIELD_SIZE_VALUE###<!-- ###display_variant2### --><!--###LINK_ITEM###--></div>
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+<div style="text-align:right;">
+  <hr style="border: 1px solid #901118; width: 100%; text-align:center;" />
+  <strong>total sum: ###PRICE_TOTAL_TAX### ¤</strong></div>
+<div style="text-align:center; ">
+    <a href="index.php?id=###PID_BASKET###"><< jump into basket >> </a >   </div>
+<!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
+<!-- ###BASKET_OVERVIEW_EMPTY### begin -->
+<div>Your basket is empty!</div>
+<!-- ###BASKET_OVERVIEW_EMPTY### end -->
 
 
 

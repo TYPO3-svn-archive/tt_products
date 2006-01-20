@@ -55,10 +55,14 @@ class tx_ttproducts_wizicon {
 
 		return $wizardItems;
 	}
+	/**
+	 * Includes the locallang.xml and returns the $LOCAL_LANG array found in that file.
+	 */
 	function includeLocalLang()	{
-		include(PATH_BE_ttproducts.'locallang.php');
+		$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(PATH_BE_ttproducts.'locallang.xml',FALSE);
 		return $LOCAL_LANG;
 	}
+	
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/class.tx_ttproducts_wizicon.php'])	{

@@ -165,14 +165,13 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$TSFE->set_no_cache();
 					// no break!
 				case 'LIST':
-					if ($this->tt_product_single || !$this->conf['NoSingleViewOnList']) {
-						$TSFE->set_no_cache();
-					}
-					// no break!
 				case 'LISTGIFTS':
 				case 'LISTHIGHLIGHTS':
 				case 'LISTNEWITEMS':
 				case 'LISTOFFERS':
+					if ($this->tt_product_single || !$this->conf['NoSingleViewOnList']) {
+						$TSFE->set_no_cache();
+					}
 					if (count($this->basket->itemArray) || $this->tt_product_single) {
 						$TSFE->set_no_cache();
 					}

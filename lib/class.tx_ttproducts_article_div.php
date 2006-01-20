@@ -60,7 +60,6 @@ class tx_ttproducts_article_div {
 		//$row['additional'] = $variantArray[4];
 	 }
 
-
 	/**
 	 * Returns the variant extVar string from the variant values in the row
 	 *
@@ -90,19 +89,28 @@ class tx_ttproducts_article_div {
 
 	function getVariantSubpartArray (&$pibase, &$tt_products, &$subpartArray, &$row, &$tempContent, $condition)  {
 		if ($condition) {
-			if (trim($row['color']) != '')
-				$subpartArray['###display_variant1###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant1###');
-			if (trim($row['size']) != '')
-				$subpartArray['###display_variant2###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant2###');
-			if (trim($row['description']) != '')
-				$subpartArray['###display_variant3###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant3###');
-			if (trim($row['gradings']) != '')
-				$subpartArray['###display_variant4###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant4###');
+			$areaArray = array();
+			if (trim($row['color']) != '')	{
+				$areaArray[] = 'display_variant1';
+			}
+			if (trim($row['size']) != '')	{
+				$areaArray[] = 'display_variant2';
+			}
+			if (trim($row['description']) != '')	{
+				$areaArray[] = 'display_variant3';
+			}
+			if (trim($row['gradings']) != '')	{
+				$areaArray[] = 'display_variant4';
+			}
 				
 			if ($tt_products->isSingle($pibase, $row)) {
-				$subpartArray['###display_variant5_isSingle###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant5_isSingle###');
+				$areaArray[] = 'display_variant5_isSingle';
 			} else {
-				$subpartArray['###display_variant5_isNotSingle###'] = $pibase->cObj->getSubpart($tempContent,'###display_variant5_isNotSingle###');
+				$areaArray[] = 'display_variant5_isNotSingle';
+			}
+			
+			foreach ($areaArray as $k => $area)	{
+				$subpartArray['###'.$area.'###'] = $pibase->cObj->getSubpart($tempContent,'###'.$area.'###');
 			}
 			
 		}
@@ -111,19 +119,24 @@ class tx_ttproducts_article_div {
 
 
 	function removeEmptySubpartArray (&$pibase, &$tt_products, &$subpartArray, &$row) {
+		$areaArray = array();
         if (trim($row['color']) == '')
-            $subpartArray['###display_variant1###'] = '';
+        	$areaArray[] = 'display_variant1';
         if (trim($row['size']) == '')
-            $subpartArray['###display_variant2###'] = '';
+        	$areaArray[] = 'display_variant2';
         if (trim($row['description']) == '')
-            $subpartArray['###display_variant3###'] = '';
+        	$areaArray[] = 'display_variant3';
         if (trim($row['gradings']) == '')
-            $subpartArray['###display_variant4###'] = '';
+        	$areaArray[] = 'display_variant4';
 
 		if ($tt_products->isSingle($pibase, $row)) {
-            $subpartArray['###display_variant5_isNotSingle###'] = '';
+        	$areaArray[] = 'display_variant5_isNotSingle';
 		} else {
-			$subpartArray['###display_variant5_isSingle###'] = '';
+        	$areaArray[] = 'display_variant5_isSingle';
+		}
+
+		foreach ($areaArray as $k => $area)	{
+			$subpartArray['###'.$area.'###'] = '';
 		}
 	}
 

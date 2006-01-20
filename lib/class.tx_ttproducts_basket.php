@@ -149,13 +149,12 @@ class tx_ttproducts_basket {
 			$this->basketExt = array();
 		}
 		$basketExtRaw = t3lib_div::_GP('ttp_basket');
-
 		$this->giftnumber = count ($this->basketExt['gift']) + 1;
 
 		$newGiftData = t3lib_div::_GP('ttp_gift');
 		$extVars= t3lib_div::_GP('ttp_extvars');
 		$uid = t3lib_div::_GP('tt_products');
-
+		
 		$sameGiftData = true;
 		$identGiftnumber = 0;
 
@@ -204,9 +203,14 @@ class tx_ttproducts_basket {
 			while(list($uid,$basketItem)=each($basketExtRaw)) {
 				$variant = tx_ttproducts_article_div::getVariantFromRow($basketItem);
 				if (t3lib_div::testInt($uid))   {
+					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked  
+					if (is_array($basketItem['quantity']))	{
+						$basketItem['quantity'] = current($basketItem['quantity']);
+					}
+					
 					if (!$updateMode) {
 						$count=t3lib_div::intInRange($basketItem['quantity'],0,100000,0);
-						if ($count>=0) {
+						if ($count >= 0) {
 							$newcount = $count;
 							$oldcount = intval($this->basketExt[$uid][$variant]);
 							if ($newGiftData) {

@@ -37,7 +37,7 @@ plugin.tt_products {
   listImage < .image
   listImage.file.maxW = {$plugin.tt_products.maxW_list}
   listImage.file.maxH = {$plugin.tt_products.maxH_list}
-  listImageLinkWrap = {$plugin.tt_products.clickEnlarge_list}
+  listImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_list}
   
   basketImage < .image
   basketImage.file.maxW = {$plugin.tt_products.maxW_basket}
@@ -53,6 +53,7 @@ plugin.tt_products {
 
   wrap1.wrap = {$plugin.tt_products.wrap1}
   wrap2.wrap = {$plugin.tt_products.wrap2}
+  nl2brNote =  {$plugin.tt_products.nl2brNote}
   color1.wrap = {$plugin.tt_products.color1}
   color2.wrap = {$plugin.tt_products.color2}
   color3.wrap = {$plugin.tt_products.color3}
@@ -79,7 +80,6 @@ plugin.tt_products {
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
   PIDthanks = {$plugin.tt_products.PIDthanks}
   PIDtracking = {$plugin.tt_products.PIDtracking}
-  PIDstatus = {$plugin.tt_products.PIDstatus}
   PIDbilling = {$plugin.tt_products.PIDbilling}
   PIDdelivery = {$plugin.tt_products.PIDdelivery}
   PIDitemDisplay = {$plugin.tt_products.PIDitemDisplay}

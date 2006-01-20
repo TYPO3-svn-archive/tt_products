@@ -3,7 +3,7 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
 $TCA['tt_products'] = Array (
 	'ctrl' => Array (
-		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products',
+		'title' => 'LLL:EXT:tt_products/locallang_tca.xml:tt_products',
 		'label' => 'title',
 		'label_alt' => 'subtitle',
 		'default_sortby' => 'ORDER BY title',
@@ -31,7 +31,7 @@ $TCA['tt_products'] = Array (
 
 $TCA['tt_products_cat'] = Array (
 	'ctrl' => Array (
-		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat',
+		'title' => 'LLL:EXT:tt_products/locallang_tca.xml:tt_products_cat',
 		'label' => 'title',
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
@@ -47,7 +47,7 @@ $TCA['tt_products_cat'] = Array (
 
 $TCA['tt_products_language'] = Array (
 	'ctrl' => Array (
-		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_language',
+		'title' => 'LLL:EXT:tt_products/locallang_tca.xml:tt_products_language',
 		'label' => 'title',
 		'default_sortby' => 'ORDER BY title',
 		'tstamp' => 'tstamp',
@@ -64,7 +64,7 @@ $TCA['tt_products_language'] = Array (
 
 $TCA['tt_products_cat_language'] = Array (
 	'ctrl' => Array (
-		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language',
+		'title' => 'LLL:EXT:tt_products/locallang_tca.xml:tt_products_cat_language',
 		'label' => 'title',
 		'default_sortby' => 'ORDER BY title',
 		'tstamp' => 'tstamp',
@@ -81,7 +81,7 @@ $TCA['tt_products_cat_language'] = Array (
 
 $TCA['tt_products_articles'] = Array (
 	'ctrl' => Array (
-		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_articles',
+		'title' => 'LLL:EXT:tt_products/locallang_tca.xml:tt_products_articles',
 		'label' => 'title',
 		'default_sortby' => 'ORDER BY title',
 		'tstamp' => 'tstamp',
@@ -98,7 +98,7 @@ $TCA['tt_products_articles'] = Array (
 
 $TCA['tt_products_emails'] = Array (
 	'ctrl' => Array (
-		'title' => 'LLL:EXT:tt_products/locallang_tca.php:tt_products_emails',
+		'title' => 'LLL:EXT:tt_products/locallang_tca.xml:tt_products_emails',
 		'label' => 'name',
 		'default_sortby' => 'ORDER BY name',
 		'tstamp' => 'tstamp',
@@ -116,7 +116,7 @@ $TCA['tt_products_emails'] = Array (
 
 $TCA['sys_products_orders'] = Array (
 	'ctrl' => Array (
-		'title' => 'LLL:EXT:tt_products/locallang_tca.php:sys_products_orders',
+		'title' => 'LLL:EXT:tt_products/locallang_tca.xml:sys_products_orders',
 		'label' => 'name',
 		'default_sortby' => 'ORDER BY name',
 		'tstamp' => 'tstamp',
@@ -143,7 +143,7 @@ else if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory']
 	$tempColumns = Array (
 		'tt_products_code' => Array (
 			'exclude' => 0,
-			'label' => 'LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code',
+			'label' => 'LLL:EXT:tt_products/locallang_tca.xml:tt_content.tt_products_code',
 			'config' => Array (
 				'type' => 'select',
 				'items' => Array (
@@ -177,8 +177,8 @@ else if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['pageAsCategory']
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='tt_products_code;;;;1-1-1';
 }
 
-t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:tt_content.list_type_pi1','5'),'list_type');
-t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:tt_products', '5'));
+t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.xml:tt_content.list_type_pi1','5'),'list_type');
+t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.xml:tt_products', '5'));
 
 t3lib_extMgm::allowTableOnStandardPages('tt_products');
 
@@ -206,7 +206,7 @@ t3lib_extMgm::addLLrefForTCAdescr('sys_products_orders','EXT:'.TT_PRODUCTS_EXTke
 $tempColumns = Array (
 	'tt_products_memoItems' => Array (
 		'exclude' => 1,
-		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_memoItems',
+		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.xml:fe_users.tt_products_memoItems',
 		'config' => Array (
 			'type' => 'input',
 			'size' => '10',
@@ -215,7 +215,7 @@ $tempColumns = Array (
 	),
 	'tt_products_discount' => Array (
 		'exclude' => 1,
-		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_discount',
+		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.xml:fe_users.tt_products_discount',
 		'config' => Array (
 			'type' => 'input',
 			'size' => '4',
@@ -231,7 +231,7 @@ $tempColumns = Array (
 	),
 	'tt_products_creditpoints' => Array (
 		'exclude' => 1,
-		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_creditpoints',
+		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.xml:fe_users.tt_products_creditpoints',
 		'config' => Array (
 			'type' => 'input',
 			'size' => '5',
@@ -240,7 +240,7 @@ $tempColumns = Array (
 	),
 	'tt_products_vouchercode' => Array (
 		'exclude' => 1,
-		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_vouchercode',
+		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.xml:fe_users.tt_products_vouchercode',
 		'config' => Array (
 			'type' => 'input',
 			'size' => '20',

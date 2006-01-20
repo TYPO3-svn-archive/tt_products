@@ -303,9 +303,9 @@ class tx_ttproducts_tracking_div {
 			}
 
 				// Get unprocessed orders.
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,name,tracking_code,amount', 'sys_products_orders', 'NOT deleted AND status!=0 AND status<100', '', 'crdate');
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,name,tracking_code,amount,status', 'sys_products_orders', 'NOT deleted AND status!=0 AND status<100', '', 'crdate');
 			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
-				$markerArray['###OTHER_ORDERS_OPTIONS###'].='<option value="'.$row['tracking_code'].'">'.htmlspecialchars($order->getOrderNumber($row['uid']).': '.$row['name'].' ('.$pibase->price->priceFormat($row['amount']).' '.$conf['currencySymbol'].')').'</option>';
+				$markerArray['###OTHER_ORDERS_OPTIONS###'].='<option value="'.$row['tracking_code'].'">'.htmlspecialchars($order->getOrderNumber($row['uid']).': '.$row['name'].' ('.$pibase->price->priceFormat($row['amount']).' '.$conf['currencySymbol'].') /' .$row['status']).'</option>'; 
 			}
 		}
 

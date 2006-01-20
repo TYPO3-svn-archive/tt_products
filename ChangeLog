@@ -1,3 +1,8 @@
+2006-20-02 Franz Holzinger <franz@fholzinger.com>
+	* convert language files into Unicode-UTF8 XML files
+	* correct error with missing products in list view
+	* list items with checkboxes for single products
+
 2006-01-02 Franz Holzinger <franz@fholzinger.com>
 	* correct error with ###PRICE_SHIPPING_TAX### and ###PRICE_SHIPPING_NO_TAX###
 	* The prices in the payment shipping pricecalculation always include the tax

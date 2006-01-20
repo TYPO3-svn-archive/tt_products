@@ -105,7 +105,9 @@ class tx_ttproducts_view_div {
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 
 		$row = &$item['rec'];
+		$variants = tx_ttproducts_article_div::getVariantFromRow ($row);
 		$markerArray=array();
+		
 			// Get image
 		$theImgCode=array();
 
@@ -249,10 +251,10 @@ class tx_ttproducts_view_div {
 
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
-		$temp = tx_ttproducts_article_div::getVariantFromRow ($row);
-		$temp = $basketExt[$row['uid']][$temp];
+		$quantity = $basketExt[$row['uid']][$variants];
 
-		$markerArray['###FIELD_QTY###']= $temp ? $temp : '';
+		$markerArray['###FIELD_QTY###']= $quantity ? $quantity : '';
+
 		$markerArray['###FIELD_NAME_BASKET###']='ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
 
 		$markerArray['###FIELD_SIZE_NAME###']='ttp_basket['.$row['uid'].'][size]';
@@ -321,15 +323,16 @@ class tx_ttproducts_view_div {
 		$prodAdditionalText['single'] = '';
 		
 		if ($conf['selectAdditional']) {
-//			$isSingleProduct = $pibase->tt_products->isSingle($pibase, $row);
-//			$message = $pibase->pi_getLL('additional_single');
-//			$prodAdditionalText['single']  = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($isSingleProduct ? 'checked':'').' value="1">';
- 
-//			$message = $pibase->pi_getLL('additional no');
-//			$prodAdditionalText =  '<OPTION value="0">'.$message.'</OPTION>';
-//			$message = $pibase->pi_getLL('additional yes');
-//			$prodAdditionalText .= '<OPTION value="1">'.$message.'</OPTION>';
-		}
+			$isSingleProduct = $pibase->tt_products->isSingle($pibase, $row);
+			if ($isSingleProduct)	{
+				$message = $pibase->pi_getLL('additional_single');
+				// $basketSingleName = 'ttp_basket['.$row['uid'].'][quantity]';
+				$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($quantity ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="1">';
+				//$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'[0]" '.($quantity ? 'checked="checked"':'').' value="1">';
+				
+				$prodAdditionalText['single'] .= '<input type="hidden" name="'.$basketQuantityName.'[1]" value="'.($quantity ? '1' : '0') .'">';
+			}
+ 		}
 
 
 		$markerArray['###PRODUCT_WEIGHT###'] = doubleval($row['weight']);

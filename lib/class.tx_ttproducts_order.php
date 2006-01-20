@@ -380,7 +380,6 @@ class tx_ttproducts_order {
                $markerArray['###PID_TRACKING###']=$this->conf['PIDtracking'];
                $markerArray['###PID_BILLING###']=$this->conf['PIDbilling'];
                $markerArray['###PID_DELIVERY###']=$this->conf['PIDdelivery'];
-               $markerArray['###PID_STATUS###']=$this->conf['PIDstatus'];
                //$rt= $row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
                $markerArray['###ORDER_CREDITS###']=$row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
                 // total amount of saved creditpoints

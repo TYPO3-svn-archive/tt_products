@@ -11,6 +11,8 @@ plugin.tt_products {
   wrap1 = <font face="verdana" size=2 color=black> | </font>
     # cat=plugin.products/typo; type=wrap; label= Wrap 2: This wrap is used in the template-file.
   wrap2 = <font face="verdana" size=1 color=black> | </font>
+    # cat=plugin.products/typo; type=boolean; label= break Note: Transforms linefeeds in the note field into <br /> HTML tags
+  nl2brNote = 1
 
     # cat=plugin.products/color; type=color; label= Color 1: This bgcolor is used in the template-file.
   color1 = #cccccc
@@ -94,7 +96,11 @@ plugin.tt_products {
   PIDthanks =
     # cat=plugin.products//; type=int+; label=PID for tracking page
   PIDtracking =
-    # cat=plugin.products//; type=int+; label=PID for single item display: Set this in your setup for defining where conditions for several pages.
+    # cat=plugin.products//; type=int+; label=PID for billing page
+  PIDbilling =
+    # cat=plugin.products//; type=int+; label=PID for delivery sheet page
+  PIDdelivery =
+    # cat=plugin.products//; type=int+; label=PID for single item display: Set this in your setup manually for defining where conditions for several pages.
   PIDitemDisplay =
     # cat=plugin.products//; type=int+; label=PID for search page: If you want all product searches to go to a specific page, enter the PID it here! NOTE: If you set this PID, all searchqueries will (must) be handled with a list content element with the code "search" on that page.
   PIDsearch =

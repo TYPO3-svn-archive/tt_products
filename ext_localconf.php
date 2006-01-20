@@ -69,36 +69,36 @@ $typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 if ($typoVersion >= 3009000 && !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
 	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = array (
 		'default' => array(
-			'MENU' => 'LLL:EXT:tt_products/locallang.php:m_default',
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
 			'fList' =>  'title,itemnumber,price,image',
 			'icon' => TRUE
 		),
 		'ext' => array (
-			'MENU' => 'LLL:EXT:tt_products/locallang.php:m_ext',
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_ext',
 			'fList' =>  'title,price2,category;inStock;weight;tax',
 			'icon' => TRUE
 		),
 		'variants' => array(
-			'MENU' => 'LLL:EXT:tt_products/locallang.php:m_variants',
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_variants',
 			'fList' =>  'title,color;size;gradings,description',
 			'icon' => TRUE
 		)
 	);
 	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articles'] = array (
 		'default' => array(
-			'MENU' => 'LLL:EXT:tt_products/locallang.php:m_default',
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
 			'fList' =>  'title,itemnumber,price,inStock',
 			'icon' => TRUE
 		),
 		'ext' => array(
-			'MENU' => 'LLL:EXT:tt_products/locallang.php:m_ext',
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_ext',
 			'fList' =>  'title;price2,color;size;gradings',
 			'icon' => TRUE
 		)
 	);
 	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] = array (
 		'default' => array(
-			'MENU' => 'LLL:EXT:tt_products/locallang.php:m_default',
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
 			'fList' =>  'title,image',
 			'icon' => TRUE
 		)
