@@ -8,21 +8,14 @@
 
 <body>
 
-<br>
-<H1>bananaGUARD Shop-Template</H1>
-<P> You can see the test website of this template at http://tt-products.zedwoo.de<br />
-The ids of this template correspond to the ids on the testsite. <br />
-The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
-</P>
-
-<br><HR><br>
+<br><hr><br>
 <h3>ITEM_LIST_TEMPLATE</h3>
 <em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
 <br>
 <br>
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>ITEM_LIST_TEMPLATE</h3>
 <em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
 <br>
@@ -33,6 +26,12 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 <!-- ###ITEM_LIST_TEMPLATE### begin
 	This subpart is used to display the regular list of products. It's also used by search-results.
 -->
+<br>
+<h1>bananaGUARD Shop-Template</h1>
+<p> Sie können die Webseite dieses Templates unter <A href="http://tt-products.zedwoo.de">tt-products.zedwoo.de</A> sehen.<br />
+Dieses Template ist ident mit jenem auf der Testseite. <br />
+Die Original-Webseite befindet sich auf <A href="http://www.bananaguard.de">bananaguard.de</A> .
+</p>
 
 <table border="0" cellspacing="0" cellpadding="1" width=1>
 	<tr>
@@ -54,7 +53,7 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 				<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
 			</tr>
 			<tr><td colspan="3">
-			<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
 
         <table bordercolor="#003399" cellspacing="1" border="1">
           <tr>
@@ -70,8 +69,12 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
             <!--###LINK_ITEM###-->
             <br>
             ###PRODUCT_IMAGE### <br>
+		  <!-- ###display_variant2### -->
+		  ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
+		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+		  <!-- ###display_variant2### -->
             <!-- ###display_variant5_isSingle### -->
-            jetzt noch nichts ###PRODUCT_ADDITIONAL_SINGLE###
+            Einzelprodukt, das nur einmal gewählt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
             <!-- ###display_variant5_isSingle### -->
             <!-- ###display_variant5_isNotSingle### -->
             ###GW1B### Stückzahl: ###GW1E### <INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
@@ -89,7 +92,7 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
           </tr>
           
         </table>
-			</FORM>
+			</form>
 			</td></tr>
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
@@ -115,7 +118,7 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>ITEM_SINGLE_DISPLAY</h3>
 <em>This subpart is used to display single products.</em><br>
 <br>
@@ -132,7 +135,7 @@ The original website is <A href="http://www.bananaguard.de">bananaguard.de</A> .
 </table>
 
 <table border="0" cellspacing="0" cellpadding="1" width=1>
-<FORM method="post" name="###FORM_NAME###" action="###FORM_URL###">
+<form method="post" name="###FORM_NAME###" action="###FORM_URL###">
 	<tr>
 		<td><img src="clear.gif" width="100" height="1"></td>
 		<td><img src="clear.gif" width="5" height="1"></td>
@@ -179,7 +182,7 @@ onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){do
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>ITEM_SEARCH</h3>
 <em>Subpart for the search-form.</em><br>
 <br>
@@ -188,7 +191,7 @@ onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){do
 <!-- ###ITEM_SEARCH### begin
 Subpart for the search-form
 -->
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 <INPUT size="30" maxlength="100" type="text" name="swords" value="###SWORDS###">
 <input type="Submit" name="order" value="Suchen">
 </form>
@@ -203,7 +206,7 @@ Subpart for the search-form
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>ITEM_SEARCH_EMPTY</h3>
 <em>Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.</em><br>
 <br>
@@ -225,7 +228,7 @@ Subpart displayed if the search was empty. If the search was successfull, the IT
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>BASKET_TEMPLATE</h3>
 <em>
 Subpart used to display the content of the shopping basket.<br>
@@ -240,7 +243,7 @@ The product list part has the exact same features as the regular LIST_ITEM_TEMPL
 In addition there's a number of fields used for delivery and payment information.
 -->
 ###EXTERNAL_COBJECT###
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 
 <table border="0" cellspacing="0" cellpadding="1" width=1>
 <tr>
@@ -308,7 +311,7 @@ In addition there's a number of fields used for delivery and payment information
 
 </td>
       <td valign=top align=right>###GW1B### <b>###PRICE_SHIPPING_TAX###</b>
-        <!-- <br>(###PRICE_SHIPPING_NO_TAX###) -->
+         <br>(###PRICE_SHIPPING_NO_TAX###)
         ###GW1E###</td>
 </tr>
 
@@ -384,7 +387,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 <td align="right"><input type="Submit" name="products_info" value="Ihre Daten eingeben" onclick="this.form.action='###FORM_URL_INFO###';"></td>
 </tr>
 </table>
-</FORM>
+</form>
 <br>
 <!-- ###BASKET_TEMPLATE### end -->
 
@@ -396,7 +399,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>BASKET_INFO_TEMPLATE</h3>
 <em>
 Subpart used if the GPvar "products_info" was set. This is normally used to let people enter address information separately from the real basket.<br>
@@ -407,7 +410,7 @@ Exact same features as BASKET_TEMPLATE<br>
 Subpart used if the GPvar "products_info" was set. This is normally used to let people enter address information separately from the real basket
 Exact same features as BASKET_TEMPLATE
 -->
-<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###" id="registrationForm">
+<form method="post" action="###FORM_URL###" name="###FORM_NAME###" id="registrationForm">
 <table border="0" cellspacing="0" cellpadding="1" width=1>
 <tr>
 <td><img src="clear.gif" width="100" height="1"></td>
@@ -428,6 +431,10 @@ Exact same features as BASKET_TEMPLATE
 <br>
 <table>
 <tr>
+<td>###GW1B###<strong>Anrede:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_SALUTATION######GW1E###</td>
+</tr>
+<tr>
 <td>###GW1B###<strong>Name: </strong>*###GW1E###</td>
 <td><input type="text" name="recs[personinfo][name]" size="30" value="###PERSON_NAME###"></td>
 </tr>
@@ -445,7 +452,7 @@ Exact same features as BASKET_TEMPLATE
 </tr>
 <tr>
 <td>###GW1B###<strong>Land: </strong>*###GW1E###</td>
-<td><input type="text" name="recs[personinfo][country]" size="60" value="###PERSON_COUNTRY###"></td>
+<td>###PERSON_COUNTRY_CODE###</td>
 </tr>
 <tr>
 <td>###GW1B###<strong>Telefon:</strong>*###GW1E###</td>
@@ -518,6 +525,10 @@ Wenn Ihre Bestellung zu einer anderen Anschrift geliefert werden soll, so geben 
 
 <table>
 <tr>
+<td>###GW1B###<strong>Anrede:</strong>###GW1E###</td>
+<td>###GW1B######DELIVERY_SALUTATION######GW1E###</td>
+</tr>
+<tr>
 <td>###GW1B###<strong>Kontaktperson:</strong>###GW1E###</td>
 <td><input type="text" name="recs[delivery][name]" size="30" value="###DELIVERY_NAME###"></td>
 </tr>
@@ -534,8 +545,8 @@ Wenn Ihre Bestellung zu einer anderen Anschrift geliefert werden soll, so geben 
 <td><input type="text" name="recs[delivery][city]" size="50" value="###DELIVERY_CITY###"></td>
 </tr>
 <tr>
-<td>###GW1B###<strong>Land:</strong>###GW1E###</td>
-<td><input type="text" name="recs[delivery][country]" size="60" value="###DELIVERY_COUNTRY###"></td>
+<td>###GW1B###<strong>Land: </strong>*###GW1E###</td>
+<td>###DELIVERY_COUNTRY_CODE###</td>
 </tr>
 <tr>
 <td>###GW1B###<strong>Telefon:</strong>###GW1E###</td>
@@ -586,7 +597,7 @@ Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
 </td>
 
       <td colspan=3 valign="BOTTOM">###GW1B### Sie bestätigen hiermit, dass Sie
-        die AGB´s von Marcel Schwarz - Online Vertrieb gelesen haben und diese akzeptieren.
+        die AGBs von Marcel Schwarz - Online Vertrieb gelesen haben und diese akzeptieren.
         ###GW1E### </td>
 </tr>
 <tr>
@@ -604,7 +615,7 @@ Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
 <input type="hidden" name="products_cmd" value="cardno" />
 </td>
 </tr></table>
-</FORM>
+</form>
 <br>
 <!-- ###BASKET_INFO_TEMPLATE### end -->
 
@@ -622,7 +633,7 @@ Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>BASKET_PAYMENT_TEMPLATE</h3>
 <em>
 Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.<br>
@@ -692,6 +703,10 @@ Exact same features as BASKET_TEMPLATE
   </tr>
   <tr>
     <td colspan=3> <table border=0>
+		<tr>
+		  <td>###GW1B###Anrede:###GW1E###</td>
+		  <td>###GW1B###<strong>###PERSON_SALUTATION###</strong>###GW1E###</td>
+		</tr>
         <tr>
           <td>###GW1B###Name:###GW1E###</td>
           <td>###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###</td>
@@ -731,6 +746,10 @@ Exact same features as BASKET_TEMPLATE
   <tr>
     <td colspan=3>
       <table border=0>
+	<tr>
+	  <td>###GW1B###Anrede:###GW1E###</td>
+	  <td>###GW1B###<strong>###DELIVERY_SALUTATION###</strong>###GW1E###</td>
+	</tr>
 	<tr>
 	<td>###GW1B###Kontaktperson:###GW1E###</td>
 	<td>###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###</td>
@@ -793,7 +812,7 @@ Exact same features as BASKET_TEMPLATE
     <td colspan=2></td>
   </tr>
     <td colspan=3>###GW1B###Pauschale: <b>###SHIPPING_TITLE###</B>###GW1E###<br></td>
-    <td valign=top align=right colspan=2>###GW1B###<b>###PRICE_SHIPPING_TAX###</b>###GW1E###</td>
+    <td valign=top align=right colspan=2>###GW1B###<b>###PRICE_SHIPPING_TAX### (###PRICE_SHIPPING_NO_TAX###)</b>###GW1E###</td>
   </tr>
   <tr>
     <td colspan=5 height="12"><img src="clear.gif" width="1" height="10"></td>
@@ -826,15 +845,31 @@ Exact same features as BASKET_TEMPLATE
   </tr>
 </table>
 <br>
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 <table width="100%"><tr>
 <td><input type="Submit" name="products_update" value="zurück zum Warenkorb">
 <input type="hidden" name="products_cmd" value="cardno" /></td>
 <td align="right"><input type="Submit" name="products_finalize" value="Bestellung abschliessen!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### (auch PayPal)###GW1E###</td>
 </tr></table>
-</FORM>
+</form>
 <br>
 <!-- ###BASKET_PAYMENT_TEMPLATE### end -->
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE</h3>
+<em>
+ZK+
+Wie BASKET_ORDERCONFIRMATION_TEMPLATE, aber wird nicht in der Datenbank gespeichert. Hier kann Code für externe Systeme eingefügt werden, der nicht mit angezeigt werden darf, wenn die Seite im Trackingmodus nochmal dargestellt wird.
+</em><br>
+<br>
+<br>
+<!-- ###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE### begin -->
+
+<!-- ###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE### end -->
 
 
 
@@ -966,6 +1001,10 @@ Message for payment method 10, Paypal
 <td colspan=3>
 <table cellspacing=3>
 <tr>
+  <td>###GW1B###Anrede:###GW1E###</td>
+  <td>###GW1B###<strong>###PERSON_SALUTATION###</strong>###GW1E###</td>
+</tr>
+<tr>
 <td>###GW1B###Name/Firma:###GW1E###</td>
 <td>###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###</td>
 </tr>
@@ -1024,6 +1063,10 @@ Message for payment method 10, Paypal
 <td>###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###</td>
 </tr>
 <tr>
+  <td>###GW1B###Anrede:###GW1E###</td>
+  <td>###GW1B###<strong>###DELIVERY_SALUTATION###</strong>###GW1E###</td>
+</tr>
+<tr>
   <td>###GW1B###PLZ Stadt:###GW1E###</td>
   <td>###GW1B###<strong>###DELIVERY_ZIP### ###DELIVERY_CITY###</strong>###GW1E###</td>
 </tr>
@@ -1070,7 +1113,7 @@ Message for payment method 10, Paypal
 </tr>
 <tr>
 <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Versand und Verpackung:</b>###GW2E###</td>
-    <td valign=top align=right colspan=3>###GW1B###<b>###PRICE_SHIPPING_TAX###</b>###GW1E###</td>
+    <td valign=top align=right colspan=3>###GW1B###<b>###PRICE_SHIPPING_TAX### (###PRICE_SHIPPING_NO_TAX###)</b>###GW1E###</td>
 </tr>
 <tr>
 <td valign=top colspan=3>###GW1B###
@@ -1128,7 +1171,7 @@ Message for payment method 10, Paypal
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>BASKET_TEMPLATE_EMPTY</h3>
 <em><br>
 <br>
@@ -1159,9 +1202,9 @@ If payment is initiated but the required information fields are not filled in co
 -->
 ###GW1B###Fehler bei der Eingabe###GW1E###<br>
 ###GW1B###<B>Sie haben nicht alle erforderlichen Felder mit Ihren Adressinformationen ausgefüllt. ###ERROR_DETAILS### Bitte gehen Sie zurück zum Aktualisieren!</B>###GW1E###
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 <input type="Submit" name="products_info" value="Adressdaten eingeben" onclick="document.forms[0].action='###FORM_URL_INFO###';">
-</FORM>
+</form>
 <!-- ###BASKET_REQUIRED_INFO_MISSING### end -->
 
 
@@ -1175,7 +1218,7 @@ If payment is initiated but the required information fields are not filled in co
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>TRACKING_DISPLAY_INFO</h3>
 <em>
 Displays the view of the order status by tracking codes.<br>
@@ -1219,7 +1262,7 @@ Order: ####ORDER_UID###
 ###GW1B###
 
 <!-- ###ADMIN_CONTROL_OK### begin -->
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 <select name="orderRecord[status][]" size="9" multiple>
 ###STATUS_OPTIONS###
 </select>
@@ -1230,24 +1273,24 @@ Order: ####ORDER_UID###
 <input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
 <input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
 <input type="Submit" name="submit" value="Bestellstatus hinzufügen">
-</FORM>
+</form>
 <hr>
 Zu einer anderen Bestellung wechseln:
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 <select name="tracking" size="9">
 ###OTHER_ORDERS_OPTIONS###
 </select><br><br>
 <input type="Submit" name="submit" value="Select">
 <input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
-</FORM>
+</form>
 <!-- ###ADMIN_CONTROL_OK### begin -->
 <!-- ###ADMIN_CONTROL_DENY### begin -->
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 <input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
 ###GW1B###Code:###GW1B###<br>
 <input type="password" size=40 name="update_code" value="###UPDATE_CODE###">
 <input type="Submit" name="submit" value="Code eingeben">
-</FORM>
+</form>
 <!-- ###ADMIN_CONTROL_DENY### begin -->
 </td></tr></table>
 </td></tr>
@@ -1257,7 +1300,7 @@ Zu einer anderen Bestellung wechseln:
 
 <strong>Email-Benachrichtigung:</strong><br>
 Wenn Sie sich über den Status Ihrer Bestellung informieren lassen wollen (###FIELD_EMAIL###) sobald sich der Status geändert hat, dann überprüfen Sie bitte folgendes:<br>
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 
 <input type="hidden" name="orderRecord[email_notify]" value="0">
 <input type="checkbox" name="orderRecord[email_notify]" value="1"###FIELD_EMAIL_NOTIFY###>Nachricht über Ablauf des Bestellvorgangs erhalten.<br>
@@ -1265,14 +1308,14 @@ Wenn Sie sich über den Status Ihrer Bestellung informieren lassen wollen (###FIE
 <input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
 
 <input type="Submit" name="submit" value="Aktualisieren">
-</FORM>
+</form>
 <br><br>
 
 <!--
 <strong>Nachricht an bananaGUARD.de:</strong><br>
 Hier können Sie uns eine Nachricht bezüglich Ihrer Bestellung schicken.<br>
 <font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 <input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
 ###GW1B###Betreff auswählen:###GW1B###<br>
 <select name="orderRecord[status][]" size="1">
@@ -1283,13 +1326,13 @@ Hier können Sie uns eine Nachricht bezüglich Ihrer Bestellung schicken.<br>
   ###GW1B###Bemerkung:###GW1B###<br>
 <textarea cols="40" rows="5" name="orderRecord[status_comment]"></textarea><br>
 <input type="Submit" name="submit" value="Nachricht senden">
-</FORM>
+</form>
 -->
 <br>
 <br>
 <B>Bestellbestätigung - Original:</B><br><br>
 ###GW1E###
-<HR>
+<hr>
 <br>
 
 ###ORDER_HTML_OUTPUT###
@@ -1309,7 +1352,7 @@ Hier können Sie uns eine Nachricht bezüglich Ihrer Bestellung schicken.<br>
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>TRACKING_ENTER_NUMBER</h3>
 <em>
 Displays form for entering the tracking number.<br>
@@ -1320,21 +1363,21 @@ Displays form for entering the tracking number.<br>
 Displays form for entering the tracking number.
 -->
 ###GW1B###<B>Bestellstatus-Code eingeben:</B>###GW1E###<br>
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 <input type="text" name="tracking"><br>
 <input type="Submit" name="submit" value="Status sehen">
-</FORM>
+</form>
 
 <!-- ###ADMIN_CONTROL### begin -->
 <table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
 <table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
 ###GW1B### <strong>Shop ADMIN:</strong><br>
 <!-- ###ADMIN_CONTROL_DENY### begin -->
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 ###GW1B###Code:###GW1B###<br>
 <input type="password" size=40 name="update_code" value="">
 <input type="Submit" name="submit" value="Code eingeben">
-</FORM>
+</form>
 <!-- ###ADMIN_CONTROL_DENY### begin -->
 </td></tr></table>
 </td></tr>
@@ -1350,7 +1393,7 @@ Displays form for entering the tracking number.
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>TRACKING_WRONG_NUMBER</h3>
 <em>
 Displays error message if no tracking code.<br>
@@ -1362,10 +1405,10 @@ Displays error message if no tracking code.
 -->
 ###GW1B###<B>Der Bestellstatus-Code existiert nicht! Bitte stellen Sie die Richtigkeit sicher und versuchen es noch einmal!</B>###GW1E###<br>
 
-<FORM method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###">
 <input type="text" name="tracking"><br>
 <input type="Submit" name="submit" value="Bestellstatus einsehen">
-</FORM>
+</form>
 
 <!-- ###TRACKING_WRONG_NUMBER### end -->
 
@@ -1381,7 +1424,7 @@ Displays error message if no tracking code.
 
 
 
-<br><br><br><br><HR><br><br><br>
+<br><br><br><br><hr><br><br><br>
 <h3>TRACKING_EMAILNOTIFY_TEMPLATE</h3>
 <em>
 Subpart used as template for the notify emails.<br>
@@ -1425,7 +1468,7 @@ Tel.: +49 (0)7195 583372
 Email: info@bananaguard.de<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
 </pre>
 <br>
-<br><br><br><HR><br><br><br>
+<br><br><br><hr><br><br><br>
 <h3>EMAIL_PLAINTEXT_TEMPLATE</h3>
 <em>
 Subpart used as template for the order-emails.<br>
@@ -1461,6 +1504,7 @@ Anzahl: ###FIELD_QTY###
 <!-- ###ITEM_LIST### end -->
 <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
 2) ZAHLUNGSADRESSE:
+###PERSON_SALUTATION###
 ###PERSON_NAME###
 ###PERSON_ADDRESS###
 Telefon: ###PERSON_TELEPHONE###
@@ -1471,6 +1515,7 @@ Email: ###PERSON_EMAIL###
 
 ###DELIVERY_COUNTRY###
 
+###DELIVERY_SALUTATION###
 att. ###DELIVERY_NAME###
 Telefon: ###DELIVERY_TELEPHONE###
 Email: ###DELIVERY_EMAIL###
@@ -1479,7 +1524,7 @@ Email: ###DELIVERY_EMAIL###
 5) BEMERKUNG:
 ###DELIVERY_NOTE_DISPLAY###
 6) VERSAND UND VERPACKUNG:
-Preis: ###PRICE_SHIPPING_TAX### EUR
+Preis: ###PRICE_SHIPPING_TAX### EUR (###PRICE_SHIPPING_NO_TAX### EUR)
 7) ZAHLUNGSWEISE:
 ###PAYMENT_TITLE###
 Preis: ###PRICE_PAYMENT_TAX### EUR
@@ -1502,7 +1547,7 @@ Email: info@bananaguard.de
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><hr><br><br><br>
 <h3>EMAIL_NEWUSER_TEMPLATE</h3>
 <br>
 <br>
@@ -1605,8 +1650,11 @@ Mein Typo3 Shop
   <tr>
     <td colspan=1 width="446"> <table cellspacing=1>
         <tr>
-          <td><strong><font size="5">###PERSON_NAME### </font></strong></td>
+          <td><strong><font size="5">###PERSON_SALUTATION### </font></strong></td>
         </tr>
+        <tr>
+          <td><strong><font size="5">###PERSON_NAME### </font></strong></td>
+        </tr>        
         <tr>
           <td><strong><font size="5">###PERSON_ADDRESS_DISPLAY### </font></strong></td>
         </tr>
@@ -1652,7 +1700,7 @@ Mein Typo3 Shop
   </tr>
   <tr>
     <td valign=top>###GW1B### Verpackung und Versand###GW1E###</td>
-    <td valign=top align=right>###GW1B### <b>EUR ###PRICE_SHIPPING_TAX###</b><br>
+    <td valign=top align=right>###GW1B### <b>EUR ###PRICE_SHIPPING_TAX### (###PRICE_SHIPPING_NO_TAX###)</b><br>
       ###GW1E###</td>
   </tr>
   <tr>
@@ -1718,6 +1766,9 @@ Mein Typo3 Shop
   <tr>
 <td colspan=1>
 <table cellspacing=1>
+<tr>
+<td><font size="5"><strong>###DELIVERY_SALUTATION###</strong></font></td>
+</tr>
 <tr>
 <td><font size="5"><strong>###DELIVERY_NAME###</strong></font></td>
 </tr>
