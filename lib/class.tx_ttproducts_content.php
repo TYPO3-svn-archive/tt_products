@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -43,19 +43,19 @@ require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
 
 class tx_ttproducts_content {
-	var $dataArray;	// array of read in contents
-	var $dataPageArray;	// array of read in contents with page id as index
-	var $table;			// object of the type tx_table_db
+	var $dataArray; // array of read in contents
+	var $dataPageArray; // array of read in contents with page id as index
+	var $table;		 // object of the type tx_table_db
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init()	{
+	function init() {
 		global $TYPO3_DB;
 		
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'sorting'=> 'sorting',
- 			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));
+			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));
 		$this->table->setTCAFieldArray('tt_content');
 	} // init
 
@@ -67,11 +67,11 @@ class tx_ttproducts_content {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', '*');
 			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
-			$this->table->enableFields('tt_content');		 
+			$this->table->enableFields('tt_content');		
 			// Fetching the category
-		 	$res = $sql->exec_SELECTquery();
-		 	$row = $TYPO3_DB->sql_fetch_assoc($res);
-		 	$rc = $this->dataArray[$row['uid']] = $row;
+			$res = $sql->exec_SELECTquery();
+			$row = $TYPO3_DB->sql_fetch_assoc($res);
+			$rc = $this->dataArray[$row['uid']] = $row;
 		}
 		return $rc;
 	}
@@ -84,14 +84,14 @@ class tx_ttproducts_content {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', '*');
 			$sql->prepareWhereFields ($this->table, 'pid', '=', $pid);
-			$this->table->enableFields('tt_content');		 
+			$this->table->enableFields('tt_content');		
 			// Fetching the category
-		 	$res = $sql->exec_SELECTquery();
-		 	$row = '';
-		 	while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-		 		$this->dataPageArray[$pid][$row['uid']] = $row;
-		 	}
-		 	$rc = $this->dataPageArray[$pid];
+			$res = $sql->exec_SELECTquery();
+			$row = '';
+			while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+				$this->dataPageArray[$pid][$row['uid']] = $row;
+			}
+			$rc = $this->dataPageArray[$pid];
 		}
 		return $rc;
 	}
@@ -107,7 +107,7 @@ class tx_ttproducts_content {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_content.php'])	{
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_content.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_content.php']);
 }
 

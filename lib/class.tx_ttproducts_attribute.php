@@ -2,13 +2,13 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
+*  the Free Software Foundation; either version 2 of the License or
 *  (at your option) any later version.
 *
 *  The GNU General Public License can be found at
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -47,7 +47,7 @@ class tx_ttproducts_attribute {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init()	{
+	function init() {
 		global $TYPO3_DB;
 		
 		$this->attributeArray = array();
@@ -78,10 +78,8 @@ class tx_ttproducts_attribute {
 }
 
 
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_attribute.php'])	{
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_attribute.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_attribute.php']);
 }
-
 
 ?>

@@ -2,13 +2,13 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2005 Els Verberne <verberne@bendoo.nl>
+*  (c) 2005-2006 Els Verberne <verberne@bendoo.nl>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
+*  the Free Software Foundation; either version 2 of the License or
 *  (at your option) any later version.
 *
 *  The GNU General Public License can be found at
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Els Verberne <verberne@bendoo.nl>
+ * @author  Els Verberne <verberne@bendoo.nl>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,7 +40,6 @@
 
 
 class tx_ttproducts_creditpoints_div {
-
 
 	/**
 	 * Returns the number of creditpoints for the frontend user
@@ -62,7 +61,7 @@ class tx_ttproducts_creditpoints_div {
 
 				$dumCount = 0;
 				$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
-	
+
 				if ($type != 'price') {
 					break;
 				}
@@ -85,25 +84,23 @@ class tx_ttproducts_creditpoints_div {
 	/**
 	 * adds the number of creditpoints for the frontend user
 	 */
-	function addCreditPoints($username, $creditpoints)	{
+	function addCreditPoints($username, $creditpoints)  {
 		if ($username) {
 			$uid_voucher = '';
-		    // get the "old" creditpoints for the user
-		    $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, tt_products_creditpoints', 'fe_users', 'username="'.$username.'"');
-		    if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
-		        $ttproductscreditpoints = $row['tt_products_creditpoints'];
-		        $uid_voucher = $row['uid'];
-		    }
-		    if ($uid_voucher) {
-			    $fieldsArrayFeUserCredit = array();
-			    $fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + $creditpoints;
+			// get the "old" creditpoints for the user
+			$res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, tt_products_creditpoints', 'fe_users', 'username="'.$username.'"');
+			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
+				$ttproductscreditpoints = $row['tt_products_creditpoints'];
+				$uid_voucher = $row['uid'];
+			}
+			if ($uid_voucher) {
+				$fieldsArrayFeUserCredit = array();
+				$fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + $creditpoints;
 		
-			    $GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$uid_voucher, $fieldsArrayFeUserCredit);
-		    }
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$uid_voucher, $fieldsArrayFeUserCredit);
+			}
 		}
 	}
-
-
 
 }
 

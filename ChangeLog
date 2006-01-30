@@ -1,3 +1,19 @@
+2006-01-30 Franz Holzinger <franz@fholzinger.com>
+	* rename class.tx_ttproducts_view_div.php into class.tx_ttproducts_marker.php
+	* rename class.tx_ttproducts_pricecalc_div.php into class.tx_ttproducts_pricecalc.php
+	* rename class.tx_ttproducts_tracking_div.php into class.tx_ttproducts_tracking.php
+	* rename class.tx_ttproducts_billdelivery_div.php into class.tx_ttproducts_billdelivery.php
+	* rename class.tx_ttproducts_currency_div.php into class.tx_ttproducts_currency_view.php
+	* rename class.tx_ttproducts_memo_div.php into class.tx_ttproducts_memo_view.php
+	* create class.tx_ttproducts_order_view.php from class.tx_ttproducts_order.php
+	* create class.tx_ttproducts_basket_view.php from class.tx_ttproducts_basket.php
+	* hooks and TS configurable product table
+
+2006-01-27 Franz Holzinger <franz@fholzinger.com>
+	* usage of the other ###FORM_URLxxx### markers everywhere to control the next page
+	* saluation field and other fields for sys_products_orders
+	* selectable country field with static_info_tables information
+
 2006-01-20 Franz Holzinger <franz@fholzinger.com>
 	* convert language files into Unicode-UTF8 XML files
 	* correct error with missing products in list view

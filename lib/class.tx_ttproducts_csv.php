@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2006 Klaus Zierer <zierer@pz-systeme.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -39,27 +39,27 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 
 
 class tx_ttproducts_csv {
 	var $pibase; // reference to object of pibase
+	var $conf;
 	var $calculatedArray; // reference to calculated basket array
 	var $itemArray; // reference to the bakset item array
 	var $price;	 					// object for price functions
-	var $conf;
+	var $order;
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$itemArray, &$calculatedArray, &$price)	{
+	function init(&$pibase, &$conf, &$itemArray, &$calculatedArray, &$price, &$order)	{
 		global $TYPO3_DB;
  		$this->pibase = &$pibase;
  		$this->conf = &$conf;
  		$this->calculatedArray = &$calculatedArray;
  		$this->itemArray = &$itemArray;
  		$this->price = &$price;
+ 		$this->order = &$order;
 	} // init
 
 
@@ -67,7 +67,7 @@ class tx_ttproducts_csv {
 		if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
 			$csvfilepath .= '/';
 		}
-		$csvfilepath .= $basket->order->getOrderNumber($csvorderuid).'.csv';
+		$csvfilepath .= $this->order->getOrderNumber($csvorderuid).'.csv';
 		
 		$csvfile = fopen($csvfilepath, 'w');
 		if ($csvfile !== FALSE)

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *  
-*  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is 
@@ -60,7 +60,7 @@ class tx_ttproducts_price {
 	/**
 	 * Returns the $price with either tax or not tax, based on if $tax is true or false. This function reads the TypoScript configuration to see whether prices in the database are entered with or without tax. That's why this function is needed.
 	 */
-	function getPrice($price,$tax=1,$taxpercentage=0)	{
+	function getPrice($price,$tax=1,$taxpercentage=0,$taxIncluded=0)	{
 		global $TSFE;
 
 		if ($taxpercentage==0)
@@ -72,7 +72,7 @@ class tx_ttproducts_price {
 			$price = $price - ($price * ($TSFE->fe_user->user['tt_products_discount'] / 100));
 		}
 
-		$taxIncluded = $this->conf['TAXincluded'];
+		$taxIncluded = ($taxIncluded ? $taxIncluded: $this->conf['TAXincluded']);
 		if ($tax)	{
 			if ($taxIncluded)	{	// If the configuration says that prices in the database is with tax included
 				return doubleval($price);
@@ -112,8 +112,8 @@ class tx_ttproducts_price {
 	 */
 	function checkVatInclude()	{
 //		$include = 1;
-//		if( $this->conf['TAXeu'] )   {
-//			if( ($this->personInfo['country_code'] != '') && ($this->personInfo['country_code'] != $this->conf['countryCode']) )    {
+//		if( $this->conf['TAXeu'] )	{
+//			if( ($this->personInfo['country_code'] != '') && ($this->personInfo['country_code'] != $this->conf['countryCode']) )	{
 //				$whereString =  'cn_iso_3 = "'.$this->personInfo['country_code'].'"';
 //				$euMember = 0 ;
 //				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','static_countries', $whereString);
@@ -121,7 +121,7 @@ class tx_ttproducts_price {
 //					$euMember = $row['cn_eu_member'];
 //				}
 //				// exclude VAT for EU companies with valid VAT id and for everyone outside EU
-//				if( !$euMember  ||  ($euMember && $this->personInfo['vat_id'] != '') )   {
+//				if( !$euMember  ||  ($euMember && $this->personInfo['vat_id'] != '') )	{
 //					$include = 0;
 //				}
 //			}

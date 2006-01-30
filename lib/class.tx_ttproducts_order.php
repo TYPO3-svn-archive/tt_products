@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -38,36 +38,35 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_view_div.php');
 
 
 class tx_ttproducts_order {
 
-    var $pibase; // reference to object of pibase
-    var $conf;
+	var $pibase; // reference to object of pibase
+	var $conf;
 	var $basket;
 
 
-//    var $config;
-//    var $page;
-//    var $tt_content; // element of class tx_table_db
-//    var $tt_products; // element of class tx_table_db
-//    var $tt_products_cat; // element of class tx_table_db
+//	var $config;
+//	var $page;
+//	var $tt_content; // element of class tx_table_db
+//	var $tt_products; // element of class tx_table_db
+//	var $tt_products_cat; // element of class tx_table_db
 
 
-    function init(&$pibase, &$conf, &$basket) {
-         $this->pibase = &$pibase;
-         $this->conf = &$conf;
-         $this->basket = &$basket;
+	function init(&$pibase, &$conf, &$basket) {
+		 $this->pibase = &$pibase;
+		 $this->conf = &$conf;
+		 $this->basket = &$basket;
 
 
-//         $this->config = &$config;
-//         $this->page = &$page;
-//         $this->tt_content = &$tt_content;
-//         $this->tt_products = &$tt_products;
-//         $this->tt_products_cat = &$tt_products_cat;
+//		 $this->config = &$config;
+//		 $this->page = &$page;
+//		 $this->tt_content = &$tt_content;
+//		 $this->tt_products = &$tt_products;
+//		 $this->tt_products_cat = &$tt_products_cat;
 
-   }
+	}
 
 
 	// **************************
@@ -180,10 +179,16 @@ class tx_ttproducts_order {
 
 			// Saving order data
 		$fieldsArray=array();
-		$fieldsArray['note']=$deliveryInfo['note'];
 /* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
 		$fieldsArray['feusers_uid']=$feusers_uid;
 		$fieldsArray['name']=$deliveryInfo['name'];
+		$fieldsArray['first_name']=$deliveryInfo['first_name'];
+		$fieldsArray['last_name']=$deliveryInfo['last_name'];
+		$fieldsArray['salutation']=$deliveryInfo['salutation'];
+		$fieldsArray['address']=$deliveryInfo['address'];
+		$fieldsArray['zip']=$deliveryInfo['zip'];
+		$fieldsArray['city']=$deliveryInfo['city'];
+		$fieldsArray['country']=$deliveryInfo['country'];
 		$fieldsArray['telephone']=$deliveryInfo['telephone'];
 		$fieldsArray['fax']=$deliveryInfo['fax'];
 		$fieldsArray['email']=$deliveryInfo['email'];
@@ -195,19 +200,22 @@ class tx_ttproducts_order {
 		$fieldsArray['amount']=$amount;
 		$fieldsArray['desired_date']=$deliveryInfo['desired_date'];
 		$fieldsArray['status']=1;	// This means, "Order confirmed on website, next step: confirm from shop that order is received"
+		$fieldsArray['note']=$deliveryInfo['note'];
+		$fieldsArray['client_ip']=t3lib_div::getIndpEnv('REMOTE_ADDR');
+
+/*
+		//<-- MKL 2004.09.21
+		$fieldsArray['company']=$this->personInfo['company'];
+		$fieldsArray['vat_id']=$this->personInfo['vat_id'];
+		$fieldsArray['country_code']=$this->personInfo['country_code'];
+		//--> MKL 2004.09.21
+*/
+
 
 /* Added Els: update fe_user with amount of creditpoints and subtract creditpoints used in order*/
 		$fieldsArrayFeUsers = array();
 		$uid_voucher = ''; // define it here
-		/* example:
-  creditpoints {
-  10.where =
-  10.type = price
-  10.prod.1   = 0.02
-  10.prod.101 = 0.04
-  10.prod.501 = 0.06
-}
-		 */
+
 		if ($this->conf['creditpoints.']) {
 			$creditpoints = tx_ttproducts_creditpoints_div::getCreditPoints($fieldsArray['amount']);
 /* Added els4: update fe_user with amount of creditpoints (= exisitng amount - used_creditpoints - spended_creditpoints + saved_creditpoints */
@@ -232,22 +240,6 @@ class tx_ttproducts_order {
 	/* Added ELS2: update user from vouchercode with 5 credits */
 			tx_ttproducts_creditpoints_div::addCreditPoints($this->basket->recs['tt_products']['vouchercode'], 5);
 		}
-
-
-/*
-		//<-- MKL 2004.09.21
-		$fieldsArray['forename']=$this->personInfo['forename'];
-		$fieldsArray['company']=$this->personInfo['company'];
-		$fieldsArray['vat_id']=$this->personInfo['vat_id'];
-		$fieldsArray['street']=$this->deliveryInfo['street'];
-		$fieldsArray['street_n1']=$this->deliveryInfo['street_n1'];
-		$fieldsArray['street_n2']=$this->deliveryInfo['street_n2'];
-		$fieldsArray['city']=$this->deliveryInfo['city'];
-		$fieldsArray['zip']=$this->deliveryInfo['zip'];
-		$fieldsArray['country_code']=$this->personInfo['country_code'];
-		$fieldsArray['client_ip']=t3lib_div::getIndpEnv('REMOTE_ADDR');
-		//--> MKL 2004.09.21
-*/
 
 				// Default status_log entry
 		$status_log=array();
@@ -336,105 +328,6 @@ class tx_ttproducts_order {
 			}
 		}
 	}
-
-/* Added Els2: Displays and manages the orders */
-/* Added Els4: message if no orders available and complete change */
-/* Added Els5: minor modifications */
-/* Added Els6: minor modifications */
-/* Added Els7: minor modifications */
-   function orders_display($theCode) {
-       global $TSFE;
-
-       $feusers_uid = $TSFE->fe_user->user['uid'];
-
-       if (!$feusers_uid)
-           return $this->pibase->cObj->getSubpart($this->basket->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###MEMO_NOT_LOGGED_IN###'));
-
-       $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
-
-       $content=$this->pibase->cObj->getSubpart($this->basket->templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, '###ORDERS_LIST_TEMPLATE###'));
- //CBY 11/11/2005 modifications : integrating order list template start
-      //$orderlist=$this->pibase->cObj->getSubpart($content,'###ORDER_LIST###');
-       $orderitem=$this->pibase->cObj->getSubpart($content,'###ORDER_ITEM###');
-       if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
-       $norows=$this->pibase->cObj->getSubpart($content,'###ORDER_NOROWS###');
-
-           $content = $norows;
-	   } else {
-
-
-	// Fill marker arrays
-
-           $markerArray=Array();
-           $subpartArray=Array();
-           $tot_creditpoints_saved = 0;
-           $tot_creditpoints_changed= 0;
-           $tot_creditpoints_spended= 0;
-           $tot_creditpoints_gifts= 0;
-           $this->orders = array();
-           while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-               //$this->orders[$row['uid']] = $row['tracking_code'];
-               $markerArray['###TRACKING_CODE###']=$row['tracking_code'];
-               $markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']);
-               $markerArray['###ORDER_NUMBER###'] = $this->getOrderNumber($row['uid']);
-               $markerArray['###PID_TRACKING###']=$this->conf['PIDtracking'];
-               $markerArray['###PID_BILLING###']=$this->conf['PIDbilling'];
-               $markerArray['###PID_DELIVERY###']=$this->conf['PIDdelivery'];
-               //$rt= $row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
-               $markerArray['###ORDER_CREDITS###']=$row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
-                // total amount of saved creditpoints
-               $tot_creditpoints_saved += $row['creditpoints_saved'];
-               // total amount of changed creditpoints
-               $tot_creditpoints_changed+= $row['creditpoints'];
-               // total amount of spended creditpoints
-               $tot_creditpoints_spended+= $row['creditpoints_spended'];
-               // total amount of creditpoints from gifts
-               $tot_creditpoints_gifts+= $row['creditpoints_gifts'];
-               $orderlistc.= $this->pibase->cObj->substituteMarkerArray($orderitem,$markerArray);
-          }
-
-          $res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
-          if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
-                $username = $row['username'];
-             }
-
-          $res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
-          $num_rows = $GLOBALS['TYPO3_DB']->sql_num_rows($res2) * 5;
-
-
-          $res3 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
-          $this->creditpoints = array();
-          while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res3)) {
-            $this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
-            $totalcreditpoints= $row['tt_products_creditpoints'];
-          }
-
-
-          $markerArray=Array();
-          $subpartArray=Array();
-
-	$markerArray['###CLIENT_NUMBER###'] =$feusers_uid;
-	$markerArray['###CLIENT_NAME###'] =$username;
-	$markerArray['###CREDIT_POINTS_SAVED###']=number_format($tot_creditpoints_saved,0);
-	$markerArray['###CREDIT_POINTS_SPENT###']=number_format($tot_creditpoints_spended,0);
-	$markerArray['###CREDIT_POINTS_CHANGED###']=number_format($tot_creditpoints_changed,0);
-	$markerArray['###CREDIT_POINTS_USED###']=number_format($tot_creditpoints_spended,0) + number_format($tot_creditpoints_changed,0);
-	$markerArray['###CREDIT_POINTS_GIFTS###']=number_format($tot_creditpoints_gifts,0);
-	$markerArray['###CREDIT_POINTS_TOTAL###']=number_format($totalcreditpoints,0);
-	$markerArray['###CREDIT_POINTS_VOUCHER###'] =$num_rows;
-	$markerArray['###CALC_DATE###']=date('d M Y');
-	$subpartArray['###ORDER_LIST###'] =$orderlistc;
- 	$subpartArray['###ORDER_NOROWS###'] ='';
-         	$content= $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
-
-//CBY 11/11/2005 modifications : integrating order list template end
-
-
- 	   }
-
-       return $content;
-
-   }
 
 
 }

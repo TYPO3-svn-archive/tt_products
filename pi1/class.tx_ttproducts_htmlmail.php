@@ -2,13 +2,13 @@
 /***************************************************************
 *  Copyright notice
 *  
-*  (c) 1999-2004 Kasper Skaarhoj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skaarhoj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is 
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
+*  the Free Software Foundation; either version 2 of the License or
 *  (at your option) any later version.
 * 
 *  The GNU General Public License can be found at
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @author  Kasper Sk&aring;rh&oslash;j <kasperYYYY@typo3.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -42,8 +42,8 @@ require_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 
 class tx_ttproducts_htmlmail extends t3lib_htmlmail {
 	
-	function start($recipient,$subject,$plain,$html,$V)	{
-		if ($recipient)	{
+	function start($recipient,$subject,$plain,$html,$V) {
+		if ($recipient) {
 				// Sets the message id
 			$this->messageid = md5(microtime()).'@domain.tld'; // formerly:  '<'.md5(microtime()).'@domain.tld>';
 		
@@ -59,15 +59,15 @@ class tx_ttproducts_htmlmail extends t3lib_htmlmail {
 			if ($V['attachment'] != '')
 				$this->addAttachment($V['attachment']);
 
-			if ($html)	{
-				$this->theParts['html']['content'] = $html;	// Fetches the content of the page
+			if ($html)  {
+				$this->theParts['html']['content'] = $html; // Fetches the content of the page
 				$this->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
 				
 				$this->extractMediaLinks();
 				$this->extractHyperLinks();
 				$this->fetchHTMLMedia();
 				$this->substMediaNamesInHTML(0);	// 0 = relative
-				$this->substHREFsInHTML();	
+				$this->substHREFsInHTML();  
 				$this->setHTML($this->encodeMsg($this->theParts['html']['content']));
 			}
 			$this->addPlain($plain);
@@ -79,7 +79,7 @@ class tx_ttproducts_htmlmail extends t3lib_htmlmail {
 	}	
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_htmlmail.php'])	{
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_htmlmail.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_htmlmail.php']);
 }
 

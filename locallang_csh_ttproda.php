@@ -8,7 +8,7 @@ $LOCAL_LANG = Array (
 		'.description' => 'Shop articles.',
 		'.details' => 'The articles are used to have special attributes like the price for variants of the products. They can be entered only after the corresponding product has already been entered.',
 		'_.seeAlso' => 'tt_products',
-		'title.description' => '[FILL IN] tt_products_cat->title',
+		'title.description' => '[FILL IN] tt_products_articles->title',
 	),
 	'dk' => Array (
 	),
@@ -23,7 +23,6 @@ $LOCAL_LANG = Array (
 	'it' => Array (
 		'.description' => 'Articoli',
 		'.details' => 'Gli articoli sono usati per avere attributi speciali come il prezzo per le varianti dei prodotti. Possono essere inseriti solo dopo che il corrispondente prodotto è già stato registrato.',
-		'title.description' => '[COMPILA] tt_products_cat->title',
 	),
 	'fr' => Array (
 		'.description' => 'Articles du magasin.',

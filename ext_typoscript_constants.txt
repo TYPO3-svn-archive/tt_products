@@ -8,9 +8,9 @@ plugin.tt_products {
   file.datasheetIcon =
 
     # cat=plugin.products/typo; type=wrap; label= Wrap 1: This wrap is used in the template-file.
-  wrap1 = <font face="verdana" size=2 color=black> | </font>
+  wrap1 = <span class="tx-ttproducts-pi1-wrap1"> | </span>
     # cat=plugin.products/typo; type=wrap; label= Wrap 2: This wrap is used in the template-file.
-  wrap2 = <font face="verdana" size=1 color=black> | </font>
+  wrap2 = <span class="tx-ttproducts-pi1-wrap2"> | </span>
     # cat=plugin.products/typo; type=boolean; label= break Note: Transforms linefeeds in the note field into <br /> HTML tags
   nl2brNote = 1
 

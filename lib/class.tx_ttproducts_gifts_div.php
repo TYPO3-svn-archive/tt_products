@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -29,9 +29,10 @@
  *
  * view functions
  *
- * $Id$
+ * $Id: class.tx_ttproducts_gifts_div.php,v 1.5 2005/12/12 17:39:39
+franzholz Exp $
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -43,9 +44,9 @@ class tx_ttproducts_gifts_div {
 	/**
 	 * returns if the product has been put into the basket as a gift
 	 *
-	 * @param	integer		uid of the product
-	 * @param	integer		variant of the product only size is used now --> TODO
-	 * @return	array		all gift numbers for this product
+	 * @param	integer	 uid of the product
+	 * @param	integer	 variant of the product only size is used now --> TODO
+	 * @return  array		all gift numbers for this product
 	 */
 	function getGiftNumbers(&$basket, $uid, $variant)	{
 		$giftArray = array();
@@ -66,7 +67,8 @@ class tx_ttproducts_gifts_div {
 	/**
 	 * Adds gift markers to a markerArray
 	 */
-	function addGiftMarkers(&$basket, $markerArray, $giftnumber)	{
+	function addGiftMarkers(&$basket, $markerArray, $giftnumber)	
+{
 
 		$markerArray['###GIFTNO###'] = $giftnumber;
 		$markerArray['###GIFT_PERSON_NAME###'] = $basket->basketExt['gift'][$giftnumber]['personname'];
@@ -74,14 +76,16 @@ class tx_ttproducts_gifts_div {
 		$markerArray['###GIFT_DELIVERY_NAME###'] = $basket->basketExt['gift'][$giftnumber]['deliveryname'];
 		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $basket->basketExt['gift'][$giftnumber]['deliveryemail'];
 		$markerArray['###GIFT_NOTE###'] = $basket->basketExt['gift'][$giftnumber]['note'];
-//		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]'; // here again, because this is here in ITEM_LIST view
-//		$markerArray['###FIELD_QTY###'] =  '';
+		//	 
+		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]';
+		// here again, because this is here in ITEM_LIST view
+		//	  $markerArray['###FIELD_QTY###'] =  '';
 
-		$markerArray['###FIELD_NAME_PERSON_NAME###']='ttp_gift[personname]';
-		$markerArray['###FIELD_NAME_PERSON_EMAIL###']='ttp_gift[personemail]';
-		$markerArray['###FIELD_NAME_DELIVERY_NAME###']='ttp_gift[deliveryname]';
-		$markerArray['###FIELD_NAME_DELIVERY_EMAIL###']='ttp_gift[deliveryemail]';
-		$markerArray['###FIELD_NAME_GIFT_NOTE###']='ttp_gift[note]';
+	 	$markerArray['###FIELD_NAME_PERSON_NAME###']='ttp_gift[personname]';
+			$markerArray['###FIELD_NAME_PERSON_EMAIL###']='ttp_gift[personemail]';
+			$markerArray['###FIELD_NAME_DELIVERY_NAME###']='ttp_gift[deliveryname]';
+			$markerArray['###FIELD_NAME_DELIVERY_EMAIL###']='ttp_gift[deliveryemail]';
+			$markerArray['###FIELD_NAME_GIFT_NOTE###']='ttp_gift[note]';
 
 		return $markerArray;
 	} // addGiftMarkers
@@ -92,7 +96,7 @@ class tx_ttproducts_gifts_div {
 	 * Saves the orderRecord and returns the result
 	 * 
 	 */
-	function saveOrderRecord($orderUid, $pid, &$giftBasket)	{
+	function saveOrderRecord($orderUid, $pid, &$giftBasket) {
 		global $TYPO3_DB;
 		$rc = '';
 
@@ -101,7 +105,7 @@ class tx_ttproducts_gifts_div {
 			foreach ($rec['item'] as $productid => $product) {
 				foreach ($product as $variant => $count) {
 					$row = array();
-					tx_ttproducts_article_div::getRowFromVariant ($row, $variant);
+					tx_ttproducts_article_div::getRowFromVariant	($row, $variant);
 					$amount += intval($row['size']) * $count;
 				}
 			}
@@ -112,16 +116,16 @@ class tx_ttproducts_gifts_div {
 				'crdate' => time(),
 				'deleted' => 0,
 
-				'ordernumber'    => $orderUid,
-				'personname'     => $rec['personname'],
-				'personemail'    => $rec['personemail'],
-				'deliveryname'   => $rec['deliveryname'],
+				'ordernumber'	=> $orderUid,
+				'personname'	 => $rec['personname'],
+				'personemail'	=> $rec['personemail'],
+				'deliveryname'	=> $rec['deliveryname'],
 				'deliveryemail'  => $rec['deliveryemail'],
-				'note'           => $rec['note'],
-				'amount'         => $amount
+				'note'			=> $rec['note'],
+				'amount'		 => $amount
 			);
 			// Saving the gifts order record
-			$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts', $insertFields);
+				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts',	$insertFields);
 			$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
 			$insertFields = array();
 			$insertFields['uid_local'] = $newId;
@@ -129,7 +133,7 @@ class tx_ttproducts_gifts_div {
 			foreach ($rec['item'] as $productid => $product) {
 				foreach ($product as $variant => $count) {
 					$row = array();
-					tx_ttproducts_article_div::getRowFromVariant ($row, $variant);
+					tx_ttproducts_article_div::getRowFromVariant	($row, $variant);
 
 					$query='uid_product=\''.intval($productid).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND description=\''.$row['description'].'\' AND gradings=\''.$row['gradings'].'\'' ;
 					$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
@@ -138,7 +142,7 @@ class tx_ttproducts_gifts_div {
 						$insertFields['uid_foreign'] = $articleRow['uid'];
 						$insertFields['count'] = $count;
 						// Saving the gifts mm order record
-						$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts_articles_mm', $insertFields);
+							$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts_articles_mm',	$insertFields);
 					}
 				}
 			}
@@ -151,7 +155,7 @@ class tx_ttproducts_gifts_div {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_gifts_div.php'])	{
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_gifts_div.php'])  {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_gifts_div.php']);
 }
 

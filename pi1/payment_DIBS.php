@@ -2,13 +2,13 @@
 /***************************************************************
 *  Copyright notice
 *  
-*  (c) 1999-2004 Kasper Skaarhoj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skaarhoj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is 
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
+*  the Free Software Foundation; either version 2 of the License or
 *  (at your option) any later version.
 * 
 *  The GNU General Public License can be found at
@@ -36,21 +36,24 @@
  * 
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Kasper Sk&aring;rh&oslash;j <kasperYYYY@typo3.com>
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
  */
 
 
-if (!is_object($pibase) || !is_object($pibase->cObj))	die('$pibase and $pibase->cObj must be objects!');
+if (!is_object($this->pibase) || !is_object($this->pibase->cObj))	die('$pibase and $pibase->cObj must be objects!');
 
 
-// $lConf = $this->basketExtra["payment."]["handleScript."];		// Loads the handleScript TypoScript into $lConf.
-$lConf = $conf;
+// $lConf = $this->basketExtra["payment."]["handleScript."];		
+// Loads the handleScript TypoScript into $lConf.
+$lConf = $confScript;
 
-$localTemplateCode = $pibase->cObj->fileResource($lConf[templateFile] ? $lConf[templateFile] : 'EXT:tt_products/template/payment_DIBS_template.tmpl');		// Fetches the DIBS template file
-$localTemplateCode = $pibase->cObj->substituteMarkerArrayCached($localTemplateCode, $pibase->globalMarkerArray);
+$localTemplateCode =
+$this->pibase->cObj->fileResource($lConf[templateFile] ?
+$lConf[templateFile] : 'EXT:tt_products/template/payment_DIBS_template.tmpl');		// Fetches the DIBS template file
+$localTemplateCode = $this->pibase->cObj->substituteMarkerArrayCached($localTemplateCode, $this->pibase->globalMarkerArray);
 
-$orderUid = $basket->order->getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
+$orderUid = $this->basket->order->getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
 
 $param = '&FE_SESSION_KEY='.rawurlencode(
 $GLOBALS['TSFE']->fe_user->id.'-'.
@@ -62,31 +65,45 @@ $GLOBALS['TSFE']->fe_user->id.'-'.
 
 $products_cmd = t3lib_div::_GP('products_cmd');
 switch($products_cmd)	{
-	case "cardno":
+	case 'cardno':
 		$tSubpart = $lConf['soloe'] ? '###DIBS_SOLOE_TEMPLATE###' : '###DIBS_CARDNO_TEMPLATE###';		// If solo-e is selected, use different subpart from template
 		$tSubpart = $lConf['direct'] ? '###DIBS_DIRECT_TEMPLATE###' : $tSubpart;		// If direct is selected, use different subpart from template
-		$content=$basket->getBasket($localTemplateCode,$tSubpart);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=$basketView->getView($localTemplateCode,$tSubpart);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 
 		$markerArray=array();
-		$markerArray['###HIDDEN_FIELDS###'] = '
-<input type="hidden" name="merchant" value="'.$lConf['merchant'].'">
-<input type="hidden" name="amount" value="'.round($basket->calculatedArray['priceTax']['total'] *100).'">
-<input type="hidden" name="currency" value="'.$lConf['currency'].'">		<!--Valuta som angivet i ISO4217, danske kroner=208-->
-<input type="hidden" name="orderid" value="'.$basket->order->getOrderNumber($orderUid).'">		<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
+		$markerArray['###HIDDEN_FIELDS###'] = 
+' <input type="hidden" name="merchant"
+value="'.$lConf['merchant'].'">
+<input type="hidden" name="amount"
+value="'.round($this->basket->calculatedArray['priceTax']['total']
+*100).'">
+<input type="hidden" name="currency"
+value="'.$lConf['currency'].'">		<!--Valuta som angivet i
+ISO4217, danske kroner=208-->
+<input type="hidden" name="orderid"
+value="'.$this->basket->order->getOrderNumber($orderUid).'">		
+<!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type="hidden" name="uniqueoid" value="1">
-<input type="hidden" name="accepturl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=accept&products_finalize=1'.$param.'">
-<input type="hidden" name="declineurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=decline&products_finalize=1'.$param.'">';	
+<input type="hidden" name="accepturl"
+value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=accept&products_finalize=1'.$param.'">
+<input type="hidden" name="declineurl"
+value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=decline&products_finalize=1'.$param.'">';
+	
 		if ($lConf['soloe'] || $lConf['direct'])	{
 		$markerArray['###HIDDEN_FIELDS###'].= '
-<input type="hidden" name="cancelurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf["relayURL"].'&products_cmd=cancel&products_finalize=1'.$param.'">';
+<input type="hidden" name="cancelurl"
+value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=cancel&products_finalize=1'.$param.'">';
 		}
 		if ($lConf['direct'])	{
-			$markerArray['###HIDDEN_FIELDS###'].= '<input type="hidden" name="opener" value="">' .
-					'<input type="hidden" name="callbackurl" value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=accept&products_finalize=1'.$param.'">';
-			$markerArray['###WINDOW_OPENER###'] = 'onsubmit="return doPopup(this);" target="Betaling"'; // if this is empty then no popup window will be opened
+			$markerArray['###HIDDEN_FIELDS###'].= '<input
+type="hidden" name="opener" value="">' .
+					'<input type="hidden" name="callbackurl"
+value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=accept&products_finalize=1'.$param.'">';
+			$markerArray['###WINDOW_OPENER###'] = 'onsubmit="return
+doPopup(this);" target="Betaling"'; // if this is empty then no popup window will be opened
 		}
 
-		if ($lConf['test'])	{
+		if ($lConf['test']) {
 			$markerArray['###HIDDEN_FIELDS###'].= '
 				<input type="hidden" name="test" value="foo">
 			';
@@ -94,20 +111,20 @@ switch($products_cmd)	{
 		if ($lConf['cardType'] && !$lConf['soloe'] && !$lConf['direct'])	{
 				/*
 				Examples:
-					DK 			Dankort
-					V-DK 		Visa-Dankort
-					MC(DK) 		Mastercard/Eurocard udstedt i Danmark
-					VISA 		Visakort udstedt i udlandet
-					MC 			Mastercard/Eurocard udstedt i udlandet
-					DIN(DK) 	Diners Club, Danmark
-					DIN 		Diners Club, international
+					DK		  Dankort
+					V-DK		Visa-Dankort
+					MC(DK)	  Mastercard/Eurocard udstedt i Danmark
+					VISA		Visakort udstedt i udlandet
+					MC		  Mastercard/Eurocard udstedt i udlandet
+					DIN(DK)	 Diners Club, Danmark
+					DIN		 Diners Club, international
 				*/
 		
 			$markerArray['###HIDDEN_FIELDS###'].= '
 				<input type="hidden" name="cardtype" value="'.$lConf['cardType'].'">
 			';
 		}
-		if ($lConf["account"])	{		// DIBS account feature
+		if ($lConf["account"])  {		// DIBS account feature
 			$markerArray['###HIDDEN_FIELDS###'].= '
 				<input type="hidden" name="account" value="'.$lConf['account'].'">
 			';
@@ -115,31 +132,32 @@ switch($products_cmd)	{
 		
 		
 				// Adds order info to hiddenfields.
-		if ($lConf['addOrderInfo'])	{	
+		if ($lConf['addOrderInfo']) {	
 			$theFields="";
 				// Delivery info
-			reset($basket->deliveryInfo);
+			reset($this->basket->deliveryInfo);
 			$cc=0;
-			while(list($field,$value)=each($basket->deliveryInfo))		{
+			while(list($field,$value)=each($this->basket->deliveryInfo))		{
 				$value = trim($value);
-				if ($value)	{
+				if ($value) {
 					$cc++;
 					$theFields.=chr(10).'<input type="hidden" name="delivery'.$cc.'.'.$field.'" value="'.htmlspecialchars($value).'">';
 				}
 			}
 			
 				// Order items
-			reset($basket->itemArray);
+			reset($this->basket->itemArray);
 			$theFields.='
 <input type="hidden" name="ordline1-1" value="Varenummer">
 <input type="hidden" name="ordline1-2" value="Beskrivelse">
 <input type="hidden" name="ordline1-3" value="Antal">
 <input type="hidden" name="ordline1-4" value="Pris">
-';				
+';			  
 			$cc=1;
-			//while(list(,$rec)=each($basket->calculatedBasket))		{
+			
+//while(list(,$rec)=each($this->basket->calculatedBasket))	  {
 			// loop over all items in the basket indexed by page and itemnumber
-			foreach ($basket->itemArray as $pid=>$pidItem) {
+			foreach ($this->basket->itemArray as $pid=>$pidItem) {
 				foreach ($pidItem as $itemnumber=>$actItemArray) {
 					foreach ($actItemArray as $k1=>$actItem) {
 						$cc++;
@@ -153,54 +171,59 @@ switch($products_cmd)	{
 			}
 		
 			$theFields.='
-<input type="hidden" name="priceinfo1.Shipping" value="'.$pibase->price->priceFormat($basket->calculatedArray['priceTax']['shipping']).'">';
+<input type="hidden" name="priceinfo1.Shipping"
+value="'.$pibase->price->priceFormat($this->basket->calculatedArray['priceTax']['shipping']).'">';
 			$theFields.='
-<input type="hidden" name="priceinfo2.Payment" value="'.$pibase->price->priceFormat($basket->calculatedArray['priceTax']['payment']).'">';
+<input type="hidden" name="priceinfo2.Payment"
+value="'.$pibase->price->priceFormat($this->basket->calculatedArray['priceTax']['payment']).'">';
 			$theFields.='
-<input type="hidden" name="priceinfo3.Tax" value="'.$pibase->price->priceFormat( $basket->calculatedArray['priceTax']['total'] - $basket->calculatedArray['priceNoTax']['total']).'">';
+<input type="hidden" name="priceinfo3.Tax"
+value="'.$pibase->price->priceFormat( $this->basket->calculatedArray['priceTax']['total'] - $this->basket->calculatedArray['priceNoTax']['total']).'">';
 			$markerArray['###HIDDEN_FIELDS###'].=$theFields;
 		}
 		$content= $pibase->cObj->substituteMarkerArrayCached($content, $markerArray);
-	break;		
+	break;	  
 	case 'decline':
 		$markerArray=array();
 		$markerArray['###REASON_CODE###'] = t3lib_div::_GP('reason');
-		$content=$basket->getBasket($localTemplateCode, '###DIBS_DECLINE_TEMPLATE###',$markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=$basketView->getView($localTemplateCode, '###DIBS_DECLINE_TEMPLATE###',$markerArray);	  // This not only gets the output but also calculates the basket total, so it's NECESSARY!
 	break;
 	case 'cancel':
-		$content=$basket->getBasket($localTemplateCode, '###DIBS_SOLOE_CANCEL_TEMPLATE###',$markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=$basketView->getView($localTemplateCode, '###DIBS_SOLOE_CANCEL_TEMPLATE###',$markerArray);	 // This not only gets the output but also calculates the basket total, so it's NECESSARY!
 	break;
 	case 'accept':
-		$content=$basket->getBasket($localTemplateCode,'###DIBS_ACCEPT_TEMPLATE###');		// This is just done to calculate stuff
+		
+$content=$basketView->getView($localTemplateCode,'###DIBS_ACCEPT_TEMPLATE###');
+	// This is just done to calculate stuff
 
 			// DIBS md5 keys
 		$k1=$lConf['k1'];
 		$k2=$lConf['k2'];
 	
 			// Checking transaction
-		$amount=round($basket->calculatedArray['priceTax']['total'] *100);
+		$amount=round($this->basket->calculatedArray['priceTax']['total'] *100);
 		$currency='208';
 		$transact=t3lib_div::_GP("transact");
 		$md5key= md5($k2.md5($k1.'transact='.$transact.'&amount='.$amount.'&currency='.$currency));
 		$authkey=t3lib_div::_GP('authkey');
 		if ($md5key != $authkey)	{
-			$content=$basket->getBasket($localTemplateCode, '###DIBS_DECLINE_MD5_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
-		} elseif (t3lib_div::_GP('orderid')!=$basket->order->getOrderNumber($orderUid)) {
-			$content=$basket->getBasket($localTemplateCode, '###DIBS_DECLINE_ORDERID_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=$basketView->getView($localTemplateCode, '###DIBS_DECLINE_MD5_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		} elseif (t3lib_div::_GP('orderid')!=$this->basket->order->getOrderNumber($orderUid)) {
+			$content=$basketView->getView($localTemplateCode, '###DIBS_DECLINE_ORDERID_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$markerArray=array();
 			$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
 
-			$content=$basket->getBasket($tmp='','###BASKET_ORDERCONFIRMATION_TEMPLATE###',$markerArray);
+			$content=$basketView->getView($tmp='','###BASKET_ORDERCONFIRMATION_TEMPLATE###',$markerArray);
 			$error=''; // TODO
-			tx_ttproducts_finalize_div::finalizeOrder($pibase,$basket->conf,$basket->templateCode, $basket,$basket->tt_products /* TODO */,$basket->tt_products_cat, $basket->price, $orderUid,$content,$error);	// Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+			tx_ttproducts_finalize_div::finalizeOrder($pibase,$this->basket->conf,$basketView->templateCode, $this->basket,$this->basket->tt_products /* TODO */,$this->basket->tt_products_cat, $this->basket->price, $orderUid,$content,$error);  // Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 		}
 	break;
 	default:
-		if ($lConf['relayURL'])	{
+		if ($lConf['relayURL']) {
 			$markerArray=array();
 			$markerArray['###REDIRECT_URL###'] = 'https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=cardno&products_finalize=1'.$param;
-			$content=$basket->getBasket($localTemplateCode, '###DIBS_REDIRECT_TEMPLATE###',$markerArray);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=$basketView->getView($localTemplateCode, '###DIBS_REDIRECT_TEMPLATE###',$markerArray);	 // This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$content = 'NO .relayURL given!!';
 		}

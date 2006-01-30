@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -41,17 +41,17 @@
 
 class tx_ttproducts_div {
 
-       /**
-         * Sets JavaScript code in the additionalJavaScript array
-         *
-         * @param       string          $fieldname is the field in the table you want to create a JavaScript for
-         * @return      void
-         * @see
-         */
-    function setJS(&$pibase, $fieldname) {
-        global $TSFE;
-        $js = '';
-        $emailArr =  explode('|', $message = $pibase->pi_getLL('invalid_email'));
+		/**
+		 * Sets JavaScript code in the additionalJavaScript array
+		 *
+		 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
+		 * @return	  void
+		 * @see
+		 */
+	function setJS(&$pibase, $fieldname) {
+		global $TSFE;
+		$js = '';
+		$emailArr =  explode('|', $message = $pibase->pi_getLL('invalid_email'));
 
 		switch ($fieldname) {
 			case 'email' :
@@ -96,7 +96,7 @@ class tx_ttproducts_div {
 		}
 
 	$TSFE->setJS ($fieldname, $js);
-    } // setJS
+	} // setJS
 
 
 	// **************************
@@ -124,14 +124,8 @@ class tx_ttproducts_div {
 
 
 
-
 }
 
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_div.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_div.php']);
-}
 
 
 ?>

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -49,7 +49,7 @@ class tx_ttproducts_email {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init()	{
+	function init() {
 		global $TYPO3_DB;
 		
 		$this->tt_products_emails = t3lib_div::makeInstance('tx_table_db');
@@ -67,9 +67,9 @@ class tx_ttproducts_email {
 			$sql->prepareWhereFields ($this->tt_products_emails, 'uid', '=', $uid);
 			$this->tt_products_emails->enableFields('tt_products_emails');
 			// Fetching the email
-		 	$res = $sql->exec_SELECTquery();
-		 	$row = $TYPO3_DB->sql_fetch_assoc($res);
-		 	$rc = $this->emailArray[$row['uid']] = $row;
+			$res = $sql->exec_SELECTquery();
+			$row = $TYPO3_DB->sql_fetch_assoc($res);
+			$rc = $this->emailArray[$row['uid']] = $row;
 		}
 		return $rc;
 	}
@@ -79,8 +79,8 @@ class tx_ttproducts_email {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_email.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_email.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_email.php'])  {
+  include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_email.php']);
 }
 
 

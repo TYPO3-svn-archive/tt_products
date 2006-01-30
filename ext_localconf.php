@@ -1,5 +1,5 @@
 <?php
-if (!defined ("TYPO3_MODE"))    die ("Access denied.");
+if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
 if (!defined ('TT_PRODUCTS_EXTkey')) {
 	define('TT_PRODUCTS_EXTkey',$_EXTKEY);
@@ -43,15 +43,15 @@ if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
 }
 
 t3lib_extMgm::addUserTSConfig('
-        options.saveDocNew.tt_products=1
+		options.saveDocNew.tt_products=1
 ');
 
 t3lib_extMgm::addUserTSConfig('
-        options.saveDocNew.tt_products_cat=1
+		options.saveDocNew.tt_products_cat=1
 ');
 
 t3lib_extMgm::addUserTSConfig('
-        options.saveDocNew.tt_products_articles=1
+		options.saveDocNew.tt_products_articles=1
 ');
 
 if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])) {
@@ -61,12 +61,14 @@ if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'])) {
 	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 1;  // set this to 1 !
 }
 if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'])) {
-	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'] = '';
+	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts']
+= '';
 }
 
 $typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
 
-if ($typoVersion >= 3009000 && !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
+if ($typoVersion >= 3009000 &&
+!defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
 	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
@@ -84,7 +86,8 @@ if ($typoVersion >= 3009000 && !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_l
 			'icon' => TRUE
 		)
 	);
-	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articles'] = array (
+	
+$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articles'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
 			'fList' =>  'title,itemnumber,price,inStock',
@@ -96,7 +99,8 @@ if ($typoVersion >= 3009000 && !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_l
 			'icon' => TRUE
 		)
 	);
-	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] = array (
+	
+$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
 			'fList' =>  'title,image',
@@ -107,9 +111,7 @@ if ($typoVersion >= 3009000 && !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_l
 
 
   ## Extending TypoScript from static template uid=43 to set up userdefined tag:
-t3lib_extMgm::addTypoScript($_EXTKEY,'editorcfg','
-	tt_content.CSS_editor.ch.tx_ttproducts_pi1 = < plugin.tx_ttproducts_pi1.CSS_editor
-',43);
+t3lib_extMgm::addTypoScript($_EXTKEY,'editorcfg','tt_content.CSS_editor.ch.tx_ttproducts_pi1 = < plugin.tx_ttproducts_pi1.CSS_editor ',43);
 
 
 t3lib_extMgm::addPItoST43($_EXTKEY,'pi1/class.tx_ttproducts_pi1.php','_pi1','list_type',0);

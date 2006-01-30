@@ -15,6 +15,11 @@
             <label index="additional_single"></label>
             <label index="wrong_parameter"></label>
             <label index="no_csv_creation"></label>
+            <label index="salutation">Anrede</label>
+            <label index="salutation0"></label>
+            <label index="salutation1"></label>
+            <label index="salutation2"></label>
+            <label index="salutation3"></label>
         </labelContext>
     </meta>
     <data type="array">
@@ -28,6 +33,11 @@
             <label index="additional_single">buy this product</label>
             <label index="wrong_parameter">Wrong parameters, GET/POST var 'tt_products' was missing or no product with uid = | found.</label>
             <label index="no_csv_creation">Warning: Cannot create CSV file '|' for this order!</label>
+            <label index="salutation">Salutation</label>
+            <label index="salutation0">Mr.</label>
+            <label index="salutation1">Mrs.</label>
+            <label index="salutation2">Ms.</label>
+            <label index="salutation3">To</label>
         </languageKey>
         <languageKey index="dk" type="array">
         </languageKey>
@@ -41,6 +51,11 @@
             <label index="additional_single">Produkt kaufen</label>
             <label index="wrong_parameter">Falscher Parameter, GET/POST var 'tt_products' wurde nicht angegeben oder kein Produkt mit uid = | gefunden.</label>
             <label index="no_csv_creation">Warnung: Für diese Bestellung kann keine CSV Datei '|' erzeugt werden!</label>
+            <label index="salutation">Anrede</label>
+            <label index="salutation0">Herr</label>
+            <label index="salutation1">Fräulein</label>
+            <label index="salutation2">Frau</label>
+            <label index="salutation3">An</label>
         </languageKey>
         <languageKey index="no" type="array">
             <label index="open_bill">Klikk her for å åpne kvitteringen</label>

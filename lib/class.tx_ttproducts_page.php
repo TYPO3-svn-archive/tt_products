@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2005 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -42,6 +42,7 @@ require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
 class tx_ttproducts_page {
+	var $pibase; 	// pibase object
 	var $dataArray;	// array of read in categories
 	var $table;			// object of the type tx_table_db
 	var $pid_list;		// list of page ids
@@ -49,9 +50,10 @@ class tx_ttproducts_page {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init()	{
+	function init(&$pibase)	{
 		global $TYPO3_DB;
 		
+		$this->pibase = &$pibase;
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'sorting'=> 'sorting',
  			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));		
@@ -150,7 +152,7 @@ class tx_ttproducts_page {
 	/**
 	 * Extends the internal pid_list by the levels given by $recursive
 	 */
-	function initRecursive($recursive, &$pibase)	{
+	function initRecursive($recursive)	{
 		global $TSFE;
 		
 		if (!$this->pid_list) {
@@ -161,7 +163,7 @@ class tx_ttproducts_page {
 			$pid_list_arr = explode(',',$this->pid_list);
 			$this->pid_list='';
 			while(list(,$val)=each($pid_list_arr))	{
-				$this->pid_list.=$val.','.$pibase->cObj->getTreeList($val,$recursive);
+				$this->pid_list.=$val.','.$this->pibase->cObj->getTreeList($val,$recursive);
 			}
 			$this->pid_list = ereg_replace(',$','',$this->pid_list);
 			$pid_list_arr = explode(',',$this->pid_list);

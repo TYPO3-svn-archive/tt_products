@@ -23,7 +23,6 @@ $LOCAL_LANG = Array (
 	'it' => Array (
 		'.description' => 'Categorie dello Shop',
 		'.details' => 'Le categorie sono usate solo se lo shop è adeguatamente configurato',
-		'title.description' => '[COMPILA] tt_products_cat->title',
 	),
 	'fr' => Array (
 		'.description' => 'Catégories du magasin.',

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2005 Kasper Skaarhoj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skaarhoj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -42,38 +42,43 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 
 
 class tx_ttproducts_single_view {
 	var $pibase; // reference to object of pibase
 	var $conf;
 	var $config;
+	var $basket;
 	var $uid; 	// product id
 	var $variants; 	// different attributes
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
 
-	var $formUrl; // URL of the form
+	var $marker; // marker functions
+	var $pid; // PID where to go
 
- 	function init(&$pibase, &$conf, &$config, &$page, &$content, &$tt_products, &$tt_products_cat, $uid, $extVars, &$formUrl) {
+ 	function init(&$pibase, &$conf, &$config, &$basket, &$page, &$tt_content, &$tt_products, &$tt_products_cat, $uid, $extVars, $pid) {
  		$this->pibase = &$pibase;
  		$this->conf = &$conf;
  		$this->config = &$config;
+		$this->basket = &$basket;
  		$this->page = &$page;
- 		$this->content = &$content;
+ 		$this->tt_content = &$tt_content;
  		$this->uid = $uid;
  		$this->variants = $extVars;
  		$this->tt_products = &$tt_products;
  		$this->tt_products_cat = &$tt_products_cat;
- 		$this->formUrl = $formUrl;
+ 		$this->pid = $pid;
+
+		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
+		$this->marker->init($pibase, $conf, $config, $basket);
  	}
 
 	// returns the single view
-	function &printView(&$templateCode, &$basket, &$error_code) {
-		global $TSFE;
+	function &printView(&$templateCode, &$error_code) {
+		global $TSFE, $TCA;
 		
 		$content = '';
 		$error_code = '';
@@ -89,7 +94,6 @@ class tx_ttproducts_single_view {
 			$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		}
 
-
 		if ($this->variants) {
 			tx_ttproducts_article_div::getRowFromVariant ($row, $this->variants);
 		}
@@ -99,25 +103,24 @@ class tx_ttproducts_single_view {
 
 				// Get the subpart code
 			$itemFrameTemplate ='';
-			$giftNumberArray = tx_ttproducts_gifts_div::getGiftNumbers ($basket, $row['uid'], $this->variants);
+			$giftNumberArray = tx_ttproducts_gifts_div::getGiftNumbers ($this->basket, $row['uid'], $this->variants);
 
 			if ($this->config['displayCurrentRecord'])	{
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 			} else if (count($giftNumberArray)) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
-			} else if ($row['inStock']==0 && $this->conf['showProductsNotInStock']) {
+			} else if ($row['inStock']==0 && $this->conf['showProductsNotInStock'] && is_array($TCA[$this->tt_products->table->name]['columns']['inStock']) ) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_NOT_IN_STOCK###';
 			} else {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
 			}
-			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,tx_ttproducts_view_div::spMarker($this->pibase, $this->conf, $itemFrameTemplate));
+			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($itemFrameTemplate));
 
 			if (count($giftNumberArray)) {
 				$personDataFrameWork = $this->pibase->cObj->getSubpart($itemFrameWork,'###PERSON_DATA###');
 				// the itemFramework is a smaller part here
 				$itemFrameWork = $this->pibase->cObj->getSubpart($itemFrameWork,'###PRODUCT_DATA###');
 			}
-
 
 			// set the title of the single view
 			switch ($this->conf['substitutePagetitle']) {
@@ -147,14 +150,13 @@ class tx_ttproducts_single_view {
 				$catTmp = $catTmp['title'];
 			}
 			$catTitle = $pageCatTitle.$catTmp;
-
 			$datasheetFile = $row['datasheet'];
 
 				// Fill marker arrays
 			$wrappedSubpartArray=array();
 			$backPID =t3lib_div::_GP('backPID');
 			$pid = ( $backPID ? $backPID : $TSFE->id);
-			$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pibase->pi_getPageLink($pid,'',tx_ttproducts_view_div::getLinkParams()) .'">','</a>');
+			$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams()) .'">','</a>');
 
 			if( $datasheetFile == '' )  {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
@@ -162,29 +164,26 @@ class tx_ttproducts_single_view {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
 			}
 
-			$item = $basket->getItem($row);
+			$item = $this->basket->getItem($row);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
-			$markerArray = tx_ttproducts_view_div::getItemMarkerArray ($this->pibase,$this->conf, $this->config, $item,$basket->basketExt, $catTitle,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
-
+			$markerArray = $this->marker->getItemMarkerArray ($item,$catTitle,$this->tt_products,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
 			$subpartArray = array();
-
 			$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];
 
-			$markerArray['###FORM_URL###']=$this->formUrl.'&tt_products='.$this->uid ;
-
-			$url = $this->pibase->pi_getPageLink($TSFE->id,'',tx_ttproducts_view_div::getLinkParams()) ; // $this->getLinkUrl('','tt_products');
-
-
+			//$markerArray['###FORM_URL###']=$this->formUrl.'&tt_products='.$this->uid ;
+			$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, array('tt_products' => $this->uid)); // Applied it here also...
+			$url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams()) ; // $this->getLinkUrl('','tt_products');
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
 			$prevOrderby = '';
 			$nextOrderby = ''; 
 
 			if ($this->conf['orderByItemNumberSg']) {
-				$queryPrevPrefix = 'itemnumber < '.intval($row['itemnumber']);
-				$queryNextPrefix = 'itemnumber > '.intval($row['itemnumber']);
-				$prevOrderby= 'itemnumber DESC';
-				$nextOrderby= 'itemnumber ASC';
+				$itemnumberField = $this->tt_products->fields['itemnumber'];
+				$queryPrevPrefix = $itemnumberField.' < '.intval($row[$itemnumberField]);
+				$queryNextPrefix = $itemnumberField.' > '.intval($row[$itemnumberField]);
+				$prevOrderby= $itemnumberField.' DESC';
+				$nextOrderby= $itemnumberField.' ASC';
 
 			} else {
 				$queryPrevPrefix = 'uid < '.intval($this->uid);
@@ -194,39 +193,41 @@ class tx_ttproducts_single_view {
 			}
 
 			$queryprev = '';
-			$wherestock = ($this->conf['showNotinStock'] ? '' : 'AND (inStock <>0) ');
-			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields('tt_products');
-			$resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
+			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$this->tt_products->table->name]['columns']['inStock']) ? '' : 'AND (inStock <>0) ');
+			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($this->tt_products->table->name);
+			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
+			$resprev = $this->tt_products->table->exec_SELECTquery('*', $queryprev, '', $prevOrderby);
 
 			if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )
 				$wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
 			else
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 
-			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields('tt_products');
-			$resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
-
+			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($this->tt_products->table->name);
+			// $resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
+			$resnext = $this->tt_products->table->exec_SELECTquery('*', $querynext, '', $nextOrderby);
 
 			if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )
 				$wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rownext['uid'].'">','</a>');
 			else
 				$subpartArray['###LINK_NEXT_SINGLE###']='';
 
-			tx_ttproducts_article_div::removeEmptySubpartArray($this->pibase, $this->tt_products, $subpartArray, $row);
+			tx_ttproducts_article_div::removeEmptySubpartArray($this->pibase, $this->tt_products, $subpartArray, $row, $this->conf);
 
-				// Substitute
-				
+				// Substitute	
 			$content= $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 			if ($personDataFrameWork) {
 				$subpartArray = array();
 				$wrappedSubpartArray=array();
 				foreach ($giftNumberArray as $k => $giftnumber) {
-					$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($basket, $markerArray, $giftnumber);
+					$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $giftnumber);
 					$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'].'_'.$giftnumber;
 					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')';
-					$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink(t3lib_div::_GP('backPID'),'',tx_ttproducts_view_div::getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants)))); // $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($this->variants);
+					//$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink(t3lib_div::_GP('backPID'),'',$this->marker->getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants)))); // $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($this->variants);
+					$markerArray = $this->marker->addURLMarkers(t3lib_div::_GP('backPID'),$markerArray, array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants))); // Applied it here also...
+					
 					$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$this->variants.']'; // here again, because this is here in ITEM_LIST view
-					$markerArray['###FIELD_QTY###'] = $basket->basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];
+					$markerArray['###FIELD_QTY###'] = $this->basket->basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];
 					$content.=$this->pibase->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 				}
 			}
