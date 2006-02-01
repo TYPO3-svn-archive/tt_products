@@ -41,6 +41,7 @@
  *
  */
 
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 
 class tx_ttproducts_list_view {

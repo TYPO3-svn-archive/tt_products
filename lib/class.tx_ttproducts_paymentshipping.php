@@ -50,15 +50,17 @@ class tx_ttproducts_paymentshipping {
 	var $conf;
 	var $config;
 	var $basket;
+	var $basketView;
 
 
-	function init(&$pibase, &$conf, &$config, &$basket)	{
+	function init(&$pibase, &$conf, &$config, &$basket, &$basketView)	{
 		global $TSFE;
 
 		$this->pibase = &$pibase;
 		$this->conf = &$conf;
 		$this->config = &$config;
 		$this->basket = &$basket;
+		$this->basketView = &$basketView;
 	}
 
 
@@ -298,7 +300,8 @@ on total no-tax price */
 			if ($calcScript)	{
 				$this->basket->pricecalc->includeCalcScript(
 					$calcScript,
-					$this->basket->basketExtra['shipping.']['calculationScript.']
+					$this->basket->basketExtra['shipping.']['calculationScript.'],
+					$this->basketView
 				);
 			}
 		}
@@ -339,7 +342,7 @@ on total no-tax price */
 		if ($this->basket->basketExtra['payment.']['calculationScript'])  {
 			$calcScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['calculationScript']);
 			if ($calcScript)	{
-				$this->basket->pricecalc->includeCalcScript($calcScript,$this->basket->basketExtra['payment.']['calculationScript.']);
+				$this->basket->pricecalc->includeCalcScript($calcScript,$this->basket->basketExtra['payment.']['calculationScript.'], $this->basketView);
 			}
 		}
 

@@ -39,6 +39,8 @@ franzholz Exp $
  *
  */
 
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
+
 
 class tx_ttproducts_gifts_div {
 	/**

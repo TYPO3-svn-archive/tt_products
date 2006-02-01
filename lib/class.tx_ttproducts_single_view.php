@@ -41,7 +41,7 @@
  *
  */
 
-
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 
 
@@ -172,7 +172,7 @@ class tx_ttproducts_single_view {
 
 			//$markerArray['###FORM_URL###']=$this->formUrl.'&tt_products='.$this->uid ;
 			$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, array('tt_products' => $this->uid)); // Applied it here also...
-			$url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams()) ; // $this->getLinkUrl('','tt_products');
+			// $url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams()) ; // $this->getLinkUrl('','tt_products');
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
 			$prevOrderby = '';
@@ -198,19 +198,23 @@ class tx_ttproducts_single_view {
 			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
 			$resprev = $this->tt_products->table->exec_SELECTquery('*', $queryprev, '', $prevOrderby);
 
-			if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
-			else
+			if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )	{
+				// $wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', array('tt_products' => $rowprev['uid'], 'backPID' => $backPID))) .'">','</a>');
+			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
+			}
 
 			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($this->tt_products->table->name);
 			// $resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
 			$resnext = $this->tt_products->table->exec_SELECTquery('*', $querynext, '', $nextOrderby);
 
-			if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rownext['uid'].'">','</a>');
-			else
+			if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )	{
+				// $wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rownext['uid'].'">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', array('tt_products' => $rownext['uid'], 'backPID' => $backPID))) .'">','</a>');
+			} else {
 				$subpartArray['###LINK_NEXT_SINGLE###']='';
+			}
 
 			tx_ttproducts_article_div::removeEmptySubpartArray($this->pibase, $this->tt_products, $subpartArray, $row, $this->conf);
 

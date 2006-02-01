@@ -39,6 +39,8 @@
  */
 
 
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
+
 
 class tx_ttproducts_tracking {
 
@@ -101,9 +103,9 @@ class tx_ttproducts_tracking {
 		All status values can be altered only if you're logged in as a BE-user and if you know the correct code (setup as .update_code in TypoScript config)
 	*/
 
-	function getTrackingInformation($orderRow, $templateCode, $trackingCode, &$orderRecord, $admin) {
+	function getTrackingInformation($orderRow, $templateCode, $trackingCode, $updateCode, &$orderRecord, $admin) {
 
-		global $TSFE;
+		global $TSFE, $TYPO3_DB;
 
 		if ($orderRow['uid'])	{
 				// Initialize update of status...
@@ -142,8 +144,8 @@ class tx_ttproducts_tracking {
 					} else if ($val>=60 && $val<69) { //  60 -69 are special messages
 						$templateMarker = 'TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE';
 						$query = 'ordernumber=\''.$orderRow['uid'].'\'';
-						$giftRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products_gifts', $query);
-						while ($giftRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($giftRes)) {
+						$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
+						while ($giftRow = $TYPO3_DB->sql_fetch_assoc($giftRes)) {
 							$recipient = $giftRow['deliveryemail'].','.$giftRow['personemail'];
 							tx_ttproducts_email_div::sendGiftEmail($this->pibase, $this->conf, $this->basket, $recipient, $orderRecord['status_comment'], $giftRow, $templateCode, $templateMarker, $giftRow['personname'], $giftRow['personemail']);
 						}
@@ -158,7 +160,7 @@ class tx_ttproducts_tracking {
 
 							// Deletes any M-M relations between the tt_products table and the order.
 							// In the future this should maybe also automatically count down the stock number of the product records. Else it doesn't make sense.
-						$GLOBALS['TYPO3_DB']->exec_DELETEquery('sys_products_orders_mm_tt_products', 'sys_products_orders_uid='.intval($orderRow['uid']));
+						$TYPO3_DB->exec_DELETEquery('sys_products_orders_mm_tt_products', 'sys_products_orders_uid='.intval($orderRow['uid']));
 					}
 				}
 			}
@@ -166,7 +168,7 @@ class tx_ttproducts_tracking {
 			if (count($fieldsArray))	{		// If any items in the field array, save them
 				$fieldsArray['tstamp'] = time();
 
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderRow['uid']), $fieldsArray);
+				$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderRow['uid']), $fieldsArray);
 
 				$orderRow = $this->order->getOrderRecord($orderRow['uid']);
 			}
@@ -247,8 +249,8 @@ class tx_ttproducts_tracking {
 			}
 
 				// Get unprocessed orders.
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,name,tracking_code,amount,status', 'sys_products_orders', 'NOT deleted AND status!=0 AND status<100', '', 'crdate');
-			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
+			$res = $TYPO3_DB->exec_SELECTquery('uid,name,tracking_code,amount,status', 'sys_products_orders', 'NOT deleted AND status!=0 AND status<100', '', 'crdate');
+			while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 				$markerArray['###OTHER_ORDERS_OPTIONS###'].='<option value="'.$row['tracking_code'].'">'.htmlspecialchars($this->order->getOrderNumber($row['uid']).': '.$row['name'].' ('.$this->pibase->price->priceFormat($row['amount']).' '.$this->conf['currencySymbol'].') /' .$row['status']).'</option>';
 			}
 		}
@@ -259,8 +261,8 @@ class tx_ttproducts_tracking {
 		$markerArray['###FIELD_EMAIL###'] = $orderRow['email'];
 		$markerArray['###ORDER_UID###'] = $this->order->getOrderNumber($orderRow['uid']);
 		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
-		$markerArray['###TRACKING_NUMBER###'] = t3lib_div::_GP('tracking');
-		$markerArray['###UPDATE_CODE###'] = $trackingCode;
+		$markerArray['###TRACKING_NUMBER###'] =  $trackingCode;
+		$markerArray['###UPDATE_CODE###'] = $updateCode;
 
 		$content= $this->pibase->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		return $content;
@@ -270,8 +272,7 @@ class tx_ttproducts_tracking {
 
 
 
-if (defined('TYPO3_MODE') &&
-$TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_tracking.php']) {
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_tracking.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_tracking.php']);
 }
 

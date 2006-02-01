@@ -62,6 +62,7 @@ plugin.tt_products {
   selectSize = {$plugin.tt_products.selectSize}
   selectGradings = {$plugin.tt_products.selectGradings}
   selectAdditional = {$plugin.tt_products.selectAdditional}
+  useArticles = {$plugin.tt_products.useArticles}
 
   displayListCatHeader = {$plugin.tt_products.displayListCatHeader}
   displayBasketCatHeader = {$plugin.tt_products.displayBasketCatHeader}
@@ -214,18 +215,10 @@ plugin.tt_products {
   10.prod.501 = 0.06
   }
   
-  _CSS_DEFAULT_STYLE (
-      .tx-ttproducts-pi1-wrap1 {
-      font-family: Verdana, Arial, Helvetica, sans-serif;
-      font-size: 12px;
-      color: #000;
-    }
-      .tx-ttproducts-pi1-wrap2 {
-      font-family: Verdana, Arial, Helvetica, sans-serif;
-      font-size: 10px;
-      color: #000;
-    }   
-  }   
+#  _CSS_DEFAULT_STYLE (
+#      .tx-ttproducts-pi1-wrap1 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }
+#      .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }   
+#  }   
 }
 
 ## EXAMPLE payment config:
@@ -270,3 +263,26 @@ plugin.tt_products.shipping {
 tt_products >
 tt_products = < plugin.tt_products
 tt_products.displayCurrentRecord = 1
+
+
+###EXAMPLES
+
+#plugin.tt_products {
+#	CMD =
+#	pidList =
+#	recursive =
+#}
+
+  # Example of default set CSS styles (these go into the document header):
+#plugin.tt_products._CSS_DEFAULT_STYLE (
+#  .tx-ttproducts-pi1 H2 { margin-top: 0px; margin-bottom: 0px; }
+#)
+  # Example of how to overrule LOCAL_LANG values for the plugin:
+#plugin.tt_products._LOCAL_LANG.default {
+#  pi_list_searchBox_search = Search!
+#}
+
+  # Example of how to set default values from TS in the incoming array, $this->piVars of the plugin:
+#plugin.tt_products._DEFAULT_PI_VARS.test = test
+
+

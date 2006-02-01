@@ -277,6 +277,16 @@ $TCA['tt_products'] = Array (
 				'authMode' => $GLOBALS['TYPO3_CONF_VARS']['BE']['explicitADmode'],
 			)
 		),
+		'gradings' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.gradings',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '20',
+				'eval' => 'trim',
+				'max' => '255'
+			)
+		),
 		'additional' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.additional',
@@ -305,16 +315,6 @@ $TCA['tt_products'] = Array (
 						</T3DataStructure>
 						',
 				)
-			)
-		),
-		'gradings' => Array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.gradings',
-			'config' => Array (
-				'type' => 'input',
-				'size' => '20',
-				'eval' => 'trim',
-				'max' => '255'
 			)
 		),
 		'special_preparation' => Array (
@@ -691,7 +691,7 @@ $TCA['tt_products_cat_language'] = Array (
 $TCA['tt_products_articles'] = Array (
 	'ctrl' => $TCA['tt_products_articles']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,itemnumber,price,price2,inStock,color,size,gradings,uid_product'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,itemnumber,price,price2,inStock,color,size,description,gradings,uid_product'
 	),
 	'feInterface' => $TCA['tt_products_articles']['feInterface'],
 	'columns' => Array (
@@ -824,6 +824,15 @@ $TCA['tt_products_articles'] = Array (
 				'max' => '60'
 			)
 		),
+		'description' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.description',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			)
+		),
 		'gradings' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.gradings',
@@ -848,7 +857,7 @@ $TCA['tt_products_articles'] = Array (
 		)
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;3;;3-3-3, itemnumber, inStock, price;;2, price2, color, size, gradings')
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;3;;3-3-3, itemnumber, inStock, price;;2, price2, color, size, description, gradings')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),

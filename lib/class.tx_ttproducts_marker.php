@@ -42,6 +42,8 @@
  *
  */
 
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
+
 
 class tx_ttproducts_marker {
 	var $pibase; // reference to object of pibase
@@ -135,8 +137,6 @@ class tx_ttproducts_marker {
 	 */
 	function getItemMarkerArray (&$item, $catTitle, &$tt_products, &$tt_content, $imageNum=0, $imageRenderObj='image', $forminfoArray=array())	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
-
-
 
 		$row = &$item['rec'];
 		if ($this->conf['useArticles'])	{

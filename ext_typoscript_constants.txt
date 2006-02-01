@@ -14,6 +14,9 @@ plugin.tt_products {
     # cat=plugin.products/typo; type=boolean; label= break Note: Transforms linefeeds in the note field into <br /> HTML tags
   nl2brNote = 1
 
+    # cat=plugin.products//; type=boolean; label= use article table: You have to set this if you want that your entries in the products articles table get used
+  useArticles =
+
     # cat=plugin.products/color; type=color; label= Color 1: This bgcolor is used in the template-file.
   color1 = #cccccc
     # cat=plugin.products/color; type=color; label= Color 2: This bgcolor is used in the template-file.

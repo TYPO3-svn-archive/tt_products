@@ -190,7 +190,7 @@ class tx_ttproducts_basket_view {
 		}
 
 		$this->activityArray = $this->transfromActivities($activityArray);
-
+		
 		if (count($this->basket->basketExt) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
 			$basket_tmpl = '';
@@ -333,7 +333,7 @@ class tx_ttproducts_basket_view {
 									if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
 										//$this->getCalculatedBasket();
 										$this->basket->getCalculatedSums();
-										$content.= $this->basket->pricecalc->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.']);
+										$content.= $this->basket->pricecalc->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $this);
 									}
 
 									// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
@@ -471,7 +471,7 @@ class tx_ttproducts_basket_view {
 					$wrappedSubpartArray=array();
 					$subpartArray=array();
 					$markerArray = $this->marker->getItemMarkerArray ($actItem,$catTitle, $this->tt_products, $this->tt_content,1,'basketImage');
-
+					
 					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
 					$markerArray['###PRODUCT_DESCRIPTION###'] = $actItem['rec']['description'];

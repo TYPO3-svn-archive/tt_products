@@ -1,3 +1,10 @@
+2006-02-01 Franz Holzinger <franz@fholzinger.com>
+	* correct error with multiple language table
+	* correct error with backPID in single view
+
+2006-01-31 Franz Holzinger <franz@fholzinger.com>
+	* new file pi1/static/old_style/setup.txt for CSS_DEFAULT_STYLE
+
 2006-01-30 Franz Holzinger <franz@fholzinger.com>
 	* rename class.tx_ttproducts_view_div.php into class.tx_ttproducts_marker.php
 	* rename class.tx_ttproducts_pricecalc_div.php into class.tx_ttproducts_pricecalc.php

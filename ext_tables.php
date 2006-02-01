@@ -1,6 +1,8 @@
 <?php
 if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
+t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXTkey, 'pi1/static/old_style/', 'Shop System Old Style');
+
 $TCA['tt_products'] = Array (
 	'ctrl' => Array (
 		'title' =>'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products',

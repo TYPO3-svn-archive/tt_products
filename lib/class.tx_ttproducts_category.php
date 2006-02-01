@@ -68,13 +68,14 @@ class tx_ttproducts_category {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
 		if (!$rc) {
-			$sql = t3lib_div::makeInstance('tx_table_db_access');
-			$sql->prepareFields($this->table, 'select', '*');
-			$sql->prepareFields($this->table, 'where', 'uid = '.$uid);
-			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
+			// $sql = t3lib_div::makeInstance('tx_table_db_access');
+			// $sql->prepareFields($this->table, 'select', '*');
+			// $sql->prepareFields($this->table, 'where', 'uid = '.$uid);
+			// $sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
 			$this->table->enableFields('tt_products_cat');		
 			// Fetching the category
-			$res = $sql->exec_SELECTquery();
+			// $res = $sql->exec_SELECTquery();
+			$res = $this->table->exec_SELECTquery('*','uid = '.$uid);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}

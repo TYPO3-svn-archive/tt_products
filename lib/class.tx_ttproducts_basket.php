@@ -43,7 +43,8 @@
  */
 
 require_once(PATH_t3lib.'class.t3lib_div.php');
- 
+
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc.php');
 
 
