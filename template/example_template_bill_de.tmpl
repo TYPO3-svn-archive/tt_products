@@ -77,7 +77,7 @@ Die Original-Webseite befindet sich auf <A href="http://www.bananaguard.de">bana
             Einzelprodukt, das nur einmal gewählt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
             <!-- ###display_variant5_isSingle### -->
             <!-- ###display_variant5_isNotSingle### -->
-            ###GW1B### Stückzahl: ###GW1E### <INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+            ###GW1B### Stückzahl: ###GW1E### <INPUT size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
             <input type="button" name="addtomemo" value="auf die Merkliste" onclick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&addmemo=###PRODUCT_ID###';">
             <p> </td>
             <!-- ###display_variant5_isNotSingle### -->
@@ -1216,8 +1216,6 @@ If payment is initiated but the required information fields are not filled in co
 
 
 
-
-
 <br><br><br><br><hr><br><br><br>
 <h3>TRACKING_DISPLAY_INFO</h3>
 <em>
@@ -1262,7 +1260,7 @@ Order: ####ORDER_UID###
 ###GW1B###
 
 <!-- ###ADMIN_CONTROL_OK### begin -->
-<form method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###" name="statusAdd">
 <select name="orderRecord[status][]" size="9" multiple>
 ###STATUS_OPTIONS###
 </select>
@@ -1272,20 +1270,21 @@ Order: ####ORDER_UID###
 
 <input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
 <input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
-<input type="Submit" name="submit" value="Bestellstatus hinzufügen">
+<input type="Submit" name="submit" value="Bestellstatus hinzufügen"><br>
 </form>
+
 <hr>
 Zu einer anderen Bestellung wechseln:
-<form method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###"  name="orderChange">
 <select name="tracking" size="9">
 ###OTHER_ORDERS_OPTIONS###
 </select><br><br>
 <input type="Submit" name="submit" value="Select">
 <input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
 </form>
-<!-- ###ADMIN_CONTROL_OK### begin -->
+<!-- ###ADMIN_CONTROL_OK### end -->
 <!-- ###ADMIN_CONTROL_DENY### begin -->
-<form method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###" name="orderChange">
 <input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
 ###GW1B###Code:###GW1B###<br>
 <input type="password" size=40 name="update_code" value="###UPDATE_CODE###">
@@ -1300,7 +1299,7 @@ Zu einer anderen Bestellung wechseln:
 
 <strong>Email-Benachrichtigung:</strong><br>
 Wenn Sie sich über den Status Ihrer Bestellung informieren lassen wollen (###FIELD_EMAIL###) sobald sich der Status geändert hat, dann überprüfen Sie bitte folgendes:<br>
-<form method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###" name="statusInform">
 
 <input type="hidden" name="orderRecord[email_notify]" value="0">
 <input type="checkbox" name="orderRecord[email_notify]" value="1"###FIELD_EMAIL_NOTIFY###>Nachricht über Ablauf des Bestellvorgangs erhalten.<br>
@@ -1315,7 +1314,7 @@ Wenn Sie sich über den Status Ihrer Bestellung informieren lassen wollen (###FIE
 <strong>Nachricht an bananaGUARD.de:</strong><br>
 Hier können Sie uns eine Nachricht bezüglich Ihrer Bestellung schicken.<br>
 <font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
-<form method="post" action="###FORM_URL###">
+<form method="post" action="###FORM_URL###"  name="sendNote">
 <input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
 ###GW1B###Betreff auswählen:###GW1B###<br>
 <select name="orderRecord[status][]" size="1">
