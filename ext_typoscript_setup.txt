@@ -69,6 +69,8 @@ plugin.tt_products {
   displayBasketColumns = {$plugin.tt_products.displayBasketColumns}
   basketPic = {$plugin.tt_products.basketPic}
   clickIntoBasket = {$plugin.tt_products.clickIntoBasket}
+  basketMaxQuantity = {$plugin.tt_products.basketMaxQuantity}
+  quantityIsFloat = {$plugin.tt_products.quantityIsFloat}
   
   CSSRowEven = {$plugin.tt_products.CSSRowEven}
   CSSRowUneven = {$plugin.tt_products.CSSRowUneven}

@@ -90,7 +90,7 @@ class tx_ttproducts_pricecalc {
 			$getDiscount = 1;
 		} else {
 			while (list(,$val) = each ($gr_list)) {
-				if ((intval($val) > 0) && ($getDiscount == 0)) {
+				if (($val > 0) && ($getDiscount == 0)) {
 					$getDiscount = 1 - strcmp($TSFE->fe_user->groupData->title, $conf['discountGroupName '] );
 
 					if (strlen($TSFE->fe_user->groupData['title']) == 0)	// repair result of strcmp
@@ -154,8 +154,8 @@ class tx_ttproducts_pricecalc {
 					krsort($priceCalcTemp['prod.']);
 					reset($priceCalcTemp['prod.']);
 					foreach ($priceCalcTemp['prod.'] as $k2=>$price2) {
-						if ($dumCount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
-							if (intval($k2) > 1) {
+						if ($dumCount >= $k2) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
+							if ($k2 > 1) {
 								// store the discount price in all calculated items from before
 //								foreach ($countedItems as $pricefor1Index=>$v3) {
 								foreach ($countedItems[$pricefor1Index] as $k4 => $v4) {
@@ -191,8 +191,8 @@ class tx_ttproducts_pricecalc {
 					krsort($priceCalcTemp['prod.']);
 					reset($priceCalcTemp['prod.']);
 					while (list ($k2, $price2) = each ($priceCalcTemp['prod.'])) {
-						if ($countTotal >= intval($k2)) { // search the price from the total count
-							if (intval($k2) > 1) {
+						if ($countTotal >= $k2) { // search the price from the total count
+							if ($k2 > 1) {
 								// store the discount price in all calculated items from before
 								foreach ($countedItems[$pricefor1Index] as $k3=>$v3) {
 									foreach ($this->basket->itemArray[$v3['pid']] [$v3['itemnumber']] as $k1=>$actItem) { 
@@ -261,9 +261,9 @@ class tx_ttproducts_pricecalc {
 				krsort($priceCalcTemp['prod.']);
 				reset($priceCalcTemp['prod.']);
 				foreach ($priceCalcTemp['prod.'] as $k2=>$price2) {
-					if (intval($k2) > 0) {
-						while ($countTemp >= intval($k2)) {
-							$countTemp -= intval($k2);
+					if ($k2 > 0) {
+						while ($countTemp >= $k2) {
+							$countTemp -= $k2;
 							$priceTotalTemp += doubleval($price2);
 						}
 					}

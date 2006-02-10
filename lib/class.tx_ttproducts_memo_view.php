@@ -53,12 +53,13 @@ class tx_ttproducts_memo_view {
 
 	var $searchFieldList='';
 
-	function init(&$pibase, &$conf, &$config, &$basket, &$page, &$tt_content, &$tt_products, &$tt_products_cat, $pid) {
+	function init(&$pibase, &$conf, &$config, &$basket, &$pid_list, &$tt_content, &$tt_products, &$tt_products_cat, $pid) {
 		$this->pibase = &$pibase;
 		$this->conf = &$conf;
 		$this->config = &$config;
 		$this->basket = &$basket;
 		$this->page = &$page;
+		$this->page = tx_ttproducts_page::createPageTable($this->pibase,$this->page,$pid_list,99);
 		$this->tt_content = &$tt_content;
 		$this->tt_products = &$tt_products;
 		$this->tt_products_cat = &$tt_products_cat;

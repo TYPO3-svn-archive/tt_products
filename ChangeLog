@@ -1,3 +1,13 @@
+2006-02-10 Franz Holzinger <franz@fholzinger.com>
+	* the check of available frontend users must consider the pid
+	* send password of new created frontend users via email
+	* basketMaxQuantity to set the maximum quantity for an item in the basket
+	* quantityIsFloat to make it possible to use float values in the basket
+	* new hooks in the basket view
+
+2006-02-02 Franz Holzinger <franz@fholzinger.com>
+	* check requiredInfoFields
+
 2006-02-01 Franz Holzinger <franz@fholzinger.com>
 	* correct error with multiple language table
 	* correct error with backPID in single view

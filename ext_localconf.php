@@ -42,17 +42,11 @@ if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
 	define('TT_PRODUCTS_DIV_DLOG', '0');	// for development error logging
 }
 
-t3lib_extMgm::addUserTSConfig('
-		options.saveDocNew.tt_products=1
-');
+t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products=1');
 
-t3lib_extMgm::addUserTSConfig('
-		options.saveDocNew.tt_products_cat=1
-');
+t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products_cat=1');
 
-t3lib_extMgm::addUserTSConfig('
-		options.saveDocNew.tt_products_articles=1
-');
+t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products_articles=1');
 
 if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])) {
 	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] = 0; //for page as categories:  1
@@ -61,8 +55,7 @@ if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'])) {
 	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 1;  // set this to 1 !
 }
 if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'])) {
-	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts']
-= '';
+	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'] = '';
 }
 
 $typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 

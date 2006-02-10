@@ -46,6 +46,7 @@ class tx_ttproducts_page {
 	var $dataArray;	// array of read in categories
 	var $table;			// object of the type tx_table_db
 	var $pid_list;		// list of page ids
+	var $pageArray;		// pid_list as array
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -75,6 +76,21 @@ class tx_ttproducts_page {
 		 	$rc = $this->dataArray[$row['uid']] = $row;
 		}
 		return $rc;
+	}
+
+
+	/**
+	 * Getting the page table
+	 * On the basket page there will be a separate page table
+	 */
+	function &createPageTable(&$pibase, &$pageObject, &$pid_list, $recursive)	{
+		if (!is_object($pageObject)) {
+			$pageObject = t3lib_div::makeInstance('tx_ttproducts_page');
+			$pageObject->init($pibase);
+			$pageObject->setPidlist($pid_list);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
+			$pageObject->initRecursive($recursive);
+		}
+		return $pageObject;
 	}
 
 
@@ -146,6 +162,14 @@ class tx_ttproducts_page {
 	 */
 	function setPidlist($pid_list)	{
 		$this->pid_list = $pid_list;
+	}
+
+	/**
+	 * Sets the pid_list internal var
+	 */
+	function setPageArray()	{
+		$this->pageArray = explode (',', $this->pid_list);
+		$this->pageArray = array_flip($this->pageArray);
 	}
 
 

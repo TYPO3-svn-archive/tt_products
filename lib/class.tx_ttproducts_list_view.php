@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author	Kasper Sk&aring;rh&oslash;j <kasperYYYY@typo3.com>
- * @author	Ren&eacute; Fritz <r.fritz@colorcube.de>
+ * @author	Renè Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3
@@ -93,7 +93,8 @@ class tx_ttproducts_list_view {
 		// if parameter 'newitemdays' is specified, only new items from the last X days are displayed
 		if (t3lib_div::_GP('newitemdays')) {
 			$temptime = time() - 86400*intval(trim(t3lib_div::_GP('newitemdays')));
-			$where = ' AND tstamp >= '.$temptime;
+			// $where = ' AND tstamp >= '.$temptime;
+			$where = ' AND (starttime >= '.$temptime . ' OR tstamp >= '. $temptime . ')'; 
 		}			
 		if(isset($this->pibase->piVars['cat'])){
 			$where .= ' AND category IN ('.implode(",",t3lib_div::intExplode(',', $this->pibase->piVars['cat'])).')';
@@ -143,7 +144,7 @@ class tx_ttproducts_list_view {
 
 		$begin_at=t3lib_div::intInRange(t3lib_div::_GP('begin_at'),0,100000);
 		if ($where || ($theCode!='SEARCH' && !t3lib_div::_GP('swords')))	{
-			$this->page->initRecursive($this->config['recursive']);
+			//$this->page->initRecursive($this->config['recursive']);
 			//tx_ttproducts_page_div::generatePageArray();
 
 				// Get products
@@ -165,6 +166,9 @@ class tx_ttproducts_list_view {
 	
 				// performing query for display:
 			$selectConf['orderBy'] = ($this->conf['orderBy'] ? $this->conf['orderBy'] : 'pid,category,title');
+			if ($this->tt_products->fields['itemnumber'])	{
+				$selectConf['orderBy'] = str_replace ('itemnumber', $this->tt_products->fields['itemnumber'], $selectConf['orderBy']);
+			} 
 			$selectConf['selectFields'] = '*';
 			$selectConf['max'] = ($this->config['limit']+1);
 			$selectConf['begin'] = $begin_at;

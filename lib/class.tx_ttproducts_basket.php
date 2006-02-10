@@ -108,14 +108,13 @@ class tx_ttproducts_basket {
 	 * @return	  void
  	 */
 
-	function init(&$pibase, &$conf, &$config, $formerBasket, $updateMode,
-				&$page, &$tt_content, &$tt_products, &$tt_products_cat, &$price, &$paymentshipping)	{
+	function init(&$pibase, &$conf, &$config, $formerBasket, $updateMode, &$pid_list,
+				&$tt_content, &$tt_products, &$tt_products_cat, &$price, &$paymentshipping, $bStoreBasket)	{
 		global $TSFE;
 
  		$this->pibase = &$pibase;
  		$this->conf = &$conf;
  		$this->config = &$config;
- 		$this->page = &$page;
  		$this->tt_content = &$tt_content;
  		$this->tt_products = &$tt_products;
  		$this->tt_products_cat = &$tt_products_cat;
@@ -125,6 +124,8 @@ class tx_ttproducts_basket {
  		$this->pricecalc = t3lib_div::makeInstance('tx_ttproducts_pricecalc');
  		$this->pricecalc->init($pibase, $this, $tt_products);		
 		$this->paymentshipping = &$paymentshipping;
+		
+		$this->page = tx_ttproducts_page::createPageTable($this->pibase,$this->page,$pid_list,99);
 
 		// store if feuserextrafields is loaded
 		$this->feuserextrafields = t3lib_extMgm::isLoaded('feuserextrafields');
@@ -138,122 +139,140 @@ class tx_ttproducts_basket {
 		} else {
 			$this->basketExt = array();
 		}
-		$basketExtRaw = t3lib_div::_GP('ttp_basket');
-		$this->giftnumber = count ($this->basketExt['gift']) + 1;
-
-		$newGiftData = t3lib_div::_GP('ttp_gift');
-		$extVars= t3lib_div::_GP('ttp_extvars');
-		$uid = t3lib_div::_GP('tt_products');
 		
-		$sameGiftData = true;
-		$identGiftnumber = 0;
-
-		if ($newGiftData) {
-	 		$giftnumber = t3lib_div::_GP('giftnumber');
-			if ($updateMode) {
-				$this->basketExt['gift'][$giftnumber] = $newGiftData;
-				$giftcount = intval($this->basketExt['gift'][$giftnumber]['item'][$uid][$extVars]);
-				if ($giftcount == 0) {
-					$this->removeGift($giftnumber, $uid, $extVars);
-				}
-				$count = 0;
-				foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
-					$count += $rec['item'][$uid][$extVars];
-				}
-				// update the general basket entry for this product
-				$this->basketExt[$uid][$extVars] = $count;
-			} else {
-			 	if (is_array($this->basketExt['gift'])) {
+		if ($bStoreBasket)	{
+			$basketExtRaw = t3lib_div::_GP('ttp_basket');
+			$this->giftnumber = count ($this->basketExt['gift']) + 1;
+	
+			$newGiftData = t3lib_div::_GP('ttp_gift');
+			$extVars= t3lib_div::_GP('ttp_extvars');
+			$uid = t3lib_div::_GP('tt_products');
+			
+			$sameGiftData = true;
+			$identGiftnumber = 0;
+	
+			if ($newGiftData) {
+		 		$giftnumber = t3lib_div::_GP('giftnumber');
+				if ($updateMode) {
+					$this->basketExt['gift'][$giftnumber] = $newGiftData;
+					$giftcount = intval($this->basketExt['gift'][$giftnumber]['item'][$uid][$extVars]);
+					if ($giftcount == 0) {
+						$this->removeGift($giftnumber, $uid, $extVars);
+					}
+					$count = 0;
 					foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
-						$sameGiftData = true;
-						foreach ($rec as $field => $value) {
-							// only the 'field' field can be different
-							if ($field != 'item' && $field != 'note' && $value != $newGiftData[$field]) {
-								$sameGiftData = false;
+						$count += $rec['item'][$uid][$extVars];
+					}
+					// update the general basket entry for this product
+					$this->basketExt[$uid][$extVars] = $count;
+				} else {
+				 	if (is_array($this->basketExt['gift'])) {
+						foreach ($this->basketExt['gift'] as $prevgiftnumber => $rec) {
+							$sameGiftData = true;
+							foreach ($rec as $field => $value) {
+								// only the 'field' field can be different
+								if ($field != 'item' && $field != 'note' && $value != $newGiftData[$field]) {
+									$sameGiftData = false;
+									break;
+								}
+							}
+							if ($sameGiftData) {
+								$identGiftnumber = $prevgiftnumber;
+								// always use the latest note
+								$this->basketExt['gift'][$identGiftnumber]['note'] = $newGiftData['note'];
 								break;
 							}
 						}
-						if ($sameGiftData) {
-							$identGiftnumber = $prevgiftnumber;
-							// always use the latest note
-							$this->basketExt['gift'][$identGiftnumber]['note'] = $newGiftData['note'];
-							break;
-						}
+				 	} else {
+						$sameGiftData = false;
 					}
-			 	} else {
-					$sameGiftData = false;
-				}
-				if (!$sameGiftData) {
-					$this->basketExt['gift'][$this->giftnumber] = $newGiftData;
+					if (!$sameGiftData) {
+						$this->basketExt['gift'][$this->giftnumber] = $newGiftData;
+					}
 				}
 			}
-		}
-
-		if (is_array($basketExtRaw)) {
-			while(list($uid,$basketItem)=each($basketExtRaw)) {
-				$variant = tx_ttproducts_article_div::getVariantFromRow($basketItem);
-				if (t3lib_div::testInt($uid))	{
-					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked  
-					if (is_array($basketItem['quantity']))	{
-						$basketItem['quantity'] = current($basketItem['quantity']);
-					}
-					
-					if (!$updateMode) {
-						$count=t3lib_div::intInRange($basketItem['quantity'],0,100000,0);
-						if ($count >= 0) {
-							$newcount = $count;
-							$oldcount = intval($this->basketExt[$uid][$variant]);
-							if ($newGiftData) {
-								$giftnumber = 0;
-								if ($sameGiftData) {
-									$giftnumber = $identGiftnumber;
-									$oldcount -= intval($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant]);
-								}
-								else {
-									$giftnumber = $this->giftnumber;
-								}
-								$newcount += $oldcount;
-								$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $count;
-								if ($count == 0) {
-									$this->removeGift($giftnumber, $uid, $variant);
-								}
-							}
-							if ($newcount)	{
-								$this->basketExt[$uid][$variant] = $newcount;
-							} else {
-								unset ($this->basketExt[$uid][$variant]);
-							}
+	
+			if (is_array($basketExtRaw)) {
+				while(list($uid,$basketItem)=each($basketExtRaw)) {
+					$variant = tx_ttproducts_article_div::getVariantFromRow($basketItem);
+					if (t3lib_div::testInt($uid))	{
+	
+						// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked  
+						if (is_array($basketItem['quantity']))	{
+							$basketItem['quantity'] = current($basketItem['quantity']);
 						}
-					} else {
-						reset($basketItem);
-
-						while(list($md5,$quantity)=each($basketItem)) {
-							if (is_array($this->basketExt[$uid]))
-							{
-								reset($this->basketExt[$uid]);
-								while(list($variant,)=each($this->basketExt[$uid])) {
-									 // useArticles if you have different prices and therefore articles for color, size, additional and gradings
-									if (md5($variant)==$md5) {
-										$this->basketExt[$uid][$variant] = $quantity;
-									 	if (is_array($this->basketExt['gift'])) {
-									 		$count = count($this->basketExt['gift']);
-									 		$giftCount = 0;
-									 		$restQuantity = $quantity;
-									 		for ($giftnumber = 1; $giftnumber <= $count; ++$giftnumber) {
-									 			if ($restQuantity == 0) {
-									 				$this->removeGift($giftnumber, $uid, $variant);
-									 			} else {
-										 			if ($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] > $restQuantity) {
-										 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
-										 				$restQuantity = 0;
-										 			} else if ($giftnumber < $count) {
-										 				$restQuantity -= $this->basketExt['gift'][$giftnumber]['item'][$uid][$variant];
+						$quantity = 0;
+						if ($this->conf['quantityIsFloat'])	{
+							// enable the German display of float
+							$quantity = str_replace (',', '.', $basketItem['quantity']);
+							$this->basketExt[$uid][$variant] = $quantity;
+						} else {
+							$quantity = $basketItem['quantity'];
+						}
+						
+						if (!$updateMode) {
+							$count=t3lib_div::intInRange($quantity,0,$this->conf['basketMaxQuantity'],0);
+							if ($this->conf['quantityIsFloat'])	{
+								$count = (float) $quantity;
+								if ($count < 0 || $count > $this->conf['basketMaxQuantity'])	{
+									$count = 0;
+								}
+							}
+							if ($count >= 0) {
+								$newcount = $count;
+								$oldcount = $this->basketExt[$uid][$variant];
+								if ($newGiftData) {
+									$giftnumber = 0;
+									if ($sameGiftData) {
+										$giftnumber = $identGiftnumber;
+										$oldcount -= $this->basketExt['gift'][$giftnumber]['item'][$uid][$variant];
+									}
+									else {
+										$giftnumber = $this->giftnumber;
+									}
+									$newcount += $oldcount;
+									$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $count;
+									if ($count == 0) {
+										$this->removeGift($giftnumber, $uid, $variant);
+									}
+								}
+								if ($newcount)	{
+									$this->basketExt[$uid][$variant] = $newcount;
+								} else {
+									unset ($this->basketExt[$uid][$variant]);
+								}
+							}
+						} else {
+							reset($basketItem);
+	
+							while(list($md5,$quantity)=each($basketItem)) {
+								if (is_array($this->basketExt[$uid]))
+								{
+									reset($this->basketExt[$uid]);
+									while(list($variant,)=each($this->basketExt[$uid])) {
+										 // useArticles if you have different prices and therefore articles for color, size, additional and gradings
+										if (md5($variant)==$md5) {
+											$this->basketExt[$uid][$variant] = $quantity;
+										 	if (is_array($this->basketExt['gift'])) {
+										 		$count = count($this->basketExt['gift']);
+										 		$giftCount = 0;
+										 		$restQuantity = $quantity;
+										 		for ($giftnumber = 1; $giftnumber <= $count; ++$giftnumber) {
+										 			if ($restQuantity == 0) {
+										 				$this->removeGift($giftnumber, $uid, $variant);
 										 			} else {
-										 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
+											 			if ($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] > $restQuantity) {
+											 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
+											 				$restQuantity = 0;
+											 			} else if ($giftnumber < $count) {
+											 				$restQuantity -= $this->basketExt['gift'][$giftnumber]['item'][$uid][$variant];
+											 			} else {
+											 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
+											 			}
 										 			}
-									 			}
-									 		}
-									 	}
+										 		}
+										 	}
+										}
 									}
 								}
 							}
@@ -261,28 +280,28 @@ class tx_ttproducts_basket {
 					}
 				}
 			}
-		}
-
-
-		// I did not find another possibility to delete elements complete from a multidimensional array
-		// than to recreate the array
-		$basketExtNew = array();
-		reset($this->basketExt);
-		while(list($tmpUid,$tmpSubArr)=each($this->basketExt)) {
-			while(list($tmpExtVar,$tmpCount)=each($tmpSubArr)) {
-				if ($tmpCount > 0) {
-					$basketExtNew[$tmpUid][$tmpExtVar] = $tmpCount;
+	
+	
+			// I did not find another possibility to delete elements complete from a multidimensional array
+			// than to recreate the array
+			$basketExtNew = array();
+			reset($this->basketExt);
+			while(list($tmpUid,$tmpSubArr)=each($this->basketExt)) {
+				while(list($tmpExtVar,$tmpCount)=each($tmpSubArr)) {
+					if ($tmpCount > 0) {
+						$basketExtNew[$tmpUid][$tmpExtVar] = $tmpCount;
+					}
 				}
 			}
+			$this->basketExt = $basketExtNew;
+	
+			if (is_array($this->basketExt) && count($this->basketExt))
+				$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
+			else
+				$TSFE->fe_user->setKey('ses','basketExt',array());
+			$TSFE->fe_user->storeSessionData(); // Franz: The basket shall not get lost
 		}
-		$this->basketExt = $basketExtNew;
-
-		if (is_array($this->basketExt) && count($this->basketExt))
-			$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
-		else
-			$TSFE->fe_user->setKey('ses','basketExt',array());
-		$TSFE->fe_user->storeSessionData(); // Franz: The basket shall not get lost
-
+	
 		$this->paymentshipping->setBasketExtras($formerBasket);
 
 		$this->personInfo = $formerBasket['personinfo'];
@@ -360,7 +379,7 @@ class tx_ttproducts_basket {
 	 */
 	function checkRequired()	{
 		$flag = '';
-		$requiredInfoFields = trim($this->basket->conf['requiredInfoFields']);
+		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
 		if ($this->basketExtra['payment.']['addRequiredInfoFields'] != '')
 			$requiredInfoFields .= ','.trim($this->basketExtra['payment.']['addRequiredInfoFields']);
 
@@ -473,52 +492,56 @@ class tx_ttproducts_basket {
 				$productsArray[$row['pid']][]=$row;
 			}
 		}
-
-		$pageArr=explode(',',$this->page->pid_list);
+		
+//		$pageArr=explode(',',$this->page->pid_list);
 
 		$this->itemArray = array(); // array of the items in the basket
 		$this->calculatedArray = array(); // this array is usede for all calculated things
+		$this->page->setPageArray();
 
-		while(list(,$v)=each($pageArr))	{
-			if (is_array($productsArray[$v]))	{
-				reset($productsArray[$v]);
-				while(list(,$row)=each($productsArray[$v]))	{
-					// if reseller is logged in then take 'price2', default is 'price'
+//		while(list(,$v)=each($pageArr))	{
+		foreach ($productsArray as $pid => $pidProductsArray)	{
+//			if (is_array($productsArray[$v]))	{
+//				reset($productsArray[$v]);
+//				while(list(,$row)=each($productsArray[$v]))	{
+			// if reseller is logged in then take 'price2', default is 'price'
+			// only the basket items for the pages belonging to this shop shall be used here
+			if ($this->page->pageArray[$pid])	{
+				foreach ($pidProductsArray as $k1 => $row)	{
 					$newItem = $this->getItem($row);
-					$this->itemArray [intval($row['pid'])] [intval($row[$this->tt_products->fields['itemnumber']])][] = $newItem;
+					$this->itemArray [intval($row['pid'])] [$row[$this->tt_products->fields['itemnumber']]][] = $newItem;
 					$count = $newItem['count'];
 					$priceTax = $newItem['priceTax'];
 					$priceNoTax = $newItem['priceNoTax'];
-
+		
 					$this->calculatedArray['count']			+= $count;
 					$this->calculatedArray['weight']		+= $row['weight']*$count;
-
-// Franz: is this needed?
-//					$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
-//					$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
-
+		// Franz: is this needed?
+		//					$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
+		//					$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
+		
 					$price2Tax = $this->price->getPrice($row['price2'],1,$row['tax']);
 					$price2NoTax = $this->price->getPrice($row['price2'],0,$row['tax']);
-
-//					/* Added Els3: if oldpricenotax is 0 -> oldpricenotax = pricenotax, otherwise price_discount doesn't calculate correctly */
-//					if (doubleval($oldPriceNoTax) == 0) {
-//						$oldPriceNoTax = $priceNoTax;
-//					}
-//
-//					$this->calculatedArray['oldPriceTax']	+= $oldPriceTax * $count;
-//					$this->calculatedArray['oldPriceNoTax']	+= $oldPriceNoTax * $count;
+		
+		//					/* Added Els3: if oldpricenotax is 0 -> oldpricenotax = pricenotax, otherwise price_discount doesn't calculate correctly */
+		//					if (doubleval($oldPriceNoTax) == 0) {
+		//						$oldPriceNoTax = $priceNoTax;
+		//					}
+		//
+		//					$this->calculatedArray['oldPriceTax']	+= $oldPriceTax * $count;
+		//					$this->calculatedArray['oldPriceNoTax']	+= $oldPriceNoTax * $count;
 					$this->calculatedArray['price2Tax']['goodstotal']	+= $price2Tax * $count;
 					$this->calculatedArray['price2NoTax']['goodstotal']	+= $price2NoTax * $count;
 				}
 			}
 		}
-
+		
 		// set the 'calcprice' in itemArray
 		if ($this->conf['pricecalc.'] || $this->conf['discountprice.']) {
 			// do the price calculation
 			$this->pricecalc->GetCalculatedData($this->conf);
 		}
-
+		
 		// loop over all items in the basket indexed by page and itemnumber
 		foreach ($this->itemArray as $pid=>$pidItem) {
 			foreach ($pidItem as $itemnumber=>$actItemArray) {
@@ -547,7 +570,7 @@ class tx_ttproducts_basket {
 				if ($prodSingle['bulkily'])
 				{
 					$value = ($this->conf['bulkilyAddition'] * $this->basketExt[$prodSingle['uid']][$prodSingle['color'].';'.$prodSingle['size'].';'.$prodSingle['description'].';'.$prodSingle['gradings']]);
-					$this->calculatedArray['priceTax']['shipping'] += $value  * (1+$conf['bulkilyFeeTax']/100);
+					$this->calculatedArray['priceTax']['shipping'] += $value  * (1+$this->conf['bulkilyFeeTax']/100);
 					$this->calculatedArray['priceNoTax']['shipping'] += $value;
 				}
 			}
@@ -572,7 +595,10 @@ class tx_ttproducts_basket {
 
 
 	function &getItem (&$row) {
-		$count = intval($this->basketExt[$row['uid']][tx_ttproducts_article_div::getVariantFromRow ($row)]);
+		$count = $this->basketExt[$row['uid']][tx_ttproducts_article_div::getVariantFromRow ($row)];
+		if (!$this->conf['quantityIsFloat'])	{
+			$count = intval($count);	
+		}
 		$priceTax = $this->price->getResellerPrice($row,1);
 		$priceNoTax = $this->price->getResellerPrice($row,0);
 		$item = array (

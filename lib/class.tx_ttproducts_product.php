@@ -76,7 +76,7 @@ class tx_ttproducts_product {
 //			$sql->prepareFields($this->table, 'select', '*');
 //			$sql->prepareFields($this->table, 'where', 'uid = '.$uid);
 //			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
-			$this->table->enableFields('tt_products');		
+			$this->table->enableFields($this->table->name);		
 			// Fetching the products
 			// $res = $sql->exec_SELECTquery();
 			$res = $this->table->exec_SELECTquery('*','uid = '.$uid);

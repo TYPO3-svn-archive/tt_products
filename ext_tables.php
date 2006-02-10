@@ -134,14 +134,13 @@ $TCA['sys_products_orders'] = Array (
 	)
 );
 
-if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)
-{
-	t3lib_div::loadTCA('tt_content');
+t3lib_div::loadTCA('tt_content');
+
+if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
 	$TCA['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='pi_flexform';
 	t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:'.TT_PRODUCTS_EXTkey.'/flexform_ds_pi1.xml');
-}
-else if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
+} else if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
 	//$tempStr = 'LLL:EXT:tt_products/locallang_db.php:tt_content.tt_products_code.I.';
 	$tempColumns = Array (
 		'tt_products_code' => Array (
@@ -151,13 +150,13 @@ else if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCateg
 				'type' => 'select',
 				'items' => Array (
 					Array('LIST'.			'0',  'LIST'),
-					Array('LISTOFFERS'.	 '1',  'LISTOFFERS'),
+					Array('LISTOFFERS'.		'1',  'LISTOFFERS'),
 					Array('LISTHIGHLIGHTS'. '2',  'LISTHIGHLIGHTS'),
 					Array('LISTNEWITEMS'.	'3',  'LISTNEWITEMS'),
-					Array('SINGLE'.		 '4',  'SINGLE'),
-					Array('SEARCH'.		 '5',  'SEARCH'),
+					Array('SINGLE'.			'4',  'SINGLE'),
+					Array('SEARCH'.			'5',  'SEARCH'),
 					Array('MEMO'.			'6',  'MEMO'),
-					Array('BASKET'.		 '7',  'BASKET'),
+					Array('BASKET'.			'7',  'BASKET'),
 					Array('INFO'.			'8',  'INFO'),
 					Array('PAYMENT'.		'9',  'PAYMENT'),
 					Array('FINALIZE'.		'10', 'FINALIZE'),
@@ -167,14 +166,14 @@ else if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCateg
 					Array('DELIVERY'.		'14', 'DELIVERY'),
 					Array('HELP'.			'15', 'HELP'),
 					Array('CURRENCY'.		'16', 'CURRENCY'),
-					Array('ORDERS'.		 '17', 'ORDERS'),
-					Array('LISTGIFTS'.	  '18', 'LISTGIFTS'),
+					Array('ORDERS'.			'17', 'ORDERS'),
+					Array('LISTGIFTS'.		'18', 'LISTGIFTS'),
+					Array('LISTCAT'.		'19', 'LISTCAT'),
 				),
 			)
 		)
 	);
 
-	t3lib_div::loadTCA('tt_content');
 	t3lib_extMgm::addTCAcolumns('tt_content',$tempColumns,1);
 	$TCA['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='tt_products_code;;;;1-1-1';
@@ -195,7 +194,7 @@ t3lib_extMgm::allowTableOnStandardPages('sys_products_orders');
 //t3lib_extMgm::addToInsertRecords('tt_products');
 
 if (TYPO3_MODE=='BE')  
-$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = PATH_BE_ttproducts.'class.tx_ttproducts_wizicon.php';
+	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = PATH_BE_ttproducts.'class.tx_ttproducts_wizicon.php';
 
 t3lib_extMgm::addLLrefForTCAdescr('tt_products','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprod.php');
 t3lib_extMgm::addLLrefForTCAdescr('tt_products_cat','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprodc.php');
@@ -252,7 +251,6 @@ $tempColumns = Array (
 t3lib_div::loadTCA('fe_users');
 
 t3lib_extMgm::addTCAcolumns('fe_users',$tempColumns,1);
-t3lib_extMgm::addToAllTCAtypes('fe_users',
-'tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1');
+t3lib_extMgm::addToAllTCAtypes('fe_users','tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1');
 
 ?>

@@ -70,18 +70,18 @@ class tx_ttproducts_finalize_div {
 		{
 			$username = strtolower(trim($basket->personInfo['email']));
 
-			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username="'.$username . '" AND deleted=0');
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $conf['PIDuserFolder'].' AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 
 			if (!$num_rows)
 			{
-				$this->password = substr(md5(rand()), 0, 6);
+				$basket->password = substr(md5(rand()), 0, 6);
 
 				$insertFields = array(
 					'pid' => $conf['PIDuserFolder'],
 					'tstamp' => time(),
 					'username' => $username,
-					'password' => $this->password,
+					'password' => $basket->password,
 					'usergroup' => $conf['memberOfGroup'],
 					'uid' => $basket->personInfo['feusers_uid'],
 					'company' => $basket->personInfo['company'],
@@ -112,7 +112,7 @@ class tx_ttproducts_finalize_div {
 						tx_ttproducts_email_div::send_mail($basket->personInfo['email'], $subject, $plain_message, $conf['orderEmail_from'], $conf['orderEmail_fromName']);
 					}
 				}
-				$res = $TYPO3_DB->exec_SELECTquery(uid, 'fe_users', 'username="'.$username . '" AND deleted=0');
+				$res = $TYPO3_DB->exec_SELECTquery(uid, 'fe_users', 'username=\''.$username . '\' AND pid='. $conf['PIDuserFolder'].' AND deleted=0');
 							while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 			 					 $basket->personInfo['feusers_uid']= $row['uid'];
 						}
@@ -238,7 +238,7 @@ class tx_ttproducts_finalize_div {
 						} else	{
 							$V['from_email'] = $conf['orderEmail_from'];
 							$V['from_name'] = $conf['orderEmail_fromName'];							
-							$V['attachment'] = ($conf['AGBattachment'] ? $conf['AGBattachment'] : '');
+							$V['attachment'] = ($conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($conf['AGBattachment']) : '');
 						}
 
 						$Typo3_htmlmail->start(implode($recipientsArray[$group],','), $subjectArray[$group], $plainMessageArray[$group], $HTMLmailContent, $V);
@@ -246,9 +246,9 @@ class tx_ttproducts_finalize_div {
 					}
 
 				} else {		// ... else just plain text...
-
+					$agbAttachment = t3lib_div::getFileAbsFileName($conf['AGBattachment']);
 					foreach ($recipientsArray['customer'] as $key => $recipient) {
-						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['customer'], $plainMessageArray['customer'], $conf['orderEmail_from'], $conf['orderEmail_fromName'], $conf['AGBattachment']);
+						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['customer'], $plainMessageArray['customer'], $conf['orderEmail_from'], $conf['orderEmail_fromName'], $agbAttachment);
 					}
 					foreach ($recipientsArray['shop'] as $key => $recipient) {
 						// $headers variable removed everywhere!
@@ -266,11 +266,6 @@ class tx_ttproducts_finalize_div {
 
 }
 
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_finalize_div.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_finalize_div.php']);
-}
 
 
 ?>

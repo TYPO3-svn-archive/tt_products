@@ -52,9 +52,7 @@ class tx_ttproducts_billdelivery {
 	var $order;
 	var $price;		 // object for price functions
 	var $type;		  // if bill or delivery
-
-	var $marker; // marker functions
-
+	var $marker; 	// marker functions
 
 	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
@@ -135,7 +133,7 @@ class tx_ttproducts_billdelivery {
 				$currentCategory=$actItem['rec']['category'];
 				$categoryArray[$currentCategory] = 1;
 		//	  $countTotal += $actBasket['count'];
-				$categoryQty[$currentCategory] += intval($actItem['count']);
+				$categoryQty[$currentCategory] += $actItem['count'];
 		//	  $categoryPrice[$currentCategory] += doubleval($actBasket['priceTax']) * intval($actBasket['count']);
 			}
 		}
@@ -226,8 +224,9 @@ class tx_ttproducts_billdelivery {
 	$content= $this->pibase->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);
 	$reldateiname = $this->conf['outputFolder'] . '/' . $this->type . '/' . $tracking . '.htm';
 
-	$dateiname = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $reldateiname;
-	$datei = fopen($dateiname, 'w');
+	// $dateiname = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $reldateiname;
+	$dateiname = t3lib_div::getFileAbsFileName($reldateiname);
+	$datei = fopen($dateiname, 'wb');
 	fwrite ($datei, $content);
 	fclose ($datei);
 

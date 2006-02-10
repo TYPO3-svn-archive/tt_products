@@ -62,6 +62,7 @@ class tx_ttproducts_basket_view {
 	var $price; // price object
 
 	var $basket; 	// the basket object
+	var $password;	// automatically generated random password for a new frontend user
 
 	var $templateCode='';				// In init(), set to the content of the templateFile. Used by default in getView()
 
@@ -76,24 +77,22 @@ class tx_ttproducts_basket_view {
 	 * @return	  void
  	 */
 
-	function init(&$pibase, &$conf, &$config, &$basket, &$page, &$order, &$tt_content, &$tt_products, &$tt_products_cat, &$price, &$templateCode )	{
- 		$this->pibase = &$pibase;
- 		$this->conf = &$conf;
- 		$this->config = &$config;
+	function init(&$basket, &$order, &$templateCode )	{
+ 		$this->pibase = &$basket->pibase;
+ 		$this->conf = &$basket->conf;
+ 		$this->config = &$basket->config;
  		$this->basket = &$basket;
- 		$this->page = &$page;
+ 		$this->page = &$basket->page;
 		$this->order = &$order;
- 		$this->tt_content = &$tt_content;
- 		$this->tt_products = &$tt_products;
- 		$this->tt_products_cat = &$tt_products_cat;
- 		$this->price = &$price;
+ 		$this->tt_content = &$basket->tt_content;
+ 		$this->tt_products = &$basket->tt_products;
+ 		$this->tt_products_cat = &$basket->tt_products_cat;
+ 		$this->price = &$basket->price;
  		$this->templateCode = &$templateCode;
  
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init($pibase, $conf, $config, $basket);
+		$this->marker->init($this->pibase, $this->conf, $this->config, $this->basket);
 	} // init
-
-
 
 
 	/**
@@ -195,10 +194,10 @@ class tx_ttproducts_basket_view {
 				// prepare action
 			$basket_tmpl = '';
 			if (count($this->activityArray)) {
-				if (!$this->page->pid_list) {
-					$this->page->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
-				}
-				$this->page->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
+//				if (!$this->page->pid_list) {
+//					$this->page->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
+//				}
+//				$this->page->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
 				// $this->pibase->page->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
 				$this->basket->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 
@@ -378,7 +377,7 @@ class tx_ttproducts_basket_view {
 				$this->pibase->load_noLinkExtCobj();	//
 				$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_OVERVIEW_EMPTY###'));
 			}
-			else if ($this->activityArray['products_basket']) {
+			else if ($this->activityArray['products_basket'] || $this->activityArray['products_info']) {
 				$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_TEMPLATE_EMPTY###'));
 			}
 		}
@@ -409,6 +408,7 @@ class tx_ttproducts_basket_view {
 		if (!$templateCode)	{
 			$templateCode = &$this->templateCode;		
 		}
+		
 
 //		$this->basket->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 
@@ -517,11 +517,13 @@ class tx_ttproducts_basket_view {
 						$sum_pricecreditpoints_total_totunits += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
 					}
 
-/* Added els4: if catTitle = shop-a-box then handling costs exists (winkelwagen.tmpl)*/
-					if ($shopabox != "1") {
-						if ($actItem['rec']['category'] == $this->conf['shopaboxCategory']) {
-							$show_handling_cost = 1;
-							$shopabox = 1;
+						// Call all getItemMarkerArray hooks at the end of this method
+					if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketItemView'])) {
+						foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketItemView'] as $classRef) {
+							$hookObj= &t3lib_div::getUserObj($classRef);
+							if (method_exists($hookObj, 'getBasketItemView')) {
+								$hookObj->getItemMarkerArray ($this, $actItem);
+							}
 						}
 					}
 
@@ -532,28 +534,6 @@ class tx_ttproducts_basket_view {
 					$addQueryString['tt_products'] = intval($actItem['rec']['uid']);
 					$addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
 					$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); 
-
-/* Added els6: also for creditscategory: different lay-out */
-/* Added Els5: different display for quantities and recycle output in shop-a-box and gifts (in payment_template, winkelwagen.tmpl) */
-					if ($actItem['rec']['category'] == $this->conf['shopaboxCategory']) {
-						$subpartArray['###QUANTITY_CAT###'] = "";
-						$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="index.php?id=shopabox">','</a>');
-						$subpartArray['###RECYCLE_CAT###'] = "";
-					} else if ($actItem['rec']['category'] == $this->conf['creditsCategory']) {
-						$subpartArray['###QUANTITY_CAT###'] = "";
-						$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="index.php?id=creditscategory">','</a>');
-					} else {
-						$subpartArray['###RECYCLE_CAT_SHOPABOX###'] = "";
-						//  in case of gift certificates
-						if ($actItem['rec']['uid'] == $this->conf['giftID']) {
-							$subpartArray['###QUANTITY_CAT###'] = "";
-/* Added els6: Exceptions for gifts no discount possible */
-							$markerArray['###OLD_PRICE_NO_TAX_CLASS###'] ='rightalign';
-							$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = '';
-						} else {
-							$subpartArray['###QUANTITY_SHOPABOX_GIFT###'] = "";
-						}
-					}
 
 					// Substitute
 					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
@@ -621,14 +601,16 @@ class tx_ttproducts_basket_view {
 		$markerArray['###PAYMENT_SELECTOR###'] = $this->basket->paymentshipping->generateRadioSelect('payment', $countTotal);
 		$markerArray['###PAYMENT_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basket->basketExtra['payment.']['image.']);
 		$markerArray['###PAYMENT_TITLE###'] = $this->basket->basketExtra['payment.']['title'];
-		if ($markerArray['###PAYMENT_TITLE###'] == "Vooruitbetaling") { // TODO start
- 			$subpartArray['###SUB_PAYMENT_MACHT###'] = '';
- 		} elseif ($markerArray['###PAYMENT_TITLE###'] == "Eénmalige machtiging") {
- 			$subpartArray['###SUB_PAYMENT_VOORUIT###'] = '';
- 		} elseif ($markerArray['###PAYMENT_TITLE###'] == "Factuur") {
- 			$subpartArray['###SUB_PAYMENT_MACHT###'] = '';
- 			$subpartArray['###SUB_PAYMENT_VOORUIT###'] = ''; // TODO end
- 		}
+
+			// Call all getItemMarkerArray hooks at the end of this method
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'] as $classRef) {
+				$hookObj= &t3lib_div::getUserObj($classRef);
+				if (method_exists($hookObj, 'getBasketView')) {
+					$hookObj->getItemMarkerArray ($this, $subpartMarker, $markerArray, $subpartArray);
+				}
+			}
+		}
 
 /* Added els4: output for payment (used in basket_payment_template, winkelwagen.tmpl)*/
 		$markerArray['###PAYMENT_NUMBER###'] = t3lib_div::_GP('payment_number');
@@ -657,15 +639,6 @@ class tx_ttproducts_basket_view {
 /* Added els4: discount based on total units (without articles in kurkenshop), necessary in winkelwagen.tmpl */
 		$markerArray['###PRICE_TOTUNITS_DISCOUNT###'] = $this->price->priceFormat($sum_pricediscount_total_totunits);
 
-/* Added Els4: if show_handling_cost (calculated above) then handling costs exists (winkelwagen.tmpl) */
-		if ($show_handling_cost == "1") {
-			$markerArray['###CAT3_HANDLING_COSTS###'] = $this->conf['shopaboxPrice'];
-		} else {
-			$subpartArray['###SUB_CAT3_HANDLING_COSTS###'] = '';
-/* Added Els8: put cat3_handling_costs 0 for plain text email */
-			$markerArray['###CAT3_HANDLING_COSTS###'] = '0.00';
-		}
-
 			// Personal and delivery info:
 /* Add ELS: more fields */
 		$list = 'name,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country';
@@ -673,12 +646,10 @@ class tx_ttproducts_basket_view {
 			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,address,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
 		}
 		$infoFields = explode(',',$list); // Fields...
-// mkl: 	$infoFields = explode(',','forename,name,address,telephone,fax,email,company,city,zip,state,street,street_n1,street_n2,country_code,vat_id');
 
 		while(list(,$fName)=each($infoFields))	{
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $this->basket->personInfo[$fName];
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $this->basket->deliveryInfo[$fName];
-
 		}
 				
 		if ($this->conf['useStaticInfoCountry'] && is_object($this->pibase->staticInfo))	{
@@ -946,8 +917,6 @@ class tx_ttproducts_basket_view {
 		$bFrameWork = $t['basketFrameWork'];
 		$subpartArray['###MESSAGE_SHIPPING###'] = $this->pibase->cObj->substituteMarkerArrayCached($this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_SHIPPING_'.$this->basket->basketExtra['shipping'].'###'),$markerArray);
 		$subpartArray['###MESSAGE_PAYMENT###'] = $this->pibase->cObj->substituteMarkerArrayCached($this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_PAYMENT_'.$this->basket->basketExtra['payment'].'###'),$markerArray);
-
-
 
 		$bFrameWork=$this->pibase->cObj->substituteMarkerArrayCached($t['basketFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 

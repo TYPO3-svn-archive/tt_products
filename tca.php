@@ -71,9 +71,10 @@ $TCA['tt_products'] = Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.subtitle',
 			'config' => Array (
-				'type' => 'input',
-				'size' => '20',
-				'max' => '256'
+				'type' => 'text',
+				'rows' => '3',
+				'cols' => '20',
+				'max' => '512'
 			)
 		),
 		'itemnumber' => Array (

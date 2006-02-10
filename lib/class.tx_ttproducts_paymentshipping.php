@@ -215,14 +215,14 @@ class tx_ttproducts_paymentshipping {
 
 		if ($confArr['type'] == 'count') {
 			while (list ($k1, $price1) = each ($confArr)) {
-				if ($countTotal >= intval($k1)) {
+				if ($countTotal >= $k1) {
 					$priceNew = $price1;
 					break;
 				}
 			}
 		} else if ($confArr['type'] == 'weight') {
 			while (list ($k1, $price1) = each ($confArr)) {
-				if ($this->basket->calculatedArray['weight'] * 1000 >= intval($k1)) {
+				if ($this->basket->calculatedArray['weight'] * 1000 >= $k1) {
 					$priceNew = $price1;
 					break;
 				}
@@ -230,7 +230,7 @@ class tx_ttproducts_paymentshipping {
 		/* Added Els: shipping price (verzendkosten) depends on price of goodstotal */
 		} else if ($confArr['type'] == 'price') {
 			while (list ($k1, $price1) = each ($confArr)) {
-				if ($priceTotalTax >= intval($k1)) {
+				if ($priceTotalTax >= $k1) {
 					$priceNew = $price1;
 					break;
 				}
@@ -328,7 +328,6 @@ on total no-tax price */
 		if ($perc)  {
 
 			$payment = ($this->basket->calculatedArray['priceTax']['goodstotal'] + $this->basket->calculatedArray['priceTax']['shipping'] ) * doubleVal($perc);
-
 			$pricePaymentTax += $price->getPrice($payment,1,$tax);
 			$pricePaymentNoTax += $price->getPrice($payment,0,$tax);
 		}
