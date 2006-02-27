@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skaarhoj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,11 +31,7 @@
  *
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	René Fritz <r.fritz@colorcube.de>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @author	Klaus Zierer <zierer@pz-systeme.de>
- * @author	Els Verberne <verberne@bendoo.nl>
+ * @author	Kasper Skårhøj (kasperYYYY@typo3.com)
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -137,6 +133,7 @@ class tx_ttproducts_finalize_div {
 			$pid = intval($conf['PIDGiftsTable']);
 			if (!$pid)	$pid = intval($TSFE->id);
 			$rc = tx_ttproducts_gifts_div::saveOrderRecord(
+				$tt_products,
 				$orderUid,
 				$pid,
 				$basket->basketExt['gift']
@@ -159,7 +156,7 @@ class tx_ttproducts_finalize_div {
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_csv.php');
 			$csv = t3lib_div::makeInstance('tx_ttproducts_csv');
 			$csv->init($this,$conf,$basket->itemArray,$basket->calculatedArray,$price,$order);
-			$csvfilepath = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $conf['CSVdestination'];
+			$csvfilepath = PATH_site.'/'. $conf['CSVdestination'];
 			$csvorderuid = $basket->recs['tt_products']['orderUid'];
 
 			$csv->create($basket, $csvorderuid, $csvfilepath, $error_message);

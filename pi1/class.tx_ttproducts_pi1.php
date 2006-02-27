@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skaarhoj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -54,8 +54,8 @@ require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
 require_once(PATH_BE_ttproducts.'pi1/class.tx_ttproducts_htmlmail.php');
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_basket.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_basket_view.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_category.php');
@@ -123,6 +123,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	function main_products($content,$conf)	{
 		global $TSFE;
 
+		$bStoreBasket = false;
 		$error_code = array();
 		
 		// page where to go usually
@@ -132,7 +133,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 		$codes=t3lib_div::trimExplode(',', $this->config['code'],1);
 		if (!count($codes))	 $codes=array('HELP');
-		$codes = $this->pi_sortCodes($codes);
+		$codes = $this->pi_sortCodes($codes, $error_code, $bStoreBasket);
 
 		if (t3lib_div::_GP('mode_update'))
 			$updateMode = 1;
@@ -140,7 +141,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$updateMode = 0;
 
 		if (!$this->errorMessage) {
-			$bStoreBasket = (count($codes) == 1 && $codes[0]=='OVERVIEW' ? false : true); 
 			$this->basket->init($this, $this->conf, $this->config, $TSFE->fe_user->getKey('ses','recs'), $updateMode, 
 				$this->pid_list, $this->tt_content, $this->tt_products, $this->tt_products_cat, $this->price, $this->paymentshipping, $bStoreBasket);
 		}
@@ -154,7 +154,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		}
 		reset($codes);
 		//$TSFE->set_no_cache(); // uncomment this line if you have a problem with the cache
-		while(!$this->errorMessage && list(,$theCode)=each($codes))	{
+		while(!$this->errorMessage && list($key,$theCode)=each($codes))	{
 			$theCode = (string) trim($theCode);
 			$contentTmp = '';
 			switch($theCode)	{
@@ -175,9 +175,12 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$contentTmp=$this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
 				case 'LISTCAT':
-					// TODO: Code for listing of categories
+					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_catlist_view.php');
 					$TSFE->set_no_cache();
-					$contentTmp = '<p>List of the categories</p>';
+						// category view
+					$categoryView = t3lib_div::makeInstance('tx_ttproducts_catlist_view');
+					$categoryView->init($this, $this->conf, $this->config, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products_cat, $this->pid);
+					$contentTmp=$categoryView->printView($this->templateCode, $error_code);
 				break;
 				case 'SINGLE':
 					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList']) {
@@ -243,17 +246,15 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 			if ($error_code[0]) {
 				$messageArr = array(); 
-				if ($error_code[1]) {
-					$i = 0;
-					foreach ($error_code as $key => $indice) {
-						if ($key == 0) {
-							$messageArr =  explode('|', $message = $this->pi_getLL($indice));
-							$contentTmp.=$messageArr[0];
-						} else {
-							$contentTmp.=$indice.$messageArr[$i];
-						}
-						$i++;
+				$i = 0;
+				foreach ($error_code as $key => $indice) {
+					if ($key == 0) {
+						$messageArr =  explode('|', $message = $this->pi_getLL($indice));
+						$contentTmp.=$this->pi_getLL('tt_products').' '.$messageArr[0];
+					} else {
+						$contentTmp.=$indice.$messageArr[$i];
 					}
+					$i++;
 				}
 				// $contentTmp.=$messageArr[0].intval($this->uid) .$messageArr[1];
 			}
@@ -265,12 +266,14 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			} else {
 				$content.=$contentTmp;
 			}
+	
 		}
 
 		if ($this->errorMessage) {
 			$content = '<p><b>'.$this->errorMessage.'</b></p>';
 		}
-		return $this->pi_wrapInBaseClass($content);
+		$rc = $this->pi_wrapInBaseClass($content);
+		return $rc;
 	}
 
 	/**
@@ -323,7 +326,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$config['storeRootPid'] = $this->conf['PIDstoreRoot'] ? $this->conf['PIDstoreRoot'] : $TSFE->tmpl->rootLine[0]['uid'];
 		$config['priceNoReseller'] = $this->conf['priceNoReseller'] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
 
-		$pid_list = $config['pid_list'] = trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.']));
+		$pid_list = $config['pid_list'] = ($this->conf['pid_list'] ? $this->conf['pid_list'] :trim($this->cObj->stdWrap('',$this->conf['pid_list.'])));
 		$this->pid_list = ($pid_list ? $pid_list : $config['storeRootPid']);
 		//$config['pid_list'] = $this->config['pid_list'] ? $config['pid_list'] : $TSFE->id;
 
@@ -423,15 +426,15 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	/**
 	 * Getting the table definitions
 	 */
-	function initTables()	{
-		$this->tt_products_articles = t3lib_div::makeInstance('tx_table_db');
-		$this->tt_products_articles->setTCAFieldArray('tt_products_articles','articles');
+	function initTables()	{		
+		$this->tt_products_articles = t3lib_div::makeInstance('tx_ttproducts_article');
+		$this->tt_products_articles->init($this,$this->LLkey, $this->conf['table.']['tt_products_articles']);	
 		$this->tt_products_cat = t3lib_div::makeInstance('tx_ttproducts_category');
 		$this->tt_products_cat->init($this->LLkey);
 		$this->tt_content = t3lib_div::makeInstance('tx_ttproducts_content');
 		$this->tt_content->init();
 		$this->tt_products = t3lib_div::makeInstance('tx_ttproducts_product');
-		$this->tt_products->init($this,$this->LLkey, $this->conf['table.']['tt_products'], $this->conf['table.']['tt_products.']);	
+		$this->tt_products->init($this,$this->LLkey, $this->conf['table.']['tt_products'], $this->conf['table.']['tt_products.'], $this->conf['useArticles']);	
 	} // initTables
 
 
@@ -530,10 +533,12 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
 	 * @return	  void
  	 */
-	function pi_sortCodes($codes)	{
+	function pi_sortCodes($codes,&$error_code,&$bStoreBasket)	{
+		$bStoreBasket = true;
+		
 		$retCodes = array();
 		$codeArray =  array (
-			'1' =>  'OVERVIEW', 'BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS',
+			'1' =>  'OVERVIEW', 'BASKET', 'LISTCAT', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS',
 			'LISTNEWITEMS', 'SINGLE', 'SEARCH',
 			'MEMO', 'INFO',
 			'PAYMENT', 'FINALIZE',
@@ -549,11 +554,24 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				if ($key!=false) {
 					$retCodes[$key-1] = $theCode;
 				} else { // retain the wrong code to get an error message later
+					$error_code[0] = 'wrong_code';
+					$error_code[1] = $theCode;
 					$retCodes[-100] = $theCode;
 				}
 			}
 		}
 		ksort($retCodes);
+		
+		// if the code field has been filled in from TS Setup
+		// This has to be done because no articles shall be put into the basket in this case.
+		if (count($codes) == 1)	{
+			$changeBasketArray = array ('BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS', 'LISTNEWITEMS', 'LISTGIFTS', 'SINGLE', 'SEARCH');
+			$tmpCodeArray = array_flip($changeBasketArray);
+			if (!isset($tmpCodeArray[current($retCodes)]))	{
+				$bStoreBasket = false;
+			}
+		}
+		
 		return ($retCodes);
 	}
 

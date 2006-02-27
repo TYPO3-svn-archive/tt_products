@@ -53,7 +53,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label= Click into basket: If set the basket page will be shown after a product has been put there. PIDbasket needs to be set.
   clickIntoBasket =
     # cat=plugin.products//; type=int+; label= maximum basket quantity: This is the maximal possible amount of one product in the basket.
-  basketMaxQuantity = 100000
+  basketMaxQuantity = 1000
     # cat=plugin.products//; type=boolean; label= Quantity is a float value: If set the basket will accept float values as quantities
   quantityIsFloat =
   

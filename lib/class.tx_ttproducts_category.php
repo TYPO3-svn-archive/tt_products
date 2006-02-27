@@ -39,7 +39,6 @@
  */
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_email.php');
 
 class tx_ttproducts_category {
@@ -49,7 +48,7 @@ class tx_ttproducts_category {
 
 
 	/**
-	 * Getting all tt_products_cat categories into internal array
+	 * initialization with table object and language table
 	 */
 	function init($LLkey)	{
 		global $TYPO3_DB,$TSFE;
@@ -64,9 +63,19 @@ class tx_ttproducts_category {
 
 
 
-	function get ($uid) {
+	/**
+	 * Getting all tt_products_cat categories into internal array
+	 */
+	function get ($uid=0,$pid=0) {
 		global $TYPO3_DB;
-		$rc = $this->dataArray[$uid];
+		
+		if (is_array($this->dataArray[$uid]))	{
+			if ($pid && $this->dataArray[$uid]['pid'] == $pid)	{
+				$rc = $this->dataArray[$uid];
+			} else	{
+				$rc = array();
+			}
+		}
 		if (!$rc) {
 			// $sql = t3lib_div::makeInstance('tx_table_db_access');
 			// $sql->prepareFields($this->table, 'select', '*');
@@ -75,11 +84,59 @@ class tx_ttproducts_category {
 			$this->table->enableFields('tt_products_cat');		
 			// Fetching the category
 			// $res = $sql->exec_SELECTquery();
-			$res = $this->table->exec_SELECTquery('*','uid = '.$uid);
-			$row = $TYPO3_DB->sql_fetch_assoc($res);
-			$rc = $this->dataArray[$row['uid']] = $row;
+			$where = '1=1 ';
+			$where .= ($uid ? 'AND uid='.$uid : '');
+			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
+			$res = $this->table->exec_SELECTquery('*',$where);
+			if ($uid)	{
+				$row = $TYPO3_DB->sql_fetch_assoc($res);
+				$rc = $this->dataArray[$row['uid']] = $row;
+			} else {
+				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+					$rc = $this->dataArray[$row['uid']] = $row;
+				}
+			}
+		}
+		if (!$rc) {
+			$rc = array();
+			$this->dataArray = array();
 		}
 		return $rc;
+	}
+
+
+
+	/**
+	 * Getting all root categories from internal array
+	 * This must be overwritten by other classes who support multiple categories
+	 * The dataArray must be extended with the 'child_category' field if available.
+	 * get (0) must have been called before
+	 * 
+	 */
+	function &prepareCategories(&$rootArray)	{
+		
+			// Call one getRootCategories hook
+		if (isset ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prepareCategories'])) {
+			$hookObj= &t3lib_div::getUserObj($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prepareCategories']);
+			if (method_exists($hookObj, 'prepareCategories')) {
+				$hookObj->prepareCategories ($this, $rootArray);
+			}
+		} else {
+			foreach ($this->dataArray as $uid => $row)	{
+				$rootArray[] = $uid;
+			}
+		}
+		
+	}
+
+	/**
+	 * Getting all sub categories from internal array
+	 * This must be overwritten by other classes who support multiple categories
+	 * getPrepareCategories must have been called before
+	 * 
+	 */
+	function &getSubcategories(&$row)	{
+		return array();
 	}
 
 

@@ -39,7 +39,6 @@ franzholz Exp $
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 
 
 class tx_ttproducts_gifts_div {
@@ -98,7 +97,7 @@ class tx_ttproducts_gifts_div {
 	 * Saves the orderRecord and returns the result
 	 * 
 	 */
-	function saveOrderRecord($orderUid, $pid, &$giftBasket) {
+	function saveOrderRecord(&$tt_products,$orderUid, $pid, &$giftBasket) {
 		global $TYPO3_DB;
 		$rc = '';
 
@@ -107,7 +106,7 @@ class tx_ttproducts_gifts_div {
 			foreach ($rec['item'] as $productid => $product) {
 				foreach ($product as $variant => $count) {
 					$row = array();
-					tx_ttproducts_article_div::getRowFromVariant	($row, $variant);
+					$tt_products->variant->getRowFromVariant	($row, $variant);
 					$amount += intval($row['size']) * $count;
 				}
 			}
@@ -135,7 +134,7 @@ class tx_ttproducts_gifts_div {
 			foreach ($rec['item'] as $productid => $product) {
 				foreach ($product as $variant => $count) {
 					$row = array();
-					tx_ttproducts_article_div::getRowFromVariant	($row, $variant);
+					$tt_products->variant->getRowFromVariant	($row, $variant);
 
 					$query='uid_product=\''.intval($productid).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND description=\''.$row['description'].'\' AND gradings=\''.$row['gradings'].'\'' ;
 					$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);

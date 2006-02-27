@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Kasper Sk&aring;rh&oslash;j <kasperYYYY@typo3.com>
- * @author  Ren&eacute; Fritz <r.fritz@colorcube.de>
+ * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @author  René Fritz <r.fritz@colorcube.de>
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @author  Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3

@@ -1,3 +1,8 @@
+2006-02-27 Franz Holzinger <franz@fholzinger.com>
+	* list of categories
+	* make it ready for TYPO3 4.0
+	* new class for variants
+
 2006-02-10 Franz Holzinger <franz@fholzinger.com>
 	* the check of available frontend users must consider the pid
 	* send password of new created frontend users via email

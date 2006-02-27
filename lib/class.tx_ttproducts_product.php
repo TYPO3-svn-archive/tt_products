@@ -39,18 +39,21 @@
  */
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_variant.php');
+
+
 
 class tx_ttproducts_product {
 	var $dataArray; // array of read in categories
 	var $table;		 // object of the type tx_table_db
 	var $fields = array();
 	var $pibase; // reference to object of pibase
+	var $variant; // object for the product variant attributes
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, $LLkey, $tablename, &$tableconf)  {
+	function init(&$pibase, $LLkey, $tablename, &$tableconf, $bUseArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		$this->pibase = $pibase;
@@ -58,10 +61,17 @@ class tx_ttproducts_product {
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray($tablename);
 		
+		$tempArray = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tx_ttproducts_product']['requiredFieldArray'];
+		
+		$this->table->setRequiredFieldArray($tempArray ? $tempArray : array('uid', 'pid', 'price', 'price2'));
+		
 		if ($TSFE->config['config']['sys_language_uid'] && ($tablename == 'tt_products')) {
 			$this->table->setLanguage ($LLkey);
 			$this->table->setTCAFieldArray('tt_products_language');
 		}
+		
+		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
+		$this->variant->init($tableconf['variant.'], $bUseArticles);
 		
 		$this->fields['itemnumber'] = ($tableconf['itemnumber'] ? $tableconf['itemnumber'] : 'itemnumber');
 	} // init

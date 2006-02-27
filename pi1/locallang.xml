@@ -6,6 +6,7 @@
 		<csh_table></csh_table>
 		<fileId>EXT:tt_products/pi1/locallang.xml</fileId>
 		<labelContext type="array">
+			<label index="tt_products"></label>
 			<label index="open_bill"></label>
 			<label index="open_delivery"></label>
 			<label index="invalid_email"></label>
@@ -15,7 +16,8 @@
 			<label index="additional_single"></label>
 			<label index="wrong_parameter"></label>
 			<label index="no_csv_creation"></label>
-			<label index="salutation">Anrede</label>
+			<label index="wrong_code"></label>
+			<label index="salutation"></label>
 			<label index="salutation0"></label>
 			<label index="salutation1"></label>
 			<label index="salutation2"></label>
@@ -24,6 +26,7 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
+			<label index="tt_products">Shop Plugin:</label>
 			<label index="open_bill">Click here to open the bill</label>
 			<label index="open_delivery">Click here to open the delivery sheet</label>
 			<label index="invalid_email">Invalid E-mail address |! Please re-enter.</label>
@@ -33,6 +36,7 @@
 			<label index="additional_single">buy this product</label>
 			<label index="wrong_parameter">Wrong parameters, GET/POST var 'tt_products' was missing or no product with uid = | found.</label>
 			<label index="no_csv_creation">Warning: Cannot create CSV file '|' for this order!</label>
+			<label index="wrong_code">Wrong display mode or code '|'.</label>
 			<label index="salutation">Salutation</label>
 			<label index="salutation0">Mr.</label>
 			<label index="salutation1">Mrs.</label>

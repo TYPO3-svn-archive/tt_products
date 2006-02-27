@@ -7,13 +7,26 @@ includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
 plugin.tt_products >
 plugin.tt_products = USER
 plugin.tt_products {
+  table.tt_products = tt_products
+  table.tt_products {
+    itemnumber = itemnumber
+    variant {
+      1 = color
+      2 = size
+      3 = description
+      4 = gradings
+      5 = additional
+    }
+  }
+  table.tt_products_articles = tt_products_articles
+  
   userFunc = tx_ttproducts_pi1->main_products
 
   templateFile = {$plugin.tt_products.file.templateFile}
   pid_list.field = pages
   code.field = select_key
   defaultCode = HELP
-  
+
   limit = {$plugin.tt_products.limit}
   limitImage = {$plugin.tt_products.limitImage}
   limitImageSingle = {$plugin.tt_products.limitImageSingle}

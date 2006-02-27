@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skaarhoj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -43,7 +43,6 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
 
 
@@ -58,7 +57,7 @@ class tx_ttproducts_basket_view {
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
-
+	
 	var $price; // price object
 
 	var $basket; 	// the basket object
@@ -101,7 +100,7 @@ class tx_ttproducts_basket_view {
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
 	 * @return	  void
  	 */
-	function transfromActivities($activities)	{
+	function transformActivities($activities)	{
 		$retActivities = array();
 		$activityArray =  Array (
 			'1' =>  'products_overview', 'products_basket', 'products_info', 'products_payment', 'products_customized_payment', 'products_finalize',
@@ -172,23 +171,34 @@ class tx_ttproducts_basket_view {
 			$activityArray['products_finalize']=true;
 		}
 
+		$codeActivityArray=array();
+
+		$bBasketCode = false;
 		if (is_array($codes)) {
 			foreach ($codes as $k => $code) {
 				if ($code=='BASKET')	{
-					$activityArray['products_basket']=true;
+					$codeActivityArray['products_basket']=true;
+					$bBasketCode = true;
 				} elseif ($code=='INFO' && !($activityArray['products_payment'] || $activityArray['products_finalize']))	{
-					$activityArray['products_info']=true;
+					$codeActivityArray['products_info']=true;
+					$bBasketCode = true;
 				} elseif ($code=='OVERVIEW') {
-					$activityArray['products_overview']=true;
+					$codeActivityArray['products_overview']=true;
 				} elseif ($code=='PAYMENT' && !($activityArray['products_finalize']))	{
-					$activityArray['products_payment']=true;
+					$codeActivityArray['products_payment']=true;
 				} elseif ($code=='FINALIZE')	{
-					$activityArray['products_finalize']=true;
+					$codeActivityArray['products_finalize']=true;
 				}
 			}
 		}
-
-		$this->activityArray = $this->transfromActivities($activityArray);
+		
+		if ($bBasketCode)	{
+			$activityArray = array_merge ($activityArray, $codeActivityArray);
+			$this->activityArray = $this->transformActivities($activityArray);
+		} else {
+			// only the code activities if there is no code BASKET or INFO set
+			$this->activityArray = $codeActivityArray;
+		}
 		
 		if (count($this->basket->basketExt) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
@@ -538,7 +548,7 @@ class tx_ttproducts_basket_view {
 					// Substitute
 					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
 
-					tx_ttproducts_article_div::getVariantSubpartArray ($this->pibase, $this->tt_products, $subpartArray, $actItem['rec'], $tempContent, 
+					$this->tt_products->variant->getVariantSubpartArray ($this->pibase, $this->tt_products, $subpartArray, $actItem['rec'], $tempContent, 
 						($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'), $this->conf );
 						
 					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);

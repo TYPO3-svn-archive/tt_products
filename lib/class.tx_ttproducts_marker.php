@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skaarhoj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -32,17 +32,13 @@
  * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	René Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @author	Klaus Zierer <zierer@pz-systeme.de>
- * @author	Els Verberne <verberne@bendoo.nl>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 
 
 class tx_ttproducts_marker {
@@ -93,7 +89,7 @@ class tx_ttproducts_marker {
 		if ($this->basket->basketExtra['payment.']['handleTarget'])	{	// Alternative target
 			$markerArray['###FORM_URL_TARGET###'] = $this->basket->basketExtra['payment.']['handleTarget'];
 		}
-
+		
 			// Call all addURLMarkers hooks at the end of this method
 		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'])) {
 			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
@@ -144,7 +140,7 @@ class tx_ttproducts_marker {
 		} else {
 			$variantRow = array();
 		}
-		$variants = tx_ttproducts_article_div::getVariantFromRow ($variantRow);
+		$variants = $tt_products->variant->getVariantFromRow ($variantRow);
 		$markerArray=array();
 		
 			// Get image
@@ -417,6 +413,45 @@ class tx_ttproducts_marker {
 		}
 
 		return $queryString;
+	}
+
+
+	/**
+	 * Template marker substitution
+	 * Fills in the markerArray with data for a product
+	 *
+	 * @param	array		reference to an item array with all the data of the item
+	 * @param	string		title of the category
+	 * @param	integer		number of images to be shown
+	 * @param	object		the image cObj to be used
+	 * @param	array		information about the parent HTML form
+	 * @return	array
+	 * @access private
+	 */
+	function &getMarkerFields (&$templateCode, &$tableFieldArray, &$requiredFieldArray, $prefix)	{
+//		while ($temp = strstr($templateCode, '###'))	{
+//			$marker = substr ($temp, 3);
+//			$end = strstr ($marker, '###');
+//		}
+		$retArray = $requiredFieldArray;
+		// obligatory fields uid and pid
+
+		$prefixLen = strlen($prefix);
+		$tagArray = explode ('###', $templateCode);
+		if (is_array($tagArray))	{
+			foreach ($tagArray as $k => $tag)	{
+				$temp = strstr($tag, $prefix);
+				if ($temp)	{
+					$field = substr ($temp, $prefixLen);
+					$field = strtolower($field);
+					if (is_array ($tableFieldArray[$field]))	{
+						$retArray[] = $field;
+					}
+				}
+			}
+		}
+		
+		return $retArray;
 	}
 
 }

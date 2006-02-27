@@ -39,7 +39,6 @@
  */
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
 class tx_ttproducts_attribute {
 	var $attributeArray;	// array of read in attributes

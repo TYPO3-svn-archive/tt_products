@@ -9,6 +9,7 @@
 			<label index="tt_content.list_type_pi1"></label>
 			<label index="tt_content.tt_products_code"></label>
 			<label index="tt_products"></label>
+			<label index="tt_products.prod_uid"></label>
 			<label index="tt_products.price"></label>
 			<label index="tt_products.price2"></label>
 			<label index="tt_products.unit"></label>
@@ -99,6 +100,7 @@
 			<label index="tt_content.list_type_pi1">Products</label>
 			<label index="tt_content.tt_products_code">Code</label>
 			<label index="tt_products">Products</label>
+			<label index="tt_products.prod_uid">Template Products</label>
 			<label index="tt_products.price">Price:</label>
 			<label index="tt_products.price2">Price (2):</label>
 			<label index="tt_products.unit">Unit of measure</label>
@@ -116,7 +118,7 @@
 			<label index="tt_products.color">Color (Variant 1):</label>
 			<label index="tt_products.size">Size (Variant 2):</label>
 			<label index="tt_products.description">Description (Variant 3):</label>
-			<label index="tt_products.gradings">Gradings (Variant 4)::</label>
+			<label index="tt_products.gradings">Gradings (Variant 4):</label>
 			<label index="tt_products.additional">Additional (Variant 5):</label>
 			<label index="tt_products.additional.once">Only a single product:</label>
 			<label index="tt_products.special_preparation">Special Preparation:</label>
@@ -187,6 +189,7 @@
 		<languageKey index="de" type="array">
 			<label index="tt_content.list_type_pi1">Produkte</label>
 			<label index="tt_products">Produkte</label>
+			<label index="tt_products.prod_uid">Template Produkte</label>
 			<label index="tt_products.price">Preis:</label>
 			<label index="tt_products.price2">Preis (2):</label>
 			<label index="tt_products.unit">Maßeinheit</label>
@@ -968,7 +971,7 @@
 			<label index="sys_products_orders.address" type="integer">142924160</label>
 			<label index="fe_users.tt_products_creditpoints" type="integer">72483863</label>
 			<label index="fe_users.tt_products_vouchercode" type="integer">218987260</label>
-			<label index="tt_content.pi1_flexform.display_mode.20" type="integer">198404114</label>
+			<label index="tt_products.prod_uid" type="integer">28109143</label>
 		</languageKey>
 		<languageKey index="dk" type="array">
 			<label index="tt_content.tt_products_code" type="integer">211868589</label>

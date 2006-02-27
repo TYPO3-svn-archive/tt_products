@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skaarhoj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -41,7 +41,6 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 
 
@@ -81,7 +80,6 @@ class tx_ttproducts_single_view {
 		global $TSFE, $TCA;
 		
 		$content = '';
-		$error_code = '';
 
 		$where = 'uid='.intval($this->uid);
 
@@ -95,7 +93,7 @@ class tx_ttproducts_single_view {
 		}
 
 		if ($this->variants) {
-			tx_ttproducts_article_div::getRowFromVariant ($row, $this->variants);
+			$this->tt_products->variant->getRowFromVariant ($row, $this->variants);
 		}
 
 		if($row) {
@@ -109,7 +107,7 @@ class tx_ttproducts_single_view {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 			} else if (count($giftNumberArray)) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
-			} else if ($row['inStock']==0 && $this->conf['showProductsNotInStock'] && is_array($TCA[$this->tt_products->table->name]['columns']['inStock']) ) {
+			} else if ($row['inStock']==0 && $this->conf['showNotInStock'] && is_array($TCA[$this->tt_products->table->name]['columns']['inStock']) ) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_NOT_IN_STOCK###';
 			} else {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
@@ -216,7 +214,7 @@ class tx_ttproducts_single_view {
 				$subpartArray['###LINK_NEXT_SINGLE###']='';
 			}
 
-			tx_ttproducts_article_div::removeEmptySubpartArray($this->pibase, $this->tt_products, $subpartArray, $row, $this->conf);
+			$this->tt_products->variant->removeEmptySubpartArray($this->pibase, $this->tt_products, $subpartArray, $row, $this->conf);
 
 				// Substitute	
 			$content= $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
