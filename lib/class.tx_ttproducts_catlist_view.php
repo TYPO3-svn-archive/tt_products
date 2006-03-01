@@ -110,6 +110,9 @@ class tx_ttproducts_catlist_view {
 		$out='';
 		$where='';
 		$bFinished = false;
+		
+		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_CATLIST_TEMPLATE###'));
+		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
 
 			// read in all categories
 		$this->tt_products_cat->get(0, $this->page->pid_list);
@@ -131,14 +134,22 @@ class tx_ttproducts_catlist_view {
 		$count = 0;
 		$menu = $this->conf['CSS.'][$this->tt_products_cat->table->name.'.']['menu'];
 		$out = '<ul id="'.$menu.'">';
+		$currentCat = $this->pibase->piVars['cat'];
 		
 		while ($depth > 0 && $count<50)	{
 			$count++;
 			if($countArray[$depth] < count ($catArray[$depth]))	{
 				$actCategory = $catArray[$depth][$countArray[$depth]];
 				$countArray[$depth]++;
-				$out .= '<li>'.$this->tt_products_cat->dataArray[$actCategory]['title'].'</li>';
-
+				$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $this->tt_products_cat->dataArray[$actCategory]);
+				$css = ($actCategory == $currentCat ? 'class="act"' : '');
+				$markerArray['###ITEM_SINGLE_PRE_HTML###'] = '<li'.($css ? ' '.$css : '').'>';
+				$wrappedSubpartArray['###LINK_CATEGORY###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array($this->pibase->prefixId.'[cat]' => $actCategory))).'"'.$css.'>','</a>');
+				$markerArray['###LIST_LINK###'] = $this->tt_products_cat->dataArray[$actCategory]['title'];  
+				$markerArray['###ITEM_SINGLE_POST_HTML###'] = '</li>';
+				$subpartArray = array();
+				$out.= $this->pibase->cObj->substituteMarkerArrayCached($t['categoryFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
+				
 				$subCategories = $this->tt_products_cat->dataArray[$actCategory]['child_category']; 
 				if (is_array($subCategories))	{
 					$depth++;
