@@ -346,7 +346,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 		if (!$this->conf['templateFile'] || empty($this->templateCode)) {
 			$this->errorMessage .= $this->pi_getLL('no_template').' tt_products.file.templateFile.';
-			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '');
+			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '""');
 		}
 
 		// mkl - multicurrency support
