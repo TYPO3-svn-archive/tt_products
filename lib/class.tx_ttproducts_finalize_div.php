@@ -254,11 +254,26 @@ class tx_ttproducts_finalize_div {
 				}
 			}
 		}
+		
+		// 3 different hook methods - There must be one for your needs, too.
 
 			// This cObject may be used to call a function which clears settings in an external order system.
 			// The output is NOT included anywhere
 		$pibase->getExternalCObject('externalFinalizing');
 
+		if ($conf['externalOrderProcessFunc'])    {
+			$pibase->userProcess('externalOrderProcessFunc',$basket);
+		}
+		
+			// Call all finalizeOrder hooks at the end of this method
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
+				$hookObj= &t3lib_div::getUserObj($classRef);
+				if (method_exists($hookObj, 'finalizeOrder')) {
+					$hookObj->finalizeOrder($pibase, $conf, $templateCode, $basket, $basketView, $tt_products, $tt_products_cat, $price, $order, $orderUid, $orderConfirmationHTML, $error_message);
+				}
+			}
+		}		
 	} // finalizeOrder
 
 }
