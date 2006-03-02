@@ -1,3 +1,6 @@
+2006-03-02 Franz Holzinger <franz@fholzinger.com>
+	* make listings in list view possible without pid in OrderBy
+
 2006-03-01 Franz Holzinger <franz@fholzinger.com>
 	* make image files larger than 1 MByte possible
 	* the category list uses template subparts

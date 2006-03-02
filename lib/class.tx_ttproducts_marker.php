@@ -420,15 +420,9 @@ class tx_ttproducts_marker {
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
 	 *
-	 * @param	array		reference to an item array with all the data of the item
-	 * @param	string		title of the category
-	 * @param	integer		number of images to be shown
-	 * @param	object		the image cObj to be used
-	 * @param	array		information about the parent HTML form
-	 * @return	array
 	 * @access private
 	 */
-	function &getMarkerFields (&$templateCode, &$tableFieldArray, &$requiredFieldArray, $prefix)	{
+	function &getMarkerFields (&$templateCode, &$tableFieldArray, &$requiredFieldArray, &$addCheckArray, $prefix)	{
 //		while ($temp = strstr($templateCode, '###'))	{
 //			$marker = substr ($temp, 3);
 //			$end = strstr ($marker, '###');
@@ -437,15 +431,28 @@ class tx_ttproducts_marker {
 		// obligatory fields uid and pid
 
 		$prefixLen = strlen($prefix);
-		$tagArray = explode ('###', $templateCode);
+		// $tagArray = explode ('###', $templateCode);
+		$treffer = array();
+		// preg_match_all('/\###([ \w]+)\###/', $templateCode, $treffer);
+		preg_match_all('/###([\w]+)###/', $templateCode, $treffer);
+		$tagArray = $treffer[1];
+		
 		if (is_array($tagArray))	{
-			foreach ($tagArray as $k => $tag)	{
+			foreach ($tagArray as $k1 => $tag)	{
 				$temp = strstr($tag, $prefix);
 				if ($temp)	{
 					$field = substr ($temp, $prefixLen);
 					$field = strtolower($field);
 					if (is_array ($tableFieldArray[$field]))	{
 						$retArray[] = $field;
+					}
+				} else if (is_array($addCheckArray)){
+					foreach ($addCheckArray as $marker => $field)	{
+						$temp = strstr($tag, $marker);
+						if ($temp)	{
+							$retArray[] = $field;
+							break;
+						}
 					}
 				}
 			}
