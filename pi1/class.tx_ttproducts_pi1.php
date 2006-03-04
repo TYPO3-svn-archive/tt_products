@@ -235,8 +235,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 						// order view
 					$orderView = t3lib_div::makeInstance('tx_ttproducts_order_view');
-					$orderView->init($this, $this->conf, $this->config, $this->basket);
-					$contentTmp=$orderView->printView();
+					$orderView->init($this, $this->conf, $this->config, $this->basket, $this->order);
+					$contentTmp=$orderView->printView($this->templateCode, $error_code);
 				break;
 				default:	// 'HELP'
 					$TSFE->set_no_cache();
@@ -464,7 +464,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			
 		$msgSubpart = '';
 		if ($trackingCode || $admin)	{		// Tracking number must be set
-			$orderRow = $this->order->getOrderRecord('',$trackingCode);
+			$orderRow = $this->order->getRecord('',$trackingCode);
 			if (is_array($orderRow) || $admin)	{		// If order is associated with tracking id.
 				if (!is_array($orderRow)) {
 					$orderRow=array('uid'=>0);
@@ -536,32 +536,33 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	function pi_sortCodes($codes,&$error_code,&$bStoreBasket)	{
 		$bStoreBasket = true;
 		
-		$retCodes = array();
-		$codeArray =  array (
-			'1' =>  'OVERVIEW', 'BASKET', 'LISTCAT', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS',
-			'LISTNEWITEMS', 'SINGLE', 'SEARCH',
-			'MEMO', 'INFO',
-			'PAYMENT', 'FINALIZE',
-			'TRACKING', 'BILL', 'DELIVERY',
-			'CURRENCY', 'ORDERS',
-			'LISTGIFTS', 'HELP',
-			);
-
-		if (is_array($codes)) {
-			foreach ($codes as $k => $code) {
-				$theCode = trim($code);
-				$key = array_search($theCode, $codeArray);
-				if ($key!=false) {
-					$retCodes[$key-1] = $theCode;
-				} else { // retain the wrong code to get an error message later
-					$error_code[0] = 'wrong_code';
-					$error_code[1] = $theCode;
-					$retCodes[-100] = $theCode;
-				}
-			}
-		}
-		ksort($retCodes);
+//		$retCodes = array();
+//		$codeArray =  array (
+//			'1' =>  'OVERVIEW', 'BASKET', 'LISTCAT', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS',
+//			'LISTNEWITEMS', 'SINGLE', 'SEARCH',
+//			'MEMO', 'INFO',
+//			'PAYMENT', 'FINALIZE',
+//			'TRACKING', 'BILL', 'DELIVERY',
+//			'CURRENCY', 'ORDERS',
+//			'LISTGIFTS', 'HELP',
+//			);
+//
+//		if (is_array($codes)) {
+//			foreach ($codes as $k => $code) {
+//				$theCode = trim($code);
+//				$key = array_search($theCode, $codeArray);
+//				if ($key!=false) {
+//					$retCodes[$key-1] = $theCode;
+//				} else { // retain the wrong code to get an error message later
+//					$error_code[0] = 'wrong_code';
+//					$error_code[1] = $theCode;
+//					$retCodes[-100] = $theCode;
+//				}
+//			}
+//		}
+//		ksort($retCodes);
 		
+		$retCodes = $codes;
 		// if the code field has been filled in from TS Setup
 		// This has to be done because no articles shall be put into the basket in this case.
 		if (count($codes) == 1)	{
@@ -604,7 +605,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 		$this->page = tx_ttproducts_page::createPageTable($this,$this->page,$this->pid_list,$this->config['recursive']);
 
-		if (($theCode=='SINGLE') || ($this->tt_product_single && !$this->conf['NoSingleViewOnList'])) {
+		if (($theCode=='SINGLE') || ($theCode=='LIST' && $this->tt_product_single && !$this->conf['NoSingleViewOnList'])) {
 			if (!$this->tt_product_single) {
 				$this->tt_product_single = $this->conf['defaultProductID'];
 			}

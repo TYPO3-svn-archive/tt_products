@@ -61,9 +61,9 @@ class tx_ttproducts_product {
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray($tablename);
 		
-		$tempArray = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tx_ttproducts_product']['requiredFieldArray'];
-		
-		$this->table->setRequiredFieldArray($tempArray ? $tempArray : array('uid', 'pid', 'price', 'price2'));
+		$requiredListFields = ($tableconf['requiredListFields'] ? $tableconf['requiredListFields'] : 'uid,pid,category,price,price2');
+		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
+		$this->table->setRequiredFieldArray($requiredListArray);
 		
 		if ($TSFE->config['config']['sys_language_uid'] && ($tablename == 'tt_products')) {
 			$this->table->setLanguage ($LLkey);

@@ -170,7 +170,7 @@ class tx_ttproducts_tracking {
 
 				$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderRow['uid']), $fieldsArray);
 
-				$orderRow = $this->order->getOrderRecord($orderRow['uid']);
+				$orderRow = $this->order->getRecord($orderRow['uid']);
 			}
 		}
 
@@ -251,7 +251,7 @@ class tx_ttproducts_tracking {
 				// Get unprocessed orders.
 			$res = $TYPO3_DB->exec_SELECTquery('uid,name,tracking_code,amount,status', 'sys_products_orders', 'NOT deleted AND status!=0 AND status<100', '', 'crdate');
 			while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-				$markerArray['###OTHER_ORDERS_OPTIONS###'].='<option value="'.$row['tracking_code'].'">'.htmlspecialchars($this->order->getOrderNumber($row['uid']).': '.$row['name'].' ('.$this->pibase->price->priceFormat($row['amount']).' '.$this->conf['currencySymbol'].') /' .$row['status']).'</option>';
+				$markerArray['###OTHER_ORDERS_OPTIONS###'].='<option value="'.$row['tracking_code'].'">'.htmlspecialchars($this->order->getNumber($row['uid']).': '.$row['name'].' ('.$this->pibase->price->priceFormat($row['amount']).' '.$this->conf['currencySymbol'].') /' .$row['status']).'</option>';
 			}
 		}
 
@@ -259,7 +259,7 @@ class tx_ttproducts_tracking {
 		$markerArray['###ORDER_HTML_OUTPUT###'] = $orderData['html_output'];		// The save order-information in HTML-format
 		$markerArray['###FIELD_EMAIL_NOTIFY###'] = $orderRow['email_notify'] ? ' checked' : '';
 		$markerArray['###FIELD_EMAIL###'] = $orderRow['email'];
-		$markerArray['###ORDER_UID###'] = $this->order->getOrderNumber($orderRow['uid']);
+		$markerArray['###ORDER_UID###'] = $this->order->getNumber($orderRow['uid']);
 		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
 		$markerArray['###TRACKING_NUMBER###'] =  $trackingCode;
 		$markerArray['###UPDATE_CODE###'] = $updateCode;

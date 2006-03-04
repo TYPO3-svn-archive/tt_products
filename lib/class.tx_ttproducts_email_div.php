@@ -39,7 +39,6 @@
  */
 
 require_once (PATH_t3lib.'class.t3lib_htmlmail.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order.php');
 require_once (PATH_BE_ttproducts.'pi1/class.tx_ttproducts_htmlmail.php');
 
 
@@ -81,7 +80,7 @@ class tx_ttproducts_email_div {
 	function sendNotifyEmail(&$pibase, &$conf, &$order, $recipient, $v, $tracking, $orderRow, $templateCode, $templateMarker, $sendername='', $senderemail='') {
 		global $TSFE;
 
-		$uid = $order->getOrderNumber($orderRow['uid']);
+		$uid = $order->getNumber($orderRow['uid']);
 			// initialize order data.
 		$orderData = unserialize($orderRow['orderData']);
 

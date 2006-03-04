@@ -48,30 +48,32 @@ class tx_ttproducts_order_view {
 	var $pibase; // reference to object of pibase
 	var $conf;
 	var $basket;
+	var $order;					 // object of the type tx_ttproducts_order
 	var $marker; // marker functions
 
 
-	function init(&$pibase, &$conf, &$config, &$basket) {
+	function init(&$pibase, &$conf, &$config, &$basket, &$order) {
 		$this->pibase = &$pibase;
 		$this->conf = &$conf;
 		$this->basket = &$basket;
+		$this->order = &$order;
 
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($pibase, $conf, $config, $basket);
 	}
 
 
-	function printView() {
+	function &printView(&$templateCode, &$error_code)	 {
 		global $TSFE;
 
 		$feusers_uid = $TSFE->fe_user->user['uid'];
 
 		if (!$feusers_uid)
-			return $this->pibase->cObj->getSubpart($this->basket->templateCode,$this->marker->spMarker('###MEMO_NOT_LOGGED_IN###'));
+			return $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###MEMO_NOT_LOGGED_IN###'));
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
 
-		$content=$this->pibase->cObj->getSubpart($this->basket->templateCode,$this->marker->spMarker('###ORDERS_LIST_TEMPLATE###'));
+		$content=$this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ORDERS_LIST_TEMPLATE###'));
  //CBY 11/11/2005 modifications : integrating order list template start
 	  //$orderlist=$this->pibase->cObj->getSubpart($content,'###ORDER_LIST###');
 		$orderitem=$this->pibase->cObj->getSubpart($content,'###ORDER_ITEM###');
@@ -88,7 +90,7 @@ class tx_ttproducts_order_view {
 				//$this->orders[$row['uid']] = $row['tracking_code'];
 				$markerArray['###TRACKING_CODE###']=$row['tracking_code'];
 				$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']);
-				$markerArray['###ORDER_NUMBER###'] = $this->getOrderNumber($row['uid']);
+				$markerArray['###ORDER_NUMBER###'] = $this->order->getNumber($row['uid']);
 				//$rt= $row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
 				$markerArray['###ORDER_CREDITS###']=$row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
 				
@@ -103,7 +105,7 @@ class tx_ttproducts_order_view {
 				
 				// total amount of creditpoints from gifts
 				$tot_creditpoints_gifts+= $row['creditpoints_gifts'];
-				$orderlistc.= $this->pibase->cObj->substituteMarkerArray($orderitem,$this->markerArray);
+				$orderlistc.= $this->pibase->cObj->substituteMarkerArray($orderitem, $markerArray);
 			}
 
 			$res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');

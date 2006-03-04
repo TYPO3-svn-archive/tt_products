@@ -173,14 +173,12 @@ class tx_ttproducts_list_view {
 			}
 
 //			$markerArray=array();
-//			$markerArray['###FORM_URL###']=$this->formUrl; // Applied later as well.
 			$markerArray = $this->marker->addURLMarkers($this->pid,array());
 			$t['listFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,array(),array());
-
 			$t['categoryTitle'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_CATEGORY###');
 			$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_LIST###');
 			$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
-	
+
 			//$this->page->initRecursive($this->config['recursive']);
 			//tx_ttproducts_page_div::generatePageArray();
 
@@ -217,14 +215,13 @@ class tx_ttproducts_list_view {
 				$this->tt_products->table->requiredFieldArray,
 				$markerFieldArray,
 				'PRODUCT_');
-			$fieldsArray[] = 'uid';		
-
+				
 			$selectConf['selectFields'] = implode(',', $fieldsArray);
 			$selectConf['max'] = ($this->config['limit']+1);
 			$selectConf['begin'] = $begin_at;
 			
 			$queryParts = $this->pibase->cObj->getQuery($this->tt_products->table->name, $selectConf, TRUE);
-
+			
 			$res = $this->tt_products->table->exec_SELECT_queryArray($queryParts);
 			$orderByArray = split (',', $selectConf['orderBy']);
 			$firstOrderField = $orderByArray[0];
@@ -273,7 +270,7 @@ class tx_ttproducts_list_view {
 					}
 
 						// Print Category Title
-					if (!in_array('category', $orderByArray) && ($firstOrderField != 'category') && ($row['pid'].'_'.$row['category'] != $currentP))	{
+					if (in_array('category', $orderByArray) && ($row['pid'].'_'.$row['category'] != $currentP))	{
 						if ($itemsOut)	{
 							$out .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
 						}
@@ -366,7 +363,7 @@ class tx_ttproducts_list_view {
 					$itemsOut .= $tempContent;
 					$iColCount++;
 				} // foreach ($productList as $k2 => $row)
-
+				
 				// multiple columns display and ITEM_SINGLE_POST_HTML is in the item's template?
 				if (
 					(($iCount == count($productsArray))	||
@@ -385,8 +382,8 @@ class tx_ttproducts_list_view {
 						$itemsOut = '';
 					} else {
 						$frameWork = 'itemFrameWork';
-						$subpartArray = array('###ITEM_SINGLE###'=>$itemsOut);
-						$out.=$this->pibase->cObj->substituteMarkerArrayCached($t[$frameWork], $subpartArray);
+						// $subpartArray = array('###ITEM_SINGLE###'=>$itemsOut);
+						$out.=$this->pibase->cObj->substituteSubpart($t[$frameWork],'###ITEM_SINGLE###',$itemsOut,0);
 					}
 				}
 
@@ -394,8 +391,7 @@ class tx_ttproducts_list_view {
 			if (count($productsArray) == 0) {
 				$content = '';  // keine Produkte gefunden
 			}
-			if ((!in_array('category', $orderByArray) || ($firstOrderField != 'category')))	{
-				$subpartArray = array('###ITEM_SINGLE###'=>$out);
+			if ((!in_array('category', $orderByArray)))	{
 				$out=$this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$out,0);
 			}
 
@@ -447,11 +443,11 @@ class tx_ttproducts_list_view {
 			$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray); //Applied it here also...
 			$markerArray['###AMOUNT_CREDITPOINTS###'] = number_format($TSFE->fe_user->user['tt_products_creditpoints'],0);
 			$markerArray['###ITEMS_SELECT_COUNT###']=$productsCount;
-
-			$content.= $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
+			$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
+			$content.= $out;
 		} elseif ($where)	{
 			$content.=$this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_SEARCH_EMPTY###'));
-		}
+		} // if ($out)
 
 		return $content;
 	}

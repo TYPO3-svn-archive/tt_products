@@ -53,7 +53,7 @@ $this->pibase->cObj->fileResource($lConf[templateFile] ?
 $lConf[templateFile] : 'EXT:tt_products/template/payment_DIBS_template.tmpl');		// Fetches the DIBS template file
 $localTemplateCode = $this->pibase->cObj->substituteMarkerArrayCached($localTemplateCode, $this->pibase->globalMarkerArray);
 
-$orderUid = $this->basket->order->getBlankOrderUid();		// Gets an order number, creates a new order if no order is associated with the current session
+$orderUid = $this->basket->order->getBlankUid();		// Gets an order number, creates a new order if no order is associated with the current session
 
 $param = '&FE_SESSION_KEY='.rawurlencode(
 $GLOBALS['TSFE']->fe_user->id.'-'.
@@ -81,7 +81,7 @@ value="'.round($this->basket->calculatedArray['priceTax']['total']
 value="'.$lConf['currency'].'">		<!--Valuta som angivet i
 ISO4217, danske kroner=208-->
 <input type="hidden" name="orderid"
-value="'.$this->basket->order->getOrderNumber($orderUid).'">		
+value="'.$this->basket->order->getNumber($orderUid).'">		
 <!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type="hidden" name="uniqueoid" value="1">
 <input type="hidden" name="accepturl"
@@ -208,7 +208,7 @@ $content=$basketView->getView($localTemplateCode,'###DIBS_ACCEPT_TEMPLATE###');
 		$authkey=t3lib_div::_GP('authkey');
 		if ($md5key != $authkey)	{
 			$content=$basketView->getView($localTemplateCode, '###DIBS_DECLINE_MD5_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
-		} elseif (t3lib_div::_GP('orderid')!=$this->basket->order->getOrderNumber($orderUid)) {
+		} elseif (t3lib_div::_GP('orderid')!=$this->basket->order->getNumber($orderUid)) {
 			$content=$basketView->getView($localTemplateCode, '###DIBS_DECLINE_ORDERID_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$markerArray=array();
@@ -216,7 +216,7 @@ $content=$basketView->getView($localTemplateCode,'###DIBS_ACCEPT_TEMPLATE###');
 
 			$content=$basketView->getView($tmp='','###BASKET_ORDERCONFIRMATION_TEMPLATE###',$markerArray);
 			$error=''; // TODO
-			tx_ttproducts_finalize_div::finalizeOrder($pibase,$this->basket->conf,$basketView->templateCode, $this->basket,$this->basket->tt_products /* TODO */,$this->basket->tt_products_cat, $this->basket->price, $orderUid,$content,$error);  // Important: finalizeOrder MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
+			$this->basket->order->finalize($basketView->templateCode, $basketView, $this->basket->tt_products /* TODO */,$this->basket->tt_products_cat, $this->basket->price, $orderUid,$content,$error);  // Important: $oder->finalize MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 		}
 	break;
 	default:

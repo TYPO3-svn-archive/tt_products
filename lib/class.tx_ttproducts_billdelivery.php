@@ -218,7 +218,7 @@ class tx_ttproducts_billdelivery {
 	$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['total']);
 	$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['total']);
 
-	$markerArray['###ORDER_UID###'] = $this->order->getOrderNumber($orderRow['uid']);
+	$markerArray['###ORDER_UID###'] = $this->order->getNumber($orderRow['uid']);
 	$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
 
 	$content= $this->pibase->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);

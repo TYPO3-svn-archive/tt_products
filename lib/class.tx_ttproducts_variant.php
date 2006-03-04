@@ -67,15 +67,14 @@ class tx_ttproducts_variant {
 		$variantArray = explode(';', $variant);
 		
 		if (is_array($this->conf) && $this->bUseArticles)	{
-			$count = 1;
 			foreach ($this->conf as $key => $field)	{
-				if ($count != 5)	{
-					$row[$field] = $variantArray[$count-1];
+				if ($key != 5)	{
+					$row[$field] = $variantArray[$key-1];
 				}
-				$count++;
 			}
 		}
 	 }
+
 
 	/**
 	 * Returns the variant extVar string from the variant values in the row
@@ -91,17 +90,15 @@ class tx_ttproducts_variant {
 		$variantArray = array();
 
 		if (is_array($this->conf) && $this->bUseArticles)	{
-			$count = 1;
 			foreach ($this->conf as $key => $field)	{
-				if ($count != 5)	{
+				if ($key != 5)	{
 					$tmpArr = t3lib_div::trimExplode(';', $row[$field]);
 					$variantArray[] = $tmpArr[0];
 				}
-				$count++;			
 			}
 		}
 			
-		$rc = implode (';', $variantArray); 
+		$rc = implode (';', $variantArray);
 		return $rc; 
 	 }
 
@@ -110,15 +107,13 @@ class tx_ttproducts_variant {
 		
 		if ($useSelects) {
 			$areaArray = array();
-			$count = 1;
 			if (is_array($this->conf))	{
 				foreach ($this->conf as $key => $field)	{
-					if ($count != 5)	{
+					if ($key != 5)	{
 						if (trim($row[$field]) != '')  {
-							$areaArray[] = 'display_variant'.$count;
+							$areaArray[] = 'display_variant'.$key;
 						}
 					}
-					$count++;			
 				}
 			}
 					
@@ -141,14 +136,12 @@ class tx_ttproducts_variant {
 		$areaArray = array();
 
 		if (is_array($this->conf))	{
-			$count = 1;
 			foreach ($this->conf as $key => $field)	{
-				if ($count != 5)	{
+				if ($key != 5)	{
 					if (trim($row[$field]) == '' || !$conf['select'.ucfirst($field)])	{
-						$areaArray[] = 'display_variant'.$count;
+						$areaArray[] = 'display_variant'.$key;
 					}
 				}
-				$count++;			
 			}
 		}
 

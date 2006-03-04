@@ -289,7 +289,7 @@ class tx_ttproducts_basket_view {
 									$content.=$this->getView($tmp='', '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
 
 									$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-									$orderUid = $this->order->getBlankOrderUid();
+									$orderUid = $this->order->getBlankUid();
 									if (trim($this->conf['paymentActivity'])=='payment' && $handleScript)	{
 										$this->basket->getCalculatedSums();
 										$content.= $this->basket->pricecalc->includeHandleScript($handleScript,  $this->basket->basketExtra['payment.']['handleScript.'], $this);
@@ -326,7 +326,7 @@ class tx_ttproducts_basket_view {
 								$this->basket->mapPersonIntoToDelivery();
 								$this->pibase->load_noLinkExtCobj();	// TODO
 								$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-								$orderUid = $this->order->getBlankOrderUid();
+								$orderUid = $this->order->getBlankUid();
 								if (trim($this->conf['paymentActivity'])=='customized' && $handleScript)	{
 									$this->getCalculatedSums();
 									$content.= $this->basket->pricecalc->includeHandleScript($handleScript,  $this->basket->basketExtra['payment.']['handleScript.'], $this);
@@ -338,7 +338,7 @@ class tx_ttproducts_basket_view {
 								if ($check=='')	{
 									$this->pibase->load_noLinkExtCobj();	// TODO
 									$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-									$orderUid = $this->order->getBlankOrderUid();
+									$orderUid = $this->order->getBlankUid();
 									if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
 										//$this->getCalculatedBasket();
 										$this->basket->getCalculatedSums();
@@ -349,11 +349,10 @@ class tx_ttproducts_basket_view {
 									$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 									$orderConfirmationHTML=$this->getView($empty, '###'.$tmpl.'###', $mainMarkerArray);
 									$contentTmp = $orderConfirmationHTML;
-									include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_finalize_div.php');
 									
-									tx_ttproducts_finalize_div::finalizeOrder($this->pibase, $this->conf, $this->templateCode, 
-										$this->basket, $this, $this->tt_products, $this->tt_products_cat, $this->price, 
-										$this->order, $orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
+									$this->order->finalize($this->templateCode, 
+										$this, $this->tt_products, $this->tt_products_cat, $this->price, 
+										$orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
 
 									if ($this->conf['PIDthanks'] > 0) {
 										$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
@@ -707,8 +706,8 @@ class tx_ttproducts_basket_view {
 			// Desired delivery date.
 		$markerArray['###DELIVERY_DESIRED_DATE###'] = $this->basket->deliveryInfo['desired_date'];
 
-			// Order:	NOTE: Data exist only if the getBlankOrderUid() has been called. Therefore this field in the template should be used only when an order has been established
-		$markerArray['###ORDER_UID###'] = $this->order->getOrderNumber($this->basket->recs['tt_products']['orderUid']);
+			// Order:	NOTE: Data exist only if the order->getBlankUid() has been called. Therefore this field in the template should be used only when an order has been established
+		$markerArray['###ORDER_UID###'] = $this->order->getNumber($this->basket->recs['tt_products']['orderUid']);
 		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($this->basket->recs['tt_products']['orderDate'],$this->conf['orderDate_stdWrap.']);
 		$markerArray['###ORDER_TRACKING_NO###'] = $this->basket->recs['tt_products']['orderTrackingNo'];
 

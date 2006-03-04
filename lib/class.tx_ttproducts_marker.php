@@ -303,7 +303,7 @@ class tx_ttproducts_marker {
 		}
 
 		$prodDescriptionText = '';
-		$prodTmp = explode(';', $row['size']);
+		$prodTmp = explode(';', $row['description']);
 		if ($this->conf['selectDescription']) {
 			foreach ($prodTmp as $prodDescription) {
 				$prodDescriptionText = $prodDescriptionText . '<OPTION value="'.$prodDescription.'">'.$prodDescription.'</OPTION>';

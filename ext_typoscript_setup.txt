@@ -6,6 +6,7 @@ includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
 ## This enables the tt_content.list item to display the guestbook:
 plugin.tt_products >
 plugin.tt_products = USER
+  # Do not change the tt_products fields if you don't know what you do
 plugin.tt_products {
   table.tt_products = tt_products
   table.tt_products {
@@ -17,6 +18,7 @@ plugin.tt_products {
       4 = gradings
       5 = additional
     }
+    requiredListFields = uid,pid,category,price,price2
   }
   table.tt_products_articles = tt_products_articles
   

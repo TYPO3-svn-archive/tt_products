@@ -67,7 +67,7 @@ class tx_ttproducts_csv {
 		if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
 			$csvfilepath .= '/';
 		}
-		$csvfilepath .= $this->order->getOrderNumber($csvorderuid).'.csv';
+		$csvfilepath .= $this->order->getNumber($csvorderuid).'.csv';
 		
 		$csvfile = fopen($csvfilepath, 'w');
 		if ($csvfile !== FALSE)

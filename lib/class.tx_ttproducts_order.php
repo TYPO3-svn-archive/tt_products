@@ -38,6 +38,7 @@
  *
  */
 
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
 
 
 class tx_ttproducts_order {
@@ -77,9 +78,9 @@ class tx_ttproducts_order {
 	 * Create a new order record
 	 *
 	 * This creates a new order-record on the page with pid, .PID_sys_products_orders. That page must exist!
-	 * Should be called only internally by eg. getBlankOrderUid, that first checks if a blank record is already created.
+	 * Should be called only internally by eg. $order->getBlankUid, that first checks if a blank record is already created.
 	 */
-	function createOrder()	{
+	function create()	{
 		global $TSFE;
 
 		$newId = 0;
@@ -116,7 +117,7 @@ class tx_ttproducts_order {
 			$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
 		}
 		return $newId;
-	} // createOrder
+	} // create
 
 
 	/**
@@ -126,50 +127,50 @@ class tx_ttproducts_order {
 	 * A finalized order is marked 'not deleted' and with status=1.
 	 * Returns this uid which is a blank order record uid.
 	 */
-	function getBlankOrderUid()	{
+	function getBlankUid()	{
 		global $TSFE;
 
 	// an new orderUid has been created always because also payment systems can be used which do not accept a duplicate order id
 		$orderUid = intval($this->basket->recs['tt_products']['orderUid']);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', 'uid='.intval($orderUid).' AND deleted AND NOT status');	// Checks if record exists, is marked deleted (all blank orders are deleted by default) and is not finished.
 		if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res) || $this->conf['alwaysAdvanceOrderNumber'])	{
-			$orderUid = $this->createOrder();
+			$orderUid = $this->create();
 			$this->basket->recs['tt_products']['orderUid'] = $orderUid;
 			$this->basket->recs['tt_products']['orderDate'] = time();
-			$this->basket->recs['tt_products']['orderTrackingNo'] = $this->getOrderNumber($orderUid).'-'.strtolower(substr(md5(uniqid(time())),0,6));
+			$this->basket->recs['tt_products']['orderTrackingNo'] = $this->getNumber($orderUid).'-'.strtolower(substr(md5(uniqid(time())),0,6));
 			$TSFE->fe_user->setKey('ses','recs',$this->basket->recs);
 		}
 		return $orderUid;
-	} // getBlankOrderUid
+	} // getBlankUid
 
 
 	/**
-	 * Returns the orderRecord if $orderUid.
+	 * Returns the order record if $orderUid.
 	 * If $tracking is set, then the order with the tracking number is fetched instead.
 	 */
-	function getOrderRecord($orderUid,$tracking='')	{
+	function getRecord($orderUid,$tracking='')	{
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', ($tracking ? 'tracking_code="'.$GLOBALS['TYPO3_DB']->quoteStr($tracking, 'sys_products_orders').'"' : 'uid='.intval($orderUid)).' AND NOT deleted');
 		return $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-	} //getOrderRecord
+	} //getRecord
 
 
 	/**
 	 * This returns the order-number (opposed to the order_uid) for display in the shop, confirmation notes and so on.
 	 * Basically this prefixes the .orderNumberPrefix, if any
 	 */
-	function getOrderNumber($orderUid)	{
+	function getNumber($orderUid)	{
 		$orderNumberPrefix = substr($this->conf['orderNumberPrefix'],0,10);
 		if ($orderNumberPrefix[0]=='%')
 			$orderNumberPrefix = date(substr($orderNumberPrefix, 1));
 		return $orderNumberPrefix.$orderUid;
-	} // getOrderNumber
+	} // getNumber
 
 
 	/**
-	 * Saves the orderRecord and returns the result
+	 * Saves the order record and returns the result
 	 *
 	 */
-	function putOrderRecord($orderUid,&$deliveryInfo, $feusers_uid, $email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML)	{
+	function putRecord($orderUid,&$deliveryInfo, $feusers_uid, $email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML)	{
 		global $TYPO3_DB;
 		global $TSFE;
 
@@ -276,7 +277,7 @@ class tx_ttproducts_order {
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
 
-	} //putOrderRecord
+	} //putRecord
 
 
 
@@ -285,7 +286,7 @@ class tx_ttproducts_order {
 	 * Creates M-M relations for the products with tt_products table. Isn't really used yet, but later will be used to display stock-status by looking up how many items are already ordered.
 	 *
 	 */
-	function createMM($conf, $orderUid, &$itemArray)	{
+	function createMM($orderUid, &$itemArray)	{
 		global $TYPO3_DB;
 
 			// First: delete any existing. Shouldn't be any
@@ -329,6 +330,237 @@ class tx_ttproducts_order {
 		}
 	}
 
+
+	/**
+	 * Finalize an order
+	 *
+	 * This finalizes an order by saving all the basket info in the current order_record.
+	 * A finalized order is then marked 'not deleted' and with status=1
+	 * The basket is also emptied, but address info is preserved for any new orders.
+	 * $orderUid is the order-uid to finalize
+	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
+	 */
+	function finalize($templateCode, &$basketView, &$tt_products, &$tt_products_cat, &$price, $orderUid, $orderConfirmationHTML, &$error_message)	{
+		global $TSFE;
+		global $TYPO3_DB;
+
+		$recipientsArray = array();
+
+		// CBY 11/11/2005 I moved the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
+		// Is no user is logged in --> create one
+		if ($this->conf['createUsers'] && $this->basket->personInfo['email'] != '' && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
+		{
+			$username = strtolower(trim($this->basket->personInfo['email']));
+
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $this->conf['PIDuserFolder'].' AND deleted=0');
+			$num_rows = $TYPO3_DB->sql_num_rows($res);
+
+			if (!$num_rows)
+			{
+				$this->basket->password = substr(md5(rand()), 0, 6);
+
+				$insertFields = array(
+					'pid' => $this->conf['PIDuserFolder'],
+					'tstamp' => time(),
+					'username' => $username,
+					'password' => $this->basket->password,
+					'usergroup' => $this->conf['memberOfGroup'],
+					'uid' => $this->basket->personInfo['feusers_uid'],
+					'company' => $this->basket->personInfo['company'],
+					'name' => $this->basket->personInfo['name'],
+					'first_name' => $this->basket->personInfo['first_name'],
+					'last_name' => $this->basket->personInfo['last_name'],
+					'address' => $this->basket->personInfo['address'],
+					'telephone' => $this->basket->personInfo['telephone'],
+					'fax' => $this->basket->personInfo['fax'],
+					'email' => $this->basket->personInfo['email'],
+					'zip' => $this->basket->personInfo['zip'],
+					'city' => $this->basket->personInfo['city'],
+					'crdate' => time()
+				);
+
+				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country':'country');
+				$insertFields[$countryKey] =  $this->basket->personInfo['country'];
+
+				$res = $TYPO3_DB->exec_INSERTquery('fe_users', $insertFields);
+				// send new user mail
+				if (count($this->basket->personInfo['email'])) {
+					$emailContent=trim($basketView->getView($tmp='','###EMAIL_NEWUSER_TEMPLATE###'));
+					if ($emailContent) {
+						$parts = split(chr(10),$emailContent,2);
+						$subject=trim($parts[0]);
+						$plain_message=trim($parts[1]);
+
+						tx_ttproducts_email_div::send_mail($this->basket->personInfo['email'], $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName']);
+					}
+				}
+				$res = $TYPO3_DB->exec_SELECTquery(uid, 'fe_users', 'username=\''.$username . '\' AND pid='. $this->conf['PIDuserFolder'].' AND deleted=0');
+							while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+			 					 $this->basket->personInfo['feusers_uid']= $row['uid'];
+						}
+
+			}
+		}
+		// CBY 11/11/2005 modification end
+
+		$rc = $this->putRecord(
+			$orderUid,
+			$this->basket->deliveryInfo,
+			$this->basket->personInfo['feusers_uid'],
+			$this->conf['email_notify_default'],		// Email notification is set here. Default email address is delivery email contact
+			$this->basket->basketExtra['payment'].': '.$this->basket->basketExtra['payment.']['title'],
+			$this->basket->basketExtra['shipping'].': '.$this->basket->basketExtra['shipping.']['title'],
+			$this->basket->calculatedArray['priceTax']['total'],
+			$orderConfirmationHTML
+			);
+
+		// any gift orders in the extended basket?
+		if ($this->basket->basketExt['gift']) {
+			$pid = intval($this->conf['PIDGiftsTable']);
+			if (!$pid)	$pid = intval($TSFE->id);
+			$rc = tx_ttproducts_gifts_div::saveOrderRecord(
+				$tt_products,
+				$orderUid,
+				$pid,
+				$this->basket->basketExt['gift']
+			);
+		}
+
+			// Fetching the order Record by selecing the newly saved one...
+		// $orderRecord = $this->getRecord($orderUid);  needed?
+
+		if (!$this->conf['alwaysInStock'] && !$this->conf['AlwaysInStock']) {
+			$rc = $tt_products->reduceInStock($this->basket->itemArray, $this->conf['useArticles']);
+		}
+
+		$this->createMM($this->orderUid, $this->basket->itemArray);
+
+		$addcsv = '';
+		// Generate CSV for each order
+		if ($this->conf['generateCSV'])
+		{
+			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_csv.php');
+			$csv = t3lib_div::makeInstance('tx_ttproducts_csv');
+			$csv->init($this->pibase,$this->conf,$this->basket->itemArray,$this->basket->calculatedArray,$price,$this);
+			$csvfilepath = PATH_site.'/'. $this->conf['CSVdestination'];
+			$csvorderuid = $this->basket->recs['tt_products']['orderUid'];
+
+			$csv->create($this->basket, $csvorderuid, $csvfilepath, $error_message);
+			$addcsv = $csvfilepath;
+		}
+
+			// Sends order emails:
+		$recipientsArray['customer'] = array();
+		$recipientsArray['customer'][] = ($this->conf['orderEmail_toDelivery'] ? $this->basket->deliveryInfo['email'] : $this->basket->personInfo['email']); // former: deliveryInfo
+		$recipientsArray['shop'] = $tt_products_cat->getEmail($this->basket->itemArray);
+		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
+		$recipientsGroupsArray = array ('shop', 'customer');
+
+		if ($recipientsArray['customer'])	{	// If there is a customer as recipient, then compile and send the mail.
+			$emailTemplateArray = array();
+			$emailTemplateArray['customer'] = 'EMAIL_PLAINTEXT_TEMPLATE';
+			$emailTemplateArray['shop'] = 'EMAIL_PLAINTEXT_TEMPLATE_SHOP';
+			$emailContentArray = array();
+			$subjectArray = array();
+			$plainMessageArray = array();
+
+			
+			foreach ($emailTemplateArray as $key => $emailTemplate) {
+				$emailContentArray[$key] = trim($basketView->getView($tmp='','###'.$emailTemplate.'###'));
+				if ($emailContentArray[$key])	{		// If there is plain text content - which is required!!
+					$parts = preg_split('/[\n\r]+/',$emailContentArray[$key],2);		// First line is subject
+					$subjectArray[$key]=trim($parts[0]);
+					$plainMessageArray[$key]=trim($parts[1]);
+					if (empty($plainMessageArray[$key])) {	// the user did not use the subject field
+						$plainMessageArray[$key] = $subjectArray[$key];
+					}
+					if (empty($subjectArray[$key])) {	
+						$subjectArray[$key] = $this->conf['orderEmail_subject'];
+					}
+				}
+			}
+
+			if (!$plainMessageArray['shop'])	{
+				$plainMessageArray['shop'] = $plainMessageArray['customer'];
+				$subjectArray['shop'] = $subjectArray['customer'];
+			}
+	
+			if ($emailContentArray['customer'])	{		// If there is plain text content - which is required!!	
+				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
+				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
+					$HTMLmailShell=$this->pibase->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
+					$HTMLmailContent=$this->pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$orderConfirmationHTML);
+					$HTMLmailContent=$this->pibase->cObj->substituteMarkerArray($HTMLmailContent, $this->globalMarkerArray);
+
+						// Remove image tags to products:
+					if ($this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix'])	{
+						$parser = t3lib_div::makeInstance('t3lib_parsehtml');
+						$htmlMailParts = $parser->splitTags('img',$HTMLmailContent);
+
+						reset($htmlMailParts);
+						while(list($kkk,$vvv)=each($htmlMailParts))	{
+							if ($kkk%2)	{
+								list($attrib) = $parser->get_tag_attributes($vvv);
+								if (t3lib_div::isFirstPartOfStr($attrib['src'],$this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix']))	{
+									$htmlMailParts[$kkk]='';
+								}
+							}
+						}
+						$HTMLmailContent=implode('',$htmlMailParts);
+					}
+
+					foreach ($recipientsGroupsArray as $key => $group)	{
+						$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
+						$Typo3_htmlmail->useBase64();
+	
+						$V = array ();
+						if ($group == 'shop')	{
+							$V['from_email'] = $this->basket->personInfo['email'];
+							$V['from_name'] = $this->basket->personInfo['name'];
+							$V['attachment'] = $addcsv;
+						} else	{
+							$V['from_email'] = $this->conf['orderEmail_from'];
+							$V['from_name'] = $this->conf['orderEmail_fromName'];							
+							$V['attachment'] = ($this->conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($this->conf['AGBattachment']) : '');
+						}
+
+						$Typo3_htmlmail->start(implode($recipientsArray[$group],','), $subjectArray[$group], $plainMessageArray[$group], $HTMLmailContent, $V);
+						$Typo3_htmlmail->sendtheMail();
+					}
+
+				} else {		// ... else just plain text...
+					$agbAttachment = t3lib_div::getFileAbsFileName($this->conf['AGBattachment']);
+					foreach ($recipientsArray['customer'] as $key => $recipient) {
+						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['customer'], $plainMessageArray['customer'], $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName'], $agbAttachment);
+					}
+					foreach ($recipientsArray['shop'] as $key => $recipient) {
+						// $headers variable removed everywhere!
+						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['shop'], $plainMessageArray['shop'], $this->basket->personInfo['email'], $this->basket->personInfo['name'], $addcsv);
+					}
+				}
+			}
+		}
+		
+		// 3 different hook methods - There must be one for your needs, too.
+
+			// This cObject may be used to call a function which clears settings in an external order system.
+			// The output is NOT included anywhere
+		$this->pibase->getExternalCObject('externalFinalizing');
+
+		if ($this->conf['externalOrderProcessFunc'])    {
+			$this->pibase->userProcess('externalOrderProcessFunc',$this->basket);
+		}
+		
+			// Call all finalizeOrder hooks at the end of this method
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
+				$hookObj= &t3lib_div::getUserObj($classRef);
+				if (method_exists($hookObj, 'finalizeOrder')) {
+					$hookObj->finalizeOrder($this, $templateCode, $basketView, $tt_products, $tt_products_cat, $price, $orderUid, $orderConfirmationHTML, $error_message);
+				}
+			}
+		}		
+	} // finalize
 
 }
 
