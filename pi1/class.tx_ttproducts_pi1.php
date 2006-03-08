@@ -116,7 +116,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $singleView;				// single view object
 	var $memoView;					// memo view and data object
 	
-	var $pi_checkCHash = TRUE;
+	var $pi_checkCHash = TRUE;		// activate cHash
 	var $pid;						// the page to which the script shall go
 
 	/**
@@ -163,7 +163,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		while(!$this->errorMessage && list($key,$theCode)=each($codes))	{
 			$theCode = (string) trim($theCode);
 			$contentTmp = '';
-			debug ($theCode, '$theCode', __LINE__, __FILE__);
 			switch($theCode)	{
 				case 'SEARCH':
 					$TSFE->set_no_cache();
@@ -190,10 +189,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$contentTmp=$categoryView->printView($this->templateCode, $error_code);
 				break;
 				case 'SINGLE':
-					debug ($this->basket->itemArray, '$this->basket->itemArray', __LINE__, __FILE__);
-					debug ($this->conf['NoSingleViewOnList'], '$this->conf[\'NoSingleViewOnList\']', __LINE__, __FILE__);
 					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList']) {
-						debug ($theCode, 'set_no_cache in single view!! $theCode', __LINE__, __FILE__); 
 						$TSFE->set_no_cache();
 					}
 					$contentTmp=$this->products_display($theCode, $this->errorMessage, $error_code);				
@@ -342,7 +338,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$config['code']='SINGLE';
 			$this->tt_product_single = true;
 		} else {
-			$this->tt_product_single = ($this->piVars['single'] ? $this->piVars['single'] : t3lib_div::_GP('tt_products'));
+			$this->tt_product_single = ($this->piVars['product'] ? $this->piVars['product'] : t3lib_div::_GP('tt_products'));
 		}
 
 		if ($this->conf['templateFile']) {
@@ -386,7 +382,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$globalMarkerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'],$this->conf['color2.']);
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'],$this->conf['color3.']);
 		$globalMarkerArray['###DOMAIN###'] = $this->conf['domain'];
-		debug ($this->conf, '$this->conf', __LINE__, __FILE__);
 		$globalMarkerArray['###PID_BASKET###'] = $this->conf['PIDbasket'];
 		$globalMarkerArray['###PID_BILLING###'] = $this->conf['PIDbilling'];
 		$globalMarkerArray['###PID_DELIVERY###'] = $this->conf['PIDdelivery'];

@@ -1,4 +1,5 @@
 2006-03-08 Franz Holzinger <franz@fholzinger.com>
+	* correct error with single view which had shown always the same product
 	* change link parameter to single view from 'tt_products' to 'tx_ttproducts_pi1['single']'
 	* attention: all the links have been changed! --> return to 'Beta' state
 
