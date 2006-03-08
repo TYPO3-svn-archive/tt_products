@@ -540,8 +540,9 @@ class tx_ttproducts_basket_view {
 
 					$splitMark = md5(microtime());
 					$addQueryString=array();
-					$addQueryString['tt_products'] = intval($actItem['rec']['uid']);
-					$addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
+					$addQueryString[$this->pibase->prefixId.'[product]']= intval($actItem['rec']['uid']);
+					$addQueryString[$this->pibase->prefixId.'[variants]']= htmlspecialchars($actItem['rec']['extVars']); 
+					// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
 					$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>'); 
 
 					// Substitute
@@ -723,11 +724,6 @@ class tx_ttproducts_basket_view {
 			// URL
 		$markerArray =  $this->marker->addURLMarkers(0, $markerArray);
 
-		$agb_url=array();
-		$pidagb = intval($this->conf['PIDagb']);
-		$agb_url['id'] = 'id='.$pidagb;
-		$agb_url['type']= $TSFE->type ? 'type='.$TSFE->type : '';
-		$agb_url['backPID']= 'backPID='.$TSFE->id;
 
 /* Added els6: reorganized this part. First calculating amount in euros, then calculate voucher discount, then calcualte the creditpoints */
 
@@ -917,7 +913,15 @@ class tx_ttproducts_basket_view {
 /* Added Els7: error in calcualtion */
 		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = $this->price->priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
 
-		$wrappedSubpartArray['###LINK_AGB###']=array('<a href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</a>');
+		$agb_url=array();
+		$pidagb = intval($this->conf['PIDagb']);
+		$addQueryString['id'] = $pidagb;
+		if ($TSFE->type)
+			$addQueryString['type'] = $TSFE->type;
+		
+		$wrappedSubpartArray['###LINK_AGB###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString)) .'" target="'.$this->conf['agbtarget'].'">','</a>');
+		
+		// $wrappedSubpartArray['###LINK_AGB###']=array('<a href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</a>');
 
 			// Final substitution:
 		if (!$TSFE->loginUser)	{		// Remove section for FE_USERs only, if there are no fe_user

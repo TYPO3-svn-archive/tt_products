@@ -1,3 +1,7 @@
+2006-03-08 Franz Holzinger <franz@fholzinger.com>
+	* change link parameter to single view from 'tt_products' to 'tx_ttproducts_pi1['single']'
+	* attention: all the links have been changed! --> return to 'Beta' state
+
 2006-03-04 Franz Holzinger <franz@fholzinger.com>
 	* correct errors in list view
 	* undo sorting of codes to make SEARCH possible on the beginning

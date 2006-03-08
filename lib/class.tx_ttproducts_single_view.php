@@ -152,7 +152,8 @@ class tx_ttproducts_single_view {
 
 				// Fill marker arrays
 			$wrappedSubpartArray=array();
-			$backPID =t3lib_div::_GP('backPID');
+			$backPID = $this->pibase->piVars['backPID'];
+			$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
 			$pid = ( $backPID ? $backPID : $TSFE->id);
 			$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams()) .'">','</a>');
 
@@ -169,7 +170,11 @@ class tx_ttproducts_single_view {
 			$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];
 
 			//$markerArray['###FORM_URL###']=$this->formUrl.'&tt_products='.$this->uid ;
-			$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, array('tt_products' => $this->uid)); // Applied it here also...
+			$addQueryString=array();
+			$addQueryString[$this->pibase->prefixId.'[product]']= $this->uid;
+			
+			// $markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, array('tt_products' => $this->uid)); // Applied it here also...
+			$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, $addQueryString); // Applied it here also...
 			// $url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams()) ; // $this->getLinkUrl('','tt_products');
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
@@ -196,9 +201,13 @@ class tx_ttproducts_single_view {
 			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
 			$resprev = $this->tt_products->table->exec_SELECTquery('*', $queryprev, '', $prevOrderby);
 
+			
 			if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )	{
+				$addQueryString=array();
+				$addQueryString[$this->pibase->prefixId.'[product]']= $rowprev['uid'];
+				$addQueryString[$this->pibase->prefixId.'[backPID]'] = $backPID;
 				// $wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', array('tt_products' => $rowprev['uid'], 'backPID' => $backPID))) .'">','</a>');
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString)) .'">','</a>');
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
@@ -208,8 +217,11 @@ class tx_ttproducts_single_view {
 			$resnext = $this->tt_products->table->exec_SELECTquery('*', $querynext, '', $nextOrderby);
 
 			if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )	{
+				$addQueryString=array();
+				$addQueryString[$this->pibase->prefixId.'[product]']= $rownext['uid'];
+				$addQueryString[$this->pibase->prefixId.'[backPID]'] = $backPID;				
 				// $wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rownext['uid'].'">','</a>');
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', array('tt_products' => $rownext['uid'], 'backPID' => $backPID))) .'">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString)) .'">','</a>');
 			} else {
 				$subpartArray['###LINK_NEXT_SINGLE###']='';
 			}
@@ -225,8 +237,11 @@ class tx_ttproducts_single_view {
 					$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $giftnumber);
 					$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'].'_'.$giftnumber;
 					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')';
-					//$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink(t3lib_div::_GP('backPID'),'',$this->marker->getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants)))); // $this->getLinkUrl(t3lib_div::_GP('backPID')).'&tt_products='.$row['uid'].'&ttp_extvars='.htmlspecialchars($this->variants);
-					$markerArray = $this->marker->addURLMarkers(t3lib_div::_GP('backPID'),$markerArray, array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants))); // Applied it here also...
+					//$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink(t3lib_div::_GP('backPID'),'',$this->marker->getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants))));
+					$addQueryString=array();
+					$addQueryString[$this->pibase->prefixId.'[product]']= intval($row['uid']);
+					$addQueryString[$this->pibase->prefixId.'[variants]']= htmlspecialchars($this->variants); 					
+					$markerArray = $this->marker->addURLMarkers($backPID,$markerArray, $addQueryString); // Applied it here also...
 					
 					$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$this->variants.']'; // here again, because this is here in ITEM_LIST view
 					$markerArray['###FIELD_QTY###'] = $this->basket->basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];

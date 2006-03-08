@@ -65,6 +65,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_gifts_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_memo_view.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_page.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentshipping.php');
@@ -113,6 +114,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 	var $basket;					// basket object
 	var $singleView;				// single view object
+	var $memoView;					// memo view and data object
 	
 	var $pi_checkCHash = TRUE;
 	var $pid;						// the page to which the script shall go
@@ -126,8 +128,12 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$bStoreBasket = false;
 		$error_code = array();
 		
+		debug ($this->piVars, '$this->piVars', __LINE__, __FILE__);
+		$backPID = $this->piVars['backPID'];
+		$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
+		
 		// page where to go usually
-		$this->pid = ($conf['PIDbasket'] && $conf['clickIntoBasket'] ? $conf['PIDbasket'] : (t3lib_div::_GP('backPID') ? t3lib_div::_GP('backPID') : $TSFE->id));
+		$this->pid = ($conf['PIDbasket'] && $conf['clickIntoBasket'] ? $conf['PIDbasket'] : ($backPID ? $backPID : $TSFE->id));
 		
 		$this->init ($content, $conf, $this->config);
 
@@ -153,10 +159,11 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$content .= $this->basketView->printView($codes, $this->errorMessage);
 		}
 		reset($codes);
-		//$TSFE->set_no_cache(); // uncomment this line if you have a problem with the cache
+		$TSFE->set_no_cache(); // uncomment this line if you have a problem with the cache
 		while(!$this->errorMessage && list($key,$theCode)=each($codes))	{
 			$theCode = (string) trim($theCode);
 			$contentTmp = '';
+			debug ($theCode, '$theCode', __LINE__, __FILE__);
 			switch($theCode)	{
 				case 'SEARCH':
 					$TSFE->set_no_cache();
@@ -183,7 +190,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$contentTmp=$categoryView->printView($this->templateCode, $error_code);
 				break;
 				case 'SINGLE':
+					debug ($this->basket->itemArray, '$this->basket->itemArray', __LINE__, __FILE__);
+					debug ($this->conf['NoSingleViewOnList'], '$this->conf[\'NoSingleViewOnList\']', __LINE__, __FILE__);
 					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList']) {
+						debug ($theCode, 'set_no_cache in single view!! $theCode', __LINE__, __FILE__); 
 						$TSFE->set_no_cache();
 					}
 					$contentTmp=$this->products_display($theCode, $this->errorMessage, $error_code);				
@@ -213,12 +223,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$contentTmp=$this->products_tracking($theCode);
 				break;
 				case 'MEMO':
-					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_memo_view.php');
 					$TSFE->set_no_cache();
-						// memo view
-					$memoView = t3lib_div::makeInstance('tx_ttproducts_memo_view');
-					$memoView->init($this, $this->conf, $this->config, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products, $this->tt_products_cat, $this->pid);
-					$contentTmp=$memoView->printView($this->templateCode, $error_code);
+					$contentTmp=$this->memoView->printView($this->templateCode, $error_code);
 				break;
 				case 'CURRENCY':
 					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_currency_view.php');
@@ -336,7 +342,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$config['code']='SINGLE';
 			$this->tt_product_single = true;
 		} else {
-			$this->tt_product_single = t3lib_div::_GP('tt_products');
+			$this->tt_product_single = ($this->piVars['single'] ? $this->piVars['single'] : t3lib_div::_GP('tt_products'));
 		}
 
 		if ($this->conf['templateFile']) {
@@ -375,10 +381,12 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$globalMarkerArray=array();
 		list($globalMarkerArray['###GW1B###'],$globalMarkerArray['###GW1E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap1.']));
 		list($globalMarkerArray['###GW2B###'],$globalMarkerArray['###GW2E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap2.']));
+		list($globalMarkerArray['###GW3B###'],$globalMarkerArray['###GW3E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap3.'])); 
 		$globalMarkerArray['###GC1###'] = $this->cObj->stdWrap($this->conf['color1'],$this->conf['color1.']);
 		$globalMarkerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'],$this->conf['color2.']);
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'],$this->conf['color3.']);
 		$globalMarkerArray['###DOMAIN###'] = $this->conf['domain'];
+		debug ($this->conf, '$this->conf', __LINE__, __FILE__);
 		$globalMarkerArray['###PID_BASKET###'] = $this->conf['PIDbasket'];
 		$globalMarkerArray['###PID_BILLING###'] = $this->conf['PIDbilling'];
 		$globalMarkerArray['###PID_DELIVERY###'] = $this->conf['PIDdelivery'];
@@ -406,6 +414,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 			// basket view
 		$this->basketView = t3lib_div::makeInstance('tx_ttproducts_basket_view');
+
+			// memo view: has to be called always because it reads parameters from the list
+		$this->memoView = t3lib_div::makeInstance('tx_ttproducts_memo_view');
+		$this->memoView->init($this, $this->conf, $this->config, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products, $this->tt_products_cat, $this->pid);
 		
 			// price
 		$this->price = t3lib_div::makeInstance('tx_ttproducts_price');
@@ -609,7 +621,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			if (!$this->tt_product_single) {
 				$this->tt_product_single = $this->conf['defaultProductID'];
 			}
-			$extVars= t3lib_div::_GP('ttp_extvars');
+			$extVars = $this->piVars['variants'];
+			$extVars = ($extVars ? $extVars : t3lib_div::_GP('ttp_extvars'));
 				// performing query:
 		
 			// $this->page->initRecursive($this->config['recursive']);

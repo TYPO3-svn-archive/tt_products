@@ -71,7 +71,7 @@ class tx_ttproducts_order_view {
 		if (!$feusers_uid)
 			return $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###MEMO_NOT_LOGGED_IN###'));
 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'feusers_uid='.$feusers_uid.' AND NOT deleted');
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders','feusers_uid='.$feusers_uid.' AND NOT deleted ORDER BY crdate');
 
 		$content=$this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ORDERS_LIST_TEMPLATE###'));
  //CBY 11/11/2005 modifications : integrating order list template start
@@ -93,6 +93,7 @@ class tx_ttproducts_order_view {
 				$markerArray['###ORDER_NUMBER###'] = $this->order->getNumber($row['uid']);
 				//$rt= $row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
 				$markerArray['###ORDER_CREDITS###']=$row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
+				$markerArray['###ORDER_AMOUNT###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($row['amount']));
 				
 				// total amount of saved creditpoints
 				$tot_creditpoints_saved += $row['creditpoints_saved'];

@@ -433,7 +433,7 @@ class tx_ttproducts_order {
 			$rc = $tt_products->reduceInStock($this->basket->itemArray, $this->conf['useArticles']);
 		}
 
-		$this->createMM($this->orderUid, $this->basket->itemArray);
+		$this->createMM($orderUid, $this->basket->itemArray);
 
 		$addcsv = '';
 		// Generate CSV for each order

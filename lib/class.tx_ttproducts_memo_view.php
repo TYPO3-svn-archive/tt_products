@@ -52,25 +52,61 @@ class tx_ttproducts_memo_view {
 	var $pid; // pid where to go
 
 	var $searchFieldList='';
+	var $memoItems;
 
 	function init(&$pibase, &$conf, &$config, &$basket, &$pid_list, &$tt_content, &$tt_products, &$tt_products_cat, $pid) {
+		global $TSFE;
+
 		$this->pibase = &$pibase;
 		$this->conf = &$conf;
 		$this->config = &$config;
 		$this->basket = &$basket;
-		$this->page = &$page;
 		$this->page = tx_ttproducts_page::createPageTable($this->pibase,$this->page,$pid_list,99);
 		$this->tt_content = &$tt_content;
 		$this->tt_products = &$tt_products;
 		$this->tt_products_cat = &$tt_products_cat;
 		$this->pid = $pid;	
 
+		$fe_user_uid = $TSFE->fe_user->user['uid'];
+		$this->memoItems = array();
+
+		if ($fe_user_uid)	{
+			if ($TSFE->fe_user->user['tt_products_memoItems'] != '')	{
+				$this->memoItems = explode(',', $TSFE->fe_user->user['tt_products_memoItems']);
+			}
+	
+			if (t3lib_div::GPvar('addmemo'))
+			{
+				$addMemo = explode(',', t3lib_div::GPvar('addmemo'));
+	
+				foreach ($addMemo as $addMemoSingle)
+					if (!in_array($addMemoSingle, $this->memoItems))
+						$this->memoItems[] = $addMemoSingle;
+	
+				$fieldsArray = array();
+				$fieldsArray['tt_products_memoItems']=implode(',', $this->memoItems);
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
+			}
+	
+			if (t3lib_div::GPvar('delmemo'))
+			{
+				$delMemo = explode(',', t3lib_div::GPvar('delmemo'));
+	
+				foreach ($delMemo as $delMemoSingle)	{
+					if (in_array($delMemoSingle, $this->memoItems))
+						unset($this->memoItems[array_search($delMemoSingle, $this->memoItems)]);
+				}
+	
+				$fieldsArray = array();
+				$fieldsArray['tt_products_memoItems']=implode(',', $this->memoItems);
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
+			}			
+		}
 	}
 
 
-
 	/**
-	 * Displays and manages the memo
+	 * Displays the memo
 	 */
 	function &printView(&$templateCode, &$error_code)
 	{
@@ -79,45 +115,13 @@ class tx_ttproducts_memo_view {
 		$content = '';
 
 		$fe_user_uid = $TSFE->fe_user->user['uid'];
-		if ($fe_user_uid)	{
-			if ($TSFE->fe_user->user['tt_products_memoItems'] != '')
-				$memoItems = explode(',', $TSFE->fe_user->user['tt_products_memoItems']);
-			else
-				$memoItems = array();
-	
-			if (t3lib_div::GPvar('addmemo'))
-			{
-				$addMemo = explode(',', t3lib_div::GPvar('addmemo'));
-	
-				foreach ($addMemo as $addMemoSingle)
-					if (!in_array($addMemoSingle, $memoItems))
-						$memoItems[] = $addMemoSingle;
-	
-				$fieldsArray = array();
-				$fieldsArray['tt_products_memoItems']=implode(',', $memoItems);
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
-			}
-	
-			if (t3lib_div::GPvar('delmemo'))
-			{
-				$delMemo = explode(',', t3lib_div::GPvar('delmemo'));
-	
-				foreach ($delMemo as $delMemoSingle)
-					if (in_array($delMemoSingle, $memoItems))
-						unset($memoItems[array_search($delMemoSingle, $memoItems)]);
-	
-				$fieldsArray = array();
-				$fieldsArray['tt_products_memoItems']=implode(',', $memoItems);
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
-			}
-			
+		if ($fe_user_uid)	{				
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_list_view.php');
 	
 			// List all products:
 			$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
 			$listView->init ($this->pibase, $this->conf, $this->config, $this->basket, $this->page, $this->content, $this->tt_products, $this->tt_products_cat, $this->pid);
-			
-			$content = $listView->printView($templateCode, 'MEMO', implode(',', $memoItems), $error_code);
+			$content = $listView->printView($templateCode, 'MEMO', implode(',', $this->memoItems), $error_code);
 		} else {
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 

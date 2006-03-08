@@ -61,6 +61,8 @@ class tx_ttproducts_marker {
  		$this->conf = &$conf;
  		$this->config = &$config;
  		$this->basket = &$basket;
+ 		
+ 		debug ($this->pibase->piVars, '$this->pibase->piVars', __LINE__, __FILE__);
 	}
 
 
@@ -70,8 +72,11 @@ class tx_ttproducts_marker {
 	function addURLMarkers($pidNext,$markerArray,$addQueryString=array())	{
 		global $TSFE;
 
+		// disable caching as soon as someone enters products into the basket, enters user data etc.
+		$addQueryString['no_cache'] = 1; 
 			// Add's URL-markers to the $markerArray and returns it
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
+		debug ($pidBasket, '$pidBasket', __LINE__, __FILE__);
 		$pidFormUrl = ($pidNext ? $pidNext : $pidBasket);
 		$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink($pidFormUrl,'',$this->getLinkParams('',$addQueryString)) ;
 		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $pidBasket);
@@ -90,6 +95,7 @@ class tx_ttproducts_marker {
 			$markerArray['###FORM_URL_TARGET###'] = $this->basket->basketExtra['payment.']['handleTarget'];
 		}
 		
+		debug ($markerArray, '$markerArray', __LINE__, __FILE__);
 			// Call all addURLMarkers hooks at the end of this method
 		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'])) {
 			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
@@ -200,7 +206,7 @@ class tx_ttproducts_marker {
 			$markerArray['###PRODUCT_IMAGE' .  intval($c + 1) . '###'] = $theImgCode[$c];
 		}
 
-			// empty all image fields with no availble image
+			// empty all image fields with no available image
 		for ($i=1; $i<=15; ++$i) {
 			if (!$markerArray['###PRODUCT_IMAGE' .  $i. '###']) {
 				$markerArray['###PRODUCT_IMAGE' .  $i. '###'] = '';
@@ -368,6 +374,20 @@ class tx_ttproducts_marker {
 	} // getItemMarkerArray
 
 
+	/**
+	 * Returns a url for use in forms and links
+	 */
+	function addQueryStringParam(&$queryString, $param) {
+		debug ($param, 'addQueryString: $param', __LINE__, __FILE__);
+		$temp = $this->pibase->piVars[$param];
+		debug ($temp, '$temp', __LINE__, __FILE__);
+		$temp = ($temp ? $temp : (t3lib_div::GPvar($param) ? t3lib_div::GPvar($param) : $this->pibase->currency)); 
+		debug ($temp, '$temp', __LINE__, __FILE__);
+		if ($temp)	{
+			$queryString[$this->pibase->prefixId.'['.$param.']'] = $temp;
+		}
+	}
+
 
 	/**
 	 * Returns a url for use in forms and links
@@ -375,22 +395,17 @@ class tx_ttproducts_marker {
 	function getLinkParams($excludeList='',$addQueryString=array()) {
 		global $TSFE;
 		$queryString=array();
-		$queryString['backPID']= $TSFE->id;
-		$temp = t3lib_div::GPvar('C') ? t3lib_div::GPvar('C') : $this->currency;
-		if ($temp)	{
-			$queryString['C'] = $temp;
-		}
-		$temp =	t3lib_div::_GP('begin_at');
-		if ($temp) {
-			$queryString['begin_at'] = $temp;
-		}
+		$queryString[$this->pibase->prefixId.'[backPID]']= $TSFE->id;
+		
+		$this->addQueryStringParam($queryString, 'C');
+		$this->addQueryStringParam($queryString, 'begin_at');
+		$this->addQueryStringParam($queryString, 'newitemdays');
+		debug ($queryString, '$queryString', __LINE__, __FILE__);
+		debug ($addQueryString, '$addQueryString', __LINE__, __FILE__);
+
 		$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
 		if ($temp) {
 			$queryString['swords'] = $temp;
-		}
-		$temp = t3lib_div::GPvar('newitemdays') ? rawurlencode(stripslashes(t3lib_div::GPvar('newitemdays'))) : '';
-		if ($temp) {
-			$queryString['newitemdays'] = $temp;
 		}
 		foreach ($addQueryString as $param => $value){
 			$queryString[$param] = $value;
@@ -412,6 +427,7 @@ class tx_ttproducts_marker {
 			}
 		}
 
+		debug ($queryString, '$queryString', __LINE__, __FILE__);
 		return $queryString;
 	}
 
@@ -419,6 +435,7 @@ class tx_ttproducts_marker {
 	/**
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
+	 * This helps to reduce the data transfer from the database
 	 *
 	 * @access private
 	 */

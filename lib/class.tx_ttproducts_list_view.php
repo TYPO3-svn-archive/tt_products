@@ -99,10 +99,15 @@ class tx_ttproducts_list_view {
 		$out='';
 		$more=0;
 		$where='';
+		$formName = 'ShopListForm';
+		// Getting various subparts we're going to use here:
+		$templateArea = '###ITEM_LIST_TEMPLATE###';
 
 		// if parameter 'newitemdays' is specified, only new items from the last X days are displayed
-		if (t3lib_div::_GP('newitemdays')) {
-			$temptime = time() - 86400*intval(trim(t3lib_div::_GP('newitemdays')));
+		$newitemdays = $this->pibase->piVars['newitemdays'];
+		$newitemdays = ($newitemdays ? $newitemdays : t3lib_div::_GP('newitemdays'));  
+		if ($newitemdays) {
+			$temptime = time() - 86400*intval(trim($newitemdays));
 			// $where = ' AND tstamp >= '.$temptime;
 			$where = ' AND (starttime >= '.$temptime . ' OR tstamp >= '. $temptime . ')'; 
 		}			
@@ -111,7 +116,7 @@ class tx_ttproducts_list_view {
 		}
 
 		switch ($theCode) {
-			case 'SEARCH':
+			case 'SEARCH':				
 					// Get search subpart
 				$t['search'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_SEARCH###'));
 					// Substitute a few markers
@@ -132,6 +137,7 @@ class tx_ttproducts_list_view {
 			break;
 			case 'LISTGIFTS':
 				$where .= ' AND '.($this->conf['whereGift'] ? $this->conf['whereGift'] : '1=0');
+				$templateArea = '###ITEM_LIST_GIFTS_TEMPLATE###';
 			break;
 			case 'LISTOFFERS':
 				$where .= ' AND offer';
@@ -145,29 +151,23 @@ class tx_ttproducts_list_view {
 			break;
 			case 'MEMO':
 				$where = ' AND '.($memoItems != '' ? 'uid IN ('.$memoItems.')' : '1=0' );
+				$templateArea = '###MEMO_TEMPLATE###';
 			break;
 			default:
 				// nothing here
 			break;
 		}
 
-		$begin_at=t3lib_div::intInRange(t3lib_div::_GP('begin_at'),0,100000);
+		$begin_at = $this->pibase->piVars['begin_at'];
+		$begin_at = ($begin_at ? $begin_at : t3lib_div::_GP('begin_at'));
+		$begin_at=t3lib_div::intInRange($begin_at,0,100000);
 		if ($where || ($theCode!='SEARCH' && !t3lib_div::_GP('swords')))	{
-			// Getting various subparts we're going to use here:
-			$area = '';
-			if ($memoItems != '') {
-				$area = '###MEMO_TEMPLATE###';
-			} else if ($theCode=='LISTGIFTS') {
-				$area = '###ITEM_LIST_GIFTS_TEMPLATE###';
-			} else {
-				$area = '###ITEM_LIST_TEMPLATE###';
-			}
 			
-			$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($area));
+			$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($templateArea));
 	
 			if (!$t['listFrameWork']) {
 				$error_code[0] = 'no_subtemplate';
-				$error_code[1] = $area;
+				$error_code[1] = $templateArea;
 				$error_code[2] = $this->conf['templateFile'];
 				return $content;
 			}
@@ -232,10 +232,9 @@ class tx_ttproducts_list_view {
 	
 			if ($theCode=='LISTGIFTS') {
 				$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $this->giftnumber);
-				$markerArray['###FORM_NAME###']= 'GiftForm';
-			} else {
-				$markerArray['###FORM_NAME###']= 'ShopForm';
+				$formName = 'GiftForm';
 			}
+			$markerArray['###FORM_NAME###'] = $formName;
 			$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].');';
 			$markerFramework = 'listFrameWork'; 
 			$t[$markerFramework] = $this->pibase->cObj->substituteMarkerArrayCached($t[$markerFramework],$markerArray,array(),array());
@@ -305,7 +304,7 @@ class tx_ttproducts_list_view {
 					$wrappedSubpartArray=array();
 
 					$addQueryString=array();
-					$addQueryString['tt_products']= intval($row['uid']);
+					$addQueryString[$this->pibase->prefixId.'[product]']= intval($row['uid']);
 					$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
 					$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>');
 
@@ -326,7 +325,11 @@ class tx_ttproducts_list_view {
 
 					// $markerArray['###FORM_URL###']=$this->formUrl; // Applied later as well.
 					$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray);
-					$markerArray['###FORM_NAME###']='item_'.$iCount;
+					$markerArray['###FORM_NAME###']=$formName;
+					$markerArray['###ITEM_NAME###']='item_'.$iCount;
+					if (!$this->conf['displayBasketColumns'])	{
+						$markerArray['###FORM_NAME###'] = $markerArray['###ITEM_NAME###']; 						
+					}
 
 					$rowEven = $this->conf['CSS.'][$this->tt_products->table->name.'.']['row.']['even'];
 					$rowEven = ($rowEven ? $rowEven : $this->conf['CSSRowEven']); // backwards compatible
@@ -408,15 +411,21 @@ class tx_ttproducts_list_view {
 			if ($more)	{
 				$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
 				$splitMark = md5(microtime());
-				$tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', array('begin_at' => $next)));
-
+				$addQueryString=array();
+				$addQueryString[$this->pibase->prefixId.'[begin_at]']= $next;
+				// $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', array('begin_at' => $next)));
+				$tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 				$wrappedSubpartArray['###LINK_NEXT###']=  explode ($splitMark, $tempUrl);  // array('<a href="'.$url.'&begin_at='.$next.'">','</a>');
 			} else {
 				$subpartArray['###LINK_NEXT###']='';
 			}
 			if ($begin_at)	{
 				$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
-				$tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', array('begin_at' => $prev)));
+				$addQueryString=array();
+				$addQueryString[$this->pibase->prefixId.'[begin_at]']= $prev;
+				
+				// $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', array('begin_at' => $prev)));
+				$tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 				$wrappedSubpartArray['###LINK_PREV###']=explode ($splitMark, $tempUrl); // array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
 			} else {
 				$subpartArray['###LINK_PREV###']='';
@@ -430,7 +439,11 @@ class tx_ttproducts_list_view {
 						//	you may use this if you want to link to the current page also
 						//
 					} else {
-						$tempUrl = $this->pibase->pi_linkToPage((string)($i+1).' ',$TSFE->id,'',$this->marker->getLinkParams('', array('begin_at' =>(string)($i * $this->config['limit']))));
+						$addQueryString=array();
+						$addQueryString[$this->pibase->prefixId.'[begin_at]']= (string)($i * $this->config['limit']);
+
+						// $tempUrl = $this->pibase->pi_linkToPage((string)($i+1).' ',$TSFE->id,'',$this->marker->getLinkParams('', array('begin_at' =>(string)($i * $this->config['limit']))));
+						$tempUrl = $this->pibase->pi_linkToPage((string)($i+1).' ',$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 						$markerArray['###BROWSE_LINKS###'].= $tempUrl; // ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
 					}
 				}
