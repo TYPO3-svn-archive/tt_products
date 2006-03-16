@@ -78,7 +78,7 @@ Die Original-Webseite befindet sich auf <A href="http://www.bananaguard.de">bana
             <!-- ###display_variant5_isSingle### -->
             <!-- ###display_variant5_isNotSingle### -->
             ###GW1B### Stückzahl: ###GW1E### <INPUT size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-            <input type="button" name="addtomemo" value="auf die Merkliste" onclick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;addmemo=###PRODUCT_ID###';">
+            <input type="image" name="addtomemo" src="typo3/ext/tt_products/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_ID###';" title="Add to memo">
             <!-- ###display_variant5_isNotSingle### --> <p> </td>
           ###ITEM_SINGLE_POST_HTML###
           <!-- ###ITEM_SINGLE### end -->
@@ -177,7 +177,6 @@ Die Original-Webseite befindet sich auf <A href="http://www.bananaguard.de">bana
 
 
 
-
 <!-- ###MEMO_TEMPLATE### begin
         This subpart is used to display the regular list of products. It's also used by search-results.
 -->
@@ -220,8 +219,8 @@ Die Original-Webseite befindet sich auf <A href="http://www.bananaguard.de">bana
                                         ###GW1B###<strong>###PRICE_TAX### &euro;###GW1E###<BR>
                                         ###GW2B### Anzahl: ###GW2E###<BR><INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
                                 </TD>
-                                <TD style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="order" src="typo3/ext/tt_products/pi/basket.gif" value="in den Warenkorb" onClick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></TD>
-				<TD style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="remove" src="typo3/ext/tt_products/pi/delmemo.png" value="von der Merkliste streichen" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&delmemo=###PRODUCT_ID###';"></TD>
+                                <TD style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="order" src="typo3/ext/tt_products/res/icons/fe/minibasket1.gif" value="in den Warenkorb" onClick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></TD>
+				<TD style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="remove" src="typo3/ext/tt_products/res/icons/fe/delmemo.png" value="von der Merkliste streichen" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[delmemo]=###PRODUCT_ID###';"></TD>
                         </TR>
                         </FORM>
                         <!-- ###ITEM_SINGLE### end -->
@@ -277,10 +276,6 @@ Subpart for the search-form
 
 
 
-
-
-
-
 <br><br><br><br><hr><br><br><br>
 <h3>ITEM_SEARCH_EMPTY</h3>
 <em>Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.</em><br>
@@ -292,11 +287,6 @@ Subpart displayed if the search was empty. If the search was successfull, the IT
 -->
 ###GW1B###<B>Es wurden keine Artikel gefunden.</B>###GW1E###
 <!-- ###ITEM_SEARCH_EMPTY### end -->
-
-
-
-
-
 
 
 
@@ -465,9 +455,6 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 </form>
 <br>
 <!-- ###BASKET_TEMPLATE### end -->
-
-
-
 
 
 
@@ -1244,8 +1231,6 @@ Message for payment method 10, Paypal
 
 
 
-
-
 <br><br><br><br><hr><br><br><br>
 <h3>BASKET_TEMPLATE_EMPTY</h3>
 <em><br>
@@ -1259,7 +1244,6 @@ If the basket is empty this subpart is displayed
 <br>
 ###GW1B###<B>Ihr Warenkorb ist noch leer.</B>###GW1E###
 <!-- ###BASKET_TEMPLATE_EMPTY### end -->
-
 
 
 
@@ -1420,12 +1404,6 @@ Hier können Sie uns eine Nachricht bezüglich Ihrer Bestellung schicken.<br>
 
 
 
-
-
-
-
-
-
 <br><br><br><br><hr><br><br><br>
 <h3>TRACKING_ENTER_NUMBER</h3>
 <em>
@@ -1485,11 +1463,6 @@ Displays error message if no tracking code.
 </form>
 
 <!-- ###TRACKING_WRONG_NUMBER### end -->
-
-
-
-
-
 
 
 
@@ -1940,6 +1913,14 @@ Mein Typo3 Shop
 		<!--###LINK_CATEGORY### end-->
 		###ITEM_SINGLE_POST_HTML###
 	<!-- ###CATEGORY_SINGLE### end-->
+
+	<!-- ###CATEGORY_SINGLE_2### begin-->
+	<!-- ###CATEGORY_SINGLE_2### end-->
+
+	<!-- ###CATEGORY_SINGLE_3### begin-->
+	<!-- ###CATEGORY_SINGLE_3### end-->
+
+	<div id="ArticleId"></div>
 
 <!-- ###ITEM_CATLIST_TEMPLATE### end -->
 

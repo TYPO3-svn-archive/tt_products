@@ -684,7 +684,6 @@ class tx_ttproducts_basket_view {
 			$prodTmp = explode(';', $row['size']);
 			foreach ($TCA['sys_products_orders']['columns']['salutation']['config']['items'] as $key => $salutation) {
 //				$temp = $this->pibase->sL($salutation[0]);
-//				debug ($temp, '$temp', __LINE__, __FILE__);
 //				$text = $this->pibase->pi_getLL($temp);
 				$text = $this->pibase->pi_getLL('salutation'.$salutation[1]);
 				$salutationText .= '<OPTION value="'.$salutation[1].'">'.$text.'</OPTION>';

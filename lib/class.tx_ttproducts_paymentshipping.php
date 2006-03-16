@@ -242,6 +242,14 @@ class tx_ttproducts_paymentshipping {
 			$priceNew = $minPrice;
 		}
 
+ 
+		// constant noCostsAmount by Christoph Zipper <info@chriszip.de>
+		// the total products price as from the payment/shipping is free
+		$noCostsAmount = (double) $confArr['noCostsAmount'];
+		if ($noCostsAmount && ($priceTotalTax >= $noCostsAmount)) {
+			$priceNew = 0;
+		}
+
 		$priceTax += $price->getPrice($priceNew,1,$tax,1);
 		$priceNoTax += $price->getPrice($priceNew,0,$tax,1);
 	}

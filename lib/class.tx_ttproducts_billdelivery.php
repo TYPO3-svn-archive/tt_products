@@ -161,8 +161,12 @@ class tx_ttproducts_billdelivery {
 						$this->pibase->cObj->setCurrentVal($catTitle);
 						$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 						$markerArray['###CATEGORY_QTY###'] = $categoryQty[$currentCategory];
-						$markerArray['###PRICE_GOODS_TAX###']= $this->price->priceFormat($calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory]);
-						$markerArray['###PRICE_GOODS_NO_TAX###']= $this->price->priceFormat($calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory]);
+						$categoryPriceTax = $calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory];
+						$markerArray['###PRICE_GOODS_TAX###'] = $this->price->priceFormat($categoryPriceTax);
+						$categoryPriceNoTax = $calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory];
+						$markerArray['###PRICE_GOODS_NO_TAX###'] = $this->price->priceFormat($categoryPriceNoTax);
+						$markerArray['###PRICE_GOODS_ONLY_TAX###'] = $this->price->priceFormat($categoryPriceTax - $categoryPriceNoTax);
+						
 						$out2 = $this->pibase->cObj->substituteMarkerArray($t['categoryTitle'], $markerArray);
 						$out.= $out2;
 					}

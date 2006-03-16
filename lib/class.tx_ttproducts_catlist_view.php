@@ -70,6 +70,20 @@ class tx_ttproducts_catlist_view {
 		$this->searchFieldList = trim($this->conf['stdSearchFieldExt']) ? implode(',', array_unique(t3lib_div::trimExplode(',',$this->searchFieldList.','.trim($this->conf['stdSearchFieldExt']),1))) : 'title,note,'.$this->tt_products->fields['itemnumber'];
 	}
 
+
+	function &getRootArray(&$categoryArray)	{
+		$rootArray = array();
+		
+		foreach ($categoryArray as $uid => $row)	{
+			if (!$categoryArray[$uid]['parent_category'])	{
+				$rootArray[] = $uid;
+			}
+		}
+		
+		return $rootArray;
+	}
+
+
 	// sets the 'depth' field
 	function setDepths (&$categoryRootArray, &$categoryArray)	{
 		$depth = 1;
@@ -77,11 +91,10 @@ class tx_ttproducts_catlist_view {
 		$endArray = array();
 		foreach ($categoryArray as $category => $row)	{
 				// is it a leaf in a tree ?
-			if (!is_array($this->tt_products_cat->dataArray[$category]['child_category']))	{
+			if (!is_array($row['child_category']))	{
 				$endArray [] = $category;				
 			}
 		}
-		
 		foreach ($endArray as $k => $category)	{
 			$count = 0;
 			$actCategory = $category;
@@ -110,18 +123,37 @@ class tx_ttproducts_catlist_view {
 		$out='';
 		$where='';
 		$bFinished = false;
+		$bSeparated = false;
+		$categoryArray = array();
+		
+		if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])	{
+			$categoryArray = $this->page->getRelationArray();
+		} else {
+				// read in all categories
+			$this->tt_products_cat->get(0, $this->page->pid_list);
+			ksort ($this->tt_products_cat->dataArray);
+			$categoryArray = $this->tt_products_cat->getRelationArray();
+		}
+	//	if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])	{
+//			$pageArray = t3lib_div::trimExplode (',', $this->page->pid_list);  
+//			foreach ($pageArray as $k => $uid)	{
+//				$row = $this->page->get ($uid);
+//				$categoryArray [$uid]['title'] = $row['title'];
+//				$pid = $row['pid']; 
+//				$categoryArray[$pid]['child'][$uid] = $uid;
+//			}
+	//	}
 		
 		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_CATLIST_TEMPLATE###'));
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
-
-			// read in all categories
-		$this->tt_products_cat->get(0, $this->page->pid_list);
-		ksort ($this->tt_products_cat->dataArray);
+		
+		if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
+			$bSeparated = true;
+		}
 		
 		$maxDepth = 3;
-		$rootArray = array(); 
-		$this->tt_products_cat->prepareCategories($rootArray);
-		$this->setDepths($rootArray, $this->tt_products_cat->dataArray);
+		$rootArray = $this->getRootArray($categoryArray); 
+		$this->setDepths($rootArray, $categoryArray);
 		
 		$outArray = array();
 		$count = 0;
@@ -133,37 +165,64 @@ class tx_ttproducts_catlist_view {
 		$countArray[1] = 0;
 		$count = 0;
 		$menu = $this->conf['CSS.'][$this->tt_products_cat->table->name.'.']['menu'];
-		$out = '<ul id="'.$menu.'">';
+		$htmlTagMain = $this->conf['displayCatListType'];
+		$htmlTagElement = ($htmlTagMain == 'ul' ? 'li' : 'option');
+		$menu = ($menu ? $menu : 'cat'.$depth);
+		$fill = '';
+		if ($bSeparated)	{
+			$fill = ' onchange="fillSelect(this,2);"';
+		}
+		$out = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
 		$currentCat = $this->pibase->piVars['cat'];
 		
+		$markerArray = array();
 		while ($depth > 0 && $count<50)	{
 			$count++;
 			if($countArray[$depth] < count ($catArray[$depth]))	{
 				$actCategory = $catArray[$depth][$countArray[$depth]];
 				$countArray[$depth]++;
-				$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $this->tt_products_cat->dataArray[$actCategory]);
+				$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $categoryArray[$actCategory]);
 				$css = ($actCategory == $currentCat ? 'class="act"' : '');
-				$markerArray['###ITEM_SINGLE_PRE_HTML###'] = '<li'.($css ? ' '.$css : '').'>';
+				$markerArray['###ITEM_SINGLE_PRE_HTML###'] = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
 				$wrappedSubpartArray['###LINK_CATEGORY###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array($this->pibase->prefixId.'[cat]' => $actCategory))).'"'.$css.'>','</a>');
-				$markerArray['###LIST_LINK###'] = $this->tt_products_cat->dataArray[$actCategory]['title'];  
-				$markerArray['###ITEM_SINGLE_POST_HTML###'] = '</li>';
+				$markerArray['###LIST_LINK###'] = $categoryArray[$actCategory]['title'];  
+				$markerArray['###ITEM_SINGLE_POST_HTML###'] = '</'.$htmlTagElement.'>';
 				$subpartArray = array();
 				$out.= $this->pibase->cObj->substituteMarkerArrayCached($t['categoryFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 				
-				$subCategories = $this->tt_products_cat->dataArray[$actCategory]['child_category']; 
-				if (is_array($subCategories))	{
+				$subCategories = $catArray[$actCategory]['child_category']; 
+				if (is_array($subCategories) && !$bSeparated)	{
 					$depth++;
-					$out .= '<ul class="w'.$count.'">';
+					$out .= '<'.$htmlTagMain.' class="w'.$count.'">';
 					$countArray[$depth] = 0;
 					$catArray[$depth] = $subCategories; 
 				}
 			} else {
-				$out .= '</ul>';
+				$out .= '</'.$htmlTagMain.'>';
 				$depth--;
 			}
 		}
-		$out .= '</ul>';
-		
+		$out .= '</'.$htmlTagMain.'ul>';
+
+		$markerArray = array();
+		$subpartArray = array();
+		$wrappedSubpartArray = array();
+		$subpartArray['###CATEGORY_SINGLE###'] = $out;
+		$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
+		if ($bSeparated)	{
+			$this->pibase->javascript->set('catselect', $categoryArray);
+			for ($i = 2; $i <= 1+$count; ++$i)	{
+				$menu = 'cat'.$i;
+				$fill = ' onchange="fillSelect(this,'.($i+1).');"';
+				if ($i == 1+$count)
+					$fill = '';
+				$tmp = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
+				$tmp .= '</'.$htmlTagMain.'>';
+				$subpartArray['###CATEGORY_SINGLE_'.$i.'###'] = $tmp;
+			}
+		}
+		$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
+
 		$content = $out;
 
 		return $content;

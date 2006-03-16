@@ -18,7 +18,7 @@ plugin.tt_products {
       4 = gradings
       5 = additional
     }
-    requiredListFields = uid,pid,category,price,price2
+    requiredListFields = uid,pid,category,price,price2,tax
   }
   table.tt_products_articles = tt_products_articles
   
@@ -82,6 +82,7 @@ plugin.tt_products {
   displayListCatHeader = {$plugin.tt_products.displayListCatHeader}
   displayBasketCatHeader = {$plugin.tt_products.displayBasketCatHeader}
   displayBasketColumns = {$plugin.tt_products.displayBasketColumns}
+  displayCatListType = {$plugin.tt_products.displayCatListType}
   basketPic = {$plugin.tt_products.basketPic}
   clickIntoBasket = {$plugin.tt_products.clickIntoBasket}
   basketMaxQuantity = {$plugin.tt_products.basketMaxQuantity}
@@ -201,7 +202,7 @@ plugin.tt_products {
   outputFolder = {$plugin.tt_products.outputfolder} 
   memberOfGroup = {$plugin.tt_products.memberOfGroup}
 
-  stdSearchFieldExt = subtitle
+  stdSearchFieldExt = {$plugin.tt_products.stdSearchFieldExt}
   PIDagb = {$plugin.tt_products.PIDagb}
   agbtarget = {$plugin.tt_products.agbtarget}
   AGBattachment = {$plugin.tt_products.AGBattachment}

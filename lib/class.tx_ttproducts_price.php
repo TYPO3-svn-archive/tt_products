@@ -58,12 +58,14 @@ class tx_ttproducts_price {
 
 
 	/**
-	 * Returns the $price with either tax or not tax, based on if $tax is true or false. This function reads the TypoScript configuration to see whether prices in the database are entered with or without tax. That's why this function is needed.
+	 * Returns the $price with either tax or not tax, based on if $tax is true or false. 
+	 * This function reads the TypoScript configuration to see whether prices in the database 
+	 * are entered with or without tax. That's why this function is needed.
 	 */
 	function getPrice($price,$tax=1,$taxpercentage=0,$taxIncluded=0)	{
 		global $TSFE;
 
-		if ($taxpercentage==0)
+		if (doubleval($taxpercentage) == 0)
 			$taxFactor = 1 + doubleval($this->conf['TAXpercentage'])/100;
 		else
 			$taxFactor = 1+$taxpercentage/100;

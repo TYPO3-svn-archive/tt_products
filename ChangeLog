@@ -1,3 +1,8 @@
+2006-03-16 Franz Holzinger <franz@fholzinger.com>
+	* use only not deleted categories
+	* extend the categories display to work with select box and pages as categories
+	* correct error with not used tax field
+
 2006-03-08 Franz Holzinger <franz@fholzinger.com>
 	* correct error with single view which had shown always the same product
 	* change link parameter to single view from 'tt_products' to 'tx_ttproducts_pi1['single']'

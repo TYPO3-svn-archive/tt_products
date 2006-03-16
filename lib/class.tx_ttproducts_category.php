@@ -81,11 +81,11 @@ class tx_ttproducts_category {
 			// $sql->prepareFields($this->table, 'select', '*');
 			// $sql->prepareFields($this->table, 'where', 'uid = '.$uid);
 			// $sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
-			$this->table->enableFields('tt_products_cat');		
+
 			// Fetching the category
 			// $res = $sql->exec_SELECTquery();
-			$where = '1=1 ';
-			$where .= ($uid ? 'AND uid='.$uid : '');
+			$where = '1=1 '.$this->table->enableFields('tt_products_cat');;
+			$where .= ($uid ? ' AND uid='.$uid : '');
 			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
 			$res = $this->table->exec_SELECTquery('*',$where);
 			if ($uid)	{
@@ -107,29 +107,6 @@ class tx_ttproducts_category {
 
 
 	/**
-	 * Getting all root categories from internal array
-	 * This must be overwritten by other classes who support multiple categories
-	 * The dataArray must be extended with the 'child_category' field if available.
-	 * get (0) must have been called before
-	 * 
-	 */
-	function &prepareCategories(&$rootArray)	{
-		
-			// Call one getRootCategories hook
-		if (isset ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prepareCategories'])) {
-			$hookObj= &t3lib_div::getUserObj($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prepareCategories']);
-			if (method_exists($hookObj, 'prepareCategories')) {
-				$hookObj->prepareCategories ($this, $rootArray);
-			}
-		} else {
-			foreach ($this->dataArray as $uid => $row)	{
-				$rootArray[] = $uid;
-			}
-		}
-		
-	}
-
-	/**
 	 * Getting all sub categories from internal array
 	 * This must be overwritten by other classes who support multiple categories
 	 * getPrepareCategories must have been called before
@@ -137,6 +114,24 @@ class tx_ttproducts_category {
 	 */
 	function &getSubcategories(&$row)	{
 		return array();
+	}
+
+
+	function &getRelationArray () {
+		$relationArray = array();
+		
+		foreach ($this->dataArray as $k => $row)	{
+			$uid = $row['uid'];
+			$relationArray [$uid]['title'] = $row['title'];
+			$relationArray [$uid]['pid'] = $row['pid'];
+			$relationArray [$uid]['parent_category'] = $row['parent_category'];
+			$parentId = $row['parent_category'];
+			if ($parentId)	{ 
+				$relationArray[$parentId]['child_category'][$uid] = $uid;
+			}
+		}
+		
+		return $relationArray;
 	}
 
 

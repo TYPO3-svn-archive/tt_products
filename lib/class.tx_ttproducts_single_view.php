@@ -240,7 +240,7 @@ class tx_ttproducts_single_view {
 					//$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink(t3lib_div::_GP('backPID'),'',$this->marker->getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants))));
 					$addQueryString=array();
 					$addQueryString[$this->pibase->prefixId.'[product]']= intval($row['uid']);
-					$addQueryString[$this->pibase->prefixId.'[variants]']= htmlspecialchars($this->variants); 					
+					$addQueryString[$this->pibase->prefixId.'[variants]']= htmlspecialchars($this->variants);
 					$markerArray = $this->marker->addURLMarkers($backPID,$markerArray, $addQueryString); // Applied it here also...
 					
 					$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$this->variants.']'; // here again, because this is here in ITEM_LIST view
@@ -248,7 +248,7 @@ class tx_ttproducts_single_view {
 					$content.=$this->pibase->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 				}
 			}
-			tx_ttproducts_div::setJS($this->pibase, 'email');  // other JavaScript checks can come here
+			$this->pibase->javascript->set('email');  // other JavaScript checks can come here
 		} else {
 			$error_code[0] = 'wrong_parameter';
 			$error_code[1] = intval($this->uid);

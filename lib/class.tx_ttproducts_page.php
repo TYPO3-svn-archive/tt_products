@@ -64,8 +64,10 @@ class tx_ttproducts_page {
 
 	function get ($uid) {
 		global $TYPO3_DB;
+		$bMultple = (strstr($uid, ',') ? true : false);
+		
 		$rc = $this->dataArray[$uid];
-		if (!$rc) {
+		if (!$rc && !$bMultple) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', 'title,uid,pid');
 			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
@@ -76,6 +78,23 @@ class tx_ttproducts_page {
 		 	$rc = $this->dataArray[$row['uid']] = $row;
 		}
 		return $rc;
+	}
+
+
+	function &getRelationArray () {
+		$relationArray = array();
+		
+		$pageArray = t3lib_div::trimExplode (',', $this->pid_list);  
+		foreach ($pageArray as $k => $uid)	{
+			$row = $this->get ($uid);
+			$relationArray [$uid]['title'] = $row['title'];
+			$relationArray [$uid]['pid'] = $row['pid'];
+			$relationArray [$uid]['parent_category'] = $row['parent_category'];
+			$pid = $row['pid']; 
+			$relationArray[$pid]['child_category'][$uid] = $uid;
+		}
+		
+		return $relationArray;
 	}
 
 

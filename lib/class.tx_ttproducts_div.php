@@ -41,63 +41,6 @@
 
 class tx_ttproducts_div {
 
-		/**
-		 * Sets JavaScript code in the additionalJavaScript array
-		 *
-		 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
-		 * @return	  void
-		 * @see
-		 */
-	function setJS(&$pibase, $fieldname) {
-		global $TSFE;
-		$js = '';
-		$emailArr =  explode('|', $message = $pibase->pi_getLL('invalid_email'));
-
-		switch ($fieldname) {
-			case 'email' :
-						$js =
-			'function test (eing) {
-				var reg = /@/;
-				var rc = true;
-				if (!reg.exec(eing)) {
-			 		rc = false;
-			 	}
-			 	return rc;
-			}
-
-			function checkEmail(element) {
-				if (test(element.value)){
-					return (true)
-				}
-/* Added els5: comma after the invalid address */
-//				alert("'.$emailArr[0].'\'"+element.value+"'.$emailArr[1].'")
-				alert("'.$emailArr[0].'\'"+element.value+"\''.$emailArr[1].'")
-				return (false)
-			}
-
-			function checkParams (formObj) {
-				var rc = true;
-				for (var i = 0; i < formObj.length; i++) {
-					if (formObj[i].type == "text") {
-						var email = /email/i;
-						if (email.exec(formObj[i].name)) {
-							rc = checkEmail (formObj[i]);
-						}
-					}
-					if (!rc) {
-						break;
-					}
-				}
-				return rc;
-			}
-
-			';
-			break;
-		}
-
-	$TSFE->setJS ($fieldname, $js);
-	} // setJS
-
 
 	// **************************
 	// Utility functions
@@ -111,17 +54,6 @@ class tx_ttproducts_div {
 				return true;
 		return false;
 	} // isUserInGroup
-
-
-
-	/**
-	 * Generates a search where clause.
-	 */
-	function searchWhere(&$pibase, &$searchFieldList, $sw)	{
-		$where=$pibase->cObj->searchWhere($sw, $searchFieldList, 'tt_products');
-		return $where;
-	} // searchWhere
-
 
 
 

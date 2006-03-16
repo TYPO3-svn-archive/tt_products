@@ -49,14 +49,13 @@ class tx_ttproducts_article {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, $LLkey, $tablename)  {
+	function init(&$pibase, $LLkey, $tablename, &$tableconf)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		$this->pibase = $pibase;
 		$tablename = ($tablename ? $tablename : 'tt_products_articles');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray($tablename,'articles');
-
 	} // init
 
 

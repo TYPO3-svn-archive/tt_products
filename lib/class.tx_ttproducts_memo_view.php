@@ -75,9 +75,9 @@ class tx_ttproducts_memo_view {
 				$this->memoItems = explode(',', $TSFE->fe_user->user['tt_products_memoItems']);
 			}
 	
-			if (t3lib_div::GPvar('addmemo'))
+			if ($this->pibase->piVars['addmemo'])
 			{
-				$addMemo = explode(',', t3lib_div::GPvar('addmemo'));
+				$addMemo = explode(',', $this->pibase->piVars['addmemo']);
 	
 				foreach ($addMemo as $addMemoSingle)
 					if (!in_array($addMemoSingle, $this->memoItems))
@@ -88,9 +88,9 @@ class tx_ttproducts_memo_view {
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
 			}
 	
-			if (t3lib_div::GPvar('delmemo'))
+			if ($this->pibase->piVars['delmemo'])
 			{
-				$delMemo = explode(',', t3lib_div::GPvar('delmemo'));
+				$delMemo = explode(',', $this->pibase->piVars['delmemo']);
 	
 				foreach ($delMemo as $delMemoSingle)	{
 					if (in_array($delMemoSingle, $this->memoItems))

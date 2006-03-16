@@ -76,10 +76,10 @@ class tx_ttproducts_list_view {
 	}
 
   
-	function categorycomp($row1, $row2)  {
-		return strcmp($this->tt_products_cat->get[$row1['category']],$this->tt_products_cat->get[$row2['category']]);
-	} // comp
-
+//	function categorycomp($row1, $row2)  {
+//		return strcmp($this->tt_products_cat->get[$row1['category']],$this->tt_products_cat->get[$row2['category']]);
+//	} // comp
+//
 
 	function finishHTMLRow(&$iColCount, $tableRowOpen)  {
 		$itemsOut = '';
@@ -122,17 +122,17 @@ class tx_ttproducts_list_view {
 					// Substitute a few markers
 				$out=$t['search'];
 				$swords = t3lib_div::_GP('swords');
-				$pid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $this->pid);
+				$pid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $this->page->pid);
 				$markerArray = $this->marker->addURLMarkers($pid,array());
 				$out = $this->pibase->cObj->substituteMarkerArrayCached($out,$markerArray);
 				
 				$htmlSwords = htmlspecialchars($swords);
-				$out=$this->pibase->cObj->substituteMarker($out, '###SWORDS###', $htmlSwords);
+				$out = $this->pibase->cObj->substituteMarker($out, '###SWORDS###', $htmlSwords);
 					// Add to content
 				$content.=$out;
 				// $entitySwords = htmlentities($swords); if the data has been entered e.g. with '&uuml;' instead of '&uuml;' 
 				if ($htmlSwords)	{
-					$where .= tx_ttproducts_div::searchWhere($this->pibase, $this->searchFieldList, trim($htmlSwords));
+					$where .= $this->tt_products->searchWhere($this->searchFieldList, trim($htmlSwords));
 				}
 			break;
 			case 'LISTGIFTS':
@@ -239,7 +239,7 @@ class tx_ttproducts_list_view {
 			$markerFramework = 'listFrameWork'; 
 			$t[$markerFramework] = $this->pibase->cObj->substituteMarkerArrayCached($t[$markerFramework],$markerArray,array(),array());
 	
-			tx_ttproducts_div::setJS($this->pibase,'email');
+			$this->pibase->javascript->set('email');
 			$t['itemFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,array(),array());
 		
 			$currentP='';
@@ -250,7 +250,8 @@ class tx_ttproducts_list_view {
 
 			foreach ($productsArray as $k1 => $productList) {
 				if (($this->conf['orderByCategoryTitle'] >= 1) && ($firstOrderField != 'category')) { // category means it should be sorted by the category title in this case
-					uasort ($productList, array(&$this, '$this->categorycomp'));
+					$compare = create_function('$row1,$row2', 'strcmp($this->tt_products_cat->get[$row1[\'category\']],$this->tt_products_cat->get[$row2[\'category\']]);');					
+					uasort ($productList, $compare);
 					$iColCount = 1;
 				}
 

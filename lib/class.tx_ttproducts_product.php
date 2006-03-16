@@ -61,7 +61,7 @@ class tx_ttproducts_product {
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray($tablename);
 		
-		$requiredListFields = ($tableconf['requiredListFields'] ? $tableconf['requiredListFields'] : 'uid,pid,category,price,price2');
+		$requiredListFields = ($tableconf['requiredListFields'] ? $tableconf['requiredListFields'] : 'uid,pid,category,price,price2,tax');
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 		
@@ -86,10 +86,10 @@ class tx_ttproducts_product {
 //			$sql->prepareFields($this->table, 'select', '*');
 //			$sql->prepareFields($this->table, 'where', 'uid = '.$uid);
 //			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
-			$this->table->enableFields($this->table->name);		
+			$where = '1=1 '.$this->table->enableFields($this->table->name);		
 			// Fetching the products
 			// $res = $sql->exec_SELECTquery();
-			$res = $this->table->exec_SELECTquery('*','uid = '.$uid);
+			$res = $this->table->exec_SELECTquery('*',$where.'AND uid = '.$uid);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}
@@ -180,6 +180,15 @@ class tx_ttproducts_product {
 		}
 		return $rc; 
 	}
+
+
+	/**
+	 * Generates a search where clause.
+	 */
+	function searchWhere(&$searchFieldList, $sw)	{
+		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->name);
+		return $where;
+	} // searchWhere
 
 
 }
