@@ -226,7 +226,7 @@ class tx_ttproducts_single_view {
 				$subpartArray['###LINK_NEXT_SINGLE###']='';
 			}
 
-			$this->tt_products->variant->removeEmptySubpartArray($this->pibase, $this->tt_products, $subpartArray, $row, $this->conf);
+			$this->tt_products->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
 
 				// Substitute	
 			$content= $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);

@@ -123,7 +123,16 @@ class tx_ttproducts_article {
 				}
 			}
 		} else {
-			$imgs = explode(',',$row['image']);
+			$fields = $this->conf['article.']['generateImageFields']; 
+			if ($fields)	{
+				$fieldArray = t3lib_div::trimExplode (',', $fields);
+				$image = '';
+				foreach ($fieldArray as $k => $field)	{
+					$image .= $row[$field];
+				}
+				$imgs = array();
+				$imgs[] = $image;
+			}
 		}
 
 		while(list($c,$val)=each($imgs))	{
