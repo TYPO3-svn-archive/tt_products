@@ -114,6 +114,106 @@ Die Original-Webseite befindet sich auf <A href="http://www.bananaguard.de">bana
 <!-- ###ITEM_LIST_TEMPLATE### end -->
 
 
+<br><hr><br>
+<h3>ARTICLE_LIST_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
+<br>
+<br>
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>ARTICLE_LIST_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of articles.</em><br>
+<br>
+<br>
+
+<!-- ###ARTICLE_LIST_TEMPLATE### begin
+	This subpart is used to display the regular list of articles.
+-->
+<br>
+
+<table border="0" cellspacing="0" cellpadding="1" width=1>
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td><!-- ###LINK_BROWSE### begin -->
+			[ ###BROWSE_LINKS### ]
+			<!-- ###LINK_BROWSE### end-->
+		</td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>nächste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+		<!-- ###ITEM_CATEGORY### begin -->
+			<tr>
+				<td colspan=4><br>###GW1B###<font size=3><strong>###CATEGORY_TITLE###</strong></font> ###GW1E###
+				<br>
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<tr>
+				<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
+			</tr>
+			<tr><td colspan="3">
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+
+        <table bordercolor="#003399" cellspacing="1" border="1">
+          <tr>
+            <td><img src="clear.gif" width="150" height="1"></td>
+            <td><img src="clear.gif" width="150" height="1"></td>
+            <td><img src="clear.gif" width="150" height="1"></td>
+          </tr>
+          <!-- ###ITEM_SINGLE### begin-->
+          ###ITEM_SINGLE_PRE_HTML###
+          <td height="150" bgcolor="###GC1###" valign="bottom" align="center">
+            <!--###LINK_ITEM###-->
+            ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+            <!--###LINK_ITEM###-->
+            <br>
+            ###PRODUCT_IMAGE### <br>
+		  <!-- ###display_variant2### -->
+		  ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
+		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+		  <!-- ###display_variant2### -->
+            <!-- ###display_variant5_isSingle### -->
+            Einzelprodukt, das nur einmal gewählt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
+            <!-- ###display_variant5_isSingle### -->
+            <!-- ###display_variant5_isNotSingle### -->
+            ###GW1B### Stückzahl: ###GW1E### <INPUT size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+            <input type="image" name="addtomemo" src="typo3/ext/tt_products/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_ID###';" title="Add to memo">
+            <!-- ###display_variant5_isNotSingle### --> <p> </td>
+          ###ITEM_SINGLE_POST_HTML###
+          <!-- ###ITEM_SINGLE### end -->
+          <tr>
+            <td colspan="3" align="CENTER"> <input type="Submit" name="order2" value="In den Warenkorb"></td>
+          </tr>
+          <tr>
+            <td colspan="3" align="CENTER">
+            <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"></td>
+          </tr>
+          
+        </table>
+			</form>
+			</td></tr>
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td></td>
+		<td></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>nächste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+</table>
+###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Befüllung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte über den Link Kontakt/Bestellung per Email. Viel Spaß beim Einkaufen! ###GW1E###
+
+<br>
+<table width="163">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<br>
+<!-- ###ARTICLE_LIST_TEMPLATE### end -->
+
 
 
 <br><br><br><br><hr><br><br><br>
@@ -517,7 +617,7 @@ Exact same features as BASKET_TEMPLATE
 <td>###PERSON_COUNTRY_CODE###</td>
 </tr>
 <tr>
-<td>###GW1B###<strong>Telefon:</strong>*###GW1E###</td>
+<td>###GW1B###<strong>Telefon: </strong>*###GW1E###</td>
 <td><input type="text" name="recs[personinfo][telephone]" size="25" value="###PERSON_TELEPHONE###"></td>
 </tr>
 <tr>
@@ -924,7 +1024,6 @@ Exact same features as BASKET_TEMPLATE
 <BR><BR><BR><BR><HR><BR><BR><BR>
 <h3>BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE</h3>
 <em>
-ZK+
 Wie BASKET_ORDERCONFIRMATION_TEMPLATE, aber wird nicht in der Datenbank gespeichert. Hier kann Code für externe Systeme eingefügt werden, der nicht mit angezeigt werden darf, wenn die Seite im Trackingmodus nochmal dargestellt wird.
 </em><br>
 <br>
@@ -957,8 +1056,8 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
         &nbsp;&nbsp;&nbsp;&nbsp;<B>###ORDER_UID###</B> <br>
         <br>
 		<font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font><br>
-        Die Bestellbestätigung wird auch an die Emailadresse im Feld "Lieferung"
-        geschickt. (###DELIVERY_EMAIL###). <br></p>
+        Die Bestellbestätigung wird auch an die Emailadresse ###CUSTOMER_RECIPIENTS_EMAIL###
+        geschickt. <br></p>
 	<p><font color=red><em><strong>Zahlungsart:</strong></em></font></p>
         <!-- ###MESSAGE_PAYMENT###
 	This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
@@ -1215,7 +1314,7 @@ Message for payment method 10, Paypal
         <br>
         <strong>bananaGUARD.de</strong><br>
         Marcel Schwarz<br>
-        Chistophstr. 4<br>
+        Christophstr. 4<br>
         D- 71364 Winnenden<br>
         Tel.: +49 (0)7195 583372<br>
         Email: info@bananaguard.de<br>
@@ -1509,7 +1608,7 @@ http://###DOMAIN###/index.php?id=###PID_TRACKING###&tracking=###ORDER_TRACKING_N
 Mit freundlichen Grüssen,
 bananaGUARD.de
 Marcel Schwarz - Online Vertrieb
-Chistophstr. 4
+Christophstr. 4
 D- 71364 Winnenden
 Tel.: +49 (0)7195 583372
 Email: info@bananaguard.de<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
@@ -1583,7 +1682,7 @@ Mit freundlichen Grüßen
 
 bananaGUARD.de
 Marcel Schwarz - Online Vertrieb
-Chistophstr. 4
+Christophstr. 4
 D- 71364 Winnenden
 Tel.: +49 (0)7195 583372
 Email: info@bananaguard.de
