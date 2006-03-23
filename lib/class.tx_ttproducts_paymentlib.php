@@ -124,7 +124,7 @@ class tx_ttproducts_paymentlib {
 				$hiddenFields = '';
 				$hiddenFieldsArr = $providerObject->transaction_formGetHiddenFields();
 				foreach ($hiddenFieldsArr as $key => $value) {
-					$hiddenFields .= '<input name='.$key.' type="hidden" value="'.htmlspecialchars($value).'" />'.chr(10);
+					$hiddenFields .= '<input name=""'.$key.'" type="hidden" value="'.htmlspecialchars($value).'" />'.chr(10);
 				}
 		
 				$formuri = $providerObject->transaction_formGetActionURI();
