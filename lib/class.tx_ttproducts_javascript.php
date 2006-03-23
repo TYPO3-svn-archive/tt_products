@@ -44,13 +44,15 @@ class tx_ttproducts_javascript {
 	var $conf;
 	var $config;
 	var $page;
+	var $xajax;
 
 
-	function init(&$pibase, &$conf, &$config, &$page) {
+	function init(&$pibase, &$conf, &$config, &$page, &$xajax) {
 		$this->pibase = &$pibase;
 		$this->conf = &$conf;
 		$this->config = &$config;
 		$this->page = &$page;
+		$this->xajax = &$xajax;
 	}
 
 
@@ -63,13 +65,14 @@ class tx_ttproducts_javascript {
 		 */
 	function set($fieldname, $params='') {
 		global $TSFE;
-		$js = '';
+		$bDirectHTML = false;
+		$code = '';
 		$emailArr =  explode('|', $message = $this->pibase->pi_getLL('invalid_email'));
 
 
 		switch ($fieldname) {
 			case 'email' :
-				$js =
+				$code =
 				'function test (eing) {
 					var reg = /@/;
 					var rc = true;
@@ -108,59 +111,73 @@ class tx_ttproducts_javascript {
 			break;
 			case 'catselect':
 
-				$js .= 'var c = new Array(); // categories
-';
-				if (is_array($params))	{
-					foreach ($params as $k => $row)	{
-						$js .= 'c['.$k.'] = new Array(3);';
-						$js .= 'c['.$k.'][0] = "'.$row['title'].'"; ' ;
-						$js .= 'c['.$k.'][1] = "'.$row['pid'].'"; ' ;
-						$child_category = $row['child_category'];
-						if (is_array($child_category))	{
-							$js .= 'c['.$k.'][2] = new Array('.count($child_category).');';
-							foreach ($child_category as $k1 => $childCat)	{
-								$js .= 'c['.$k.'][2]['.$k1.'] = "'.$childCat.'"; ' ;
+				if (is_object($this->xajax))	{
+					$code .= 'var c = new Array(); // categories
+	';
+					if (is_array($params))	{
+						foreach ($params as $k => $row)	{
+							$code .= 'c['.$k.'] = new Array(3);';
+							$code .= 'c['.$k.'][0] = "'.$row['title'].'"; ' ;
+							$code .= 'c['.$k.'][1] = "'.$row['pid'].'"; ' ;
+							$child_category = $row['child_category'];
+							if (is_array($child_category))	{
+								$code .= 'c['.$k.'][2] = new Array('.count($child_category).');';
+								foreach ($child_category as $k1 => $childCat)	{
+									$code .= 'c['.$k.'][2]['.$k1.'] = "'.$childCat.'"; ' ;
+								}
+							} else {
+								$code .= 'c['.$k.'][2] = "0"; ' ;
 							}
-						} else {
-							$js .= 'c['.$k.'][2] = "0"; ' ;
+						$code .= '
+	';
 						}
-					$js .= '
-';
 					}
+					$code .=
+		'
+		function fillSelect (select,id) {
+	    var sb;
+	    var index = select.selectedIndex;
+	    var category = select.options[index].value;
+	    var subcategories;
+	
+	    
+		id = "cat" + id;
+		sb = document.getElementById(id);
+	    sb.length = 0;
+	    subcategories = c[category][2]; 
+	    if (typeof(subcategories) == "object") {
+	        sb.options[0] = new Option("Anzahl: "+subcategories.length, "A");
+	        for (var i=0; i<subcategories.length; ++i) {
+		        sb.options[i] = new Option(c[c[category][2][i]][0], c[category][2][i]);
+	        }
+	    } else {
+	        /* sb.options[0] = new Option(len, "keine Unterkategorie");*/
+	        sb.options[0] = new Option("Show article", "B");
+	        tt_products_showArticle(category);
+	    }
+	    /* sb.options[0] = new Option("Test", "keine Unterkategorie"); */
+		sb.selectedIndex = 0;
+		';
+					$code .= '
+		}
+		';
 				}
-				$js .=
-	'
-	function fillSelect (select,id) {
-    var sb;
-    var index = select.selectedIndex;
-    var category = select.options[index].value;
-    var subcategories;
-
-    
-	id = "cat" + id;
-	sb = document.getElementById(id);
-    sb.length = 0;
-    subcategories = c[category][2]; 
-    if (typeof(subcategories) == "object") {
-        sb.options[0] = new Option("Anzahl: "+subcategories.length, "A");
-        for (var i=0; i<subcategories.length; ++i) {
-	        sb.options[i] = new Option(c[c[category][2][i]][0], c[category][2][i]);
-        }
-    } else {
-        /* sb.options[0] = new Option(len, "keine Unterkategorie");*/
-        sb.options[0] = new Option("Test - B", "B");
-    }
-    /* sb.options[0] = new Option("Test", "keine Unterkategorie"); */
-	sb.selectedIndex = 0;
-	';
-				$js .= '
-	}
-	';
-
+			break;
+			case 'ttpajax':
+				// XAJAX part
+				if (is_object($this->xajax))	{
+					$code .= $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax'));
+				}
+				$bDirectHTML = true;
 			break;
 		}
 
-	$TSFE->setJS ($fieldname, $js);
+	if ($bDirectHTML)	{
+		// $TSFE->setHeaderHTML ($fieldname, $code);
+		$TSFE->additionalHeaderData['tx_ttproducts-js'] = $code;
+	} else {
+		$TSFE->setJS ($fieldname, $code);
+	}
 	} // setJS
 
 }

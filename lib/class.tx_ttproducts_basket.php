@@ -123,14 +123,11 @@ class tx_ttproducts_basket {
  		$this->pricecalc = t3lib_div::makeInstance('tx_ttproducts_pricecalc');
  		$this->pricecalc->init($pibase, $this, $tt_products);		
 		$this->paymentshipping = &$paymentshipping;
-		
 		$this->page = tx_ttproducts_page::createPageTable($this->pibase,$this->page,$pid_list,99);
 
 		// store if feuserextrafields is loaded
 		$this->feuserextrafields = t3lib_extMgm::isLoaded('feuserextrafields');
-
 		$this->itemArray = array();
-
 		$tmpBasketExt = $TSFE->fe_user->getKey('ses','basketExt');
 
 		if (is_array($tmpBasketExt)) {
@@ -311,9 +308,10 @@ class tx_ttproducts_basket {
 			$this->personInfo['country'] = $this->pibase->staticInfo->getStaticInfoName('COUNTRIES', $this->personInfo['country_code'],'','');
 			$this->deliveryInfo['country'] = $this->pibase->staticInfo->getStaticInfoName('COUNTRIES', $this->deliveryInfo['country_code'],'','');
 		}
-		
-		if ($TSFE->loginUser && (!$this->personInfo || !$this->personInfo['name']) && $this->conf['lockLoginUserInfo'])	{
+
+		if ($TSFE->loginUser && (!$this->personInfo || !$this->personInfo['name'] || $this->conf['editLockedLoginInfo']) && $this->conf['lockLoginUserInfo'])	{
 			$address = '';
+			$this->personInfo['feusers_uid'] = $TSFE->fe_user->user['uid'];
 
 			if ($this->conf['loginUserInfoAddress']) {
 				$address = implode(chr(10),
@@ -327,50 +325,38 @@ class tx_ttproducts_basket {
 			else {
 				$address = $TSFE->fe_user->user['address'];
 			}
-
-			$this->personInfo['feusers_uid'] = $TSFE->fe_user->user['uid'];
-			$this->personInfo['name'] = $TSFE->fe_user->user['name'];
-			$this->personInfo['first_name'] = $TSFE->fe_user->user['first_name'];
-			$this->personInfo['last_name'] = $TSFE->fe_user->user['last_name'];
-
 			$this->personInfo['address'] = $address;
-			$this->personInfo['email'] = $TSFE->fe_user->user['email'];
 
-			$this->personInfo['telephone'] = $TSFE->fe_user->user['telephone'];
-			$this->personInfo['fax'] = $TSFE->fe_user->user['fax'];
-			$this->personInfo['zip'] = $TSFE->fe_user->user['zip'];
-			$this->personInfo['city'] = $TSFE->fe_user->user['city'];
-			$this->personInfo['country'] = ($this->conf['useStaticInfoCountry'] ? $TSFE->fe_user->user['static_info_country']:$TSFE->fe_user->user['country']);
-			$this->personInfo['agb'] = (isset($this->personInfo['agb']) ? $this->personInfo['agb'] : $TSFE->fe_user->user['agb']);
-			$this->personInfo['date_of_birth'] = date( 'd-m-Y', $TSFE->fe_user->user['date_of_birth']);
-			$this->personInfo['company'] = $TSFE->fe_user->user['company'];
 
+			$fields = 'name, first_name, last_name, email, telephone, fax, zip, city, company';
+			$fields .= ',tt_products_creditpoints, tt_products_vouchercode';
 			if ($this->feuserextrafields) {
-				/* Added Els: getting the fields for displaying in the BASKET_PAYMENT_TEMPLATE  from fe_user */
-				$this->personInfo['tx_feuserextrafields_initials_name'] = $TSFE->fe_user->user['tx_feuserextrafields_initials_name'];
-				$this->personInfo['tx_feuserextrafields_prefix_name'] = $TSFE->fe_user->user['tx_feuserextrafields_prefix_name'];
-				$this->personInfo['tx_feuserextrafields_gsm_tel'] = $TSFE->fe_user->user['tx_feuserextrafields_gsm_tel'];
-				$this->personInfo['tx_feuserextrafields_company_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_company_deliv'];
-				$this->personInfo['tx_feuserextrafields_address_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_address_deliv'];
-				$this->personInfo['tx_feuserextrafields_housenumber'] = $TSFE->fe_user->user['tx_feuserextrafields_housenumber'];
-				$this->personInfo['tx_feuserextrafields_housenumber_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_housenumber_deliv'];
-				$this->personInfo['tx_feuserextrafields_housenumberadd'] = $TSFE->fe_user->user['tx_feuserextrafields_housenumberadd'];
-				$this->personInfo['tx_feuserextrafields_housenumberadd_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_housenumberadd_deliv'];
-				$this->personInfo['tx_feuserextrafields_pobox'] = $TSFE->fe_user->user['tx_feuserextrafields_pobox'];
-				$this->personInfo['tx_feuserextrafields_pobox_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_pobox_deliv'];
-				$this->personInfo['tx_feuserextrafields_zip_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_zip_deliv'];
-				$this->personInfo['tx_feuserextrafields_city_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_city_deliv'];
-				$this->personInfo['tx_feuserextrafields_country'] = $TSFE->fe_user->user['tx_feuserextrafields_country'];
-				$this->personInfo['tx_feuserextrafields_country_deliv'] = $TSFE->fe_user->user['tx_feuserextrafields_country_deliv'];
+				$fields .= ',tx_feuserextrafields_initials_name, tx_feuserextrafields_prefix_name, tx_feuserextrafields_gsm_tel'.
+						'tx_feuserextrafields_company_deliv, tx_feuserextrafields_address_deliv, tx_feuserextrafields_housenumber'.
+						'tx_feuserextrafields_housenumber_deliv, tx_feuserextrafields_housenumberadd, tx_feuserextrafields_housenumberadd_deliv'.
+						'tx_feuserextrafields_pobox, tx_feuserextrafields_pobox_deliv, tx_feuserextrafields_zip_deliv, tx_feuserextrafields_city_deliv'.
+						'tx_feuserextrafields_country, tx_feuserextrafields_country_deliv';				
 			}
 
-/* Added Els: getting the field tt_products_creditpoints and tt_products_vouchercode from fe_user */
-			$this->personInfo['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'];
-			$this->personInfo['tt_products_vouchercode'] = $TSFE->fe_user->user['tt_products_vouchercode'];
+//			$lockLoginInfoFields = t3lib_div::trimExplode(',',$this->conf['lockLoginInfoFields']);
+//			$lockLoginInfoFields = array_flip ($tmp);
+			
+			$fieldArray = t3lib_div::trimExplode(',',$fields);
+	// $fieldArray =  array_diff ($fieldArray, $lockLoginInfoFields);
+			foreach ($fieldArray as $k => $field)	{
+				$this->personInfo[$field] = ($this->personInfo[$field] ? $this->personInfo[$field]: $TSFE->fe_user->user[$field]);
+			}
+			
+//			foreach ($lockLoginInfoFields as $k => $field)	{
+//				
+//			}
+			
+			$this->personInfo['country'] = ($this->personInfo['country'] ? $this->personInfo['country'] : ($this->conf['useStaticInfoCountry'] ? $TSFE->fe_user->user['static_info_country']:$TSFE->fe_user->user['country']));
+			$this->personInfo['agb'] = (isset($this->personInfo['agb']) ? $this->personInfo['agb'] : $TSFE->fe_user->user['agb']);
+			$this->personInfo['date_of_birth'] = date( 'd-m-Y', $TSFE->fe_user->user['date_of_birth']);
 		}
 		
 	} // init
-
 
 
 
@@ -425,6 +411,7 @@ class tx_ttproducts_basket {
 		unset($this->recs['tt_products']);
 		return ($this->recs);
 	} // getClearBasketRecord
+
 
 
 	/**
@@ -595,6 +582,7 @@ class tx_ttproducts_basket {
 	} // getCalculatedBasket
 
 
+
 	function &getItem (&$row) {
 		$variant = $this->tt_products->variant->getVariantFromRow ($row);
 		$count = $this->basketExt[$row['uid']][$variant];
@@ -614,6 +602,7 @@ class tx_ttproducts_basket {
 			);
 		return $item;
 	}
+
 
 
 	// This calculates the total for everything in the basket

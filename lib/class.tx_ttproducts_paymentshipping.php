@@ -356,6 +356,16 @@ on total no-tax price */
 	} // GetPaymentShippingData
 
 
+	/**
+	 * Include handle script
+	 */
+	function includeHandleScript($handleScript, &$confScript)	{
+		$content = '';
+		include($handleScript);
+		return $content;
+	} // includeHandleScript
+
+
 }
 
 

@@ -69,16 +69,6 @@ class tx_ttproducts_pricecalc {
 	} // includeCalcScript
 
 
-	/**
-	 * Include handle script
-	 */
-	function includeHandleScript($handleScript, &$confScript, &$basketView)	{
-		$content = '';
-		include($handleScript);
-		return $content;
-	} // includeHandleScript
-
-
 	function GetCalculatedData(&$conf) { // delete countTotal if not neede any more
 		global $TSFE;
 

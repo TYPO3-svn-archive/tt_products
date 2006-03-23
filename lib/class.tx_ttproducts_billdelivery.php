@@ -173,7 +173,7 @@ class tx_ttproducts_billdelivery {
 	
 					// Print Item Title
 					$wrappedSubpartArray=array();
-					$markerArray = $this->marker->getItemMarkerArray ($actItem, $catTitle,$this->tt_products,$this->tt_content,1,'image');
+					$markerArray = $this->tt_products->getItemMarkerArray ($actItem, $catTitle,$this->basket->basketExt,$this->tt_content,1,'image');
 	
 					$markerArray['###FIELD_QTY###'] = $actItem['count'];
 					$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
@@ -227,7 +227,6 @@ class tx_ttproducts_billdelivery {
 
 	$content= $this->pibase->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);
 	$reldateiname = $this->conf['outputFolder'] . '/' . $this->type . '/' . $tracking . '.htm';
-
 	// $dateiname = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $reldateiname;
 	$dateiname = t3lib_div::getFileAbsFileName($reldateiname);
 	$datei = fopen($dateiname, 'wb');

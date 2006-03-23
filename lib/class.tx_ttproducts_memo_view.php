@@ -54,7 +54,7 @@ class tx_ttproducts_memo_view {
 	var $searchFieldList='';
 	var $memoItems;
 
-	function init(&$pibase, &$conf, &$config, &$basket, &$pid_list, &$tt_content, &$tt_products, &$tt_products_cat, $pid) {
+	function init(&$pibase, &$conf, &$config, &$basket, &$pid_list, &$tt_content, &$tt_products, &$tt_products_cat, &$tt_products_articles, $pid) {
 		global $TSFE;
 
 		$this->pibase = &$pibase;
@@ -65,6 +65,7 @@ class tx_ttproducts_memo_view {
 		$this->tt_content = &$tt_content;
 		$this->tt_products = &$tt_products;
 		$this->tt_products_cat = &$tt_products_cat;
+		$this->tt_products_articles = &$tt_products_articles;
 		$this->pid = $pid;	
 
 		$fe_user_uid = $TSFE->fe_user->user['uid'];
@@ -120,8 +121,9 @@ class tx_ttproducts_memo_view {
 	
 			// List all products:
 			$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
-			$listView->init ($this->pibase, $this->conf, $this->config, $this->basket, $this->page, $this->content, $this->tt_products, $this->tt_products_cat, $this->pid);
-			$content = $listView->printView($templateCode, 'MEMO', implode(',', $this->memoItems), $error_code);
+			$listView->init ($this->pibase, $this->conf, $this->config, $this->basket, $this->page, $this->content, $this->tt_products, $this->tt_products_cat, $this->tt_products_articles, $this->pid);
+			$templateArea = '###ITEM_LIST_TEMPLATE###';
+			$content = $listView->printView($templateCode, 'MEMO', implode(',', $this->memoItems), $error_code, $templateArea);
 		} else {
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 

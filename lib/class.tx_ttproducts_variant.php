@@ -41,15 +41,19 @@
 
 
 class tx_ttproducts_variant {
+	var $pibase;
 	var $conf;
+	var $tt_products;
 	var $bUseArticles;
 	
 
 	/**
 	 * setting the local variables
 	 */
-	function init(&$conf, $bUseArticles)  {
+	function init(&$pibase, &$conf, &$tt_products, $bUseArticles)  {
+		$this->pibase = &$pibase;
 		$this->conf = &$conf;
+		$this->tt_products = &$tt_products;
 		$this->bUseArticles = $bUseArticles;
 	} // init
 
@@ -103,7 +107,7 @@ class tx_ttproducts_variant {
 	 }
 
 
-	function getVariantSubpartArray (&$pibase, &$tt_products, &$subpartArray, &$row, &$tempContent, $useSelects, &$conf)  {
+	function getVariantSubpartArray (&$subpartArray, &$row, &$tempContent, $useSelects, &$conf)  {
 		
 		if ($useSelects) {
 			$areaArray = array();
@@ -117,21 +121,21 @@ class tx_ttproducts_variant {
 				}
 			}
 					
-			if ($tt_products->isSingle($row)) {
+			if ($this->tt_products->isSingle($row)) {
 				$areaArray[] = 'display_variant5_isSingle';
 			} else {
 				$areaArray[] = 'display_variant5_isNotSingle';
 			}
 			
 			foreach ($areaArray as $k => $area) {
-				$subpartArray['###'.$area.'###'] = $pibase->cObj->getSubpart($tempContent,'###'.$area.'###');
+				$subpartArray['###'.$area.'###'] = $this->pibase->cObj->getSubpart($tempContent,'###'.$area.'###');
 			}
 		}
-		$this->removeEmptySubpartArray($pibase, $tt_products, $subpartArray, $row, $conf);
+		$this->removeEmptySubpartArray($subpartArray, $row, $conf);
 	}
 
 
-	function removeEmptySubpartArray (&$pibase, &$tt_products, &$subpartArray, &$row, &$conf) {
+	function removeEmptySubpartArray (&$subpartArray, &$row, &$conf) {
 				
 		$areaArray = array();
 
@@ -145,7 +149,7 @@ class tx_ttproducts_variant {
 			}
 		}
 
-		if ($tt_products->isSingle($row)) {
+		if ($this->tt_products->isSingle($row)) {
 			$areaArray[] = 'display_variant5_isNotSingle';
 		} else {
 			$areaArray[] = 'display_variant5_isSingle';

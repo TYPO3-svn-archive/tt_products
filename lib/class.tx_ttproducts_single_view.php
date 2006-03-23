@@ -165,7 +165,7 @@ class tx_ttproducts_single_view {
 
 			$item = $this->basket->getItem($row);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
-			$markerArray = $this->marker->getItemMarkerArray ($item,$catTitle,$this->tt_products,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
+			$markerArray = $this->tt_products->getItemMarkerArray ($item,$catTitle,$this->basket->basketExt,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
 			$subpartArray = array();
 			$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];
 

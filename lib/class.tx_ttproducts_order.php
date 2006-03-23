@@ -339,13 +339,21 @@ class tx_ttproducts_order {
 	 * The basket is also emptied, but address info is preserved for any new orders.
 	 * $orderUid is the order-uid to finalize
 	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
+	 * 
+	 * returns the email address of the customer to whom the order notification has been sent
 	 */
-	function finalize($templateCode, &$basketView, &$tt_products, &$tt_products_cat, &$price, $orderUid, $orderConfirmationHTML, &$error_message)	{
+	function finalize($templateCode, &$basketView, &$tt_products, &$tt_products_cat, &$price, $orderUid, &$orderConfirmationHTML, &$error_message)	{
 		global $TSFE;
 		global $TYPO3_DB;
 
 		$recipientsArray = array();
-
+		$recipientsArray['customer'] = array();
+		$recipientsArray['customer'][] = ($this->conf['orderEmail_toDelivery'] ? $this->basket->deliveryInfo['email'] : $this->basket->personInfo['email']); // former: deliveryInfo
+		$recipientsArray['shop'] = $tt_products_cat->getEmail($this->basket->itemArray);
+		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
+		$markerArray = array('###CUSTOMER_RECIPIENTS_EMAIL###' => implode(',', $recipientsArray['customer']));
+		$orderConfirmationHTML= $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
+		
 		// CBY 11/11/2005 I moved the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
 		// Is no user is logged in --> create one
 		if ($this->conf['createUsers'] && $this->basket->personInfo['email'] != '' && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == ''))
@@ -450,10 +458,7 @@ class tx_ttproducts_order {
 		}
 
 			// Sends order emails:
-		$recipientsArray['customer'] = array();
-		$recipientsArray['customer'][] = ($this->conf['orderEmail_toDelivery'] ? $this->basket->deliveryInfo['email'] : $this->basket->personInfo['email']); // former: deliveryInfo
-		$recipientsArray['shop'] = $tt_products_cat->getEmail($this->basket->itemArray);
-		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
+
 		$recipientsGroupsArray = array ('shop', 'customer');
 
 		if ($recipientsArray['customer'])	{	// If there is a customer as recipient, then compile and send the mail.
@@ -559,7 +564,8 @@ class tx_ttproducts_order {
 					$hookObj->finalizeOrder($this, $templateCode, $basketView, $tt_products, $tt_products_cat, $price, $orderUid, $orderConfirmationHTML, $error_message);
 				}
 			}
-		}		
+		}	
+		
 	} // finalize
 
 }

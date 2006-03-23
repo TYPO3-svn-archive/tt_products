@@ -173,6 +173,10 @@ class tx_ttproducts_catlist_view {
 			$fill = ' onchange="fillSelect(this,2);"';
 		}
 		$out = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
+		if ($htmlTagMain == 'select')	{
+			// empty select entry at the beginning
+			$out .= '<option value="0"></option>';
+		}
 		$currentCat = $this->pibase->piVars['cat'];
 		
 		$markerArray = array();
@@ -184,7 +188,11 @@ class tx_ttproducts_catlist_view {
 				$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $categoryArray[$actCategory]);
 				$css = ($actCategory == $currentCat ? 'class="act"' : '');
 				$markerArray['###ITEM_SINGLE_PRE_HTML###'] = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
-				$wrappedSubpartArray['###LINK_CATEGORY###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array($this->pibase->prefixId.'[cat]' => $actCategory))).'"'.$css.'>','</a>');
+				if ($htmlTagMain == 'select')	{
+					$wrappedSubpartArray['###LINK_CATEGORY###'] = array('','');
+				} else {
+					$wrappedSubpartArray['###LINK_CATEGORY###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array($this->pibase->prefixId.'[cat]' => $actCategory))).'"'.$css.'>','</a>');
+				}
 				$markerArray['###LIST_LINK###'] = $categoryArray[$actCategory]['title'];  
 				$markerArray['###ITEM_SINGLE_POST_HTML###'] = '</'.$htmlTagElement.'>';
 				$subpartArray = array();
@@ -211,6 +219,7 @@ class tx_ttproducts_catlist_view {
 		$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
 		if ($bSeparated)	{
 			$this->pibase->javascript->set('catselect', $categoryArray);
+			
 			for ($i = 2; $i <= 1+$count; ++$i)	{
 				$menu = 'cat'.$i;
 				$fill = ' onchange="fillSelect(this,'.($i+1).');"';
