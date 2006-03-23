@@ -2,7 +2,8 @@
 if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
 t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXTkey, 'pi1/static/old_style/', 'Shop System Old Style');
-
+$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
+		
 $TCA['tt_products'] = Array (
 	'ctrl' => Array (
 		'title' =>'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products',
@@ -49,6 +50,7 @@ $TCA['tt_products_cat'] = Array (
 	)
 );
 
+
 $TCA['tt_products_language'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_language',
@@ -65,6 +67,7 @@ $TCA['tt_products_language'] = Array (
 		'fe_admin_fieldList' => 'title,subtitle,prod_uid,note,unit,www,datasheet,hidden,starttime,endtime',
 	)
 );
+
 
 $TCA['tt_products_cat_language'] = Array (
 	'ctrl' => Array (
@@ -99,6 +102,7 @@ $TCA['tt_products_articles'] = Array (
 		'fe_admin_fieldList' => 'hidden,cat_uid, sys_language_uid,title',
 	)
 );
+
 
 $TCA['tt_products_emails'] = Array (
 	'ctrl' => Array (
@@ -136,6 +140,8 @@ $TCA['sys_products_orders'] = Array (
 	)
 );
 
+
+
 t3lib_div::loadTCA('tt_content');
 
 if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
@@ -171,18 +177,34 @@ if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
 					Array('ORDERS'.			'17', 'ORDERS'),
 					Array('LISTGIFTS'.		'18', 'LISTGIFTS'),
 					Array('LISTCAT'.		'19', 'LISTCAT'),
+					Array('LISTARTICLES'.	'20', 'LISTARTICLES'),
 				),
 			)
 		)
 	);
 
+	if ($typoVersion < 3008000)	{
+		$tempColumns['tt_products_code']['label'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code';
+	}
 	t3lib_extMgm::addTCAcolumns('tt_content',$tempColumns,1);
 	$TCA['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='tt_products_code;;;;1-1-1';
 }
 
-t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_content.list_type_pi1','5'),'list_type');
-t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products', '5'));
+if ($typoVersion < 3008000)	{
+	$TCA['tt_products']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products';
+	$TCA['tt_products_cat']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat';
+	$TCA['tt_products_language']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products_language';
+	$TCA['tt_products_cat_language']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language';
+	$TCA['tt_products_articles']['ctrl']['title'] =  'LLL:EXT:tt_products/locallang_tca.php:tt_products_articles';
+	$TCA['tt_products_emails']['ctrl']['title'] =  'LLL:EXT:tt_products/locallang_tca.php:tt_products_emails';
+	$TCA['sys_products_orders']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:sys_products_orders';
+	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:tt_content.list_type_pi1','5'),'list_type');
+	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:tt_products', '5'));
+} else {
+	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_content.list_type_pi1','5'),'list_type');
+	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products', '5'));
+}
 
 t3lib_extMgm::allowTableOnStandardPages('tt_products');
 t3lib_extMgm::allowTableOnStandardPages('tt_products_language');
@@ -250,6 +272,14 @@ $tempColumns = Array (
 		)
 	),
 );
+
+if ($typoVersion < 3008000)	{
+	$tempColumns['tt_products_memoItems']['label'] = 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_memoItems';
+	$tempColumns['tt_products_discount']['label'] = 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_discount';
+	$tempColumns['tt_products_creditpoints']['label'] = 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_creditpoints';
+	$tempColumns['tt_products_vouchercode']['label'] =  'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_vouchercode';
+}
+
 t3lib_div::loadTCA('fe_users');
 
 t3lib_extMgm::addTCAcolumns('fe_users',$tempColumns,1);

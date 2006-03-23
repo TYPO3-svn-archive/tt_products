@@ -93,6 +93,7 @@
 			<label index="tt_content.pi1_flexform.display_mode.18"></label>
 			<label index="tt_content.pi1_flexform.display_mode.19"></label>
 			<label index="tt_content.pi1_flexform.display_mode.20"></label>
+			<label index="tt_content.pi1_flexform.display_mode.21"></label>
 		</labelContext>
 	</meta>
 	<data type="array">
@@ -185,6 +186,7 @@
 			<label index="tt_content.pi1_flexform.display_mode.18">General: memo</label>
 			<label index="tt_content.pi1_flexform.display_mode.19">General: help</label>
 			<label index="tt_content.pi1_flexform.display_mode.20">Categories: list</label>
+			<label index="tt_content.pi1_flexform.display_mode.21">Articles: list</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="tt_content.list_type_pi1">Produkte</label>
@@ -273,6 +275,7 @@
 			<label index="tt_content.pi1_flexform.display_mode.18">Allgemein: Memo</label>
 			<label index="tt_content.pi1_flexform.display_mode.19">Allgemein: Hilfe</label>
 			<label index="tt_content.pi1_flexform.display_mode.20">Kategorien: Liste</label>
+			<label index="tt_content.pi1_flexform.display_mode.21">Artikel: Liste</label>
 		</languageKey>
 		<languageKey index="dk" type="array">
 			<label index="tt_content.tt_products_code">Kode</label>

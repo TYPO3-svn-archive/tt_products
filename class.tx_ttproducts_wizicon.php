@@ -59,7 +59,13 @@ class tx_ttproducts_wizicon {
 	 * Includes the locallang.xml and returns the $LOCAL_LANG array found in that file.
 	 */
 	function includeLocalLang()	{
-		$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(PATH_BE_ttproducts.'locallang.xml',FALSE);
+		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
+		
+		if ($typoVersion >= 3008000)	{
+			$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(PATH_BE_ttproducts.'locallang.xml',FALSE);
+		} else {
+			include(PATH_BE_ttproducts.'locallang.php');
+		}
 		return $LOCAL_LANG;
 	}
 	

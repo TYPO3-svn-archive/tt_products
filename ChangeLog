@@ -1,3 +1,11 @@
+2006-03-23 Franz Holzinger <franz@fholzinger.com>
+	* make category subtitle visible in backend
+	* LISTARTICLES for a listing of articles
+	* make usage of the Payment Library extension
+	* category list with select boxes displays content using JavaScript and AJAX 
+	* Payment Gayteways with use of paymentlib - handleLib payment settings
+	* editLockedLoginInfo to still change some fields of the frontend user for the order
+
 2006-03-16 Franz Holzinger <franz@fholzinger.com>
 	* use only not deleted categories
 	* extend the categories display to work with select box and pages as categories

@@ -91,6 +91,10 @@
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.20</numindex>
 							<numindex index="1">LISTCAT</numindex>					    
 					    </numindex>						    				   					    			    
+					    <numindex index="21">
+							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.21</numindex>
+							<numindex index="1">LISTARTICLES</numindex>					    
+					    </numindex>						    				   					    			    
 					</items>
 					<size>5</size>
 					<minitems>1</minitems>

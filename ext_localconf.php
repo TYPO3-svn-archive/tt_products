@@ -60,7 +60,7 @@ if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProduct
 
 $typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
 
-if ($typoVersion >= 3009000 &&
+if ($typoVersion >= 4005000 &&
 !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
 	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = array (
 		'default' => array(
@@ -102,10 +102,8 @@ $TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] 
 	);
 }
 
-
   ## Extending TypoScript from static template uid=43 to set up userdefined tag:
 t3lib_extMgm::addTypoScript($_EXTKEY,'editorcfg','tt_content.CSS_editor.ch.tx_ttproducts_pi1 = < plugin.tx_ttproducts_pi1.CSS_editor ',43);
-
 
 t3lib_extMgm::addPItoST43($_EXTKEY,'pi1/class.tx_ttproducts_pi1.php','_pi1','list_type',0);
 

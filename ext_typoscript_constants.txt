@@ -158,6 +158,8 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=boolean; label=lock login user: If set and a user is logged in, the address info of that fe_user is 'hardcoded' as billing address of the user.
   lockLoginUserInfo = 0
+    # cat=plugin.products//; type=boolean; label=edit locked login info: If set and lockLoginUserInfo is set then it is possible to edit still the data only for the order if there are HTML edit fields in the template
+  editLockedLoginInfo =
     # cat=plugin.products//; type=boolean; label=lock login user address: If lockLoginUserInfo is set, this switch makes that the address field is filled in from address, country, zip and city of the fe_user
   loginUserInfoAddress =
     # cat=plugin.products//; type=boolean; label=order by after page: If you want to define the order of the list. It is always ordered by the page id at first.
@@ -206,6 +208,8 @@ plugin.tt_products {
   createUsers = 0
     # cat=plugin.products//; type=int+; label=User Sysfolder PID: PID of the sysfolder for the new users
   PIDuserFolder = 116
+    # cat=plugin.products//; type=string; label=Output folder: Folder where the bill and delivery sheets are created.
+  outputFolder = fileadmin/data
     # cat=plugin.products//; type=int+; label=Group of customers
   memberOfGroup = 1
 
