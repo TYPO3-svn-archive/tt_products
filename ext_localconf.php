@@ -1,6 +1,9 @@
 <?php
 if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
+$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
+$_EXTCONF = unserialize($_EXTCONF);    // unserializing the configuration so we can use it here:
+
 if (!defined ('TT_PRODUCTS_EXTkey')) {
 	define('TT_PRODUCTS_EXTkey',$_EXTKEY);
 }
@@ -25,18 +28,21 @@ if (!defined ('TABLE_EXTkey')) {
 	define('TABLE_EXTkey','table');
 }
 
-if (!defined ('PATH_BE_table')) {
-	define('PATH_BE_table', t3lib_extMgm::extPath(TABLE_EXTkey));
+if (t3lib_extMgm::isLoaded(TABLE_EXTkey)) {
+	if (!defined ('PATH_BE_table')) {
+		define('PATH_BE_table', t3lib_extMgm::extPath(TABLE_EXTkey));
+	}
 }
 
 if (!defined ('FH_LIBRARY_EXTkey')) {
 	define('FH_LIBRARY_EXTkey','fh_library');
 }
 
-if (!defined ('PATH_BE_fh_library')) {
-	define('PATH_BE_fh_library', t3lib_extMgm::extPath(FH_LIBRARY_EXTkey));
+if (t3lib_extMgm::isLoaded(FH_LIBRARY_EXTkey)) {
+	if (!defined ('PATH_BE_fh_library')) {
+		define('PATH_BE_fh_library', t3lib_extMgm::extPath(FH_LIBRARY_EXTkey));
+	}
 }
-
 
 if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
 	define('TT_PRODUCTS_DIV_DLOG', '0');	// for development error logging
@@ -49,16 +55,19 @@ t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products_cat=1');
 t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products_articles=1');
 
 if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])) {
-	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] = 0; //for page as categories:  1
+	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] = $_EXTCONF['pageAsCategory'];
 }
-if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'])) {
-	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 1;  // set this to 1 !
+
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = $_EXTCONF['useFlexforms'];
+
+if ($typoVersion < 3007000 || !t3lib_extMgm::isLoaded(FH_LIBRARY_EXTkey)) {
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 0;
 }
+
 if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'])) {
 	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'] = '';
 }
 
-$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
 
 if ($typoVersion >= 4005000 &&
 !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
@@ -101,6 +110,7 @@ $TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] 
 		)
 	);
 }
+
 
   ## Extending TypoScript from static template uid=43 to set up userdefined tag:
 t3lib_extMgm::addTypoScript($_EXTKEY,'editorcfg','tt_content.CSS_editor.ch.tx_ttproducts_pi1 = < plugin.tx_ttproducts_pi1.CSS_editor ',43);

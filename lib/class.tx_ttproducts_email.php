@@ -44,7 +44,7 @@ require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
 class tx_ttproducts_email {
 	var $emailArray;	// array of read in emails
-	var $tt_products_emails;			// object of the type tx_table_db
+	var $table;		 // object of the type tx_table_db
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -52,9 +52,9 @@ class tx_ttproducts_email {
 	function init() {
 		global $TYPO3_DB;
 		
-		$this->tt_products_emails = t3lib_div::makeInstance('tx_table_db');
-		$this->tt_products_emails->setTCAFieldArray('tt_products_emails');
-
+		$this->table = t3lib_div::makeInstance('tx_table_db');
+		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
+		$this->table->setTCAFieldArray('tt_products_emails');
 	} // init
 
 
@@ -63,9 +63,9 @@ class tx_ttproducts_email {
 		$rc = $this->emailArray[$uid];;
 		if (!$rc) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
-			$sql->prepareFields($this->tt_products_emails, 'select', '*');
-			$sql->prepareWhereFields ($this->tt_products_emails, 'uid', '=', $uid);
-			$this->tt_products_emails->enableFields('tt_products_emails');
+			$sql->prepareFields($this->table, 'select', '*');
+			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
+			$this->table->enableFields('tt_products_emails');
 			// Fetching the email
 			$res = $sql->exec_SELECTquery();
 			$row = $TYPO3_DB->sql_fetch_assoc($res);

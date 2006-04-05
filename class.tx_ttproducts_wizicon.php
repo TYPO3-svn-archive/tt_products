@@ -41,17 +41,17 @@ class tx_ttproducts_wizicon {
 
 		if ($TYPO3_CONF_VARS['EXTCONF']['tt_products']['pageAsCategory'] == 0)
 		{
-			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]='.rawurlencode('HELP');
+			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=HELP';
 		}
 		else
 		{
-			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]='.rawurlencode('HELP');
+			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]=HELP';
 		}
-		$wizardItems['plugins_ttproducts'] = array(
+		$wizardItems['plugins_tx_ttproducts_pi1'] = array(
 			'icon'=>PATH_BE_ttproducts_rel.'res/icons/be/ce_wiz.gif',
 			'title'=>$LANG->getLLL('plugins_title',$LL),
 			'description'=>$LANG->getLLL('plugins_description',$LL),
-			'params'=> $params	);
+			'params'=> $params);
 
 		return $wizardItems;
 	}

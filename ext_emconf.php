@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Shop System',
-	'description' => 'Shop system in multiple languages with photo gallery, articles, order tracking, Paypal payment, bill creation, creditpoint and voucher system, gift certificates, confirmation emails and search facility. Install the \'Table Library\' table v0.0.9 and the fh_library v0.0.8 extensions before you make an update!',
+	'description' => 'Shop system in multiple languages with photo gallery, articles, order tracking, Paypal payment, bill creation, creditpoint and voucher system, gift certificates, confirmation emails and search facility. Install the \'Table Library\' table v0.1.0 and the fh_library v0.0.8 extensions before you make an update!',
 	'category' => 'plugin',
 	'shy' => 0,
 	'dependencies' => 'cms,table,fh_library',

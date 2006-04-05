@@ -82,8 +82,9 @@ class tx_ttproducts_single_view {
 		$content = '';
 
 		$where = 'uid='.intval($this->uid);
+		$viewTable = &$this->tt_products;
 
-		$this->tt_products->table->enableFields();
+		$viewTable->table->enableFields();
 	 	$res = $this->tt_products->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
 	 	$row = '';
 		if ($this->config['displayCurrentRecord'])	{
@@ -93,7 +94,7 @@ class tx_ttproducts_single_view {
 		}
 
 		if ($this->variants) {
-			$this->tt_products->variant->getRowFromVariant ($row, $this->variants);
+			$viewTable->variant->getRowFromVariant ($row, $this->variants);
 		}
 
 		if($row) {
@@ -107,7 +108,7 @@ class tx_ttproducts_single_view {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 			} else if (count($giftNumberArray)) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
-			} else if ($row['inStock']==0 && $this->conf['showNotInStock'] && is_array($TCA[$this->tt_products->table->name]['columns']['inStock']) ) {
+			} else if ($row['inStock']==0 && $this->conf['showNotInStock'] && is_array($TCA[$viewTable->table->name]['columns']['inStock']) ) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_NOT_IN_STOCK###';
 			} else {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
@@ -165,7 +166,7 @@ class tx_ttproducts_single_view {
 
 			$item = $this->basket->getItem($row);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
-			$markerArray = $this->tt_products->getItemMarkerArray ($item,$catTitle,$this->basket->basketExt,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
+			$markerArray = $viewTable->getItemMarkerArray ($item,$catTitle,$this->basket->basketExt,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
 			$subpartArray = array();
 			$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];
 
@@ -182,7 +183,7 @@ class tx_ttproducts_single_view {
 			$nextOrderby = ''; 
 
 			if ($this->conf['orderByItemNumberSg']) {
-				$itemnumberField = $this->tt_products->fields['itemnumber'];
+				$itemnumberField = $viewTable->fields['itemnumber'];
 				$queryPrevPrefix = $itemnumberField.' < '.intval($row[$itemnumberField]);
 				$queryNextPrefix = $itemnumberField.' > '.intval($row[$itemnumberField]);
 				$prevOrderby= $itemnumberField.' DESC';
@@ -196,10 +197,11 @@ class tx_ttproducts_single_view {
 			}
 
 			$queryprev = '';
-			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$this->tt_products->table->name]['columns']['inStock']) ? '' : 'AND (inStock <>0) ');
-			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($this->tt_products->table->name);
+			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$viewTable->table->name]['columns']['inStock']) ? '' : 'AND (inStock <>0) ');
+			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($viewTable->table->name);
 			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
-			$resprev = $this->tt_products->table->exec_SELECTquery('*', $queryprev, '', $prevOrderby);
+			debug ($queryprev, '$queryprev', __LINE__, __FILE__);
+			$resprev = $viewTable->table->exec_SELECTquery('*', $queryprev, '', $prevOrderby);
 
 			
 			if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )	{
@@ -212,9 +214,10 @@ class tx_ttproducts_single_view {
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
 
-			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($this->tt_products->table->name);
+			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($viewTable->table->name);
+			debug ($querynext, '$querynext', __LINE__, __FILE__);
 			// $resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
-			$resnext = $this->tt_products->table->exec_SELECTquery('*', $querynext, '', $nextOrderby);
+			$resnext = $viewTable->table->exec_SELECTquery('*', $querynext, '', $nextOrderby);
 
 			if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )	{
 				$addQueryString=array();
@@ -226,7 +229,8 @@ class tx_ttproducts_single_view {
 				$subpartArray['###LINK_NEXT_SINGLE###']='';
 			}
 
-			$this->tt_products->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
+			debug ($subpartArray, '$subpartArray', __LINE__, __FILE__);
+			$viewTable->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
 
 				// Substitute	
 			$content= $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);

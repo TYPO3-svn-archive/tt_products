@@ -45,16 +45,19 @@ class tx_ttproducts_variant {
 	var $conf;
 	var $tt_products;
 	var $bUseArticles;
+	var $bSelectableArray;
 	
 
 	/**
 	 * setting the local variables
 	 */
-	function init(&$pibase, &$conf, &$tt_products, $bUseArticles)  {
+	function init(&$pibase, &$conf, &$tt_products, $bUseArticles, &$bSelectableArray)  {
 		$this->pibase = &$pibase;
 		$this->conf = &$conf;
 		$this->tt_products = &$tt_products;
 		$this->bUseArticles = $bUseArticles;
+		$this->bSelectableArray = $bSelectableArray;
+		debug ($this->bSelectableArray, '$this->bSelectableArray', __LINE__, __FILE__);
 	} // init
 
 
@@ -70,13 +73,15 @@ class tx_ttproducts_variant {
 	 function getRowFromVariant (&$row, $variant) {
 		$variantArray = explode(';', $variant);
 		
-		if (is_array($this->conf) && $this->bUseArticles)	{
+		if (is_array($this->conf) && ($this->bUseArticles || count ($this->bSelectableArray)))	{
 			foreach ($this->conf as $key => $field)	{
 				if ($key != 5)	{
 					$row[$field] = $variantArray[$key-1];
 				}
 			}
 		}
+		
+		debug ($row, 'getRowFromVariant: $row', __LINE__, __FILE__);
 	 }
 
 
@@ -93,7 +98,7 @@ class tx_ttproducts_variant {
 		// take only the first color, size and gradings, if there are more entries from the products table		
 		$variantArray = array();
 
-		if (is_array($this->conf) && $this->bUseArticles)	{
+		if (is_array($this->conf) && ($this->bUseArticles || count ($this->bSelectableArray)))	{
 			foreach ($this->conf as $key => $field)	{
 				if ($key != 5)	{
 					$tmpArr = t3lib_div::trimExplode(';', $row[$field]);
@@ -103,6 +108,7 @@ class tx_ttproducts_variant {
 		}
 			
 		$rc = implode (';', $variantArray);
+		debug ($rc, 'getVariantFromRow $rc', __LINE__, __FILE__);
 		return $rc; 
 	 }
 

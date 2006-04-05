@@ -199,6 +199,7 @@ class tx_ttproducts_paymentshipping {
 	function getConfiguredPrice(&$price, &$tax, &$confArr, &$countTotal, &$priceTotalTax, &$priceTax, &$priceNoTax) {
 		$minPrice=0;
 		$priceNew=0;
+		debug ($confArr, '$confArr', __LINE__, __FILE__);
 		if ($confArr['WherePIDMinPrice.']) {
 				// compare PIDList with values set in priceTaxWherePIDMinPrice in the SETUP
 				// if they match, get the min. price
@@ -242,14 +243,18 @@ class tx_ttproducts_paymentshipping {
 			$priceNew = $minPrice;
 		}
 
+		debug ($priceNew, '$priceNew', __LINE__, __FILE__);
  
 		// constant noCostsAmount by Christoph Zipper <info@chriszip.de>
 		// the total products price as from the payment/shipping is free
 		$noCostsAmount = (double) $confArr['noCostsAmount'];
+		debug ($noCostsAmount, '$noCostsAmount', __LINE__, __FILE__);
+		debug ($priceTotalTax, '$priceTotalTax', __LINE__, __FILE__);
 		if ($noCostsAmount && ($priceTotalTax >= $noCostsAmount)) {
 			$priceNew = 0;
 		}
 
+		debug ($priceNew, '$priceNew', __LINE__, __FILE__);
 		$priceTax += $price->getPrice($priceNew,1,$tax,1);
 		$priceNoTax += $price->getPrice($priceNew,0,$tax,1);
 	}
@@ -359,7 +364,7 @@ on total no-tax price */
 	/**
 	 * Include handle script
 	 */
-	function includeHandleScript($handleScript, &$confScript)	{
+	function includeHandleScript($handleScript, &$confScript, $activity, &$bFinalize)	{
 		$content = '';
 		include($handleScript);
 		return $content;

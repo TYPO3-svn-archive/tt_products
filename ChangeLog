@@ -1,3 +1,9 @@
+2006-04-05 Franz Holzinger <franz@fholzinger.com>
+	* configuration via ext_conf_template.txt
+	* do not use fh_library and table in ext_localconf.php if these extensions have not been installed
+	* add order by categories to the products list
+	* correct error with HTML emails
+
 2006-03-23 Franz Holzinger <franz@fholzinger.com>
 	* make category subtitle visible in backend
 	* LISTARTICLES for a listing of articles

@@ -51,6 +51,7 @@ class tx_ttproducts_product {
 	var $conf;
 	var $config;
 	var $variant; // object for the product variant attributes
+	var $bSelectableArray; // array of variants which are selectable
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -63,6 +64,7 @@ class tx_ttproducts_product {
 		$this->config = &$config;
 		$tablename = ($tablename ? $tablename : 'tt_products');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
+		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 		
 		$requiredListFields = ($tableconf['requiredListFields'] ? $tableconf['requiredListFields'] : 'uid,pid,category,price,price2,tax,inStock');
@@ -75,9 +77,21 @@ class tx_ttproducts_product {
 		}
 		
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
-		$this->variant->init($this->pibase, $tableconf['variant.'], $this, $bUseArticles);
+		
+		$this->bSelectableArray = array();
+		if ($this->conf['selectColor'])
+			$this->bSelectableArray[0] = true;
+		if ($this->conf['selectSize'])
+			$this->bSelectableArray[1] = true;
+		if ($this->conf['selectDescription'])
+			$this->bSelectableArray[2] = true;
+		if ($this->conf['selectGradings'])
+			$this->bSelectableArray[3] = true;
+					
+		$this->variant->init($this->pibase, $tableconf['variant.'], $this, $bUseArticles, $this->bSelectableArray);
 		
 		$this->fields['itemnumber'] = ($tableconf['itemnumber'] ? $tableconf['itemnumber'] : 'itemnumber');
+		debug ($this->fields, '$this->fields', __LINE__, __FILE__);
 	} // init
 
 
@@ -113,7 +127,7 @@ class tx_ttproducts_product {
 	 * Reduces the instock value of the orderRecord with the sold items and returns the result
 	 * 
 	 */
-	function reduceInStock(&$itemArray, $useArticles)	{
+	function reduceInStock(&$itemArray, $bUseArticles)	{
 		global $TYPO3_DB, $TCA;
 		$rc = '';
 
@@ -123,8 +137,7 @@ class tx_ttproducts_product {
 			// loop over all items in the basket indexed by page and itemnumber
 			foreach ($itemArray as $pid=>$pidItem) {
 				foreach ($pidItem as $itemnumber=>$actItemArray) {
-					#error_Log ("tt_products  $this->conf['useArticles'] = ".$this->conf['useArticles']);
-					if ($useArticles) {
+					if ($bUseArticles) {
 						foreach ($actItemArray as $k1=>$actItem) {
 							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND description=\''.$actItem['rec']['description'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
 	
@@ -211,7 +224,7 @@ class tx_ttproducts_product {
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 
 		$row = &$item['rec'];
-		if ($this->conf['useArticles'])	{
+		if ($this->conf['useArticles'] || count($this->bSelectableArray))	{
 			$variantRow = &$row;
 		} else {
 			$variantRow = array();
@@ -431,11 +444,11 @@ class tx_ttproducts_product {
 		}
 
 			// Call all getItemMarkerArray hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getProductsItemMarkerArray'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getProductsItemMarkerArray'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['product'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['product'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
-				if (method_exists($hookObj, 'getProductsItemMarkerArray')) {
-					$hookObj->getProductsItemMarkerArray ($this, $markerArray, $item, $catTitle, $tt_content, $imageNum, $imageRenderObj, $forminfoArray);
+				if (method_exists($hookObj, 'getItemMarkerArray')) {
+					$hookObj->getItemMarkerArray ($this, $markerArray, $item, $catTitle, $tt_content, $imageNum, $imageRenderObj, $forminfoArray);
 				}
 			}
 		}

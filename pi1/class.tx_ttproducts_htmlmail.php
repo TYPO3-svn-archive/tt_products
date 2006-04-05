@@ -43,9 +43,16 @@ require_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 class tx_ttproducts_htmlmail extends t3lib_htmlmail {
 	
 	function start($recipient,$subject,$plain,$html,$V) {
+		debug ($recipient, '$recipient', __LINE__, __FILE__);
+		debug ($subject, '$subject', __LINE__, __FILE__);
+		debug ($plain, '$plain', __LINE__, __FILE__);
+		debug ($html, '$html', __LINE__, __FILE__);
+		debug ($V, '$V', __LINE__, __FILE__);
 		if ($recipient) {
+			parent::start();
+
 				// Sets the message id
-			$this->messageid = md5(microtime()).'@domain.tld'; // formerly:  '<'.md5(microtime()).'@domain.tld>';
+			// $this->messageid = md5(microtime()).'@domain.tld'; // formerly:  '<'.md5(microtime()).'@domain.tld>';
 		
 			$this->subject = $subject;
 			

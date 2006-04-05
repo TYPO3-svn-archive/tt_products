@@ -62,9 +62,10 @@ class tx_ttproducts_article {
 
 		$tablename = ($tablename ? $tablename : 'tt_products_articles');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
+		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 
-		$requiredListFields = ($tableconf['requiredListFields'] ? $tableconf['requiredListFields'] : 'uid,pid,uid_product,price,price2,tax');
+		$requiredListFields = ($tableconf['requiredListFields'] ? $tableconf['requiredListFields'] : 'uid,pid,uid_product,price,price2');
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 
@@ -331,11 +332,11 @@ class tx_ttproducts_article {
 		}
 
 			// Call all getItemMarkerArray hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getProductsItemMarkerArray'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getProductsItemMarkerArray'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['article'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['article'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
-				if (method_exists($hookObj, 'getProductsItemMarkerArray')) {
-					$hookObj->getProductsItemMarkerArray ($this, $markerArray, $item, $catTitle, $tt_content, $imageNum, $imageRenderObj, $forminfoArray);
+				if (method_exists($hookObj, 'getItemMarkerArray')) {
+					$hookObj->getItemMarkerArray ($this, $markerArray, $item, $catTitle, $tt_content, $imageNum, $imageRenderObj, $forminfoArray);
 				}
 			}
 		}

@@ -89,9 +89,15 @@ class tx_ttproducts_list_view {
 			$itemsOut.= '<td></td>';
 		}
 		$itemsOut.= ($tableRowOpen ? '</tr>' : '');
+		// continue with the first column after this
+		$iColCount = 1;
 		return $itemsOut;
 	} // comp
 
+
+//	function compare ($row1,$row2)	{
+//		return strcmp($this->tt_products_cat->get[$row1['category']],$this->tt_products_cat->get[$row2['category']]);
+//	}
 
 	// returns the products list view
 	function &printView(&$templateCode, $theCode, &$memoItems, &$error_code, $templateArea = '###ITEM_LIST_TEMPLATE###') {
@@ -177,7 +183,6 @@ class tx_ttproducts_list_view {
 		if ($where || ($theCode!='SEARCH' && !t3lib_div::_GP('swords')))	{
 			
 			$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($templateArea));
-	
 			if (!$t['listFrameWork']) {
 				$error_code[0] = 'no_subtemplate';
 				$error_code[1] = $templateArea;
@@ -190,11 +195,11 @@ class tx_ttproducts_list_view {
 			$t['categoryTitle'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_CATEGORY###');
 			$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_LIST###');
 			$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
+			$bItemPostHtml = (strstr($t['item'], 'ITEM_SINGLE_POST_HTML') > 0);
 
 				// Get products
 			$selectConf = Array();
 			$selectConf['pidInList'] = $this->page->pid_list;
-	
 			$wherestock = ($this->conf['showNotinStock'] || !is_array(($TCA[$viewTable->table->name]['columns']['inStock'])) ? '' : 'AND (inStock <> 0) ');
 			$selectConf['where'] = '1=1 '.$wherestock.$where;
 	
@@ -224,19 +229,53 @@ class tx_ttproducts_list_view {
 				$viewTable->table->requiredFieldArray,
 				$markerFieldArray,
 				'PRODUCT_');
-				
+
+// SELECT *
+// FROM tt_products
+// LEFT OUTER JOIN tt_products_cat ON tt_products.category = tt_products_cat.uid
+
+			// $selectConf['leftjoin'] = ''
+			
+			$catColumnPrefix = 'cat';
+			$orderByCat = $this->tt_products_cat->catconf['orderBy']; 
+			if ($orderByCat)	{
+				$catFields = ($orderByCat == 'uid' ? $orderByCat : 'uid,'.$orderByCat);
+				$selectConf['orderBy'] = $catFields.','.$selectConf['orderBy']; 
+//				$this->tt_products_cat->table->setColumnPrefix($catColumnPrefix);
+//				$catQueryParts = $this->tt_products_cat->table->getQuery($catFields,'','',$orderByCat);
+//				debug ($catQueryParts, '$catQueryParts', __LINE__, __FILE__);
+//				foreach ($catQueryParts as $field => $value)	{
+//					if ($queryParts[$field] && $value)	{
+//						if ($field == 'ORDERBY')	{
+//							$queryParts[$field] = $value.','.$queryParts[$field];
+//						} else if ($field == 'WHERE') {
+//							$queryParts[$field] = ' AND '.$queryParts[$field].','.$value;
+//						} else {
+//							$queryParts[$field] = $queryParts[$field].','.$value;	
+//						}
+//					} else {
+//					if ($value)	{
+//						$queryParts[$field] = $value;
+//					}
+//				}
+				$prodAlias = $this->tt_products->table->getAliasName();
+				$catAlias = $this->tt_products_cat->table->getAliasName();
+				$selectConf['leftjoin'] = $this->tt_products_cat->table->name.' '.$catAlias.' ON '.$catAlias.'.uid='.$prodAlias.'.category';
+//				$this->tt_products_cat->table->setColumnPrefix('');
+			}
+
 			$selectConf['selectFields'] = implode(',', $fieldsArray);
 			$selectConf['max'] = ($this->config['limit']+1);
 			$selectConf['begin'] = $begin_at;
-			
-			$queryParts = $this->pibase->cObj->getQuery($viewTable->table->name, $selectConf, TRUE);
-			
-			$res = $viewTable->table->exec_SELECT_queryArray($queryParts);
+			$queryParts = $this->pibase->cObj->getQuery($viewTable->table->name, $selectConf, TRUE);		
+			$queryParts = $viewTable->table->getQueryArray($queryParts);
+			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
 			$orderByArray = split (',', $selectConf['orderBy']);
 			$firstOrderField = $orderByArray[0];
 			$productsArray=array();
 			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
-				$productsArray[$row[$firstOrderField]][]=$row;
+				// $productsArray[$row[$firstOrderField]][]=$row;
+				$productsArray[]=$row;
 			}
 	
 			if ($theCode=='LISTGIFTS') {
@@ -246,152 +285,157 @@ class tx_ttproducts_list_view {
 			$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].');';
 			$markerFramework = 'listFrameWork'; 
 			$t[$markerFramework] = $this->pibase->cObj->substituteMarkerArrayCached($t[$markerFramework],$markerArray,array(),array());
-	
 			$this->pibase->javascript->set('email');
 			$t['itemFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,array(),array());
-		
 			$currentP='';
 			$out='';
 			$iCount=0;
 			$more=0;		// If set during this loop, the next-item is drawn
 			$iColCount=1;
+//
+//			if (($this->conf['orderByCategoryTitle'] >= 1) && ($firstOrderField != 'category')) { // category means it should be sorted by the category title in this case
+//				// uncomment this line if your PHP version makes troubles with the compare function
+//				// $this->compare = create_function('$row1,$row2', 'return strcmp($this->tt_products_cat->get[$row1[\'category\']],$this->tt_products_cat->get[$row2[\'category\']]);');
+//			}					
 
-			foreach ($productsArray as $k1 => $productList) {
-				if (($this->conf['orderByCategoryTitle'] >= 1) && ($firstOrderField != 'category')) { // category means it should be sorted by the category title in this case
-					$compare = create_function('$row1,$row2', 'strcmp($this->tt_products_cat->get[$row1[\'category\']],$this->tt_products_cat->get[$row2[\'category\']]);');					
-					uasort ($productList, $compare);
-					$iColCount = 1;
+			$itemsOut='';
+			$tableRowOpen=0;
+
+//			foreach ($productsArray as $k1 => $productList) {
+			foreach ($productsArray as $k2 => $row) {
+
+//				foreach ($productList as $k2 => $row)	{
+				$iCount++;
+				if ($iCount > $this->config['limit'])	{
+					$more=1;
+					break;
 				}
 
-				$itemsOut='';
-				$tableRowOpen=0;
-				foreach ($productList as $k2 => $row)	{
-					$iCount++;
-					if ($iCount > $this->config['limit'])	{
-						$more=1;
-						break;
-					}
+				// max. number of columns reached?
+				if ($iColCount > $this->conf['displayBasketColumns'] || !$this->conf['displayBasketColumns']) {
+					$iColCount = 1; // restart in the first column
+				}
 
-					// max. number of columns reached?
-					if ($iColCount > $this->conf['displayBasketColumns'] || !$this->conf['displayBasketColumns']) {
-						$iColCount = 1; // restart in the first column
+					// Print Category Title
+				if ($orderByCat && ($row['category'] != $currentP))	{
+					if ($itemsOut)	{
+						$out .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
 					}
+					$itemsOut = '';			// Clear the item-code var
 
-						// Print Category Title
-					if (in_array('category', $orderByArray) && ($row['pid'].'_'.$row['category'] != $currentP))	{
-						if ($itemsOut)	{
-							$out .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
+					$currentP = $row['category'];
+					$bCategoryHasChanged = true;
+					$iColCount = 1;
+					if ($where || $this->conf['displayListCatHeader'])	{
+						$markerArray=array();
+						$pageCatTitle = '';
+						if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
+							$pageTmp = $this->page->get($row['pid']);
+							$pageCatTitle = $pageTmp['title'].'/';
 						}
-						$itemsOut = '';			// Clear the item-code var
-
-						$currentP = $row['pid'].'_'.$row['category'];
-						if ($where || $this->conf['displayListCatHeader'])	{
-							$markerArray=array();
-							$pageCatTitle = '';
-							if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
-								$pageTmp = $this->page->get($row['pid']);
-								$pageCatTitle = $pageTmp['title'].'/';
-							}
-							$tmpCategory = ($row['category'] ? $this->tt_products_cat->get($row['category']) : array ('title' => ''));
-							$catTitle = $pageCatTitle.($tmpCategory['title']);
-							$this->pibase->cObj->setCurrentVal($catTitle);
-							$markerArray['###CATEGORY_TITLE###']=$this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
-							$out.= $this->pibase->cObj->substituteMarkerArray($t['categoryTitle'], $markerArray);
-						}
-					}
-
-					$tmp = $this->conf['CSS.'][$viewTable->table->name.'.']['list.']['default'];
-					$css_current = ($tmp ? $tmp : $this->conf['CSSListDefault']);	// only for backwards compatibility
-
-					if ($row['uid']==$this->tt_product_single) {
-						$tmp = $this->conf['CSS.'][$viewTable->table->name.'.']['list.']['current'];
-						$css_current = ($tmp ? $tmp : $this->conf['CSSListCurrent']);
-					}
-					$css_current = ($css_current ? '" id="'.$css_current.'"' : '');
-
-						// Print Item Title
-					$wrappedSubpartArray=array();
-
-					$addQueryString=array();
-					$addQueryString[$this->pibase->prefixId.'[product]']= intval($row['uid']);
-					$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
-					$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>');
-
-					$datasheetFile = $row['datasheet'] ;
-					if( $datasheetFile == '' )  {
-						$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
-					}  else  {
-						$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
-					}
-
-					$item = $this->basket->getItem($row);
-					$markerArray = $viewTable->getItemMarkerArray ($item, $catTitle, $this->basket->basketExt, $this->tt_content, $this->config['limitImage'],'listImage');
-					if ($theCode=='LISTGIFTS') {
-						$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $this->basket->giftnumber);
-					}
 						
-					$subpartArray = array();
+						$tmpCategory = $row[$catColumnPrefix.'title'];
+						$tmpCategory = ($tmpCategory? $tmpCategory : ($row['category'] ? $this->tt_products_cat->get($row['category']) : array ('title' => '')));
+						$catTitle = $pageCatTitle.($tmpCategory['title']);
+						$this->pibase->cObj->setCurrentVal($catTitle);
+						$markerArray['###CATEGORY_TITLE###']=$this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
+						$out.= $this->pibase->cObj->substituteMarkerArray($t['categoryTitle'], $markerArray);
+					}
+				} else {
+					$bCategoryHasChanged = false;
+				}
 
-					// $markerArray['###FORM_URL###']=$this->formUrl; // Applied later as well.
-					$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray);
-					$markerArray['###FORM_NAME###']=$formName;
-					$markerArray['###ITEM_NAME###']='item_'.$iCount;
-					if (!$this->conf['displayBasketColumns'])	{
-						$markerArray['###FORM_NAME###'] = $markerArray['###ITEM_NAME###']; 						
-					}
+				$tmp = $this->conf['CSS.'][$viewTable->table->name.'.']['list.']['default'];
+				$css_current = ($tmp ? $tmp : $this->conf['CSSListDefault']);	// only for backwards compatibility
 
-					$rowEven = $this->conf['CSS.'][$viewTable->table->name.'.']['row.']['even'];
-					$rowEven = ($rowEven ? $rowEven : $this->conf['CSSRowEven']); // backwards compatible
-					$rowUneven = $this->conf['CSS.'][$viewTable->table->name.'.']['row.']['uneven'];
-					$rowUneven = ($rowUneven ? $rowUneven : $this->conf['CSSRowUneven']); // backwards compatible
-					// alternating css-class eg. for different background-colors
-					$even_uneven = (($iCount & 1) == 0 ? $rowEven : $rowUneven);
+				if ($row['uid']==$this->tt_product_single) {
+					$tmp = $this->conf['CSS.'][$viewTable->table->name.'.']['list.']['current'];
+					$css_current = ($tmp ? $tmp : $this->conf['CSSListCurrent']);
+				}
+				$css_current = ($css_current ? '" id="'.$css_current.'"' : '');
 
-					$temp='';
-					if ($iColCount == 1) {
-						if ($even_uneven) {
-							$temp = '<tr class="'.$even_uneven.'">';
-						} else {
-							$temp = '<tr>';
-						}
-						$tableRowOpen=1;
-					}
-					$markerArray['###ITEM_SINGLE_PRE_HTML###'] = $temp;
-					$temp='';
-					if ($iColCount == $this->conf['displayBasketColumns']) {
-						$temp = '</tr>';
-						$tableRowOpen=0;
-					}
-					$markerArray['###ITEM_SINGLE_POST_HTML###'] = $temp;
-					$pid = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
-					$markerArray['###FORM_MEMO###'] = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams()); //$this->getLinkUrl($this->conf['PIDmemo']);
+					// Print Item Title
+				$wrappedSubpartArray=array();
+				$addQueryString=array();
+				$addQueryString[$this->pibase->prefixId.'[product]']= intval($row['uid']);
+				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
+				$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>');
+				$datasheetFile = $row['datasheet'] ;
+				if( $datasheetFile == '' )  {
+					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
+				}  else  {
+					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
+				}
 
-					// cuts note in list view
-					if (strlen($markerArray['###PRODUCT_NOTE###']) > $this->conf['max_note_length']) {
-						$markerArray['###PRODUCT_NOTE###'] = substr(strip_tags($markerArray['###PRODUCT_NOTE###']), 0, $this->conf['max_note_length']) . '...';
+				$item = $this->basket->getItem($row);
+				$markerArray = $viewTable->getItemMarkerArray ($item, $catTitle, $this->basket->basketExt, $this->tt_content, $this->config['limitImage'],'listImage');
+				if ($theCode=='LISTGIFTS') {
+					$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $this->basket->giftnumber);
+				}
+				$subpartArray = array();
+
+				// $markerArray['###FORM_URL###']=$this->formUrl; // Applied later as well.
+				$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray);
+				$markerArray['###FORM_NAME###']=$formName;
+				$markerArray['###ITEM_NAME###']='item_'.$iCount;
+				if (!$this->conf['displayBasketColumns'])	{
+					$markerArray['###FORM_NAME###'] = $markerArray['###ITEM_NAME###']; 						
+				}
+
+				$rowEven = $this->conf['CSS.'][$viewTable->table->name.'.']['row.']['even'];
+				$rowEven = ($rowEven ? $rowEven : $this->conf['CSSRowEven']); // backwards compatible
+				$rowUneven = $this->conf['CSS.'][$viewTable->table->name.'.']['row.']['uneven'];
+				$rowUneven = ($rowUneven ? $rowUneven : $this->conf['CSSRowUneven']); // backwards compatible
+				// alternating css-class eg. for different background-colors
+				$even_uneven = (($iCount & 1) == 0 ? $rowEven : $rowUneven);
+
+				$temp='';
+				if ($iColCount == 1) {
+					if ($even_uneven) {
+						$temp = '<tr class="'.$even_uneven.'">';
+					} else {
+						$temp = '<tr>';
 					}
-					if (is_object($viewTable->variant))	{
-						$viewTable->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
-					}
-					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
-					$itemsOut .= $tempContent;
-					$iColCount++;
-				} // foreach ($productList as $k2 => $row)
+					$tableRowOpen=1;
+				}
+				$markerArray['###ITEM_SINGLE_PRE_HTML###'] = $temp;
+				$temp='';
+				if ($iColCount == $this->conf['displayBasketColumns']) {
+					$temp = '</tr>';
+					$tableRowOpen=0;
+				}
+				$markerArray['###ITEM_SINGLE_POST_HTML###'] = $temp;
+				$pid = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
+				$markerArray['###FORM_MEMO###'] = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams()); //$this->getLinkUrl($this->conf['PIDmemo']);
+
+				// cuts note in list view
+				if (strlen($markerArray['###PRODUCT_NOTE###']) > $this->conf['max_note_length']) {
+					$markerArray['###PRODUCT_NOTE###'] = substr(strip_tags($markerArray['###PRODUCT_NOTE###']), 0, $this->conf['max_note_length']) . '...';
+				}
+				if (is_object($viewTable->variant))	{
+					$viewTable->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
+				}
+				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
+				$itemsOut .= $tempContent;
+				$iColCount++;
+
+//				} // foreach ($productList as $k2 => $row)
 				
 				// multiple columns display and ITEM_SINGLE_POST_HTML is in the item's template?
 				if (
-					(($iCount == count($productsArray))	||
-					(in_array('category', $orderByArray) && 
-						($firstOrderField != 'category') && 
+					(
+						($bCategoryHasChanged && $iCount > 1)	||
+						(!$orderByCat && 
 						($this->conf['displayBasketColumns'] > 1))
-						) && 
-					strstr($t['item'], 'ITEM_SINGLE_POST_HTML')
-					) { // complete the last table row
+					) &&
+						$bItemPostHtml
+					) { 
+					// complete the last table row
 					$itemsOut .= $this->finishHTMLRow($iColCount, $tableRowOpen);
 				}
 
 				if ($itemsOut)	{
-					if ((!in_array('category', $orderByArray) || ($firstOrderField != 'category')))	{
+					if ((!$orderByCat || ($firstOrderField != 'category')))	{
 						$out.=$itemsOut;
 						$itemsOut = '';
 					} else {
@@ -403,13 +447,11 @@ class tx_ttproducts_list_view {
 
 			}	// foreach ($productsArray as $k1 => $productList) {
 			if (count($productsArray) == 0) {
-				$content = '';  // keine Produkte gefunden
+				$content = '';  // TODO: keine Produkte gefunden
 			}
-			if ((!in_array('category', $orderByArray)))	{
-				$out=$this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$out,0);
-			}
+			$out=$this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$out,0);
 
-		}	// if ($where ...		
+		}	// if ($where ...
 		if ($out)	{
 			// next / prev:
 			// $url = $this->getLinkUrl('','begin_at');
@@ -426,7 +468,7 @@ class tx_ttproducts_list_view {
 				$addQueryString[$this->pibase->prefixId.'[begin_at]']= $next;
 				// $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', array('begin_at' => $next)));
 				$tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
-				$wrappedSubpartArray['###LINK_NEXT###']=  explode ($splitMark, $tempUrl);  // array('<a href="'.$url.'&begin_at='.$next.'">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT###'] =  explode ($splitMark, $tempUrl);  // array('<a href="'.$url.'&begin_at='.$next.'">','</a>');
 			} else {
 				$subpartArray['###LINK_NEXT###']='';
 			}

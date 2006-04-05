@@ -45,16 +45,22 @@ class tx_ttproducts_category {
 	var $dataArray; // array of read in categories
 	var $table;		 // object of the type tx_table_db
 	var $tt_products_email;				// object of the type tx_table_db
-
+	var $catconf;
 
 	/**
 	 * initialization with table object and language table
 	 */
-	function init($LLkey)	{
+	function init(&$pibase, $LLkey, $tablename, &$tableconf,  &$catconf)	{
 		global $TYPO3_DB,$TSFE;
 		
+		debug ($catconf, '$catconf', __LINE__, __FILE__);
+		$tablename = ($tablename ? $tablename : 'tt_products');
+		$this->catconf = &$catconf;
+	
 		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->table->setTCAFieldArray('tt_products_cat');
+		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
+		$this->table->setTCAFieldArray($tablename);
+
 		if ($TSFE->config['config']['sys_language_uid']) {
 			$this->table->setLanguage ($LLkey);
 			$this->table->setTCAFieldArray('tt_products_cat_language');
@@ -70,12 +76,13 @@ class tx_ttproducts_category {
 		global $TYPO3_DB;
 		
 		if (is_array($this->dataArray[$uid]))	{
-			if ($pid && $this->dataArray[$uid]['pid'] == $pid)	{
+			if (($pid && $this->dataArray[$uid]['pid'] == $pid) || ($pid == 0))	{
 				$rc = $this->dataArray[$uid];
-			} else	{
+			} else {
 				$rc = array();
 			}
 		}
+		
 		if (!$rc) {
 			// $sql = t3lib_div::makeInstance('tx_table_db_access');
 			// $sql->prepareFields($this->table, 'select', '*');
@@ -87,7 +94,9 @@ class tx_ttproducts_category {
 			$where = '1=1 '.$this->table->enableFields('tt_products_cat');;
 			$where .= ($uid ? ' AND uid='.$uid : '');
 			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
-			$res = $this->table->exec_SELECTquery('*',$where);
+			$orderBy = $this->catconf['orderBy'];
+			debug ($orderBy, '$orderBy', __LINE__, __FILE__);
+			$res = $this->table->exec_SELECTquery('*',$where,'',$orderBy);
 			if ($uid)	{
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
 				$rc = $this->dataArray[$row['uid']] = $row;
@@ -96,6 +105,7 @@ class tx_ttproducts_category {
 					$rc = $this->dataArray[$row['uid']] = $row;
 				}
 			}
+			debug ($this->dataArray, '$this->dataArray', __LINE__, __FILE__);
 		}
 		if (!$rc) {
 			$rc = array();

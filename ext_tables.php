@@ -13,6 +13,7 @@ $TCA['tt_products'] = Array (
 		'tstamp' => 'tstamp',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
 		'delete' => 'deleted',
 		'enablecolumns' => Array (
 			'disabled' => 'hidden',
@@ -42,6 +43,7 @@ $TCA['tt_products_cat'] = Array (
 		'delete' => 'deleted',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_cat.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
 	),
@@ -60,6 +62,7 @@ $TCA['tt_products_language'] = Array (
 		'delete' => 'deleted',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_language.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
 	),
@@ -78,6 +81,7 @@ $TCA['tt_products_cat_language'] = Array (
 		'delete' => 'deleted',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_cat_language.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
 	),
@@ -95,6 +99,7 @@ $TCA['tt_products_articles'] = Array (
 		'delete' => 'deleted',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_articles.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
 	),
@@ -113,6 +118,7 @@ $TCA['tt_products_emails'] = Array (
 		'delete' => 'deleted',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
 		'mainpalette' => 1,
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_emails.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
@@ -192,6 +198,8 @@ if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
 }
 
 if ($typoVersion < 3008000)	{
+	
+	// overwrite the values for former language files
 	$TCA['tt_products']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products';
 	$TCA['tt_products_cat']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat';
 	$TCA['tt_products_language']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products_language';
@@ -200,10 +208,8 @@ if ($typoVersion < 3008000)	{
 	$TCA['tt_products_emails']['ctrl']['title'] =  'LLL:EXT:tt_products/locallang_tca.php:tt_products_emails';
 	$TCA['sys_products_orders']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:sys_products_orders';
 	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:tt_content.list_type_pi1','5'),'list_type');
-	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:tt_products', '5'));
 } else {
 	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_content.list_type_pi1','5'),'list_type');
-	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products', '5'));
 }
 
 t3lib_extMgm::allowTableOnStandardPages('tt_products');

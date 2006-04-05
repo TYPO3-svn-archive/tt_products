@@ -30,7 +30,14 @@ plugin.tt_products {
       4 = gradings
       5 = additional
     }
-    requiredListFields = uid,pid,uid_product,price,price2,inStock
+  }
+  conf.tt_products.articles {
+    requiredListFields = uid,pid,uid_product,price,price2,inStock  
+  }
+
+  table.tt_products_cat = tt_products_cat
+  conf.tt_products_cat {
+    orderBy = sorting
   }
   
   userFunc = tx_ttproducts_pi1->main_products

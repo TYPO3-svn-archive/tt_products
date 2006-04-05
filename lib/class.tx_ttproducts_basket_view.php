@@ -136,6 +136,27 @@ class tx_ttproducts_basket_view {
 	}
 
 
+	function processPayment(&$content, &$bFinalize)	{
+		global $TSFE;
+
+		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
+		$this->basket->getCalculatedSums();
+		if ($handleScript)	{
+			$content.= $this->paymentshipping->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $this->conf['paymentActivity'], $bFinalize);
+		} else if (t3lib_extMgm::isLoaded ('paymentlib') && intval(phpversion()) == 5) {
+			$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
+			if ($handleLib == 'paymentlib')	{
+				// Payment Library
+				require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
+				
+				$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
+				$paymentlib->init($this->pibase, $this->conf, $this->config, $this->basket, $this, $this->price, $this->order);
+				$content.= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
+			}
+		}		
+	}
+
+
 	/**
 	 * Takes care of basket, address info, confirmation and gate to payment
 	 * Also the 'products_...' script parameters are used here.
@@ -214,6 +235,7 @@ class tx_ttproducts_basket_view {
 
 				$mainMarkerArray=array();
 				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject.'';  // adding extra preprocessing CObject
+				$bFinalize = false; // no finalization must be called.
 				
 				foreach ($this->activityArray as $activity=>$value) {
 					if ($value) {
@@ -291,22 +313,7 @@ class tx_ttproducts_basket_view {
 									$content.=$this->getView($tmp='', '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
 									
 									if (trim($this->conf['paymentActivity'])=='payment')	{
-										$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-										$this->basket->getCalculatedSums();
-										if ($handleScript)	{
-											$content.= $this->paymentshipping->includeHandleScript($handleScript,  $this->basket->basketExtra['payment.']['handleScript.']);
-										} else if (t3lib_extMgm::isLoaded ('paymentlib') && intval(phpversion()) == 5) {
-											$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
-											if ($handleLib == 'paymentlib')	{
-												// Payment Library
-												require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
-												
-												$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-												$paymentlib->init($this->pibase, $this->conf, $this->config, $this->basket, $this, $this->price, $this->order);
-												
-												$content.= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.']);
-											}
-										}
+										$this->processPayment($content, $bFinalize);
 									}
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
@@ -335,61 +342,63 @@ class tx_ttproducts_basket_view {
 									$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
 								}
 							break;
-							case 'products_customized_payment':
-								$this->basket->mapPersonIntoToDelivery();
-								$this->pibase->load_noLinkExtCobj();	// TODO
-								$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-								if (trim($this->conf['paymentActivity'])=='customized' && $handleScript)	{
-									$this->getCalculatedSums();
-									$content.= $this->paymentshipping->includeHandleScript($handleScript,  $this->basket->basketExtra['payment.']['handleScript.']);
+							// a special step after payment and before finalization needed for some payment systems
+							case 'products_customized':
+								if (trim($this->conf['paymentActivity'])=='customized')	{
+									$this->processPayment($content, $bFinalize);
 								}
 							break; 
 							case 'products_finalize':
-								$this->basket->mapPersonIntoToDelivery();
-								$check = $this->basket->checkRequired();
-								if ($check=='')	{
-									$this->pibase->load_noLinkExtCobj();	// TODO
-									$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-									$orderUid = $this->order->getBlankUid();
-									if (trim($this->conf['paymentActivity'])=='finalize' && $handleScript)	{
-										//$this->getCalculatedBasket();
-										$this->basket->getCalculatedSums();
-										$content.= $this->paymentshipping->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.']);
-									}
-
-									// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
-									$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
-									$orderConfirmationHTML=$this->getView($empty, '###'.$tmpl.'###', $mainMarkerArray);
-									
-									$this->order->finalize($this->templateCode, 
-										$this, $this->tt_products, $this->tt_products_cat, $this->price, 
-										$orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
-									$contentTmp = $orderConfirmationHTML;
-
-									if ($this->conf['PIDthanks'] > 0) {
-										$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
-										$contentTmp = $this->getView($empty, '###'.$tmpl.'###', $mainMarkerArray);
-									}
-									$content.=$contentTmp;
-									$content .= $this->getView($empty,'###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
-									
-									// Empties the shopping basket!
-									$this->basket->clearBasket();
-								} else {	// If not all required info-fields are filled in, this is shown instead:
-									$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-									$content = $this->pibase->cObj->substituteMarkerArray($content, $this->marker->addURLMarkers(0, array()));
-								}
+								$bFinalize = true;
 							break;
 							default:
 								// nothing yet
 							break;
 						} // switch
 					}	// if ($value)
+						// in case of an error
 					if ($basket_tmpl) {
 						$content.=$this->getView($empty, '###'.$basket_tmpl.'###',$mainMarkerArray);
+						$bFinalize = false;
 						break; // foreach
 					}
 				} // foreach ($this->activityArray as $activity=>$value)
+				
+					// finalization at the end so that after every activity this can be called
+				if ($bFinalize)	{
+					$this->basket->mapPersonIntoToDelivery();
+					$check = $this->basket->checkRequired();
+					if ($check=='')	{
+						$this->pibase->load_noLinkExtCobj();	// TODO
+						$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
+						$orderUid = $this->order->getBlankUid();
+						if (trim($this->conf['paymentActivity'])=='finalize')	{
+							$this->processPayment($content, $bFinalize);
+						}
+
+						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
+						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
+						$orderConfirmationHTML=$this->getView($empty, '###'.$tmpl.'###', $mainMarkerArray);
+						
+						$this->order->finalize($this->templateCode, 
+							$this, $this->tt_products, $this->tt_products_cat, $this->price, 
+							$orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
+						$contentTmp = $orderConfirmationHTML;
+
+						if ($this->conf['PIDthanks'] > 0) {
+							$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
+							$contentTmp = $this->getView($empty, '###'.$tmpl.'###', $mainMarkerArray);
+						}
+						$content .= $contentTmp;
+						$content .= $this->getView($empty,'###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
+						
+						// Empties the shopping basket!
+						$this->basket->clearBasket();
+					} else {	// If not all required info-fields are filled in, this is shown instead:
+						$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+						$content = $this->pibase->cObj->substituteMarkerArray($content, $this->marker->addURLMarkers(0, array()));
+					}
+				}
 			} else { // if (count($this->activityArray))
 				// nothing. no BASKET code or similar thing
 			}

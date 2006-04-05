@@ -146,6 +146,7 @@ class tx_ttproducts_marker {
 		$queryString[$this->pibase->prefixId.'[backPID]']= $TSFE->id;
 		
 		$this->addQueryStringParam($queryString, 'C');
+		$this->addQueryStringParam($queryString, 'cat');
 		$this->addQueryStringParam($queryString, 'begin_at');
 		$this->addQueryStringParam($queryString, 'newitemdays');
 

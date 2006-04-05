@@ -150,8 +150,7 @@ class tx_ttproducts_email_div {
 				if (class_exists($cls) && $conf['orderEmail_htmlmail']) {	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$pibase->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
 					$HTMLmailContent=$pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$emailContent);
-					$HTMLmailContent=$pibase->cObj->substituteMarkerArray($HTMLmailContent,
-$pibase->globalMarkerArray);
+					$HTMLmailContent=$pibase->cObj->substituteMarkerArray($HTMLmailContent, $pibase->globalMarkerArray);
 
 					$V = array (
 						'from_email' => $senderemail,
@@ -162,6 +161,7 @@ $pibase->globalMarkerArray);
 					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
 					$Typo3_htmlmail->useBase64();
 					$Typo3_htmlmail->start(implode($recipients,','), $subject, $emailContent, $HTMLmailContent, $V);
+					debug ($Typo3_htmlmail, '$Typo3_htmlmail', __LINE__, __FILE__);
 					$Typo3_htmlmail->sendtheMail();
 				} else {		// ... else just plain text...
 					// $headers variable &uuml;berall entfernt!
