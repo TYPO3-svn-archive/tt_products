@@ -365,12 +365,10 @@ class tx_ttproducts_basket {
 	 */
 	function checkRequired()	{
 		$flag = '';
-		debug ($this->conf['requiredInfoFields'], '$this->conf[\'requiredInfoFields\']', __LINE__, __FILE__);
 		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
 		if ($this->basketExtra['payment.']['addRequiredInfoFields'] != '')
 			$requiredInfoFields .= ','.trim($this->basketExtra['payment.']['addRequiredInfoFields']);
 
-		debug ($requiredInfoFields, '$requiredInfoFields', __LINE__, __FILE__);
 		if ($requiredInfoFields)	{
 			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
 			while(list(,$fName)=each($infoFields))	{

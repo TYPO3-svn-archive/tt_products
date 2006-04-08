@@ -40,7 +40,6 @@
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
 
-
 class tx_ttproducts_order {
 
 	var $pibase; // reference to object of pibase
@@ -92,16 +91,13 @@ class tx_ttproducts_order {
 			if ($this->conf['advanceOrderNumberWithInteger'] || $this->conf['alwaysAdvanceOrderNumber'])	{
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', '', '', 'uid DESC', '1');
 				list($prevUid) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
-				debug ($prevUid, '$prevUid', __LINE__, __FILE__);
 
 				if ($this->conf['advanceOrderNumberWithInteger']) {
 					$rndParts = explode(',',$this->conf['advanceOrderNumberWithInteger']);
 					$advanceUid = $prevUid+t3lib_div::intInRange(rand(intval($rndParts[0]),intval($rndParts[1])),1);
-					debug ($advanceUid, '$advanceUid', __LINE__, __FILE__);
 				} else {
 					$advanceUid = $prevUid + 1;
 				}
-				debug ($advanceUid, '$advanceUid', __LINE__, __FILE__);
 			}
 
 			$time = time();
@@ -118,7 +114,6 @@ class tx_ttproducts_order {
 			$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders', $insertFields);
 
 			$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
-			debug ($newId, '$newId', __LINE__, __FILE__);
 		}
 		return $newId;
 	} // create
@@ -357,7 +352,6 @@ class tx_ttproducts_order {
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
 		$markerArray = array('###CUSTOMER_RECIPIENTS_EMAIL###' => implode(',', $recipientsArray['customer']));
 		$orderConfirmationHTML= $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
-		debug ($orderConfirmationHTML, '$orderConfirmationHTML', __LINE__, __FILE__);
 		
 		// Move the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
 		// Is no user is logged in --> create one
@@ -404,7 +398,7 @@ class tx_ttproducts_order {
 						$subject=trim($parts[0]);
 						$plain_message=trim($parts[1]);
 
-						tx_ttproducts_email_div::send_mail($this->basket->personInfo['email'], $subject, $plain_message, $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName']);
+						tx_ttproducts_email_div::send_mail($this->basket->personInfo['email'], $subject, $plain_message, $tmp='', $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName']);
 					}
 				}
 				$res = $TYPO3_DB->exec_SELECTquery(uid, 'fe_users', 'username=\''.$username . '\' AND pid='. $this->conf['PIDuserFolder'].' AND deleted=0');
@@ -463,7 +457,6 @@ class tx_ttproducts_order {
 
 			// Sends order emails:
 		$recipientsGroupsArray = array ('shop', 'customer');
-		debug ($recipientsArray, '$recipientsArray', __LINE__, __FILE__);
 		if ($recipientsArray['customer'])	{	// If there is a customer as recipient, then compile and send the mail.
 			$emailTemplateArray = array();
 			$emailTemplateArray['customer'] = 'EMAIL_PLAINTEXT_TEMPLATE';
@@ -491,17 +484,17 @@ class tx_ttproducts_order {
 				$subjectArray['shop'] = $subjectArray['customer'];
 			}
 	
-			debug ($emailContentArray, '$emailContentArray', __LINE__, __FILE__);
-			if ($emailContentArray['customer'])	{		// If there is plain text content - which is required!!	
-				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
-				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
+			if ($emailContentArray['customer'])	{		// If there is plain text content - which is required!!
+				if ($this->conf['orderEmail_htmlmail'])	{
+					include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
+					$cls = t3lib_div::makeInstanceClassName('t3lib_htmlmail');				
+				}	
+				if (class_exists($cls))	{	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$this->pibase->cObj->getSubpart($templateCode,'###EMAIL_HTML_SHELL###');
-					debug ($HTMLmailShell, '$HTMLmailShell', __LINE__, __FILE__);
 					$HTMLmailContent=$this->pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$orderConfirmationHTML);
 					$HTMLmailContent=$this->pibase->cObj->substituteMarkerArray($HTMLmailContent, $this->pibase->globalMarkerArray);
-					debug ($HTMLmailContent, '$HTMLmailContent', __LINE__, __FILE__);
 
-						// Remove image tags to products:
+						// Remove image tags to the products:
 					if ($this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix'])	{
 						$parser = t3lib_div::makeInstance('t3lib_parsehtml');
 						$htmlMailParts = $parser->splitTags('img',$HTMLmailContent);
@@ -518,32 +511,59 @@ class tx_ttproducts_order {
 						$HTMLmailContent=implode('',$htmlMailParts);
 					}
 
+					$V = array ();
+					$V['shop']['from_email'] = $this->basket->personInfo['email'];
+					$V['shop']['from_name'] = $this->basket->personInfo['name'];
+					$V['shop']['attachment'] = $addcsv;
+					$V['default']['from_email'] = $this->conf['orderEmail_from'];
+					$V['default']['from_name'] = $this->conf['orderEmail_fromName'];							
+					$V['default']['attachment'] = ($this->conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($this->conf['AGBattachment']) : '');
+
 					foreach ($recipientsGroupsArray as $key => $group)	{
-						$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
-						$Typo3_htmlmail->useBase64();
-						$V = array ();
-						if ($group == 'shop')	{
-							$V['from_email'] = $this->basket->personInfo['email'];
-							$V['from_name'] = $this->basket->personInfo['name'];
-							$V['attachment'] = $addcsv;
-						} else	{
-							$V['from_email'] = $this->conf['orderEmail_from'];
-							$V['from_name'] = $this->conf['orderEmail_fromName'];							
-							$V['attachment'] = ($this->conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($this->conf['AGBattachment']) : '');
-						}
-						$Typo3_htmlmail->start(implode($recipientsArray[$group],','), $subjectArray[$group], $plainMessageArray[$group], $HTMLmailContent, $V);
-						debug ($Typo3_htmlmail, '$Typo3_htmlmail', __LINE__, __FILE__);
-						$Typo3_htmlmail->sendtheMail();
+						$vGroup = ($group == 'shop' ? $group : 'default');
+						
+						tx_ttproducts_email_div::send_mail(
+							implode($recipientsArray[$group],','),
+							$subjectArray[$group],
+							$plainMessageArray[$group],
+							$HTMLmailContent,
+							$V[$vGroup]['from_email'],
+							$this->conf['orderEmail_from'],
+							$V[$vGroup]['from_name']);
+						
+//						$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
+//						$Typo3_htmlmail->start();
+//						$Typo3_htmlmail->useBase64();
+//						$Typo3_htmlmail->subject = $subjectArray[$group];
+//						$Typo3_htmlmail->from_name = $V[$vGroup]['from_name'];
+//						$Typo3_htmlmail->from_email = $V[$vGroup]['from_email'];
+//						$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
+//						$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
+//						$Typo3_htmlmail->addAttachment($V[$vGroup]['attachment']);
+//						$Typo3_htmlmail->theParts['html']['content'] = $HTMLmailContent; // Fetches the content of the page
+//						$Typo3_htmlmail->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
+//						$Typo3_htmlmail->extractMediaLinks();
+//						$Typo3_htmlmail->extractHyperLinks();
+//						$Typo3_htmlmail->fetchHTMLMedia();
+//						$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
+//						$Typo3_htmlmail->substHREFsInHTML();  
+//						$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
+//						$Typo3_htmlmail->addPlain($plainMessageArray[$group]);
+//						$Typo3_htmlmail->setHeaders();
+//						$Typo3_htmlmail->setContent();
+//						$Typo3_htmlmail->setRecipient(implode($recipientsArray[$group],','));
+//						// $Typo3_htmlmail->start(implode($recipientsArray[$group],','), $subjectArray[$group], $plainMessageArray[$group], $HTMLmailContent, $V);
+//						$Typo3_htmlmail->sendtheMail();
 					}
 
 				} else {		// ... else just plain text...
 					$agbAttachment = t3lib_div::getFileAbsFileName($this->conf['AGBattachment']);
 					foreach ($recipientsArray['customer'] as $key => $recipient) {
-						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['customer'], $plainMessageArray['customer'], $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName'], $agbAttachment);
+						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['customer'], $plainMessageArray['customer'], $tmp='', $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName'], $agbAttachment);
 					}
 					foreach ($recipientsArray['shop'] as $key => $recipient) {
 						// $headers variable removed everywhere!
-						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['shop'], $plainMessageArray['shop'], $this->basket->personInfo['email'], $this->basket->personInfo['name'], $addcsv);
+						tx_ttproducts_email_div::send_mail($recipient, $subjectArray['shop'], $plainMessageArray['shop'], $tmp='', $this->basket->personInfo['email'], $this->basket->personInfo['name'], $addcsv);
 					}
 				}
 			}

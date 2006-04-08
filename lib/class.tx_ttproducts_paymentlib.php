@@ -70,7 +70,7 @@ class tx_ttproducts_paymentlib {
 	/**
 	 * Include handle extension library
 	 */
-	function includeHandleLib($handleLib, &$confScript)	{
+	function includeHandleLib($handleLib, &$confScript, &$bFinalize)	{
 		global $TSFE;
 
 		$content = '';
@@ -83,60 +83,65 @@ class tx_ttproducts_paymentlib {
 				$providerKey = $providerObject->getProviderKey();
 				$ok =  $providerObject->transaction_init (TX_PAYMENTLIB_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER, $paymentMethod, TX_PAYMENTLIB_GATEWAYMODE_FORM, 'tt_products');
 				if (!$ok) return 'ERROR: Could not initialize transaction.';	
-				$param = '&FE_SESSION_KEY='.rawurlencode(
-					$TSFE->fe_user->id.'-'.
-						md5(
-						$TSFE->fe_user->id.'/'.
-						$GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
-						)
-					);
-		
-					// Prepare some values for the form fields:
-				$totalPrice = $this->basket->calculatedArray['priceTax']['total'];
-				$totalPriceFormatted = $this->price->priceFormat($totalPrice);
-				$orderUid = $this->order->getBlankUid();		// Gets an order number, creates a new order if no order is associated with the current session
-				
-				$transactionDetailsArr = array (
-					'transaction' => array (
-						'amount' => $totalPrice,
-						'currency' => $confScript['Currency'],
-						'orderuid' => $orderUid,
-						'returi' => t3lib_div::getIndpEnv ('TYPO3_REQUEST_URL').$param
-					),
-				);
-		
-					// Set payment details and get the form data:
-				$ok = $providerObject->transaction_setDetails ($transactionDetailsArr);
-				if (!$ok) return 'ERROR: Setting details of transaction failed.';
-			
+
 					// Get results of a possible earlier submit and display messages:
 				$transactionResultsArr = $providerObject->transaction_getResults();
-				if (is_array ($transactionResultsArr)) {
-					foreach ($transactionResultsArr['remotemessages'] as $message) {
-						$messagesText .= '<span style="color:red;">'.htmlspecialchars($message).'</span><br />';
-					}
-					$messagesText .= '<br />';	
-				}		
-				$localTemplateCode = $this->pibase->cObj->fileResource($lConf['templateFile'] ? $lConf['templateFile'] : 'EXT:tt_products/template/paymentlib.tmpl');
-				$localTemplateCode = $this->pibase->cObj->substituteMarkerArrayCached($localTemplateCode, $this->pibase->globalMarkerArray);
-
-					// Render hidden fields:
-				$hiddenFields = '';
-				$hiddenFieldsArr = $providerObject->transaction_formGetHiddenFields();
-				foreach ($hiddenFieldsArr as $key => $value) {
-					$hiddenFields .= '<input name=""'.$key.'" type="hidden" value="'.htmlspecialchars($value).'" />'.chr(10);
-				}
-		
-				$formuri = $providerObject->transaction_formGetActionURI();
-				if ($formuri) {
-					$markerArray=array();
-					$markerArray['###HIDDEN_FIELDS###'] = $hiddenFields;
-					$markerArray['###REDIRECT_URL###'] = $formuri;
-					$content=$this->basketView->getView($localTemplateCode, '###PAYMENTLIB_FORM_TEMPLATE###',$markerArray);
+				if ($providerObject->transaction_succeded($transactionResultsArr)) {
+					$bFinalize = true;
+				} else if ($providerObject->transaction_failed($transactionResultsArr))	{
+					$content = '<span style="color:red;">'.htmlspecialchars($providerObject->transaction_message()).'</span><br />';
+					$content .= '<br />';	
 				} else {
-					$content = 'NO .relayURL given!!';
-				}
-								
+					// perform the access to the Gateway
+
+					$param = '&FE_SESSION_KEY='.rawurlencode(
+						$TSFE->fe_user->id.'-'.
+							md5(
+							$TSFE->fe_user->id.'/'.
+							$GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
+							)
+						);
+					$param = '&products_'.$this->conf['paymentActivity'].'=1'.$param;
+			
+						// Prepare some values for the form fields:
+					$totalPrice = $this->basket->calculatedArray['priceTax']['total'];
+					$totalPriceFormatted = $this->price->priceFormat($totalPrice);
+					$orderUid = $this->order->getBlankUid();		// Gets an order number, creates a new order if no order is associated with the current session
+					debug ($orderUid, '$orderUid', __LINE__, __FILE__);
+					
+					$transactionDetailsArr = array (
+						'transaction' => array (
+							'amount' => $totalPrice,
+							'currency' => $confScript['Currency'],
+							'orderuid' => $orderUid,
+							'returi' => t3lib_div::getIndpEnv ('TYPO3_REQUEST_URL').$param
+						),
+					);
+			
+						// Set payment details and get the form data:
+					$ok = $providerObject->transaction_setDetails ($transactionDetailsArr);
+					if (!$ok) return 'ERROR: Setting details of transaction failed.';
+					
+					$localTemplateCode = $this->pibase->cObj->fileResource($lConf['templateFile'] ? $lConf['templateFile'] : 'EXT:tt_products/template/paymentlib.tmpl');
+					$localTemplateCode = $this->pibase->cObj->substituteMarkerArrayCached($localTemplateCode, $this->pibase->globalMarkerArray);
+	
+						// Render hidden fields:
+					$hiddenFields = '';
+					$hiddenFieldsArr = $providerObject->transaction_formGetHiddenFields();
+					foreach ($hiddenFieldsArr as $key => $value) {
+						$hiddenFields .= '<input name="'.$key.'" type="hidden" value="'.htmlspecialchars($value).'" />'.chr(10);
+					}
+			
+					$formuri = $providerObject->transaction_formGetActionURI();
+					if ($formuri) {
+						$markerArray=array();
+						$markerArray['###HIDDEN_FIELDS###'] = $hiddenFields;
+						$markerArray['###REDIRECT_URL###'] = $formuri;
+						$content=$this->basketView->getView($localTemplateCode, '###PAYMENTLIB_FORM_TEMPLATE###',$markerArray);
+					} else {
+						$content = 'NO .relayURL given!!';
+					}
+				}				
 			}
 		}
 		return $content;

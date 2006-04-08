@@ -200,7 +200,6 @@ class tx_ttproducts_single_view {
 			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$viewTable->table->name]['columns']['inStock']) ? '' : 'AND (inStock <>0) ');
 			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($viewTable->table->name);
 			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
-			debug ($queryprev, '$queryprev', __LINE__, __FILE__);
 			$resprev = $viewTable->table->exec_SELECTquery('*', $queryprev, '', $prevOrderby);
 
 			
@@ -215,7 +214,6 @@ class tx_ttproducts_single_view {
 			}
 
 			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($viewTable->table->name);
-			debug ($querynext, '$querynext', __LINE__, __FILE__);
 			// $resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
 			$resnext = $viewTable->table->exec_SELECTquery('*', $querynext, '', $nextOrderby);
 
@@ -229,7 +227,6 @@ class tx_ttproducts_single_view {
 				$subpartArray['###LINK_NEXT_SINGLE###']='';
 			}
 
-			debug ($subpartArray, '$subpartArray', __LINE__, __FILE__);
 			$viewTable->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
 
 				// Substitute	

@@ -51,6 +51,7 @@ class tx_ttproducts_list_view {
 	var $page;
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
+	var $tt_products_articles; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
 	var $pid; // pid where to go
 	var $marker; // marker functions
@@ -218,6 +219,19 @@ class tx_ttproducts_list_view {
 			if ($viewTable->fields['itemnumber'])	{
 				$selectConf['orderBy'] = str_replace ('itemnumber', $viewTable->fields['itemnumber'], $selectConf['orderBy']);
 			}			
+			$orderByCat = $this->tt_products_cat->catconf['orderBy'];
+
+			$orderByArray = split (',', $selectConf['orderBy']);
+			$firstOrderField = $orderByArray[0];
+
+				// sorting by category not yet possible for articles
+			if ($viewTable === $this->tt_products_articles)	{
+				$orderByCat = '';
+				$orderByArray = array_diff($orderByArray, array('category'));
+				$selectConf['orderBy'] = implode (',', $orderByArray);
+			} 
+			$selectConf['orderBy'] = $viewTable->table->transformOrderby($selectConf['orderBy']);
+
 			$markerFieldArray = array('BULKILY_WARNING' => 'bulkily',
 				'PRODUCT_SPECIAL_PREP' => 'special_preparation',
 				'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
@@ -230,51 +244,31 @@ class tx_ttproducts_list_view {
 				$markerFieldArray,
 				'PRODUCT_');
 
-// SELECT *
-// FROM tt_products
-// LEFT OUTER JOIN tt_products_cat ON tt_products.category = tt_products_cat.uid
-
-			// $selectConf['leftjoin'] = ''
-			
 			$catColumnPrefix = 'cat';
-			$orderByCat = $this->tt_products_cat->catconf['orderBy']; 
 			if ($orderByCat)	{
 				$catFields = ($orderByCat == 'uid' ? $orderByCat : 'uid,'.$orderByCat);
-				$selectConf['orderBy'] = $catFields.','.$selectConf['orderBy']; 
-//				$this->tt_products_cat->table->setColumnPrefix($catColumnPrefix);
-//				$catQueryParts = $this->tt_products_cat->table->getQuery($catFields,'','',$orderByCat);
-//				debug ($catQueryParts, '$catQueryParts', __LINE__, __FILE__);
-//				foreach ($catQueryParts as $field => $value)	{
-//					if ($queryParts[$field] && $value)	{
-//						if ($field == 'ORDERBY')	{
-//							$queryParts[$field] = $value.','.$queryParts[$field];
-//						} else if ($field == 'WHERE') {
-//							$queryParts[$field] = ' AND '.$queryParts[$field].','.$value;
-//						} else {
-//							$queryParts[$field] = $queryParts[$field].','.$value;	
-//						}
-//					} else {
-//					if ($value)	{
-//						$queryParts[$field] = $value;
-//					}
-//				}
+				$selectConf['orderBy'] = $this->tt_products_cat->table->transformOrderby($catFields).','.
+					$selectConf['orderBy']; 
 				$prodAlias = $this->tt_products->table->getAliasName();
 				$catAlias = $this->tt_products_cat->table->getAliasName();
+
+				// SELECT *
+				// FROM tt_products
+				// LEFT OUTER JOIN tt_products_cat ON tt_products.category = tt_products_cat.uid
 				$selectConf['leftjoin'] = $this->tt_products_cat->table->name.' '.$catAlias.' ON '.$catAlias.'.uid='.$prodAlias.'.category';
 //				$this->tt_products_cat->table->setColumnPrefix('');
 			}
 
-			$selectConf['selectFields'] = implode(',', $fieldsArray);
+			$selectFields = implode(',', $fieldsArray);
+			$selectConf['selectFields'] = $viewTable->table->transformSelect($selectFields);
 			$selectConf['max'] = ($this->config['limit']+1);
 			$selectConf['begin'] = $begin_at;
-			$queryParts = $this->pibase->cObj->getQuery($viewTable->table->name, $selectConf, TRUE);		
-			$queryParts = $viewTable->table->getQueryArray($queryParts);
+			$queryParts = $this->pibase->cObj->getQuery($viewTable->table->name, $selectConf, TRUE);
+//			$queryParts = $viewTable->table->getQueryArray($queryParts);
+			debug ($queryParts, '$queryParts', __LINE__, __FILE__);
 			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
-			$orderByArray = split (',', $selectConf['orderBy']);
-			$firstOrderField = $orderByArray[0];
 			$productsArray=array();
 			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
-				// $productsArray[$row[$firstOrderField]][]=$row;
 				$productsArray[]=$row;
 			}
 	
@@ -296,7 +290,7 @@ class tx_ttproducts_list_view {
 //			if (($this->conf['orderByCategoryTitle'] >= 1) && ($firstOrderField != 'category')) { // category means it should be sorted by the category title in this case
 //				// uncomment this line if your PHP version makes troubles with the compare function
 //				// $this->compare = create_function('$row1,$row2', 'return strcmp($this->tt_products_cat->get[$row1[\'category\']],$this->tt_products_cat->get[$row2[\'category\']]);');
-//			}					
+//			}			
 
 			$itemsOut='';
 			$tableRowOpen=0;
@@ -357,9 +351,16 @@ class tx_ttproducts_list_view {
 					// Print Item Title
 				$wrappedSubpartArray=array();
 				$addQueryString=array();
-				$addQueryString[$this->pibase->prefixId.'[product]']= intval($row['uid']);
+				$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
+
+				$addQueryString[$this->pibase->prefixId.'[product]']= intval($row['uid']); // $addQueryString['tt_products']= intval($row['uid']);
 				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
-				$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString)).'"'.$css_current.'>','</a>');
+				$queryString = $this->marker->getLinkParams('', $addQueryString);
+				$pageLink = $this->pibase->pi_getPageLink($pid,'',$queryString);
+				if ($typoVersion <= 3008000)	{
+					$pageLink = 'index.php?id='.$pid.'&'.$this->pibase->prefixId.'[product]='.intval($row['uid']).'&'.$this->pibase->prefixId.'[backPID]='.$TSFE->id;						
+				}
+				$wrappedSubpartArray['###LINK_ITEM###']=  array('<a href="'. $pageLink .'"'.$css_current.'>','</a>');
 				$datasheetFile = $row['datasheet'] ;
 				if( $datasheetFile == '' )  {
 					$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');

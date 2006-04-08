@@ -38,8 +38,6 @@
  *
  */
 
-require_once (PATH_t3lib.'class.t3lib_htmlmail.php');
-require_once (PATH_BE_ttproducts.'pi1/class.tx_ttproducts_htmlmail.php');
 
 
 class tx_ttproducts_email_div {
@@ -47,12 +45,14 @@ class tx_ttproducts_email_div {
 	/**
 	 * Extended mail function
 	 */
-	function send_mail($email,$subject,$message,$fromEMail,$fromName,$attachment='') {
+	function send_mail($email,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
+		include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
+
 		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
 		if (class_exists($cls)) {
 			$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
 			$Typo3_htmlmail->start();
-			$Typo3_htmlmail->useBase64();
+			// $Typo3_htmlmail->useBase64(); +++ TODO
 
 			$Typo3_htmlmail->subject = $subject;
 			$Typo3_htmlmail->from_email = $fromEMail;
@@ -60,12 +60,23 @@ class tx_ttproducts_email_div {
 			$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
 			$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
 			$Typo3_htmlmail->organisation = '';
-			$Typo3_htmlmail->priority = 3;
 
-			$Typo3_htmlmail->addPlain($message);
 			if ($attachment != '')
 				$Typo3_htmlmail->addAttachment($attachment);
 
+			if ($html)  {
+				$Typo3_htmlmail->theParts['html']['content'] = $html; // Fetches the content of the page
+				$Typo3_htmlmail->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
+				
+				$Typo3_htmlmail->extractMediaLinks();
+				$Typo3_htmlmail->extractHyperLinks();
+				$Typo3_htmlmail->fetchHTMLMedia();
+				$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
+				$Typo3_htmlmail->substHREFsInHTML();  
+				$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
+			}
+
+			$Typo3_htmlmail->addPlain($message);
 			$Typo3_htmlmail->setHeaders();
 			$Typo3_htmlmail->setContent();
 			$Typo3_htmlmail->setRecipient(explode(',', $email));
@@ -111,7 +122,7 @@ class tx_ttproducts_email_div {
 				$subject=trim($parts[0]);
 				$plain_message=trim($parts[1]);
 
-				tx_ttproducts_email_div::send_mail(implode($recipients,','), $subject, $plain_message, $senderemail, $sendername);
+				tx_ttproducts_email_div::send_mail(implode($recipients,','), $subject, $plain_message, $tmp='', $senderemail, $sendername);
 			}
 		}
 	}
@@ -146,27 +157,30 @@ class tx_ttproducts_email_div {
 
 				$emailContent = $pibase->cObj->substituteMarkerArrayCached($plain_message, $markerArray);
 
-				$cls  = t3lib_div::makeInstanceClassName('tx_ttproducts_htmlmail');
-				if (class_exists($cls) && $conf['orderEmail_htmlmail']) {	// If htmlmail lib is included, then generate a nice HTML-email
+				if ($this->conf['orderEmail_htmlmail'])	{
+					include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
+					$cls  = t3lib_div::makeInstanceClassName('t3lib_htmlmail');				
+				}
+				if (class_exists($cls)) {	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$pibase->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
 					$HTMLmailContent=$pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$emailContent);
 					$HTMLmailContent=$pibase->cObj->substituteMarkerArray($HTMLmailContent, $pibase->globalMarkerArray);
 
-					$V = array (
-						'from_email' => $senderemail,
-						'from_name'  => $sendername,
-						'attachment' => $conf['GiftAttachment']
-					);
-
-					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
-					$Typo3_htmlmail->useBase64();
-					$Typo3_htmlmail->start(implode($recipients,','), $subject, $emailContent, $HTMLmailContent, $V);
-					debug ($Typo3_htmlmail, '$Typo3_htmlmail', __LINE__, __FILE__);
-					$Typo3_htmlmail->sendtheMail();
+//					$V = array (
+//						'from_email' => $senderemail,
+//						'from_name'  => $sendername,
+//						'attachment' => $conf['GiftAttachment']
+//					);
+//
+//					
+//					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
+//					$Typo3_htmlmail->useBase64();
+//					$Typo3_htmlmail->start(implode($recipients,','), $subject, $emailContent, $HTMLmailContent, $V);
+					tx_ttproducts_email_div::send_mail(implode($recipients,','),  $subject, $emailContent, $HTMLmailContent, $senderemail, $sendername, $conf['GiftAttachment']);
+//					$this->send_mail();
 				} else {		// ... else just plain text...
-					// $headers variable &uuml;berall entfernt!
-					tx_ttproducts_email_div::send_mail($recipients, $subject, $emailContent, $senderemail, $sendername, $conf['GiftAttachment']);
-					tx_ttproducts_email_div::send_mail($conf['orderEmail_to'], $subject, $emailContent, $basket->personInfo['email'], $basket->personInfo['name'], $conf['GiftAttachment']);
+					tx_ttproducts_email_div::send_mail($recipients, $subject, $emailContent, $tmp='',$senderemail, $sendername, $conf['GiftAttachment']);
+					tx_ttproducts_email_div::send_mail($conf['orderEmail_to'], $subject, $emailContent, $tmp='', $basket->personInfo['email'], $basket->personInfo['name'], $conf['GiftAttachment']);
 				}
 			}
 		}

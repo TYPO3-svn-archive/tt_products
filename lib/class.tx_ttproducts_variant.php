@@ -57,7 +57,6 @@ class tx_ttproducts_variant {
 		$this->tt_products = &$tt_products;
 		$this->bUseArticles = $bUseArticles;
 		$this->bSelectableArray = $bSelectableArray;
-		debug ($this->bSelectableArray, '$this->bSelectableArray', __LINE__, __FILE__);
 	} // init
 
 
@@ -80,8 +79,6 @@ class tx_ttproducts_variant {
 				}
 			}
 		}
-		
-		debug ($row, 'getRowFromVariant: $row', __LINE__, __FILE__);
 	 }
 
 
@@ -108,7 +105,6 @@ class tx_ttproducts_variant {
 		}
 			
 		$rc = implode (';', $variantArray);
-		debug ($rc, 'getVariantFromRow $rc', __LINE__, __FILE__);
 		return $rc; 
 	 }
 

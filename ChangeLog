@@ -1,4 +1,9 @@
-2006-04-05 Franz Holzinger <franz@fholzinger.com>
+2006-04-08 Franz Holzinger <franz@fholzinger.com>
+	* do all email stuff in the class.tx_ttproducts_email_div.php
+	* correct uid and category in the list view
+
+2006-04-06 Franz Holzinger <franz@fholzinger.com>
+	* turn off BASE64 encoding for emails
 	* configuration via ext_conf_template.txt
 	* do not use fh_library and table in ext_localconf.php if these extensions have not been installed
 	* add order by categories to the products list

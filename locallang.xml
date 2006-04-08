@@ -16,7 +16,7 @@
     <data type="array">
         <languageKey index="default" type="array">
             <label index="plugins_title">Shop System</label>
-            <label index="plugins_description">Add a shopping system plugin to the page. This is a part of the built-in shop and requires the page to contain product elements in the database.</label>
+            <label index="plugins_description">Add a shopping system plugin to the page. This requires the database to contain product elements in all languages.</label>
             <label index="m_default">default</label>
             <label index="m_ext">extended</label>
             <label index="m_variants">variants</label>
@@ -25,7 +25,7 @@
             <label index="plugins_description">Tilføjer en butiks produktliste til siden. Dette er en del af den indbyggede butik og kræver, at siden indeholder produktelementer i databasen.</label>
         </languageKey>
         <languageKey index="de" type="array">
-            <label index="plugins_description">Fügt ein Plugin für das Shop System ein. Das ist ein Bestandteil des integrierten Online-Shops und benötigt Produktdatensätze in der Datenbank.</label>
+            <label index="plugins_description">Fügt ein Plugin für das Shop System ein. Die Datenbank benötigt Produktdatensätze in allen Sprachen.</label>
             <label index="m_default">Standard</label>
             <label index="m_ext">Erweitert</label>
             <label index="m_variants">Varianten</label>
@@ -34,7 +34,7 @@
             <label index="plugins_description">Setter inn en butikks produktliste på siden. Dette er en del av den innebygde butikken (webshopen) og krever at siden inneholder produktelementer i databasen.</label>
         </languageKey>
         <languageKey index="it" type="array">
-            <label index="plugins_description">Aggiungi alla pagina un elenco dei prodotti. Questo fa parte del &quot;shopping system&quot; integrato; la pagina deve contenere dei prodotti.</label>
+            <label index="plugins_description">Aggiungi alla pagina un elenco dei prodotti. Questo fa parte del &quot;shopping system&quot; extensione; la pagina deve contenere dei prodotti.</label>
         </languageKey>
         <languageKey index="fr" type="array">
             <label index="plugins_title">Système de Magasin</label>

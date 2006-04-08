@@ -64,6 +64,9 @@ class tx_ttproducts_product {
 		$this->config = &$config;
 		$tablename = ($tablename ? $tablename : 'tt_products');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
+		$tableConfig = array();
+		$tableConfig['orderBy'] = $conf['orderBy'];
+		$this->table->setConfig($tableConfig);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 		
@@ -91,7 +94,6 @@ class tx_ttproducts_product {
 		$this->variant->init($this->pibase, $tableconf['variant.'], $this, $bUseArticles, $this->bSelectableArray);
 		
 		$this->fields['itemnumber'] = ($tableconf['itemnumber'] ? $tableconf['itemnumber'] : 'itemnumber');
-		debug ($this->fields, '$this->fields', __LINE__, __FILE__);
 	} // init
 
 

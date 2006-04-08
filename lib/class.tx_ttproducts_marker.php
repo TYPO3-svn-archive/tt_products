@@ -142,8 +142,10 @@ class tx_ttproducts_marker {
 	 */
 	function getLinkParams($excludeList='',$addQueryString=array()) {
 		global $TSFE;
+		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
+
 		$queryString=array();
-		$queryString[$this->pibase->prefixId.'[backPID]']= $TSFE->id;
+		$queryString[$this->pibase->prefixId.'[backPID]']= $TSFE->id; // $queryString['backPID']= $TSFE->id;
 		
 		$this->addQueryStringParam($queryString, 'C');
 		$this->addQueryStringParam($queryString, 'cat');

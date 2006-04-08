@@ -168,8 +168,11 @@ class tx_ttproducts_page {
 			if ($conf) {
 				$rc = $conf;
 			} else {
-				$pageTmp = $this->get($row['pid']);
-				$rc = intval ($pageTmp['pid']);
+				global $TSFE;
+				
+				$rc = intval ($TSFE->id);
+//				$pageTmp = $this->get($row['pid']);
+//				$rc = intval ($pageTmp['pid']);
 			}
 		}
 		return $rc;

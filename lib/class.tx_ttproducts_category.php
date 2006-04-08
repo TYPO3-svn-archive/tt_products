@@ -53,7 +53,6 @@ class tx_ttproducts_category {
 	function init(&$pibase, $LLkey, $tablename, &$tableconf,  &$catconf)	{
 		global $TYPO3_DB,$TSFE;
 		
-		debug ($catconf, '$catconf', __LINE__, __FILE__);
 		$tablename = ($tablename ? $tablename : 'tt_products');
 		$this->catconf = &$catconf;
 	
@@ -95,7 +94,6 @@ class tx_ttproducts_category {
 			$where .= ($uid ? ' AND uid='.$uid : '');
 			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
 			$orderBy = $this->catconf['orderBy'];
-			debug ($orderBy, '$orderBy', __LINE__, __FILE__);
 			$res = $this->table->exec_SELECTquery('*',$where,'',$orderBy);
 			if ($uid)	{
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
@@ -105,7 +103,6 @@ class tx_ttproducts_category {
 					$rc = $this->dataArray[$row['uid']] = $row;
 				}
 			}
-			debug ($this->dataArray, '$this->dataArray', __LINE__, __FILE__);
 		}
 		if (!$rc) {
 			$rc = array();

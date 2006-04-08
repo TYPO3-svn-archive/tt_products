@@ -51,7 +51,6 @@
 require_once(PATH_BE_fh_library.'/sysext/cms/tslib/class.fhlibrary_pibase.php');
 
 require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
-require_once(PATH_BE_ttproducts.'pi1/class.tx_ttproducts_htmlmail.php');
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 
@@ -206,7 +205,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList'] && 
 						(!$this->conf['PIDitemDisplay'] || !!$this->conf['PIDitemDisplay.'])) {
 						$TSFE->set_no_cache();
-						echo "set_no_cache()";
 					}
 					$contentTmp=$this->products_display($theCode, $this->errorMessage, $error_code);				
 				break;
@@ -371,7 +369,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->templateCode = $this->cObj->fileResource($this->conf['templateFile']);
 		}
 
-		debug ($this->conf['templateFile'], '$this->conf[\'templateFile\']', __LINE__, __FILE__);
 		if (!$this->conf['templateFile'] || empty($this->templateCode)) {
 			$this->errorMessage .= $this->pi_getLL('no_template').' tt_products.file.templateFile.';
 			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '""');
@@ -476,7 +473,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	 */
 	function initTables()	{		
 		$this->tt_products_cat = t3lib_div::makeInstance('tx_ttproducts_category');
-		debug ($this->conf['conf.'], '$this->conf[\'conf.\']', __LINE__, __FILE__);
 		$this->tt_products_cat->init(
 			$this,
 			$this->LLkey,
@@ -510,12 +506,9 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 
 	
-	function tt_products_processFormData($arg)        {
-		// Debug the content of the "submitted" Form
-		
+	function tt_products_processFormData($arg)        {		
 	     $xajax_content = "<br /><br /><strong>submitted values</strong><br /><br />
 	                      ".t3lib_div::view_array($arg);  // here will output the Array, it looks like the $_POST/$_GET, which would be generated.
-	    # debug($this->xajax);
 	
 	     // Instantiate the tx_xajax_response object
 	     $objResponse = new tx_xajax_response();

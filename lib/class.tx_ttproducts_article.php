@@ -59,9 +59,10 @@ class tx_ttproducts_article {
 		$this->conf = &$conf;
 		$this->config = &$config;
 		$this->tt_products = &$tt_products;
-
+		
 		$tablename = ($tablename ? $tablename : 'tt_products_articles');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
+		$this->table->setConfig($conf['conf.'][$tablename.'.']);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 
@@ -153,20 +154,16 @@ class tx_ttproducts_article {
 
 		$iconImgCode = $this->pibase->cObj->IMAGE($this->conf['datasheetIcon.']);
 
-			// Subst. fields
-		$markerArray['###PRODUCT_UNIT###'] = $row['unit'];
-		$markerArray['###PRODUCT_UNIT_FACTOR###'] = $row['unit_factor'];
-
 		$markerArray['###ICON_DATASHEET###']=$iconImgCode;
 
-		$markerArray['###PRODUCT_TITLE###'] = $row['title'];
-		$markerArray['###PRODUCT_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
+		$markerArray['###ARTICLE_TITLE###'] = $row['title'];
+		$markerArray['###ARTICLE_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
 
 			// Extension CSS styled content
 		if (t3lib_extMgm::isLoaded('css_styled_content')) {
-			$markerArray['###PRODUCT_NOTE###'] = $this->pibase->pi_RTEcssText($markerArray['###PRODUCT_NOTE###']);
+			$markerArray['###ARTICLE_NOTE###'] = $this->pibase->pi_RTEcssText($markerArray['###PRODUCT_NOTE###']);
 		} else if (is_array($this->conf['parseFunc.']))	{
-			$markerArray['###PRODUCT_NOTE###'] = $this->pibase->cObj->parseFunc($markerArray['###PRODUCT_NOTE###'],$this->conf['parseFunc.']);
+			$markerArray['###ARTICLE_NOTE###'] = $this->pibase->cObj->parseFunc($markerArray['###PRODUCT_NOTE###'],$this->conf['parseFunc.']);
 		}
 		$markerArray['###PRODUCT_ITEMNUMBER###'] = $row[$this->pibase->tt_products->fields['itemnumber']];
 
