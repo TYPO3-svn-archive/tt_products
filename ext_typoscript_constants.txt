@@ -14,7 +14,7 @@ plugin.tt_products {
     # cat=plugin.products/typo; type=boolean; label= break Note: Transforms linefeeds in the note field into <br /> HTML tags
   nl2brNote = 1
 
-    # cat=plugin.products//; type=boolean; label= use article table: You have to set this if you want that your entries in the products articles table get used
+    # cat=plugin.products//; type=integer; label= use article table: You have to set this to 1 if you want that your entries in the products articles table get used. Set it to 2 if your articles do not use the variant fields.
   useArticles =
 
     # cat=plugin.products/color; type=color; label= Color 1: This bgcolor is used in the template-file.
@@ -30,6 +30,8 @@ plugin.tt_products {
   clickEnlarge_list = 1
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Basket display: As above, but for the images in the basket
   clickEnlarge_basket = 1
+    # cat=plugin.products//; type=boolean; label= Click Enlarge, Category images: As above, but for the category images
+  clickEnlarge_listcat = 0
 
     # cat=plugin.products//; type=boolean; label= Color selectable, List display: Make the color selectable in the list
   selectColor = 1
@@ -89,12 +91,16 @@ plugin.tt_products {
   maxW_single = 200
     # cat=plugin.products/dims; type=int+; label= Max image width, list display: The maximum width in pixels of an image when displayed in lists and searchresults.
   maxW_list = 50
-    # cat=plugin.products/dims; type=int+; label= Max image heitgh, list display: The maximum height in pixels of an image when displayed in lists and searchresults.
+    # cat=plugin.products/dims; type=int+; label= Max image height, list display: The maximum height in pixels of an image when displayed in lists and searchresults.
   maxH_list = 100
     # cat=plugin.products/dims; type=int+; label= Max image width, basket display: The maximum width in pixels of an image when displayed in the shopping-basket.
   maxW_basket = 100
     # cat=plugin.products/dims; type=int+; label= Max image height, basket display: The maximum height in pixels of an image when displayed in the shopping-basket.
   maxH_basket = 100
+    # cat=plugin.products/dims; type=int+; label= Max image width, category images: The maximum width in pixels of an image for categories when displayed in lists and searchresults.
+  maxW_listcat = 50
+    # cat=plugin.products/dims; type=int+; label= Max image height, category images: The maximum height in pixels of an image for categories when displayed in lists and searchresults.
+  maxH_listcat = 100
     # cat=plugin.products/dims; type=int+; label= Max image width, popup window: The maximum width in pixels of an image when displayed in the popup window.
   maxW_popup = 400
 
@@ -111,8 +117,12 @@ plugin.tt_products {
   PIDbilling =
     # cat=plugin.products//; type=int+; label=PID for delivery sheet page
   PIDdelivery =
+    # cat=plugin.products//; type=int+; label=PID for payment page
+  PIDpayment = 
     # cat=plugin.products//; type=int+; label=PID for single item display: Set this in your setup manually for defining where conditions for several pages.
   PIDitemDisplay =
+    # cat=plugin.products//; type=int+; label=PID for list items display: Set this in your setup manually for defining where conditions for several pages.
+  PIDlistDisplay =
     # cat=plugin.products//; type=int+; label=PID for search page: If you want all product searches to go to a specific page, enter the PID it here! NOTE: If you set this PID, all searchqueries will (must) be handled with a list content element with the code "search" on that page.
   PIDsearch =
     # cat=plugin.products//; type=int+; label=PID for basket page: If you want every change in the number of items anywhere to go to a specific page (eg. the shopping basket page), enter the PID here.
@@ -137,6 +147,8 @@ plugin.tt_products {
  
     # cat=plugin.products//; type=int+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
   defaultProductID = 1
+    # cat=plugin.products//; type=int+; label=default category ID: ID of the default category that will be shown in the list view when not tx_ttproducts_pi1[cat] parameter is given
+  defaultCategoryID = 
     # cat=plugin.products//; type=int+; label=recursive levels: Number of recursive levels to select tt_products from in lists.
   recursive = 99
     # cat=plugin.products//; type=string; label=Domain ot the shop; used to replace the ###DOMAIN### marker
@@ -162,20 +174,16 @@ plugin.tt_products {
   editLockedLoginInfo =
     # cat=plugin.products//; type=boolean; label=lock login user address: If lockLoginUserInfo is set, this switch makes that the address field is filled in from address, country, zip and city of the fe_user
   loginUserInfoAddress =
-    # cat=plugin.products//; type=boolean; label=order by after page: If you want to define the order of the list. It is always ordered by the page id at first.
-  orderBy = 
-    # cat=plugin.products//; type=boolean; label=order by category title: If you want the list to be ordered by the title of the tt_products_cat. This overwrites any settings of orderBy.
-  orderByCategoryTitle = 
     # cat=plugin.products//; type=boolean; label=oder by item number: If the single item display should be sorted by ItemNumber instead of uid; used for ###LINK_NEXT_SINGLE### and ###LINK_PREV_SINGLE### 
   orderByItemNumberSg = 
     # cat=plugin.products//; type=string; label=Prefix to the order numbers: Dont use spaces or special chars. Max 10 chars.
-  orderNumberPrefix = order_
+  orderNumberPrefix = %
     # cat=plugin.products//; type=string; label=from email addresss: From email address for the confirmation email to customer
-  orderEmail_from = shop@myTypo3Shop.com
+  orderEmail_from = shop@myTYPO3Shop.com
     # cat=plugin.products//; type=string; label=from email name: From name for the confirmation email to customer. 
-  orderEmail_fromName = My Typo3 Shop
+  orderEmail_fromName = My TYPO3 Shop
     # cat=plugin.products//; type=string; label=to email addresses: Comma separated list of recipients of the order email. Shop and administrator/supervisor email addresses go here!
-  orderEmail_to = shop@myTypo3Shop.com
+  orderEmail_to = shop@myTYPO3Shop.com
     # cat=plugin.products//; type=boolean; label=send email to delivery: If you want to send the email notification to the delivery email and not to the billing email
   orderEmail_toDelivery =
     # cat=plugin.products//; type=string; label=subject of email: The topic of your email. Or the first line in EMAIL_PLAINTEXT_TEMPLATE is used!
@@ -216,7 +224,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=int+; label=PID of AGB page: PID of the page with the AGB
   PIDagb = 0
     # cat=plugin.products//; type=small; label=Target of AGB page: Target for the AGB page
-  agbtarget = _blank
+  AGBtarget = _blank
 
     # cat=plugin.products/file; type=file[html,htm,pdf,doc,txt]; label= AGB Attachment File: This file is attached to the order confirmation mail
   AGBattachment = EXT:tt_products/template/agb.txt

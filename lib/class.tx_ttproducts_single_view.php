@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skårhøj <kasperYYYY@typo3.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -50,70 +50,119 @@ class tx_ttproducts_single_view {
 	var $config;
 	var $basket;
 	var $uid; 	// product id
+	var $type; 	// 'product' or 'article'
 	var $variants; 	// different attributes
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
+	var $tt_products_articles;  // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
+	var $fe_users; // element of class tx_table_db
 
 	var $marker; // marker functions
 	var $pid; // PID where to go
+	var $LLkey; // language key
+	var $useArticles;
 
- 	function init(&$pibase, &$conf, &$config, &$basket, &$page, &$tt_content, &$tt_products, &$tt_products_cat, $uid, $extVars, $pid) {
+ 	function init(&$pibase, &$conf, &$config, &$basket, &$basketView, &$page,
+ 			&$tt_content, &$tt_products, &$tt_products_articles,
+ 			&$tt_products_cat, &$fe_users, $uidArray, $extVars,
+ 			$pid, $LLkey, $useArticles) {
  		$this->pibase = &$pibase;
  		$this->conf = &$conf;
  		$this->config = &$config;
 		$this->basket = &$basket;
+		$this->basketView = &$basketView;
  		$this->page = &$page;
  		$this->tt_content = &$tt_content;
- 		$this->uid = $uid;
+ 		$this->uid = current($uidArray);
+ 		$this->type = key($uidArray);
  		$this->variants = $extVars;
  		$this->tt_products = &$tt_products;
+ 		$this->tt_products_articles = &$tt_products_articles;
  		$this->tt_products_cat = &$tt_products_cat;
+		$this->fe_users = &$fe_users;
  		$this->pid = $pid;
-
+		$this->LLkey = $LLkey;
+		$this->useArticles = $useArticles;	
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($pibase, $conf, $config, $basket);
  	}
 
 	// returns the single view
-	function &printView(&$templateCode, &$error_code) {
-		global $TSFE, $TCA;
+	function &printView(&$templateCode, &$error_code, $pageAsCategory) {
+		global $TSFE, $TCA, $TYPO3_DB;
 		
+		$itemTableArray = array('product' => &$this->tt_products, 'article' => &$this->tt_products_articles);
+		$rowArray = array('product' => '', 'article' => '');
 		$content = '';
+		
+//		if ($this->type == 'product')	{
+//			$itemTable = &$this->tt_products;
+//		} else if ($this->type == 'article')	{
+//			$itemTable = &$this->tt_products_articles;
+//		} else return $content; 
 
-		$where = 'uid='.intval($this->uid);
-		$viewTable = &$this->tt_products;
-
-		$viewTable->table->enableFields();
-	 	$res = $this->tt_products->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
-	 	$row = '';
 		if ($this->config['displayCurrentRecord'])	{
-			$row=$this->pibase->cObj->data;
+			$rowArray[$this->type] = $this->pibase->cObj->data;  
 		} else {
-			$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+			$itemTableArray[$this->type]->table->enableFields();
+			$where = 'uid='.intval($this->uid);
+			$res = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
+			$rowArray[$this->type] = $TYPO3_DB->sql_fetch_assoc($res);
+			if ($this->type == 'product')	{
+				if ($this->variants) {
+					$itemTableArray[$this->type]->variant->getRowFromVariant ($rowArray[$this->type], $this->variants);
+				}
+			} else {
+				$itemTableArray['product']->table->enableFields();
+				$where = 'uid='.intval($rowArray[$this->type]['uid_product']);
+				$res = $itemTableArray['product']->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
+				$rowArray['product'] = $TYPO3_DB->sql_fetch_assoc($res);
+				$itemTableArray['article']->mergeProductRow($rowArray['article'], $rowArray['product']);
+			}
+				
 		}
-
-		if ($this->variants) {
-			$viewTable->variant->getRowFromVariant ($row, $this->variants);
+		if ($this->type == 'article')	{
+			
 		}
-
-		if($row) {
+		$row = $rowArray[$this->type];
+		if ($row) {
 		 	// $this->uid = intval ($row['uid']); // store the uid for later usage here
 
 				// Get the subpart code
 			$itemFrameTemplate ='';
-			$giftNumberArray = tx_ttproducts_gifts_div::getGiftNumbers ($this->basket, $row['uid'], $this->variants);
+			$giftNumberArray = tx_ttproducts_gifts_div::getGiftNumbers ($this->basket, $rowArray['product']['uid'], $this->variants);
 
 			if ($this->config['displayCurrentRecord'])	{
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 			} else if (count($giftNumberArray)) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
-			} else if ($row['inStock']==0 && $this->conf['showNotInStock'] && is_array($TCA[$viewTable->table->name]['columns']['inStock']) ) {
+			} else if ($row['inStock'] == 0 && $this->conf['showNotInStock'] && is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_NOT_IN_STOCK###';
 			} else {
-				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
+				if ($this->type == 'product')	{
+					$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY###';
+				} else {
+					$itemFrameTemplate = '###ARTICLE_SINGLE_DISPLAY###';
+				}
 			}
 			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($itemFrameTemplate));
+			
+			$markerFieldArray = array(
+				'BULKILY_WARNING' => 'bulkily',
+				'PRODUCT_SPECIAL_PREP' => 'special_preparation',
+				'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
+				'LINK_DATASHEET' => 'datasheet');
+			$viewTagArray = array();
+			$fieldsArray = $this->marker->getMarkerFields(
+				$itemFrameWork,
+				$itemTableArray[$this->type]->table->name,
+				$itemTableArray[$this->type]->table->tableFieldArray,
+				$itemTableArray[$this->type]->table->requiredFieldArray,
+				$markerFieldArray,
+				$itemTableArray[$this->type]->table->marker,
+				$viewTagArray
+			);
 
 			if (count($giftNumberArray)) {
 				$personDataFrameWork = $this->pibase->cObj->getSubpart($itemFrameWork,'###PERSON_DATA###');
@@ -138,13 +187,16 @@ class tx_ttproducts_single_view {
 			}
 
 			$pageCatTitle = '';
-			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
-					$pageTmp = $this->page->get($row['pid']);
-					$pageCatTitle = $pageTmp['title'].'/';
+			if ($pageAsCategory >= 1) {
+				$pageTmp = $this->page->get($row['pid']);
+				$pageCatTitle = $pageTmp['title'];
+				if ($pageAsCategory == 1)	{
+					$pageCatTitle .= '/';
+				}	
 			}
-
+			
 			$catTmp = '';
-			if ($row['category']) {
+			if ($row['category'] && ($pageAsCategory != 2)) {
 				$catTmp = $this->tt_products_cat->get($row['category']);
 				$catTmp = $catTmp['title'];
 			}
@@ -156,7 +208,7 @@ class tx_ttproducts_single_view {
 			$backPID = $this->pibase->piVars['backPID'];
 			$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
 			$pid = ( $backPID ? $backPID : $TSFE->id);
-			$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams()) .'">','</a>');
+			$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>');
 
 			if( $datasheetFile == '' )  {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
@@ -164,18 +216,31 @@ class tx_ttproducts_single_view {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
 			}
 
-			$item = $this->basket->getItem($row);
+			$variant = $itemTableArray[$this->type]->variant->getVariantFromRow ($row);
+			$item = $this->basket->getItem($row, $variant);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
-			$markerArray = $viewTable->getItemMarkerArray ($item,$catTitle,$this->basket->basketExt,$this->tt_content, $this->config['limitImageSingle'],'image', $forminfoArray);
+			$markerArray = array();
+			$itemTableArray[$this->type]->getItemMarkerArray (
+				$item,
+				$markerArray,
+				$catTitle,
+				$this->basket->basketExt,
+				$this->config['limitImageSingle'],
+				'image',
+				$viewTagArray,
+				$forminfoArray,
+				'SINGLE'
+			);
+			$this->basketView->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, 'SINGLE');  
 			$subpartArray = array();
-			$markerArray['###FORM_NAME###']=$forminfoArray['###FORM_NAME###'];
+			$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'];
 
 			//$markerArray['###FORM_URL###']=$this->formUrl.'&tt_products='.$this->uid ;
-			$addQueryString=array();
-			$addQueryString[$this->pibase->prefixId.'[product]']= $this->uid;
+			$addQueryString = array();
+			$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $this->uid;
 			
 			// $markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, array('tt_products' => $this->uid)); // Applied it here also...
-			$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, $addQueryString); // Applied it here also...
+			$markerArray = $this->marker->addURLMarkers($this->pid, $markerArray, $addQueryString); // Applied it here also...
 			// $url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams()) ; // $this->getLinkUrl('','tt_products');
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
@@ -183,7 +248,7 @@ class tx_ttproducts_single_view {
 			$nextOrderby = ''; 
 
 			if ($this->conf['orderByItemNumberSg']) {
-				$itemnumberField = $viewTable->fields['itemnumber'];
+				$itemnumberField = $itemTableArray[$this->type]->fields['itemnumber'];
 				$queryPrevPrefix = $itemnumberField.' < '.intval($row[$itemnumberField]);
 				$queryNextPrefix = $itemnumberField.' > '.intval($row[$itemnumberField]);
 				$prevOrderby= $itemnumberField.' DESC';
@@ -197,38 +262,39 @@ class tx_ttproducts_single_view {
 			}
 
 			$queryprev = '';
-			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$viewTable->table->name]['columns']['inStock']) ? '' : 'AND (inStock <>0) ');
-			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($viewTable->table->name);
+			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ? '' : 'AND (inStock <>0) ');
+			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $itemTableArray[$this->type]->table->enableFields();
 			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
-			$resprev = $viewTable->table->exec_SELECTquery('*', $queryprev, '', $prevOrderby);
-
+			$resprev = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $queryprev, '', $prevOrderby);
 			
-			if ($rowprev = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resprev) )	{
+			if ($rowprev = $TYPO3_DB->sql_fetch_assoc($resprev) )	{
 				$addQueryString=array();
-				$addQueryString[$this->pibase->prefixId.'[product]']= $rowprev['uid'];
+				$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $rowprev['uid'];
 				$addQueryString[$this->pibase->prefixId.'[backPID]'] = $backPID;
 				// $wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString)) .'">','</a>');
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,true)) .'">','</a>');
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
 
-			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $this->pibase->cObj->enableFields($viewTable->table->name);
+			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $itemTableArray[$this->type]->table->enableFields();
 			// $resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
-			$resnext = $viewTable->table->exec_SELECTquery('*', $querynext, '', $nextOrderby);
+			$resnext = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $querynext, '', $nextOrderby);
 
-			if ($rownext = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resnext) )	{
+			if ($rownext = $TYPO3_DB->sql_fetch_assoc($resnext) )	{
 				$addQueryString=array();
-				$addQueryString[$this->pibase->prefixId.'[product]']= $rownext['uid'];
+				$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $rownext['uid'];
 				$addQueryString[$this->pibase->prefixId.'[backPID]'] = $backPID;				
 				// $wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rownext['uid'].'">','</a>');
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString)) .'">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,true)) .'">','</a>');
 			} else {
-				$subpartArray['###LINK_NEXT_SINGLE###']='';
+				$subpartArray['###LINK_NEXT_SINGLE###'] = '';
 			}
 
-			$viewTable->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
-
+			if ($this->type == 'product')	{
+				$itemTableArray[$this->type]->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
+			}
+			
 				// Substitute	
 			$content= $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 			if ($personDataFrameWork) {
@@ -240,7 +306,7 @@ class tx_ttproducts_single_view {
 					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].')';
 					//$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink(t3lib_div::_GP('backPID'),'',$this->marker->getLinkParams('', array('tt_products' => $row['uid'], 'ttp_extvars' => htmlspecialchars($this->variants))));
 					$addQueryString=array();
-					$addQueryString[$this->pibase->prefixId.'[product]']= intval($row['uid']);
+					$addQueryString[$this->pibase->prefixId.'['.$this->type.']']= intval($row['uid']);
 					$addQueryString[$this->pibase->prefixId.'[variants]']= htmlspecialchars($this->variants);
 					$markerArray = $this->marker->addURLMarkers($backPID,$markerArray, $addQueryString); // Applied it here also...
 					
@@ -254,7 +320,7 @@ class tx_ttproducts_single_view {
 			$error_code[0] = 'wrong_parameter';
 			$error_code[1] = intval($this->uid);
 		}
-	return $content;
+		return $content;
 	} // print
 }
 

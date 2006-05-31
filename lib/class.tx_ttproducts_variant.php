@@ -43,20 +43,29 @@
 class tx_ttproducts_variant {
 	var $pibase;
 	var $conf;
-	var $tt_products;
-	var $bUseArticles;
+	var $itemTable;
+	var $useArticles;
 	var $bSelectableArray;
 	
 
 	/**
 	 * setting the local variables
 	 */
-	function init(&$pibase, &$conf, &$tt_products, $bUseArticles, &$bSelectableArray)  {
+	function init(&$pibase, &$conf, &$itemTable, $useArticles)  {
 		$this->pibase = &$pibase;
 		$this->conf = &$conf;
-		$this->tt_products = &$tt_products;
-		$this->bUseArticles = $bUseArticles;
-		$this->bSelectableArray = $bSelectableArray;
+		$this->itemTable = &$itemTable;
+		$this->useArticles = $useArticles;
+		$this->bSelectableArray = array();
+		if ($this->conf['selectColor'])
+			$this->bSelectableArray[0] = true;
+		if ($this->conf['selectSize'])
+			$this->bSelectableArray[1] = true;
+		if ($this->conf['selectDescription'])
+			$this->bSelectableArray[2] = true;
+		if ($this->conf['selectGradings'])
+			$this->bSelectableArray[3] = true;
+
 	} // init
 
 
@@ -72,7 +81,7 @@ class tx_ttproducts_variant {
 	 function getRowFromVariant (&$row, $variant) {
 		$variantArray = explode(';', $variant);
 		
-		if (is_array($this->conf) && ($this->bUseArticles || count ($this->bSelectableArray)))	{
+		if (is_array($this->conf) && ($this->useArticles == 1 || count ($this->bSelectableArray)))	{
 			foreach ($this->conf as $key => $field)	{
 				if ($key != 5)	{
 					$row[$field] = $variantArray[$key-1];
@@ -92,10 +101,10 @@ class tx_ttproducts_variant {
 	 * @see getRowFromVariant
 	 */
 	 function getVariantFromRow (&$row) {
-		// take only the first color, size and gradings, if there are more entries from the products table		
+		// take only the first color, size and gradings, if there are more entries from the item table		
 		$variantArray = array();
 
-		if (is_array($this->conf) && ($this->bUseArticles || count ($this->bSelectableArray)))	{
+		if (is_array($this->conf) && ($this->useArticles == 1 || count ($this->bSelectableArray)))	{
 			foreach ($this->conf as $key => $field)	{
 				if ($key != 5)	{
 					$tmpArr = t3lib_div::trimExplode(';', $row[$field]);
@@ -103,7 +112,7 @@ class tx_ttproducts_variant {
 				}
 			}
 		}
-			
+		
 		$rc = implode (';', $variantArray);
 		return $rc; 
 	 }
@@ -123,7 +132,7 @@ class tx_ttproducts_variant {
 				}
 			}
 					
-			if ($this->tt_products->isSingle($row)) {
+			if ($this->itemTable->isSingle($row)) {
 				$areaArray[] = 'display_variant5_isSingle';
 			} else {
 				$areaArray[] = 'display_variant5_isNotSingle';
@@ -138,7 +147,6 @@ class tx_ttproducts_variant {
 
 
 	function removeEmptySubpartArray (&$subpartArray, &$row, &$conf) {
-				
 		$areaArray = array();
 
 		if (is_array($this->conf))	{
@@ -151,7 +159,7 @@ class tx_ttproducts_variant {
 			}
 		}
 
-		if ($this->tt_products->isSingle($row)) {
+		if ($this->itemTable->isSingle($row)) {
 			$areaArray[] = 'display_variant5_isNotSingle';
 		} else {
 			$areaArray[] = 'display_variant5_isSingle';
@@ -161,6 +169,55 @@ class tx_ttproducts_variant {
 			$subpartArray['###'.$area.'###'] = '';
 		}
 	}
+
+
+	/**
+	 * Template marker substitution
+	 * Fills in the markerArray with data for a product
+	 *
+	 * @param	array		reference to an item array with all the data of the item
+	 * @param	string		title of the category
+	 * @param	integer		number of images to be shown
+	 * @param	object		the image cObj to be used
+	 * @param	array		information about the parent HTML form
+	 * @return	array
+	 * @access private
+	 */
+	function &getItemMarkerArray (&$item, &$markerArray, &$basketExt, &$tagArray, $code='')	{
+			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
+
+		$row = &$item['rec'];
+		$variants = $this->getVariantFromRow ($row);
+		$basketQuantityName = 'ttp_basket['.$row['uid'].'][quantity]';
+		$quantity = $basketExt[$row['uid']][$variants];
+		$markerArray['###FIELD_NAME###']=$basketQuantityName;
+		$quantity = $basketExt[$row['uid']][$variants];
+		$markerArray['###FIELD_QTY###']= $quantity ? $quantity : '';
+
+		$markerArray = array();
+		$markerArray['###FIELD_SIZE_NAME###'] = 'ttp_basket['.$row['uid'].'][size]';
+		$markerArray['###FIELD_SIZE_VALUE###'] = $row['size'];
+		$markerArray['###FIELD_SIZE_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
+		$markerArray['###FIELD_COLOR_NAME###'] = 'ttp_basket['.$row['uid'].'][color]';
+		$markerArray['###FIELD_COLOR_VALUE###'] = $row['color'];
+		$markerArray['###FIELD_DESCRIPTION_NAME###'] = 'ttp_basket['.$row['uid'].'][description]';
+		$markerArray['###FIELD_DESCRIPTION_VALUE###'] = $row['description'];
+		$markerArray['###FIELD_GRADINGS_NAME###'] = 'ttp_basket['.$row['uid'].'][gradings]';
+		$markerArray['###FIELD_GRADINGS_VALUE###'] = $row['gradings'];
+		$markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
+		
+		$prodAdditionalText['single'] = '';	
+		if ($this->conf['selectAdditional']) {
+			$isSingleProduct = $this->isSingle($row);
+			if ($isSingleProduct)	{
+				$message = $this->pibase->pi_getLL('additional_single');
+				$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($quantity ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="1">';
+				$prodAdditionalText['single'] .= '<input type="hidden" name="'.$basketQuantityName.'[1]" value="'.($quantity ? '1' : '0') .'">';
+			}
+ 		}
+		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
+	} // getItemMarkerArray
+
 
 }
 

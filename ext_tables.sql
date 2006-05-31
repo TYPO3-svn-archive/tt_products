@@ -115,6 +115,7 @@ CREATE TABLE tt_products_cat_language (
 	endtime int(11) DEFAULT '0' NOT NULL,
 	fe_group int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
+	subtitle mediumtext NOT NULL,
 	note text NOT NULL,  
 	cat_uid int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
@@ -145,8 +146,10 @@ CREATE TABLE tt_products_articles (
 	itemnumber varchar(40) DEFAULT '' NOT NULL,
 	price varchar(20) DEFAULT '' NOT NULL,
 	price2 varchar(20) DEFAULT '' NOT NULL,
+	note text NOT NULL,
+	image tinyblob NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
-
+	weight varchar(20) DEFAULT '' NOT NULL,
 	color varchar(60) DEFAULT '' NOT NULL,
 	size varchar(60) DEFAULT '' NOT NULL,
 	description mediumtext NOT NULL,
@@ -278,7 +281,7 @@ CREATE TABLE sys_products_orders (
 	shipping varchar(80) DEFAULT '' NOT NULL,
 	amount varchar(20) DEFAULT '' NOT NULL,
 	email_notify tinyint(4) unsigned DEFAULT '0' NOT NULL,
-	tracking_code varchar(20) DEFAULT '' NOT NULL,
+	tracking_code varchar(32) DEFAULT '' NOT NULL,
 	status tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	status_log blob NOT NULL,
 	orderData mediumblob NOT NULL,
@@ -324,8 +327,8 @@ CREATE TABLE fe_users (
 );
 
 #
-# Extension of table 'tt_content' for zk_products compatibility where pages are used as categories
+# Extension of table 'tt_content' for zk_products compatibility where no flexforms have been used
 #
-CREATE TABLE tt_content (
-	tt_products_code varchar(30) DEFAULT 'HELP' NOT NULL
-);
+#CREATE TABLE tt_content (
+#	tt_products_code varchar(30) DEFAULT 'HELP' NOT NULL
+#);

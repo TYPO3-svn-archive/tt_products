@@ -71,19 +71,19 @@ class tx_ttproducts_marker {
 		global $TSFE;
 
 		// disable caching as soon as someone enters products into the basket, enters user data etc.
-		$addQueryString['no_cache'] = 1; 
+		// $addQueryString['no_cache'] = 1; 
 			// Add's URL-markers to the $markerArray and returns it
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
 		$pidFormUrl = ($pidNext ? $pidNext : $pidBasket);
-		$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink($pidFormUrl,'',$this->getLinkParams('',$addQueryString)) ;
+		$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink($pidFormUrl,'',$this->getLinkParams('',$addQueryString,true)) ;
 		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $pidBasket);
-		$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString)) ;
+		$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString,true)) ;
 		$pid = ( $this->conf['PIDpayment'] ? $this->conf['PIDpayment'] : $pidBasket);
-		$markerArray['###FORM_URL_PAYMENT###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString)) ;
+		$markerArray['###FORM_URL_PAYMENT###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString,true)) ;
 		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $pidBasket);
-		$markerArray['###FORM_URL_FINALIZE###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString)) ;
+		$markerArray['###FORM_URL_FINALIZE###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString,true)) ;
 		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $pidBasket);
-		$markerArray['###FORM_URL_THANKS###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString)) ;
+		$markerArray['###FORM_URL_THANKS###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString,true)) ;
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 
 		// This handleURL is called instead of the THANKS-url in order to let handleScript process the information if payment by credit card or so.
@@ -128,11 +128,15 @@ class tx_ttproducts_marker {
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function addQueryStringParam(&$queryString, $param) {
+	function addQueryStringParam(&$queryString, $param, $bUsePrefix=false) {
 		$temp = $this->pibase->piVars[$param];
-		$temp = ($temp ? $temp : (t3lib_div::GPvar($param) ? t3lib_div::GPvar($param) : $this->pibase->currency)); 
+		$temp = ($temp ? $temp : (t3lib_div::GPvar($param) ? t3lib_div::GPvar($param) : 0)); 
 		if ($temp)	{
-			$queryString[$this->pibase->prefixId.'['.$param.']'] = $temp;
+			if ($bUsePrefix)	{
+				$queryString[$this->pibase->prefixId.'['.$param.']'] = $temp;
+			} else {
+				$queryString[$param] = $temp;
+			}
 		}
 	}
 
@@ -140,17 +144,28 @@ class tx_ttproducts_marker {
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function getLinkParams($excludeList='',$addQueryString=array()) {
+	function getLinkParams($excludeList='',$addQueryString=array(),$bUsePrefix=false) {
 		global $TSFE;
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
 		$queryString=array();
-		$queryString[$this->pibase->prefixId.'[backPID]']= $TSFE->id; // $queryString['backPID']= $TSFE->id;
+//		$fe_user = (is_array($TSFE->fe_user->user) ? 1 : 0);
+		if ($bUsePrefix)	{
+			$queryString[$this->pibase->prefixId.'[backPID]'] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
+//			if ($fe_user)	{
+//				$queryString[$this->pibase->prefixId.'[fegroup]'] = 1;
+//			}
+		} else {
+			$queryString[backPID] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
+//			if ($fe_user)	{
+//				$queryString['fegroup'] = 1;
+//			}
+		}
 		
-		$this->addQueryStringParam($queryString, 'C');
-		$this->addQueryStringParam($queryString, 'cat');
-		$this->addQueryStringParam($queryString, 'begin_at');
-		$this->addQueryStringParam($queryString, 'newitemdays');
+		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
+		$this->addQueryStringParam($queryString, 'cat', $bUsePrefix);
+		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);
+		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 
 		$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
 		if ($temp) {
@@ -181,13 +196,12 @@ class tx_ttproducts_marker {
 
 
 	/**
-	 * Template marker substitution
-	 * Fills in the markerArray with data for a product
+	 * finds all the markers for a product
 	 * This helps to reduce the data transfer from the database
 	 *
 	 * @access private
 	 */
-	function &getMarkerFields (&$templateCode, &$tableFieldArray, &$requiredFieldArray, &$addCheckArray, $prefix)	{
+	function &getMarkerFields (&$templateCode, $tableName, &$tableFieldArray, &$requiredFieldArray, &$addCheckArray, $prefix, &$tagArray)	{
 //		while ($temp = strstr($templateCode, '###'))	{
 //			$marker = substr ($temp, 3);
 //			$end = strstr ($marker, '###');
@@ -195,19 +209,24 @@ class tx_ttproducts_marker {
 		$retArray = $requiredFieldArray;
 		// obligatory fields uid and pid
 
+		$prefix .= '_';
 		$prefixLen = strlen($prefix);
 		// $tagArray = explode ('###', $templateCode);
 		$treffer = array();
 		// preg_match_all('/\###([ \w]+)\###/', $templateCode, $treffer);
-		preg_match_all('/###([\w]+)###/', $templateCode, $treffer);
+		preg_match_all('/###([\w:]+)###/', $templateCode, $treffer);
 		$tagArray = $treffer[1];
 		
 		if (is_array($tagArray))	{
-			foreach ($tagArray as $k1 => $tag)	{
+			$tagArray = array_flip($tagArray);
+			foreach ($tagArray as $tag => $k1)	{
 				$temp = strstr($tag, $prefix);
 				if ($temp)	{
 					$field = substr ($temp, $prefixLen);
 					$field = strtolower($field);
+					if (strstr($field,'image'))	{	// IMAGE markers can contain following number
+						$field = 'image';
+					}
 					if (is_array ($tableFieldArray[$field]))	{
 						$retArray[] = $field;
 					}
@@ -223,8 +242,27 @@ class tx_ttproducts_marker {
 			}
 		}
 		
+		$generateArray = array('generateImage', 'generatePath');
+		foreach ($generateArray as $k => $generate)	{
+			if (is_array($this->conf['conf.']) && is_array($this->conf['conf.'][$tableName.'.']) && is_array($this->conf['conf.'][$tableName.'.'][$generate.'.'])) {
+				$genPartArray = $this->conf['conf.'][$tableName.'.'][$generate.'.'];
+				if ($genPartArray['type'] == 'tablefields')	{
+					$fieldArray = $genPartArray['field.'];
+					if (is_array($fieldArray))	{ 
+						foreach ($fieldArray as $field => $count)	{
+							$retArray[] = $field;
+						}
+					}
+				}	
+			}
+		}
+		if (is_array($retArray))	{
+			$retArray = array_unique($retArray);
+		}
+
 		return $retArray;
 	}
+
 
 }
 

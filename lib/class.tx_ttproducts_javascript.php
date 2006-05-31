@@ -27,7 +27,7 @@
 /**
  * Part of the tt_products (Shopping System) extension.
  *
- * div functions
+ * JavaScript functions
  *
  * $Id$
  *
@@ -60,15 +60,16 @@ class tx_ttproducts_javascript {
 		 * Sets JavaScript code in the additionalJavaScript array
 		 *
 		 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
-		 * @return	  void
+		 * @param		array		  category array
+		 * @param		integer		  counter
+		 * @return	  	void
 		 * @see
 		 */
-	function set($fieldname, $params='') {
+	function set($fieldname, $params='', $count=0) {
 		global $TSFE;
 		$bDirectHTML = false;
 		$code = '';
 		$emailArr =  explode('|', $message = $this->pibase->pi_getLL('invalid_email'));
-
 
 		switch ($fieldname) {
 			case 'email' :
@@ -92,7 +93,7 @@ class tx_ttproducts_javascript {
 					return (false)
 				}
 	
-				function checkParams (formObj) {
+				function checkParams(formObj) {
 					var rc = true;
 					for (var i = 0; i < formObj.length; i++) {
 						if (formObj[i].type == "text") {
@@ -111,19 +112,36 @@ class tx_ttproducts_javascript {
 			break;
 			case 'catselect':
 
+				if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])	{
+					$catIndex = 'cat';
+				} else {
+					$catIndex = 'pid_list';
+				}
 				if (is_object($this->xajax))	{
 					$code .= 'var c = new Array(); // categories
-	';
+		var boxCount = '.$count.'; // number of select boxes
+';
 					if (is_array($params))	{
+//						error_log ('$params');
 						foreach ($params as $k => $row)	{
+//							error_log($k.':');
+//							foreach ($row as $k2 => $v2)	{
+//								if ($k2 != 'child_category')
+//									error_log ($k2.'|'.$v2);
+//							}
 							$code .= 'c['.$k.'] = new Array(3);';
 							$code .= 'c['.$k.'][0] = "'.$row['title'].'"; ' ;
 							$code .= 'c['.$k.'][1] = "'.$row['pid'].'"; ' ;
 							$child_category = $row['child_category'];
 							if (is_array($child_category))	{
+//								error_log('child_category');
 								$code .= 'c['.$k.'][2] = new Array('.count($child_category).');';
+								$count = 0;
 								foreach ($child_category as $k1 => $childCat)	{
-									$code .= 'c['.$k.'][2]['.$k1.'] = "'.$childCat.'"; ' ;
+									$newCode = 'c['.$k.'][2]['.$count.'] = "'.$childCat.'"; ';
+//									error_log ($newCode);
+									$code .= $newCode;
+									$count++;
 								}
 							} else {
 								$code .= 'c['.$k.'][2] = "0"; ' ;
@@ -134,26 +152,41 @@ class tx_ttproducts_javascript {
 					}
 					$code .=
 		'
-		function fillSelect (select,id) {
-	    var sb;
-	    var index = select.selectedIndex;
-	    var category = select.options[index].value;
-	    var subcategories;
+		function fillSelect (select,id,showSubCategories) {
+		var sb;
+		var index = select.selectedIndex;
+		var category = select.options[index].value;
+		var subcategories;
+		var bShowArticle = 0;
 	
-	    
-		id = "cat" + id;
-		sb = document.getElementById(id);
-	    sb.length = 0;
-	    subcategories = c[category][2]; 
-	    if (typeof(subcategories) == "object") {
-	        sb.options[0] = new Option("Anzahl: "+subcategories.length, "A");
-	        for (var i=0; i<subcategories.length; ++i) {
-		        sb.options[i] = new Option(c[c[category][2][i]][0], c[category][2][i]);
-	        }
+	    if (id > 0) {
+			id = "cat" + id;
+			sb = document.getElementById(id);
+		    sb.length = 0;
+		    subcategories = c[category][2]; 
+		    if (typeof(subcategories) == "object" && showSubCategories == 1) {
+		        sb.options[0] = new Option("Anzahl: "+subcategories.length, 0);
+		        // sb.options[0] = new Option("","A"); 
+		        for (var i=0; i<subcategories.length; ++i) {
+			        sb.options[i+1] = new Option(c[c[category][2][i]][0], c[category][2][i]);
+		        }
+		    } else {
+		    	bShowArticle = 1;
+		    }
 	    } else {
+	    	bShowArticle = 1;
+	    }
+	    if (bShowArticle)	{
 	        /* sb.options[0] = new Option(len, "keine Unterkategorie");*/
-	        sb.options[0] = new Option("Show article", "B");
-	        tt_products_showArticle(category);
+	        var data = new Array();
+			sb = document.getElementById("cat"+2);
+	        sb.options[0] = new Option("Show article \'"+showSubCategories+"\'", "B");
+	        data["'.$this->pibase->prefixId.'"] = new Array();
+	        data["'.$this->pibase->prefixId.'"]["'.$catIndex.'"] = category;
+	        tt_products_showArticle(data);
+	    } else {
+			sb = document.getElementById("cat"+2);
+	        sb.options[0] = new Option("keinen Artikel anzeigen \'"+bShowArticle+"\'", "C");	    	
 	    }
 	    /* sb.options[0] = new Option("Test", "keine Unterkategorie"); */
 		sb.selectedIndex = 0;
@@ -166,18 +199,18 @@ class tx_ttproducts_javascript {
 			case 'ttpajax':
 				// XAJAX part
 				if (is_object($this->xajax))	{
-					$code .= $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax'));
+					$code .= $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax')); 
 				}
 				$bDirectHTML = true;
 			break;
-		}
+		} // switch
 
-	if ($bDirectHTML)	{
-		// $TSFE->setHeaderHTML ($fieldname, $code);
-		$TSFE->additionalHeaderData['tx_ttproducts-js'] = $code;
-	} else {
-		$TSFE->setJS ($fieldname, $code);
-	}
+		if ($bDirectHTML)	{
+			// $TSFE->setHeaderHTML ($fieldname, $code);
+			$TSFE->additionalHeaderData['tx_ttproducts-js'] = $code;
+		} else {
+			$TSFE->setJS ($fieldname, $code);
+		}
 	} // setJS
 
 }

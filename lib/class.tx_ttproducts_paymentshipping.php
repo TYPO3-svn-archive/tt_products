@@ -41,7 +41,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_div.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_fe_users.php');
 
 
 class tx_ttproducts_paymentshipping {
@@ -51,9 +51,10 @@ class tx_ttproducts_paymentshipping {
 	var $config;
 	var $basket;
 	var $basketView;
+	var $fe_users; // element of class tx_table_db
 
 
-	function init(&$pibase, &$conf, &$config, &$basket, &$basketView)	{
+	function init(&$pibase, &$conf, &$config, &$basket, &$basketView, &$fe_users)	{
 		global $TSFE;
 
 		$this->pibase = &$pibase;
@@ -61,6 +62,7 @@ class tx_ttproducts_paymentshipping {
 		$this->config = &$config;
 		$this->basket = &$basket;
 		$this->basketView = &$basketView;
+		$this->fe_users = &$fe_users;
 	}
 
 
@@ -95,13 +97,22 @@ class tx_ttproducts_paymentshipping {
 			}
 	
 			$confArr = $this->cleanConfArr($this->conf['payment.']);
-			while(list($key,$val)=each($confArr)) {
-				if ($val['show'] || !isset($val['show']))
+			while(list($key,$val) = each($confArr)) {
+				if ($val['show'] || !isset($val['show']))	{
+					if ($val['type'] == 'fe_users')	{
+						if (is_array($TSFE->fe_user->user))	{
+							$paymentField = $this->fe_users->getFieldName('payment');
+							$paymentMethod = $TSFE->fe_user->user[$paymentField];
+							$this->conf['payment.'][$key.'.']['title'] = $paymentMethod; 
+						} else {
+							unset($this->conf['payment.'][$key.'.']);
+						}
+					}
 					if (($val['visibleForGroupID'] != '') &&
-						(!tx_ttproducts_div::isUserInGroup($TSFE->fe_user->user, $val['visibleForGroupID'])))
-					{
+						(!$this->fe_users->isUserInGroup($TSFE->fe_user->user, $val['visibleForGroupID'])))	{
 						unset($this->conf['payment.'][$key.'.']);
 					}
+				}
 			}
 	
 			ksort($this->conf['payment.']);
@@ -151,29 +162,26 @@ class tx_ttproducts_paymentshipping {
 		$active = $this->basket->basketExtra[$key];
 		$confArr = $this->cleanConfArr($this->conf[$key.'.']);
 		$out='';
-
 		$template = $this->conf[$key.'.']['template'] ? ereg_replace('\' *\. *\$key *\. *\'',$key, $this->conf[$key.'.']['template']) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$key.']" onClick="submit()" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
-
 		$wrap = $this->conf[$key.'.']['wrap'] ? $this->conf[$key.'.']['wrap'] :'<select name="recs[tt_products]['.$key.']" onChange="submit()">|</select>';
-
-		while(list($key,$val)=each($confArr))	{
+		while(list($key,$val) = each($confArr))	{
 			if (($val['show'] || !isset($val['show'])) &&
 				(doubleval($val['showLimit']) >= doubleval($this->basket->calculatedArray['count']) || !isset($val['showLimit']) ||
 				 intval($val['showLimit']) == 0)) {
 				if ($type)  {	// radio
-					$markerArray=array();
-					$markerArray['###VALUE###']=intval($key);
-					$markerArray['###CHECKED###']=(intval($key)==$active?' checked':'');
-					$markerArray['###TITLE###']=$val['title'];
-					$markerArray['###IMAGE###']=$this->pibase->cObj->IMAGE($val['image.']);
+					$markerArray = array();
+					$markerArray['###VALUE###'] = intval($key);
+					$markerArray['###CHECKED###'] = (intval($key)==$active?' checked':'');
+					$markerArray['###TITLE###'] = $val['title'];
+					$markerArray['###IMAGE###'] = $this->pibase->cObj->IMAGE($val['image.']);
 					$out.=$this->pibase->cObj->substituteMarkerArrayCached($template, $markerArray);
 				} else {
-					$out.='<option value="'.intval($key).'"'.(intval($key)==$active?' selected':'').'>'.htmlspecialchars($val['title']).'</option>';
+					$out.='<option value="'.intval($key).'"'.(intval($key) == $active?' selected':'').'>'.htmlspecialchars($val['title']).'</option>';
 				}
 			}
 		}
 		if (!$type) {
-			$out=$this->pibase->cObj->wrap($out,$wrap);
+			$out = $this->pibase->cObj->wrap($out,$wrap);
 		}
 		return $out;
 	} // generateRadioSelect

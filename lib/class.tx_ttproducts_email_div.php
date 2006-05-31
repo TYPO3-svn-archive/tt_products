@@ -91,10 +91,8 @@ class tx_ttproducts_email_div {
 	function sendNotifyEmail(&$pibase, &$conf, &$order, $recipient, $v, $tracking, $orderRow, $templateCode, $templateMarker, $sendername='', $senderemail='') {
 		global $TSFE;
 
-		$uid = $order->getNumber($orderRow['uid']);
 			// initialize order data.
 		$orderData = unserialize($orderRow['orderData']);
-
 		$sendername = ($sendername ? $sendername : $conf['orderEmail_fromName']);
 		$senderemail = ($senderemail ? $senderemail : $conf['orderEmail_from']);
 
@@ -106,22 +104,20 @@ class tx_ttproducts_email_div {
 		if (count($recipients)) {	// If any recipients, then compile and send the mail.
 			$emailContent=trim($pibase->cObj->getSubpart($templateCode,'###'.$templateMarker.'###'));
 			if ($emailContent)  {		// If there is plain text content - which is required!!
-				$markerArray['###ORDER_STATUS_TIME###']=$pibase->cObj->stdWrap($v['time'],$conf['statusDate_stdWrap.']);
-				$markerArray['###ORDER_STATUS###']=$v['status'];
-				$markerArray['###ORDER_STATUS_INFO###']=$v['info'];
-				$markerArray['###ORDER_STATUS_COMMENT###']=$v['comment'];
+				$markerArray['###ORDER_STATUS_TIME###'] = $pibase->cObj->stdWrap($v['time'],$conf['statusDate_stdWrap.']);
+				$markerArray['###ORDER_STATUS###'] = $v['status'];
+				$markerArray['###ORDER_STATUS_INFO###'] = $v['info'];
+				$markerArray['###ORDER_STATUS_COMMENT###'] = $v['comment'];
 				$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
 				$markerArray['###PERSON_NAME###'] = $orderData['personInfo']['name'];
 				$markerArray['###DELIVERY_NAME###'] = $orderData['deliveryInfo']['name'];
-
 				$markerArray['###ORDER_TRACKING_NO###']=$tracking;
-				$markerArray['###ORDER_UID###']=$uid;
-				$emailContent=$pibase->cObj->substituteMarkerArrayCached($emailContent, $markerArray);
-
+				$orderNumber = $order->getNumber($orderRow['uid']);
+				$markerArray['###ORDER_UID###'] = $orderNumber;
+				$emailContent = $pibase->cObj->substituteMarkerArrayCached($emailContent, $markerArray);
 				$parts = split(chr(10),$emailContent,2);
-				$subject=trim($parts[0]);
-				$plain_message=trim($parts[1]);
-
+				$subject = trim($parts[0]);
+				$plain_message = trim($parts[1]);
 				tx_ttproducts_email_div::send_mail(implode($recipients,','), $subject, $plain_message, $tmp='', $senderemail, $sendername);
 			}
 		}
@@ -137,7 +133,6 @@ class tx_ttproducts_email_div {
 
 		$sendername = ($giftRow['personname'] ? $giftRow['personname'] : $conf['orderEmail_fromName']);
 		$senderemail = ($giftRow['personemail'] ? $giftRow['personemail'] : $conf['orderEmail_from']);
-
 		$recipients = $recipient;
 		$recipients=t3lib_div::trimExplode(',',$recipients,1);
 
@@ -154,7 +149,6 @@ class tx_ttproducts_email_div {
 				$markerArray['###PERSON_NAME###'] = $giftRow['personname'];
 				$markerArray['###DELIVERY_NAME###'] = $giftRow['deliveryname'];
 				$markerArray['###ORDER_STATUS_COMMENT###'] = $giftRow['note'].'\n'.$comment;
-
 				$emailContent = $pibase->cObj->substituteMarkerArrayCached($plain_message, $markerArray);
 
 				if ($this->conf['orderEmail_htmlmail'])	{
@@ -184,9 +178,7 @@ class tx_ttproducts_email_div {
 				}
 			}
 		}
-
 	}
-
 
 }
 

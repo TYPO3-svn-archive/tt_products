@@ -40,18 +40,17 @@
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
+require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_category_base.php');
 
-class tx_ttproducts_page {
-	var $pibase; 	// pibase object
-	var $dataArray;	// array of read in categories
-	var $table;			// object of the type tx_table_db
+
+class tx_ttproducts_page extends tx_ttproducts_category_base {
 	var $pid_list;		// list of page ids
 	var $pageArray;		// pid_list as array
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase)	{
+	function init(&$pibase, &$conf, &$config, &$tt_content, $LLkey, $tablename, &$tableconf,  &$pageconf)	{
 		global $TYPO3_DB;
 		
 		$this->pibase = &$pibase;
@@ -59,6 +58,8 @@ class tx_ttproducts_page {
 		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'sorting'=> 'sorting',
  			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));		
 		$this->table->setTCAFieldArray('pages');
+		
+		parent::init($pibase, $conf, $config, $tt_content);
 	} // init
 
 
@@ -81,17 +82,30 @@ class tx_ttproducts_page {
 	}
 
 
-	function &getRelationArray () {
+	function &getRelationArray ($excludePid=0) {
 		$relationArray = array();
 		
-		$pageArray = t3lib_div::trimExplode (',', $this->pid_list);  
+		$pageArray = t3lib_div::trimExplode (',', $this->pid_list);
+		$excludeKey = array_search($excludePid, $pageArray);
+		unset($pageArray[$excludeKey]);
 		foreach ($pageArray as $k => $uid)	{
 			$row = $this->get ($uid);
 			$relationArray [$uid]['title'] = $row['title'];
-			$relationArray [$uid]['pid'] = $row['pid'];
-			$relationArray [$uid]['parent_category'] = $row['parent_category'];
-			$pid = $row['pid']; 
-			$relationArray[$pid]['child_category'][$uid] = $uid;
+			$relationArray [$uid]['pid'] = $row['uid'];
+			$pid = $row['pid'];
+			$parentKey = array_search($pid, $pageArray);
+			if ($parentKey === FALSE || $parentKey == 0 && $pageArray[0] != $pid)	{
+				$pid = 0;
+			}
+			$relationArray [$uid]['parent_category'] = $pid;
+			$parentId = $pid;
+			if ($parentId)	{
+				$count = 0;
+				if (!is_array($relationArray[$parentId]['child_category']))	{
+					$relationArray[$parentId]['child_category'] = array();
+				}
+				$relationArray[$parentId]['child_category'][] = (int) $uid;
+			}
 		}
 		
 		return $relationArray;
@@ -102,13 +116,22 @@ class tx_ttproducts_page {
 	 * Getting the page table
 	 * On the basket page there will be a separate page table
 	 */
-	function &createPageTable(&$pibase, &$pageObject, &$pid_list, $recursive)	{
+	function &createPageTable(&$pibase, &$conf, &$config, &$tt_content, $LLkey, $tablename, &$tableconf,  &$pageconf, &$pageObject, &$pid_list, $recursive)	{
 		if (!is_object($pageObject)) {
 			$pageObject = t3lib_div::makeInstance('tx_ttproducts_page');
-			$pageObject->init($pibase);
-			$pageObject->setPidlist($pid_list);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
-			$pageObject->initRecursive($recursive);
+			$pageObject->init(
+				$pibase,
+				$conf,
+				$config,
+				$tt_content,
+				$LLkey,
+				$tablename,
+				$tableconf,
+				$pageconf
+			);
 		}
+		$pageObject->setPidlist($pid_list);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
+		$pageObject->initRecursive($recursive);
 		return $pageObject;
 	}
 
@@ -216,10 +239,29 @@ class tx_ttproducts_page {
 			$pid_list_arr = array_unique ($pid_list_arr);
 			$this->pid_list = implode(',', $pid_list_arr);
 		}
-		
-		
 	}
 
+
+	/**
+	 * Template marker substitution
+	 * Fills in the markerArray with data for a product
+	 *
+	 * @param	array		reference to an item array with all the data of the item
+	 * @param	integer		number of images to be shown
+	 * @param	object		the image cObj to be used
+	 * @param	array		information about the parent HTML form
+	 * @return	array		Returns a markerArray ready for substitution with information
+	 * 			 			for the tt_producst record, $row
+	 * @access private
+	 */
+	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code)	{
+		$row = $this->get($pid);
+
+			// Get image	
+		$this->image->getItemMarkerArray ($row, $markerArray, $pid, $imageNum, $imageRenderObj, $viewCatTagArray, $code);
+		$pageCatTitle = $row['title'];
+		$this->setMarkerArrayCatTitle ($markerArray, $pageCatTitle);
+	}
 }
 
 

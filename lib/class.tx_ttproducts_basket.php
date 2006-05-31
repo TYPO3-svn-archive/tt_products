@@ -55,7 +55,9 @@ class tx_ttproducts_basket {
 	var $page;
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
+	var $tt_products_articles; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
+	var $fe_users; // element of class tx_table_db
 
 	var $price; // price object
 	var $pricecalc; // price calculation object
@@ -72,11 +74,12 @@ class tx_ttproducts_basket {
 	var $basketExt=array();				// "Basket Extension" - holds extended attributes
 	var $giftnumber;					// current counter of the gifts
 
-		// Internal: Arrays from getView() function
 	var $itemArray;						// the items in the basket; database row, how many (quantity, count) and the price; this has replaced the former $calculatedBasket
 	var $calculatedArray;				// all calculated totals from the basket e.g. priceTax and weight
 
 	var $feuserextrafields;			// exension with additional fe_users fields
+	var $viewTable;	// link to tt_products or tt_products_articles
+	var $useArticles; 
 
 
 	/**
@@ -100,6 +103,47 @@ class tx_ttproducts_basket {
 	}
 
 	/**
+	 * Changes the quantitiy to integer or float
+	 *
+	 * @param		bool	convert to float?
+	 * @param		string	quantity
+	 * @return	    float or integer quantity
+ 	 */
+	function numberQuantity($bToFloat, $quantity)	{
+		$rc = '';
+		if ($bToFloat)	{
+			$quantity = (string) $quantity;
+			// enable the German display of float
+			$quantity = (float) str_replace (',', '.', $quantity);
+		} else {
+			$rc = (int) $quantity;
+		}
+		$rc = $quantity;
+		
+		return $rc;
+	}
+
+
+	function getMaxCount ($quantity)	{
+		$count = 0;
+
+		if ($this->conf['quantityIsFloat'])	{
+			$count = (float) $quantity;
+			if ($count < 0)	{
+				$count = 0;
+			}
+			if ($count > $this->conf['basketMaxQuantity'])	{
+				$count = $this->conf['basketMaxQuantity'];
+			}
+		} else {
+			$count=t3lib_div::intInRange($quantity,0,$this->conf['basketMaxQuantity'],0);		
+		}
+		
+		return $count;
+	}
+
+
+	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
 	 * $basket is the TYPO3 default shopping basket array from ses-data
 	 *
@@ -107,8 +151,10 @@ class tx_ttproducts_basket {
 	 * @return	  void
  	 */
 
-	function init(&$pibase, &$conf, &$config, $formerBasket, $updateMode, &$pid_list,
-				&$tt_content, &$tt_products, &$tt_products_cat, &$price, &$paymentshipping, $bStoreBasket)	{
+	function init( &$pibase, &$conf, &$config, $formerBasket, $updateMode, &$pid_list,
+					&$tt_content, &$tt_products, &$tt_products_articles, 
+					&$tt_products_cat, &$fe_users, &$price,
+					&$paymentshipping, $bStoreBasket)	{
 		global $TSFE;
 
  		$this->pibase = &$pibase;
@@ -116,14 +162,38 @@ class tx_ttproducts_basket {
  		$this->config = &$config;
  		$this->tt_content = &$tt_content;
  		$this->tt_products = &$tt_products;
+ 		$this->tt_products_articles = &$tt_products_articles;
  		$this->tt_products_cat = &$tt_products_cat;
+ 		$this->fe_users = &$fe_users;
 		$this->recs = $formerBasket;	// Sets it internally
 		$this->basket=array();
 		$this->price = &$price;
  		$this->pricecalc = t3lib_div::makeInstance('tx_ttproducts_pricecalc');
  		$this->pricecalc->init($pibase, $this, $tt_products);		
 		$this->paymentshipping = &$paymentshipping;
-		$this->page = tx_ttproducts_page::createPageTable($this->pibase,$this->page,$pid_list,99);
+		// $this->page = tx_ttproducts_page::createPageTable($this->pibase,$this->page,$pid_list,99);
+			// pages
+		$this->page = tx_ttproducts_page::createPageTable(
+			$this->pibase,
+			$this->conf,
+			$this->config,
+			$this->tt_content,
+			$this->pibase->LLkey,
+			$this->conf['table.']['pages'], 
+			$this->conf['table.']['pages.'],
+			$this->conf['conf.']['pages.'],
+			$this->page,
+			$pid_list,
+			99
+		);
+		
+		$this->useArticles = $this->conf['useArticles'];
+		
+		if ($this->useArticles == 2)	{
+			$this->viewTable = &$this->tt_products_articles; 
+		} else {
+			$this->viewTable = &$this->tt_products;
+		}
 
 		// store if feuserextrafields is loaded
 		$this->feuserextrafields = t3lib_extMgm::isLoaded('feuserextrafields');
@@ -141,9 +211,9 @@ class tx_ttproducts_basket {
 		$newGiftData = t3lib_div::_GP('ttp_gift');
 		$extVars = $this->pibase->piVars['variants'];
 		$extVars = ($extVars ? $extVars : t3lib_div::_GP('ttp_extvars'));
-		$uid = $this->pibase->piVars['product'];
+		$paramProduct = strtolower($this->viewTable->marker);
+		$uid = $this->pibase->piVars[$paramProduct];
 		$uid = ($uid ? $uid : t3lib_div::_GP('tt_products'));
-		
 		$sameGiftData = true;
 		$identGiftnumber = 0;
 
@@ -189,31 +259,22 @@ class tx_ttproducts_basket {
 		}
 
 		if (is_array($basketExtRaw)) {
-			while(list($uid,$basketItem)=each($basketExtRaw)) {
-				$variant = $this->tt_products->variant->getVariantFromRow($basketItem);
+			while(list($uid,$basketItem) = each($basketExtRaw)) {
+				$variant = $this->viewTable->variant->getVariantFromRow($basketItem);
 				if (t3lib_div::testInt($uid))	{
-
 					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked  
 					if (is_array($basketItem['quantity']))	{
 						$basketItem['quantity'] = current($basketItem['quantity']);
 					}
 					$quantity = 0;
+					$quantity = $this->numberQuantity($this->conf['quantityIsFloat'],$basketItem['quantity']);
+
 					if ($this->conf['quantityIsFloat'])	{
-						// enable the German display of float
-						$quantity = str_replace (',', '.', $basketItem['quantity']);
 						$this->basketExt[$uid][$variant] = $quantity;
-					} else {
-						$quantity = $basketItem['quantity'];
 					}
 					
 					if (!$updateMode) {
-						$count=t3lib_div::intInRange($quantity,0,$this->conf['basketMaxQuantity'],0);
-						if ($this->conf['quantityIsFloat'])	{
-							$count = (float) $quantity;
-							if ($count < 0 || $count > $this->conf['basketMaxQuantity'])	{
-								$count = 0;
-							}
-						}
+						$count=$this->getMaxCount ($quantity);
 						if ($count >= 0) {
 							$newcount = $count;
 							$oldcount = $this->basketExt[$uid][$variant];
@@ -242,13 +303,15 @@ class tx_ttproducts_basket {
 						reset($basketItem);
 
 						while(list($md5,$quantity)=each($basketItem)) {
+							$quantity = $this->numberQuantity($this->conf['quantityIsFloat'],$quantity);
 							if (is_array($this->basketExt[$uid]))
 							{
 								reset($this->basketExt[$uid]);
 								while(list($variant,)=each($this->basketExt[$uid])) {
 									 // useArticles if you have different prices and therefore articles for color, size, additional and gradings
 									if (md5($variant)==$md5) {
-										$this->basketExt[$uid][$variant] = $quantity;
+										$count=$this->getMaxCount ($quantity);
+										$this->basketExt[$uid][$variant] = $count;
 									 	if (is_array($this->basketExt['gift'])) {
 									 		$count = count($this->basketExt['gift']);
 									 		$giftCount = 0;
@@ -298,9 +361,7 @@ class tx_ttproducts_basket {
 				$TSFE->fe_user->storeSessionData(); // Franz: The basket shall not get lost
 			}
 		}
-	
 		$this->paymentshipping->setBasketExtras($formerBasket);
-
 		$this->personInfo = $formerBasket['personinfo'];
 		$this->deliveryInfo = $formerBasket['delivery'];
 		
@@ -321,13 +382,10 @@ class tx_ttproducts_basket {
 						($this->conf['useStaticInfoCountry'] ? $TSFE->fe_user->user['static_info_country']:$TSFE->fe_user->user['country'])
 						,1)
 					);
-			}
-			else {
+			} else {
 				$address = $TSFE->fe_user->user['address'];
 			}
 			$this->personInfo['address'] = $address;
-
-
 			$fields = 'name, first_name, last_name, email, telephone, fax, zip, city, company';
 			$fields .= ',tt_products_creditpoints, tt_products_vouchercode';
 			if ($this->feuserextrafields) {
@@ -337,20 +395,10 @@ class tx_ttproducts_basket {
 						'tx_feuserextrafields_pobox, tx_feuserextrafields_pobox_deliv, tx_feuserextrafields_zip_deliv, tx_feuserextrafields_city_deliv'.
 						'tx_feuserextrafields_country, tx_feuserextrafields_country_deliv';				
 			}
-
-//			$lockLoginInfoFields = t3lib_div::trimExplode(',',$this->conf['lockLoginInfoFields']);
-//			$lockLoginInfoFields = array_flip ($tmp);
-			
 			$fieldArray = t3lib_div::trimExplode(',',$fields);
-	// $fieldArray =  array_diff ($fieldArray, $lockLoginInfoFields);
 			foreach ($fieldArray as $k => $field)	{
 				$this->personInfo[$field] = ($this->personInfo[$field] ? $this->personInfo[$field]: $TSFE->fe_user->user[$field]);
-			}
-			
-//			foreach ($lockLoginInfoFields as $k => $field)	{
-//				
-//			}
-			
+			}					
 			$this->personInfo['country'] = ($this->personInfo['country'] ? $this->personInfo['country'] : ($this->conf['useStaticInfoCountry'] ? $TSFE->fe_user->user['static_info_country']:$TSFE->fe_user->user['country']));
 			$this->personInfo['agb'] = (isset($this->personInfo['agb']) ? $this->personInfo['agb'] : $TSFE->fe_user->user['agb']);
 			$this->personInfo['date_of_birth'] = date( 'd-m-Y', $TSFE->fe_user->user['date_of_birth']);
@@ -391,9 +439,21 @@ class tx_ttproducts_basket {
 
 			// all of the delivery address will be overwritten when no address and no email address have been filled in
 		if (!trim($this->deliveryInfo['address']) && !trim($this->deliveryInfo['email'])) {
-/* Added Els: 'feusers_uid,' and more fields */
-			$infoExtraFields = ($this->feuserextrafields ? ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv':'');
-			$infoFields = explode(',','feusers_uid,telephone,salutation,name,first_name,last_name,email,date_of_birth,company,address,city,zip,country,country_code'.$infoExtraFields); // Fields...
+			$infoExtraFields = '';
+			if ($this->feuserextrafields)	{
+				$infoExtraFields = ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,' .
+					'tx_feuserextrafields_gsm_tel,tx_feuserextrafields_company_deliv,' .
+					'tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,' .
+					'tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,' .
+					'tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,' .
+					'tx_feuserextrafields_pobox_deliv,tx_feuserextrafields_zip_deliv,' .
+					'tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,' .
+					'tx_feuserextrafields_country_deliv';
+			}
+			$infoFields = explode(',','feusers_uid,telephone,salutation,name,first_name,last_name,email,' .
+				'date_of_birth,company,address,city,zip,country,country_code'.
+				$infoExtraFields
+			); // Fields...
 			while(list(,$fName)=each($infoFields))	{
 				$this->deliveryInfo[$fName] = $this->personInfo[$fName];
 			}
@@ -438,8 +498,10 @@ class tx_ttproducts_basket {
 
 	 */
 	function getCalculatedBasket()	{
+		global $TYPO3_DB;
+		
 		if ($this->itemArray[0]) {// the item array contains all the data for the elements found in the basket
-			return;	// this function is called in a loop from getView
+			return;	// this function is called in a loop from basketView->getView
 					// all the calculations however need to be done only once
 					// the global member variables must already be filled in
 		}
@@ -454,74 +516,70 @@ class tx_ttproducts_basket {
 			return;
 		}
 		//$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->pibase->cObj->enableFields('tt_products'));
-		$res = $this->tt_products->table->exec_SELECTquery('*','uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->tt_products->table->enableFields());
+		$res = $this->viewTable->table->exec_SELECTquery('*','uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->viewTable->table->enableFields());
 
-		$this->productsArray = array(); // TODO: use only local products array
-		$productsArray = &$this->productsArray;
-		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
-			reset($this->basketExt[$row['uid']]);
-			while(list($bextVars,)=each($this->basketExt[$row['uid']])) {
-				$this->tt_products->variant->getRowFromVariant ($row, $bextVars);
-				$row['extVars'] = $bextVars;
-				if ($this->conf['useArticles']) {
-					// get the article uid with these colors, sizes and gradings
-					$query='uid_product=\''.intval($row['uid']).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND description=\''.$row['description'].'\' AND gradings=\''.$row['gradings'].'\'';
-					$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products_articles', $query);
-					if ($articleRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($articleRes)) {
-							// use the fields of the article instead of the product
-						foreach ($articleRow as $field => $fieldValue) {
-							if ($field != 'uid') {
-								$row[$field] = $fieldValue;
+		$productsArray = array();
+		$this->page->setPageArray();
+		while($row = $TYPO3_DB->sql_fetch_assoc($res))		{
+			$pid = $row['pid'];
+
+			// only the basket items for the pages belonging to this shop shall be used here
+			if (isset($this->page->pageArray[$pid]))	{
+				reset($this->basketExt[$row['uid']]);
+				while(list($bextVars,)=each($this->basketExt[$row['uid']])) {
+	
+					$this->viewTable->variant->getRowFromVariant ($row, $bextVars);
+					$row['extVars'] = $bextVars;
+					if ($this->useArticles == 1) {
+						// get the article uid with these colors, sizes and gradings
+						$query='uid_product=\''.intval($row['uid']).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND description=\''.$row['description'].'\' AND gradings=\''.$row['gradings'].'\'';
+						$articleRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_articles', $query);
+						if ($articleRow = $TYPO3_DB->sql_fetch_assoc($articleRes)) {
+								// use the fields of the article instead of the product
+							foreach ($articleRow as $field => $fieldValue) {
+								if ($field != 'uid') {
+									$row[$field] = $fieldValue;
+								}
 							}
 						}
+					} else if ($this->useArticles == 2)	{
+						$productRow = $this->viewTable->getProductRow($row);
+						$this->viewTable->mergeProductRow($row, $productRow);
 					}
+					$productsArray[] = $row;
 				}
-				$productsArray[$row['pid']][]=$row;
 			}
 		}
 		
-//		$pageArr=explode(',',$this->page->pid_list);
-
 		$this->itemArray = array(); // array of the items in the basket
 		$this->calculatedArray = array(); // this array is usede for all calculated things
-		$this->page->setPageArray();
 
-//		while(list(,$v)=each($pageArr))	{
-		foreach ($productsArray as $pid => $pidProductsArray)	{
-//			if (is_array($productsArray[$v]))	{
-//				reset($productsArray[$v]);
-//				while(list(,$row)=each($productsArray[$v]))	{
+		foreach ($productsArray as $k1 => $row)	{
+			$variant = $this->viewTable->variant->getVariantFromRow($row);
+			$newItem = $this->getItem($row,$variant);
+			$this->itemArray [intval($row['pid'])] [$row[$this->viewTable->fields['itemnumber']]][] = $newItem;
+			$count = $newItem['count'];
+			$priceTax = $newItem['priceTax'];
+			$priceNoTax = $newItem['priceNoTax'];
+
+			$this->calculatedArray['count']		+= $count;
+			$this->calculatedArray['weight']	+= $row['weight']*$count;
 			// if reseller is logged in then take 'price2', default is 'price'
-			// only the basket items for the pages belonging to this shop shall be used here
-			
-			if (isset($this->page->pageArray[$pid]))	{
-				foreach ($pidProductsArray as $k1 => $row)	{
-					$newItem = $this->getItem($row);
-					$this->itemArray [intval($row['pid'])] [$row[$this->tt_products->fields['itemnumber']]][] = $newItem;
-					$count = $newItem['count'];
-					$priceTax = $newItem['priceTax'];
-					$priceNoTax = $newItem['priceNoTax'];
-		
-					$this->calculatedArray['count']			+= $count;
-					$this->calculatedArray['weight']		+= $row['weight']*$count;
-		// Franz: is this needed?
-		//					$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
-		//					$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
-		
-					$price2Tax = $this->price->getPrice($row['price2'],1,$row['tax']);
-					$price2NoTax = $this->price->getPrice($row['price2'],0,$row['tax']);
-		
-		//					/* Added Els3: if oldpricenotax is 0 -> oldpricenotax = pricenotax, otherwise price_discount doesn't calculate correctly */
-		//					if (doubleval($oldPriceNoTax) == 0) {
-		//						$oldPriceNoTax = $priceNoTax;
-		//					}
-		//
-		//					$this->calculatedArray['oldPriceTax']	+= $oldPriceTax * $count;
-		//					$this->calculatedArray['oldPriceNoTax']	+= $oldPriceNoTax * $count;
-					$this->calculatedArray['price2Tax']['goodstotal']	+= $price2Tax * $count;
-					$this->calculatedArray['price2NoTax']['goodstotal']	+= $price2NoTax * $count;
-				}
-			}
+			$price2Tax = $this->price->getPrice($row['price2'],1,$row['tax']);
+			$price2NoTax = $this->price->getPrice($row['price2'],0,$row['tax']);
+
+			$this->calculatedArray['price2Tax']['goodstotal']	+= $price2Tax * $count;
+			$this->calculatedArray['price2NoTax']['goodstotal']	+= $price2NoTax * $count;
+
+// Franz: is this needed?
+//			$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
+//			$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
+//			/* Added Els3: if oldpricenotax is 0 -> oldpricenotax = pricenotax, otherwise price_discount doesn't calculate correctly */
+//			if (doubleval($oldPriceNoTax) == 0) {
+//				$oldPriceNoTax = $priceNoTax;
+//			}
+//			$this->calculatedArray['oldPriceTax']	+= $oldPriceTax * $count;
+//			$this->calculatedArray['oldPriceNoTax']	+= $oldPriceNoTax * $count;
 		}
 		
 		// set the 'calcprice' in itemArray
@@ -552,15 +610,11 @@ class tx_ttproducts_basket {
 			}
 		}
 
-		foreach ($productsArray as $prodUID) {
-			foreach ($prodUID as $prodSingle)
-			{
-				if ($prodSingle['bulkily'])
-				{
-					$value = $this->conf['bulkilyAddition'] * $this->basketExt[$prodSingle['uid']][$this->tt_products->variant->getVariantFromRow($prodSingle)];
-					$this->calculatedArray['priceTax']['shipping'] += $value  * (1+$this->conf['bulkilyFeeTax']/100);
-					$this->calculatedArray['priceNoTax']['shipping'] += $value;
-				}
+		foreach ($productsArray as $row) {
+			if ($row['bulkily'])	{
+				$value = $this->conf['bulkilyAddition'] * $this->basketExt[$row['uid']][$this->viewTable->variant->getVariantFromRow($row)];
+				$this->calculatedArray['priceTax']['shipping'] += $value  * (1+$this->conf['bulkilyFeeTax']/100);
+				$this->calculatedArray['priceNoTax']['shipping'] += $value;
 			}
 		}
 
@@ -583,8 +637,7 @@ class tx_ttproducts_basket {
 
 
 
-	function &getItem (&$row) {
-		$variant = $this->tt_products->variant->getVariantFromRow ($row);
+	function &getItem (&$row, $variant) {
 		$count = $this->basketExt[$row['uid']][$variant];
 		if (!$this->conf['quantityIsFloat'])	{
 			$count = intval($count);	
@@ -607,18 +660,17 @@ class tx_ttproducts_basket {
 
 	// This calculates the total for everything in the basket
 	function getCalculatedSums () {
-		$this->calculatedArray['priceTax']['total'] = $this->calculatedArray['priceTax']['goodstotal'];
-		$this->calculatedArray['priceTax']['total']+= $this->calculatedArray['priceTax']['payment'];
-		$this->calculatedArray['priceTax']['total']+= $this->calculatedArray['priceTax']['shipping'];
+		$this->calculatedArray['priceTax']['total']  = $this->calculatedArray['priceTax']['goodstotal'];
+		$this->calculatedArray['priceTax']['total'] += $this->calculatedArray['priceTax']['payment'];
+		$this->calculatedArray['priceTax']['total'] += $this->calculatedArray['priceTax']['shipping'];
 
-		$this->calculatedArray['priceTax']['total']-= $this->calculatedArray['priceTax']['creditpoints'];
-		$this->calculatedArray['priceTax']['total']-= $this->calculatedArray['priceTax']['voucher'];
+		$this->calculatedArray['priceTax']['total'] -= $this->calculatedArray['priceTax']['creditpoints'];
+		$this->calculatedArray['priceTax']['total'] -= $this->calculatedArray['priceTax']['voucher'];
 
 		$this->calculatedArray['priceNoTax']['total']  = $this->calculatedArray['priceNoTax']['goodstotal'];
 		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['payment'];
 		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['shipping'];
 	}
-
 
 }
 

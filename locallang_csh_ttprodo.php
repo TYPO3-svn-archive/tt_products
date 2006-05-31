@@ -34,6 +34,11 @@ $LOCAL_LANG = Array (
 	),
 	'fi' => Array (
 	),
+	'fi' => Array (
+		'.description' => 'Tilaukset.',
+		'.details' => 'Joitakin tilauksia on tehty. Vain järjestelmänvalvoja voi muuttaa niitä.',
+		
+	),
 	'tr' => Array (
 	),
 	'se' => Array (

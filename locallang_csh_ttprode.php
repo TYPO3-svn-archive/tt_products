@@ -36,6 +36,11 @@ $LOCAL_LANG = Array (
 	),
 	'fi' => Array (
 	),
+	'fi' => Array (
+		'.description' => 'Ostosohjelman sähköpostit.',
+		'.details' => 'Sähköpostiosoitteita käytätään lähetettäessä tuotekategorioihin perustuvia tiedotteita.',
+		
+	),
 	'tr' => Array (
 	),
 	'se' => Array (

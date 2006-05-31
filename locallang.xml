@@ -54,8 +54,11 @@
         <languageKey index="si" type="array">
             <label index="plugins_description">Doda seznam izdelkov za prodajo na stran. Ta modul je del vgrajenega sistema za prodajo in zahteva določene elemente izdelkov v bazi podatkov strani.</label>
         </languageKey>
-        <languageKey index="fi" type="array">
-            <label index="plugins_description">Lisää tuotelista sivulle. Tämä on osa sisäisestä kauppasovellukseta ja edellyttää että tietokannassa on tuote-tietoja.</label>
+		<languageKey index="fi" type="array">
+            <label index="plugins_description">Lisää tuotelista sivulle. Tämä on osa sisäisestä kauppasovelluksesta ja edellyttää että tietokannassa on tuotetietoja.</label>
+            <label index="m_default">oletus</label>
+            <label index="m_ext">laajennettu</label>
+            <label index="m_variants">variantit</label>
         </languageKey>
         <languageKey index="tr" type="array">
             <label index="plugins_description">Sayfaya alışveriş ürünü listesi ekle. Bu mağaza yapılandırmasının bir bölümü ve veritabanında gerekli olan sayfayı içeren ürün elementleridir.</label>
@@ -172,7 +175,7 @@
             <label index="plugins_description" type="integer">41048644</label>
         </languageKey>
         <languageKey index="fi" type="array">
-            <label index="plugins_description" type="integer">41048644</label>
+            <label index="plugins_description">Lisää tuotelista sivulle. Tämä on osa sisäisestä kauppasovelluksesta ja edellyttää että tietokannassa on tuotetietoja.</label>
         </languageKey>
         <languageKey index="tr" type="array">
             <label index="plugins_description" type="integer">41048644</label>

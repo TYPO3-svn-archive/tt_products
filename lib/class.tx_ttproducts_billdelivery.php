@@ -100,8 +100,10 @@ class tx_ttproducts_billdelivery {
 	$subpartArray = array();
 	$wrappedSubpartArray = array();
 
-	$itemArray = $orderData['itemArray'];
-	$calculatedArray = $orderData['calculatedArray'];
+	$tmp = $orderData['itemArray'];
+	$itemArray = ($tmp ? $tmp : array());
+	$tmp = $orderData['calculatedArray'];
+	$calculatedArray = ($tmp ? $tmp : array());
 
 	if ($this->type == 'bill') {
 		$subpartMarker='###BILL_TEMPLATE###';
@@ -114,7 +116,7 @@ class tx_ttproducts_billdelivery {
 		// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
 	$t['orderFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($subpartMarker));
 
-	$t['categoryTitle'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_CATEGORY###');
+	$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_CATEGORY###');
 	$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_LIST###');
 	$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
 
@@ -139,8 +141,6 @@ class tx_ttproducts_billdelivery {
 		}
 	}
 
-	reset($itemArray);
-	reset($categoryArray);
 	$itemsOut='';
 	$out='';
 
@@ -167,14 +167,14 @@ class tx_ttproducts_billdelivery {
 						$markerArray['###PRICE_GOODS_NO_TAX###'] = $this->price->priceFormat($categoryPriceNoTax);
 						$markerArray['###PRICE_GOODS_ONLY_TAX###'] = $this->price->priceFormat($categoryPriceTax - $categoryPriceNoTax);
 						
-						$out2 = $this->pibase->cObj->substituteMarkerArray($t['categoryTitle'], $markerArray);
+						$out2 = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
 						$out.= $out2;
 					}
 	
 					// Print Item Title
 					$wrappedSubpartArray=array();
-					$markerArray = $this->tt_products->getItemMarkerArray ($actItem, $catTitle,$this->basket->basketExt,$this->tt_content,1,'image');
-	
+					$markerArray = array();
+					$this->tt_products->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt,1,'image', strtoupper($this->type));
 					$markerArray['###FIELD_QTY###'] = $actItem['count'];
 					$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
 					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);

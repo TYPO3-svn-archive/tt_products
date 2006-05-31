@@ -85,7 +85,7 @@ class tx_ttproducts_csv {
 					$csvlinedelivery .= ';';
 				}
 				$csvlinehead .= '"' . $fName . '"';
-				$csvlineperson .= '"' . str_replace('\r\n', '|', $basket->personInfo[$fName]) . '"';
+				$csvlineperson .= '"' . str_replace(chr(13).chr(10), '|', $basket->personInfo[$fName]) . '"';
 				$csvlinedelivery .= '"' . $basket->deliveryInfo[$fName] . '"';
 			}
 
@@ -99,7 +99,6 @@ class tx_ttproducts_csv {
 				$this->price->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '"';
 
 			$csvlinedeliverynote = '"'.$basket->deliveryInfo['note'].'"';
-			
 			$csvlinedeliverydesireddate = '"'.$basket->deliveryInfo['desired_date'].'"';
 
 			// Build field list
@@ -118,7 +117,7 @@ class tx_ttproducts_csv {
 				$csvdescr .= '"deliverynote";"desired date";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
 				$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
 			}
-			$csvdescr .= '\n';
+			$csvdescr .= chr(13);
 			fwrite($csvfile, $csvdescr);
 
 			// Write ordered product list
@@ -145,22 +144,22 @@ class tx_ttproducts_csv {
 							$infoWritten = true;
 							$csvdata .= ';'.$csvlinedeliverynote.';'.$csvlinedeliverydesireddate.';'.$csvlineshipping.';'.$csvlinepayment.';'.$csvlineperson.';'.$csvlinedelivery;
 						}
-						$csvdata .= '\n';
+						$csvdata .= chr(13);
 						fwrite($csvfile, $csvdata);
 					}
 				}
 			}
 
 			if (!$this->conf['CSVinOneLine']) {
-				fwrite($csvfile, '\n');
-				fwrite($csvfile, $csvlinehead . '\n');
-				fwrite($csvfile, $csvlineperson . '\n');
-				fwrite($csvfile, $csvlinedelivery . '\n');
-				fwrite($csvfile, '\n');
-				fwrite($csvfile, $csvlinedeliverynote . '\n');
-				fwrite($csvfile, $csvlinedeliverydesireddate . '\n');
-				fwrite($csvfile, $csvlineshipping . '\n');
-				fwrite($csvfile, $csvlinepayment . '\n');
+				fwrite($csvfile, chr(13));
+				fwrite($csvfile, $csvlinehead . chr(13));
+				fwrite($csvfile, $csvlineperson . chr(13));
+				fwrite($csvfile, $csvlinedelivery . chr(13));
+				fwrite($csvfile, chr(13));
+				fwrite($csvfile, $csvlinedeliverynote . chr(13));
+				fwrite($csvfile, $csvlinedeliverydesireddate . chr(13));
+				fwrite($csvfile, $csvlineshipping . chr(13));
+				fwrite($csvfile, $csvlinepayment . chr(13));
 			}
 
 			fclose($csvfile);

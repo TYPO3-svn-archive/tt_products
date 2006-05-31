@@ -38,61 +38,56 @@
  *
  */
 
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_variant.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_base.php');
 
 
 
-class tx_ttproducts_product {
+class tx_ttproducts_product extends tx_ttproducts_article_base {
 	var $dataArray; // array of read in products
 	var $table;		 // object of the type tx_table_db
 	var $fields = array();
-	var $pibase; // reference to object of pibase
-	var $conf;
-	var $config;
-	var $variant; // object for the product variant attributes
-	var $bSelectableArray; // array of variants which are selectable
+	var $bIsProduct=true;	// if this is the base for a product
+	var $marker = 'PRODUCT';
+	var $type = 'product';
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$config, $LLkey, $tablename, &$tableconf, $bUseArticles)  {
+	function init(&$pibase, &$conf, &$config, &$tt_content, $LLkey, $tablename, &$tableconf, &$prodconf, $useArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
-		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
 		$tablename = ($tablename ? $tablename : 'tt_products');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $conf['orderBy'];
+		
+		if (!$tableConfig['orderBy'])	{
+			 $tableConfig['orderBy'] = $tableconf['ALL.']['orderBy'];				
+		}
+
 		$this->table->setConfig($tableConfig);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
-		$this->table->setTCAFieldArray($tablename);
+		$this->table->setTCAFieldArray($tablename, 'products');
 		
-		$requiredListFields = ($tableconf['requiredListFields'] ? $tableconf['requiredListFields'] : 'uid,pid,category,price,price2,tax,inStock');
+		$requiredListFields = 'uid,pid,category,price,price2,tax,inStock';
+		if (is_array($tableconf['ALL.']))	{
+			$tmp = $tableconf['ALL.']['requiredListFields'];
+			$requiredListFields = ($tmp ? $tmp : $requiredListFields);
+		}		
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
-		
-		if ($TSFE->config['config']['sys_language_uid'] && ($tablename == 'tt_products')) {
+	
+		if ($TSFE->config['config']['sys_language_uid'] && ($tablename == 'tt_products') &&
+			(!$prodconf['language.'] || !$prodconf['language.']['type'])) {
 			$this->table->setLanguage ($LLkey);
-			$this->table->setTCAFieldArray('tt_products_language');
+			$this->table->setLangName('tt_products_language');
+			$this->table->setTCAFieldArray($this->table->langname);
 		}
+
+		parent::init($pibase, $conf, $config, $tt_content);
 		
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
-		
-		$this->bSelectableArray = array();
-		if ($this->conf['selectColor'])
-			$this->bSelectableArray[0] = true;
-		if ($this->conf['selectSize'])
-			$this->bSelectableArray[1] = true;
-		if ($this->conf['selectDescription'])
-			$this->bSelectableArray[2] = true;
-		if ($this->conf['selectGradings'])
-			$this->bSelectableArray[3] = true;
-					
-		$this->variant->init($this->pibase, $tableconf['variant.'], $this, $bUseArticles, $this->bSelectableArray);
-		
+		$this->variant->init($this->pibase, $tableconf['variant.'], $this, $useArticles);
 		$this->fields['itemnumber'] = ($tableconf['itemnumber'] ? $tableconf['itemnumber'] : 'itemnumber');
 	} // init
 
@@ -101,15 +96,15 @@ class tx_ttproducts_product {
 	function get ($uid) {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
-		if (!$rc) {
+		if (!$rc && $uid) {
 //			$sql = t3lib_div::makeInstance('tx_table_db_access');
 //			$sql->prepareFields($this->table, 'select', '*');
 //			$sql->prepareFields($this->table, 'where', 'uid = '.$uid);
-//			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
-			$where = '1=1 '.$this->table->enableFields($this->table->name);		
+//			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid)
+			$where = '1=1 '.$this->table->enableFields($this->table->name);
 			// Fetching the products
 			// $res = $sql->exec_SELECTquery();
-			$res = $this->table->exec_SELECTquery('*',$where.'AND uid = '.$uid);
+			$res = $this->table->exec_SELECTquery('*', $where.'AND uid = '.$uid);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}
@@ -129,7 +124,7 @@ class tx_ttproducts_product {
 	 * Reduces the instock value of the orderRecord with the sold items and returns the result
 	 * 
 	 */
-	function reduceInStock(&$itemArray, $bUseArticles)	{
+	function reduceInStock(&$itemArray, $useArticles)	{
 		global $TYPO3_DB, $TCA;
 		$rc = '';
 
@@ -139,7 +134,7 @@ class tx_ttproducts_product {
 			// loop over all items in the basket indexed by page and itemnumber
 			foreach ($itemArray as $pid=>$pidItem) {
 				foreach ($pidItem as $itemnumber=>$actItemArray) {
-					if ($bUseArticles) {
+					if ($useArticles) {
 						foreach ($actItemArray as $k1=>$actItem) {
 							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND description=\''.$actItem['rec']['description'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
 	
@@ -205,7 +200,7 @@ class tx_ttproducts_product {
 	 * Generates a search where clause.
 	 */
 	function searchWhere(&$searchFieldList, $sw)	{
-		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->name);
+		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->getAliasName());
 		return $where;
 	} // searchWhere
 
@@ -222,241 +217,101 @@ class tx_ttproducts_product {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, $catTitle, &$basketExt, &$tt_content, $imageNum=0, $imageRenderObj='image', $forminfoArray=array())	{
+	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='')	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 
 		$row = &$item['rec'];
-		if ($this->conf['useArticles'] || count($this->bSelectableArray))	{
-			$variantRow = &$row;
-		} else {
-			$variantRow = array();
-		}
-		$variants = $this->variant->getVariantFromRow ($variantRow);
-		$markerArray=array();
+		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code);
 		
-			// Get image
-		$theImgCode=array();
-
-		$imgs = array();
-
-		if ($this->conf['usePageContentImage']) {
-			$pageContent = $tt_content->getFromPid($row['pid']);
-			foreach ($pageContent as $pid => $contentRow) {
-				if ($contentRow['image']) {
-					$imgs[] = $contentRow['image'];
-				}
-			}
-		} else {
-			$imgs = explode(',',$row['image']);
-		}
-
-		while(list($c,$val)=each($imgs))	{
-			if ($c==$imageNum)	break;
-			if ($val)	{
-				$this->conf[$imageRenderObj.'.']['file'] = 'uploads/pics/'.$val;
-			} else {
-				$this->conf[$imageRenderObj.'.']['file'] = $this->conf['noImageAvailable'];
-			}
-			$i = $c;
-			if (!$this->conf['separateImage'])
-			{
-				$i = 0;  // show all images together as one image
-			}
-			$theImgCode[$i] .= $this->pibase->cObj->IMAGE($this->conf[$imageRenderObj.'.']);
-		}
-
-		$iconImgCode = $this->pibase->cObj->IMAGE($this->conf['datasheetIcon.']);
-
 			// Subst. fields
 		$markerArray['###PRODUCT_UNIT###'] = $row['unit'];
 		$markerArray['###PRODUCT_UNIT_FACTOR###'] = $row['unit_factor'];
-
-		$markerArray['###ICON_DATASHEET###']=$iconImgCode;
-
-		$markerArray['###PRODUCT_TITLE###'] = $row['title'];
-		$markerArray['###PRODUCT_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
-
-			// Extension CSS styled content
-		if (t3lib_extMgm::isLoaded('css_styled_content')) {
-			$markerArray['###PRODUCT_NOTE###'] = $this->pibase->pi_RTEcssText($markerArray['###PRODUCT_NOTE###']);
-		} else if (is_array($this->conf['parseFunc.']))	{
-			$markerArray['###PRODUCT_NOTE###'] = $this->pibase->cObj->parseFunc($markerArray['###PRODUCT_NOTE###'],$this->conf['parseFunc.']);
-		}
-		$markerArray['###PRODUCT_ITEMNUMBER###'] = $row[$this->fields['itemnumber']];
-
-		$markerArray['###PRODUCT_IMAGE###'] = $theImgCode[0]; // for compatibility only
-
-		while ((list($c,$val)=each($theImgCode)))
-		{
-			$markerArray['###PRODUCT_IMAGE' .  intval($c + 1) . '###'] = $theImgCode[$c];
-		}
-
-			// empty all image fields with no available image
-		for ($i=1; $i<=15; ++$i) {
-			if (!$markerArray['###PRODUCT_IMAGE' .  $i. '###']) {
-				$markerArray['###PRODUCT_IMAGE' .  $i. '###'] = '';
-			}
-		}
-
-		$markerArray['###PRODUCT_SUBTITLE###'] = $row['subtitle'];
+		$iconImgCode = $this->pibase->cObj->IMAGE($this->conf['datasheetIcon.']);
+		$markerArray['###ICON_DATASHEET###'] = $iconImgCode;
 		$markerArray['###PRODUCT_WWW###'] = $row['www'];
-		$markerArray['###PRODUCT_ID###'] = $row['uid'];
-		$markerArray['###CUR_SYM###'] = ' '.($this->conf['currencySymbol'] ? $this->conf['currencySymbol'] : '');
-
-		$markerArray['###PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']));
-		$markerArray['###PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax']));
-		$markerArray['###PRICE_ONLY_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
-
-/* Added els4: printing of pric_no_tax with currency symbol (used in totaal-_.tmpl and winkelwagen.tmpl) */
-		if ($row['category'] == $this->conf['creditsCategory']) {
-			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $this->pibase->price->printPrice($item['priceNoTax']);
-		} else {
-			$markerArray['###PRICE_NO_TAX_CUR_SYM###'] = $markerArray['###CUR_SYM###'].'&nbsp;'.$this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax']));
-		}
-
-		$oldPrice = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],1,$row['tax'])));
-		$oldPriceNoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],0,$row['tax'])));
-		$price2 = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],1,$row['tax'])));
-		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],0,$row['tax'])));
-		$priceNo = intval($this->config['priceNoReseller']);
-		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
-			$oldPrice = $oldPriceNoTax = '';
-		}
-
-		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
-		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
-		$markerArray['###PRICE2_TAX###'] = $price2;
-		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
-
-		$markerArray['###PRODUCT_INSTOCK_UNIT###'] = '';
-		if ($row['inStock'] <> 0) {
-			$markerArray['###PRODUCT_INSTOCK###'] = $row['inStock'];
-			$markerArray['###PRODUCT_INSTOCK_UNIT###'] = $this->conf['inStockPieces'];
-		} else {
-			$markerArray['###PRODUCT_INSTOCK###'] = $this->conf['notInStockMessage'];
-		}
-
 		$markerArray['###CATEGORY_TITLE###'] = $catTitle;
-
-		$basketQuantityName = 'ttp_basket['.$row['uid'].'][quantity]';
-		
-		$markerArray['###FIELD_NAME###']=$basketQuantityName;
 
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
-		$quantity = $basketExt[$row['uid']][$variants];
-
-		$markerArray['###FIELD_QTY###']= $quantity ? $quantity : '';
-
-		$markerArray['###FIELD_NAME_BASKET###']='ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
-
-		$markerArray['###FIELD_SIZE_NAME###']='ttp_basket['.$row['uid'].'][size]';
-		$markerArray['###FIELD_SIZE_VALUE###']=$row['size'];
-		$markerArray['###FIELD_SIZE_ONCHANGE']= ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
-
-		$markerArray['###FIELD_COLOR_NAME###']='ttp_basket['.$row['uid'].'][color]';
-		$markerArray['###FIELD_COLOR_VALUE###']=$row['color'];
-
-		$markerArray['###FIELD_DESCRIPTION_NAME###']='ttp_basket['.$row['uid'].'][description]';
-		$markerArray['###FIELD_DESCRIPTION_VALUE###']=$row['description'];
-
-		$markerArray['###FIELD_GRADINGS_NAME###']='ttp_basket['.$row['uid'].'][gradings]';
-		$markerArray['###FIELD_GRADINGS_VALUE###']=$row['gradings'];
-
-		$markerArray['###FIELD_ADDITIONAL_NAME###']='ttp_basket['.$row['uid'].'][additional]';
-//		$markerArray['###FIELD_ADDITIONAL_VALUE###']=$row['additional'];
-
-/* Added Els4: total price is quantity multiplied with pricenottax mulitplied with unit_factor (exception for kurkenshop), _credits is necessary for "kurkenshop", without decimal and currency symbol */
-		if ($row['category'] == $this->conf['creditsCategory']) {
-			$markerArray['###PRICE_ITEM_X_QTY###'] = $this->pibase->price->printPrice($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']);
-		} else {
-/* Added Els8: &nbsp; -> space */
-			$markerArray['###PRICE_ITEM_X_QTY###'] = $markerArray['###CUR_SYM###'].' '.$this->pibase->price->printPrice($this->pibase->price->priceFormat($markerArray['###FIELD_QTY###']*$item['priceNoTax']*$row['unit_factor']));
-		}
-
-		$prodColorText = '';
-		$prodTmp = explode(';', $row['color']);
-		if ($this->conf['selectColor']) {
-			foreach ($prodTmp as $prodCol)
-				$prodColorText = $prodColorText . '<OPTION value="'.$prodCol.'">'.$prodCol.'</OPTION>';
-		} else {
-			$prodColorText = $prodTmp[0];
-		}
-
-		$prodSizeText = '';
-		$prodTmp = explode(';', $row['size']);
-		if ($this->conf['selectSize']) {
-			foreach ($prodTmp as $prodSize) {
-				$prodSizeText = $prodSizeText . '<OPTION value="'.$prodSize.'">'.$prodSize.'</OPTION>';
-			}
-		} else {
-			$prodSizeText = $prodTmp[0];
-		}
-
-		$prodDescriptionText = '';
-		$prodTmp = explode(';', $row['description']);
-		if ($this->conf['selectDescription']) {
-			foreach ($prodTmp as $prodDescription) {
-				$prodDescriptionText = $prodDescriptionText . '<OPTION value="'.$prodDescription.'">'.$prodDescription.'</OPTION>';
-			}
-		} else {
-			$prodDescriptionText = $prodTmp[0];
-		}
-
-		$prodGradingsText = '';
-		$prodTmp = explode(';', $row['gradings']);
-		if ($this->conf['selectGradings']) {
-			foreach ($prodTmp as $prodGradings) {
-				$prodGradingsText = $prodGradingsText . '<OPTION value="'.$prodGradings.'">'.$prodGradings.'</OPTION>';
-			}
-		} else {
-			$prodGradingsText = $prodTmp[0];
-		}
-
-		$prodAdditionalText['single'] = '';
-		
-		if ($this->conf['selectAdditional']) {
-			$isSingleProduct = $this->isSingle($row);
-			if ($isSingleProduct)	{
-				$message = $this->pibase->pi_getLL('additional_single');
-				// $basketSingleName = 'ttp_basket['.$row['uid'].'][quantity]';
-				$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($quantity ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="1">';
-				//$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'[0]" '.($quantity ? 'checked="checked"':'').' value="1">';
-				
-				$prodAdditionalText['single'] .= '<input type="hidden" name="'.$basketQuantityName.'[1]" value="'.($quantity ? '1' : '0') .'">';
-			}
- 		}
-
-		$markerArray['###PRODUCT_WEIGHT###'] = doubleval($row['weight']);
+		$markerArray['###FIELD_NAME_BASKET###'] = 'ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $this->conf['bulkilyWarning'] : '';
-		$markerArray['###PRODUCT_COLOR###'] = $prodColorText;
-		$markerArray['###PRODUCT_SIZE###'] = $prodSizeText;
-		$markerArray['###PRODUCT_DESCRIPTION###'] = $prodDescriptionText;
-		$markerArray['###PRODUCT_GRADINGS###'] = $prodGradingsText;
-		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
 
-		if ($row['special_preparation'])
-			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $this->pibase->cObj->substituteMarkerArray($this->conf['specialPreparation'],$markerArray);
-		else
+		if ($row['special_preparation'])	{
+			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $this->conf['specialPreparation'];
+		} else	{
 			$markerArray['###PRODUCT_SPECIAL_PREP###'] = '';
+		}
 
 		// Fill the Currency Symbol or not
 		if ($this->conf['itemMarkerArrayFunc'])	{
 			$markerArray = $this->pibase->userProcess('itemMarkerArrayFunc',$markerArray);
 		}
+		
+	} // getItemMarkerArray
 
-			// Call all getItemMarkerArray hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['product'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['product'] as $classRef) {
+
+	function addWhereCat($cat, $pid_list)	{
+		$where = '';
+		if($cat) {
+			$cat = implode(',',t3lib_div::intExplode(',', $cat));
+			$where = ' AND ( category IN ('.$cat.')';
+		}
+
+			// Call all addWhere hooks for categories at the end of this method
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
-				if (method_exists($hookObj, 'getItemMarkerArray')) {
-					$hookObj->getItemMarkerArray ($this, $markerArray, $item, $catTitle, $tt_content, $imageNum, $imageRenderObj, $forminfoArray);
+				if (method_exists($hookObj, 'addWhereCat')) {
+					$whereNew = $hookObj->addWhereCat($this, $cat, $where, $pid_list);
+					$where .= ($whereNew ? ' OR '.$whereNew : '');
+				}
+			}
+		}
+
+		if ($where)	{
+			$where .= ' )';
+		}
+		return $where;
+	}
+
+
+	function addselectConfCat($cat, &$selectConf)	{
+		$tableNameArray = array();
+
+			// Call all addWhere hooks for categories at the end of this method
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
+				$hookObj= &t3lib_div::getUserObj($classRef);
+				if (method_exists($hookObj, 'addselectConfCat')) {
+					$tableNameArray[] = $hookObj->addselectConfCat($this, $cat, $selectConf);
 				}
 			}
 		}
 		
-		return $markerArray;
-	} // getItemMarkerArray
+		return implode(',', $tableNameArray);	
+	}
+
+
+	function getPageUidsCat($cat)	{
+		$uidArray = array();
+
+			// Call all addWhere hooks for categories at the end of this method
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
+				$hookObj= &t3lib_div::getUserObj($classRef);
+				if (method_exists($hookObj, 'getPageUidsCat')) {
+					$hookObj->getPageUidsCat($this, $cat, $uidArray);
+				}
+			}
+		}
+
+		$uidArray = array_unique($uidArray);
+		return (implode(',',$uidArray));
+	}
+
+	function getProductField(&$row, $field)	{
+		return $row[$field];
+	}
 
 }
 

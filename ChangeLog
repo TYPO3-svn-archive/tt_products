@@ -1,3 +1,23 @@
+2006-05-30 Franz Holzinger <franz@fholzinger.com>
+	* category menu which shows submenues on mouse click
+	* correct error with tracking code
+	* change orderBy configuration
+	* correct error to show multiple images for a product
+	* correct error with duplicate ending </ul> in catlist view
+	* correct list to use the products language table in list view
+	* improve article list view
+	* single view for articles
+	* change RTE config for TCA to let the admin configure it
+	* uid of articles as new variant, so no variant fields are necessary for articles
+	* fetch images from folders depending on the fields of the articles table
+	* images for categories and articles
+	* consider basketMaxQuantity also when new items are put into the basket
+	* category list considers subcategories
+	* use cHash in all links in the list view and category list view
+	* CSV error correction: replace '\n' with chr(13)
+	* correct error with unset Frontend Admin password
+	* selectDescription into ext_typoscript_setup.txt
+
 2006-04-08 Franz Holzinger <franz@fholzinger.com>
 	* do all email stuff in the class.tx_ttproducts_email_div.php
 	* correct uid and category in the list view

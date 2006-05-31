@@ -40,30 +40,37 @@
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_email.php');
+require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_category_base.php');
 
-class tx_ttproducts_category {
-	var $dataArray; // array of read in categories
-	var $table;		 // object of the type tx_table_db
+class tx_ttproducts_category extends tx_ttproducts_category_base {
 	var $tt_products_email;				// object of the type tx_table_db
 	var $catconf;
+	var $image;
 
 	/**
 	 * initialization with table object and language table
 	 */
-	function init(&$pibase, $LLkey, $tablename, &$tableconf,  &$catconf)	{
+	function init(&$pibase, &$conf, &$config, &$tt_content, $LLkey, $tablename, &$tableconf,  &$catconf)	{
 		global $TYPO3_DB,$TSFE;
 		
-		$tablename = ($tablename ? $tablename : 'tt_products');
-		$this->catconf = &$catconf;
-	
+		$tablename = ($tablename ? $tablename : 'tt_products_cat');
+		$this->catconf = &$catconf;	
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 
-		if ($TSFE->config['config']['sys_language_uid']) {
+		if ($TSFE->config['config']['sys_language_uid'] && 
+				(!$this->catconf['language.'] ||
+				!$this->catconf['language.']['type'])) {
 			$this->table->setLanguage ($LLkey);
 			$this->table->setTCAFieldArray('tt_products_cat_language');
 		}
+		
+		if ($this->catconf['language.'] && $this->catconf['language.']['type'] == 'csv')	{
+			$this->table->initLanguageFile($this->catconf['language.']['file']);
+		}
+
+		parent::init($pibase, $conf, $config, $tt_content);
 	} // init
 
 
@@ -93,13 +100,22 @@ class tx_ttproducts_category {
 			$where = '1=1 '.$this->table->enableFields('tt_products_cat');;
 			$where .= ($uid ? ' AND uid='.$uid : '');
 			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
-			$orderBy = $this->catconf['orderBy'];
+			$orderBy = '';
+			if (is_array($this->catconf['ALL.']))	{
+				$orderBy = $this->catconf['ALL.']['orderBy'];
+			}
 			$res = $this->table->exec_SELECTquery('*',$where,'',$orderBy);
 			if ($uid)	{
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
+				if (is_array($this->table->langArray) && $this->table->langArray[$row['title']])	{
+					$row['title'] = $this->table->langArray[$row['title']];
+				}
 				$rc = $this->dataArray[$row['uid']] = $row;
 			} else {
 				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+					if (is_array($this->table->langArray) && $this->table->langArray[$row['title']])	{
+						$row['title'] = $this->table->langArray[$row['title']];
+					}
 					$rc = $this->dataArray[$row['uid']] = $row;
 				}
 			}
@@ -111,6 +127,13 @@ class tx_ttproducts_category {
 		return $rc;
 	}
 
+
+	function getParamDefault ()	{
+		$cat = $this->pibase->piVars['cat'];
+		$cat = ($cat ? $cat : $this->conf['defaultCategoryID']);
+		$cat = implode(',',t3lib_div::intExplode(',', $cat));
+		return $cat;	
+	}
 
 
 	/**
@@ -133,8 +156,12 @@ class tx_ttproducts_category {
 			$relationArray [$uid]['pid'] = $row['pid'];
 			$relationArray [$uid]['parent_category'] = $row['parent_category'];
 			$parentId = $row['parent_category'];
-			if ($parentId)	{ 
-				$relationArray[$parentId]['child_category'][$uid] = $uid;
+			if ($parentId)	{
+				$count = 0;
+				if (!is_array($relationArray[$parentId]['child_category']))	{
+					$relationArray[$parentId]['child_category'] = array();
+				}
+				$relationArray[$parentId]['child_category'][] = (int) $uid;
 			}
 		}
 		
@@ -169,6 +196,35 @@ class tx_ttproducts_category {
 		}
 		return $emailArray;
 	}
+
+
+	/**
+	 * Template marker substitution
+	 * Fills in the markerArray with data for a product
+	 *
+	 * @param	array		reference to an item array with all the data of the item
+	 * @param	integer		number of images to be shown
+	 * @param	object		the image cObj to be used
+	 * @param	array		information about the parent HTML form
+	 * @return	array		Returns a markerArray ready for substitution with information
+	 * 			 			for the tt_producst record, $row
+	 * @access private
+	 */
+	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code)	{
+		$row = ($category ? $this->get($category) : array ('title' => '', 'pid' => $pid));
+
+			// Get image	
+		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $code);
+		$pageCatTitle = '';
+		if ($pageAsCategory == 1) {
+			$pageTmp = $page->get($pid);
+			$pageCatTitle = $pageTmp['title'].'/';
+		}
+		
+		$catTitle = $pageCatTitle.($row['title']);
+		$this->setMarkerArrayCatTitle ($markerArray, $catTitle);
+	}
+	
 }
 
 

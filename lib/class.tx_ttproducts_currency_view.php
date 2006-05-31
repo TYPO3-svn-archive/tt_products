@@ -71,7 +71,7 @@ class tx_ttproducts_currency_view {
 		$index = 0;
 		foreach( $currList as $key => $value)	{
 			//$url = $this->getLinkUrl('','',array('C' => 'C='.$key));
-			$url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->markergetLinkParams('',array('C' => 'C='.$key)));
+			$url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->markergetLinkParams('',array('C' => 'C='.$key),true));
 			$jScript .= '	currlink['.$index.'] = "'.$url.'"; '.chr(10) ;
 			$index ++ ;
 		}

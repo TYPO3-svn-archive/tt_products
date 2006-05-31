@@ -102,6 +102,15 @@
 				</config>
 			</TCEforms>
 	      </display_mode>
+	      <template_suffix>
+			<TCEforms>
+				<label>LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.template_suffix</label>
+				<config>
+					<type>input</type>
+					<size>25</size>
+				</config>
+			</TCEforms>
+	      </template_suffix>
 	    </el>
 	  </ROOT>
 </T3DataStructure>

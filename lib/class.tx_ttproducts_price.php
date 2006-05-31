@@ -65,6 +65,8 @@ class tx_ttproducts_price {
 	function getPrice($price,$tax=1,$taxpercentage=0,$taxIncluded=0)	{
 		global $TSFE;
 
+		debug ($taxpercentage, '$taxpercentage', __LINE__, __FILE__);
+		debug ($this->conf['TAXpercentage'], '$this->conf[\'TAXpercentage\']', __LINE__, __FILE__);
 		if (doubleval($taxpercentage) == 0)
 			$taxFactor = 1 + doubleval($this->conf['TAXpercentage'])/100;
 		else

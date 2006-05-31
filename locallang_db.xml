@@ -6,100 +6,10 @@
 		<csh_table></csh_table>
 		<fileId>EXT:tt_products/locallang_db.xml</fileId>
 		<labelContext type="array">
-			<label index="tt_content.list_type_pi1"></label>
-			<label index="tt_content.tt_products_code"></label>
-			<label index="tt_products"></label>
-			<label index="tt_products.prod_uid"></label>
-			<label index="tt_products.price"></label>
-			<label index="tt_products.price2"></label>
-			<label index="tt_products.unit"></label>
-			<label index="tt_products.unit_factor"></label>
-			<label index="tt_products.itemnumber"></label>
-			<label index="tt_products.inStock"></label>
-			<label index="tt_products.datasheet"></label>
-			<label index="tt_products.www"></label>
-			<label index="tt_products.tax"></label>
-			<label index="tt_products.weight"></label>
-			<label index="tt_products.bulkily"></label>
-			<label index="tt_products.offer"></label>
-			<label index="tt_products.highlight"></label>
-			<label index="tt_products.directcost"></label>
-			<label index="tt_products.color"></label>
-			<label index="tt_products.size"></label>
-			<label index="tt_products.description"></label>
-			<label index="tt_products.gradings"></label>
-			<label index="tt_products.additional"></label>
-			<label index="tt_products.additional.once"></label>
-			<label index="tt_products.special_preparation"></label>
-			<label index="tt_products.subtitle"></label>
-			<label index="tt_products.variants"></label>
-			<label index="tt_products_language"></label>
-			<label index="tt_products_language.prd_uid"></label>
-			<label index="tt_products_language.sys_language_uid"></label>
-			<label index="tt_products_language.datasheet"></label>
-			<label index="tt_products_cat"></label>
-			<label index="tt_products_cat.email_uid"></label>
-			<label index="tt_products_cat_language"></label>
-			<label index="tt_products_cat_language.sys_language_uid"></label>
-			<label index="tt_products_cat_language.cat_uid"></label>
-			<label index="tt_products_articles"></label>
-			<label index="tt_products_articles.uid_product"></label>
-			<label index="tt_products_emails"></label>
-			<label index="sys_products_orders"></label>
-			<label index="sys_products_orders.payment"></label>
-			<label index="sys_products_orders.shipping"></label>
-			<label index="sys_products_orders.amount"></label>
-			<label index="sys_products_orders.email_notify"></label>
-			<label index="sys_products_orders.tracking_code"></label>
-			<label index="sys_products_orders.status"></label>
-			<label index="sys_products_orders.status_log"></label>
-			<label index="sys_products_orders.orderData"></label>
-			<label index="sys_products_orders.agb"></label>
-			<label index="sys_products_orders.feusers_uid"></label>
-			<label index="sys_products_orders.creditpoints"></label>
-			<label index="sys_products_orders.creditpoints_spended"></label>
-			<label index="sys_products_orders.creditpoints_saved"></label>
-			<label index="sys_products_orders.creditpoints_gifts"></label>
-			<label index="sys_products_orders.desired_date"></label>
-			<label index="sys_products_orders.salutation"></label>
-			<label index="sys_products_orders.salutation.I.0"></label>
-			<label index="sys_products_orders.salutation.I.1"></label>
-			<label index="sys_products_orders.salutation.I.2"></label>
-			<label index="sys_products_orders.salutation.I.3"></label>
-			<label index="sys_products_orders.first_name"></label>
-			<label index="sys_products_orders.last_name"></label>
-			<label index="fe_users.tt_products_memoItems"></label>
-			<label index="fe_users.tt_products_discount"></label>
-			<label index="fe_users.tt_products_creditpoints"></label>
-			<label index="fe_users.tt_products_vouchercode"></label>
-			<label index="tt_content.pi1_flexform.display_mode"></label>
-			<label index="tt_content.pi1_flexform.display_mode.1"></label>
-			<label index="tt_content.pi1_flexform.display_mode.2"></label>
-			<label index="tt_content.pi1_flexform.display_mode.3"></label>
-			<label index="tt_content.pi1_flexform.display_mode.4"></label>
-			<label index="tt_content.pi1_flexform.display_mode.5"></label>
-			<label index="tt_content.pi1_flexform.display_mode.6"></label>
-			<label index="tt_content.pi1_flexform.display_mode.7"></label>
-			<label index="tt_content.pi1_flexform.display_mode.8"></label>
-			<label index="tt_content.pi1_flexform.display_mode.9"></label>
-			<label index="tt_content.pi1_flexform.display_mode.10"></label>
-			<label index="tt_content.pi1_flexform.display_mode.11"></label>
-			<label index="tt_content.pi1_flexform.display_mode.12"></label>
-			<label index="tt_content.pi1_flexform.display_mode.13"></label>
-			<label index="tt_content.pi1_flexform.display_mode.14"></label>
-			<label index="tt_content.pi1_flexform.display_mode.15"></label>
-			<label index="tt_content.pi1_flexform.display_mode.16"></label>
-			<label index="tt_content.pi1_flexform.display_mode.17"></label>
-			<label index="tt_content.pi1_flexform.display_mode.18"></label>
-			<label index="tt_content.pi1_flexform.display_mode.19"></label>
-			<label index="tt_content.pi1_flexform.display_mode.20"></label>
-			<label index="tt_content.pi1_flexform.display_mode.21"></label>
 		</labelContext>
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="tt_content.list_type_pi1">Products</label>
-			<label index="tt_content.tt_products_code">Code</label>
 			<label index="tt_products">Products</label>
 			<label index="tt_products.prod_uid">Template Products</label>
 			<label index="tt_products.price">Price:</label>
@@ -165,6 +75,8 @@
 			<label index="fe_users.tt_products_discount">Discount</label>
 			<label index="fe_users.tt_products_creditpoints">Creditpoints</label>
 			<label index="fe_users.tt_products_vouchercode">Vouchercode</label>
+			<label index="tt_content.list_type_pi1">Products</label>
+			<label index="tt_content.tt_products_code">Code</label>
 			<label index="tt_content.pi1_flexform.display_mode">Display mode</label>
 			<label index="tt_content.pi1_flexform.display_mode.1">Products: list</label>
 			<label index="tt_content.pi1_flexform.display_mode.2">Products: list gifts</label>
@@ -187,9 +99,9 @@
 			<label index="tt_content.pi1_flexform.display_mode.19">General: help</label>
 			<label index="tt_content.pi1_flexform.display_mode.20">Categories: list</label>
 			<label index="tt_content.pi1_flexform.display_mode.21">Articles: list</label>
+			<label index="tt_content.pi1_flexform.template_suffix">Template suffix</label>
 		</languageKey>
 		<languageKey index="de" type="array">
-			<label index="tt_content.list_type_pi1">Produkte</label>
 			<label index="tt_products">Produkte</label>
 			<label index="tt_products.prod_uid">Template Produkte</label>
 			<label index="tt_products.price">Preis:</label>
@@ -254,6 +166,7 @@
 			<label index="fe_users.tt_products_discount">Rabatt</label>
 			<label index="fe_users.tt_products_creditpoints">Gutscheinpunkte</label>
 			<label index="fe_users.tt_products_vouchercode">Freundschaftswerbung Code</label>
+			<label index="tt_content.list_type_pi1">Produkte</label>
 			<label index="tt_content.pi1_flexform.display_mode">Anzeigetyp</label>
 			<label index="tt_content.pi1_flexform.display_mode.1">Produkte: Liste</label>
 			<label index="tt_content.pi1_flexform.display_mode.2">Produkte: Liste Geschenke</label>
@@ -276,9 +189,9 @@
 			<label index="tt_content.pi1_flexform.display_mode.19">Allgemein: Hilfe</label>
 			<label index="tt_content.pi1_flexform.display_mode.20">Kategorien: Liste</label>
 			<label index="tt_content.pi1_flexform.display_mode.21">Artikel: Liste</label>
+			<label index="tt_content.pi1_flexform.template_suffix">Template Suffix</label>
 		</languageKey>
 		<languageKey index="dk" type="array">
-			<label index="tt_content.tt_products_code">Kode</label>
 			<label index="tt_products">Produkter</label>
 			<label index="tt_products.price">Pris:</label>
 			<label index="tt_products.price2">Pris (2):</label>
@@ -312,9 +225,10 @@
 			<label index="tt_products_articles">Produkter</label>
 			<label index="tt_products_articles.uid_product">Produkt ID</label>
 			<label index="tt_products_emails">Produkt email</label>
-			<label index="tt_content.list_type_pi1">Produkter</label>
 			<label index="fe_users.tt_products_memoItems">Memo</label>
 			<label index="fe_users.tt_products_discount">Rabat</label>
+			<label index="tt_content.list_type_pi1">Produkter</label>
+			<label index="tt_content.tt_products_code">Kode</label>
 			<label index="tt_content.pi1_flexform.display_mode">Visning</label>
 			<label index="tt_content.pi1_flexform.display_mode.1">Produkter: Liste</label>
 			<label index="tt_content.pi1_flexform.display_mode.2">Produkter: Liste gaver</label>
@@ -337,7 +251,6 @@
 			<label index="tt_content.pi1_flexform.display_mode.19">Generelt: Hjælp</label>
 		</languageKey>
 		<languageKey index="no" type="array">
-			<label index="tt_content.tt_products_code">Kode</label>
 			<label index="tt_products">Produkter</label>
 			<label index="tt_products.price">Pris:</label>
 			<label index="tt_products.price2">Pris (2):</label>
@@ -368,9 +281,10 @@
 			<label index="tt_products_cat_language.cat_uid">Produktkategori-element</label>
 			<label index="tt_products_articles">Produktartikler</label>
 			<label index="tt_products_articles.uid_product">Produkt</label>
-			<label index="tt_content.list_type_pi1">Produkter</label>
 			<label index="fe_users.tt_products_memoItems">Notater</label>
 			<label index="fe_users.tt_products_discount">Rabatt</label>
+			<label index="tt_content.list_type_pi1">Produkter</label>
+			<label index="tt_content.tt_products_code">Kode</label>
 			<label index="tt_content.pi1_flexform.display_mode">Visningsmodus</label>
 			<label index="tt_content.pi1_flexform.display_mode.1">Produkter: Liste</label>
 			<label index="tt_content.pi1_flexform.display_mode.2">Produkter: Gaveliste</label>
@@ -393,7 +307,6 @@
 			<label index="tt_content.pi1_flexform.display_mode.19">Generelt: Hjelp</label>
 		</languageKey>
 		<languageKey index="it" type="array">
-			<label index="tt_content.tt_products_code">Codice</label>
 			<label index="tt_products">Prodotti</label>
 			<label index="tt_products.price">Prezzo:</label>
 			<label index="tt_products.price2">Prezzo (2):</label>
@@ -422,6 +335,7 @@
 			<label index="tt_content.list_type_pi1">Prodotti</label>
 			<label index="fe_users.tt_products_memoItems">Memo</label>
 			<label index="fe_users.tt_products_discount">Sconto</label>
+			<label index="tt_content.tt_products_code">Codice</label>
 			<label index="tt_content.pi1_flexform.display_mode">Visualizza</label>
 			<label index="tt_content.pi1_flexform.display_mode.1">Prodotti: lista</label>
 			<label index="tt_content.pi1_flexform.display_mode.2">Prodotti: lista regali</label>
@@ -474,9 +388,9 @@
 			<label index="tt_products_cat_language.cat_uid">Enregistrement de la catégorie de produit</label>
 			<label index="tt_products_articles">Article à partir du produit</label>
 			<label index="tt_products_articles.uid_product">Produit</label>
-			<label index="tt_content.list_type_pi1">Produits</label>
 			<label index="fe_users.tt_products_memoItems">Liste memo</label>
 			<label index="fe_users.tt_products_discount">Réduction</label>
+			<label index="tt_content.list_type_pi1">Produits</label>
 			<label index="tt_content.pi1_flexform.display_mode">Mode d'affichage</label>
 			<label index="tt_content.pi1_flexform.display_mode.1">Produits: lister</label>
 			<label index="tt_content.pi1_flexform.display_mode.2">Produits: lister les cadeaux</label>
@@ -505,9 +419,9 @@
 			<label index="tt_products.itemnumber">N° de parte:</label>
 			<label index="tt_products.inStock">En existencia (pz.):</label>
 			<label index="tt_products_cat">Categoría de producto</label>
+			<label index="tt_content.list_type_pi1">Productos</label>
 		</languageKey>
 		<languageKey index="nl" type="array">
-			<label index="tt_content.tt_products_code">Code</label>
 			<label index="tt_products">Producten</label>
 			<label index="tt_products.price">Prijs:</label>
 			<label index="tt_products.price2">Prijs (2):</label>
@@ -538,11 +452,11 @@
 			<label index="tt_products_cat_language.cat_uid">Produkt-kategorie id</label>
 			<label index="tt_products_articles">Produkt artikelen</label>
 			<label index="tt_products_articles.uid_product">Produkt</label>
-			<label index="tt_content.list_type_pi1">Produkten</label>
 			<label index="fe_users.tt_products_memoItems">Memo lijst</label>
 			<label index="fe_users.tt_products_discount">Korting</label>
 			<label index="fe_users.tt_products_creditpoints">Kurkensaldo</label>
 			<label index="fe_users.tt_products_vouchercode">Vouchercode</label>
+			<label index="tt_content.list_type_pi1">Producten</label>
 			<label index="tt_content.pi1_flexform.display_mode">Weergave modus</label>
 			<label index="tt_content.pi1_flexform.display_mode.1">Produkten: lijst</label>
 			<label index="tt_content.pi1_flexform.display_mode.2">Produkten: lijst geschenken</label>
@@ -593,9 +507,9 @@
 			<label index="tt_products_cat_language">Kategorie produktu (alternativní jazyk)</label>
 			<label index="tt_products_cat_language.sys_language_uid">Jazyk</label>
 			<label index="tt_products_cat_language.cat_uid">Záznam kategorie produktu</label>
-			<label index="tt_content.list_type_pi1">Produkty</label>
 			<label index="fe_users.tt_products_memoItems">Memo poloky</label>
 			<label index="fe_users.tt_products_discount">Sleva</label>
+			<label index="tt_content.list_type_pi1">Produkty</label>
 		</languageKey>
 		<languageKey index="pl" type="array">
 			<label index="tt_products">Produkty</label>
@@ -633,14 +547,18 @@
 			<label index="tt_products.itemnumber">Št. izdelka:</label>
 			<label index="tt_products.inStock">Na zalogi (kom):</label>
 			<label index="tt_products_cat">Kategorija izdelka</label>
+			<label index="tt_content.list_type_pi1">Izdelki</label>
 		</languageKey>
 		<languageKey index="fi" type="array">
 			<label index="tt_content.tt_products_code">Kooodi</label>
 			<label index="tt_products">Tuotteet:</label>
 			<label index="tt_products.price">Hinta:</label>
 			<label index="tt_products.price2">Hinta (2):</label>
-			<label index="tt_products.itemnumber">Tuote numero:</label>
+			<label index="tt_products.unit">Mittayksikkö</label>
+			<label index="tt_products.unit_factor">Mittakerroin</label>
+			<label index="tt_products.itemnumber">Tuotenumero:</label>
 			<label index="tt_products.inStock">Varastossa (kpl)</label>
+			<label index="tt_products.datasheet">Tuotetaulukko</label>
 			<label index="tt_products.tax">ALV:</label>
 			<label index="tt_products.weight">Paino (kg):</label>
 			<label index="tt_products.bulkily">Määrä:</label>
@@ -649,12 +567,74 @@
 			<label index="tt_products.directcost">Kustannukset:</label>
 			<label index="tt_products.color">Väri:</label>
 			<label index="tt_products.size">Koko:</label>
+			<label index="tt_products.description">Kuvaus:</label>
 			<label index="tt_products.gradings">Luokittelut:</label>
+			<label index="tt_products.additional">Lisämääreet:</label>
+			<label index="tt_products.additional.once">Vain jos yksi tuote:</label>			
 			<label index="tt_products.special_preparation">Erityiset:</label>
 			<label index="tt_products.subtitle">Alanimike:</label>
+			<label index="tt_products.variants">Variantit</label>
+			<label index="tt_products_language">Tuotteet (vaihtoehtoinen kieli)</label>
+			<label index="tt_products_language.prd_uid">Tuotteen tietue</label>
+			<label index="tt_products_language.sys_language_uid">Kieli</label>
+			<label index="tt_products_language.datasheet">Tuotetaulukko</label>
 			<label index="tt_products_cat">Tuoteluokka</label>
+			<label index="tt_products_cat.email_uid">Sähköpostivahvistus</label>
+			<label index="tt_products_cat_language">Tuoteluokka (vaihtoehtoinen kieli)</label>
+			<label index="tt_products_cat_language.sys_language_uid">Kieli</label>
+			<label index="tt_products_cat_language.cat_uid">Tuoteluokan tietue</label>	
+			<label index="tt_products_articles">Tuoteartikkelit</label>
+			<label index="tt_products_articles.uid_product">Tuoteartikkeli</label>
+			<label index="tt_products_emails">Tuoteartikkelin sähköpostit</label>
+			<label index="sys_products_orders">Systeemin tuotetetilaukset</label>
+			<label index="sys_products_orders.payment">maksu</label>
+			<label index="sys_products_orders.shipping">kuljetus</label>
+			<label index="sys_products_orders.amount">määrä</label>
+			<label index="sys_products_orders.email_notify">sähköpostimuistutus</label>
+			<label index="sys_products_orders.tracking_code">seurantakoodi</label>
+			<label index="sys_products_orders.status">tila</label>
+			<label index="sys_products_orders.status_log">tilan loki</label>
+			<label index="sys_products_orders.orderData">tilaustieto</label>
+			<label index="sys_products_orders.agb">agb</label>
+			<label index="sys_products_orders.feusers_uid">Edustakäyttäjä</label>
+			<label index="sys_products_orders.creditpoints">Bonuspisteet</label>
+			<label index="sys_products_orders.creditpoints_spended">Käytetyt bonuspisteet</label>
+			<label index="sys_products_orders.creditpoints_saved">Tallennetut bonuspisteet</label>
+			<label index="sys_products_orders.creditpoints_gifts">Bonuspistelahjat</label>
+			<label index="sys_products_orders.desired_date">Haluttu päivämäärä</label>
+			<label index="sys_products_orders.salutation">Puhuttelumuoto</label>
+			<label index="sys_products_orders.salutation.I.0">Herra</label>
+			<label index="sys_products_orders.salutation.I.1">Rouva</label>
+			<label index="sys_products_orders.salutation.I.2">Neiti</label>
+			<label index="sys_products_orders.salutation.I.3">Vastaanottaja</label>
+			<label index="sys_products_orders.first_name">Etunimi</label>
+			<label index="sys_products_orders.last_name">Sukunimi</label>
+			<label index="sys_products_orders.address">osoite</label>			
 			<label index="fe_users.tt_products_memoItems">Muistion tiedot</label>
 			<label index="fe_users.tt_products_discount">Alennus</label>
+			<label index="fe_users.tt_products_creditpoints">Bonuspisteet</label>
+			<label index="fe_users.tt_products_vouchercode">Kuittikoodi</label>
+			<label index="tt_content.pi1_flexform.display_mode">Näyttömoodi</label>
+			<label index="tt_content.pi1_flexform.display_mode.1">Tuotteet: lista</label>
+			<label index="tt_content.pi1_flexform.display_mode.2">Tuotteet: lahjalista</label>
+			<label index="tt_content.pi1_flexform.display_mode.3">Tuotteet: suositushintalista</label>
+			<label index="tt_content.pi1_flexform.display_mode.4">Tuotteet: tarjoustuotelista</label>
+			<label index="tt_content.pi1_flexform.display_mode.5">Tuotteet: uusien tuotteiden lista</label>
+			<label index="tt_content.pi1_flexform.display_mode.6">Tuotteet: yksittäinen tuote</label>
+			<label index="tt_content.pi1_flexform.display_mode.7">Tuotteet: etsi</label>
+			<label index="tt_content.pi1_flexform.display_mode.8">Valuutta: valitsin</label>
+			<label index="tt_content.pi1_flexform.display_mode.9">Ostoskori: sisältö</label>
+			<label index="tt_content.pi1_flexform.display_mode.10">Ostoskori: yleisnäkymä</label>
+			<label index="tt_content.pi1_flexform.display_mode.11">Ostoskori: asiakastietojen laittaminen</label>
+			<label index="tt_content.pi1_flexform.display_mode.12">Ostoskori: maksaminen</label>
+			<label index="tt_content.pi1_flexform.display_mode.13">Ostoskori: tilauksen päättäminen</label>
+			<label index="tt_content.pi1_flexform.display_mode.14">Tilaukset: seuranta</label>
+			<label index="tt_content.pi1_flexform.display_mode.15">Tilaukset: laskutus</label>
+			<label index="tt_content.pi1_flexform.display_mode.16">Tilaukset: jakelu</label>
+			<label index="tt_content.pi1_flexform.display_mode.17">Tilaukset: lista</label>
+			<label index="tt_content.pi1_flexform.display_mode.18">Yleiset: muistio</label>
+			<label index="tt_content.pi1_flexform.display_mode.19">Yleiset: opastus</label>
+			<label index="tt_content.pi1_flexform.display_mode.20">Luokat: lista</label>
 		</languageKey>
 		<languageKey index="tr" type="array">
 			<label index="tt_products">Ürünler</label>
@@ -663,9 +643,9 @@
 			<label index="tt_products.itemnumber">Nesne numarası:</label>
 			<label index="tt_products.inStock">Stoktaki (prç):</label>
 			<label index="tt_products_cat">Ürün kategorisi</label>
+			<label index="tt_content.list_type_pi1">Ürünler</label>
 		</languageKey>
 		<languageKey index="se" type="array">
-			<label index="tt_content.tt_products_code">Kod</label>
 			<label index="tt_products">Produkter</label>
 			<label index="tt_products.price">Pris:</label>
 			<label index="tt_products.price2">Pris (2):</label>
@@ -685,6 +665,8 @@
 			<label index="tt_products_cat">Produktkategori</label>
 			<label index="fe_users.tt_products_memoItems">Memo Produkter</label>
 			<label index="fe_users.tt_products_discount">Rabatt</label>
+			<label index="tt_content.list_type_pi1">Produkter</label>
+			<label index="tt_content.tt_products_code">Kod</label>
 		</languageKey>
 		<languageKey index="pt" type="array">
 			<label index="tt_products">Produtos</label>
@@ -693,6 +675,7 @@
 			<label index="tt_products.itemnumber">Número do item:</label>
 			<label index="tt_products.inStock">Em armazém (pçs):</label>
 			<label index="tt_products_cat">Categoria do produto</label>
+			<label index="tt_content.list_type_pi1">Produtos</label>
 		</languageKey>
 		<languageKey index="ru" type="array">
 			<label index="tt_products">Продукты</label>
@@ -701,6 +684,7 @@
 			<label index="tt_products.itemnumber">Номенклатура:</label>
 			<label index="tt_products.inStock">На складе (штук):</label>
 			<label index="tt_products_cat">Категория продуктов</label>
+			<label index="tt_content.list_type_pi1">Продукты</label>
 		</languageKey>
 		<languageKey index="ro" type="array">
 		</languageKey>
@@ -713,13 +697,13 @@
 			<label index="tt_products.itemnumber">Číslo poloky:</label>
 			<label index="tt_products.inStock">V sklade (ks)</label>
 			<label index="tt_products_cat">Kategória výrobku</label>
+			<label index="tt_content.list_type_pi1">Produkty</label>
 		</languageKey>
 		<languageKey index="lt" type="array">
 		</languageKey>
 		<languageKey index="is" type="array">
 		</languageKey>
 		<languageKey index="hr" type="array">
-			<label index="tt_content.tt_products_code">Kod</label>
 			<label index="tt_products">Proizvodi</label>
 			<label index="tt_products.price">Cijena:</label>
 			<label index="tt_products.price2">Cijena (2):</label>
@@ -739,6 +723,8 @@
 			<label index="tt_products_cat">Kategorija proizvoda:</label>
 			<label index="fe_users.tt_products_memoItems">Memo</label>
 			<label index="fe_users.tt_products_discount">Popust</label>
+			<label index="tt_content.list_type_pi1">Proizvodi</label>
+			<label index="tt_content.tt_products_code">Kod</label>
 		</languageKey>
 		<languageKey index="hu" type="array">
 			<label index="tt_products">Termékek</label>
@@ -747,6 +733,7 @@
 			<label index="tt_products.itemnumber">Tételszám:</label>
 			<label index="tt_products.inStock">Raktáron (db):</label>
 			<label index="tt_products_cat">Termék kategória</label>
+			<label index="tt_content.list_type_pi1">Termékek</label>
 		</languageKey>
 		<languageKey index="gl" type="array">
 		</languageKey>
@@ -761,6 +748,7 @@
 			<label index="tt_products.itemnumber">貨品編號：</label>
 			<label index="tt_products.inStock">庫存（件）：</label>
 			<label index="tt_products_cat">產品類別</label>
+			<label index="tt_content.list_type_pi1">產品</label>
 		</languageKey>
 		<languageKey index="eu" type="array">
 		</languageKey>
@@ -771,6 +759,7 @@
 			<label index="tt_products.itemnumber">Номер на артикула:</label>
 			<label index="tt_products.inStock">На склад (броя):</label>
 			<label index="tt_products_cat">Продуктова категория</label>
+			<label index="tt_content.list_type_pi1">Продукти</label>
 		</languageKey>
 		<languageKey index="br" type="array">
 			<label index="tt_products">Produtos</label>
@@ -779,6 +768,7 @@
 			<label index="tt_products.itemnumber">Número do ítem:</label>
 			<label index="tt_products.inStock">Em estoque (un):</label>
 			<label index="tt_products_cat">Categoria do produto</label>
+			<label index="tt_content.list_type_pi1">Produtos</label>
 		</languageKey>
 		<languageKey index="et" type="array">
 		</languageKey>
@@ -808,86 +798,6 @@
 		</languageKey>
 	</data>
 	<orig_hash type="array">
-		<languageKey index="default" type="array">
-			<label index="tt_content.list_type_pi1" type="integer">6879244</label>
-			<label index="tt_content.tt_products_code" type="integer">211868589</label>
-			<label index="tt_products" type="integer">6879244</label>
-			<label index="tt_products.price" type="integer">254546606</label>
-			<label index="tt_products.price2" type="integer">131847666</label>
-			<label index="tt_products.unit" type="integer">31696029</label>
-			<label index="tt_products.unit_factor" type="integer">149179040</label>
-			<label index="tt_products.itemnumber" type="integer">111309730</label>
-			<label index="tt_products.inStock" type="integer">5210719</label>
-			<label index="tt_products.datasheet" type="integer">103423967</label>
-			<label index="tt_products.www" type="integer">134240929</label>
-			<label index="tt_products.tax" type="integer">99791745</label>
-			<label index="tt_products.weight" type="integer">13958717</label>
-			<label index="tt_products.bulkily" type="integer">108142069</label>
-			<label index="tt_products.offer" type="integer">3058747</label>
-			<label index="tt_products.highlight" type="integer">157133979</label>
-			<label index="tt_products.directcost" type="integer">151602474</label>
-			<label index="tt_products.color" type="integer">251294659</label>
-			<label index="tt_products.size" type="integer">60928027</label>
-			<label index="tt_products.description" type="integer">71151333</label>
-			<label index="tt_products.gradings" type="integer">40090077</label>
-			<label index="tt_products.additional" type="integer">76748518</label>
-			<label index="tt_products.additional.once" type="integer">25852508</label>
-			<label index="tt_products.special_preparation" type="integer">25820102</label>
-			<label index="tt_products.subtitle" type="integer">252742192</label>
-			<label index="tt_products.variants" type="integer">20835377</label>
-			<label index="tt_products_language" type="integer">27866527</label>
-			<label index="tt_products_language.prd_uid" type="integer">190912485</label>
-			<label index="tt_products_language.sys_language_uid" type="integer">77154959</label>
-			<label index="tt_products_language.datasheet" type="integer">103423967</label>
-			<label index="tt_products_cat" type="integer">56777951</label>
-			<label index="tt_products_cat.email_uid" type="integer">33900355</label>
-			<label index="tt_products_cat_language" type="integer">229874641</label>
-			<label index="tt_products_cat_language.sys_language_uid" type="integer">77154959</label>
-			<label index="tt_products_cat_language.cat_uid" type="integer">90105861</label>
-			<label index="tt_products_articles" type="integer">166342311</label>
-			<label index="tt_products_articles.uid_product" type="integer">233508945</label>
-			<label index="tt_products_emails" type="integer">53055639</label>
-			<label index="sys_products_orders" type="integer">127218170</label>
-			<label index="sys_products_orders.payment" type="integer">260293288</label>
-			<label index="sys_products_orders.shipping" type="integer">51515830</label>
-			<label index="sys_products_orders.amount" type="integer">245317857</label>
-			<label index="sys_products_orders.email_notify" type="integer">144250015</label>
-			<label index="sys_products_orders.tracking_code" type="integer">245849206</label>
-			<label index="sys_products_orders.status" type="integer">162313285</label>
-			<label index="sys_products_orders.status_log" type="integer">198299006</label>
-			<label index="sys_products_orders.orderData" type="integer">189191236</label>
-			<label index="sys_products_orders.agb" type="integer">136166185</label>
-			<label index="sys_products_orders.feusers_uid" type="integer">120672153</label>
-			<label index="sys_products_orders.creditpoints" type="integer">17851983</label>
-			<label index="sys_products_orders.creditpoints_spended" type="integer">58811981</label>
-			<label index="sys_products_orders.creditpoints_saved" type="integer">162623546</label>
-			<label index="sys_products_orders.creditpoints_gifts" type="integer">215948879</label>
-			<label index="sys_products_orders.desired_date" type="integer">214350618</label>
-			<label index="fe_users.tt_products_memoItems" type="integer">110976211</label>
-			<label index="fe_users.tt_products_discount" type="integer">17095049</label>
-			<label index="fe_users.tt_products_creditpoints" type="integer">72483863</label>
-			<label index="fe_users.tt_products_vouchercode" type="integer">218987260</label>
-			<label index="tt_content.pi1_flexform.display_mode" type="integer">194991965</label>
-			<label index="tt_content.pi1_flexform.display_mode.1" type="integer">221475549</label>
-			<label index="tt_content.pi1_flexform.display_mode.2" type="integer">9389235</label>
-			<label index="tt_content.pi1_flexform.display_mode.3" type="integer">245737610</label>
-			<label index="tt_content.pi1_flexform.display_mode.4" type="integer">225720715</label>
-			<label index="tt_content.pi1_flexform.display_mode.5" type="integer">116867237</label>
-			<label index="tt_content.pi1_flexform.display_mode.6" type="integer">32227089</label>
-			<label index="tt_content.pi1_flexform.display_mode.7" type="integer">172862909</label>
-			<label index="tt_content.pi1_flexform.display_mode.8" type="integer">246361695</label>
-			<label index="tt_content.pi1_flexform.display_mode.9" type="integer">38366068</label>
-			<label index="tt_content.pi1_flexform.display_mode.10" type="integer">206318579</label>
-			<label index="tt_content.pi1_flexform.display_mode.11" type="integer">123886360</label>
-			<label index="tt_content.pi1_flexform.display_mode.12" type="integer">157312289</label>
-			<label index="tt_content.pi1_flexform.display_mode.13" type="integer">115618459</label>
-			<label index="tt_content.pi1_flexform.display_mode.14" type="integer">236941665</label>
-			<label index="tt_content.pi1_flexform.display_mode.15" type="integer">157450969</label>
-			<label index="tt_content.pi1_flexform.display_mode.16" type="integer">123459885</label>
-			<label index="tt_content.pi1_flexform.display_mode.17" type="integer">182833495</label>
-			<label index="tt_content.pi1_flexform.display_mode.18" type="integer">20484105</label>
-			<label index="tt_content.pi1_flexform.display_mode.19" type="integer">40383733</label>
-		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="tt_products" type="integer">6879244</label>
 			<label index="tt_products.price" type="integer">254546606</label>
@@ -905,7 +815,7 @@
 			<label index="tt_products.color" type="integer">251294659</label>
 			<label index="tt_products.size" type="integer">60928027</label>
 			<label index="tt_products.description" type="integer">71151333</label>
-			<label index="tt_products.gradings" type="integer">40090077</label>
+			<label index="tt_products.gradings" type="integer">207533014</label>
 			<label index="tt_products.additional" type="integer">76748518</label>
 			<label index="tt_products.additional.once" type="integer">25852508</label>
 			<label index="tt_products.special_preparation" type="integer">25820102</label>
@@ -975,6 +885,8 @@
 			<label index="fe_users.tt_products_creditpoints" type="integer">72483863</label>
 			<label index="fe_users.tt_products_vouchercode" type="integer">218987260</label>
 			<label index="tt_products.prod_uid" type="integer">28109143</label>
+			<label index="tt_content.pi1_flexform.display_mode.21" type="integer">182948977</label>
+			<label index="tt_content.pi1_flexform.template_suffix" type="integer">92876174</label>
 		</languageKey>
 		<languageKey index="dk" type="array">
 			<label index="tt_content.tt_products_code" type="integer">211868589</label>
@@ -1159,7 +1071,7 @@
 			<label index="tt_products.directcost" type="integer">151602474</label>
 			<label index="tt_products.color" type="integer">251294659</label>
 			<label index="tt_products.size" type="integer">60928027</label>
-			<label index="tt_products.gradings" type="integer">40090077</label>
+			<label index="tt_products.gradings" type="integer">207533014</label>
 			<label index="tt_products.additional" type="integer">76748518</label>
 			<label index="tt_products.special_preparation" type="integer">25820102</label>
 			<label index="tt_products.subtitle" type="integer">252742192</label>

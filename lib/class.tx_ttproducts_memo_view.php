@@ -61,8 +61,20 @@ class tx_ttproducts_memo_view {
 		$this->conf = &$conf;
 		$this->config = &$config;
 		$this->basket = &$basket;
-		$this->page = tx_ttproducts_page::createPageTable($this->pibase,$this->page,$pid_list,99);
 		$this->tt_content = &$tt_content;
+		$this->page = tx_ttproducts_page::createPageTable(
+			$this->pibase,
+			$this->conf,
+			$this->config,
+			$this->tt_content,
+			$this->pibase->LLkey,
+			$this->conf['table.']['pages'], 
+			$this->conf['table.']['pages.'],
+			$this->conf['conf.']['pages.'],
+			$this->page,
+			$pid_list,
+			99
+		);
 		$this->tt_products = &$tt_products;
 		$this->tt_products_cat = &$tt_products_cat;
 		$this->tt_products_articles = &$tt_products_articles;

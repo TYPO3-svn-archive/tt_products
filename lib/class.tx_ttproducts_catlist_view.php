@@ -60,9 +60,20 @@ class tx_ttproducts_catlist_view {
 		$this->basket = &$basket;
 		$this->tt_content = &$tt_content;
 		$this->tt_products_cat = &$tt_products_cat;
-		$this->pid = $pid;
-		
-		$this->page = tx_ttproducts_page::createPageTable($this->pibase,$this->page,$pid_list,99);
+		$this->pid = $pid;		
+		$this->page = tx_ttproducts_page::createPageTable(
+			$this->pibase,
+			$this->conf,
+			$this->config,
+			$this->tt_content,
+			$this->pibase->LLkey,
+			$this->conf['table.']['pages'], 
+			$this->conf['table.']['pages.'],
+			$this->conf['conf.']['pages.'],
+			$this->page,
+			$pid_list,
+			99
+		);
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($pibase, $conf, $config, $basket);
 
@@ -84,6 +95,22 @@ class tx_ttproducts_catlist_view {
 	}
 
 
+	function &getParentsArray($cat, &$categoryArray)	{
+		$parentsArray = array();
+		
+		if ($cat)	{
+			$uid = $cat;
+			$parentsArray[$uid] = true;
+			// get all forfathers
+			while ($uid = $categoryArray[$uid]['parent_category'])	{
+				$parentsArray[$uid] = true;
+			}
+		}
+
+		return $parentsArray;
+	}
+
+
 	// sets the 'depth' field
 	function setDepths (&$categoryRootArray, &$categoryArray)	{
 		$depth = 1;
@@ -92,17 +119,17 @@ class tx_ttproducts_catlist_view {
 		foreach ($categoryArray as $category => $row)	{
 				// is it a leaf in a tree ?
 			if (!is_array($row['child_category']))	{
-				$endArray [] = $category;				
+				$endArray [] = (int) $category;				
 			}
 		}
 		foreach ($endArray as $k => $category)	{
 			$count = 0;
-			$actCategory = $category;
+			$actCategory = (int) $category;
 			// determine the highest parent
 			while ($actCategory && !$categoryArray[$actCategory]['depth'] && $count < 100) {
 				$count++;
 				$lastCategory = $actCategory; 
-				$actCategory = $categoryArray[$actCategory]['parent_category'];
+				$actCategory = (int) $categoryArray[$actCategory]['parent_category'];
 			}
 			
 			$depth = $count + $categoryArray[$lastCategory]['depth'];
@@ -110,24 +137,28 @@ class tx_ttproducts_catlist_view {
 			$actCategory = $category;
 			while ($actCategory && !$categoryArray[$actCategory]['depth']) {
 				$categoryArray[$actCategory]['depth'] = $depth--;
-				$actCategory = $categoryArray[$actCategory]['parent_category'];
+				$actCategory = (int) $categoryArray[$actCategory]['parent_category'];
 			}
 			
 		}
 	}
 
+
 	// returns the products list view
-	function &printView(&$templateCode, &$error_code) {
-		global $TSFE, $TCA;
+	function &printView(&$templateCode, &$error_code, $pageAsCategory) {
+		global $TSFE, $TCA, $TYPO3_CONF_VARS;
 		$content='';
 		$out='';
 		$where='';
 		$bFinished = false;
 		$bSeparated = false;
 		$categoryArray = array();
-		
+		$htmlTagMain = $this->conf['displayCatListType'];
+		$htmlTagElement = ($htmlTagMain == 'ul' ? 'li' : 'option');
+		$currentCat = $this->tt_products_cat->getParamDefault();
+
 		if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])	{
-			$categoryArray = $this->page->getRelationArray();
+			$categoryArray = $this->page->getRelationArray($this->pibase->cObj->data['pages']);
 		} else {
 				// read in all categories
 			$this->tt_products_cat->get(0, $this->page->pid_list);
@@ -143,95 +174,131 @@ class tx_ttproducts_catlist_view {
 //				$categoryArray[$pid]['child'][$uid] = $uid;
 //			}
 	//	}
-		
+
 		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_CATLIST_TEMPLATE###'));
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
+		$t['linkCategoryFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryFrameWork'],'###LINK_CATEGORY###');
+
+		$subpartArray = array();
+		$subpartArray['###LINK_CATEGORY###'] = '###CATEGORY_TMP###';
+		$tmp = $this->pibase->cObj->substituteMarkerArrayCached($t['categoryFrameWork'],array(),$subpartArray);
+		$htmlParts = t3lib_div::trimExplode ('###CATEGORY_TMP###', $tmp);
+		$htmlPartsMarkers = array('###ITEM_SINGLE_PRE_HTML###', '###ITEM_SINGLE_POST_HTML###');
 		
 		if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
 			$bSeparated = true;
 		}
 		
 		$maxDepth = 3;
-		$rootArray = $this->getRootArray($categoryArray); 
+		$rootArray = $this->getRootArray($categoryArray);
+		$parentArray = $this->getParentsArray($currentCat, $categoryArray);
 		$this->setDepths($rootArray, $categoryArray);
-		
 		$outArray = array();
 		$count = 0;
 		$depth = 1;
 		$catArray = array();
-		$catArray [$depth] = &$rootArray;  
+		$catArray [(int) $depth] = &$rootArray;
 		$countArray = array();
 		$countArray[0] = 0;
 		$countArray[1] = 0;
 		$count = 0;
 		$menu = $this->conf['CSS.'][$this->tt_products_cat->table->name.'.']['menu'];
-		$htmlTagMain = $this->conf['displayCatListType'];
-		$htmlTagElement = ($htmlTagMain == 'ul' ? 'li' : 'option');
 		$menu = ($menu ? $menu : 'cat'.$depth);
 		$fill = '';
 		if ($bSeparated)	{
-			$fill = ' onchange="fillSelect(this,2);"';
+			$fill = ' onchange="fillSelect(this,2,1);"';
 		}
 		$out = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
 		if ($htmlTagMain == 'select')	{
 			// empty select entry at the beginning
 			$out .= '<option value="0"></option>';
 		}
-		$currentCat = $this->pibase->piVars['cat'];
-		
-		$markerArray = array();
-		while ($depth > 0 && $count<50)	{
-			$count++;
-			if($countArray[$depth] < count ($catArray[$depth]))	{
-				$actCategory = $catArray[$depth][$countArray[$depth]];
-				$countArray[$depth]++;
-				$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $categoryArray[$actCategory]);
-				$css = ($actCategory == $currentCat ? 'class="act"' : '');
-				$markerArray['###ITEM_SINGLE_PRE_HTML###'] = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
-				if ($htmlTagMain == 'select')	{
-					$wrappedSubpartArray['###LINK_CATEGORY###'] = array('','');
+		$out = str_replace($htmlPartsMarkers[0], $out, $htmlParts[0]);
+		if ($htmlTagMain == 'ul')	{
+			while ($depth > 0 && $count < 300)	{
+				$count++;
+				$css = 'class="w'.$count.'"';
+				if($countArray[$depth] < count ($catArray[$depth]))	{
+					$markerArray = array();
+					$actCategory = $catArray[$depth][$countArray[$depth]];
+					$subCategories = $categoryArray[$actCategory]['child_category'];
+					$countArray[$depth]++;				
+					$css = ($actCategory == $currentCat ? 'class="act"' : $css);
+					$preOut = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
+					$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);
+	
+					if ($pageAsCategory > 0)	{
+						$pid = $categoryArray[$actCategory]['pid'];
+					} else {
+						$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $categoryArray[$actCategory]);
+					}
+					
+					// $t['linkCategoryFrameWork']
+					$addQueryString = array('cat' => $actCategory);
+					if (is_array($TSFE->fe_user->user))	 {
+						$addQueryString = array(); // array('fegroup' => 1);
+					}
+					$tempUrl = $this->pibase->pi_linkTP_keepPIvars_url($addQueryString,1,1,$pid);
+					$linkOut = '<a href="'.$tempUrl.'" '.$css.'>'.$categoryArray[$actCategory]['title'].'</a>';
+					$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);
+					if (is_array($subCategories)	&&
+						(!$this->conf['clickIntoSubmenu'] || $parentArray[$actCategory] == true))	{
+						$depth++;
+						$preOut = '<'.$htmlTagMain.' '.$css.'" >';
+						$countArray[(int) $depth] = 0;
+						$catArray[(int) $depth] = $subCategories;
+						$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);
+					}
 				} else {
-					$wrappedSubpartArray['###LINK_CATEGORY###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array($this->pibase->prefixId.'[cat]' => $actCategory))).'"'.$css.'>','</a>');
+					$depth--;
+					$prevCategory = $catArray[$depth][$countArray[$depth]-1];
+					$subCategories = $categoryArray[$prevCategory]['child_category'];
+	
+					$postOut = '</'.$htmlTagElement.'>';
+					if (is_array($subCategories))	{
+						$postOut .= '</'.$htmlTagMain.'>';
+					}
+					$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);
 				}
-				$markerArray['###LIST_LINK###'] = $categoryArray[$actCategory]['title'];  
-				$markerArray['###ITEM_SINGLE_POST_HTML###'] = '</'.$htmlTagElement.'>';
-				$subpartArray = array();
-				$out.= $this->pibase->cObj->substituteMarkerArrayCached($t['categoryFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
-				
-				$subCategories = $catArray[$actCategory]['child_category']; 
-				if (is_array($subCategories) && !$bSeparated)	{
-					$depth++;
-					$out .= '<'.$htmlTagMain.' class="w'.$count.'">';
-					$countArray[$depth] = 0;
-					$catArray[$depth] = $subCategories; 
-				}
-			} else {
-				$out .= '</'.$htmlTagMain.'>';
-				$depth--;
 			}
+		} else {  // if ($htmlTagMain == 'ul')
+			while ($depth > 0 && $count < 50)	{
+				$count++;
+				if($countArray[$depth] < count ($catArray[$depth]))	{
+					$actCategory = $catArray[$depth][$countArray[$depth]];
+					$subCategories = $categoryArray[$actCategory]['child_category'];
+					$countArray[$depth]++;				
+					$css = ($actCategory == $currentCat ? 'class="act"' : $css);
+					$preOut = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
+					$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);
+					$linkOut = $categoryArray[$actCategory]['title'];
+					$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);
+					$postOut = '</'.$htmlTagElement.'>';
+					$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);				
+				}
+			}		
 		}
-		$out .= '</'.$htmlTagMain.'ul>';
+		$out .= '</'.$htmlTagMain.'>';
 
 		$markerArray = array();
 		$subpartArray = array();
 		$wrappedSubpartArray = array();
 		$subpartArray['###CATEGORY_SINGLE###'] = $out;
-		$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
 		if ($bSeparated)	{
+			$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
 			$this->pibase->javascript->set('catselect', $categoryArray);
 			
 			for ($i = 2; $i <= 1+$count; ++$i)	{
 				$menu = 'cat'.$i;
-				$fill = ' onchange="fillSelect(this,'.($i+1).');"';
-				if ($i == 1+$count)
-					$fill = '';
+				$bShowSubcategories = ($i < 1+$count ? 1 : 0); 
+				$boxNumber = ($i < 1+$count ? ($i+1) : 0);
+				$fill = ' onchange="fillSelect(this,'.$boxNumber.','.$bShowSubcategories.');"';
 				$tmp = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
 				$tmp .= '</'.$htmlTagMain.'>';
 				$subpartArray['###CATEGORY_SINGLE_'.$i.'###'] = $tmp;
 			}
 		}
 		$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
-
 		$content = $out;
 
 		return $content;

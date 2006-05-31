@@ -64,20 +64,20 @@ class tx_ttproducts_order_view {
 
 
 	function &printView(&$templateCode, &$error_code)	 {
-		global $TSFE;
+		global $TSFE, $TYPO3_DB;
 
 		$feusers_uid = $TSFE->fe_user->user['uid'];
 
 		if (!$feusers_uid)
 			return $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###MEMO_NOT_LOGGED_IN###'));
 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders','feusers_uid='.$feusers_uid.' AND NOT deleted ORDER BY crdate');
+		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders','feusers_uid='.$feusers_uid.' AND NOT deleted ORDER BY crdate');
 
 		$content=$this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ORDERS_LIST_TEMPLATE###'));
  //CBY 11/11/2005 modifications : integrating order list template start
 	  //$orderlist=$this->pibase->cObj->getSubpart($content,'###ORDER_LIST###');
 		$orderitem=$this->pibase->cObj->getSubpart($content,'###ORDER_ITEM###');
-		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
+		if ($TYPO3_DB->sql_num_rows($res)) {
 			// Fill marker arrays
 			$markerArray=Array();
 			$subpartArray=Array();
@@ -86,7 +86,7 @@ class tx_ttproducts_order_view {
 			$tot_creditpoints_spended= 0;
 			$tot_creditpoints_gifts= 0;
 			$this->orders = array();
-			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 				//$this->orders[$row['uid']] = $row['tracking_code'];
 				$markerArray['###TRACKING_CODE###']=$row['tracking_code'];
 				$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']);
@@ -109,16 +109,16 @@ class tx_ttproducts_order_view {
 				$orderlistc.= $this->pibase->cObj->substituteMarkerArray($orderitem, $markerArray);
 			}
 
-			$res1 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
-			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res1)) {
+			$res1 = $TYPO3_DB->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
+			if ($row = $TYPO3_DB->sql_fetch_assoc($res1)) {
 				$username = $row['username'];
 			}
 	
-			$res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
-			$num_rows = $GLOBALS['TYPO3_DB']->sql_num_rows($res2) * 5;
-			$res3 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
+			$res2 = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
+			$num_rows = $TYPO3_DB->sql_num_rows($res2) * 5;
+			$res3 = $TYPO3_DB->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
 			$this->creditpoints = array();
-			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res3)) {
+			while($row = $TYPO3_DB->sql_fetch_assoc($res3)) {
 				$this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
 				$totalcreditpoints= $row['tt_products_creditpoints'];
 			}
@@ -144,7 +144,7 @@ class tx_ttproducts_order_view {
 			$content = $norows;
 		} // else of if ($GLOBALS['TYPO3_DB']->sql_num_rows($res))
   
-	return $content;
+		return $content;
 	}
 
 }

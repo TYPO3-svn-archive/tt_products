@@ -39,6 +39,8 @@ $LOCAL_LANG = Array (
 	'si' => Array (
 	),
 	'fi' => Array (
+		'.description' => 'Tuotteiden kategoriat.',
+		'.details' => 'Kategorioita käytetään vain, jos tuotteet on konfiguroitu käyttämään niitä.',		
 	),
 	'tr' => Array (
 	),

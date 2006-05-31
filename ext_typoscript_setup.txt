@@ -18,8 +18,12 @@ plugin.tt_products {
       4 = gradings
       5 = additional
     }
+  }
+  conf.tt_products.ALL {
+    orderBy = {$plugin.tt_products.orderBy}
     requiredListFields = uid,pid,category,price,price2,tax,inStock
   }
+
   table.tt_products_articles = tt_products_articles
   table.tt_products_articles {
     itemnumber = itemnumber
@@ -31,17 +35,16 @@ plugin.tt_products {
       5 = additional
     }
   }
-  conf.tt_products.articles {
+  conf.tt_products.articles.ALL {
     requiredListFields = uid,pid,uid_product,price,price2,inStock  
   }
 
   table.tt_products_cat = tt_products_cat
-  conf.tt_products_cat {
+  conf.tt_products_cat.ALL {
     orderBy = sorting
   }
-  
-  userFunc = tx_ttproducts_pi1->main_products
 
+  userFunc = tx_ttproducts_pi1->main_products
   templateFile = {$plugin.tt_products.file.templateFile}
   pid_list.field = pages
   code.field = select_key
@@ -77,11 +80,16 @@ plugin.tt_products {
   basketImage.file.maxH = {$plugin.tt_products.maxH_basket}
   basketImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_basket}
 
+  listcatImage < .image
+  listcatImage.file.maxW = {$plugin.tt_products.maxW_listcat}
+  listcatImage.file.maxH = {$plugin.tt_products.maxH_listcat}
+  listcatImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_listcat}
+
   image.wrap = | <BR>
 
   noImageAvailable = {$plugin.tt_products.file.noImageAvailable}
   datasheetIcon {
-  file = {$plugin.tt_products.file.datasheetIcon}
+	file = {$plugin.tt_products.file.datasheetIcon}
   }
 
   wrap1.wrap = {$plugin.tt_products.wrap1}
@@ -93,6 +101,7 @@ plugin.tt_products {
 
   selectColor = {$plugin.tt_products.selectColor}
   selectSize = {$plugin.tt_products.selectSize}
+  selectDescription = {$plugin.tt_products.selectDescription}
   selectGradings = {$plugin.tt_products.selectGradings}
   selectAdditional = {$plugin.tt_products.selectAdditional}
   useArticles = {$plugin.tt_products.useArticles}
@@ -103,6 +112,7 @@ plugin.tt_products {
   displayCatListType = {$plugin.tt_products.displayCatListType}
   basketPic = {$plugin.tt_products.basketPic}
   clickIntoBasket = {$plugin.tt_products.clickIntoBasket}
+  clickIntoSubmenu = {$plugin.tt_products.clickIntoSubmenu}
   basketMaxQuantity = {$plugin.tt_products.basketMaxQuantity}
   quantityIsFloat = {$plugin.tt_products.quantityIsFloat}
   
@@ -115,11 +125,13 @@ plugin.tt_products {
 
   PIDinfo = {$plugin.tt_products.PIDinfo}
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
+  PIDpayment = {$plugin.tt_products.PIDpayment}
   PIDthanks = {$plugin.tt_products.PIDthanks}
   PIDtracking = {$plugin.tt_products.PIDtracking}
   PIDbilling = {$plugin.tt_products.PIDbilling}
   PIDdelivery = {$plugin.tt_products.PIDdelivery}
   PIDitemDisplay = {$plugin.tt_products.PIDitemDisplay}
+  PIDlistDisplay = {$plugin.tt_products.PIDlistDisplay}
   PIDsearch = {$plugin.tt_products.PIDsearch}
   PIDbasket = {$plugin.tt_products.PIDbasket}
   PIDstoreRoot = {$plugin.tt_products.PIDstoreRoot}
@@ -132,6 +144,7 @@ plugin.tt_products {
   alwaysAdvanceOrderNumber = {$plugin.tt_products.alwaysAdvanceOrderNumber}
 
   defaultProductID = {$plugin.tt_products.defaultProductID}
+  defaultCategoryID = {$plugin.tt_products.defaultCategoryID}
   recursive = {$plugin.tt_products.recursive}
   domain = {$plugin.tt_products.domain}
   
@@ -150,8 +163,6 @@ plugin.tt_products {
   lockLoginUserInfo = {$plugin.tt_products.lockLoginUserInfo}
   editLockedLoginInfo = {$plugin.tt_products.editLockedLoginInfo}
   loginUserInfoAddress = {$plugin.tt_products.loginUserInfoAddress}
-  orderBy = {$plugin.tt_products.orderBy}
-  orderByCategoryTitle = {$plugin.tt_products.orderByCategoryTitle}
   orderByItemNumberSg = {$plugin.tt_products.orderByItemNumberSg}
   orderNumberPrefix = {$plugin.tt_products.orderNumberPrefix}
   requiredInfoFields = name, address, telephone, email
@@ -223,7 +234,7 @@ plugin.tt_products {
 
   stdSearchFieldExt = {$plugin.tt_products.stdSearchFieldExt}
   PIDagb = {$plugin.tt_products.PIDagb}
-  agbtarget = {$plugin.tt_products.agbtarget}
+  AGBtarget = {$plugin.tt_products.AGBtarget}
   AGBattachment = {$plugin.tt_products.AGBattachment}
 
   generateCSV = {$plugin.tt_products.generateCSV}
@@ -251,6 +262,8 @@ plugin.tt_products {
   10.prod.101 = 0.04
   10.prod.501 = 0.06
   }
+  
+  form.SEARCH.name = ShopSearchForm
   
 #  _CSS_DEFAULT_STYLE (
 #      .tx-ttproducts-pi1-wrap1 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }

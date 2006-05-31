@@ -147,7 +147,6 @@ $TCA['sys_products_orders'] = Array (
 );
 
 
-
 t3lib_div::loadTCA('tt_content');
 
 if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
@@ -198,7 +197,6 @@ if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
 }
 
 if ($typoVersion < 3008000)	{
-	
 	// overwrite the values for former language files
 	$TCA['tt_products']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products';
 	$TCA['tt_products_cat']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat';
@@ -254,7 +252,7 @@ $tempColumns = Array (
 			'checkbox' => '0',
 			'range' => Array (
 				'upper' => '1000',
-				'lower' => '10'
+				'lower' => '1'
 			),
 			'default' => 0
 		)

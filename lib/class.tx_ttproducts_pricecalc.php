@@ -84,7 +84,7 @@ class tx_ttproducts_pricecalc {
 		} else {
 			while (list(,$val) = each ($gr_list)) {
 				if (((float) $val > 0) && ($getDiscount == 0)) {
-					$getDiscount = 1 - strcmp($TSFE->fe_user->groupData->title, $conf['discountGroupName '] );
+					$getDiscount = 1 - strcmp($TSFE->fe_user->groupData->title, $conf['discountGroupName'] );
 
 					if (strlen($TSFE->fe_user->groupData['title']) == 0)	// repair result of strcmp
 						$getDiscount = 0;

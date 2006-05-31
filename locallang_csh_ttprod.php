@@ -50,6 +50,8 @@ tt_content:list_type',
 	'si' => Array (
 	),
 	'fi' => Array (
+		'.description' => 'Ostoskoriohjelman sisältämät tuotteet',
+		'.details' => 'Tämä taulukko sisältää sisäisessä ostoskoriohjelmassa olevat tuotteet.',		
 	),
 	'tr' => Array (
 	),

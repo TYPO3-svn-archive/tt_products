@@ -39,6 +39,8 @@ $LOCAL_LANG = Array (
 	'si' => Array (
 	),
 	'fi' => Array (
+		'.description' => 'Tuotteet.',
+		'.details' => 'Käytetyillä tuotteilla tulee olla tietyt ominaisuudet kuten tuotevarianttien hinta. Ne voidaan antaa vasta sen jälkeen kun niitä vastaava tuote on määritetty.',		
 	),
 	'tr' => Array (
 	),

@@ -67,7 +67,7 @@ switch($products_cmd)	{
 	case 'cardno':
 		$tSubpart = $lConf['soloe'] ? '###DIBS_SOLOE_TEMPLATE###' : '###DIBS_CARDNO_TEMPLATE###';		// If solo-e is selected, use different subpart from template
 		$tSubpart = $lConf['direct'] ? '###DIBS_DIRECT_TEMPLATE###' : $tSubpart;		// If direct is selected, use different subpart from template
-		$content=$this->basketView->getView($localTemplateCode,$tSubpart);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=$this->basketView->getView($localTemplateCode,'PAYMENT', $tSubpart);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 
 		$markerArray=array();
 		$markerArray['###HIDDEN_FIELDS###'] = 
@@ -185,14 +185,14 @@ value="'.$pibase->price->priceFormat( $this->basket->calculatedArray['priceTax']
 	case 'decline':
 		$markerArray=array();
 		$markerArray['###REASON_CODE###'] = t3lib_div::_GP('reason');
-		$content=$this->basketView->getView($localTemplateCode, '###DIBS_DECLINE_TEMPLATE###',$markerArray);	  // This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=$this->basketView->getView($localTemplateCode, 'PAYMENT', '###DIBS_DECLINE_TEMPLATE###',$markerArray);	  // This not only gets the output but also calculates the basket total, so it's NECESSARY!
 	break;
 	case 'cancel':
-		$content=$this->basketView->getView($localTemplateCode, '###DIBS_SOLOE_CANCEL_TEMPLATE###',$markerArray);	 // This not only gets the output but also calculates the basket total, so it's NECESSARY!
+		$content=$this->basketView->getView($localTemplateCode, 'PAYMENT', '###DIBS_SOLOE_CANCEL_TEMPLATE###',$markerArray);	 // This not only gets the output but also calculates the basket total, so it's NECESSARY!
 	break;
 	case 'accept':
 		
-$content=$this->basketView->getView($localTemplateCode,'###DIBS_ACCEPT_TEMPLATE###');
+$content=$this->basketView->getView($localTemplateCode, 'PAYMENT', '###DIBS_ACCEPT_TEMPLATE###');
 	// This is just done to calculate stuff
 
 			// DIBS md5 keys
@@ -206,14 +206,14 @@ $content=$this->basketView->getView($localTemplateCode,'###DIBS_ACCEPT_TEMPLATE#
 		$md5key= md5($k2.md5($k1.'transact='.$transact.'&amount='.$amount.'&currency='.$currency));
 		$authkey=t3lib_div::_GP('authkey');
 		if ($md5key != $authkey)	{
-			$content=$this->basketView->getView($localTemplateCode, '###DIBS_DECLINE_MD5_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=$this->basketView->getView($localTemplateCode, 'PAYMENT', '###DIBS_DECLINE_MD5_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} elseif (t3lib_div::_GP('orderid')!=$this->basket->order->getNumber($orderUid)) {
-			$content=$this->basketView->getView($localTemplateCode, '###DIBS_DECLINE_ORDERID_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
+			$content=$this->basketView->getView($localTemplateCode, 'PAYMENT', '###DIBS_DECLINE_ORDERID_TEMPLATE###');		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		} else {
 			$markerArray=array();
 			$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
 
-			$content=$this->basketView->getView($tmp='','###BASKET_ORDERCONFIRMATION_TEMPLATE###',$markerArray);
+			$content=$this->basketView->getView($tmp='', 'PAYMENT', '###BASKET_ORDERCONFIRMATION_TEMPLATE###',$markerArray);
 			$error=''; // TODO
 			$this->order->finalize($this->basketView->templateCode, $this->basketView, $this->basket->tt_products /* TODO */,$this->basket->tt_products_cat, $this->basket->price, $orderUid,$content,$error);  // Important: $oder->finalize MUST come after the call of prodObj->getBasket, because this function, getBasket, calculates the order! And that information is used in the finalize-function
 		}
@@ -222,7 +222,7 @@ $content=$this->basketView->getView($localTemplateCode,'###DIBS_ACCEPT_TEMPLATE#
 		if ($lConf['relayURL']) {
 			$markerArray=array();
 			$markerArray['###REDIRECT_URL###'] = 'https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=cardno&products_finalize=1'.$param;
-			$content=$this->basketView->getView($localTemplateCode, '###DIBS_REDIRECT_TEMPLATE###',$markerArray);
+			$content=$this->basketView->getView($localTemplateCode, 'PAYMENT', '###DIBS_REDIRECT_TEMPLATE###',$markerArray);
 		} else {
 			$content = 'NO .relayURL given!!';
 		}
