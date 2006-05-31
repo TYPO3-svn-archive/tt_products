@@ -26,19 +26,23 @@
 -->
 <br>
 <h1>bananaGUARD Shop-Template</h1>
-<p> Sie können die Webseite dieses Templates unter <A href="http://tt-products.zedwoo.de">tt-products.zedwoo.de</A> sehen.<br />
-Dieses Template ist ident mit jenem auf der Testseite. <br />
-Die Original-Webseite befindet sich auf <A href="http://www.bananaguard.de">bananaguard.de</A> .
+<p> Dieses Template entspricht dem früheren Shop von <A href="http://www.bananaguard.de">bananaguard.de</A> .
 </p>
 
 <table border="0" cellspacing="0" cellpadding="1" width=1>
 	<tr>
+		<!-- ###FE_GROUP_1_TEMPLATE### begin -->
+		<td>Du bist eingeloggt! </td>
+		<!-- ###FE_GROUP_1_TEMPLATE### end -->
 		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
 		<td><!-- ###LINK_BROWSE### begin -->
 			[ ###BROWSE_LINKS### ]
 			<!-- ###LINK_BROWSE### end-->
 		</td>
 		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>nächste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+	<tr>
+		<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
 	</tr>
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
 		<!-- ###ITEM_CATEGORY### begin -->
@@ -49,9 +53,6 @@ Die Original-Webseite befindet sich auf <A href="http://www.bananaguard.de">bana
 			</tr>
 		<!-- ###ITEM_CATEGORY### end -->
 		<!-- ###ITEM_LIST### begin -->
-			<tr>
-				<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
-			</tr>
 			<tr><td colspan="3">
 			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
 
@@ -68,7 +69,7 @@ Die Original-Webseite befindet sich auf <A href="http://www.bananaguard.de">bana
             ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
             <!--###LINK_ITEM###-->
             <br>
-            ###PRODUCT_IMAGE### <br>
+            ###PRODUCT_IMAGE1### <br>
 		  <!-- ###display_variant2### -->
 		  ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
 		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
@@ -424,9 +425,9 @@ In addition there's a number of fields used for delivery and payment information
 </td>
 <td></td>
 <td></td>
-<td valign=top>###GW1B### <!-- ###PRICE_TAX### --> ###GW1E###</td>
+<td valign=top>###GW1B### ###PRICE_TAX### (Steuer: ###PRICE_ONLY_TAX###) EUR ###GW1E###</td>
 <td valign=top> <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </td>
-<td valign=top align=right>###GW1B### <!--<b>###PRICE_TOTAL_TAX###</b> <br>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###) --> ###GW1E###</td>
+<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> <br>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)###GW1E###</td>
 </tr>
 <!-- ###ITEM_SINGLE### end -->
 <!-- ###ITEM_LIST### end -->
@@ -467,9 +468,6 @@ In addition there's a number of fields used for delivery and payment information
 <td colspan=6><img src="clear.gif" width="1" height="10"></td>
 </tr>
 
-
-<!-- Payment habe ich hier rausgenommen -->
-
 <tr>
 <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Zahlungsweise:</b>###GW2E###</td>
 <td colspan=3></td>
@@ -506,15 +504,11 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 </td>
 <td valign=top align=right>###GW1B###
 <b>###PRICE_PAYMENT_TAX###</b><br>
-<!-- (###PRICE_PAYMENT_NO_TAX###) -->###GW1E###</td>
+ (###PRICE_PAYMENT_NO_TAX###) ###GW1E###</td>
 </tr>
 <tr>
 <td colspan=6><img src="clear.gif" width="1" height="10"></td>
 </tr>
-
-
-<!-- Payment habe ich hier rausgenommen -->
-
 
 
 <tr>
@@ -523,7 +517,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 <tr>
 <td valign=top colspan=5></td>
 <td valign=top align=right nowrap>###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b><br>
-      (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)<br> ###GW1E###</td>
+      (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)<br> (Steuer: ###PRICE_TOTAL_ONLY_TAX###) EUR  ###GW1E###</td>
 </tr>
 </table><br>
 <table width="100%"><tr>
@@ -1032,7 +1026,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.
 <tr>
     <td colspan=6> <p>###GW1B###<b>Bestellbestätigung:</b><br>
         Vielen Dank für Ihre Bestellung!<br>
-        Ihre DEMO-Bestellung ist nun abgeschlossen und hat folgende Nummer:<br>
+        Ihre Test-Bestellung ist nun abgeschlossen und hat folgende Nummer:<br>
         <br>
         &nbsp;&nbsp;&nbsp;&nbsp;<B>###ORDER_UID###</B> <br>
         <br>
@@ -1616,7 +1610,7 @@ Bestellung ####ORDER_UID###
 Bestellung ####ORDER_UID###
 
 Bestellbestätigung:
-Ihre DEMO-Bestellung ist abgeschlossen und hat die Nummer ###ORDER_UID###.
+Ihre Test-Bestellung ist abgeschlossen und hat die Nummer ###ORDER_UID###.
 Verweisen Sie bitte bei jedem Kontakt mit uns auf diese Bestellnummer.
 
 BESTELLSTATUS:
@@ -2003,10 +1997,26 @@ Mein Typo3 Shop
 	<!-- ###CATEGORY_SINGLE_3### begin-->
 	<!-- ###CATEGORY_SINGLE_3### end-->
 
-	<div id="ArticleId"></div>
+	<!-- ###CATEGORY_SINGLE_4### begin-->
+	<!-- ###CATEGORY_SINGLE_4### end-->
+
+	<div id="ArticleId">Das ersetzen</div>
 
 <!-- ###ITEM_CATLIST_TEMPLATE### end -->
 
+
+<!-- ###ITEM_CATLIST_TEMPLATE_UL### begin
+	This subpart is used to display the regular list of categories.
+-->
+	<!-- ###CATEGORY_SINGLE### begin-->
+		###ITEM_SINGLE_PRE_HTML###
+		<!--###LINK_CATEGORY### begin-->
+			###LIST_LINK###
+		<!--###LINK_CATEGORY### end-->
+		###ITEM_SINGLE_POST_HTML###
+	<!-- ###CATEGORY_SINGLE### end-->
+
+<!-- ###ITEM_CATLIST_TEMPLATE_UL### end -->
 
 
 
