@@ -1,0 +1,318 @@
+<?php
+/***************************************************************
+*  Copyright notice
+*
+*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  All rights reserved
+*
+*  This script is part of the Typo3 project. The Typo3 project is
+*  free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License or
+*  (at your option) any later version.
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*  A copy is found in the textfile GPL.txt and important notices to the license
+*  from the author is found in LICENSE.txt distributed with these scripts.
+*
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  This copyright notice MUST APPEAR in all copies of the script!
+***************************************************************/
+/**
+ * Part of the tt_products (Shopping System) extension.
+ *
+ * functions for the images
+ *
+ * $Id$
+ *
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @package TYPO3
+ * @subpackage tt_products
+ *
+ *
+ */
+
+
+class tx_ttproducts_image {
+	var $pibase; // reference to object of pibase
+	var $conf;
+	var $config;
+	var $marker;
+	var $parenttable;
+
+	/**
+	 * Getting all tt_products_cat categories into internal array
+	 */
+	function init(&$pibase, &$conf, &$config, &$tt_content, &$parenttable, $marker)  {
+		global $TYPO3_DB,$TSFE,$TCA;
+		
+		$this->pibase = &$pibase;
+		$this->conf = &$conf;
+		$this->config = &$config;
+		$this->tt_content = &$tt_content;
+		$this->parenttable = &$parenttable;
+		$this->marker = $marker;
+	} // init
+
+
+	/* returns the key for the tag array and marker array without leading and ending '###' */
+	function getMarkerkey(&$imageMarkerArray, $imageName)	{
+		$imageNameArray = t3lib_div::trimExplode('_', $imageName);
+		$partsArray = t3lib_div::trimExplode(',', $imageMarkerArray['parts']);
+		$keyArray = array();
+		$keyArray[] = $this->marker;
+		$keyArray[] = 'IMAGE';
+		foreach ($partsArray as $k2 => $part)	{
+			$keyArray[] = $imageNameArray[$part-1];
+		}
+		$key = current(t3lib_div::trimExplode('.',(implode('_', $keyArray))));
+		return $key;
+	}
+	
+	
+	function &getTableConf ($tablename, $theCode)	{
+
+		if (is_array($this->conf['conf.']) &&
+			is_array($this->conf['conf.'][$tablename.'.'])
+			)	{
+			if (is_array($this->conf['conf.'][$tablename.'.']['ALL.']))	{
+				$tableConf = $this->conf['conf.'][$tablename.'.']['ALL.'];
+			}
+			if (is_array($this->conf['conf.'][$tablename.'.'][$theCode.'.']))	{
+				$tempConf = $this->conf['conf.'][$tablename.'.'][$theCode.'.'];
+				$tableConf = array_merge($tableConf, $tempConf);
+			}
+		}
+		
+		return $tableConf;
+	}
+
+	/**
+	 * Template marker substitution
+	 * Fills in the markerArray with data for a product
+	 *
+	 * @param	string		name of the marker prefix
+	 * @param	array		reference to an item array with all the data of the item
+	 * @param	string		title of the category
+	 * @param	integer		number of images to be shown
+	 * @param	object		the image cObj to be used
+	 * @param	array		information about the parent HTML form
+	 * @return	array		Returns a markerArray ready for substitution with information
+	 * 			 			for the tt_producst record, $row
+	 * @access private
+	 */
+	function getItemMarkerArray ($row, &$markerArray, $pid, $imageNum=0, $imageRenderObj='image', &$tagArray, $theCode)	{
+		global $TYPO3_DB;
+		
+		$bImages = false;
+		$marker = $this->marker;
+		$tableConf = $this->getTableConf($this->parenttable->name, $theCode);
+
+			// Get image
+		$theImgCode = array();
+		$specialImgCode = array();
+		$imageConf = $this->conf[$imageRenderObj.'.'];
+		if (is_array($tableConf))	{
+			$imageMarkerArray = $tableConf['imageMarker.'];
+		}
+		$imgs = array();
+
+		if ($this->conf['usePageContentImage']) {
+			$pageContent = $this->tt_content->getFromPid($pid);
+			foreach ($pageContent as $pid => $contentRow) {
+				if ($contentRow['image']) {
+					$imgs[] = $contentRow['image'];
+				}
+			}
+			$bImages = true;
+		}
+		
+		if (!$bImages)	{
+			$fieldconfParent = array();
+			if (is_array($tableConf))	{
+				$tempConf = '';
+				if	(
+					is_array($tableConf['generateImage.']) &&
+					$tableConf['generateImage.']['type'] == 'foreigntable'
+				)	{
+					$tempConf = &$tableConf['generateImage.'];
+				}
+				if (is_array($tempConf))	{
+					$conftable = $tempConf['table'];
+					$localfield = $tempConf['uid_local'];
+					$foreignfield = $tempConf['uid_foreign'];
+					$fieldconfParent['generateImage'] = $tempConf['field.']; 
+					$where_clause = $conftable.'.'.$foreignfield .'='. $row[$localfield];
+					$res = $TYPO3_DB->exec_SELECTquery('*',$conftable,$where_clause,'',$foreignfield,1);
+						// only first found row will be used
+					$row = $TYPO3_DB->sql_fetch_assoc($res);
+				}
+			}
+			
+			// $confParentTableConf = $this->getTableConf($conftable, $theCode);
+			
+			$conftable = ($conftable ? $conftable : $this->parenttable->name);
+			$generateArray = array('generateImage', 'generatePath');
+			$nameArray = array();
+			$conftableConf = $this->getTableConf($conftable, $theCode);
+
+			foreach ($generateArray as $k => $generate)	{
+
+			 	if (is_array($conftableConf) &&
+				 	is_array($conftableConf[$generate.'.'])) {
+				 	$genPartArray = $conftableConf[$generate.'.'];
+				 	$tableFieldsCode = '';
+				 		
+				 	if ($genPartArray['type'] == 'tablefields')	{
+				 		$nameArray[$generate] = '';
+				 		$fieldConf = $genPartArray['field.'];
+				 		
+				 		if (is_array($fieldConf))	{
+					 		if (is_array($fieldconfParent[$generate]))	{
+					 			$fieldConf = array_merge($fieldConf, $fieldconfParent[$generate]);
+					 		}
+					 			
+					 		foreach ($fieldConf as $field => $count)	{ 
+								if ($row[$field])	{
+									$nameArray[$generate] .= substr($row[$field], 0, $count);
+									if ($generate == 'generateImage')
+										$bImages = true;
+								}
+					 		}
+				 		}
+				 	}
+				}
+			}
+
+			if ($nameArray['generatePath'])	{
+				if (is_array($conftableConf['generatePath.']))	{
+					$dirname = $conftableConf['generatePath.']['base'].'/'.$nameArray['generatePath'];
+				}
+				if (is_dir($dirname))	{
+					$directory = dir($dirname);
+					while($entry=$directory->read())	{
+						if (strstr($entry, $nameArray['generateImage'].'_'))	{
+							$imgs[] = $entry;
+						}
+					}
+					$directory->close();
+				}
+				if (count($imgs))
+					$bImages = true;
+			}
+		} 
+		
+		if (!$bImages)	{
+			$imgs = explode(',',$row['image']);
+		}
+
+		$specialConf = array();
+		$tempImageConf = '';
+		if (is_array($tableConf) &&
+			is_array($tableConf['image.']))	{
+			$tempImageConf = &$tableConf['image.'];
+		}
+		
+		if (is_array($tempImageConf))	{
+
+			foreach ($tagArray as $key => $value)	{
+				$keyArray = t3lib_div::trimExplode (':', $key);
+				$specialConfType = strtolower($keyArray[1]);
+				$tagKey = $keyArray[0];
+				if ($specialConfType &&
+					(!is_array($specialConf[$tagKey]) || !isset($specialConf[$tagKey][$specialConfType]) ) && 
+					is_array($tempImageConf[$specialConfType.'.'])) {
+
+					// add the special configuration
+					$specialConf[$tagKey] = array();
+					$specialConf[$tagKey][$specialConfType] = &$tempImageConf[$specialConfType.'.'];
+				}
+			}
+		}
+		$dirname = ($dirname ? $dirname : 'uploads/pics');
+		while(list($c,$val)=each($imgs))	{
+			if ($c==$imageNum)	break;
+			if ($val)	{
+				$imageConf['file'] = $dirname.'/'.$val;
+			} else {
+				$imageConf['file'] = $this->conf['noImageAvailable'];
+			}
+			if (!$this->conf['separateImage']) {
+				$key = 0;  // show all images together as one image
+			} else {
+				$key = ($val ? $val : $c);
+			}
+			
+			$theImgCode[$key] .= $this->pibase->cObj->IMAGE($imageConf);
+			$tagkey = '';
+			if ($val)	{
+				$tagkey = $this->getMarkerkey($imageMarkerArray, $key);
+			}
+			if (is_array($specialConf[$tagkey]))	{
+				foreach ($specialConf[$tagkey] as $specialConfType => $specialImageConf)	{
+					$theImageConf = array_merge($imageConf, $specialImageConf);
+					$theImgCode[$key.':'.$specialConfType] .= $this->pibase->cObj->IMAGE($theImageConf);
+				}
+			}
+		}
+		$markerArray['###'.$this->marker.'_IMAGE###'] = current($theImgCode); // for compatibility only
+		$c = 1;
+		while ((list($k1,$val)=each($theImgCode))) {
+			if (strstr($val, ':'))	{
+				// no duplicate images for the normal markers with numbers.
+				continue;
+			}
+			$key = $this->marker.'_IMAGE' . intval($c);
+			if (isset($tagArray[$key]))	{
+				$markerArray['###'.$key.'###'] = $val;				
+			}
+			$c++;
+		}
+
+		$bImageMarker = false;
+		if (is_array($tableConf) && 
+			is_array($tableConf['imageMarker.']) &&
+			$tableConf['imageMarker.']['type'] == 'imagename' )	{
+			$bImageMarker = true;
+		}
+		
+		if ($bImageMarker)	{
+			foreach ($theImgCode as $imageName => $imgValue)	{
+				$nameArray = t3lib_div::trimExplode(':', $imageName);
+				$suffix = ($nameArray[1] ? ':'.$nameArray[1] : ''); 
+				$tagkey = $this->getMarkerkey($imageMarkerArray, $imageName).strtoupper($suffix);
+				if (isset($tagArray[$tagkey]))	{
+					$markerArray['###'.$tagkey.'###'] = $imgValue;
+				}				
+			}
+		} 
+
+//plugin.tt_products.conf.pages.imageMarker {
+//    type = imagename
+//    parts = 2,3
+		
+			// empty all image fields with no available image
+		foreach ($tagArray as $value => $k1)	{
+			$keyMarker = '###'.$value.'###';
+			if (strstr($value, '_IMAGE') && !$markerArray[$keyMarker])	{
+				$markerArray[$keyMarker] = '';
+			}
+		}
+		
+	}
+
+}
+
+
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_image.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_image.php']);
+}
+
+
+?>
