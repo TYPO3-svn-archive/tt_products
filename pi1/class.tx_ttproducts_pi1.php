@@ -406,12 +406,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$config['limitImage'] = $config['limitImage'] ? $config['limitImage'] : 1;
 		$config['limitImageSingle'] = t3lib_div::intInRange($this->conf['limitImageSingle'],0,50);
 		$config['limitImageSingle'] = $config['limitImageSingle'] ? $config['limitImageSingle'] : 1;
-
 		$recursive = ($this->cObj->data['recursive'] ? $this->cObj->data['recursive']: $this->conf['recursive']);
 		$config['recursive'] = t3lib_div::intInRange($recursive,0,100);
 		$config['storeRootPid'] = $this->conf['PIDstoreRoot'] ? $this->conf['PIDstoreRoot'] : $TSFE->tmpl->rootLine[0]['uid'];
 		$config['priceNoReseller'] = $this->conf['priceNoReseller'] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
-
 		$pid_list = $config['pid_list'] = ($this->piVars['pid_list'] ? $this->piVars['pid_list'] : ($this->cObj->data['pages'] ? $this->cObj->data['pages'] : ($this->conf['pid_list.'] ? trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.'])) : $this->conf['pid_list'])));
 		$this->pid_list = ($pid_list ? $pid_list : $config['storeRootPid']);
 		//$config['pid_list'] = $this->config['pid_list'] ? $config['pid_list'] : $TSFE->id;
@@ -629,32 +627,32 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 		// XAJAX functions cannot be in classes
 	function tt_products_ShowArticle($data)	{
-		error_log ('tt_products_ShowArticle $data = '.$data);
-		foreach ($data as $k1 => $v1)	{
-			error_log ('|'.$k1.':'.$v1);
-			foreach ($v1 as $k2 => $v2)	{
-				error_log ('|'.$k2.':'.$v2);				
-			}
-		}
+//		error_log ('tt_products_ShowArticle $data = '.$data);
+//		foreach ($data as $k1 => $v1)	{
+//			error_log ('|'.$k1.':'.$v1);
+//			foreach ($v1 as $k2 => $v2)	{
+//				error_log ('|'.$k2.':'.$v2);				
+//			}
+//		}
         // We put our incomming data to the regular piVars 
         $this->piVars = array_merge($this->piVars,$data[$this->prefixId]);
-        error_log ('$this->piVars = '.$this->piVars); 		
-        error_log ('tt_products_showArticle: $this->piVars[\'cat\'] = '.$this->piVars['cat']);
-        error_log ('tt_products_showArticle: $this->piVars[\'pid_list\'] = '.$this->piVars['pid_list']);
+//        error_log ('$this->piVars = '.$this->piVars); 		
+//        error_log ('tt_products_showArticle: $this->piVars[\'cat\'] = '.$this->piVars['cat']);
+//        error_log ('tt_products_showArticle: $this->piVars[\'pid_list\'] = '.$this->piVars['pid_list']);
 
 		$this->excludeCode = '';
 		$artListKey = array_search('LISTCAT', $this->codeArray);
 		if (count($this->codeArray))	{
 			unset($this->codeArray[$artListKey]);
-			foreach ($this->codeArray as $k1 => $v1)	{
-				error_log($k1.':'.$v1);
-			}
+//			foreach ($this->codeArray as $k1 => $v1)	{
+//				error_log($k1.':'.$v1);
+//			}
 			if (count($this->codeArray))	{
 				reset($this->codeArray);
 				$theCode = current($this->codeArray);
-				error_log ('$theCode = '.$theCode);
+//				error_log ('$theCode = '.$theCode);
 				$idClass = 'tx-ttproducts-pi1-'.strtolower($theCode);
-				error_log ('$idClass = '.$idClass);
+//				error_log ('$idClass = '.$idClass);
 			}
 		}
 	    $content = $this->doProcessing('',true);
@@ -663,7 +661,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	    // Instantiate the tx_xajax_response object
 	    $objResponse = new tx_xajax_response();
 	    
-	    error_log ('$idClass = '.$idClass);
+//	    error_log ('$idClass = '.$idClass);
 	    // add a command to the response to assign the innerHTML attribute of
 	    // the element with id="ArticleId" to whatever the new content is
 	    $objResponse->addAssign(($idClass ? $idClass : 'ArticleId'),'innerHTML', $content);
@@ -751,7 +749,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		if ($GLOBALS['TSFE']->beUserLogin)	{
 			$updateCode = t3lib_div::_GP('update_code');
 			if ($updateCode == $this->conf['update_code'])	{
-				$admin= 1;		// Means that the administrator of the website is authenticated.
+				$admin = 1;		// Means that the administrator of the website is authenticated.
 			}
 		}
 		return $admin;

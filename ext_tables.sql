@@ -55,6 +55,7 @@ CREATE TABLE tt_products_cat (
 	cruser_id int(11) DEFAULT '0' NOT NULL,
 	sorting int(10) DEFAULT '0' NOT NULL,
 	deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
+	hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	subtitle mediumtext NOT NULL,
 	note text NOT NULL,
