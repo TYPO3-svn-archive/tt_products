@@ -100,13 +100,13 @@ class tx_ttproducts_order {
 
 			$time = time();
 			$insertFields = array (
-				'pid' => $pid,
+				'pid' => intval($pid),
 				'tstamp' => $time,
 				'crdate' => $time,
 				'deleted' => 1
 			);
 			if ($advanceUid > 0)	{
-				$insertFields['uid'] = $advanceUid;
+				$insertFields['uid'] = intval($advanceUid);
 			}
 
 			$TYPO3_DB->exec_INSERTquery('sys_products_orders', $insertFields);
@@ -145,8 +145,9 @@ class tx_ttproducts_order {
 	 * If $tracking is set, then the order with the tracking number is fetched instead.
 	 */
 	function getRecord($orderUid,$tracking='')	{
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', ($tracking ? 'tracking_code="'.$GLOBALS['TYPO3_DB']->quoteStr($tracking, 'sys_products_orders').'"' : 'uid='.intval($orderUid)).' AND NOT deleted');
-		return $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		global $TYPO3_DB;
+		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders', ($tracking ? 'tracking_code="'.$TYPO3_DB->quoteStr($tracking, 'sys_products_orders').'"' : 'uid='.intval($orderUid)).' AND NOT deleted');
+		return $TYPO3_DB->sql_fetch_assoc($res);
 	} //getRecord
 
 
@@ -177,28 +178,28 @@ class tx_ttproducts_order {
 			// Saving order data
 		$fieldsArray=array();
 /* Added Els: introduce a field into sys_products_orders containing the uid of the fe_user */
-		$fieldsArray['feusers_uid']=$feusers_uid;
-		$fieldsArray['name']=$deliveryInfo['name'];
-		$fieldsArray['first_name']=$deliveryInfo['first_name'];
-		$fieldsArray['last_name']=$deliveryInfo['last_name'];
-		$fieldsArray['salutation']=$deliveryInfo['salutation'];
-		$fieldsArray['address']=$deliveryInfo['address'];
-		$fieldsArray['zip']=$deliveryInfo['zip'];
-		$fieldsArray['city']=$deliveryInfo['city'];
-		$fieldsArray['country']=$deliveryInfo['country'];
-		$fieldsArray['telephone']=$deliveryInfo['telephone'];
-		$fieldsArray['fax']=$deliveryInfo['fax'];
-		$fieldsArray['email']=$deliveryInfo['email'];
-		$fieldsArray['email_notify']= $email_notify;
+		$fieldsArray['feusers_uid'] = $TYPO3_DB->quoteStr($feusers_uid,'sys_products_orders');
+		$fieldsArray['name'] = $TYPO3_DB->quoteStr($deliveryInfo['name'],'sys_products_orders');
+		$fieldsArray['first_name'] = $TYPO3_DB->quoteStr($deliveryInfo['first_name'],'sys_products_orders');
+		$fieldsArray['last_name'] = $TYPO3_DB->quoteStr($deliveryInfo['last_name'],'sys_products_orders');
+		$fieldsArray['salutation'] = $TYPO3_DB->quoteStr($deliveryInfo['salutation'],'sys_products_orders');
+		$fieldsArray['address'] = $TYPO3_DB->quoteStr($deliveryInfo['address'],'sys_products_orders');
+		$fieldsArray['zip'] = $TYPO3_DB->quoteStr($deliveryInfo['zip'],'sys_products_orders');
+		$fieldsArray['city'] = $TYPO3_DB->quoteStr($deliveryInfo['city'],'sys_products_orders');
+		$fieldsArray['country'] = $TYPO3_DB->quoteStr($deliveryInfo['country'],'sys_products_orders');
+		$fieldsArray['telephone'] = $TYPO3_DB->quoteStr($deliveryInfo['telephone'],'sys_products_orders');
+		$fieldsArray['fax'] = $TYPO3_DB->quoteStr($deliveryInfo['fax'],'sys_products_orders');
+		$fieldsArray['email'] = $TYPO3_DB->quoteStr($deliveryInfo['email'],'sys_products_orders');
+		$fieldsArray['email_notify'] = $TYPO3_DB->quoteStr($email_notify,'sys_products_orders');
 
 			// can be changed after order is set.
-		$fieldsArray['payment']=$payment;
-		$fieldsArray['shipping']=$shipping;
-		$fieldsArray['amount']=$amount;
-		$fieldsArray['desired_date']=$deliveryInfo['desired_date'];
-		$fieldsArray['status']=1;	// This means, "Order confirmed on website, next step: confirm from shop that order is received"
-		$fieldsArray['note']=$deliveryInfo['note'];
-		$fieldsArray['client_ip']=t3lib_div::getIndpEnv('REMOTE_ADDR');
+		$fieldsArray['payment'] = $TYPO3_DB->quoteStr($payment,'sys_products_orders');
+		$fieldsArray['shipping'] = $TYPO3_DB->quoteStr($shipping,'sys_products_orders');
+		$fieldsArray['amount'] = $TYPO3_DB->quoteStr($amount,'sys_products_orders');
+		$fieldsArray['desired_date'] = $TYPO3_DB->quoteStr($deliveryInfo['desired_date'],'sys_products_orders');
+		$fieldsArray['status'] = 1;	// This means, "Order confirmed on website, next step: confirm from shop that order is received"
+		$fieldsArray['note'] = $TYPO3_DB->quoteStr($deliveryInfo['note'],'sys_products_orders');
+		$fieldsArray['client_ip'] = $TYPO3_DB->quoteStr(t3lib_div::getIndpEnv('REMOTE_ADDR'),'sys_products_orders');
 
 /*
 		//<-- MKL 2004.09.21
@@ -217,7 +218,7 @@ class tx_ttproducts_order {
 			$creditpoints = tx_ttproducts_creditpoints_div::getCreditPoints($fieldsArray['amount']);
 /* Added Els: update fe_user with amount of creditpoints (= exisitng amount - used_creditpoints - spended_creditpoints + saved_creditpoints */
 //			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->basket->recs['tt_products']['creditpoints'];
-			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] - $this->basket->recs['tt_products']['creditpoints'] - t3lib_div::_GP('creditpoints_spended') + t3lib_div::_GP('creditpoints_saved');
+			$fieldsArrayFeUsers['tt_products_creditpoints'] = floatval($TSFE->fe_user->user['tt_products_creditpoints'] - $this->basket->recs['tt_products']['creditpoints'] - t3lib_div::_GP('creditpoints_spended') + t3lib_div::_GP('creditpoints_saved'));
 		}
 
 /* Added Els: update fe_user with vouchercode */
@@ -228,12 +229,12 @@ class tx_ttproducts_order {
 				$uid_voucher = $row['uid'];
 			}
 			if (($uid_voucher != '') && ($this->basket->deliveryInfo['feusers_uid'] != $uid_voucher) ) {
-				$fieldsArrayFeUsers['tt_products_vouchercode'] = $this->basket->recs['tt_products']['vouchercode'];
+				$fieldsArrayFeUsers['tt_products_vouchercode'] = $TYPO3_DB->quoteStr($this->basket->recs['tt_products']['vouchercode'],'fe_users');
 			}
 		}
 
 		if ($this->basket->deliveryInfo['feusers_uid']) {
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$this->basket->deliveryInfo['feusers_uid'], $fieldsArrayFeUsers);
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.intval($this->basket->deliveryInfo['feusers_uid']), $fieldsArrayFeUsers);
 	/* Added Els: update user from vouchercode with 5 credits */
 			tx_ttproducts_creditpoints_div::addCreditPoints($this->basket->recs['tt_products']['vouchercode'], 5);
 		}
@@ -249,7 +250,7 @@ class tx_ttproducts_order {
 		$fieldsArray['status_log']=serialize($status_log);
 
 			// Order Data serialized
-		$fieldsArray['orderData']=serialize(array(
+		$fieldsArray['orderData'] = serialize(array(
 				'html_output' 			=>	$orderConfirmationHTML,
 				'deliveryInfo' 			=>	$this->basket->deliveryInfo,
 				'personInfo' 			=>	$this->basket->personInfo,
@@ -258,17 +259,17 @@ class tx_ttproducts_order {
 		));
 
 			// Setting tstamp, deleted and tracking code
-		$fieldsArray['tstamp']=time();
+		$fieldsArray['tstamp'] = time();
 		$fieldsArray['deleted']=0;
-		$fieldsArray['tracking_code']=$this->basket->recs['tt_products']['orderTrackingNo'];
-		$fieldsArray['agb']		= $this->basket->personInfo['agb'];
+		$fieldsArray['tracking_code'] = $TYPO3_DB->quoteStr($this->basket->recs['tt_products']['orderTrackingNo'],'sys_products_orders');
+		$fieldsArray['agb']		= $TYPO3_DB->quoteStr($this->basket->personInfo['agb'],'sys_products_orders');
 /* Added Els: write creditpointvalue into sys_products_order */
-		$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
+		$fieldsArray['creditpoints'] = $TYPO3_DB->quoteStr($this->basket->recs['tt_products']['creditpoints'],'sys_products_orders');
 /* Added Els: write creditpoint_spended and saved value into sys_products_order */
-		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
-		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
+		$fieldsArray['creditpoints_spended'] = $TYPO3_DB->quoteStr(t3lib_div::_GP('creditpoints_spended'),'sys_products_orders');
+		$fieldsArray['creditpoints_saved'] = $TYPO3_DB->quoteStr(t3lib_div::_GP('creditpoints_saved'),'sys_products_orders');
 /* Added Els: write creditpoint_gifts value into sys_products_order */
-		$fieldsArray['creditpoints_gifts'] = t3lib_div::_GP('creditpoints_gifts');
+		$fieldsArray['creditpoints_gifts'] = $TYPO3_DB->quoteStr(t3lib_div::_GP('creditpoints_gifts'),'sys_products_orders');
 		
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
@@ -298,12 +299,12 @@ class tx_ttproducts_order {
 				if ($this->conf['useArticles']) {
 					foreach ($actItemArray as $k1=>$actItem) {
 						// get the article uid with these colors, sizes and gradings
-						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND description=\''.$actItem['rec']['description'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
+						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$TYPO3_DB->quoteStr($actItem['rec']['color'],'tt_products_articles').'\' AND size=\''.$TYPO3_DB->quoteStr($actItem['rec']['size'],'tt_products_articles').'\' AND description=\''.$TYPO3_DB->quoteStr($actItem['rec']['description'],'tt_products_articles').'\' AND gradings=\''.$TYPO3_DB->quoteStr($actItem['rec']['gradings'],'tt_products_articles').'\'';
 						$res = $TYPO3_DB->exec_SELECTquery('uid', 'tt_products_articles', $query);
 
 						if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 							$insertFields = array (
-								'sys_products_orders_uid' => $orderUid,
+								'sys_products_orders_uid' => intval($orderUid),
 								'sys_products_orders_qty' => intval($actItem['count']),
 								'tt_products_uid' => intval($actItem['rec']['uid']),
 								'tt_products_articles_uid' => intval($row['uid'])
@@ -314,7 +315,7 @@ class tx_ttproducts_order {
 				} else {
 					foreach ($actItemArray as $k1=>$actItem) {
 						$insertFields = array (
-							'sys_products_orders_uid' => $orderUid,
+							'sys_products_orders_uid' => intval($orderUid),
 							'sys_products_orders_qty' => intval($actItem['count']),
 							'tt_products_uid' => intval($actItem['rec']['uid'])
 						);
@@ -359,27 +360,27 @@ class tx_ttproducts_order {
 			if (!$num_rows)	{
 				$this->basket->password = substr(md5(rand()), 0, 6);
 				$insertFields = array(
-					'pid' => $this->conf['PIDuserFolder'],
+					'pid' => intval($this->conf['PIDuserFolder']),
 					'tstamp' => time(),
-					'username' => $username,
-					'password' => $this->basket->password,
-					'usergroup' => $this->conf['memberOfGroup'],
-					'uid' => $this->basket->personInfo['feusers_uid'],
-					'company' => $this->basket->personInfo['company'],
-					'name' => $this->basket->personInfo['name'],
-					'first_name' => $this->basket->personInfo['first_name'],
-					'last_name' => $this->basket->personInfo['last_name'],
-					'address' => $this->basket->personInfo['address'],
-					'telephone' => $this->basket->personInfo['telephone'],
-					'fax' => $this->basket->personInfo['fax'],
-					'email' => $this->basket->personInfo['email'],
-					'zip' => $this->basket->personInfo['zip'],
-					'city' => $this->basket->personInfo['city'],
+					'username' => $TYPO3_DB->quoteStr($username,'fe_users'),
+					'password' => $TYPO3_DB->quoteStr($this->basket->password,'fe_users'),
+					'usergroup' => $TYPO3_DB->quoteStr($this->conf['memberOfGroup'],'fe_users'),
+					'uid' => $TYPO3_DB->quoteStr($this->basket->personInfo['feusers_uid'],'fe_users'),
+					'company' => $TYPO3_DB->quoteStr($this->basket->personInfo['company'],'fe_users'),
+					'name' => $TYPO3_DB->quoteStr($this->basket->personInfo['name'],'fe_users'),
+					'first_name' => $TYPO3_DB->quoteStr($this->basket->personInfo['first_name'],'fe_users'),
+					'last_name' => $TYPO3_DB->quoteStr($this->basket->personInfo['last_name'],'fe_users'),
+					'address' => $TYPO3_DB->quoteStr($this->basket->personInfo['address'],'fe_users'),
+					'telephone' => $TYPO3_DB->quoteStr($this->basket->personInfo['telephone'],'fe_users'),
+					'fax' => $TYPO3_DB->quoteStr($this->basket->personInfo['fax'],'fe_users'),
+					'email' => $TYPO3_DB->quoteStr($this->basket->personInfo['email'],'fe_users'),
+					'zip' => $TYPO3_DB->quoteStr($this->basket->personInfo['zip'],'fe_users'),
+					'city' => $TYPO3_DB->quoteStr($this->basket->personInfo['city'],'fe_users'),
 					'crdate' => time()
 				);
 
 				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country':'country');
-				$insertFields[$countryKey] =  $this->basket->personInfo['country'];
+				$insertFields[$countryKey] =  $TYPO3_DB->quoteStr($this->basket->personInfo['country'],'fe_users');
 				$res = $TYPO3_DB->exec_INSERTquery('fe_users', $insertFields);
 				// send new user mail
 				if (count($this->basket->personInfo['email'])) {
@@ -389,13 +390,12 @@ class tx_ttproducts_order {
 						$parts = split(chr(10),$emailContent,2);
 						$subject=trim($parts[0]);
 						$plain_message=trim($parts[1]);
-
 						tx_ttproducts_email_div::send_mail($this->basket->personInfo['email'], $subject, $plain_message, $tmp='', $this->conf['orderEmail_from'], $this->conf['orderEmail_fromName']);
 					}
 				}
-				$res = $TYPO3_DB->exec_SELECTquery(uid, 'fe_users', 'username=\''.$username . '\' AND pid='. $this->conf['PIDuserFolder'].' AND deleted=0');
+				$res = $TYPO3_DB->exec_SELECTquery('uid', 'fe_users', 'username='.$TYPO3_DB->quoteStr($username,'fe_users') . ' AND pid='. intval($this->conf['PIDuserFolder']).' AND deleted=0');
 				while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-			 		 $this->basket->personInfo['feusers_uid']= $row['uid'];
+			 		 $this->basket->personInfo['feusers_uid'] = intval($row['uid']);
 				}
 			}
 		}

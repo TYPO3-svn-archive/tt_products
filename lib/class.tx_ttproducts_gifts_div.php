@@ -112,22 +112,22 @@ class tx_ttproducts_gifts_div {
 			}
 			// Saving gift order data
 			$insertFields = array(
-				'pid' => $pid,
+				'pid' => intval($pid),
 				'tstamp' => time(),
 				'crdate' => time(),
 				'deleted' => 0,
 
-				'ordernumber'	=> $orderUid,
-				'personname'	 => $rec['personname'],
-				'personemail'	=> $rec['personemail'],
-				'deliveryname'	=> $rec['deliveryname'],
-				'deliveryemail'  => $rec['deliveryemail'],
-				'note'			=> $rec['note'],
-				'amount'		 => $amount
+				'ordernumber'	=> $TYPO3_DB->quoteStr($orderUid,'tt_products_gifts_articles_mm'),
+				'personname'	=> $TYPO3_DB->quoteStr($rec['personname'],'tt_products_gifts_articles_mm'),
+				'personemail'	=> $TYPO3_DB->quoteStr($rec['personemail'],'tt_products_gifts_articles_mm'),
+				'deliveryname'	=> $TYPO3_DB->quoteStr($rec['deliveryname'],'tt_products_gifts_articles_mm'),
+				'deliveryemail' => $TYPO3_DB->quoteStr($rec['deliveryemail'],'tt_products_gifts_articles_mm'),
+				'note'			=> $TYPO3_DB->quoteStr($rec['note'],'tt_products_gifts_articles_mm'),
+				'amount'		=> $TYPO3_DB->quoteStr($amount,'tt_products_gifts_articles_mm')
 			);
 			// Saving the gifts order record
-				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_products_gifts',	$insertFields);
-			$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
+			$TYPO3_DB->exec_INSERTquery('tt_products_gifts',	$insertFields);
+			$newId = $TYPO3_DB->sql_insert_id();
 			$insertFields = array();
 			$insertFields['uid_local'] = $newId;
 
@@ -136,7 +136,7 @@ class tx_ttproducts_gifts_div {
 					$row = array();
 					$tt_products->variant->getRowFromVariant	($row, $variant);
 
-					$query='uid_product=\''.intval($productid).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND description=\''.$row['description'].'\' AND gradings=\''.$row['gradings'].'\'' ;
+					$query='uid_product=\''.intval($productid).'\' AND color=\''.$TYPO3_DB->quoteStr($row['color'],'tt_products_articles').'\' AND size=\''.$TYPO3_DB->quoteStr($row['size'],'tt_products_articles').'\' AND description=\''.$TYPO3_DB->quoteStr($row['description'],'tt_products_articles').'\' AND gradings=\''.$TYPO3_DB->quoteStr($row['gradings'],'tt_products_articles').'\'';
 					$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
 
 					if ($articleRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($articleRes)) {

@@ -57,6 +57,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		$tablename = ($tablename ? $tablename : 'tt_products');
+		if (is_array($prodconf['ALL.']) && $prodconf['ALL.']['orderBy'] == '{$plugin.tt_products.orderBy}')	{
+			$prodconf['ALL.']['orderBy'] = '';
+		}
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $conf['orderBy'];
@@ -83,9 +86,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$this->table->setLangName('tt_products_language');
 			$this->table->setTCAFieldArray($this->table->langname);
 		}
-
 		parent::init($pibase, $conf, $config, $tt_content);
-		
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $tableconf['variant.'], $this, $useArticles);
 		$this->fields['itemnumber'] = ($tableconf['itemnumber'] ? $tableconf['itemnumber'] : 'itemnumber');
@@ -101,10 +102,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 //			$sql->prepareFields($this->table, 'select', '*');
 //			$sql->prepareFields($this->table, 'where', 'uid = '.$uid);
 //			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid)
-			$where = '1=1 '.$this->table->enableFields($this->table->name);
+			$where = '1=1 '.$this->table->enableFields();
 			// Fetching the products
 			// $res = $sql->exec_SELECTquery();
-			$res = $this->table->exec_SELECTquery('*', $where.'AND uid = '.$uid);
+			$res = $this->table->exec_SELECTquery('*', $where.'AND uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}
@@ -136,7 +137,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				foreach ($pidItem as $itemnumber=>$actItemArray) {
 					if ($useArticles) {
 						foreach ($actItemArray as $k1=>$actItem) {
-							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$actItem['rec']['color'].'\' AND size=\''.$actItem['rec']['size'].'\' AND description=\''.$actItem['rec']['description'].'\' AND gradings=\''.$actItem['rec']['gradings'].'\'';
+							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$TYPO3_DB->quoteStr($actItem['rec']['color'],'tt_products_articles').'\' AND size=\''.$TYPO3_DB->quoteStr($actItem['rec']['size'],'tt_products_articles').'\' AND description=\''.$TYPO3_DB->quoteStr($actItem['rec']['description'],'tt_products_articles').'\' AND gradings=\''.$TYPO3_DB->quoteStr($actItem['rec']['gradings'],'tt_products_articles').'\'';
 	
 							$res = $TYPO3_DB->exec_SELECTquery('inStock', 'tt_products_articles', $query);
 								//  TODO: Saving the order record support color, size, description and gradings here

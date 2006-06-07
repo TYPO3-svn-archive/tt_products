@@ -140,7 +140,7 @@ class tx_ttproducts_list_view {
 		} else {
 			$viewCatTable = &$this->page;
 		}
-
+ 
 		// if parameter 'newitemdays' is specified, only new items from the last X days are displayed
 		$newitemdays = $this->pibase->piVars['newitemdays'];
 		$newitemdays = ($newitemdays ? $newitemdays : t3lib_div::_GP('newitemdays'));  
@@ -258,7 +258,7 @@ class tx_ttproducts_list_view {
 	
 				// range check to current productsCount
 			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount)?($productsCount > $this->config['limit'] ? $productsCount-$this->config['limit'] : $productsCount):$begin_at,0);
-			$selectConf['orderBy'] = $this->conf['orderBy'];	
+			$selectConf['orderBy'] = $this->conf['orderBy'];
 
 				// performing query for display:	
 			if (!$selectConf['orderBy'])	{
@@ -283,7 +283,6 @@ class tx_ttproducts_list_view {
 				'PRODUCT_SPECIAL_PREP' => 'special_preparation',
 				'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
 				'LINK_DATASHEET' => 'datasheet');
-
 			$markerPre = $itemTable->marker . '_'; 
 			$viewTagArray = array();
 			$fieldsArray = $this->marker->getMarkerFields(

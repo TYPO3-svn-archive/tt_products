@@ -55,7 +55,7 @@ class tx_ttproducts_memo_view {
 	var $memoItems;
 
 	function init(&$pibase, &$conf, &$config, &$basket, &$pid_list, &$tt_content, &$tt_products, &$tt_products_cat, &$tt_products_articles, $pid) {
-		global $TSFE;
+		global $TSFE, $TYPO3_DB;
 
 		$this->pibase = &$pibase;
 		$this->conf = &$conf;
@@ -94,11 +94,11 @@ class tx_ttproducts_memo_view {
 	
 				foreach ($addMemo as $addMemoSingle)
 					if (!in_array($addMemoSingle, $this->memoItems))
-						$this->memoItems[] = $addMemoSingle;
+						$this->memoItems[] = intval($addMemoSingle);
 	
 				$fieldsArray = array();
-				$fieldsArray['tt_products_memoItems']=implode(',', $this->memoItems);
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
+				$fieldsArray['tt_products_memoItems'] = implode(',', $this->memoItems);
+				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
 			}
 	
 			if ($this->pibase->piVars['delmemo'])
@@ -106,13 +106,14 @@ class tx_ttproducts_memo_view {
 				$delMemo = explode(',', $this->pibase->piVars['delmemo']);
 	
 				foreach ($delMemo as $delMemoSingle)	{
-					if (in_array($delMemoSingle, $this->memoItems))
-						unset($this->memoItems[array_search($delMemoSingle, $this->memoItems)]);
+					$val = intval($delMemoSingle);
+					if (in_array($val, $this->memoItems))
+						unset($this->memoItems[array_search($val, $this->memoItems)]);
 				}
 	
 				$fieldsArray = array();
 				$fieldsArray['tt_products_memoItems']=implode(',', $this->memoItems);
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
+				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
 			}			
 		}
 	}

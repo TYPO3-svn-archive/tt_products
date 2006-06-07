@@ -71,7 +71,7 @@ class tx_ttproducts_order_view {
 		if (!$feusers_uid)
 			return $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###MEMO_NOT_LOGGED_IN###'));
 
-		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders','feusers_uid='.$feusers_uid.' AND NOT deleted ORDER BY crdate');
+		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders','feusers_uid='.intval($feusers_uid).' AND NOT deleted ORDER BY crdate');
 
 		$content=$this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ORDERS_LIST_TEMPLATE###'));
  //CBY 11/11/2005 modifications : integrating order list template start
@@ -109,14 +109,14 @@ class tx_ttproducts_order_view {
 				$orderlistc.= $this->pibase->cObj->substituteMarkerArray($orderitem, $markerArray);
 			}
 
-			$res1 = $TYPO3_DB->exec_SELECTquery('username ', 'fe_users', 'uid="'.$feusers_uid.'"');
+			$res1 = $TYPO3_DB->exec_SELECTquery('username ', 'fe_users', 'uid="'.intval($feusers_uid).'"');
 			if ($row = $TYPO3_DB->sql_fetch_assoc($res1)) {
 				$username = $row['username'];
 			}
 	
-			$res2 = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode="'.$username.'"');
+			$res2 = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode='.$TYPO3_DB->quoteStr($username, 'fe_users'));
 			$num_rows = $TYPO3_DB->sql_num_rows($res2) * 5;
-			$res3 = $TYPO3_DB->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.$feusers_uid.' AND NOT deleted');
+			$res3 = $TYPO3_DB->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.intval($feusers_uid).' AND NOT deleted');
 			$this->creditpoints = array();
 			while($row = $TYPO3_DB->sql_fetch_assoc($res3)) {
 				$this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];

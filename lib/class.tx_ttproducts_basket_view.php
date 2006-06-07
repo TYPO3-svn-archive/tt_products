@@ -174,24 +174,25 @@ class tx_ttproducts_basket_view {
 		$empty = '';
 		$activityArray = array();
 
-		if (t3lib_div::_GP('products_redeem_gift'))	{
-		 	$activityArray['products_redeem_gift']=true;
+			// use '_x' for coordinates from Internet Explorer if button images are used
+		if (t3lib_div::_GP('products_redeem_gift') || t3lib_div::_GP('products_redeem_gift_x'))    {
+		 	$activityArray['products_redeem_gift'] = true;
 		}
-
-		if (t3lib_div::_GP('products_overview'))	{
-			$activityArray['products_overview']=true;
+      
+       	if (t3lib_div::_GP('products_overview') || t3lib_div::_GP('products_overview_x'))    { 
+			$activityArray['products_overview'] = true; 
 		}
-		if (t3lib_div::_GP('products_info'))	{
-			$activityArray['products_info']=true;
+		if (t3lib_div::_GP('products_info') || t3lib_div::_GP('products_info_x'))    { 
+			$activityArray['products_info'] = true;
 		}
-		if (t3lib_div::_GP('products_payment'))	{
-			$activityArray['products_payment']=true;
+		if (t3lib_div::_GP('products_payment') || t3lib_div::_GP('products_payment_x'))    { 
+			$activityArray['products_payment'] = true;
 		}
-		if (t3lib_div::_GP('products_customized_payment'))	{
-			$activityArray['products_customized_payment']=true;
+		if (t3lib_div::_GP('products_customized_payment') || t3lib_div::_GP('products_customized_payment_x'))    {
+			$activityArray['products_customized_payment'] = true;
 		}
-		if (t3lib_div::_GP('products_finalize'))	{
-			$activityArray['products_finalize']=true;
+		if (t3lib_div::_GP('products_finalize') || t3lib_div::_GP('products_finalize_x'))    { 
+			$activityArray['products_finalize'] = true; 
 		}
 
 		$codeActivityArray=array();

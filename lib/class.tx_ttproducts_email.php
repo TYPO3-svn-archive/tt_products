@@ -64,8 +64,8 @@ class tx_ttproducts_email {
 		if (!$rc) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', '*');
-			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
-			$this->table->enableFields('tt_products_emails');
+			$sql->prepareWhereFields ($this->table, 'uid', '=', intval($uid));
+			$this->table->enableFields();
 			// Fetching the email
 			$res = $sql->exec_SELECTquery();
 			$row = $TYPO3_DB->sql_fetch_assoc($res);

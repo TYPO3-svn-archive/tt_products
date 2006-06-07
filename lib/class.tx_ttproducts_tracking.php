@@ -111,11 +111,11 @@ class tx_ttproducts_tracking {
 				// Initialize update of status...
 			$fieldsArray = array();
 			if (isset($orderRecord['email_notify']))	{
-				$fieldsArray['email_notify']=$orderRecord['email_notify'];
+				$fieldsArray['email_notify'] = $TYPO3_DB->quoteStr($orderRecord['email_notify'],'sys_products_orders');
 				$orderRow['email_notify'] = $fieldsArray['email_notify'];
 			}
 			if (isset($orderRecord['email']))	{
-				$fieldsArray['email']=$orderRecord['email'];
+				$fieldsArray['email'] = $TYPO3_DB->quoteStr($orderRecord['email'],'sys_products_orders');
 				$orderRow['email'] = $fieldsArray['email'];
 			}
 
@@ -126,9 +126,9 @@ class tx_ttproducts_tracking {
 				while(list(,$val)=each($orderRecord['status'])) {
 					$status_log_element = array(
 						'time' => time(),
-						'info' => $this->conf['statusCodes.'][$val],
-						'status' => $val,
-						'comment' => $orderRecord['status_comment']
+						'info' => $TYPO3_DB->quoteStr($this->conf['statusCodes.'][$val],'sys_products_orders'),
+						'status' => $TYPO3_DB->quoteStr($val,'sys_products_orders'),
+						'comment' => $TYPO3_DB->quoteStr($orderRecord['status_comment'],'sys_products_orders')
 					);
 
 					if ($admin || ($val>=50 && $val<59))	{// Numbers 50-59 are usermessages.
@@ -138,12 +138,11 @@ class tx_ttproducts_tracking {
 						}
 						$templateMarker = 'TRACKING_EMAILNOTIFY_TEMPLATE';
 						tx_ttproducts_email_div::sendNotifyEmail($this->pibase, $this->conf, $this->order, $recipient, $status_log_element, t3lib_div::_GP('tracking'), $orderRow, $templateCode, $templateMarker);
-
 						$status_log[] = $status_log_element;
 						$update=1;
 					} else if ($val>=60 && $val<69) { //  60 -69 are special messages
 						$templateMarker = 'TRACKING_EMAIL_GIFTNOTIFY_TEMPLATE';
-						$query = 'ordernumber=\''.$orderRow['uid'].'\'';
+						$query = 'ordernumber=\''.intval($orderRow['uid']).'\'';
 						$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
 						while ($giftRow = $TYPO3_DB->sql_fetch_assoc($giftRes)) {
 							$recipient = $giftRow['deliveryemail'].','.$giftRow['personemail'];
@@ -154,8 +153,8 @@ class tx_ttproducts_tracking {
 					}
 				}
 				if ($update)	{
-					$fieldsArray['status_log']=serialize($status_log);
-					$fieldsArray['status']=$status_log_element['status'];
+					$fieldsArray['status_log'] = serialize($status_log);
+					$fieldsArray['status'] = $TYPO3_DB->quoteStr($status_log_element['status'],'sys_products_orders');
 					if ($fieldsArray['status'] >= 100)  {
 
 							// Deletes any M-M relations between the tt_products table and the order.

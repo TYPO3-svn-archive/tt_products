@@ -97,8 +97,8 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 
 			// Fetching the category
 			// $res = $sql->exec_SELECTquery();
-			$where = '1=1 '.$this->table->enableFields('tt_products_cat');;
-			$where .= ($uid ? ' AND uid='.$uid : '');
+			$where = '1=1 '.$this->table->enableFields();;
+			$where .= ($uid ? ' AND uid='.intval($uid) : '');
 			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
 			$orderBy = '';
 			if (is_array($this->catconf['ALL.']))	{

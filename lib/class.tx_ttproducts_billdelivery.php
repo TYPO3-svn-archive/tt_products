@@ -144,6 +144,22 @@ class tx_ttproducts_billdelivery {
 	$itemsOut='';
 	$out='';
 
+	$itemTable = &$this->tt_products;
+	$viewTagArray = array();
+	$markerFieldArray = array('BULKILY_WARNING' => 'bulkily',
+		'PRODUCT_SPECIAL_PREP' => 'special_preparation',
+		'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
+		'LINK_DATASHEET' => 'datasheet');	
+	$fieldsArray = $this->marker->getMarkerFields(
+		$t['item'],
+		$itemTable->table->name,
+		$itemTable->table->tableFieldArray,
+		$itemTable->table->requiredFieldArray,
+		$markerFieldArray,
+		$itemTable->table->marker,
+		$viewTagArray
+	);
+
 	foreach ($categoryArray as $currentCategory=>$value)	{
 		$categoryChanged = 1;
 		// loop over all orderd items indexed by page and itemnumber
@@ -174,7 +190,7 @@ class tx_ttproducts_billdelivery {
 					// Print Item Title
 					$wrappedSubpartArray=array();
 					$markerArray = array();
-					$this->tt_products->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt,1,'image', strtoupper($this->type));
+					$this->tt_products->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt,1,'image', $viewTagArray, array(), strtoupper($this->type));
 					$markerArray['###FIELD_QTY###'] = $actItem['count'];
 					$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
 					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);

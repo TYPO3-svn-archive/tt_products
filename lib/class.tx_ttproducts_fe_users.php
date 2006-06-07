@@ -82,8 +82,8 @@ class tx_ttproducts_fe_users {
 
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
-			$where = '1=1 '.$this->table->enableFields($this->table->name);
-			$res = $this->table->exec_SELECTquery('*',$where.'AND uid = '.$uid);
+			$where = '1=1 '.$this->table->enableFields();
+			$res = $this->table->exec_SELECTquery('*',$where.'AND uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}

@@ -86,8 +86,8 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
 		if (!$rc) {
-			$this->table->enableFields($this->table->name);		
-			$res = $this->table->exec_SELECTquery('*','uid = '.$uid);
+			$this->table->enableFields();		
+			$res = $this->table->exec_SELECTquery('*','uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}

@@ -71,8 +71,8 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		if (!$rc && !$bMultple) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', 'title,uid,pid');
-			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
-			$this->table->enableFields('page');		 
+			$sql->prepareWhereFields ($this->table, 'uid', '=', intval($uid));
+			$this->table->enableFields();		 
 			// Fetching the category
 		 	$res = $sql->exec_SELECTquery();
 		 	$row = $TYPO3_DB->sql_fetch_assoc($res);

@@ -510,7 +510,7 @@ class tx_ttproducts_basket {
 		reset($this->basketExt);
 		while(list($uidTmp,)=each($this->basketExt))
 			if ($uidTmp != 'gift' && !in_array($uidTmp, $uidArr))
-				$uidArr[] = $uidTmp;
+				$uidArr[] = intval($uidTmp);
 
 		if (count($uidArr) == 0) {
 			return;
@@ -532,7 +532,7 @@ class tx_ttproducts_basket {
 					$row['extVars'] = $bextVars;
 					if ($this->useArticles == 1) {
 						// get the article uid with these colors, sizes and gradings
-						$query='uid_product=\''.intval($row['uid']).'\' AND color=\''.$row['color'].'\' AND size=\''.$row['size'].'\' AND description=\''.$row['description'].'\' AND gradings=\''.$row['gradings'].'\'';
+						$query='uid_product=\''.intval($row['uid']).'\' AND color=\''.$TYPO3_DB->quoteStr($row['color'],'tt_products').'\' AND size=\''.$TYPO3_DB->quoteStr($row['size'],'tt_products').'\' AND description=\''.$TYPO3_DB->quoteStr($row['description'],'tt_products').'\' AND gradings=\''.$TYPO3_DB->quoteStr($row['gradings'],'tt_products').'\'';
 						$articleRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_articles', $query);
 						if ($articleRow = $TYPO3_DB->sql_fetch_assoc($articleRes)) {
 								// use the fields of the article instead of the product
