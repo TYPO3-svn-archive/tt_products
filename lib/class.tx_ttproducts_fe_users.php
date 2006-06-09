@@ -45,6 +45,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_variant.php');
 
 class tx_ttproducts_fe_users {
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
 
@@ -56,12 +57,13 @@ class tx_ttproducts_fe_users {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$config, $tablename, &$tableconf)  {
+	function init(&$pibase, &$cnf, $tablename, &$tableconf)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 		
 		$tablename = ($tablename ? $tablename : 'fe_users');
 		$this->table = t3lib_div::makeInstance('tx_table_db');

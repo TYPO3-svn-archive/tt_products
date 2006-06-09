@@ -42,6 +42,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 
 class tx_ttproducts_catlist_view {
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
 	var $basket;
@@ -53,18 +54,18 @@ class tx_ttproducts_catlist_view {
 
 	var $searchFieldList='';
 
-	function init(&$pibase, &$conf, &$config, &$basket, &$pid_list, &$tt_content, &$tt_products_cat, $pid) {
+	function init(&$pibase, &$cnf, &$basket, &$pid_list, &$tt_content, &$tt_products_cat, $pid) {
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
 		$this->tt_content = &$tt_content;
 		$this->tt_products_cat = &$tt_products_cat;
 		$this->pid = $pid;		
 		$this->page = tx_ttproducts_page::createPageTable(
 			$this->pibase,
-			$this->conf,
-			$this->config,
+			$this->cnf,
 			$this->tt_content,
 			$this->pibase->LLkey,
 			$this->conf['table.']['pages'], 
@@ -75,7 +76,7 @@ class tx_ttproducts_catlist_view {
 			99
 		);
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init($pibase, $conf, $config, $basket);
+		$this->marker->init($pibase, $cnf, $basket);
 
 			//extend standard search fields with user setup
 		$this->searchFieldList = trim($this->conf['stdSearchFieldExt']) ? implode(',', array_unique(t3lib_div::trimExplode(',',$this->searchFieldList.','.trim($this->conf['stdSearchFieldExt']),1))) : 'title,note,'.$this->tt_products->fields['itemnumber'];

@@ -43,6 +43,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_image.php');
 class tx_ttproducts_category_base {
 	var $table;		 // object of the type tx_table_db
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
 	var $dataArray;  // array of read in categories
@@ -52,16 +53,17 @@ class tx_ttproducts_category_base {
 	/**
 	 * initialization with table object and language table
 	 */
-	function init(&$pibase, &$conf, &$config, &$tt_content)	{
+	function init(&$pibase, &$cnf, &$tt_content)	{
 		global $TYPO3_DB,$TSFE;
 
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 
 			// image
 		$this->image = t3lib_div::makeInstance('tx_ttproducts_image');
-		$this->image->init($this->pibase, $conf, $config, $tt_content, $this->table, $this->marker);
+		$this->image->init($this->pibase, $cnf, $tt_content, $this->table, $this->marker);
 	} // init
 
 

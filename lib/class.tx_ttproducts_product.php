@@ -53,7 +53,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$config, &$tt_content, $LLkey, $tablename, &$tableconf, &$prodconf, $useArticles)  {
+	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf, &$prodconf, $useArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		$tablename = ($tablename ? $tablename : 'tt_products');
@@ -86,7 +86,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$this->table->setLangName('tt_products_language');
 			$this->table->setTCAFieldArray($this->table->langname);
 		}
-		parent::init($pibase, $conf, $config, $tt_content);
+		parent::init($pibase, $cnf, $tt_content);
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $tableconf['variant.'], $this, $useArticles);
 		$this->fields['itemnumber'] = ($tableconf['itemnumber'] ? $tableconf['itemnumber'] : 'itemnumber');
@@ -137,8 +137,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				foreach ($pidItem as $itemnumber=>$actItemArray) {
 					if ($useArticles) {
 						foreach ($actItemArray as $k1=>$actItem) {
-							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color=\''.$TYPO3_DB->quoteStr($actItem['rec']['color'],'tt_products_articles').'\' AND size=\''.$TYPO3_DB->quoteStr($actItem['rec']['size'],'tt_products_articles').'\' AND description=\''.$TYPO3_DB->quoteStr($actItem['rec']['description'],'tt_products_articles').'\' AND gradings=\''.$TYPO3_DB->quoteStr($actItem['rec']['gradings'],'tt_products_articles').'\'';
-	
+							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($actItem['rec']['color'],'tt_products_articles').' AND size='.$TYPO3_DB->fullQuoteStr($actItem['rec']['size'],'tt_products_articles').' AND description='.$TYPO3_DB->fullQuoteStr($actItem['rec']['description'],'tt_products_articles').' AND gradings='.$TYPO3_DB->fullQuoteStr($actItem['rec']['gradings'],'tt_products_articles');	
 							$res = $TYPO3_DB->exec_SELECTquery('inStock', 'tt_products_articles', $query);
 								//  TODO: Saving the order record support color, size, description and gradings here
 						}
@@ -218,11 +217,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='')	{
+	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='', $id='1')	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
-
 		$row = &$item['rec'];
-		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code);
+		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id);
 		
 			// Subst. fields
 		$markerArray['###PRODUCT_UNIT###'] = $row['unit'];
@@ -235,6 +233,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
 		$markerArray['###FIELD_NAME_BASKET###'] = 'ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
+		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $this->conf['bulkilyWarning'] : '';
 
 		if ($row['special_preparation'])	{

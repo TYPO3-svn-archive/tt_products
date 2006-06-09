@@ -47,6 +47,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_fe_users.php');
 class tx_ttproducts_paymentshipping {
 
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
 	var $basket;
@@ -54,12 +55,13 @@ class tx_ttproducts_paymentshipping {
 	var $fe_users; // element of class tx_table_db
 
 
-	function init(&$pibase, &$conf, &$config, &$basket, &$basketView, &$fe_users)	{
+	function init(&$pibase, &$cnf, &$basket, &$basketView, &$fe_users)	{
 		global $TSFE;
 
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
 		$this->basketView = &$basketView;
 		$this->fe_users = &$fe_users;

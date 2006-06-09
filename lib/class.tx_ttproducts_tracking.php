@@ -45,6 +45,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
 class tx_ttproducts_tracking {
 
 	var $pibase;
+	var $cnf;
 	var $conf;				  // original configuration
 	var $basket;				// basket object
 	var $order;					 // object of the type tx_ttproducts_order
@@ -59,11 +60,12 @@ class tx_ttproducts_tracking {
 	 * @return	  void
 	 */
 
-	function init(&$pibase, &$conf, &$basket, &$order, &$price) {
+	function init(&$pibase, &$cnf, &$basket, &$order, &$price) {
 		global $TSFE;
 
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
 		$this->basket = &$basket;
 		$this->order = &$order;
 		$this->price = &$price;	 
@@ -111,12 +113,12 @@ class tx_ttproducts_tracking {
 				// Initialize update of status...
 			$fieldsArray = array();
 			if (isset($orderRecord['email_notify']))	{
-				$fieldsArray['email_notify'] = $TYPO3_DB->quoteStr($orderRecord['email_notify'],'sys_products_orders');
-				$orderRow['email_notify'] = $fieldsArray['email_notify'];
+				$fieldsArray['email_notify'] = $TYPO3_DB->fullQuoteStr($orderRecord['email_notify'],'sys_products_orders');
+				$orderRow['email_notify'] = $orderRecord['email_notify'];
 			}
 			if (isset($orderRecord['email']))	{
-				$fieldsArray['email'] = $TYPO3_DB->quoteStr($orderRecord['email'],'sys_products_orders');
-				$orderRow['email'] = $fieldsArray['email'];
+				$fieldsArray['email'] = $TYPO3_DB->fullQuoteStr($orderRecord['email'],'sys_products_orders');
+				$orderRow['email'] = $orderRecord['email'];
 			}
 
 			if (is_array($orderRecord['status']))	{
@@ -126,9 +128,9 @@ class tx_ttproducts_tracking {
 				while(list(,$val)=each($orderRecord['status'])) {
 					$status_log_element = array(
 						'time' => time(),
-						'info' => $TYPO3_DB->quoteStr($this->conf['statusCodes.'][$val],'sys_products_orders'),
-						'status' => $TYPO3_DB->quoteStr($val,'sys_products_orders'),
-						'comment' => $TYPO3_DB->quoteStr($orderRecord['status_comment'],'sys_products_orders')
+						'info' => $TYPO3_DB->fullQuoteStr($this->conf['statusCodes.'][$val],'sys_products_orders'),
+						'status' => $TYPO3_DB->fullQuoteStr($val,'sys_products_orders'),
+						'comment' => $TYPO3_DB->fullQuoteStr($orderRecord['status_comment'],'sys_products_orders')
 					);
 
 					if ($admin || ($val>=50 && $val<59))	{// Numbers 50-59 are usermessages.
@@ -154,7 +156,7 @@ class tx_ttproducts_tracking {
 				}
 				if ($update)	{
 					$fieldsArray['status_log'] = serialize($status_log);
-					$fieldsArray['status'] = $TYPO3_DB->quoteStr($status_log_element['status'],'sys_products_orders');
+					$fieldsArray['status'] = intval($status_log_element['status'],'sys_products_orders');
 					if ($fieldsArray['status'] >= 100)  {
 
 							// Deletes any M-M relations between the tt_products table and the order.
@@ -166,9 +168,7 @@ class tx_ttproducts_tracking {
 
 			if (count($fieldsArray))	{		// If any items in the field array, save them
 				$fieldsArray['tstamp'] = time();
-
 				$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderRow['uid']), $fieldsArray);
-
 				$orderRow = $this->order->getRecord($orderRow['uid']);
 			}
 		}

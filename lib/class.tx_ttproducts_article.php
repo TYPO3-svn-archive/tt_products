@@ -53,7 +53,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$config, &$tt_products, &$tt_content, $LLkey, $tablename, &$tableconf, &$articleConf)  {
+	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, $LLkey, $tablename, &$tableconf, &$articleConf)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		
@@ -72,13 +72,10 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 
-		parent::init($pibase, $conf, $config, $tt_content);
-
+		parent::init($pibase, $cnf, $tt_content);
 
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $tableconf['variant.'], $this, 0);
-
-
 	} // init
 
 

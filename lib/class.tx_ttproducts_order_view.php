@@ -52,14 +52,19 @@ class tx_ttproducts_order_view {
 	var $marker; // marker functions
 
 
-	function init(&$pibase, &$conf, &$config, &$basket, &$order) {
+	function init(&$pibase, &$cnf, &$basket, &$order) {
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
 		$this->basket = &$basket;
 		$this->order = &$order;
 
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init($pibase, $conf, $config, $basket);
+		$this->marker->init(
+			$pibase,
+			$cnf,
+			$basket
+		);
 	}
 
 
@@ -114,7 +119,7 @@ class tx_ttproducts_order_view {
 				$username = $row['username'];
 			}
 	
-			$res2 = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode='.$TYPO3_DB->quoteStr($username, 'fe_users'));
+			$res2 = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode='.$TYPO3_DB->fullQuoteStr($username, 'fe_users'));
 			$num_rows = $TYPO3_DB->sql_num_rows($res2) * 5;
 			$res3 = $TYPO3_DB->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.intval($feusers_uid).' AND NOT deleted');
 			$this->creditpoints = array();

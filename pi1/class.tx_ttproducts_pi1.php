@@ -55,6 +55,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_basket.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_basket_view.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_category.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_config.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_content.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_javascript.php');
@@ -88,6 +89,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		// Internal: init():
 	var $templateCode='';				// In init(), set to the content of the templateFile. Used by default in basketView->getView()
 	var $config=array();				// updated configuration
+	var $cnf;							// object for configuration purposes
 	var $tt_product_single=array();
 	var $globalMarkerArray=array();
 	var $externalCObject='';
@@ -101,7 +103,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $tt_products_articles;		// object of the type tx_table_db
 	var $tt_products_cat; 					// object of the type tx_ttproducts_category
 
-	var $tt_content; 					// object of the type tx_ttproducts_content
+	var $tt_content; 				// object of the type tx_ttproducts_content
 	var $order;	 					// object of the type tx_ttproducts_order
 	var $page;	 					// object of the type tx_ttproducts_page
 	var $paymentshipping; 			// object of the type tx_ttproducts_paymentshipping
@@ -209,8 +211,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		if (!$this->errorMessage) {
 			$this->basket->init(
 				$this,
-				$this->conf,
-				$this->config,
+				$this->cnf,
 				$TSFE->fe_user->getKey('ses','recs'),
 				$updateMode, 
 				$this->pid_list,
@@ -262,7 +263,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_catlist_view.php');
 						// category view
 					$categoryView = t3lib_div::makeInstance('tx_ttproducts_catlist_view');
-					$categoryView->init($this, $this->conf, $this->config, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products_cat, $this->pid);
+					$categoryView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products_cat, $this->pid);
 //					if (count($codes) > 1)	{
 //						$idClass = 'tx-ttproducts-pi1-'.strtolower($codes[1]);
 //					} else {
@@ -310,7 +311,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$TSFE->set_no_cache();
 						// currency view
 					$currencyView = t3lib_div::makeInstance('tx_ttproducts_currency_view');
-					$currencyView->init($this, $this->conf, $this->config, $this->basket);
+					$currencyView->init($this, $this->cnf, $this->basket);
 
 					$contentTmp=$currencyView->printView();
 				break;
@@ -320,7 +321,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 						// order view
 					$orderView = t3lib_div::makeInstance('tx_ttproducts_order_view');
-					$orderView->init($this, $this->conf, $this->config, $this->basket, $this->order);
+					$orderView->init($this, $this->cnf, $this->basket, $this->order);
 					$contentTmp=$orderView->printView($this->templateCode, $error_code);
 				break;
 				default:	// 'HELP'
@@ -376,6 +377,12 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		global $TSFE;
 
 		$this->pi_setPiVarDefaults();
+
+		$this->cnf = t3lib_div::makeInstance('tx_ttproducts_config');
+		$this->cnf->init(
+			$this->conf,
+			$config
+		);
 		
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 		if ($typoVersion < 3008000)	{
@@ -494,8 +501,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// pages
 		$this->page = tx_ttproducts_page::createPageTable(
 			$this,
-			$this->conf,
-			$this->config,
+			$this->cnf,
 			$this->tt_content,
 			$this->LLkey,
 			$this->conf['table.']['pages'], 
@@ -508,7 +514,12 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 			// JavaScript
 		$this->javascript = t3lib_div::makeInstance('tx_ttproducts_javascript');
-		$this->javascript->init($this, $this->conf, $this->config, $this->page, $this->xajax);
+		$this->javascript->init(
+			$this,
+			$this->cnf,
+			$this->page,
+			$this->xajax
+		);
 		
 			// basket
 		$this->basket = t3lib_div::makeInstance('tx_ttproducts_basket');
@@ -518,27 +529,47 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 			// memo view: has to be called always because it reads parameters from the list
 		$this->memoView = t3lib_div::makeInstance('tx_ttproducts_memo_view');
-		$this->memoView->init($this, $this->conf, $this->config, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products, $this->tt_products_cat, $this->tt_products_articles, $this->pid);
+		$this->memoView->init(
+			$this,
+			$this->cnf,
+			$this->basket,
+			$this->pid_list,
+			$this->tt_content,
+			$this->tt_products,
+			$this->tt_products_cat,
+			$this->tt_products_articles,
+			$this->pid
+		);
 				
 			// price
 		$this->price = t3lib_div::makeInstance('tx_ttproducts_price');
-		$this->price->init($this, $this->conf, $config);
+		$this->price->init(
+			$this,
+			$this->conf,
+			$config
+		);
 	
 			// paymentshipping
 		$this->paymentshipping = t3lib_div::makeInstance('tx_ttproducts_paymentshipping');
-		$this->paymentshipping->init($this, $this->conf, $config, $this->basket, $this->basketView, $this->fe_users);
+		$this->paymentshipping->init(
+			$this,
+			$this->cnf,
+			$this->basket,
+			$this->basketView,
+			$this->fe_users
+		);
 
 			// order
 		$this->order = t3lib_div::makeInstance('tx_ttproducts_order');
 		$this->order->init(
 			$this,
-			$this->conf,
+			$this->cnf,
 			$this->tt_products,
 			$this->tt_products_articles,
 			$this->tt_products_cat,
 			$this->basket
 		);
-
+		
 	} // init
 
 
@@ -549,8 +580,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$this->tt_products_cat = t3lib_div::makeInstance('tx_ttproducts_category');
 		$this->tt_products_cat->init(
 			$this,
-			$this->conf,
-			$this->config,
+			$this->cnf,
 			$this->tt_content,
 			$this->LLkey,
 			$this->conf['table.']['tt_products_cat'], 
@@ -562,8 +592,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$this->tt_content->init();
 		$this->tt_products = t3lib_div::makeInstance('tx_ttproducts_product');
 		$this->tt_products->init(
-			$this,$this->conf,
-			$this->config,
+			$this,
+			$this->cnf,
 			$this->tt_content,
 			$this->LLkey,
 			$this->conf['table.']['tt_products'],
@@ -575,8 +605,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$this->tt_products_articles = t3lib_div::makeInstance('tx_ttproducts_article');
 		$this->tt_products_articles->init(
 			$this,
-			$this->conf,
-			$this->config,
+			$this->cnf,
 			$this->tt_products,
 			$this->tt_content,
 			$this->LLkey,
@@ -588,8 +617,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$this->fe_users = t3lib_div::makeInstance('tx_ttproducts_fe_users');
 		$this->fe_users->init(
 			$this,
-			$this->conf,
-			$this->config,
+			$this->cnf,
 			$this->conf['table.']['fe_users'],
 			$this->conf['table.']['fe_users.']
 		);
@@ -701,20 +729,50 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				switch ($theCode) {
 					case 'TRACKING':
 				 		$tracking = t3lib_div::makeInstance('tx_ttproducts_tracking');
-				 		$tracking->init($this,$this->conf,$this->basket,$this->order,$this->price);
+				 		$tracking->init(
+				 			$this,
+				 			$this->cnf,
+				 			$this->basket,
+				 			$this->order,
+				 			$this->price
+				 		);
 						$orderRecord = t3lib_div::_GP('orderRecord');
 						$content = $tracking->getTrackingInformation($orderRow, $this->templateCode, $trackingCode, $updateCode, $orderRecord, $admin);
 						break;
 					case 'BILL':
 				 		$bill = t3lib_div::makeInstance('tx_ttproducts_billdelivery');
-				 		$bill->init($this,$this->conf,$this->config,$this->basket,$this->tt_products, $this->tt_products_cat, $this->tt_content, $this->order, $this->price,'bill');
+				 		$bill->init(
+				 			$this,
+				 			$this->cnf,
+				 			$this->basket,
+				 			$this->tt_products,
+				 			$this->tt_products_cat,
+				 			$this->tt_content,
+				 			$this->order,
+				 			$this->price,
+							'bill'
+						);
 				 		
 						$content = $bill->getInformation($orderRow, $this->templateCode,$trackingCode);
 						break;
 					case 'DELIVERY':
 				 		$delivery = t3lib_div::makeInstance('tx_ttproducts_billdelivery');
-				 		$delivery->init($this,$this->conf,$this->config,$this->basket,$this->tt_products, $this->tt_products_cat, $this->tt_content, $this->order, $this->price,'delivery');
-						$content = $delivery->getInformation($orderRow, $this->templateCode,$trackingCode);
+				 		$delivery->init(
+				 			$this,
+				 			$this->cnf,
+				 			$this->basket,
+				 			$this->tt_products,
+				 			$this->tt_products_cat,
+				 			$this->tt_content,
+				 			$this->order,
+				 			$this->price,
+							'delivery'
+						);
+						$content = $delivery->getInformation(
+							$orderRow,
+							$this->templateCode,
+							$trackingCode
+						);
 						break;
 					default:
 						debug('error in '.TT_PRODUCTS_EXTkey.' calling function products_tracking with $theCode = "'.$theCode.'"');
@@ -822,8 +880,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$this->singleView = t3lib_div::makeInstance('tx_ttproducts_single_view');
 				$this->singleView->init (
 					$this,
-					$this->conf,
-					$this->config,
+					$this->cnf,
 					$this->basket,
 					$this->basketView,
 					$this->page,
@@ -851,8 +908,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// List all products:
 			$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
 			$listView->init (
-				$this, $this->conf,
-				$this->config,
+				$this,
+				$this->cnf,
 				$this->basket,
 				$this->basketView,
 				$this->page,

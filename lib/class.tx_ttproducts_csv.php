@@ -43,6 +43,7 @@
 
 class tx_ttproducts_csv {
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $calculatedArray; // reference to calculated basket array
 	var $itemArray; // reference to the bakset item array
@@ -52,10 +53,11 @@ class tx_ttproducts_csv {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$itemArray, &$calculatedArray, &$price, &$order)	{
+	function init(&$pibase, &$cnf, &$itemArray, &$calculatedArray, &$price, &$order)	{
 		global $TYPO3_DB;
  		$this->pibase = &$pibase;
- 		$this->conf = &$conf;
+ 		$this->cnf = &$cnf;
+ 		$this->conf = &$this->cnf->conf;
  		$this->calculatedArray = &$calculatedArray;
  		$this->itemArray = &$itemArray;
  		$this->price = &$price;

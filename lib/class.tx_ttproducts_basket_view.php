@@ -79,8 +79,9 @@ class tx_ttproducts_basket_view {
 
 	function init(&$basket, &$order, &$templateCode )	{
  		$this->pibase = &$basket->pibase;
- 		$this->conf = &$basket->conf;
- 		$this->config = &$basket->config;
+ 		$this->cnf = &$basket->cnf;
+ 		$this->conf = &$this->cnf->conf;
+ 		$this->config = &$this->cnf->config;
  		$this->basket = &$basket;
  		$this->page = &$basket->page;
 		$this->order = &$order;
@@ -93,7 +94,7 @@ class tx_ttproducts_basket_view {
  		$this->templateCode = &$templateCode;
  
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init($this->pibase, $this->conf, $this->config, $this->basket);
+		$this->marker->init($this->pibase, $this->cnf, $this->basket);
 	} // init
 
 
@@ -152,7 +153,7 @@ class tx_ttproducts_basket_view {
 				require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
 				
 				$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-				$paymentlib->init($this->pibase, $this->conf, $this->config, $this->basket, $this, $this->price, $this->order);
+				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $this, $this->price, $this->order);
 				$content.= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
 			}
 		}		
@@ -472,6 +473,7 @@ class tx_ttproducts_basket_view {
 			$viewTagArray
 		);
 
+		$count = 0;
 		// loop over all items in the basket indexed by page and itemnumber
 		foreach ($this->basket->itemArray as $pid=>$pidItem) {
 			if (!$this->page->pageArray[$pid])	{
@@ -480,6 +482,7 @@ class tx_ttproducts_basket_view {
 			}
 			foreach ($pidItem as $itemnumber=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
+					$count++;
 					$pidcategory = ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1 ? $pid : '');
 					$currentPnew = $pidcategory.'_'.$actItem['rec']['category'];
 						// Print Category Title
@@ -513,8 +516,8 @@ class tx_ttproducts_basket_view {
 					$wrappedSubpartArray=array();
 					$subpartArray=array();
 					$markerArray = array();
-					$this->getItemMarkerArray ($actItem, $markerArray, $this->basket->basketExt, $code);										
-					$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $code);
+					$this->getItemMarkerArray ($actItem, $markerArray, $this->basket->basketExt, $code, $count);										
+					$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $code, $count);
 					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
 					$markerArray['###PRODUCT_DESCRIPTION###'] = $actItem['rec']['description'];
@@ -563,7 +566,7 @@ class tx_ttproducts_basket_view {
 					$splitMark = md5(microtime());
 					$addQueryString=array();
 					$addQueryString[$this->pibase->prefixId.'[product]'] = intval($actItem['rec']['uid']);
-					$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($actItem['rec']['extVars']); 
+					$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($actItem['rec']['extVars']);
 					// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
 					$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true)).'"'.$css_current.'>','</a>'); 
 
@@ -635,7 +638,7 @@ class tx_ttproducts_basket_view {
 			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getBasketView')) {
-					$hookObj->getItemMarkerArray ($this, $subpartMarker, $markerArray, $subpartArray, $code);
+					$hookObj->getItemMarkerArray ($this, $subpartMarker, $markerArray, $subpartArray, $code, $count);
 				}
 			}
 		}
@@ -961,14 +964,14 @@ class tx_ttproducts_basket_view {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, &$basketExt, $code)	{
+	function getItemMarkerArray (&$item, &$markerArray, &$basketExt, $code, $id='1')	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
-
 		$row = &$item['rec'];
 		$basketQuantityName = 'ttp_basket['.$row['uid'].'][quantity]';
 
 		$variants = $this->viewTable->variant->getVariantFromRow($row);
 		$markerArray['###FIELD_NAME###'] = $basketQuantityName;
+		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		$quantity = $basketExt[$row['uid']][$variants];
 		$markerArray['###FIELD_QTY###'] = $quantity ? $quantity : '';
 	}

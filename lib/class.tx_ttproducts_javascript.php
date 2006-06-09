@@ -41,16 +41,18 @@
 
 class tx_ttproducts_javascript {
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
 	var $page;
 	var $xajax;
 
 
-	function init(&$pibase, &$conf, &$config, &$page, &$xajax) {
+	function init(&$pibase, &$cnf, &$page, &$xajax) {
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 		$this->page = &$page;
 		$this->xajax = &$xajax;
 	}

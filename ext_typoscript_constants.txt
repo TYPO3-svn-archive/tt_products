@@ -75,7 +75,6 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label= single view, List display: Usually you get the link to the single item view on the display page of the LIST code. If you however want to create your own pages for single view with SINGLE code you must set this to 1.
   NoSingleViewOnList = 
   
-  
     # cat=plugin.products//; type=int+; label= Max items displayed: The maximum number of items displayed on one page. 
   limit = 50
     # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item on a list view. 

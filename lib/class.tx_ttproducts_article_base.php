@@ -59,12 +59,12 @@ class tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$config, &$tt_content)  {
+	function init(&$pibase, &$cnf, &$tt_content)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
+		$this->conf = &$cnf->conf;
+		$this->config = &$cnf->config;
 
 		$this->variantArray = array();
 		$this->variantArray[1] = array('color', ($this->bIsProduct && $this->conf['selectColor']));
@@ -74,7 +74,7 @@ class tx_ttproducts_article_base {
 		
 			// image
 		$this->image = t3lib_div::makeInstance('tx_ttproducts_image');
-		$this->image->init($this->pibase, $this->conf, $this->config, $tt_content, $this->table, $this->marker);
+		$this->image->init($this->pibase, $cnf, $tt_content, $this->table, $this->marker);
 
 	} // init
 
@@ -101,7 +101,7 @@ class tx_ttproducts_article_base {
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='')	{
+	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1')	{
 		if (!$this->marker)
 			return array();
 		$row = &$item['rec'];
@@ -166,10 +166,11 @@ class tx_ttproducts_article_base {
 			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getItemMarkerArray')) {
-					$hookObj->getItemMarkerArray ($this, $markerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $code);
+					$hookObj->getItemMarkerArray ($this, $markerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $code, $id);
 				}
 			}
 		}
+		
 	}
 
 

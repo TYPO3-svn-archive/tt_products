@@ -49,16 +49,27 @@ class tx_ttproducts_image {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$config, &$tt_content, &$parenttable, $marker)  {
+	function init(&$pibase, &$cnf, &$tt_content, &$parenttable, $marker)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 		$this->tt_content = &$tt_content;
 		$this->parenttable = &$parenttable;
 		$this->marker = $marker;
+		
+		if ($this->conf['noImageAvailable'] == '{$plugin.tt_products.file.noImageAvailable}')	{
+			$this->conf['noImageAvailable'] = '';
+		}
+		
+		// DAM support
+		if (t3lib_extMgm::isLoaded('dam')) {
+			include_once(t3lib_extMgm::extPath('dam').'lib/class.tx_dam.php');
+		}
 	} // init
+
 
 
 	/* returns the key for the tag array and marker array without leading and ending '###' */
@@ -74,24 +85,7 @@ class tx_ttproducts_image {
 		$key = current(t3lib_div::trimExplode('.',(implode('_', $keyArray))));
 		return $key;
 	}
-	
-	
-	function &getTableConf ($tablename, $theCode)	{
 
-		if (is_array($this->conf['conf.']) &&
-			is_array($this->conf['conf.'][$tablename.'.'])
-			)	{
-			if (is_array($this->conf['conf.'][$tablename.'.']['ALL.']))	{
-				$tableConf = $this->conf['conf.'][$tablename.'.']['ALL.'];
-			}
-			if (is_array($this->conf['conf.'][$tablename.'.'][$theCode.'.']))	{
-				$tempConf = $this->conf['conf.'][$tablename.'.'][$theCode.'.'];
-				$tableConf = array_merge($tableConf, $tempConf);
-			}
-		}
-		
-		return $tableConf;
-	}
 
 	/**
 	 * Template marker substitution
@@ -112,7 +106,7 @@ class tx_ttproducts_image {
 		
 		$bImages = false;
 		$marker = $this->marker;
-		$tableConf = $this->getTableConf($this->parenttable->name, $theCode);
+		$tableConf = $this->cnf->getTableConf($this->parenttable->name, $theCode);
 
 			// Get image
 		$theImgCode = array();
@@ -160,7 +154,7 @@ class tx_ttproducts_image {
 			$conftable = ($conftable ? $conftable : $this->parenttable->name);
 			$generateArray = array('generateImage', 'generatePath');
 			$nameArray = array();
-			$conftableConf = $this->getTableConf($conftable, $theCode);
+			$conftableConf = $this->cnf->getTableConf($conftable, $theCode);
 
 			foreach ($generateArray as $k => $generate)	{
 
@@ -242,6 +236,9 @@ class tx_ttproducts_image {
 				$imageConf['file'] = $dirname.'/'.$val;
 			} else {
 				$imageConf['file'] = $this->conf['noImageAvailable'];
+			}
+			if (t3lib_extMgm::isLoaded('dam') && $imageConf['file']) {
+				$meta = tx_dam::meta_getDataForFile($imageConf['file']);
 			}
 			if (!$this->conf['separateImage']) {
 				$key = 0;  // show all images together as one image

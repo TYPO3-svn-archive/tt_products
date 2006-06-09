@@ -49,6 +49,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc.php');
 
 class tx_ttproducts_basket {
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
 
@@ -151,15 +152,16 @@ class tx_ttproducts_basket {
 	 * @return	  void
  	 */
 
-	function init( &$pibase, &$conf, &$config, $formerBasket, $updateMode, &$pid_list,
+	function init( &$pibase, &$cnf, $formerBasket, $updateMode, &$pid_list,
 					&$tt_content, &$tt_products, &$tt_products_articles, 
 					&$tt_products_cat, &$fe_users, &$price,
 					&$paymentshipping, $bStoreBasket)	{
 		global $TSFE;
 
  		$this->pibase = &$pibase;
- 		$this->conf = &$conf;
- 		$this->config = &$config;
+ 		$this->cnf = &$cnf;
+ 		$this->conf = &$this->cnf->conf;
+ 		$this->config = &$this->cnf->config;
  		$this->tt_content = &$tt_content;
  		$this->tt_products = &$tt_products;
  		$this->tt_products_articles = &$tt_products_articles;
@@ -175,8 +177,7 @@ class tx_ttproducts_basket {
 			// pages
 		$this->page = tx_ttproducts_page::createPageTable(
 			$this->pibase,
-			$this->conf,
-			$this->config,
+			$this->cnf,
 			$this->tt_content,
 			$this->pibase->LLkey,
 			$this->conf['table.']['pages'], 
@@ -532,7 +533,7 @@ class tx_ttproducts_basket {
 					$row['extVars'] = $bextVars;
 					if ($this->useArticles == 1) {
 						// get the article uid with these colors, sizes and gradings
-						$query='uid_product=\''.intval($row['uid']).'\' AND color=\''.$TYPO3_DB->quoteStr($row['color'],'tt_products').'\' AND size=\''.$TYPO3_DB->quoteStr($row['size'],'tt_products').'\' AND description=\''.$TYPO3_DB->quoteStr($row['description'],'tt_products').'\' AND gradings=\''.$TYPO3_DB->quoteStr($row['gradings'],'tt_products').'\'';
+						$query='uid_product=\''.intval($row['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($row['color'],'tt_products').' AND size='.$TYPO3_DB->fullQuoteStr($row['size'],'tt_products').' AND description='.$TYPO3_DB->fullQuoteStr($row['description'],'tt_products').' AND gradings='.$TYPO3_DB->fullQuoteStr($row['gradings'],'tt_products');
 						$articleRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_articles', $query);
 						if ($articleRow = $TYPO3_DB->sql_fetch_assoc($articleRes)) {
 								// use the fields of the article instead of the product

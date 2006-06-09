@@ -60,13 +60,14 @@ class tx_ttproducts_list_view {
 	var $useArticles;
 	var $searchFieldList='';
 
-	function init(&$pibase, &$conf, &$config, &$basket, &$basketView,
+	function init(&$pibase, &$cnf, &$basket, &$basketView,
 			&$page, &$tt_content, &$tt_products,
 			&$tt_products_articles, &$tt_products_cat, &$fe_users,
 			$pid, $LLkey, $useArticles) {
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
 		$this->basketView = &$basketView;
 		$this->page = &$page;
@@ -79,7 +80,7 @@ class tx_ttproducts_list_view {
 		$this->LLkey = $LLkey;
 		$this->useArticles = $useArticles;	
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init($pibase, $conf, $config, $basket);
+		$this->marker->init($pibase, $cnf, $basket);
 
 			//extend standard search fields with user setup
 		$this->searchFieldList = trim($this->conf['stdSearchFieldExt']) ? implode(',', array_unique(t3lib_div::trimExplode(',',$this->searchFieldList.','.trim($this->conf['stdSearchFieldExt']),1))) : 'title,note,'.$this->tt_products->fields['itemnumber'];
@@ -128,10 +129,10 @@ class tx_ttproducts_list_view {
 		$pageAsCategory
 	) {
 		global $TSFE, $TCA, $TYPO3_DB;
-		$content='';
-		$out='';
-		$more=0;		// If set during this loop, the next-item is drawn
-		$where='';
+		$content = '';
+		$out = '';
+		$more = 0;		// If set during this loop, the next-item is drawn
+		$where = '';
 		$formName = 'ShopListForm';
 		$itemTable = &$this->tt_products;
 
@@ -239,13 +240,14 @@ class tx_ttproducts_list_view {
 			$dum = strstr($t['item'], 'ITEM_SINGLE_POST_HTML');
 			$bItemPostHtml = (strstr($t['item'], 'ITEM_SINGLE_POST_HTML') != false);
 
-				// Get products
+				// Get products count
 			$selectConf = Array();
 			$selectConf['pidInList'] = $this->page->pid_list;
 			$wherestock = ($this->conf['showNotinStock'] || !is_array(($TCA[$itemTable->table->name]['columns']['inStock'])) ? '' : 'AND (inStock <> 0) ');
 			$whereNew = $wherestock.$where;
 			$whereNew = $itemTable->table->transformWhere($whereNew);
 			$selectConf['where'] = '1=1 '.$whereNew;
+			$selectConf['from'] = $itemTable->table->getAdditionalTables();
 	
 				// performing query to count all products (we need to know it for browsing):
 			$selectConf['selectFields'] = 'count(*)';
@@ -258,6 +260,8 @@ class tx_ttproducts_list_view {
 	
 				// range check to current productsCount
 			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount)?($productsCount > $this->config['limit'] ? $productsCount-$this->config['limit'] : $productsCount):$begin_at,0);
+			
+				// Get products count			
 			$selectConf['orderBy'] = $this->conf['orderBy'];
 
 				// performing query for display:	
@@ -306,10 +310,9 @@ class tx_ttproducts_list_view {
 				$viewCatTagArray
 			);
 			$catTitle = '';
-			
 			if ($orderByCat && ($pageAsCategory < 2))	{
-				$catFields = ($orderByCat == 'uid' ? $orderByCat : 'uid,'.$orderByCat);
-				$selectConf['orderBy'] = $viewCatTable->table->transformOrderby($catFields).
+				// $catFields = ($orderByCat == 'uid' ? $orderByCat : 'uid,'.$orderByCat);
+				$selectConf['orderBy'] = $viewCatTable->table->transformOrderby($orderByCat).
 					($selectConf['orderBy'] ? ','. $selectConf['orderBy'] : '');
 
 				$prodAlias = $itemTable->table->getAliasName();
@@ -319,17 +322,24 @@ class tx_ttproducts_list_view {
 				// FROM tt_products
 				// LEFT OUTER JOIN tt_products_cat ON tt_products.category = tt_products_cat.uid
 				$selectConf['leftjoin'] = $viewCatTable->table->name.' '.$catAlias.' ON '.$catAlias.'.uid='.$prodAlias.'.category';
-				$selectConf['from'] .= $viewCatTable->table->getAdditionalTables();
+				$catTables = $viewCatTable->table->getAdditionalTables();
+				$selectConf['from'] = ($catTables ? $catTables.', '.$selectConf['from']:$selectConf['from']);
 			}
 
 			$selectFields = implode(',', $fieldsArray);
 			$selectConf['selectFields'] = $itemTable->table->transformSelect($selectFields);
 			$join = '';
 			$tmpTables = $itemTable->table->transformTable('',false,$join);
-			$selectConf['where'] = $join.$itemTable->table->transformWhere($selectConf['where']);
+			// $selectConf['where'] = $join.$itemTable->table->transformWhere($selectConf['where']);
+			$selectConf['where'] = $join.$selectConf['where'];
 			$selectConf['max'] = ($this->config['limit']+1);
 			$selectConf['begin'] = $begin_at;
-			$selectConf['from'] = ($selectConf['from'] ? $selectConf['from'].', ':'').$itemTable->table->getAdditionalTables();
+			// $selectConf['from'] = ($selectConf['from'] ? $selectConf['from'].', ':'').$itemTable->table->getAdditionalTables();
+			
+			if ($selectConf['orderBy'])	{
+				$selectConf['orderBy'] = $TYPO3_DB->stripOrderBy($selectConf['orderBy']);
+			}
+			
 			$tablename = $itemTable->table->name;
 			$queryParts = $itemTable->table->getQueryConf($this->pibase->cObj,$tablename, $selectConf, TRUE);
 			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
@@ -398,7 +408,8 @@ class tx_ttproducts_list_view {
 								$viewCatTagArray, 
 								array(), 
 								$pageAsCategory,
-								$theCode
+								$theCode,
+								$iCount
 							);
 							$catTitle = $viewCatTable->getMarkerArrayCatTitle($markerArray);
 							if ($t['categoryFrameWork'])	{
@@ -443,17 +454,16 @@ class tx_ttproducts_list_view {
 					$variant = $itemTable->variant->getVariantFromRow($row);
 					$item = $this->basket->getItem($row, $variant);
 					$markerArray = array();
-					$this->basketView->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, $theCode);
-					$itemTable->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, $theCode);
+					$this->basketView->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, $theCode, $iCount);
+					$itemTable->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, $theCode, $iCount);
 					if ($itemTable->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
 						$prodRow = $this->tt_products->get($row['uid_product']);
 						$variant = $itemTable->variant->getVariantFromRow($prodRow);
 						$item = $this->basket->getItem($prodRow, $variant);
-						$this->tt_products->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, $theCode);
+						$this->tt_products->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, array(), $theCode, $iCount);
+					} else {
+						$this->tt_products->variant->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, $viewTagArray, $theCode, $iCount);
 					}
-//					 else if ($itemTable->marker == 'ARTICLE')	{ // ($itemTable === $this->tt_products_articles)
-//						$this->tt_products->variant->getItemMarkerArray($item, $markerArray, $this->basket->basketExt, $viewTagArray, $theCode);
-//					}
 					
 					if ($theCode == 'LISTGIFTS') {
 						$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $this->basket->giftnumber);

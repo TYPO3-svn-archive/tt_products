@@ -46,20 +46,22 @@ require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_category_base.php');
 class tx_ttproducts_page extends tx_ttproducts_category_base {
 	var $pid_list;		// list of page ids
 	var $pageArray;		// pid_list as array
+	var $cnf;
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$config, &$tt_content, $LLkey, $tablename, &$tableconf,  &$pageconf)	{
+	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf,  &$pageconf)	{
 		global $TYPO3_DB;
 		
 		$this->pibase = &$pibase;
+		$this->cnf = &$cnf;
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'sorting'=> 'sorting',
  			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));		
 		$this->table->setTCAFieldArray('pages');
 		
-		parent::init($pibase, $conf, $config, $tt_content);
+		parent::init($pibase, $cnf, $tt_content);
 	} // init
 
 
@@ -116,13 +118,12 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * Getting the page table
 	 * On the basket page there will be a separate page table
 	 */
-	function &createPageTable(&$pibase, &$conf, &$config, &$tt_content, $LLkey, $tablename, &$tableconf,  &$pageconf, &$pageObject, &$pid_list, $recursive)	{
+	function &createPageTable(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf,  &$pageconf, &$pageObject, &$pid_list, $recursive)	{
 		if (!is_object($pageObject)) {
 			$pageObject = t3lib_div::makeInstance('tx_ttproducts_page');
 			$pageObject->init(
 				$pibase,
-				$conf,
-				$config,
+				$cnf,
 				$tt_content,
 				$LLkey,
 				$tablename,
@@ -254,7 +255,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code)	{
+	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id)	{
 		$row = $this->get($pid);
 
 			// Get image	

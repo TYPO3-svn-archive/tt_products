@@ -50,7 +50,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	/**
 	 * initialization with table object and language table
 	 */
-	function init(&$pibase, &$conf, &$config, &$tt_content, $LLkey, $tablename, &$tableconf,  &$catconf)	{
+	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf,  &$catconf)	{
 		global $TYPO3_DB,$TSFE;
 		
 		$tablename = ($tablename ? $tablename : 'tt_products_cat');
@@ -70,7 +70,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			$this->table->initLanguageFile($this->catconf['language.']['file']);
 		}
 
-		parent::init($pibase, $conf, $config, $tt_content);
+		parent::init($pibase, $cnf, $tt_content);
 	} // init
 
 
@@ -104,7 +104,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			if (is_array($this->catconf['ALL.']))	{
 				$orderBy = $this->catconf['ALL.']['orderBy'];
 			}
-			$res = $this->table->exec_SELECTquery('*',$where,'',$orderBy);
+			$res = $this->table->exec_SELECTquery('*',$where,'',$TYPO3_DB->stripOrderBy($orderBy));
 			if ($uid)	{
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
 				if (is_array($this->table->langArray) && $this->table->langArray[$row['title']])	{
@@ -210,11 +210,11 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code)	{
+	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id)	{
 		$row = ($category ? $this->get($category) : array ('title' => '', 'pid' => $pid));
 
 			// Get image	
-		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $code);
+		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id);
 		$pageCatTitle = '';
 		if ($pageAsCategory == 1) {
 			$pageTmp = $page->get($pid);

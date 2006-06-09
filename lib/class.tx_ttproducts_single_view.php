@@ -46,6 +46,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 
 class tx_ttproducts_single_view {
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
 	var $basket;
@@ -63,13 +64,14 @@ class tx_ttproducts_single_view {
 	var $LLkey; // language key
 	var $useArticles;
 
- 	function init(&$pibase, &$conf, &$config, &$basket, &$basketView, &$page,
+ 	function init(&$pibase, &$cnf, &$basket, &$basketView, &$page,
  			&$tt_content, &$tt_products, &$tt_products_articles,
  			&$tt_products_cat, &$fe_users, $uidArray, $extVars,
  			$pid, $LLkey, $useArticles) {
  		$this->pibase = &$pibase;
- 		$this->conf = &$conf;
- 		$this->config = &$config;
+ 		$this->cnf = &$cnf;
+ 		$this->conf = &$this->cnf->conf;
+ 		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
 		$this->basketView = &$basketView;
  		$this->page = &$page;
@@ -85,7 +87,7 @@ class tx_ttproducts_single_view {
 		$this->LLkey = $LLkey;
 		$this->useArticles = $useArticles;	
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init($pibase, $conf, $config, $basket);
+		$this->marker->init($pibase, $cnf, $basket);
  	}
 
 	// returns the single view
@@ -229,9 +231,10 @@ class tx_ttproducts_single_view {
 				'image',
 				$viewTagArray,
 				$forminfoArray,
-				'SINGLE'
+				'SINGLE',
+				1
 			);
-			$this->basketView->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, 'SINGLE');  
+			$this->basketView->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, 'SINGLE', 1);  
 			$subpartArray = array();
 			$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'];
 
@@ -265,7 +268,7 @@ class tx_ttproducts_single_view {
 			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ? '' : 'AND (inStock <>0) ');
 			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $itemTableArray[$this->type]->table->enableFields();
 			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
-			$resprev = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $queryprev, '', $prevOrderby);
+			$resprev = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $queryprev, '', $TYPO3_DB->stripOrderBy($prevOrderby));
 			
 			if ($rowprev = $TYPO3_DB->sql_fetch_assoc($resprev) )	{
 				$addQueryString=array();
@@ -279,7 +282,7 @@ class tx_ttproducts_single_view {
 
 			$querynext = $queryNextPrefix.' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $itemTableArray[$this->type]->table->enableFields();
 			// $resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
-			$resnext = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $querynext, '', $nextOrderby);
+			$resnext = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $querynext, '', $TYPO3_DB->stripOrderBy($nextOrderby));
 
 			if ($rownext = $TYPO3_DB->sql_fetch_assoc($resnext) )	{
 				$addQueryString=array();
@@ -309,7 +312,6 @@ class tx_ttproducts_single_view {
 					$addQueryString[$this->pibase->prefixId.'['.$this->type.']']= intval($row['uid']);
 					$addQueryString[$this->pibase->prefixId.'[variants]']= htmlspecialchars($this->variants);
 					$markerArray = $this->marker->addURLMarkers($backPID,$markerArray, $addQueryString); // Applied it here also...
-					
 					$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$this->variants.']'; // here again, because this is here in ITEM_LIST view
 					$markerArray['###FIELD_QTY###'] = $this->basket->basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];
 					$content.=$this->pibase->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);

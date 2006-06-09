@@ -45,18 +45,20 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 class tx_ttproducts_currency_view {
 
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $basket;
 	var $marker; // marker functions
 
 
-	function init(&$pibase, &$conf, &$config, &$basket) {
+	function init(&$pibase, &$cnf, &$basket) {
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
 		$this->basket = &$basket;
 
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init($pibase, $conf, $config, $basket);
+		$this->marker->init($pibase, $cnf, $basket);
 	}
 
 

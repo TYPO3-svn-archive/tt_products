@@ -97,7 +97,7 @@ class tx_ttproducts_creditpoints_div {
 			}
 			if ($uid_voucher) {
 				$fieldsArrayFeUserCredit = array();
-				$fieldsArrayFeUserCredit['tt_products_creditpoints'] = $TYPO3_DB->quoteStr($ttproductscreditpoints + $creditpoints,'fe_users');
+				$fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + $creditpoints;
 		
 				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.intval($uid_voucher), $fieldsArrayFeUserCredit);
 			}

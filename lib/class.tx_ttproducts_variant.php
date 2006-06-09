@@ -183,7 +183,7 @@ class tx_ttproducts_variant {
 	 * @return	array
 	 * @access private
 	 */
-	function &getItemMarkerArray (&$item, &$markerArray, &$basketExt, &$tagArray, $code='')	{
+	function &getItemMarkerArray (&$item, &$markerArray, &$basketExt, &$tagArray, $code='', $id)	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 
 		$row = &$item['rec'];
@@ -193,8 +193,8 @@ class tx_ttproducts_variant {
 		$markerArray['###FIELD_NAME###']=$basketQuantityName;
 		$quantity = $basketExt[$row['uid']][$variants];
 		$markerArray['###FIELD_QTY###']= $quantity ? $quantity : '';
+		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 
-		$markerArray = array();
 		$markerArray['###FIELD_SIZE_NAME###'] = 'ttp_basket['.$row['uid'].'][size]';
 		$markerArray['###FIELD_SIZE_VALUE###'] = $row['size'];
 		$markerArray['###FIELD_SIZE_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"

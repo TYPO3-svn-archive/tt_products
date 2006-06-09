@@ -68,7 +68,7 @@ class tx_ttproducts_gifts_div {
 	/**
 	 * Adds gift markers to a markerArray
 	 */
-	function addGiftMarkers(&$basket, $markerArray, $giftnumber)	
+	function addGiftMarkers(&$basket, $markerArray, $giftnumber, $code='LISTGIFTS', $id='1')	
 {
 
 		$markerArray['###GIFTNO###'] = $giftnumber;
@@ -79,6 +79,7 @@ class tx_ttproducts_gifts_div {
 		$markerArray['###GIFT_NOTE###'] = $basket->basketExt['gift'][$giftnumber]['note'];
 		//	 
 		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]';
+		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		// here again, because this is here in ITEM_LIST view
 		//	  $markerArray['###FIELD_QTY###'] =  '';
 
@@ -106,7 +107,7 @@ class tx_ttproducts_gifts_div {
 			foreach ($rec['item'] as $productid => $product) {
 				foreach ($product as $variant => $count) {
 					$row = array();
-					$tt_products->variant->getRowFromVariant	($row, $variant);
+					$tt_products->variant->getRowFromVariant($row, $variant);
 					$amount += intval($row['size']) * $count;
 				}
 			}
@@ -117,13 +118,13 @@ class tx_ttproducts_gifts_div {
 				'crdate' => time(),
 				'deleted' => 0,
 
-				'ordernumber'	=> $TYPO3_DB->quoteStr($orderUid,'tt_products_gifts_articles_mm'),
-				'personname'	=> $TYPO3_DB->quoteStr($rec['personname'],'tt_products_gifts_articles_mm'),
-				'personemail'	=> $TYPO3_DB->quoteStr($rec['personemail'],'tt_products_gifts_articles_mm'),
-				'deliveryname'	=> $TYPO3_DB->quoteStr($rec['deliveryname'],'tt_products_gifts_articles_mm'),
-				'deliveryemail' => $TYPO3_DB->quoteStr($rec['deliveryemail'],'tt_products_gifts_articles_mm'),
-				'note'			=> $TYPO3_DB->quoteStr($rec['note'],'tt_products_gifts_articles_mm'),
-				'amount'		=> $TYPO3_DB->quoteStr($amount,'tt_products_gifts_articles_mm')
+				'ordernumber'	=> $TYPO3_DB->fullQuoteStr($orderUid,'tt_products_gifts_articles_mm'),
+				'personname'	=> $TYPO3_DB->fullQuoteStr($rec['personname'],'tt_products_gifts_articles_mm'),
+				'personemail'	=> $TYPO3_DB->fullQuoteStr($rec['personemail'],'tt_products_gifts_articles_mm'),
+				'deliveryname'	=> $TYPO3_DB->fullQuoteStr($rec['deliveryname'],'tt_products_gifts_articles_mm'),
+				'deliveryemail' => $TYPO3_DB->fullQuoteStr($rec['deliveryemail'],'tt_products_gifts_articles_mm'),
+				'note'			=> $TYPO3_DB->fullQuoteStr($rec['note'],'tt_products_gifts_articles_mm'),
+				'amount'		=> $TYPO3_DB->fullQuoteStr($amount,'tt_products_gifts_articles_mm')
 			);
 			// Saving the gifts order record
 			$TYPO3_DB->exec_INSERTquery('tt_products_gifts',	$insertFields);
@@ -136,7 +137,7 @@ class tx_ttproducts_gifts_div {
 					$row = array();
 					$tt_products->variant->getRowFromVariant	($row, $variant);
 
-					$query='uid_product=\''.intval($productid).'\' AND color=\''.$TYPO3_DB->quoteStr($row['color'],'tt_products_articles').'\' AND size=\''.$TYPO3_DB->quoteStr($row['size'],'tt_products_articles').'\' AND description=\''.$TYPO3_DB->quoteStr($row['description'],'tt_products_articles').'\' AND gradings=\''.$TYPO3_DB->quoteStr($row['gradings'],'tt_products_articles').'\'';
+					$query='uid_product=\''.intval($productid).'\' AND color='.$TYPO3_DB->fullQuoteStr($row['color'],'tt_products_articles').' AND size='.$TYPO3_DB->fullQuoteStr($row['size'],'tt_products_articles').' AND description='.$TYPO3_DB->fullQuoteStr($row['description'],'tt_products_articles').' AND gradings='.$TYPO3_DB->fullQuoteStr($row['gradings'],'tt_products_articles');
 					$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);
 
 					if ($articleRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($articleRes)) {

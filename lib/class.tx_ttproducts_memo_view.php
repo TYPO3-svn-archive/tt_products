@@ -42,6 +42,7 @@
 
 class tx_ttproducts_memo_view {
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
 	var $basket;
@@ -54,18 +55,18 @@ class tx_ttproducts_memo_view {
 	var $searchFieldList='';
 	var $memoItems;
 
-	function init(&$pibase, &$conf, &$config, &$basket, &$pid_list, &$tt_content, &$tt_products, &$tt_products_cat, &$tt_products_articles, $pid) {
+	function init(&$pibase, &$cnf, &$basket, &$pid_list, &$tt_content, &$tt_products, &$tt_products_cat, &$tt_products_articles, $pid) {
 		global $TSFE, $TYPO3_DB;
 
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
-		$this->config = &$config;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
 		$this->tt_content = &$tt_content;
 		$this->page = tx_ttproducts_page::createPageTable(
 			$this->pibase,
-			$this->conf,
-			$this->config,
+			$this->cnf,
 			$this->tt_content,
 			$this->pibase->LLkey,
 			$this->conf['table.']['pages'], 
@@ -134,14 +135,28 @@ class tx_ttproducts_memo_view {
 	
 			// List all products:
 			$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
-			$listView->init ($this->pibase, $this->conf, $this->config, $this->basket, $this->page, $this->content, $this->tt_products, $this->tt_products_cat, $this->tt_products_articles, $this->pid);
+			$listView->init (
+				$this->pibase,
+				$this->cnf,
+				$this->basket,
+				$this->page,
+				$this->content,
+				$this->tt_products,
+				$this->tt_products_cat,
+				$this->tt_products_articles,
+				$this->pid
+			);
 			$templateArea = '###ITEM_LIST_TEMPLATE###';
 			$content = $listView->printView($templateCode, 'MEMO', implode(',', $this->memoItems), $error_code, $templateArea);
 		} else {
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 
 			$marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-			$marker->init($this->pibase, $this->conf, $this->config, $this->basket);
+			$marker->init(
+				$this->pibase,
+				$this->cnf,
+				$this->basket
+			);
 			
 			$content = $this->pibase->cObj->getSubpart($templateCode,$marker->spMarker('###MEMO_NOT_LOGGED_IN###'));
 		}

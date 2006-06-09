@@ -1,3 +1,6 @@
+2006-06-09 Franz Holzinger <franz@fholzinger.com>
+	* extra configuration class
+
 2006-06-07 Franz Holzinger <franz@fholzinger.com>
 	* products_info_x to set activity in order to consider Internet Explorer when a basket image is used
 	* do not show hidden products

@@ -41,6 +41,7 @@ plugin.tt_products {
 
   table.tt_products_cat = tt_products_cat
   conf.tt_products_cat.ALL {
+  	language.type = noTranslation
     orderBy = sorting
   }
 
