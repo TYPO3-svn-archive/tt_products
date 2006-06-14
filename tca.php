@@ -314,12 +314,20 @@ $TCA['tt_products'] = Array (
 								<el>
 								<isSingle>
 									<TCEforms>
-										<label>LLL:EXT:tt_products/locallang_db.xml:tt_products.additional.once</label>
+										<label>LLL:EXT:tt_products/locallang_db.xml:tt_products.additional.issingle</label>
 										<config>
 											<type>check</type>
 										</config>
 									</TCEforms>
 								</isSingle>
+								<isImage>
+									<TCEforms>
+										<label>LLL:EXT:tt_products/locallang_db.xml:tt_products.additional.isimage</label>
+										<config>
+											<type>check</type>
+										</config>
+									</TCEforms>
+								</isImage>
 								</el>
 							</ROOT>
 							<meta>

@@ -103,27 +103,6 @@ class tx_ttproducts_basket {
 		}
 	}
 
-	/**
-	 * Changes the quantitiy to integer or float
-	 *
-	 * @param		bool	convert to float?
-	 * @param		string	quantity
-	 * @return	    float or integer quantity
- 	 */
-	function numberQuantity($bToFloat, $quantity)	{
-		$rc = '';
-		if ($bToFloat)	{
-			$quantity = (string) $quantity;
-			// enable the German display of float
-			$quantity = (float) str_replace (',', '.', $quantity);
-		} else {
-			$rc = (int) $quantity;
-		}
-		$rc = $quantity;
-		
-		return $rc;
-	}
-
 
 	function getMaxCount ($quantity)	{
 		$count = 0;
@@ -268,7 +247,7 @@ class tx_ttproducts_basket {
 						$basketItem['quantity'] = current($basketItem['quantity']);
 					}
 					$quantity = 0;
-					$quantity = $this->numberQuantity($this->conf['quantityIsFloat'],$basketItem['quantity']);
+					$quantity = $this->price->toNumber($this->conf['quantityIsFloat'],$basketItem['quantity']);
 
 					if ($this->conf['quantityIsFloat'])	{
 						$this->basketExt[$uid][$variant] = $quantity;
@@ -304,7 +283,7 @@ class tx_ttproducts_basket {
 						reset($basketItem);
 
 						while(list($md5,$quantity)=each($basketItem)) {
-							$quantity = $this->numberQuantity($this->conf['quantityIsFloat'],$quantity);
+							$quantity = $this->price->toNumber($this->conf['quantityIsFloat'],$quantity);
 							if (is_array($this->basketExt[$uid]))
 							{
 								reset($this->basketExt[$uid]);
@@ -568,7 +547,6 @@ class tx_ttproducts_basket {
 			// if reseller is logged in then take 'price2', default is 'price'
 			$price2Tax = $this->price->getPrice($row['price2'],1,$row['tax']);
 			$price2NoTax = $this->price->getPrice($row['price2'],0,$row['tax']);
-
 			$this->calculatedArray['price2Tax']['goodstotal']	+= $price2Tax * $count;
 			$this->calculatedArray['price2NoTax']['goodstotal']	+= $price2NoTax * $count;
 

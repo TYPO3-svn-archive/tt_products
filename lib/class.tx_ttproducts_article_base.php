@@ -75,7 +75,6 @@ class tx_ttproducts_article_base {
 			// image
 		$this->image = t3lib_div::makeInstance('tx_ttproducts_image');
 		$this->image->init($this->pibase, $cnf, $tt_content, $this->table, $this->marker);
-
 	} // init
 
 
@@ -198,12 +197,12 @@ class tx_ttproducts_article_base {
 
 
 	/**
-	 * Returns true if the item is a single item
+	 * Returns true if the item has the $check value checked
 	 * 
 	 */
-	function isSingle(&$row)  {
-		$isSingle = false;
-		return $isSingle; 
+	function hasAdditional(&$row, $check)  {
+		$hasAdditional = false;
+		return $hasAdditional; 
 	}
 
 }

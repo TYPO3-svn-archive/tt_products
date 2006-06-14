@@ -170,30 +170,17 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	}
 
 
-
 	/**
-	 * Returns true if the product is a single product
+	 * Returns true if the item has the $check value checked
 	 * 
 	 */
-	function isSingle(&$row)  {
+	function hasAdditional(&$row, $check)  {
+		$hasAdditional = false;
 		$additional = t3lib_div::xml2array($row['additional']);
-		$isSingle = $this->pibase->pi_getFFvalue($additional, 'isSingle');
-		return $isSingle; 
+		$hasAdditional = $this->pibase->pi_getFFvalue($additional, $check);
+		return $hasAdditional; 
 	}
 
-
-
-	/**
-	 * Returns true if the product has additional attribute settings
-	 * 
-	 */
-	function hasAdditional(&$row) {
-		$rc = false;
-		if ($this->isSingle($row)) {
-			$rc = true;
-		}
-		return $rc; 
-	}
 
 
 	/**

@@ -160,18 +160,7 @@ class tx_ttproducts_email_div {
 					$HTMLmailContent=$pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$emailContent);
 					$HTMLmailContent=$pibase->cObj->substituteMarkerArray($HTMLmailContent, $pibase->globalMarkerArray);
 
-//					$V = array (
-//						'from_email' => $senderemail,
-//						'from_name'  => $sendername,
-//						'attachment' => $conf['GiftAttachment']
-//					);
-//
-//					
-//					$Typo3_htmlmail = t3lib_div::makeInstance('tx_ttproducts_htmlmail');
-//					$Typo3_htmlmail->useBase64();
-//					$Typo3_htmlmail->start(implode($recipients,','), $subject, $emailContent, $HTMLmailContent, $V);
 					tx_ttproducts_email_div::send_mail(implode($recipients,','),  $subject, $emailContent, $HTMLmailContent, $senderemail, $sendername, $conf['GiftAttachment']);
-//					$this->send_mail();
 				} else {		// ... else just plain text...
 					tx_ttproducts_email_div::send_mail($recipients, $subject, $emailContent, $tmp='',$senderemail, $sendername, $conf['GiftAttachment']);
 					tx_ttproducts_email_div::send_mail($conf['orderEmail_to'], $subject, $emailContent, $tmp='', $basket->personInfo['email'], $basket->personInfo['name'], $conf['GiftAttachment']);

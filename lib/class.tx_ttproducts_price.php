@@ -58,12 +58,34 @@ class tx_ttproducts_price {
 
 
 	/**
+	 * Changes the string value to integer or float and considers the German float ',' separator
+	 *
+	 * @param		bool	convert to float?
+	 * @param		string	quantity
+	 * @return	    float or integer string value
+ 	 */
+	function toNumber($bToFloat, $text)	{
+		$rc = '';
+		if ($bToFloat)	{
+			$text = (string) $text;
+			// enable the German display of float
+			$rc = (float) str_replace (',', '.', $text);
+		} else {
+			$rc = (int) $text;
+		}
+		
+		return $rc;
+	}
+
+	/**
 	 * Returns the $price with either tax or not tax, based on if $tax is true or false. 
 	 * This function reads the TypoScript configuration to see whether prices in the database 
 	 * are entered with or without tax. That's why this function is needed.
 	 */
 	function getPrice($price,$tax=1,$taxpercentage=0,$taxIncluded=0)	{
 		global $TSFE;
+		$rc = 0;
+		$price = $this->toNumber(true, $price);
 
 		if (doubleval($taxpercentage) == 0)
 			$taxFactor = 1 + doubleval($this->conf['TAXpercentage'])/100;
@@ -77,17 +99,19 @@ class tx_ttproducts_price {
 		$taxIncluded = ($taxIncluded ? $taxIncluded: $this->conf['TAXincluded']);
 		if ($tax)	{
 			if ($taxIncluded)	{	// If the configuration says that prices in the database is with tax included
-				return doubleval($price);
+				$rc = $price;
 			} else {
-				return doubleval($price)*$taxFactor;
+				$rc = $price*$taxFactor;
 			}
 		} else {
 			if ($taxIncluded)	{	// If the configuration says that prices in the database is with tax included
-				return doubleval($price)/$taxFactor;
+				$rc = $price/$taxFactor;
 			} else {
-				return doubleval($price);
+				$rc = $price;
 			}
 		}
+		
+		return $rc;
 	} // getPrice
 
 

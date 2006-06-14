@@ -259,8 +259,8 @@ class tx_ttproducts_paymentshipping {
 			$priceNew = 0;
 		}
 
-		$priceTax += $price->getPrice($priceNew,1,$tax,1);
-		$priceNoTax += $price->getPrice($priceNew,0,$tax,1);
+		$priceTax += $price->getPrice($priceNew,1,$tax);
+		$priceNoTax += $price->getPrice($priceNew,0,$tax);
 	}
 
 

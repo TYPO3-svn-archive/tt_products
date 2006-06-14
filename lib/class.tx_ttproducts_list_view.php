@@ -92,15 +92,16 @@ class tx_ttproducts_list_view {
 //	} // comp
 //
 
-	function finishHTMLRow(&$iColCount, $tableRowOpen)  {
+	function finishHTMLRow($iColCount, $tableRowOpen)  {
 		$itemsOut = '';
-		while ($iColCount <= $this->conf['displayBasketColumns']) {
+		if ($tableRowOpen)	{
 			$iColCount++;
-			$itemsOut.= '<td></td>';
+			while ($iColCount <= $this->conf['displayBasketColumns']) {
+				$itemsOut.= '<td></td>';
+				$iColCount++;
+			}
+			$itemsOut.= ($tableRowOpen ? '</tr>' : '');
 		}
-		$itemsOut.= ($tableRowOpen ? '</tr>' : '');
-		// continue with the first column after this
-		$iColCount = 1;
 		return $itemsOut;
 	} // comp
 

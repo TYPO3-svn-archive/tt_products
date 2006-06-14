@@ -132,7 +132,7 @@ class tx_ttproducts_variant {
 				}
 			}
 					
-			if ($this->itemTable->isSingle($row)) {
+			if ($this->itemTable->hasAdditional($row,'isSingle')) {
 				$areaArray[] = 'display_variant5_isSingle';
 			} else {
 				$areaArray[] = 'display_variant5_isNotSingle';
@@ -159,7 +159,7 @@ class tx_ttproducts_variant {
 			}
 		}
 
-		if ($this->itemTable->isSingle($row)) {
+		if ($this->itemTable->hasAdditional($row,'isSingle')) {
 			$areaArray[] = 'display_variant5_isNotSingle';
 		} else {
 			$areaArray[] = 'display_variant5_isSingle';
@@ -208,7 +208,7 @@ class tx_ttproducts_variant {
 		
 		$prodAdditionalText['single'] = '';	
 		if ($this->conf['selectAdditional']) {
-			$isSingleProduct = $this->isSingle($row);
+			$isSingleProduct = $this->hasAdditional($row,'isSingle');
 			if ($isSingleProduct)	{
 				$message = $this->pibase->pi_getLL('additional_single');
 				$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($quantity ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="1">';

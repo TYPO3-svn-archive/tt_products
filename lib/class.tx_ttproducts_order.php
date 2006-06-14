@@ -527,30 +527,6 @@ class tx_ttproducts_order {
 							$V[$vGroup]['from_name'],
 							$V[$vGroup]['attachment']
 						);
-						
-//						$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
-//						$Typo3_htmlmail->start();
-//						$Typo3_htmlmail->useBase64();
-//						$Typo3_htmlmail->subject = $subjectArray[$group];
-//						$Typo3_htmlmail->from_name = $V[$vGroup]['from_name'];
-//						$Typo3_htmlmail->from_email = $V[$vGroup]['from_email'];
-//						$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
-//						$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
-//						$Typo3_htmlmail->addAttachment($V[$vGroup]['attachment']);
-//						$Typo3_htmlmail->theParts['html']['content'] = $HTMLmailContent; // Fetches the content of the page
-//						$Typo3_htmlmail->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
-//						$Typo3_htmlmail->extractMediaLinks();
-//						$Typo3_htmlmail->extractHyperLinks();
-//						$Typo3_htmlmail->fetchHTMLMedia();
-//						$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
-//						$Typo3_htmlmail->substHREFsInHTML();  
-//						$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
-//						$Typo3_htmlmail->addPlain($plainMessageArray[$group]);
-//						$Typo3_htmlmail->setHeaders();
-//						$Typo3_htmlmail->setContent();
-//						$Typo3_htmlmail->setRecipient(implode($recipientsArray[$group],','));
-//						// $Typo3_htmlmail->start(implode($recipientsArray[$group],','), $subjectArray[$group], $plainMessageArray[$group], $HTMLmailContent, $V);
-//						$Typo3_htmlmail->sendtheMail();
 					}
 
 				} else {		// ... else just plain text...
