@@ -1,3 +1,6 @@
+2006-06-16 Franz Holzinger <franz@fholzinger.com>
+	* correct error with inStock
+
 2006-06-14 Franz Holzinger <franz@fholzinger.com>
 	* connection to DAM for images
 	* correct <td> in list view

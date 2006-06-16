@@ -126,6 +126,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
 	function main_products($content,$conf)	{
+		global $TSFE;
 
 		$this->conf = &$conf;
 		$backPID = $this->piVars['backPID'];

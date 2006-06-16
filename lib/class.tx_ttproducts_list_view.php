@@ -86,11 +86,6 @@ class tx_ttproducts_list_view {
 		$this->searchFieldList = trim($this->conf['stdSearchFieldExt']) ? implode(',', array_unique(t3lib_div::trimExplode(',',$this->searchFieldList.','.trim($this->conf['stdSearchFieldExt']),1))) : 'title,note,'.$this->tt_products->fields['itemnumber'];
 	}
 
-  
-//	function categorycomp($row1, $row2)  {
-//		return strcmp($this->tt_products_cat->get[$row1['category']],$this->tt_products_cat->get[$row2['category']]);
-//	} // comp
-//
 
 	function finishHTMLRow($iColCount, $tableRowOpen)  {
 		$itemsOut = '';
@@ -116,9 +111,6 @@ class tx_ttproducts_list_view {
 		return $rc;
 	}
 
-//	function compare ($row1,$row2)	{
-//		return strcmp($this->tt_products_cat->get[$row1['category']],$this->tt_products_cat->get[$row2['category']]);
-//	}
 
 	// returns the products list view
 	function &printView(
@@ -271,7 +263,7 @@ class tx_ttproducts_list_view {
 			}
 			$tmpArray = t3lib_div::trimExplode(',', $selectConf['orderBy']);
 			$orderByProduct = $tmpArray[0];
-			$orderByCat = $viewCatTable->catconf['orderBy'];
+			$orderByCat = $viewCatTable->$this->catconf['ALL.']['orderBy'];
 
 				// sorting by category not yet possible for articles
 			if ($itemTable->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
@@ -367,12 +359,7 @@ class tx_ttproducts_list_view {
 			$out = '';
 			$categoryAndItemsOut = '';
 			$iCount = 0;
-			$iColCount = 0;
-//
-//			if (($this->conf['orderByCategoryTitle'] >= 1) && ($firstOrderField != 'category')) { // category means it should be sorted by the category title in this case
-//				// uncomment this line if your PHP version makes troubles with the compare function
-//				// $this->compare = create_function('$row1,$row2', 'return strcmp($this->tt_products_cat->get[$row1[\'category\']],$this->tt_products_cat->get[$row2[\'category\']]);');
-//			}			
+			$iColCount = 0;	
 
 			$itemsOut = '';
 			$itemListOut = '';

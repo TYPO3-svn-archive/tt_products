@@ -369,10 +369,10 @@ class tx_ttproducts_basket {
 			$fields = 'name, first_name, last_name, email, telephone, fax, zip, city, company';
 			$fields .= ',tt_products_creditpoints, tt_products_vouchercode';
 			if ($this->feuserextrafields) {
-				$fields .= ',tx_feuserextrafields_initials_name, tx_feuserextrafields_prefix_name, tx_feuserextrafields_gsm_tel'.
-						'tx_feuserextrafields_company_deliv, tx_feuserextrafields_address_deliv, tx_feuserextrafields_housenumber'.
-						'tx_feuserextrafields_housenumber_deliv, tx_feuserextrafields_housenumberadd, tx_feuserextrafields_housenumberadd_deliv'.
-						'tx_feuserextrafields_pobox, tx_feuserextrafields_pobox_deliv, tx_feuserextrafields_zip_deliv, tx_feuserextrafields_city_deliv'.
+				$fields .= ',tx_feuserextrafields_initials_name, tx_feuserextrafields_prefix_name, tx_feuserextrafields_gsm_tel,'.
+						'tx_feuserextrafields_company_deliv, tx_feuserextrafields_address_deliv, tx_feuserextrafields_housenumber,'.
+						'tx_feuserextrafields_housenumber_deliv, tx_feuserextrafields_housenumberadd, tx_feuserextrafields_housenumberadd_deliv,'.
+						'tx_feuserextrafields_pobox, tx_feuserextrafields_pobox_deliv, tx_feuserextrafields_zip_deliv, tx_feuserextrafields_city_deliv,'.
 						'tx_feuserextrafields_country, tx_feuserextrafields_country_deliv';				
 			}
 			$fieldArray = t3lib_div::trimExplode(',',$fields);

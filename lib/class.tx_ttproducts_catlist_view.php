@@ -166,20 +166,10 @@ class tx_ttproducts_catlist_view {
 			ksort ($this->tt_products_cat->dataArray);
 			$categoryArray = $this->tt_products_cat->getRelationArray();
 		}
-	//	if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])	{
-//			$pageArray = t3lib_div::trimExplode (',', $this->page->pid_list);  
-//			foreach ($pageArray as $k => $uid)	{
-//				$row = $this->page->get ($uid);
-//				$categoryArray [$uid]['title'] = $row['title'];
-//				$pid = $row['pid']; 
-//				$categoryArray[$pid]['child'][$uid] = $uid;
-//			}
-	//	}
 
 		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_CATLIST_TEMPLATE###'));
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
 		$t['linkCategoryFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryFrameWork'],'###LINK_CATEGORY###');
-
 		$subpartArray = array();
 		$subpartArray['###LINK_CATEGORY###'] = '###CATEGORY_TMP###';
 		$tmp = $this->pibase->cObj->substituteMarkerArrayCached($t['categoryFrameWork'],array(),$subpartArray);
@@ -234,11 +224,10 @@ class tx_ttproducts_catlist_view {
 						$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $categoryArray[$actCategory]);
 					}
 					
-					// $t['linkCategoryFrameWork']
 					$addQueryString = array('cat' => $actCategory);
-					if (is_array($TSFE->fe_user->user))	 {
-						$addQueryString = array(); // array('fegroup' => 1);
-					}
+//					if (is_array($TSFE->fe_user->user))	 {
+//						$addQueryString[] = array('fegroup' => 1);
+//					}
 					$tempUrl = $this->pibase->pi_linkTP_keepPIvars_url($addQueryString,1,1,$pid);
 					$linkOut = '<a href="'.$tempUrl.'" '.$css.'>'.$categoryArray[$actCategory]['title'].'</a>';
 					$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);

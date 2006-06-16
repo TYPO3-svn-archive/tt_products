@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Shop System',
-	'description' => 'Open Source Shop in multiple languages, photo gallery using DAM, product variants, payment gateways, bill, creditpoint, voucher system and gift certificates. Requires table v0.1.3 and fh_library v0.0.9!',
+	'description' => 'Open Source Shop in multiple languages, photo gallery using DAM, product variants, payment gateways, bill, creditpoint, voucher system and gift certificates. Requires table v0.1.4 and fh_library v0.0.9!',
 	'category' => 'plugin',
 	'shy' => 0,
 	'dependencies' => 'cms,table,fh_library',
@@ -37,7 +37,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'constraints' => array(
 		'depends' => array(
 			'cms' => '',
-			'table' => '0.1.3-',
+			'table' => '0.1.4-',
 			'fh_library' => '0.0.9-',
 			'php' => '4.2.3-',
 			'typo3' => '3.8.0-4.0.20',

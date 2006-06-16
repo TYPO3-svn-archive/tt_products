@@ -428,7 +428,7 @@ class tx_ttproducts_order {
 		// $orderRecord = $this->getRecord($orderUid);  needed?
 
 		if (!$this->conf['alwaysInStock'] && !$this->conf['AlwaysInStock']) {
-			$rc = $viewTables->reduceInStock($this->basket->itemArray, $this->conf['useArticles']);
+			$rc = $viewTable->reduceInStock($this->basket->itemArray, $this->conf['useArticles']);
 		}
 
 		$this->createMM($orderUid, $this->basket->itemArray);
