@@ -43,7 +43,11 @@
         <languageKey index="es" type="array">
         </languageKey>
         <languageKey index="nl" type="array">
+            <label index="plugins_title">Winkel Systeem</label>
             <label index="plugins_description">Voeg een produktenlijst toe op de pagina. Dit is een deel van de ingebouwde winkelmodule. De pagina dient produktelementen te bevatten in de database.</label>
+            <label index="m_default">Standaard</label>
+            <label index="m_ext">Uitgebreid</label>
+            <label index="m_variants">Varianten</label>
         </languageKey>
         <languageKey index="cz" type="array">
             <label index="plugins_description">Přidá na stranu seznam produktů e-obchodu. Toto je část vestavěného e-obchodu. Strana musí obsahovat produkty zapsané v databázi.</label>
