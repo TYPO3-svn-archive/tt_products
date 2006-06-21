@@ -31,8 +31,8 @@
 			<label index="tt_products.description">Description (Variant 3):</label>
 			<label index="tt_products.gradings">Gradings (Variant 4):</label>
 			<label index="tt_products.additional">Additional (Variant 5):</label>
-			<label index="tt_products.additional.issingle">Only a single product:</label>
-			<label index="tt_products.additional.isimage">A file product:</label>
+			<label index="tt_products.additional.issingle">Buy only once:</label>
+			<label index="tt_products.additional.isimage">Is an image:</label>
 			<label index="tt_products.special_preparation">Special Preparation:</label>
 			<label index="tt_products.subtitle">Subtitle:</label>
 			<label index="tt_products.variants">Variants</label>
@@ -90,7 +90,7 @@
 			<label index="tt_content.pi1_flexform.display_mode.9">Basket: content</label>
 			<label index="tt_content.pi1_flexform.display_mode.10">Basket: overview</label>
 			<label index="tt_content.pi1_flexform.display_mode.11">Basket: input customer data</label>
-			<label index="tt_content.pi1_flexform.display_mode.12">Basket: input payment</label>
+			<label index="tt_content.pi1_flexform.display_mode.12">Basket: control and payment</label>
 			<label index="tt_content.pi1_flexform.display_mode.13">Basket: finalize order</label>
 			<label index="tt_content.pi1_flexform.display_mode.14">Orders: tracking</label>
 			<label index="tt_content.pi1_flexform.display_mode.15">Orders: billing</label>
@@ -123,8 +123,8 @@
 			<label index="tt_products.description">Beschreibung (Variante 3):</label>
 			<label index="tt_products.gradings">Staffelungen (Variante 4):</label>
 			<label index="tt_products.additional">Zusätzliches (Variante 5):</label>
-			<label index="tt_products.additional.issingle">Nur ein Einzelprodukt:</label>
-			<label index="tt_products.additional.isimage">Ein Dateiprodukt:</label>
+			<label index="tt_products.additional.issingle">nur einzeln:</label>
+			<label index="tt_products.additional.isimage">ist ein Bild:</label>
 			<label index="tt_products.special_preparation">Spezialanfertigung:</label>
 			<label index="tt_products.subtitle">Untertitel:</label>
 			<label index="tt_products.variants">Varianten</label>
@@ -181,7 +181,7 @@
 			<label index="tt_content.pi1_flexform.display_mode.9">Warenkorb: Inhalt</label>
 			<label index="tt_content.pi1_flexform.display_mode.10">Warenkorb: Mini</label>
 			<label index="tt_content.pi1_flexform.display_mode.11">Warenkorb: Eingabe Kundendaten</label>
-			<label index="tt_content.pi1_flexform.display_mode.12">Warenkorb: Eingabe Bezahlung</label>
+			<label index="tt_content.pi1_flexform.display_mode.12">Warenkorb: Kontrolle und Bezahlung</label>
 			<label index="tt_content.pi1_flexform.display_mode.13">Warenkorb: Bestellung abschließen</label>
 			<label index="tt_content.pi1_flexform.display_mode.14">Bestellung: Verwaltung</label>
 			<label index="tt_content.pi1_flexform.display_mode.15">Bestellung: Rechnung</label>

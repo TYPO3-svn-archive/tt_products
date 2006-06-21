@@ -359,28 +359,28 @@ class tx_ttproducts_order {
 
 			if (!$num_rows)	{
 				$this->basket->password = substr(md5(rand()), 0, 6);
-				$insertFields = array(
+				$insertFields = array(	// TODO: check with TCA
 					'pid' => intval($this->conf['PIDuserFolder']),
 					'tstamp' => time(),
-					'username' => $TYPO3_DB->fullQuoteStr($username,'fe_users'),
-					'password' => $TYPO3_DB->fullQuoteStr($this->basket->password,'fe_users'),
-					'usergroup' => $TYPO3_DB->fullQuoteStr($this->conf['memberOfGroup'],'fe_users'),
-					'uid' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['feusers_uid'],'fe_users'),
-					'company' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['company'],'fe_users'),
-					'name' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['name'],'fe_users'),
-					'first_name' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['first_name'],'fe_users'),
-					'last_name' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['last_name'],'fe_users'),
-					'address' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['address'],'fe_users'),
-					'telephone' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['telephone'],'fe_users'),
-					'fax' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['fax'],'fe_users'),
-					'email' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['email'],'fe_users'),
-					'zip' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['zip'],'fe_users'),
-					'city' => $TYPO3_DB->fullQuoteStr($this->basket->personInfo['city'],'fe_users'),
+					'username' => $username,
+					'password' => $this->basket->password,
+					'usergroup' => $this->conf['memberOfGroup'],
+					'uid' => $this->basket->personInfo['feusers_uid'],
+					'company' => $this->basket->personInfo['company'],
+					'name' => $this->basket->personInfo['name'],
+					'first_name' => $this->basket->personInfo['first_name'],
+					'last_name' => $this->basket->personInfo['last_name'],
+					'address' => $this->basket->personInfo['address'],
+					'telephone' => $this->basket->personInfo['telephone'],
+					'fax' => $this->basket->personInfo['fax'],
+					'email' => $this->basket->personInfo['email'],
+					'zip' => $this->basket->personInfo['zip'],
+					'city' => $this->basket->personInfo['city'],
 					'crdate' => time()
 				);
 
 				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country':'country');
-				$insertFields[$countryKey] =  $TYPO3_DB->fullQuoteStr($this->basket->personInfo['country'],'fe_users');
+				$insertFields[$countryKey] =  $this->basket->personInfo['country'];
 				$res = $TYPO3_DB->exec_INSERTquery('fe_users', $insertFields);
 				// send new user mail
 				if (count($this->basket->personInfo['email'])) {

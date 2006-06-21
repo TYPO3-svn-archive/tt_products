@@ -118,13 +118,13 @@ class tx_ttproducts_gifts_div {
 				'crdate' => time(),
 				'deleted' => 0,
 
-				'ordernumber'	=> $TYPO3_DB->fullQuoteStr($orderUid,'tt_products_gifts_articles_mm'),
-				'personname'	=> $TYPO3_DB->fullQuoteStr($rec['personname'],'tt_products_gifts_articles_mm'),
-				'personemail'	=> $TYPO3_DB->fullQuoteStr($rec['personemail'],'tt_products_gifts_articles_mm'),
-				'deliveryname'	=> $TYPO3_DB->fullQuoteStr($rec['deliveryname'],'tt_products_gifts_articles_mm'),
-				'deliveryemail' => $TYPO3_DB->fullQuoteStr($rec['deliveryemail'],'tt_products_gifts_articles_mm'),
-				'note'			=> $TYPO3_DB->fullQuoteStr($rec['note'],'tt_products_gifts_articles_mm'),
-				'amount'		=> $TYPO3_DB->fullQuoteStr($amount,'tt_products_gifts_articles_mm')
+				'ordernumber'	=> $orderUid,
+				'personname'	=> $rec['personname'],
+				'personemail'	=> $rec['personemail'],
+				'deliveryname'	=> $rec['deliveryname'],
+				'deliveryemail' => $rec['deliveryemail'],
+				'note'			=> $rec['note'],
+				'amount'		=> $amount,
 			);
 			// Saving the gifts order record
 			$TYPO3_DB->exec_INSERTquery('tt_products_gifts',	$insertFields);

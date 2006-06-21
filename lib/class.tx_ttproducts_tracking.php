@@ -128,9 +128,9 @@ class tx_ttproducts_tracking {
 				while(list(,$val)=each($orderRecord['status'])) {
 					$status_log_element = array(
 						'time' => time(),
-						'info' => $TYPO3_DB->fullQuoteStr($this->conf['statusCodes.'][$val],'sys_products_orders'),
-						'status' => $TYPO3_DB->fullQuoteStr($val,'sys_products_orders'),
-						'comment' => $TYPO3_DB->fullQuoteStr($orderRecord['status_comment'],'sys_products_orders')
+						'info' => $this->conf['statusCodes.'][$val],
+						'status' => $val,
+						'comment' => $orderRecord['status_comment']
 					);
 
 					if ($admin || ($val>=50 && $val<59))	{// Numbers 50-59 are usermessages.

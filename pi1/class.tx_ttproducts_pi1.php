@@ -270,14 +270,14 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 //					} else {
 //						$idClass = 'ArticleId';
 //					}
-					$contentTmp=$categoryView->printView($this->templateCode, $error_code, $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory']);
+					$contentTmp = $categoryView->printView($this->templateCode, $error_code, $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory']);
 				break;
 				case 'SINGLE':
 					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList'] && 
-						(!$this->conf['PIDitemDisplay'] || !!$this->conf['PIDitemDisplay.'])) {
+						!$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']) {
 						$TSFE->set_no_cache();
 					}
-					$contentTmp=$this->products_display($theCode, $this->errorMessage, $error_code);				
+					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);				
 				break;
 				case 'OVERVIEW':
 					if (count($this->basket->itemArray)) {
