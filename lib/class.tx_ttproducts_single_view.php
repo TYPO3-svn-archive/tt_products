@@ -91,9 +91,12 @@ class tx_ttproducts_single_view {
  	}
 
 	// returns the single view
-	function &printView(&$templateCode, &$error_code, $pageAsCategory) {
+	function &printView(&$templateCode, &$error_code, $pageAsCategory, $templateSuffix = '') {
 		global $TSFE, $TCA, $TYPO3_DB;
-		
+
+		if ($templateSuffix != '') {
+			$templateSuffix = '_'.strtoupper($templateSuffix);
+		}		
 		$itemTableArray = array('product' => &$this->tt_products, 'article' => &$this->tt_products_articles);
 		$rowArray = array('product' => '', 'article' => '');
 		$content = '';
@@ -148,6 +151,9 @@ class tx_ttproducts_single_view {
 					$itemFrameTemplate = '###ARTICLE_SINGLE_DISPLAY###';
 				}
 			}
+			// Add the template suffix
+			$itemFrameTemplate = substr($itemFrameTemplate, 0, -3).$templateSuffix.'###';
+			
 			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($itemFrameTemplate));
 			
 			$markerFieldArray = array(

@@ -256,12 +256,12 @@ plugin.tt_products {
   whereGift = {$plugin.tt_products.whereGift}  
 
   creditpoints {
-  pricefactor = 0.5
-  10.where =
-  10.type = price
-  10.prod.1   = 0.02
-  10.prod.101 = 0.04
-  10.prod.501 = 0.06
+    pricefactor = 0.5
+    10.where =
+    10.type = price
+    10.prod.1   = 0.02
+    10.prod.101 = 0.04
+    10.prod.501 = 0.06
   }
   
   form.SEARCH.name = ShopSearchForm

@@ -158,7 +158,7 @@ class tx_ttproducts_marker {
 //				$queryString[$this->pibase->prefixId.'[fegroup]'] = 1;
 //			}
 		} else {
-			$queryString[backPID] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
+			$queryString['backPID'] = $TSFE->id;
 //			if ($fe_user)	{
 //				$queryString['fegroup'] = 1;
 //			}
@@ -204,10 +204,6 @@ class tx_ttproducts_marker {
 	 * @access private
 	 */
 	function &getMarkerFields (&$templateCode, $tableName, &$tableFieldArray, &$requiredFieldArray, &$addCheckArray, $prefix, &$tagArray)	{
-//		while ($temp = strstr($templateCode, '###'))	{
-//			$marker = substr ($temp, 3);
-//			$end = strstr ($marker, '###');
-//		}
 		$retArray = $requiredFieldArray;
 		// obligatory fields uid and pid
 

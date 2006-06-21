@@ -53,23 +53,42 @@ class tx_ttproducts_config {
 	} // init
 
 
-	function &getTableConf ($tablename, $theCode)	{
+	function &getTableConf ($tablename, $theCode='')	{
 
+		$tableConf = array();
 		if (is_array($this->conf['conf.']) &&
 			is_array($this->conf['conf.'][$tablename.'.'])
 			)	{
 			if (is_array($this->conf['conf.'][$tablename.'.']['ALL.']))	{
 				$tableConf = $this->conf['conf.'][$tablename.'.']['ALL.'];
 			}
-			if (is_array($this->conf['conf.'][$tablename.'.'][$theCode.'.']))	{
+			if ($theCode &&
+				is_array($this->conf['conf.'][$tablename.'.'][$theCode.'.']))	{
 				$tempConf = $this->conf['conf.'][$tablename.'.'][$theCode.'.'];
 				$tableConf = array_merge($tableConf, $tempConf);
+			}
+			if ($tableConf['orderBy'] == '{$plugin.tt_products.orderBy}')	{
+				$tableConf['orderBy'] = '';
 			}
 		}
 		
 		return $tableConf;
 	}
 
+
+	function bUseLanguageTable ($tableConf) 	{
+		global $TSFE;
+
+		$rc = false;
+		if ($TSFE->config['config']['sys_language_uid'])	{
+
+			if ((!$tableConf['language.'] || !$tableConf['language.']['type']))	{
+				$rc = true;
+			}
+		}
+		
+		return $rc;
+	}
 }
 
 

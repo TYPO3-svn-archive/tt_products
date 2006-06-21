@@ -256,10 +256,12 @@ class tx_ttproducts_list_view {
 			
 				// Get products count			
 			$selectConf['orderBy'] = $this->conf['orderBy'];
+			
+			$productsConf = $this->cnf->getTableConf($itemTable->table->name,$theCode);
 
 				// performing query for display:	
 			if (!$selectConf['orderBy'])	{
-				 $selectConf['orderBy'] = $this->conf['conf.'][$itemTable->table->name.'.']['ALL.']['orderBy'];				
+				 $selectConf['orderBy'] = $productsConf['orderBy'];				
 			}
 			$tmpArray = t3lib_div::trimExplode(',', $selectConf['orderBy']);
 			$orderByProduct = $tmpArray[0];
@@ -274,7 +276,7 @@ class tx_ttproducts_list_view {
 			} 
 			if ($itemTable->fields['itemnumber'])	{
 				$selectConf['orderBy'] = str_replace ('itemnumber', $itemTable->fields['itemnumber'], $selectConf['orderBy']);
-			}			
+			}
 			$selectConf['orderBy'] = $itemTable->table->transformOrderby($selectConf['orderBy']);
 			$markerFieldArray = array('BULKILY_WARNING' => 'bulkily',
 				'PRODUCT_SPECIAL_PREP' => 'special_preparation',
@@ -342,7 +344,7 @@ class tx_ttproducts_list_view {
 				$iCount++;
 				$itemArray[]=$row;
 			}
-			if ($iCount == $this->config['limit']-1 && ($row = $TYPO3_DB->sql_fetch_assoc($res)))	{
+			if ($iCount == $this->config['limit'] && ($row = $TYPO3_DB->sql_fetch_assoc($res)))	{
 				$more = 1;
 			}
 	

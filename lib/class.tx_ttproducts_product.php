@@ -49,23 +49,28 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	var $bIsProduct=true;	// if this is the base for a product
 	var $marker = 'PRODUCT';
 	var $type = 'product';
+	var $tableconf;
+
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
 	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf, &$prodconf, $useArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
-		
+
+		$this->cnf = &$cnf;
 		$tablename = ($tablename ? $tablename : 'tt_products');
-		if (is_array($prodconf['ALL.']) && $prodconf['ALL.']['orderBy'] == '{$plugin.tt_products.orderBy}')	{
-			$prodconf['ALL.']['orderBy'] = '';
-		}
+		$this->tableconf = $this->cnf->getTableConf($tablename);
+//		if ($this->tableconf['orderBy'] == '{$plugin.tt_products.orderBy}')	{
+//			$this->tableconf['orderBy'] = '';
+//		}
 		$this->table = t3lib_div::makeInstance('tx_table_db');
+		
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $conf['orderBy'];
 		
 		if (!$tableConfig['orderBy'])	{
-			 $tableConfig['orderBy'] = $tableconf['ALL.']['orderBy'];				
+			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];				
 		}
 
 		$this->table->setConfig($tableConfig);
@@ -73,25 +78,24 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$this->table->setTCAFieldArray($tablename, 'products');
 		
 		$requiredListFields = 'uid,pid,category,price,price2,tax,inStock';
-		if (is_array($tableconf['ALL.']))	{
-			$tmp = $tableconf['ALL.']['requiredListFields'];
+		if ($this->tableconf['requiredListFields'])	{
+			$tmp = $this->tableconf['requiredListFields'];
 			$requiredListFields = ($tmp ? $tmp : $requiredListFields);
 		}		
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 	
-		if ($TSFE->config['config']['sys_language_uid'] && ($tablename == 'tt_products') &&
-			(!$prodconf['language.'] || !$prodconf['language.']['type'])) {
+		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
 			$this->table->setLangName('tt_products_language');
 			$this->table->setTCAFieldArray($this->table->langname);
 		}
+		
 		parent::init($pibase, $cnf, $tt_content);
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $tableconf['variant.'], $this, $useArticles);
 		$this->fields['itemnumber'] = ($tableconf['itemnumber'] ? $tableconf['itemnumber'] : 'itemnumber');
 	} // init
-
 
 
 	function get ($uid) {

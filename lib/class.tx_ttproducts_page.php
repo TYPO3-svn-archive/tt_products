@@ -214,7 +214,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * Sets the pid_list internal var
 	 */
 	function setPageArray()	{
-		$this->pageArray = explode (',', $this->pid_list);
+		$this->pageArray = t3lib_div::trimExplode (',', $this->pid_list);
 		$this->pageArray = array_flip($this->pageArray);
 	}
 

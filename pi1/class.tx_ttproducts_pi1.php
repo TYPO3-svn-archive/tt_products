@@ -449,18 +449,18 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		}
 
 		// mkl - multicurrency support
-		if (t3lib_extMgm::isLoaded('mkl_currxrate')) {
-			include_once(t3lib_extMgm::extPath('mkl_currxrate').'pi1/class.tx_mklcurrxrate_pi1.php');
-			$this->baseCurrency = $TSFE->tmpl->setup['plugin.']['tx_mklcurrxrate_pi1.']['currencyCode'];
-			$this->currency = t3lib_div::GPvar('C') ? 	t3lib_div::GPvar('C') : $this->baseCurrency;
-
-			// mkl - Initialise exchange rate library and get
-
-			$this->exchangeRate = t3lib_div::makeInstance('tx_mklcurrxrate_pi1');
-			$this->exchangeRate->init();
-			$result = $this->exchangeRate->getExchangeRate($this->baseCurrency, $this->currency) ;
-			$this->xrate = floatval ( $result['rate'] );
-		}
+//		if (t3lib_extMgm::isLoaded('mkl_currxrate')) {
+//			include_once(t3lib_extMgm::extPath('mkl_currxrate').'pi1/class.tx_mklcurrxrate_pi1.php');
+//			$this->baseCurrency = $TSFE->tmpl->setup['plugin.']['tx_mklcurrxrate_pi1.']['currencyCode'];
+//			$this->currency = t3lib_div::GPvar('C') ? 	t3lib_div::GPvar('C') : $this->baseCurrency;
+//
+//			// mkl - Initialise exchange rate library and get
+//
+//			$this->exchangeRate = t3lib_div::makeInstance('tx_mklcurrxrate_pi1');
+//			$this->exchangeRate->init();
+//			$result = $this->exchangeRate->getExchangeRate($this->baseCurrency, $this->currency) ;
+//			$this->xrate = floatval ( $result['rate'] );
+//		}
 
 		if (t3lib_extMgm::isLoaded('sr_static_info')) {
 			include_once(t3lib_extMgm::extPath('sr_static_info').'pi1/class.tx_srstaticinfo_pi1.php');
@@ -585,8 +585,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->tt_content,
 			$this->LLkey,
 			$this->conf['table.']['tt_products_cat'], 
-			$this->conf['table.']['tt_products_cat.'],
-			$this->conf['conf.']['tt_products_cat.']
+			$this->conf['table.']['tt_products_cat.']
 		);
 
 		$this->tt_content = t3lib_div::makeInstance('tx_ttproducts_content');
@@ -900,7 +899,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$content = $this->singleView->printView(
 					$this->templateCode, 
 					$error_code,
-					$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory']
+					$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'],
+					$this->template_suffix
 				);
 			}
 		} else {

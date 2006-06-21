@@ -472,6 +472,8 @@ class tx_ttproducts_basket_view {
 			$this->viewTable->table->marker,
 			$viewTagArray
 		);
+		
+		$this->page->setPageArray();
 
 		$count = 0;
 		// loop over all items in the basket indexed by page and itemnumber

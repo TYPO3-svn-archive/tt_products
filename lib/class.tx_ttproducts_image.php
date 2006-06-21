@@ -232,19 +232,24 @@ class tx_ttproducts_image {
 		$dirname = ($dirname ? $dirname : 'uploads/pics');
 		while(list($c,$val)=each($imgs))	{
 			if ($c==$imageNum)	break;
+			$bUseImage = false;
 			if ($val)	{
 				$imageConf['file'] = $dirname.'/'.$val;
+				$bUseImage = true;
 			} else {
 				$imageConf['file'] = $this->conf['noImageAvailable'];
 			}
-			if (t3lib_extMgm::isLoaded('dam') && $imageConf['file']) {
-				$fieldList = 'uid,pid,tstamp,crdate,active,media_type,title,category,index_type,file_mime_type,file_mime_subtype,
-	 				file_type,file_type_version,file_name,file_path,file_size,file_mtime,file_inode,file_ctime,file_hash,file_status,
-	 				file_orig_location,file_orig_loc_desc,file_creator,file_dl_name,file_usage,meta,ident,creator,
-	 				keywords,description,alt_text,caption,abstract,search_content,language,pages,publisher,copyright,
-	 				instructions,date_cr,date_mod,loc_desc,loc_country,loc_city,hres,vres,hpixels,vpixels,color_space,
-	 				width,height,height_unit';
-				$meta = tx_dam::meta_getDataForFile($imageConf['file'],$fieldList);
+			if (t3lib_extMgm::isLoaded('dam') && $bUseImage) {
+				$damObj = t3lib_div::getUserObj('tx_dam');
+				if(function_exists($damObj->meta_getDataForFile) ) {
+					$fieldList = 'uid,pid,tstamp,crdate,active,media_type,title,category,index_type,file_mime_type,file_mime_subtype,
+		 				file_type,file_type_version,file_name,file_path,file_size,file_mtime,file_inode,file_ctime,file_hash,file_status,
+		 				file_orig_location,file_orig_loc_desc,file_creator,file_dl_name,file_usage,meta,ident,creator,
+		 				keywords,description,alt_text,caption,abstract,search_content,language,pages,publisher,copyright,
+		 				instructions,date_cr,date_mod,loc_desc,loc_country,loc_city,hres,vres,hpixels,vpixels,color_space,
+		 				width,height,height_unit';
+					$meta = $damObj->meta_getDataForFile($imageConf['file'],$fieldList);
+				}
 			}
 			if (!$this->conf['separateImage']) {
 				$key = 0;  // show all images together as one image

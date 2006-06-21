@@ -44,30 +44,34 @@ require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_category_base.php');
 
 class tx_ttproducts_category extends tx_ttproducts_category_base {
 	var $tt_products_email;				// object of the type tx_table_db
-	var $catconf;
+	var $tableconf;
 	var $image;
+	var $cnf;
 
 	/**
 	 * initialization with table object and language table
 	 */
-	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf,  &$catconf)	{
-		global $TYPO3_DB,$TSFE;
+	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf)	{
+		global $TYPO3_DB;
 		
+		$this->cnf = &$cnf;
 		$tablename = ($tablename ? $tablename : 'tt_products_cat');
-		$this->catconf = &$catconf;	
+		$this->tableconf = $this->cnf->getTableConf($tablename);	
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 
-		if ($TSFE->config['config']['sys_language_uid'] && 
-				(!$this->catconf['language.'] ||
-				!$this->catconf['language.']['type'])) {
+//		if ($TSFE->config['config']['sys_language_uid'] && 
+//				(!$this->catconf['language.'] ||
+//				!$this->catconf['language.']['type'])) {
+		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
-			$this->table->setTCAFieldArray('tt_products_cat_language');
+			$this->table->setLangName('tt_products_cat_language');
+			$this->table->setTCAFieldArray($this->table->langname);
 		}
 		
-		if ($this->catconf['language.'] && $this->catconf['language.']['type'] == 'csv')	{
-			$this->table->initLanguageFile($this->catconf['language.']['file']);
+		if ($this->tableconf['language.'] && $this->tableconf['language.']['type'] == 'csv')	{
+			$this->table->initLanguageFile($this->tableconf['language.']['file']);
 		}
 
 		parent::init($pibase, $cnf, $tt_content);
@@ -101,9 +105,8 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			$where .= ($uid ? ' AND uid='.intval($uid) : '');
 			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
 			$orderBy = '';
-			if (is_array($this->catconf['ALL.']))	{
-				$orderBy = $this->catconf['ALL.']['orderBy'];
-			}
+			$orderBy = $this->tableconf['orderBy'];
+			
 			$res = $this->table->exec_SELECTquery('*',$where,'',$TYPO3_DB->stripOrderBy($orderBy));
 			if ($uid)	{
 				$row = $TYPO3_DB->sql_fetch_assoc($res);

@@ -262,9 +262,9 @@ class tx_ttproducts_order {
 
 			// Setting tstamp, deleted and tracking code
 		$fieldsArray['tstamp'] = time();
-		$fieldsArray['deleted']=0;
+		$fieldsArray['deleted'] = 0;
 		$fieldsArray['tracking_code'] = $this->basket->recs['tt_products']['orderTrackingNo'];
-		$fieldsArray['agb']		= $this->basket->personInfo['agb'];
+		$fieldsArray['agb'] = $this->basket->personInfo['agb'];
 /* Added Els: write creditpointvalue into sys_products_order */
 		$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
 /* Added Els: write creditpoint_spended and saved value into sys_products_order */
@@ -276,7 +276,6 @@ class tx_ttproducts_order {
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
 	} //putRecord
-
 
 
 
