@@ -16,7 +16,7 @@
     <data type="array">
         <languageKey index="default" type="array">
             <label index="plugins_title">Shop System</label>
-            <label index="plugins_description">Add a shopping system plugin to the page. This requires the database to contain product elements in all languages.</label>
+            <label index="plugins_description">Add a shopping system plugin to the page. This makes it possible to sell products in multiple languages.</label>
             <label index="m_default">default</label>
             <label index="m_ext">extended</label>
             <label index="m_variants">variants</label>
@@ -25,7 +25,7 @@
             <label index="plugins_description">Tilføjer en butiks produktliste til siden. Dette er en del af den indbyggede butik og kræver, at siden indeholder produktelementer i databasen.</label>
         </languageKey>
         <languageKey index="de" type="array">
-            <label index="plugins_description">Fügt ein Plugin für das Shop System ein. Die Datenbank benötigt Produktdatensätze in allen Sprachen.</label>
+		<label index="plugins_description">Fügt ein Shop System Plugin ein. Damit können Produktdatensätze in mehreren Sprachen angezeigt werden.</label>
             <label index="m_default">Standard</label>
             <label index="m_ext">Erweitert</label>
             <label index="m_variants">Varianten</label>

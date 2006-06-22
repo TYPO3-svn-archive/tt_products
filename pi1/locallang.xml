@@ -34,7 +34,7 @@
 			<label index="no_subtemplate">The part | or the template file | has not been found.</label>
 			<label index="accept_AGB">You have to accept the general trading conditions to proceed.</label>
 			<label index="additional_single">buy this product</label>
-			<label index="wrong_parameter">Wrong parameters, GET/POST var 'tx_ttproducts_pi1[product]' was missing or no product with uid = | found.</label>
+			<label index="wrong_parameter">Wrong parameters. GET/POST var 'tx_ttproducts_pi1[product]' is missing or no product with uid = | found.</label>
 			<label index="no_csv_creation">Warning: Cannot create CSV file '|' for this order!</label>
 			<label index="wrong_code">Wrong display mode or code '|'.</label>
 			<label index="salutation">Salutation</label>
@@ -53,7 +53,7 @@
 			<label index="no_subtemplate">Der Bereich | wurde in der Template Datei | nicht gefunden.</label>
 			<label index="accept_AGB">Sie haben unsere AGB nicht akzeptiert.</label>
 			<label index="additional_single">Produkt kaufen</label>
-			<label index="wrong_parameter">Falscher Parameter, GET/POST var 'tx_ttproducts_pi1[product]' wurde nicht angegeben oder kein Produkt mit uid = | gefunden.</label>
+			<label index="wrong_parameter">Falscher Parameter. GET/POST var 'tx_ttproducts_pi1[product]' wurde nicht angegeben oder kein Produkt mit uid = | gefunden.</label>
 			<label index="no_csv_creation">Warnung: Für diese Bestellung kann keine CSV Datei '|' erzeugt werden!</label>
 			<label index="salutation">Anrede</label>
 			<label index="salutation0">Herr</label>
