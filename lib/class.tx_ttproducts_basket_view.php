@@ -473,17 +473,22 @@ class tx_ttproducts_basket_view {
 			$viewTagArray
 		);
 		
-		$this->page->setPageArray();
-
 		$count = 0;
+//		debug ($this->basket->itemArray, '$this->basket->itemArray', __LINE__, __FILE__);
+//		debug ($this->page->pageArray, '$this->page->pageArray', __LINE__, __FILE__);
 		// loop over all items in the basket indexed by page and itemnumber
 		foreach ($this->basket->itemArray as $pid=>$pidItem) {
-			if (!$this->page->pageArray[$pid])	{
+			if (!isset($this->page->pageArray[$pid]))	{
 				// product belongs to another basket	
 				continue;
 			}
 			foreach ($pidItem as $itemnumber=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
+					// debug ($actItem, '$actItem', __LINE__, __FILE__);
+					$row = &$actItem['rec'];
+					// debug ($row, '$row', __LINE__, __FILE__);
+					$pid = $row['pid'];
+					// debug ($pid, '$pid', __LINE__, __FILE__); 
 					$count++;
 					$pidcategory = ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1 ? $pid : '');
 					$currentPnew = $pidcategory.'_'.$actItem['rec']['category'];
