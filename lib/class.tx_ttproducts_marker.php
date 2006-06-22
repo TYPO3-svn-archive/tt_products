@@ -65,6 +65,17 @@ class tx_ttproducts_marker {
  		$this->basket = &$basket;
 	}
 
+	/**
+	 * Adds link markers to a wrapped subpart array
+	 */
+	function getWrappedSubpartArray(&$wrappedSubpartArray,$addQueryString=array())	{
+		global $TSFE;
+
+		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
+
+		$pageLink = $this->pibase->pi_getPageLink($pidBasket,'',$this->getLinkParams('',$addQueryString,true)) ;
+		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'. $pageLink .'"'.$css_current.'>','</a>');
+	}
 
 	/**
 	 * Adds URL markers to a markerArray

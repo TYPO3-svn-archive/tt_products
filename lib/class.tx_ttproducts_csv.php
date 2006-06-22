@@ -126,29 +126,33 @@ class tx_ttproducts_csv {
 			reset($this->itemArray);
 
 			$infoWritten = false;
-			// loop over all items in the basket indexed by page and itemnumber
-			foreach ($this->itemArray as $pid=>$pidItem) {
-				foreach ($pidItem as $itemnumber=>$actItemArray) {
-					foreach ($actItemArray as $k1=>$actItem) {
-						$variants = explode(';', $actItem['rec']['extVars']);
-						$csvdata = '"'.intval($actItem['rec']['uid']).'";"'.
-									intval($actItem['count']).'";"'.
-									$variants[0].'";"'.
-									$variants[1].'";"'.
-									$variants[2].'";"'.
-									$variants[3].'"';
-									$variants[4].'"';
-						reset($csvfields);
-						foreach($csvfields as $csvfield) {
-							$csvdata .= ';"'.$actItem['rec'][$csvfield].'"';
-						}
-						if ($this->conf['CSVinOneLine'] && (!$infoWritten))	{
-							$infoWritten = true;
-							$csvdata .= ';'.$csvlinedeliverynote.';'.$csvlinedeliverydesireddate.';'.$csvlineshipping.';'.$csvlinepayment.';'.$csvlineperson.';'.$csvlinedelivery;
-						}
-						$csvdata .= chr(13);
-						fwrite($csvfile, $csvdata);
+			// loop over all items in the basket indexed by itemnumber
+			foreach ($this->itemArray as $itemnumber=>$actItemArray) {
+				foreach ($actItemArray as $k1=>$actItem) {
+					$row = &$actItem['rec'];
+					$pid = intval($row['pid']);
+					if (!isset($basket->page->pageArray[$pid]))	{
+						// product belongs to another basket	
+						continue;
 					}
+					$variants = explode(';', $actItem['rec']['extVars']);
+					$csvdata = '"'.intval($actItem['rec']['uid']).'";"'.
+								intval($actItem['count']).'";"'.
+								$variants[0].'";"'.
+								$variants[1].'";"'.
+								$variants[2].'";"'.
+								$variants[3].'"';
+								$variants[4].'"';
+					reset($csvfields);
+					foreach($csvfields as $csvfield) {
+						$csvdata .= ';"'.$actItem['rec'][$csvfield].'"';
+					}
+					if ($this->conf['CSVinOneLine'] && (!$infoWritten))	{
+						$infoWritten = true;
+						$csvdata .= ';'.$csvlinedeliverynote.';'.$csvlinedeliverydesireddate.';'.$csvlineshipping.';'.$csvlinepayment.';'.$csvlineperson.';'.$csvlinedelivery;
+					}
+					$csvdata .= chr(13);
+					fwrite($csvfile, $csvdata);
 				}
 			}
 

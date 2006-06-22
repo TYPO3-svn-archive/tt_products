@@ -136,34 +136,32 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		if ($this->table->name == 'tt_products' || is_array(($TCA[$this->table->name]['columns']['inStock'])) )	{		
 			// Reduce inStock
 	
-			// loop over all items in the basket indexed by page and itemnumber
-			foreach ($itemArray as $pid=>$pidItem) {
-				foreach ($pidItem as $itemnumber=>$actItemArray) {
-					if ($useArticles) {
-						foreach ($actItemArray as $k1=>$actItem) {
-							$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($actItem['rec']['color'],'tt_products_articles').' AND size='.$TYPO3_DB->fullQuoteStr($actItem['rec']['size'],'tt_products_articles').' AND description='.$TYPO3_DB->fullQuoteStr($actItem['rec']['description'],'tt_products_articles').' AND gradings='.$TYPO3_DB->fullQuoteStr($actItem['rec']['gradings'],'tt_products_articles');	
-							$res = $TYPO3_DB->exec_SELECTquery('inStock', 'tt_products_articles', $query);
-								//  TODO: Saving the order record support color, size, description and gradings here
-						}
-					} else {
-						foreach ($actItemArray as $k1=>$actItem) {
-							$query='uid=\''.intval($actItem['rec']['uid']).'\'';
-	
-							$res = $TYPO3_DB->exec_SELECTquery('inStock', $this->table->name, $query);
-	
-							if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-								if ($row['inStock'] > 0) {
-									$newInStock = intval($row['inStock'])-intval($actItem['count']);
-									if ($newInStock < 0) {
-										$newInStock = 0;
-									}
-	
-									$fieldsArray =array();
-											// Setting tstamp, deleted and tracking code
-									$fieldsArray['inStock']=$newInStock;
-	
-									$res = $TYPO3_DB->exec_UPDATEquery($this->table->name, 'uid='.intval($actItem['rec']['uid']), $fieldsArray);
+			// loop over all items in the basket indexed by itemnumber
+			foreach ($itemArray as $itemnumber=>$actItemArray) {
+				if ($useArticles) {
+					foreach ($actItemArray as $k1=>$actItem) {
+						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($actItem['rec']['color'],'tt_products_articles').' AND size='.$TYPO3_DB->fullQuoteStr($actItem['rec']['size'],'tt_products_articles').' AND description='.$TYPO3_DB->fullQuoteStr($actItem['rec']['description'],'tt_products_articles').' AND gradings='.$TYPO3_DB->fullQuoteStr($actItem['rec']['gradings'],'tt_products_articles');	
+						$res = $TYPO3_DB->exec_SELECTquery('inStock', 'tt_products_articles', $query);
+							//  TODO: Saving the order record support color, size, description and gradings here
+					}
+				} else {
+					foreach ($actItemArray as $k1=>$actItem) {
+						$query='uid=\''.intval($actItem['rec']['uid']).'\'';
+
+						$res = $TYPO3_DB->exec_SELECTquery('inStock', $this->table->name, $query);
+
+						if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+							if ($row['inStock'] > 0) {
+								$newInStock = intval($row['inStock'])-intval($actItem['count']);
+								if ($newInStock < 0) {
+									$newInStock = 0;
 								}
+
+								$fieldsArray =array();
+										// Setting tstamp, deleted and tracking code
+								$fieldsArray['inStock']=$newInStock;
+
+								$res = $TYPO3_DB->exec_UPDATEquery($this->table->name, 'uid='.intval($actItem['rec']['uid']), $fieldsArray);
 							}
 						}
 					}

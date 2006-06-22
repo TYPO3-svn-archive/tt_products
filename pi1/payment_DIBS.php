@@ -155,17 +155,15 @@ doPopup(this);" target="Betaling"'; // if this is empty then no popup window wil
 			$cc=1;
 			
 //while(list(,$rec)=each($this->basket->calculatedBasket))	  {
-			// loop over all items in the basket indexed by page and itemnumber
-			foreach ($this->basket->itemArray as $pid=>$pidItem) {
-				foreach ($pidItem as $itemnumber=>$actItemArray) {
-					foreach ($actItemArray as $k1=>$actItem) {
-						$cc++;
-						$theFields.='
-		<input type="hidden" name="ordline'.$cc.'-1" value="'.htmlspecialchars($actItem['rec']['itemnumber']).'">
-		<input type="hidden" name="ordline'.$cc.'-2" value="'.htmlspecialchars($actItem['rec']['title']).'">
-		<input type="hidden" name="ordline'.$cc.'-3" value="'.$actItem['count'].'">
-		<input type="hidden" name="ordline'.$cc.'-4" value="'.$pibase->price->priceFormat($actItem['totalTax']).'">';
-					}
+			// loop over all items in the basket indexed by itemnumber
+			foreach ($this->basket->itemArray as $itemnumber=>$actItemArray) {
+				foreach ($actItemArray as $k1=>$actItem) {
+					$cc++;
+					$theFields.='
+	<input type="hidden" name="ordline'.$cc.'-1" value="'.htmlspecialchars($actItem['rec']['itemnumber']).'">
+	<input type="hidden" name="ordline'.$cc.'-2" value="'.htmlspecialchars($actItem['rec']['title']).'">
+	<input type="hidden" name="ordline'.$cc.'-3" value="'.$actItem['count'].'">
+	<input type="hidden" name="ordline'.$cc.'-4" value="'.$pibase->price->priceFormat($actItem['totalTax']).'">';
 				}
 			}
 		

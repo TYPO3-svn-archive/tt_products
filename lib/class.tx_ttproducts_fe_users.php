@@ -113,7 +113,7 @@ class tx_ttproducts_fe_users {
 	} // isUserInGroup
 
 
-	function getSubpartWrappedSubpartArray(&$subpartArray, &$wrappedSubpartArray)	{
+	function getWrappedSubpartArray(&$subpartArray, &$wrappedSubpartArray)	{
 		global $TSFE;
 
 		if ($TSFE->fe_user->user)	{

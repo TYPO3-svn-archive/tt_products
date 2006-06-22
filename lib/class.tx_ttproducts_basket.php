@@ -463,6 +463,9 @@ class tx_ttproducts_basket {
 			// Empties the shopping basket!
 		$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
 		$TSFE->fe_user->setKey('ses','basketExt',array());
+		unset($this->itemArray);
+		unset($this->basketExt);
+		
 	} // clearBasket
 
 
@@ -537,7 +540,7 @@ class tx_ttproducts_basket {
 		foreach ($productsArray as $k1 => $row)	{
 			$variant = $this->viewTable->variant->getVariantFromRow($row);
 			$newItem = $this->getItem($row,$variant);
-			$this->itemArray [intval($row['pid'])] [$row[$this->viewTable->fields['itemnumber']]][] = $newItem;
+			$this->itemArray [$row[$this->viewTable->fields['itemnumber']]][] = $newItem;
 			$count = $newItem['count'];
 			$priceTax = $newItem['priceTax'];
 			$priceNoTax = $newItem['priceNoTax'];
@@ -567,25 +570,25 @@ class tx_ttproducts_basket {
 			$this->pricecalc->GetCalculatedData($this->conf);
 		}
 		
-		// loop over all items in the basket indexed by page and itemnumber
-		foreach ($this->itemArray as $pid=>$pidItem) {
-			foreach ($pidItem as $itemnumber=>$actItemArray) {
-				foreach ($actItemArray as $k1=>$actItem) {
-					// has the price been calculated before take it if it gets cheaper now
-					if (($actItem['calcprice'] > 0) && ($actItem['calcprice'] < $actItem['priceTax'])) {
-						$this->itemArray[$pid][$itemnumber][$k1]['priceTax'] = $this->price->getPrice($actItem['calcprice'],1,$actItem['rec']['tax']);
-						$this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] = $this->price->getPrice($actItem['calcprice'],0,$actItem['rec']['tax']);
-					}
-					//  multiplicate it with the count :
-					$this->itemArray[$pid][$itemnumber][$k1]['totalTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceTax'] * $actItem['count'];
-					$this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'] = $this->itemArray[$pid][$itemnumber][$k1]['priceNoTax'] * $actItem['count'];
-							// Fills this array with the product records. Reason: Sorting them by category (based on the page, they reside on)
-					$this->calculatedArray['priceTax']['goodstotal'] += $this->itemArray[$pid][$itemnumber][$k1]['totalTax'];
-					$this->calculatedArray['priceNoTax']['goodstotal'] += $this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'];
+		// loop over all items in the basket indexed by itemnumber
+		foreach ($this->itemArray as $itemnumber=>$actItemArray) {
+			foreach ($actItemArray as $k1=>$actItem) {
+				$row = &$actItem['rec'];
 
-					$this->calculatedArray['categoryPriceTax']['goodstotal'][$actItem['rec']['category']]+= $this->itemArray[$pid][$itemnumber][$k1]['totalTax'];
-					$this->calculatedArray['categoryPriceNoTax']['goodstotal'][$actItem['rec']['category']]+= $this->itemArray[$pid][$itemnumber][$k1]['totalNoTax'];
+				// has the price been calculated before take it if it gets cheaper now
+				if (($actItem['calcprice'] > 0) && ($actItem['calcprice'] < $actItem['priceTax'])) {
+					$this->itemArray[$itemnumber][$k1]['priceTax'] = $this->price->getPrice($actItem['calcprice'],1,$row['tax']);
+					$this->itemArray[$itemnumber][$k1]['priceNoTax'] = $this->price->getPrice($actItem['calcprice'],0,$row['tax']);
 				}
+				//  multiplicate it with the count :
+				$this->itemArray[$itemnumber][$k1]['totalTax'] = $this->itemArray[$itemnumber][$k1]['priceTax'] * $actItem['count'];
+				$this->itemArray[$itemnumber][$k1]['totalNoTax'] = $this->itemArray[$itemnumber][$k1]['priceNoTax'] * $actItem['count'];
+						// Fills this array with the product records. Reason: Sorting them by category (based on the page, they reside on)
+				$this->calculatedArray['priceTax']['goodstotal'] += $this->itemArray[$itemnumber][$k1]['totalTax'];
+				$this->calculatedArray['priceNoTax']['goodstotal'] += $this->itemArray[$itemnumber][$k1]['totalNoTax'];
+
+				$this->calculatedArray['categoryPriceTax']['goodstotal'][$row['category']]+= $this->itemArray[$itemnumber][$k1]['totalTax'];
+				$this->calculatedArray['categoryPriceNoTax']['goodstotal'][$row['category']]+= $this->itemArray[$itemnumber][$k1]['totalNoTax'];
 			}
 		}
 

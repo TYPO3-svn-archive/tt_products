@@ -103,6 +103,7 @@ class tx_ttproducts_billdelivery {
 	$wrappedSubpartArray = array();
 
 	$tmp = $orderData['itemArray'];
+	$version = $orderData['version'];
 	$itemArray = ($tmp ? $tmp : array());
 	$tmp = $orderData['calculatedArray'];
 	$calculatedArray = ($tmp ? $tmp : array());
@@ -130,16 +131,12 @@ class tx_ttproducts_billdelivery {
 //
 	// Calculate quantities for all categories
 
-	// loop over all items in the ordered items indexed by page and itemnumber
-	foreach ($itemArray as $pid=>$pidItem) {
-		foreach ($pidItem as $itemnumber=>$actItemArray) {
-			foreach ($actItemArray as $k1=>$actItem) {
-				$currentCategory=$actItem['rec']['category'];
-				$categoryArray[$currentCategory] = 1;
-		//	  $countTotal += $actBasket['count'];
-				$categoryQty[$currentCategory] += $actItem['count'];
-		//	  $categoryPrice[$currentCategory] += doubleval($actBasket['priceTax']) * intval($actBasket['count']);
-			}
+	// loop over all items in the ordered items indexed by itemnumber
+	foreach ($itemArray as $itemnumber=>$actItemArray) {
+		foreach ($actItemArray as $k1=>$actItem) {
+			$currentCategory=$actItem['rec']['category'];
+			$categoryArray[$currentCategory] = 1;
+			$categoryQty[$currentCategory] += $actItem['count'];
 		}
 	}
 
@@ -165,46 +162,44 @@ class tx_ttproducts_billdelivery {
 	$count = 0;
 	foreach ($categoryArray as $currentCategory=>$value)	{
 		$categoryChanged = 1;
-		// loop over all orderd items indexed by page and itemnumber
-		foreach ($itemArray as $pid=>$pidItem) {
-			foreach ($pidItem as $itemnumber=>$actItemArray) {
-				foreach ($actItemArray as $k1=>$actItem) {
-					$count++;
-						// Print Category Title
-					if ($actItem['rec']['category']==$currentCategory)	{
-						if ($categoryChanged == 1)	{
-							$markerArray=array();
-							$tmpCategory = $this->tt_products_cat->get($currentCategory);
-							$catTitle= ($tmpCategory ? $tmpCategory['title']: '');
-							$this->pibase->cObj->setCurrentVal($catTitle);
-							$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
-							$markerArray['###CATEGORY_QTY###'] = $categoryQty[$currentCategory];
-							$categoryPriceTax = $calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory];
-							$markerArray['###PRICE_GOODS_TAX###'] = $this->price->priceFormat($categoryPriceTax);
-							$categoryPriceNoTax = $calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory];
-							$markerArray['###PRICE_GOODS_NO_TAX###'] = $this->price->priceFormat($categoryPriceNoTax);
-							$markerArray['###PRICE_GOODS_ONLY_TAX###'] = $this->price->priceFormat($categoryPriceTax - $categoryPriceNoTax);
-							
-							$out2 = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
-							$out.= $out2;
-						}
-		
-						// Print Item Title
-						$wrappedSubpartArray=array();
-						$markerArray = array();
-						$this->tt_products->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt,1,'image', $viewTagArray, array(), strtoupper($this->type), $count);
-						$markerArray['###FIELD_QTY###'] = $actItem['count'];
-						$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
-						$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);
-						$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$this->price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
-						$itemsOut = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,array(),$wrappedSubpartArray);
-						if ($itemsOut) {
-							$out2 =$this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
-							$out .= $out2;
-						}
-						$itemsOut='';		// Clear the item-code var
-						$categoryChanged = 0;
+		// loop over all ordered items indexed by itemnumber
+		foreach ($itemArray as $itemnumber=>$actItemArray) {
+			foreach ($actItemArray as $k1=>$actItem) {
+				$count++;
+					// Print Category Title
+				if ($actItem['rec']['category']==$currentCategory)	{
+					if ($categoryChanged == 1)	{
+						$markerArray=array();
+						$tmpCategory = $this->tt_products_cat->get($currentCategory);
+						$catTitle= ($tmpCategory ? $tmpCategory['title']: '');
+						$this->pibase->cObj->setCurrentVal($catTitle);
+						$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
+						$markerArray['###CATEGORY_QTY###'] = $categoryQty[$currentCategory];
+						$categoryPriceTax = $calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory];
+						$markerArray['###PRICE_GOODS_TAX###'] = $this->price->priceFormat($categoryPriceTax);
+						$categoryPriceNoTax = $calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory];
+						$markerArray['###PRICE_GOODS_NO_TAX###'] = $this->price->priceFormat($categoryPriceNoTax);
+						$markerArray['###PRICE_GOODS_ONLY_TAX###'] = $this->price->priceFormat($categoryPriceTax - $categoryPriceNoTax);
+						
+						$out2 = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
+						$out.= $out2;
 					}
+	
+					// Print Item Title
+					$wrappedSubpartArray=array();
+					$markerArray = array();
+					$this->tt_products->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt,1,'image', $viewTagArray, array(), strtoupper($this->type), $count);
+					$markerArray['###FIELD_QTY###'] = $actItem['count'];
+					$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
+					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);
+					$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$this->price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
+					$itemsOut = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,array(),$wrappedSubpartArray);
+					if ($itemsOut) {
+						$out2 =$this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
+						$out .= $out2;
+					}
+					$itemsOut='';		// Clear the item-code var
+					$categoryChanged = 0;
 				}
 			}
 		}

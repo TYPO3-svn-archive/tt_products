@@ -159,12 +159,14 @@ class tx_ttproducts_list_view {
 				$markerArray = $this->marker->addURLMarkers($pid,array());
 				$markerArray['###FORM_NAME###'] = $formName;
 				$out = $this->pibase->cObj->substituteMarkerArrayCached($out,$markerArray);
+
 				$htmlSwords = htmlspecialchars($swords);
 				$out = $this->pibase->cObj->substituteMarker($out, '###SWORDS###', $htmlSwords);
 				if ($formName)	{
 						// Add to content
 					$content .= $out;
 				}
+				$out = '';
 				// $entitySwords = htmlentities($swords); if the data has been entered e.g. with '&uuml;' instead of '&uuml;' 
 				if ($htmlSwords)	{
 					$where .= $this->tt_products->searchWhere($this->searchFieldList, trim($htmlSwords));
@@ -223,8 +225,11 @@ class tx_ttproducts_list_view {
 			
 			$markerArray = $this->marker->addURLMarkers($this->pid,array());
 			$wrappedSubpartArray = array();
+
+			$this->marker->getWrappedSubpartArray($pid,$wrappedSubpartArray);
+			
 			$subPartArray = array();
-			$this->fe_users->getSubpartWrappedSubpartArray($subPartArray, $wrappedSubpartArray);
+			$this->fe_users->getWrappedSubpartArray($subPartArray, $wrappedSubpartArray);
 			$t['listFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subPartArray,$wrappedSubpartArray);
 			$t['categoryAndItemsFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_CATEGORY_AND_ITEMS###');
 			$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryAndItemsFrameWork'],'###ITEM_CATEGORY###');

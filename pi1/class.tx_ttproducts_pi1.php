@@ -78,6 +78,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $prefixId = 'tx_ttproducts_pi1';	// Same as class name
 	var $scriptRelPath = 'pi1/class.tx_ttproducts_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
+	var $version = '020412';			// version number
 
 	var $cObj;		// The backReference to the mother cObj object set at call time
 

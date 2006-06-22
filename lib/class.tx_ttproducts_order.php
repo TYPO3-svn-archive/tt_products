@@ -257,7 +257,8 @@ class tx_ttproducts_order {
 				'deliveryInfo' 			=>	$this->basket->deliveryInfo,
 				'personInfo' 			=>	$this->basket->personInfo,
 				'itemArray'				=>	$this->basket->itemArray,
-				'calculatedArray'		=>	$this->basket->calculatedArray
+				'calculatedArray'		=>	$this->basket->calculatedArray,
+				'version'				=>  $this->pibase->version
 		));
 
 			// Setting tstamp, deleted and tracking code
@@ -293,35 +294,31 @@ class tx_ttproducts_order {
 			// Second: Insert a new relation for each ordered item
 		reset($itemArray);
 
-		// loop over all items in the basket indexed by page and itemnumber
-		foreach ($itemArray as $pid=>$pidItem) {
-			foreach ($pidItem as $itemnumber=>$actItemArray) {
-				if ($this->conf['useArticles']) {
-					foreach ($actItemArray as $k1=>$actItem) {
-						// get the article uid with these colors, sizes and gradings
-						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($actItem['rec']['color'],'tt_products_articles').' AND size='.$TYPO3_DB->fullQuoteStr($actItem['rec']['size'],'tt_products_articles').' AND description='.$TYPO3_DB->fullQuoteStr($actItem['rec']['description'],'tt_products_articles').' AND gradings='.$TYPO3_DB->fullQuoteStr($actItem['rec']['gradings'],'tt_products_articles');
-						$res = $TYPO3_DB->exec_SELECTquery('uid', 'tt_products_articles', $query);
+		// loop over all items in the basket indexed by itemnumber
+		foreach ($itemArray as $itemnumber=>$actItemArray) {
+			foreach ($actItemArray as $k1=>$actItem) {
+				$row = &$actItem['rec'];
+				$pid = intval($row['pid']);
+				if (!isset($basket->page->pageArray[$pid]))	{
+					// product belongs to another basket	
+					continue;
+				}
 
-						if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-							$insertFields = array (
-								'sys_products_orders_uid' => intval($orderUid),
-								'sys_products_orders_qty' => intval($actItem['count']),
-								'tt_products_uid' => intval($actItem['rec']['uid']),
-								'tt_products_articles_uid' => intval($row['uid'])
-							);
-							$TYPO3_DB->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
-						}
-					}
-				} else {
-					foreach ($actItemArray as $k1=>$actItem) {
-						$insertFields = array (
-							'sys_products_orders_uid' => intval($orderUid),
-							'sys_products_orders_qty' => intval($actItem['count']),
-							'tt_products_uid' => intval($actItem['rec']['uid'])
-						);
-						$TYPO3_DB->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
+				$insertFields = array (
+					'sys_products_orders_uid' => intval($orderUid),
+					'sys_products_orders_qty' => intval($actItem['count']),
+					'tt_products_uid' => intval($actItem['rec']['uid'])
+				);
+
+				if ($this->conf['useArticles']) {
+					// get the article uid with these colors, sizes and gradings
+					$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($actItem['rec']['color'],'tt_products_articles').' AND size='.$TYPO3_DB->fullQuoteStr($actItem['rec']['size'],'tt_products_articles').' AND description='.$TYPO3_DB->fullQuoteStr($actItem['rec']['description'],'tt_products_articles').' AND gradings='.$TYPO3_DB->fullQuoteStr($actItem['rec']['gradings'],'tt_products_articles');
+					$res = $TYPO3_DB->exec_SELECTquery('uid', 'tt_products_articles', $query);
+					if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+						$insertFields['tt_products_articles_uid'] = intval($row['uid']);
 					}
 				}
+				$TYPO3_DB->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
 			}
 		}
 	}

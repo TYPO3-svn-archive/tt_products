@@ -106,33 +106,57 @@ class tx_ttproducts_basket_view {
  	 */
 	function transformActivities($activities)	{
 		$retActivities = array();
-		$activityArray =  Array (
-			'1' =>  'products_overview', 'products_basket', 'products_info', 'products_payment', 'products_customized_payment', 'products_finalize',
-			);
+		$codeActivities = array();
+		$codeActivityArray =  Array (
+			'1' =>  
+				'products_overview',
+				'products_basket',
+				'products_info',
+				'products_payment',
+				'products_customized_payment',
+				'products_finalize',
+		);
 
+		$activityArray =  Array (
+			'1' =>  
+			'products_redeem_gift',
+			'products_clear_basket'
+		);
+
+
+		if (is_array($activities)) {
+			foreach ($codeActivityArray as $k => $activity) {
+				if ($activities[$activity]) {
+					$codeActivities[$activity] = true;
+				}
+			}
+		}
+
+		if ($codeActivities['products_info']) {
+			if($codeActivities['products_payment']) {
+				$codeActivities['products_payment'] = false;
+			}
+			if($codeActivities['products_finalize']) {
+				$codeActivities['products_finalize'] = false;
+			}
+		}
+		if ($codeActivities['products_payment']) {
+			if($codeActivities['products_finalize']) {
+				$codeActivities['products_finalize'] = false;
+			}
+		}
+		if ($codeActivities['products_basket'] && count($codeActivities)>1) {
+			$codeActivities['products_basket'] = false;
+		}
+
+		
 		if (is_array($activities)) {
 			foreach ($activityArray as $k => $activity) {
 				if ($activities[$activity]) {
 					$retActivities[$activity] = true;
 				}
 			}
-		}
-
-		if ($retActivities['products_info']) {
-			if($retActivities['products_payment']) {
-				$retActivities['products_payment'] = false;
-			}
-			if($retActivities['products_finalize']) {
-				$retActivities['products_finalize'] = false;
-			}
-		}
-		if ($retActivities['products_payment']) {
-			if($retActivities['products_finalize']) {
-				$retActivities['products_finalize'] = false;
-			}
-		}
-		if ($retActivities['products_basket'] && count($retActivities)>1) {
-			$retActivities['products_basket'] = false;
+			$retActivities = array_merge ($retActivities, $codeActivities);
 		}
 
 		return ($retActivities);
@@ -174,11 +198,16 @@ class tx_ttproducts_basket_view {
 		$content = '';
 		$empty = '';
 		$activityArray = array();
+		$bBasketEmpty = false;
 
 			// use '_x' for coordinates from Internet Explorer if button images are used
 		if (t3lib_div::_GP('products_redeem_gift') || t3lib_div::_GP('products_redeem_gift_x'))    {
 		 	$activityArray['products_redeem_gift'] = true;
 		}
+		if (t3lib_div::_GP('products_clear_basket') || t3lib_div::_GP('products_clear_basket_x'))    {
+			$activityArray['products_clear_basket'] = true;
+		}
+
       
        	if (t3lib_div::_GP('products_overview') || t3lib_div::_GP('products_overview_x'))    { 
 			$activityArray['products_overview'] = true; 
@@ -242,6 +271,11 @@ class tx_ttproducts_basket_view {
 					if ($value) {
 							// perform action
 						switch($activity)	{
+							case 'products_clear_basket':
+								// Empties the shopping basket!
+								$this->basket->clearBasket();
+								$bBasketEmpty = true;
+							break;
 							case 'products_basket':
 								if (count($this->activityArray) == 1) {
 									$content .= $this->getView($empty, 'BASKET');
@@ -351,6 +385,10 @@ class tx_ttproducts_basket_view {
 							break;
 						} // switch
 					}	// if ($value)
+					if ($bBasketEmpty)	{
+						break;
+					}
+
 						// in case of an error
 					if ($basket_tmpl) {
 						$content.=$this->getView($empty, 'BASKET', '###'.$basket_tmpl.'###',$mainMarkerArray);
@@ -398,13 +436,17 @@ class tx_ttproducts_basket_view {
 				// nothing. no BASKET code or similar thing
 			}
 		} else { // if (count($this->basket->basketExt))
+			$bBasketEmpty = true;
+		}
+		
+		if ($bBasketEmpty)	{
 			if ($this->activityArray['products_overview']) {
 				$this->pibase->load_noLinkExtCobj();	//
 				$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_OVERVIEW_EMPTY###'));
 			}
 			else if ($this->activityArray['products_basket'] || $this->activityArray['products_info']) {
 				$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_TEMPLATE_EMPTY###'));
-			}
+			}			
 		}
 		$markerArray = array();
 		$markerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject;	// adding extra preprocessing CObject
@@ -474,122 +516,117 @@ class tx_ttproducts_basket_view {
 		);
 		
 		$count = 0;
-//		debug ($this->basket->itemArray, '$this->basket->itemArray', __LINE__, __FILE__);
-//		debug ($this->page->pageArray, '$this->page->pageArray', __LINE__, __FILE__);
-		// loop over all items in the basket indexed by page and itemnumber
-		foreach ($this->basket->itemArray as $pid=>$pidItem) {
-			if (!isset($this->page->pageArray[$pid]))	{
-				// product belongs to another basket	
-				continue;
-			}
-			foreach ($pidItem as $itemnumber=>$actItemArray) {
-				foreach ($actItemArray as $k1=>$actItem) {
-					// debug ($actItem, '$actItem', __LINE__, __FILE__);
-					$row = &$actItem['rec'];
-					// debug ($row, '$row', __LINE__, __FILE__);
-					$pid = $row['pid'];
-					// debug ($pid, '$pid', __LINE__, __FILE__); 
-					$count++;
-					$pidcategory = ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1 ? $pid : '');
-					$currentPnew = $pidcategory.'_'.$actItem['rec']['category'];
-						// Print Category Title
-					if ($currentPnew!=$currentP)	{
-						if ($itemsOut)	{
-							$out .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
-						}
-						$itemsOut='';			// Clear the item-code var
-						$currentP = $currentPnew;
-						if ($this->conf['displayBasketCatHeader'])	{
-							$markerArray=array();
-							$pageCatTitle = '';
-							if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
-								$pageTmp = $this->page->get($pid);
-								$pageCatTitle = $pageTmp['title'].'/';
-							}
-							$catTmp = '';
-							if ($actItem['rec']['category']) {
-								$catTmp = $this->tt_products_cat->get($actItem['rec']['category']);
-								$catTmp = $catTmp['title'];
-							}
-							$catTitle = $pageCatTitle.$catTmp;
 
-							$this->pibase->cObj->setCurrentVal($catTitle);
-							$markerArray['###CATEGORY_TITLE###']=$this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
-							$out .= $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
-						}
+		// loop over all items in the basket indexed by itemnumber
+
+		foreach ($this->basket->itemArray as $itemnumber=>$actItemArray) {
+			foreach ($actItemArray as $k1=>$actItem) {
+				$row = &$actItem['rec'];
+				$pid = intval($row['pid']);
+				if (!isset($this->page->pageArray[$pid]))	{
+					// product belongs to another basket	
+					continue;
+				}
+				$count++;
+				$pidcategory = ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1 ? $pid : '');
+				$currentPnew = $pidcategory.'_'.$actItem['rec']['category'];
+					// Print Category Title
+				if ($currentPnew!=$currentP)	{
+					if ($itemsOut)	{
+						$out .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
 					}
+					$itemsOut='';			// Clear the item-code var
+					$currentP = $currentPnew;
+					if ($this->conf['displayBasketCatHeader'])	{
+						$markerArray=array();
+						$pageCatTitle = '';
+						if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
+							$pageTmp = $this->page->get($pid);
+							$pageCatTitle = $pageTmp['title'].'/';
+						}
+						$catTmp = '';
+						if ($actItem['rec']['category']) {
+							$catTmp = $this->tt_products_cat->get($actItem['rec']['category']);
+							$catTmp = $catTmp['title'];
+						}
+						$catTitle = $pageCatTitle.$catTmp;
 
-						// Fill marker arrays
-					$wrappedSubpartArray=array();
-					$subpartArray=array();
-					$markerArray = array();
-					$this->getItemMarkerArray ($actItem, $markerArray, $this->basket->basketExt, $code, $count);										
-					$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $code, $count);
-					$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
-					$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
-					$markerArray['###PRODUCT_DESCRIPTION###'] = $actItem['rec']['description'];
-					$markerArray['###PRODUCT_GRADINGS###'] = $actItem['rec']['gradings'];
-					//$markerArray['###PRODUCT_ADDITIONAL###'] = $actItem['rec']['additional'];
+						$this->pibase->cObj->setCurrentVal($catTitle);
+						$markerArray['###CATEGORY_TITLE###']=$this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
+						$out .= $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
+					}
+				}
 
-					$catTitle= $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : '';
-					$this->pibase->cObj->setCurrentVal($catTitle);
-					$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
-					$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($actItem['totalTax']);
-					$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($actItem['totalNoTax']);
-					$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $this->price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
+					// Fill marker arrays
+				$wrappedSubpartArray=array();
+				$subpartArray=array();
+				$markerArray = array();
+				$this->getItemMarkerArray ($actItem, $markerArray, $this->basket->basketExt, $code, $count);										
+				$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $code, $count);
+				$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
+				$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
+				$markerArray['###PRODUCT_DESCRIPTION###'] = $actItem['rec']['description'];
+				$markerArray['###PRODUCT_GRADINGS###'] = $actItem['rec']['gradings'];
+				//$markerArray['###PRODUCT_ADDITIONAL###'] = $actItem['rec']['additional'];
+
+				$catTitle= $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : '';
+				$this->pibase->cObj->setCurrentVal($catTitle);
+				$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
+				$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($actItem['totalTax']);
+				$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($actItem['totalNoTax']);
+				$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $this->price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
 
 /* Added els4: calculating of price_discount necessary in winkelwagen.tmpl (articles in kurkenshop are excluded, because these articled will be payed with creditpoints) */
-					if ( ($actItem['rec']['price'] != '0.00') && doubleval($actItem['rec']['price2']) && ($actItem['rec']['category'] != $this->conf['creditsCategory']) ) {
-						$pricediscount_total_tot_units = "";
+				if ( ($actItem['rec']['price'] != '0.00') && doubleval($actItem['rec']['price2']) && ($actItem['rec']['category'] != $this->conf['creditsCategory']) ) {
+					$pricediscount_total_tot_units = "";
 
 /* Added els7: different calculation of pricediscount_total_tot_units */
 //						$oldprice_total_tot_units = ($actItem['totalNoTax']/$actItem['rec']['price2'])*$actItem['rec']['price'];
 //						$pricediscount_total_tot_units = ($oldprice_total_tot_units - $actItem['totalNoTax']) * $actItem['rec']['unit_factor'];
-						$pricediscount_total_tot_units = ($actItem['rec']['price'] - $actItem['rec']['price2']) * $actItem['rec']['unit_factor'] * $actItem['count'];
-						$sum_pricediscount_total_totunits += $pricediscount_total_tot_units;
-					}
+					$pricediscount_total_tot_units = ($actItem['rec']['price'] - $actItem['rec']['price2']) * $actItem['rec']['unit_factor'] * $actItem['count'];
+					$sum_pricediscount_total_totunits += $pricediscount_total_tot_units;
+				}
 
 /* Added els4: TOTUNITS_: both prices mulitplied by unit_factor and third line is calculating the sum, necessary in winkelwagen.tmpl. All articles in kurkenshop are payed with creditpoints*/
-					$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###'] = $this->price->priceFormat($actItem['totalTax']*$actItem['rec']['unit_factor']);
-					if ($actItem['rec']['category'] == $this->conf['creditsCategory']) {
+				$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###'] = $this->price->priceFormat($actItem['totalTax']*$actItem['rec']['unit_factor']);
+				if ($actItem['rec']['category'] == $this->conf['creditsCategory']) {
 /* Added els7: different calculation of PRICECREDITS_TOTAL_TOTUNITS_NO_TAX */
 //						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']*$actItem['rec']['unit_factor']);
-						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($actItem['rec']['price2']*$actItem['rec']['unit_factor']) * $actItem['count'];
-					} else {
+					$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($actItem['rec']['price2']*$actItem['rec']['unit_factor']) * $actItem['count'];
+				} else {
 /* Added els7: different calculation of PRICECREDITS_TOTAL_TOTUNITS_NO_TAX */
 //						$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###']=$actItem['totalNoTax']*$actItem['rec']['unit_factor'];
-						$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'] = $actItem['rec']['price2']*$actItem['rec']['unit_factor'] * $actItem['count'];
-					}
+					$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'] = $actItem['rec']['price2']*$actItem['rec']['unit_factor'] * $actItem['count'];
+				}
 
-					$sum_pricecredits_total_totunits_no_tax += $markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'];
-					$sum_price_total_totunits_no_tax += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
+				$sum_pricecredits_total_totunits_no_tax += $markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'];
+				$sum_price_total_totunits_no_tax += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
 
 /* Added els4: calculating of price_creditpoints necessary in winkelwagen.tmpl, only if article contains special_prep then one can gains creditpoints */
-					if ($actItem['rec']['special_preparation'] != '0.00') {
-						$sum_pricecreditpoints_total_totunits += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
-					}
-
-					$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
-					$splitMark = md5(microtime());
-					$addQueryString=array();
-					$addQueryString[$this->pibase->prefixId.'[product]'] = intval($actItem['rec']['uid']);
-					$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($actItem['rec']['extVars']);
-					// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
-					$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true)).'"'.$css_current.'>','</a>'); 
-
-					// Substitute
-					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
-					$this->viewTable->variant->getVariantSubpartArray ($subpartArray, $actItem['rec'], $tempContent, 
-						($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'), $this->conf );
-					$this->basket->fe_users->getSubpartWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
-					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
-					$itemsOut .= $tempContent;
+				if ($actItem['rec']['special_preparation'] != '0.00') {
+					$sum_pricecreditpoints_total_totunits += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
 				}
-				if ($itemsOut)	{
-					$tempContent=$this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
-					$out .= $tempContent;
-					$itemsOut='';			// Clear the item-code var
-				}
+
+				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
+				$splitMark = md5(microtime());
+				$addQueryString=array();
+				$addQueryString[$this->pibase->prefixId.'[product]'] = intval($actItem['rec']['uid']);
+				$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($actItem['rec']['extVars']);
+				// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
+				$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true)).'"'.$css_current.'>','</a>'); 
+
+				// Substitute
+				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
+				$this->viewTable->variant->getVariantSubpartArray ($subpartArray, $actItem['rec'], $tempContent, 
+					($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'), $this->conf );
+				$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
+				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
+				$itemsOut .= $tempContent;
+			}
+			if ($itemsOut)	{
+				$tempContent=$this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
+				$out .= $tempContent;
+				$itemsOut='';			// Clear the item-code var
 			}
 		}
 
@@ -949,7 +986,7 @@ class tx_ttproducts_basket_view {
 		$subpartArray['###MESSAGE_SHIPPING###'] = $this->pibase->cObj->substituteMarkerArrayCached($this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_SHIPPING_'.$this->basket->basketExtra['shipping'].'###'),$markerArray);
 		$subpartArray['###MESSAGE_PAYMENT###'] = $this->pibase->cObj->substituteMarkerArrayCached($this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_PAYMENT_'.$this->basket->basketExtra['payment'].'###'),$markerArray);
 
-		$this->basket->fe_users->getSubpartWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
+		$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
 		$bFrameWork=$this->pibase->cObj->substituteMarkerArrayCached($t['basketFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 
 			// substitute the main subpart with the rendered content.

@@ -273,7 +273,10 @@ class tx_ttproducts_catlist_view {
 		$markerArray = array();
 		$subpartArray = array();
 		$wrappedSubpartArray = array();
+		$this->marker->getWrappedSubpartArray($wrappedSubpartArray);
 		$subpartArray['###CATEGORY_SINGLE###'] = $out;
+
+			
 		if ($bSeparated)	{
 			$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
 			$this->pibase->javascript->set('catselect', $categoryArray);
