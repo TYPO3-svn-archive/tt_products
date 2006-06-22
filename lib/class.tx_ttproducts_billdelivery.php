@@ -132,7 +132,7 @@ class tx_ttproducts_billdelivery {
 	// Calculate quantities for all categories
 
 	// loop over all items in the ordered items indexed by itemnumber
-	foreach ($itemArray as $itemnumber=>$actItemArray) {
+	foreach ($itemArray as $sort=>$actItemArray) {
 		foreach ($actItemArray as $k1=>$actItem) {
 			$currentCategory=$actItem['rec']['category'];
 			$categoryArray[$currentCategory] = 1;
@@ -162,8 +162,8 @@ class tx_ttproducts_billdelivery {
 	$count = 0;
 	foreach ($categoryArray as $currentCategory=>$value)	{
 		$categoryChanged = 1;
-		// loop over all ordered items indexed by itemnumber
-		foreach ($itemArray as $itemnumber=>$actItemArray) {
+		// loop over all ordered items indexed by a sorting text
+		foreach ($itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
 				$count++;
 					// Print Category Title

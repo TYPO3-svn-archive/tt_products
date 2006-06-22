@@ -136,8 +136,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		if ($this->table->name == 'tt_products' || is_array(($TCA[$this->table->name]['columns']['inStock'])) )	{		
 			// Reduce inStock
 	
-			// loop over all items in the basket indexed by itemnumber
-			foreach ($itemArray as $itemnumber=>$actItemArray) {
+			// loop over all items in the basket indexed by a sorting text
+			foreach ($itemArray as $sort=>$actItemArray) {
 				if ($useArticles) {
 					foreach ($actItemArray as $k1=>$actItem) {
 						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($actItem['rec']['color'],'tt_products_articles').' AND size='.$TYPO3_DB->fullQuoteStr($actItem['rec']['size'],'tt_products_articles').' AND description='.$TYPO3_DB->fullQuoteStr($actItem['rec']['description'],'tt_products_articles').' AND gradings='.$TYPO3_DB->fullQuoteStr($actItem['rec']['gradings'],'tt_products_articles');	

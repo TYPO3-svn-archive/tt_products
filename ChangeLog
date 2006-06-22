@@ -1,6 +1,7 @@
 2006-06-22 Franz Holzinger <franz@fholzinger.com>
 	* missing marker substitution for first page in basket
 	* remove index pid from the basket's itemArray
+	* let the only index of the basket's itemArray be a sorting text which can be customized
 
 2006-06-21 Franz Holzinger <franz@fholzinger.com>
 	* use table configuration module

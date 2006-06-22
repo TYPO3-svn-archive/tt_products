@@ -570,25 +570,25 @@ class tx_ttproducts_basket {
 			$this->pricecalc->GetCalculatedData($this->conf);
 		}
 		
-		// loop over all items in the basket indexed by itemnumber
-		foreach ($this->itemArray as $itemnumber=>$actItemArray) {
+		// loop over all items in the basket indexed by a sort string
+		foreach ($this->itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
 				$row = &$actItem['rec'];
 
 				// has the price been calculated before take it if it gets cheaper now
 				if (($actItem['calcprice'] > 0) && ($actItem['calcprice'] < $actItem['priceTax'])) {
-					$this->itemArray[$itemnumber][$k1]['priceTax'] = $this->price->getPrice($actItem['calcprice'],1,$row['tax']);
-					$this->itemArray[$itemnumber][$k1]['priceNoTax'] = $this->price->getPrice($actItem['calcprice'],0,$row['tax']);
+					$this->itemArray[$sort][$k1]['priceTax'] = $this->price->getPrice($actItem['calcprice'],1,$row['tax']);
+					$this->itemArray[$sort][$k1]['priceNoTax'] = $this->price->getPrice($actItem['calcprice'],0,$row['tax']);
 				}
 				//  multiplicate it with the count :
-				$this->itemArray[$itemnumber][$k1]['totalTax'] = $this->itemArray[$itemnumber][$k1]['priceTax'] * $actItem['count'];
-				$this->itemArray[$itemnumber][$k1]['totalNoTax'] = $this->itemArray[$itemnumber][$k1]['priceNoTax'] * $actItem['count'];
+				$this->itemArray[$sort][$k1]['totalTax'] = $this->itemArray[$sort][$k1]['priceTax'] * $actItem['count'];
+				$this->itemArray[$sort][$k1]['totalNoTax'] = $this->itemArray[$sort][$k1]['priceNoTax'] * $actItem['count'];
 						// Fills this array with the product records. Reason: Sorting them by category (based on the page, they reside on)
-				$this->calculatedArray['priceTax']['goodstotal'] += $this->itemArray[$itemnumber][$k1]['totalTax'];
-				$this->calculatedArray['priceNoTax']['goodstotal'] += $this->itemArray[$itemnumber][$k1]['totalNoTax'];
+				$this->calculatedArray['priceTax']['goodstotal'] += $this->itemArray[$sort][$k1]['totalTax'];
+				$this->calculatedArray['priceNoTax']['goodstotal'] += $this->itemArray[$sort][$k1]['totalNoTax'];
 
-				$this->calculatedArray['categoryPriceTax']['goodstotal'][$row['category']]+= $this->itemArray[$itemnumber][$k1]['totalTax'];
-				$this->calculatedArray['categoryPriceNoTax']['goodstotal'][$row['category']]+= $this->itemArray[$itemnumber][$k1]['totalNoTax'];
+				$this->calculatedArray['categoryPriceTax']['goodstotal'][$row['category']]+= $this->itemArray[$sort][$k1]['totalTax'];
+				$this->calculatedArray['categoryPriceNoTax']['goodstotal'][$row['category']]+= $this->itemArray[$sort][$k1]['totalNoTax'];
 			}
 		}
 
@@ -615,6 +615,7 @@ class tx_ttproducts_basket {
 			$this->calculatedArray['priceTax']['payment'],
 			$this->calculatedArray['priceNoTax']['payment']
 		);
+		
 	} // getCalculatedBasket
 
 

@@ -313,8 +313,6 @@ class tx_ttproducts_image {
 			}
 		}
 		
-//		debug ($markerArray, '$markerArray', __LINE__, __FILE__);
-		
 	}
 
 }

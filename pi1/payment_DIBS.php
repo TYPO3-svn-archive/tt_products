@@ -155,8 +155,8 @@ doPopup(this);" target="Betaling"'; // if this is empty then no popup window wil
 			$cc=1;
 			
 //while(list(,$rec)=each($this->basket->calculatedBasket))	  {
-			// loop over all items in the basket indexed by itemnumber
-			foreach ($this->basket->itemArray as $itemnumber=>$actItemArray) {
+			// loop over all items in the basket indexed by a sorting text
+			foreach ($this->basket->itemArray as $sort=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
 					$cc++;
 					$theFields.='

@@ -294,8 +294,8 @@ class tx_ttproducts_order {
 			// Second: Insert a new relation for each ordered item
 		reset($itemArray);
 
-		// loop over all items in the basket indexed by itemnumber
-		foreach ($itemArray as $itemnumber=>$actItemArray) {
+		// loop over all items in the basket indexed by a sorting text
+		foreach ($itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
 				$row = &$actItem['rec'];
 				$pid = intval($row['pid']);

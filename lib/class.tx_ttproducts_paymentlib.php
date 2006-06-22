@@ -107,7 +107,6 @@ class tx_ttproducts_paymentlib {
 					$totalPrice = $this->basket->calculatedArray['priceTax']['total'];
 					$totalPriceFormatted = $this->price->priceFormat($totalPrice);
 					$orderUid = $this->order->getBlankUid();		// Gets an order number, creates a new order if no order is associated with the current session
-					debug ($orderUid, '$orderUid', __LINE__, __FILE__);
 					
 					$transactionDetailsArr = array (
 						'transaction' => array (

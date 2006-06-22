@@ -185,8 +185,8 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		$emailArray = array();
 		$this->tt_products_email = t3lib_div::makeInstance('tx_ttproducts_email');
 		$this->tt_products_email->init();
-		// loop over all items in the basket indexed by page and itemnumber
-		foreach ($itemArray as $itemnumber=>$actItemArray) {
+		// loop over all items in the basket indexed by page and a sorting text
+		foreach ($itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
 				$category = $this->get($actItem['rec']['category']);
 				$tmp = $this->tt_products_email->getEmail($category['email_uid']);

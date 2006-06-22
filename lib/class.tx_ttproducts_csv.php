@@ -126,8 +126,8 @@ class tx_ttproducts_csv {
 			reset($this->itemArray);
 
 			$infoWritten = false;
-			// loop over all items in the basket indexed by itemnumber
-			foreach ($this->itemArray as $itemnumber=>$actItemArray) {
+			// loop over all items in the basket indexed by a sorting text
+			foreach ($this->itemArray as $sort=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
 					$row = &$actItem['rec'];
 					$pid = intval($row['pid']);
