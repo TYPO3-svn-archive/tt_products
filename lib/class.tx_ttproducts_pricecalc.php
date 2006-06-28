@@ -242,13 +242,13 @@ class tx_ttproducts_pricecalc {
 				}
 				$dumCount = 0;
 
-				// loop over all items in the basket indexed by itemnumber
-				foreach ($this->basket->itemArray as $itemnumber=>$actItemArray) {
+				// loop over all items in the basket indexed by sort string
+				foreach ($this->basket->itemArray as $sort=>$actItemArray) {
 					foreach ($actItemArray as $k2=>$actItem) {
 						// count all items which will apply to the discount price
 						$count2 = $actItem['count'];
 						if (((float) $count2 > 0) && ($actItem['rec']['price'] == $pricefor1)) {
-							$countedItems [$pricefor1Index][] = array ('itemnumber' => $itemnumber);
+							$countedItems [$pricefor1Index][] = array ('sort' => $sort);
 							$dumCount += $count2;
 						}
 					}

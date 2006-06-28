@@ -99,8 +99,10 @@ class tx_ttproducts_single_view {
 		}		
 		$itemTableArray = array('product' => &$this->tt_products, 'article' => &$this->tt_products_articles);
 		$rowArray = array('product' => '', 'article' => '');
+		$itemTableConf = $rowArray;
+		$itemTableLangFields = $rowArray; 
 		$content = '';
-		
+					
 //		if ($this->type == 'product')	{
 //			$itemTable = &$this->tt_products;
 //		} else if ($this->type == 'article')	{
@@ -114,6 +116,9 @@ class tx_ttproducts_single_view {
 			$where = 'uid='.intval($this->uid);
 			$res = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
 			$rowArray[$this->type] = $TYPO3_DB->sql_fetch_assoc($res);
+			$itemTableConf[$this->type] = $this->cnf->getTableConf($itemTableArray[$this->type]->table->name, 'SINGLE');
+			$itemTableLangFields[$this->type] = $this->cnf->getTranslationFields($itemTableConf[$this->type]);
+
 			if ($this->type == 'product')	{
 				if ($this->variants) {
 					$itemTableArray[$this->type]->variant->getRowFromVariant ($rowArray[$this->type], $this->variants);
@@ -123,10 +128,21 @@ class tx_ttproducts_single_view {
 				$where = 'uid='.intval($rowArray[$this->type]['uid_product']);
 				$res = $itemTableArray['product']->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
 				$rowArray['product'] = $TYPO3_DB->sql_fetch_assoc($res);
+				$itemTableConf['product'] = $this->cnf->getTableConf($itemTableArray['product']->table->name, 'SINGLE');
+				$itemTableLangFields['product'] = $this->cnf->getTranslationFields($itemTableConf);
 				$itemTableArray['article']->mergeProductRow($rowArray['article'], $rowArray['product']);
 			}
 				
 		}
+
+		foreach ($itemTableLangFields as $type => $fieldArray)	{
+			if (is_array($fieldArray))	{
+				foreach ($fieldArray as $field => $langfield)	{
+					$rowArray[$type][$field] = $rowArray[$type][$langfield];
+				}
+			}
+		}
+
 		if ($this->type == 'article')	{
 			
 		}

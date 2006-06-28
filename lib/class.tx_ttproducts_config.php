@@ -89,6 +89,21 @@ class tx_ttproducts_config {
 		
 		return $rc;
 	}
+	
+	function getTranslationFields($tableConf)	{
+		$fieldArray = array();
+		if (is_array($tableConf['language.']) && $tableConf['language.']['type'] == 'field')	{
+			$langConf = $tableConf['language.']['field.'];
+			if (is_array($langConf))	{
+				foreach ($langConf as $field => $langfield)	{
+					$fieldArray[$field] = $langfield;
+				}
+			}
+		}
+		return $fieldArray;
+	}
+	
+	
 }
 
 

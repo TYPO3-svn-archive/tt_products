@@ -1,3 +1,8 @@
+2006-06-28 Franz Holzinger <franz@fholzinger.com>
+	* translation of some fields of a table in other fields
+	* correct error with wrong quotation in tracking
+	* catlist with option 'null' to use no predefined HTML
+
 2006-06-22 Franz Holzinger <franz@fholzinger.com>
 	* missing marker substitution for first page in basket
 	* remove index pid from the basket's itemArray

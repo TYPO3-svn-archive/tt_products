@@ -69,12 +69,12 @@ class tx_ttproducts_fe_users {
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray($tablename);
 		$this->fields['payment'] = ($tableconf['payment'] ? $tableconf['payment'] : '');
-		$requiredListFields = 'uid,pid,email'.($this->fields['payment'] ? ','.$this->fields['payment'] : '');
+		$requiredFields = 'uid,pid,email'.($this->fields['payment'] ? ','.$this->fields['payment'] : '');
 		if (is_array($tableconf['ALL.']))	{
-			$tmp = $tableconf['ALL.']['requiredListFields'];
-			$requiredListFields = ($tmp ? $tmp : $requiredListFields);
+			$tmp = $tableconf['ALL.']['requiredFields'];
+			$requiredFields = ($tmp ? $tmp : $requiredFields);
 		}
-		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
+		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 	} // init
 

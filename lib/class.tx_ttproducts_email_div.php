@@ -45,7 +45,7 @@ class tx_ttproducts_email_div {
 	/**
 	 * Extended mail function
 	 */
-	function send_mail($email,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
+	function send_mail($toEMail,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
 		include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 
 		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
@@ -79,7 +79,7 @@ class tx_ttproducts_email_div {
 			$Typo3_htmlmail->addPlain($message);
 			$Typo3_htmlmail->setHeaders();
 			$Typo3_htmlmail->setContent();
-			$Typo3_htmlmail->setRecipient(explode(',', $email));
+			$Typo3_htmlmail->setRecipient(explode(',', $toEMail));
 			$Typo3_htmlmail->sendTheMail();
 		}
 	}

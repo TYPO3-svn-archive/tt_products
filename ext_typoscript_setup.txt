@@ -21,7 +21,7 @@ plugin.tt_products {
   }
   conf.tt_products.ALL {
     orderBy = {$plugin.tt_products.orderBy}
-    requiredListFields = uid,pid,category,price,price2,tax,inStock
+    requiredFields = uid,pid,category,price,price2,tax,inStock
   }
 
   table.tt_products_articles = tt_products_articles
@@ -36,7 +36,7 @@ plugin.tt_products {
     }
   }
   conf.tt_products.articles.ALL {
-    requiredListFields = uid,pid,uid_product,price,price2,inStock  
+    requiredFields = uid,pid,uid_product,price,price2,inStock  
   }
 
   table.tt_products_cat = tt_products_cat

@@ -115,7 +115,7 @@
 			<label index="tt_products.tax">MwSt:</label>
 			<label index="tt_products.weight">Gewicht (kg):</label>
 			<label index="tt_products.bulkily">Sperrig:</label>
-			<label index="tt_products.offer">Angebot:</label>
+			<label index="tt_products.offer">Aktion:</label>
 			<label index="tt_products.highlight">Besonderheit:</label>
 			<label index="tt_products.directcost">Einkaufspreis:</label>
 			<label index="tt_products.color">Farbe (Variante 1):</label>

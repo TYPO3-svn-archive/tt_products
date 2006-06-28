@@ -77,18 +77,30 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename, 'products');
 		
-		$requiredListFields = 'uid,pid,category,price,price2,tax,inStock';
-		if ($this->tableconf['requiredListFields'])	{
-			$tmp = $this->tableconf['requiredListFields'];
-			$requiredListFields = ($tmp ? $tmp : $requiredListFields);
-		}		
-		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
+		$requiredFields = 'uid,pid,category,price,price2,tax,inStock';
+		if ($this->tableconf['requiredFields'])	{
+			$tmp = $this->tableconf['requiredFields'];
+			$requiredFields = ($tmp ? $tmp : $requiredFields);
+		}	
+		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
+		if (is_array($this->tableconf['language.']) &&
+			$this->tableconf['language.']['type'] == 'field' &&
+			is_array($this->tableconf['language.']['field.'])
+			)	{
+			$addRequiredFields = array();
+			$addRequiredFields[] = $this->tableconf['language.']['field.'];
+			$this->table->addRequiredFieldArray ($addRequiredFields);
+		}
 	
 		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
 			$this->table->setLangName('tt_products_language');
 			$this->table->setTCAFieldArray($this->table->langname);
+		}
+
+		if ($this->tableconf['language.'] && $this->tableconf['language.']['type'] == 'csv')	{
+			$this->table->initLanguageFile($this->tableconf['language.']['file']);
 		}
 		
 		parent::init($pibase, $cnf, $tt_content);
@@ -210,6 +222,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
 		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id);
+		
 		
 			// Subst. fields
 		$markerArray['###PRODUCT_UNIT###'] = $row['unit'];

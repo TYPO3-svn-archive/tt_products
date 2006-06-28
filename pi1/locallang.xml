@@ -30,7 +30,7 @@
 			<label index="open_bill">Click here to open the bill</label>
 			<label index="open_delivery">Click here to open the delivery sheet</label>
 			<label index="invalid_email">Invalid E-mail address |! Please re-enter.</label>
-			<label index="no_template">The shop template file has not been found. Check your settings of</label>
+			<label index="no_template">The shop template file has not been found. Check your constants about</label>
 			<label index="no_subtemplate">The part | or the template file | has not been found.</label>
 			<label index="accept_AGB">You have to accept the general trading conditions to proceed.</label>
 			<label index="additional_single">buy this product</label>
@@ -49,7 +49,7 @@
 			<label index="open_bill">zum Öffnen der Rechnung hier klicken</label>
 			<label index="open_delivery">zum Öffnen des Lieferscheins hier klicken</label>
 			<label index="invalid_email">Ungültige E-mail Addresse |! Bitte neu eingeben.</label>
-			<label index="no_template">Die Shop-Template Datei wurde nicht gefunden. Überprüfen Sie die Einstellung</label>
+			<label index="no_template">Die Shop-Template Datei wurde nicht gefunden. Überprüfen Sie in den Constants:</label>
 			<label index="no_subtemplate">Der Bereich | wurde in der Template Datei | nicht gefunden.</label>
 			<label index="accept_AGB">Sie haben unsere AGB nicht akzeptiert.</label>
 			<label index="additional_single">Produkt kaufen</label>

@@ -47,6 +47,8 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	var $tableconf;
 	var $image;
 	var $cnf;
+	var $marker = 'CATEGORY';
+	var $piVar = 'cat';
 
 	/**
 	 * initialization with table object and language table
@@ -132,7 +134,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 
 
 	function getParamDefault ()	{
-		$cat = $this->pibase->piVars['cat'];
+		$cat = $this->pibase->piVars[$this->piVar];
 		$cat = ($cat ? $cat : $this->conf['defaultCategoryID']);
 		$cat = implode(',',t3lib_div::intExplode(',', $cat));
 		return $cat;	
@@ -150,7 +152,8 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	}
 
 
-	function &getRelationArray () {
+	function &getRelationArray ($excludePid=0) {
+
 		$relationArray = array();
 		
 		foreach ($this->dataArray as $k => $row)	{

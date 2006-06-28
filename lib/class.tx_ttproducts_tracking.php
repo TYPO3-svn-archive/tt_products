@@ -113,11 +113,11 @@ class tx_ttproducts_tracking {
 				// Initialize update of status...
 			$fieldsArray = array();
 			if (isset($orderRecord['email_notify']))	{
-				$fieldsArray['email_notify'] = $TYPO3_DB->fullQuoteStr($orderRecord['email_notify'],'sys_products_orders');
+				$fieldsArray['email_notify'] = $orderRecord['email_notify'];
 				$orderRow['email_notify'] = $orderRecord['email_notify'];
 			}
 			if (isset($orderRecord['email']))	{
-				$fieldsArray['email'] = $TYPO3_DB->fullQuoteStr($orderRecord['email'],'sys_products_orders');
+				$fieldsArray['email'] = $orderRecord['email'];
 				$orderRow['email'] = $orderRecord['email'];
 			}
 

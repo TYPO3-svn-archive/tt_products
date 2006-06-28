@@ -42,13 +42,15 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_image.php');
 
 class tx_ttproducts_category_base {
 	var $table;		 // object of the type tx_table_db
-	var $pibase; // reference to object of pibase
+	var $pibase; 	 // reference to object of pibase
 	var $cnf;
 	var $conf;
 	var $config;
 	var $dataArray;  // array of read in categories
 	var $image;
 	var $marker = 'CATEGORY';	// must be overridden
+	var $piVar = ''; // must be overridden
+
 
 	/**
 	 * initialization with table object and language table
@@ -82,19 +84,28 @@ class tx_ttproducts_category_base {
 	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', $viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code)	{
 	}
 
+
 	function getParamDefault ()	{
 		$rc = '';
 		return $rc;
 	}
 
+
+	function &getRelationArray ($excludePid=0) {
+		
+	}
+
+
 	function setMarkerArrayCatTitle (&$markerArray, $catTitle)	{
 		$this->pibase->cObj->setCurrentVal($catTitle);
 		$markerArray['###CATEGORY_TITLE###']=$this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 	}
-	
+
+
 	function getMarkerArrayCatTitle(&$markerArray)	{
 		return ($markerArray['###CATEGORY_TITLE###']);
 	}
+
 }
 
 

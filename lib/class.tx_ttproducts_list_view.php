@@ -45,6 +45,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
 
 class tx_ttproducts_list_view {
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
 	var $basket;
@@ -225,9 +226,7 @@ class tx_ttproducts_list_view {
 			
 			$markerArray = $this->marker->addURLMarkers($this->pid,array());
 			$wrappedSubpartArray = array();
-
 			$this->marker->getWrappedSubpartArray($pid,$wrappedSubpartArray);
-			
 			$subPartArray = array();
 			$this->fe_users->getWrappedSubpartArray($subPartArray, $wrappedSubpartArray);
 			$t['listFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subPartArray,$wrappedSubpartArray);
@@ -261,7 +260,6 @@ class tx_ttproducts_list_view {
 			
 				// Get products count			
 			$selectConf['orderBy'] = $this->conf['orderBy'];
-			
 			$productsConf = $this->cnf->getTableConf($itemTable->table->name,$theCode);
 
 				// performing query for display:	
@@ -298,7 +296,9 @@ class tx_ttproducts_list_view {
 				$itemTable->table->marker,
 				$viewTagArray
 			);
-			
+			$itemTableConf = $this->cnf->getTableConf($itemTable->table->name, $theCode);
+			$itemTableLangFields = $this->cnf->getTranslationFields($itemTableConf);
+			$fieldsArray = array_merge($fieldsArray, $itemTableLangFields);
 			$viewCatTagArray = array();
 			$catfieldsArray = $this->marker->getMarkerFields(
 				$t['categoryFrameWork'],
@@ -347,6 +347,12 @@ class tx_ttproducts_list_view {
 			$iCount = 0;
 			while ($iCount < $this->config['limit'] && ($row = $TYPO3_DB->sql_fetch_assoc($res)))		{
 				$iCount++;
+				if (count($itemTableLangFields))	{
+					foreach ($itemTableLangFields as $field => $langfield)	{
+						$row[$field] = $row[$langfield];
+					}
+				}
+				
 				$itemArray[]=$row;
 			}
 			if ($iCount == $this->config['limit'] && ($row = $TYPO3_DB->sql_fetch_assoc($res)))	{

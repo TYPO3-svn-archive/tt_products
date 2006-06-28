@@ -335,7 +335,6 @@ class tx_ttproducts_basket_view {
 								$this->pibase->load_noLinkExtCobj();	// TODO
 								$pidagb = intval($this->conf['PIDagb']);
 								$this->basket->mapPersonIntoToDelivery();
-								$php = intval(phpversion());
 								$check = $this->basket->checkRequired();
 								if ($check=='' &&
 									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {

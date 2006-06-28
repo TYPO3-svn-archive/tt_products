@@ -64,12 +64,12 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 
-		$requiredListFields = 'uid,pid,uid_product,price,price2';
+		$requiredFields = 'uid,pid,uid_product,price,price2';
 		if (is_array($tableconf['ALL.']))	{
-			$tmp = $tableconf['ALL.']['requiredListFields'];
-			$requiredListFields = ($tmp ? $tmp : $requiredListFields);
+			$tmp = $tableconf['ALL.']['requiredFields'];
+			$requiredFields = ($tmp ? $tmp : $requiredFields);
 		}
-		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
+		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 
 		parent::init($pibase, $cnf, $tt_content);

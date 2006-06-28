@@ -47,6 +47,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	var $pid_list;		// list of page ids
 	var $pageArray;		// pid_list as array
 	var $cnf;
+	var $piVar = 'pid';
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -56,10 +57,31 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
+		$tablename = ($tablename ? $tablename : 'pages');
+		$this->tableconf = $this->cnf->getTableConf($tablename);
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'sorting'=> 'sorting',
  			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));		
-		$this->table->setTCAFieldArray('pages');
+		$this->table->setTCAFieldArray($tablename, 'pages');
+		
+		$requiredFields = 'uid,pid,title,shortcut';
+		if ($this->tableconf['requiredFields'])	{
+			$tmp = $this->tableconf['requiredFields'];
+			$requiredFields = ($tmp ? $tmp : $requiredFields);
+		}	
+		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
+		$this->table->setRequiredFieldArray($requiredListArray);
+
+		if (is_array($this->tableconf['generatePath.']) &&
+			$this->tableconf['generatePath.']['type'] == 'tablefields' &&
+			is_array($this->tableconf['generatePath.']['field.'])
+			)	{
+			$addRequiredFields = array();
+			foreach ($this->tableconf['generatePath.']['field.'] as $field => $value)	{
+				$addRequiredFields[] = $field;
+			}
+			$this->table->addRequiredFieldArray ($addRequiredFields);
+		}		
 		
 		parent::init($pibase, $cnf, $tt_content);
 	} // init
@@ -72,7 +94,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		$rc = $this->dataArray[$uid];
 		if (!$rc && !$bMultple) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
-			$sql->prepareFields($this->table, 'select', 'title,uid,pid');
+			$sql->prepareFields($this->table, 'select', implode(',', $this->table->requiredFieldArray));
 			$sql->prepareWhereFields ($this->table, 'uid', '=', intval($uid));
 			$this->table->enableFields();		 
 			// Fetching the category
@@ -84,6 +106,14 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	}
 
 
+	function getParamDefault ()	{
+		$pid = $this->pibase->piVars[$this->piVar];
+		$pid = ($pid ? $pid : $this->conf['defaultPageID']);
+		$pid = implode(',',t3lib_div::intExplode(',', $pid));
+		return $pid;	
+	}
+
+
 	function &getRelationArray ($excludePid=0) {
 		$relationArray = array();
 		
@@ -92,6 +122,11 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		unset($pageArray[$excludeKey]);
 		foreach ($pageArray as $k => $uid)	{
 			$row = $this->get ($uid);
+			if ($row['shortcut'] == $excludePid)	{	// do not show shortcuts to the excluded page
+				$excludeKey = array_search($row['uid'], $pageArray);
+				unset($pageArray[$excludeKey]);
+				continue;
+			}
 			$relationArray [$uid]['title'] = $row['title'];
 			$relationArray [$uid]['pid'] = $row['uid'];
 			$pid = $row['pid'];
@@ -187,8 +222,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 					break;  //ready with the foreach loop
 				}
 			}
-		} else
-		{
+		} else {
 			if ($conf) {
 				$rc = $conf;
 			} else {
@@ -209,6 +243,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	function setPidlist($pid_list)	{
 		$this->pid_list = $pid_list;
 	}
+
 
 	/**
 	 * Sets the pid_list internal var
@@ -231,9 +266,9 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		if ($recursive)	{		// get pid-list if recursivity is enabled
 			$recursive = intval($recursive);
 			$pid_list_arr = explode(',',$this->pid_list);
-			$this->pid_list='';
-			while(list(,$val)=each($pid_list_arr))	{
-				$this->pid_list.=$val.','.$this->pibase->cObj->getTreeList($val,$recursive);
+			$this->pid_list = '';
+			while(list(,$val) = each($pid_list_arr))	{
+				$this->pid_list .= $val.','.$this->pibase->cObj->getTreeList($val,$recursive);
 			}
 			$this->pid_list = ereg_replace(',$','',$this->pid_list);
 			$pid_list_arr = explode(',',$this->pid_list);

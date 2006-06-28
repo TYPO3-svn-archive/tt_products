@@ -124,24 +124,16 @@ class tx_ttproducts_javascript {
 		var boxCount = '.$count.'; // number of select boxes
 ';
 					if (is_array($params))	{
-//						error_log ('$params');
 						foreach ($params as $k => $row)	{
-//							error_log($k.':');
-//							foreach ($row as $k2 => $v2)	{
-//								if ($k2 != 'child_category')
-//									error_log ($k2.'|'.$v2);
-//							}
 							$code .= 'c['.$k.'] = new Array(3);';
 							$code .= 'c['.$k.'][0] = "'.$row['title'].'"; ' ;
 							$code .= 'c['.$k.'][1] = "'.$row['pid'].'"; ' ;
 							$child_category = $row['child_category'];
 							if (is_array($child_category))	{
-//								error_log('child_category');
 								$code .= 'c['.$k.'][2] = new Array('.count($child_category).');';
 								$count = 0;
 								foreach ($child_category as $k1 => $childCat)	{
 									$newCode = 'c['.$k.'][2]['.$count.'] = "'.$childCat.'"; ';
-//									error_log ($newCode);
 									$code .= $newCode;
 									$count++;
 								}

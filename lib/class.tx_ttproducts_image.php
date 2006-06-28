@@ -117,7 +117,9 @@ class tx_ttproducts_image {
 		}
 		$imgs = array();
 
-		if ($this->conf['usePageContentImage']) {
+		if (is_array($tableConf['fetchImage.']) && 
+			$tableConf['fetchImage.']['type'] == 'foreigntable'  &&
+			$tableConf['fetchImage.']['table'] == 'tt_content') {
 			$pageContent = $this->tt_content->getFromPid($pid);
 			foreach ($pageContent as $pid => $contentRow) {
 				if ($contentRow['image']) {
@@ -162,7 +164,7 @@ class tx_ttproducts_image {
 				 	is_array($conftableConf[$generate.'.'])) {
 				 	$genPartArray = $conftableConf[$generate.'.'];
 				 	$tableFieldsCode = '';
-				 		
+				 	
 				 	if ($genPartArray['type'] == 'tablefields')	{
 				 		$nameArray[$generate] = '';
 				 		$fieldConf = $genPartArray['field.'];
@@ -171,8 +173,8 @@ class tx_ttproducts_image {
 					 		if (is_array($fieldconfParent[$generate]))	{
 					 			$fieldConf = array_merge($fieldConf, $fieldconfParent[$generate]);
 					 		}
-					 			
-					 		foreach ($fieldConf as $field => $count)	{ 
+					 		
+					 		foreach ($fieldConf as $field => $count)	{
 								if ($row[$field])	{
 									$nameArray[$generate] .= substr($row[$field], 0, $count);
 									if ($generate == 'generateImage')

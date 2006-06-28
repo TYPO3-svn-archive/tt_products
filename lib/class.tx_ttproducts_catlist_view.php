@@ -154,18 +154,23 @@ class tx_ttproducts_catlist_view {
 		$bFinished = false;
 		$bSeparated = false;
 		$categoryArray = array();
+		$categoryTable = '';
 		$htmlTagMain = $this->conf['displayCatListType'];
-		$htmlTagElement = ($htmlTagMain == 'ul' ? 'li' : 'option');
-		$currentCat = $this->tt_products_cat->getParamDefault();
+		$htmlTagElement = ($htmlTagMain == 'ul' ? 'li' : $htmlTagMain == 'select' ? 'option' : 'null');
 
 		if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])	{
-			$categoryArray = $this->page->getRelationArray($this->pibase->cObj->data['pages']);
+			$excludeCat = $this->pibase->cObj->data['pid'];
+			$categoryTable = &$this->page;
 		} else {
 				// read in all categories
-			$this->tt_products_cat->get(0, $this->page->pid_list);
-			ksort ($this->tt_products_cat->dataArray);
-			$categoryArray = $this->tt_products_cat->getRelationArray();
+			$categoryTable = &$this->tt_products_cat;
+			$categoryTable->get(0, $this->page->pid_list);
+			ksort ($categoryTable->dataArray);
+			$excludeCat = 0;
 		}
+		
+		$categoryArray = $categoryTable->getRelationArray($excludeCat);
+		$currentCat = $categoryTable->getParamDefault();
 
 		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_CATLIST_TEMPLATE###'));
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
@@ -193,13 +198,15 @@ class tx_ttproducts_catlist_view {
 		$countArray[0] = 0;
 		$countArray[1] = 0;
 		$count = 0;
-		$menu = $this->conf['CSS.'][$this->tt_products_cat->table->name.'.']['menu'];
-		$menu = ($menu ? $menu : 'cat'.$depth);
+		$menu = $this->conf['CSS.'][$categoryTable->table->name.'.']['menu'];
+		$menu = ($menu ? $menu : $categoryTable->piVar.$depth);
 		$fill = '';
 		if ($bSeparated)	{
 			$fill = ' onchange="fillSelect(this,2,1);"';
 		}
-		$out = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
+		if ($htmlTagMain != 'null')	{
+			$out = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
+		}
 		if ($htmlTagMain == 'select')	{
 			// empty select entry at the beginning
 			$out .= '<option value="0"></option>';
@@ -224,7 +231,7 @@ class tx_ttproducts_catlist_view {
 						$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $categoryArray[$actCategory]);
 					}
 					
-					$addQueryString = array('cat' => $actCategory);
+					$addQueryString = array($categoryTable->piVar => $actCategory);
 //					if (is_array($TSFE->fe_user->user))	 {
 //						$addQueryString[] = array('fegroup' => 1);
 //					}
@@ -251,38 +258,82 @@ class tx_ttproducts_catlist_view {
 					$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);
 				}
 			}
-		} else {  // if ($htmlTagMain == 'ul')
-			while ($depth > 0 && $count < 50)	{
-				$count++;
-				if($countArray[$depth] < count ($catArray[$depth]))	{
-					$actCategory = $catArray[$depth][$countArray[$depth]];
-					$subCategories = $categoryArray[$actCategory]['child_category'];
-					$countArray[$depth]++;				
-					$css = ($actCategory == $currentCat ? 'class="act"' : $css);
-					$preOut = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
-					$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);
-					$linkOut = $categoryArray[$actCategory]['title'];
-					$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);
-					$postOut = '</'.$htmlTagElement.'>';
-					$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);				
-				}
+		} else if ($htmlTagMain == 'select') {  // if ($htmlTagMain == 'ul')
+			foreach ($catArray[$depth] as $k => $actCategory)	{
+				$css = ($actCategory == $currentCat ? 'class="act"' : $css);
+				$preOut = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
+				$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);
+				$linkOut = $categoryArray[$actCategory]['title'];
+				$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);
+				$postOut = '</'.$htmlTagElement.'>';
+				$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);				
 			}		
+		} else {
+			// ($htmlTagMain == 'null')  -- where no special HTML tags will be created
+
+			$viewCatTagArray = array();
+			$catfieldsArray = $this->marker->getMarkerFields(
+				$t['linkCategoryFrameWork'],
+				$viewCatTable->table->name,
+				$viewCatTable->table->tableFieldArray,
+				$viewCatTable->table->requiredFieldArray,
+				$tmp = array(),
+				$viewCatTable->table->marker,
+				$viewCatTagArray
+			);
+
+			$iCount = 0;
+			foreach ($catArray[$depth] as $k => $actCategory)	{
+				$iCount++;
+				$css = 'class="w'.$iCount.'"';
+				$css = ($actCategory == $currentCat ? 'class="act"' : $css);
+				$row = $categoryArray[$actCategory];
+				$pid = $row['pid'];
+				$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $row);
+				$addQueryString = array($categoryTable->piVar => $actCategory);
+				$tempUrl = $this->pibase->pi_linkTP_keepPIvars_url($addQueryString,1,1,$pid);
+				$linkOutArray = array('<a href="'. $tempUrl .'"'.$css.'>','</a>');
+				$linkOut = $linkOutArray[0].$row['title'].$linkOutArray[1];
+				$markerArray = array();
+				$categoryTable->getMarkerArray (
+					$markerArray, 
+					$this->page,
+					$actCategory, 
+					$row['pid'],
+					$this->config['limitImage'], 
+					'listImage', 
+					$viewCatTagArray, 
+					array(), 
+					$pageAsCategory,
+					'LISTCAT',
+					$iCount
+				);
+				$catTitle = $categoryTable->getMarkerArrayCatTitle($markerArray);
+				$markerArray['###LIST_LINK###'] = $linkOut;
+				
+				if ($t['linkCategoryFrameWork'])	{
+					$categoryOut = $this->pibase->cObj->substituteMarkerArray($t['linkCategoryFrameWork'], $markerArray);
+					$out .= $linkOutArray[0].$categoryOut.$linkOutArray[1];
+				}
+
+			}
 		}
-		$out .= '</'.$htmlTagMain.'>';
+		if ($htmlTagMain != 'null')	{
+			$out .= '</'.$htmlTagMain.'>';
+		}
 
 		$markerArray = array();
 		$subpartArray = array();
 		$wrappedSubpartArray = array();
 		$this->marker->getWrappedSubpartArray($wrappedSubpartArray);
 		$subpartArray['###CATEGORY_SINGLE###'] = $out;
-
-			
+	
 		if ($bSeparated)	{
 			$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
 			$this->pibase->javascript->set('catselect', $categoryArray);
 			
 			for ($i = 2; $i <= 1+$count; ++$i)	{
-				$menu = 'cat'.$i;
+				$menu = $categoryTable->piVar.$i;
 				$bShowSubcategories = ($i < 1+$count ? 1 : 0); 
 				$boxNumber = ($i < 1+$count ? ($i+1) : 0);
 				$fill = ' onchange="fillSelect(this,'.$boxNumber.','.$bShowSubcategories.');"';
