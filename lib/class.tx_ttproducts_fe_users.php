@@ -85,7 +85,7 @@ class tx_ttproducts_fe_users {
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
 			$where = '1=1 '.$this->table->enableFields();
-			$res = $this->table->exec_SELECTquery('*',$where.'AND uid = '.intval($uid));
+			$res = $this->table->exec_SELECTquery('*',$where.' AND uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}
@@ -137,8 +137,29 @@ class tx_ttproducts_fe_users {
 	 * @return	array
 	 * @access private
 	 */
-	function getMarkerArray (&$markerArray, &$item, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code)	{
+	function getItemMarkerArray (&$row, &$markerArray, $bSelect, $type)	{
+		global $TCA;
 
+		$typeSalutationText = '';
+
+		if ($bSelect)	{
+				// Salutation		
+			$salutationText = '';
+			foreach ($TCA['sys_products_orders']['columns']['salutation']['config']['items'] as $key => $salutation) {
+//				$temp = $this->pibase->sL($salutation[0]);
+//				$text = $this->pibase->pi_getLL($temp);
+				$text = $this->pibase->pi_getLL('salutation'.$salutation[1]);
+				$salutationText .= '<OPTION value="'.$salutation[1].'">'.$text.'</OPTION>';
+			}
+			$salutationText = '[salutation]">' . $salutationText.'</SELECT>';
+			$salutationPreText = '<SELECT name="recs';
+			$typeSalutationText = $salutationPreText . '['.$type.'info]' . $salutationText;  
+		} else {
+			$typeSalutationText = $this->pibase->pi_getLL('salutation'.$row['salutation']); 
+		}
+		
+		$markerArray['###'.strtoupper($type).'_SALUTATION###'] = $typeSalutationText;
+		
 	} // getMarkerArray
 
 }

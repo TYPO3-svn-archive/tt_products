@@ -114,10 +114,10 @@ class tx_ttproducts_javascript {
 			break;
 			case 'catselect':
 
-				if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])	{
-					$catIndex = 'cat';
+				if ($this->pibase->pageAsCategory == 2)	{
+					$catIndex = 'pid';
 				} else {
-					$catIndex = 'pid_list';
+					$catIndex = 'cat';
 				}
 				if (is_object($this->xajax))	{
 					$code .= 'var c = new Array(); // categories
@@ -154,7 +154,7 @@ class tx_ttproducts_javascript {
 		var bShowArticle = 0;
 	
 	    if (id > 0) {
-			id = "cat" + id;
+			id = "'.$catIndex.'" + id;
 			sb = document.getElementById(id);
 		    sb.length = 0;
 		    subcategories = c[category][2]; 
@@ -173,13 +173,13 @@ class tx_ttproducts_javascript {
 	    if (bShowArticle)	{
 	        /* sb.options[0] = new Option(len, "keine Unterkategorie");*/
 	        var data = new Array();
-			sb = document.getElementById("cat"+2);
+			sb = document.getElementById("'.$catIndex.'"+2);
 	        sb.options[0] = new Option("Show article \'"+showSubCategories+"\'", "B");
 	        data["'.$this->pibase->prefixId.'"] = new Array();
 	        data["'.$this->pibase->prefixId.'"]["'.$catIndex.'"] = category;
 	        tt_products_showArticle(data);
 	    } else {
-			sb = document.getElementById("cat"+2);
+			sb = document.getElementById("'.$catIndex.'"+2);
 	        sb.options[0] = new Option("keinen Artikel anzeigen \'"+bShowArticle+"\'", "C");	    	
 	    }
 	    /* sb.options[0] = new Option("Test", "keine Unterkategorie"); */

@@ -75,7 +75,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		parent::init($pibase, $cnf, $tt_content);
 
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
-		$this->variant->init($this->pibase, $tableconf['variant.'], $this, 0);
+		$this->variant->init($this->pibase, $cnf, $tableconf['variant.'], $this, 0);
 	} // init
 
 
@@ -86,7 +86,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 			$this->table->enableFields();		
 			$res = $this->table->exec_SELECTquery('*','uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
-			$rc = $this->dataArray[$row['uid']] = $row;
+			$rc = $this->dataArray[$uid] = $row;
 		}
 		return $rc;
 	}

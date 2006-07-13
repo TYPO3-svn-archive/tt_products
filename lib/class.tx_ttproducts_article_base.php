@@ -108,6 +108,7 @@ class tx_ttproducts_article_base {
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code);
 		$markerArray['###'.$this->marker.'_ID###'] = $row['uid'];
+		$markerArray['###'.$this->marker.'_UID###'] = $row['uid'];
 		$markerArray['###'.$this->marker.'_TITLE###'] = $row['title'];
 		$markerArray['###'.$this->marker.'_SUBTITLE###'] = $row['subtitle'];
 		$markerArray['###'.$this->marker.'_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
@@ -169,7 +170,6 @@ class tx_ttproducts_article_base {
 				}
 			}
 		}
-		
 	}
 
 

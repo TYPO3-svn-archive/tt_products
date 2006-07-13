@@ -240,6 +240,7 @@ class tx_ttproducts_basket {
 
 		if (is_array($basketExtRaw)) {
 			while(list($uid,$basketItem) = each($basketExtRaw)) {
+			
 				$variant = $this->viewTable->variant->getVariantFromRow($basketItem);
 				if (t3lib_div::testInt($uid))	{
 					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked  

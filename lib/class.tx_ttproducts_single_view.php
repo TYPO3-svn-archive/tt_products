@@ -50,6 +50,7 @@ class tx_ttproducts_single_view {
 	var $conf;
 	var $config;
 	var $basket;
+	var $basketView;
 	var $uid; 	// product id
 	var $type; 	// 'product' or 'article'
 	var $variants; 	// different attributes
@@ -98,23 +99,17 @@ class tx_ttproducts_single_view {
 			$templateSuffix = '_'.strtoupper($templateSuffix);
 		}		
 		$itemTableArray = array('product' => &$this->tt_products, 'article' => &$this->tt_products_articles);
-		$rowArray = array('product' => '', 'article' => '');
+		$rowArray = array('product' => array(), 'article' => array());
 		$itemTableConf = $rowArray;
 		$itemTableLangFields = $rowArray; 
 		$content = '';
-					
-//		if ($this->type == 'product')	{
-//			$itemTable = &$this->tt_products;
-//		} else if ($this->type == 'article')	{
-//			$itemTable = &$this->tt_products_articles;
-//		} else return $content; 
-
+		
 		if ($this->config['displayCurrentRecord'])	{
 			$rowArray[$this->type] = $this->pibase->cObj->data;  
 		} else {
 			$itemTableArray[$this->type]->table->enableFields();
-			$where = 'uid='.intval($this->uid);
-			$res = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
+			$where = 'uid='.intval($this->uid) .' AND pid IN ('.$this->page->pid_list.')';
+			$res = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $where );
 			$rowArray[$this->type] = $TYPO3_DB->sql_fetch_assoc($res);
 			$itemTableConf[$this->type] = $this->cnf->getTableConf($itemTableArray[$this->type]->table->name, 'SINGLE');
 			$itemTableLangFields[$this->type] = $this->cnf->getTranslationFields($itemTableConf[$this->type]);
@@ -244,6 +239,7 @@ class tx_ttproducts_single_view {
 			$item = $this->basket->getItem($row, $variant);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
 			$markerArray = array();
+			$this->basketView->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, 'SINGLE', 1);
 			$itemTableArray[$this->type]->getItemMarkerArray (
 				$item,
 				$markerArray,
@@ -256,7 +252,33 @@ class tx_ttproducts_single_view {
 				'SINGLE',
 				1
 			);
-			$this->basketView->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, 'SINGLE', 1);  
+
+			if ($this->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
+				$prodRow = $itemTableArray['product']->get($row['uid_product']);
+				$variant = $itemTableArray['product']->variant->getVariantFromRow($prodRow);
+				$item = $this->basket->getItem($prodRow, $variant);
+				$itemTableArray['product']->getItemMarkerArray (
+					$item,
+					$markerArray,
+					$catTitle,
+					$this->basket->basketExt,
+					$this->config['limitImage'],
+					'listImage',
+					$viewTagArray,
+					array(),
+					'SINGLE',
+					1
+				);
+			} else {
+				$itemTableArray['product']->variant->getItemMarkerArray (
+					$item,
+					$markerArray,
+					$this->basket->basketExt,
+					$viewTagArray,
+					'SINGLE',
+					1
+				);
+			}
 			$subpartArray = array();
 			$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'];
 
@@ -287,7 +309,7 @@ class tx_ttproducts_single_view {
 			}
 
 			$queryprev = '';
-			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ? '' : 'AND (inStock <>0) ');
+			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ? '' : ' AND (inStock <>0) ');
 			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $itemTableArray[$this->type]->table->enableFields();
 			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
 			$resprev = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $queryprev, '', $TYPO3_DB->stripOrderBy($prevOrderby));
@@ -320,8 +342,47 @@ class tx_ttproducts_single_view {
 				$itemTableArray[$this->type]->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
 			}
 			
+			if ($this->type == 'product' && $key = array_search('related_uid', $fieldsArray))	{
+
+				include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_list_view.php');
+				$relatedIds = $itemTableArray[$this->type]->getRelated($this->uid);
+	
+				if (count($relatedIds))	{
+					// List all products:
+					$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
+					$listView->init (
+						$this->pibase,
+						$this->cnf,
+						$this->basket,
+						$this->basketView,
+						$this->page,
+						$this->tt_content,
+						$this->tt_products,
+						$this->tt_products_articles,
+						$this->tt_products_cat,
+						$this->fe_users,
+						$this->pid,
+						$this->LLkey,
+						$this->useArticles
+					);
+		
+					$templateArea = '###ITEM_LIST_RELATED_TEMPLATE###';
+					$tmpContent = $listView->printView(
+						$templateCode,
+						'SINGLE',
+						implode(',', $relatedIds),
+						$error_code,
+						$templateArea,
+						$this->pibase->pageAsCategory
+					);
+					$markerArray['###PRODUCT_RELATED_UID###'] = $tmpContent;
+				} else {
+					$markerArray['###PRODUCT_RELATED_UID###'] = '';
+				}
+			}
+			
 				// Substitute	
-			$content= $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
+			$content = $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 			if ($personDataFrameWork) {
 				$subpartArray = array();
 				$wrappedSubpartArray=array();
@@ -338,8 +399,9 @@ class tx_ttproducts_single_view {
 					$markerArray['###FIELD_QTY###'] = $this->basket->basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];
 					$content.=$this->pibase->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 				}
+				$this->pibase->javascript->set('email');  // other JavaScript checks can come here
 			}
-			$this->pibase->javascript->set('email');  // other JavaScript checks can come here
+			
 		} else {
 			$error_code[0] = 'wrong_parameter';
 			$error_code[1] = intval($this->uid);

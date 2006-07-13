@@ -39,6 +39,9 @@
  */
 
 
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_fe_users.php');
+
+
 
 class tx_ttproducts_email_div {
 
@@ -111,6 +114,9 @@ class tx_ttproducts_email_div {
 				$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
 				$markerArray['###PERSON_NAME###'] = $orderData['personInfo']['name'];
 				$markerArray['###DELIVERY_NAME###'] = $orderData['deliveryInfo']['name'];
+				tx_ttproducts_fe_users::getItemMarkerArray ($orderData['personInfo'], $markerArray, false, 'person');
+				tx_ttproducts_fe_users::getItemMarkerArray ($orderData['deliveryInfo'], $markerArray, false, 'delivery');
+				
 				$markerArray['###ORDER_TRACKING_NO###']=$tracking;
 				$orderNumber = $order->getNumber($orderRow['uid']);
 				$markerArray['###ORDER_UID###'] = $orderNumber;

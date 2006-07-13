@@ -64,7 +64,7 @@ class tx_ttproducts_billdelivery {
 	 */
 
 	function init(&$pibase, &$cnf, &$basket, &$tt_products, &$tt_products_cat, &$tt_content, &$order, &$price, $type) {
-	global $TSFE;
+		global $TSFE;
 
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
@@ -86,170 +86,176 @@ class tx_ttproducts_billdelivery {
 	/**
 	 * Bill,Delivery Generation from tracking code
 	 */
-	function getInformation($orderRow, $templateCode, $tracking)
-	{
+	function getInformation($orderRow, $templateCode, $tracking)	{
 		/*
 		Bill or delivery information display, which needs tracking code to be shown
 		This is extension information to tracking at another page
 		See Tracking for further information
 		*/
-	global $TSFE;
-
-		// initialize order data.
-	$orderData = unserialize($orderRow['orderData']);
-
-	$markerArray = array();
-	$subpartArray = array();
-	$wrappedSubpartArray = array();
-
-	$tmp = $orderData['itemArray'];
-	$version = $orderData['version'];
-	$itemArray = ($tmp ? $tmp : array());
-	$tmp = $orderData['calculatedArray'];
-	$calculatedArray = ($tmp ? $tmp : array());
-
-	if ($this->type == 'bill') {
-		$subpartMarker='###BILL_TEMPLATE###';
-	} else {
-		$subpartMarker='###DELIVERY_TEMPLATE###';
-	}
-
-		// Getting subparts from the template code.
-	$t=array();
-		// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
-	$t['orderFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($subpartMarker));
-
-	$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_CATEGORY###');
-	$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_LIST###');
-	$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
-
-	$categoryQty = array();
-//	  $categoryPrice = array();
-	$categoryArray = array();
-
-//	  $countTotal = 0;
-//
-	// Calculate quantities for all categories
-
-	// loop over all items in the ordered items indexed by itemnumber
-	foreach ($itemArray as $sort=>$actItemArray) {
-		foreach ($actItemArray as $k1=>$actItem) {
-			$currentCategory=$actItem['rec']['category'];
-			$categoryArray[$currentCategory] = 1;
-			$categoryQty[$currentCategory] += $actItem['count'];
+		global $TSFE;
+	
+			// initialize order data.
+		$orderData = unserialize($orderRow['orderData']);
+	
+		$markerArray = array();
+		$subpartArray = array();
+		$wrappedSubpartArray = array();
+	
+		$tmp = $orderData['itemArray'];
+		$version = $orderData['version'];
+		if (version_compare($version, '2.5.0', '>=') && is_array($tmp))	{
+			$tableName = key($tmp);
+			$itemArray = current($tmp);
+		} else {
+			$itemArray = (is_array($tmp) ? $tmp : array());
 		}
-	}
-
-	$itemsOut='';
-	$out='';
-
-	$itemTable = &$this->tt_products;
-	$viewTagArray = array();
-	$markerFieldArray = array('BULKILY_WARNING' => 'bulkily',
-		'PRODUCT_SPECIAL_PREP' => 'special_preparation',
-		'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
-		'LINK_DATASHEET' => 'datasheet');	
-	$fieldsArray = $this->marker->getMarkerFields(
-		$t['item'],
-		$itemTable->table->name,
-		$itemTable->table->tableFieldArray,
-		$itemTable->table->requiredFieldArray,
-		$markerFieldArray,
-		$itemTable->table->marker,
-		$viewTagArray
-	);
-
-	$count = 0;
-	foreach ($categoryArray as $currentCategory=>$value)	{
-		$categoryChanged = 1;
-		// loop over all ordered items indexed by a sorting text
+		
+		$tmp = $orderData['calculatedArray'];
+		$calculatedArray = ($tmp ? $tmp : array());
+	
+		if ($this->type == 'bill') {
+			$subpartMarker='###BILL_TEMPLATE###';
+		} else {
+			$subpartMarker='###DELIVERY_TEMPLATE###';
+		}
+	
+			// Getting subparts from the template code.
+		$t=array();
+			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
+		$t['orderFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($subpartMarker));
+	
+		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_CATEGORY###');
+		$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_LIST###');
+		$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
+	
+		$categoryQty = array();
+	//	  $categoryPrice = array();
+		$categoryArray = array();
+	
+	//	  $countTotal = 0;
+	//
+		// Calculate quantities for all categories
+	
+		// loop over all items in the ordered items indexed by itemnumber
 		foreach ($itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
-				$count++;
-					// Print Category Title
-				if ($actItem['rec']['category']==$currentCategory)	{
-					if ($categoryChanged == 1)	{
-						$markerArray=array();
-						$tmpCategory = $this->tt_products_cat->get($currentCategory);
-						$catTitle= ($tmpCategory ? $tmpCategory['title']: '');
-						$this->pibase->cObj->setCurrentVal($catTitle);
-						$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
-						$markerArray['###CATEGORY_QTY###'] = $categoryQty[$currentCategory];
-						$categoryPriceTax = $calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory];
-						$markerArray['###PRICE_GOODS_TAX###'] = $this->price->priceFormat($categoryPriceTax);
-						$categoryPriceNoTax = $calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory];
-						$markerArray['###PRICE_GOODS_NO_TAX###'] = $this->price->priceFormat($categoryPriceNoTax);
-						$markerArray['###PRICE_GOODS_ONLY_TAX###'] = $this->price->priceFormat($categoryPriceTax - $categoryPriceNoTax);
-						
-						$out2 = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
-						$out.= $out2;
-					}
+				$currentCategory=$actItem['rec']['category'];
+				$categoryArray[$currentCategory] = 1;
+				$categoryQty[$currentCategory] += $actItem['count'];
+			}
+		}
 	
-					// Print Item Title
-					$wrappedSubpartArray=array();
-					$markerArray = array();
-					$this->tt_products->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt,1,'image', $viewTagArray, array(), strtoupper($this->type), $count);
-					$markerArray['###FIELD_QTY###'] = $actItem['count'];
-					$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
-					$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);
-					$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$this->price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
-					$itemsOut = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,array(),$wrappedSubpartArray);
-					if ($itemsOut) {
-						$out2 =$this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
-						$out .= $out2;
+		$itemsOut='';
+		$out='';
+	
+		$itemTable = &$this->tt_products;
+		$viewTagArray = array();
+		$markerFieldArray = array('BULKILY_WARNING' => 'bulkily',
+			'PRODUCT_SPECIAL_PREP' => 'special_preparation',
+			'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
+			'LINK_DATASHEET' => 'datasheet');	
+		$fieldsArray = $this->marker->getMarkerFields(
+			$t['item'],
+			$itemTable->table->name,
+			$itemTable->table->tableFieldArray,
+			$itemTable->table->requiredFieldArray,
+			$markerFieldArray,
+			$itemTable->table->marker,
+			$viewTagArray
+		);
+	
+		$count = 0;
+		foreach ($categoryArray as $currentCategory=>$value)	{
+			$categoryChanged = 1;
+			// loop over all ordered items indexed by a sorting text
+			foreach ($itemArray as $sort=>$actItemArray) {
+				foreach ($actItemArray as $k1=>$actItem) {
+					$count++;
+						// Print Category Title
+					if ($actItem['rec']['category']==$currentCategory)	{
+						if ($categoryChanged == 1)	{
+							$markerArray=array();
+							$tmpCategory = $this->tt_products_cat->get($currentCategory);
+							$catTitle= ($tmpCategory ? $tmpCategory['title']: '');
+							$this->pibase->cObj->setCurrentVal($catTitle);
+							$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
+							$markerArray['###CATEGORY_QTY###'] = $categoryQty[$currentCategory];
+							$categoryPriceTax = $calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory];
+							$markerArray['###PRICE_GOODS_TAX###'] = $this->price->priceFormat($categoryPriceTax);
+							$categoryPriceNoTax = $calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory];
+							$markerArray['###PRICE_GOODS_NO_TAX###'] = $this->price->priceFormat($categoryPriceNoTax);
+							$markerArray['###PRICE_GOODS_ONLY_TAX###'] = $this->price->priceFormat($categoryPriceTax - $categoryPriceNoTax);
+							
+							$out2 = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
+							$out.= $out2;
+						}
+		
+						// Print Item Title
+						$wrappedSubpartArray=array();
+						$markerArray = array();
+						$this->tt_products->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt,1,'image', $viewTagArray, array(), strtoupper($this->type), $count);
+						$markerArray['###FIELD_QTY###'] = $actItem['count'];
+						$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
+						$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);
+						$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$this->price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
+						$itemsOut = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,array(),$wrappedSubpartArray);
+						if ($itemsOut) {
+							$out2 =$this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
+							$out .= $out2;
+						}
+						$itemsOut='';		// Clear the item-code var
+						$categoryChanged = 0;
 					}
-					$itemsOut='';		// Clear the item-code var
-					$categoryChanged = 0;
 				}
 			}
 		}
-	}
-
-	$subpartArray['###ITEM_CATEGORY_AND_ITEMS###'] = $out;
-
-		// Final things
-		// Personal and delivery info:
-
-	$orderData['personInfo']['salutation'] = $this->pibase->pi_getLL('salutation'.$orderData['personInfo']['salutation']);
-
-	$orderData['deliveryInfo']['salutation'] = $this->pibase->pi_getLL('salutation'.$orderData['deliveryInfo']['salutation']);
-
-	/* Added Els: 'feusers_uid,'*/
-	$infoFields = explode(',','feusers_uid,name,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country');
-	  // Fields...
-	while(list(,$fName)=each($infoFields))
-	{
-		$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['personInfo'][$fName];
-		$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['deliveryInfo'][$fName];
-	}
-
-	$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
-	$markerArray['###DELIVERY_ADDRESS_DISPLAY###'] = nl2br($markerArray['###DELIVERY_ADDRESS###']);
-
-	$temp = explode(' ', $orderRow['payment']);
-	$markerArray['###PAYMENT_TITLE###'] = $temp[1];
-	$markerArray['###PRICE_SHIPPING_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['shipping']);
-	$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['shipping']);
-	$markerArray['###PRICE_PAYMENT_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['payment']);
-	$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['payment']);
-	$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['total']);
-	$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['total']);
-
-	$markerArray['###ORDER_UID###'] = $this->order->getNumber($orderRow['uid']);
-	$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
-
-	$content= $this->pibase->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);
-	$reldateiname = $this->conf['outputFolder'] . '/' . $this->type . '/' . $tracking . '.htm';
-	// $dateiname = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $reldateiname;
-	$dateiname = t3lib_div::getFileAbsFileName($reldateiname);
-	$datei = fopen($dateiname, 'wb');
-	fwrite ($datei, $content);
-	fclose ($datei);
-
-	$message = $this->pibase->pi_getLL('open_'.$this->type);
-	$content = '<a href="' . $reldateiname . '" >'.$message.'</a>';
-
-	return $content;
+	
+		$subpartArray['###ITEM_CATEGORY_AND_ITEMS###'] = $out;
+	
+			// Final things
+			// Personal and delivery info:
+	
+		$orderData['personInfo']['salutation'] = $this->pibase->pi_getLL('salutation'.$orderData['personInfo']['salutation']);
+	
+		$orderData['deliveryInfo']['salutation'] = $this->pibase->pi_getLL('salutation'.$orderData['deliveryInfo']['salutation']);
+	
+		/* Added Els: 'feusers_uid,'*/
+		$infoFields = explode(',','feusers_uid,name,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country');
+		  // Fields...
+		while(list(,$fName)=each($infoFields))	{
+			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['personInfo'][$fName];
+			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['deliveryInfo'][$fName];
+		}
+	
+		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
+		$markerArray['###DELIVERY_ADDRESS_DISPLAY###'] = nl2br($markerArray['###DELIVERY_ADDRESS###']);
+	
+		$temp = explode(' ', $orderRow['payment']);
+		$markerArray['###PAYMENT_TITLE###'] = $temp[1];
+		$markerArray['###PRICE_PAYMENT_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['payment']);
+		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['payment']);
+		$temp = explode(' ', $orderRow['shipping']);
+		$markerArray['###SHIPPING_TITLE###'] = $temp[1];
+		$markerArray['###PRICE_SHIPPING_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['shipping']);
+		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['shipping']);
+		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['total']);
+		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['total']);
+	
+		$markerArray['###ORDER_UID###'] = $this->order->getNumber($orderRow['uid']);
+		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
+	
+		$content= $this->pibase->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);
+		$reldateiname = $this->conf['outputFolder'] . '/' . $this->type . '/' . $tracking . '.htm';
+		// $dateiname = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $reldateiname;
+		$dateiname = t3lib_div::getFileAbsFileName($reldateiname);
+		$datei = fopen($dateiname, 'wb');
+		fwrite ($datei, $content);
+		fclose ($datei);
+	
+		$message = $this->pibase->pi_getLL('open_'.$this->type);
+		$content = '<a href="' . $reldateiname . '" >'.$message.'</a>';
+	
+		return $content;
 	}
 
 }

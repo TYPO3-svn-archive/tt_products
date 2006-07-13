@@ -150,8 +150,7 @@ class tx_ttproducts_paymentshipping {
 	/**
 	 * Generates a radio or selector box for payment shipping
 	 */
-	function generateRadioSelect($key, &$calculatedArray)
-{
+	function generateRadioSelect($key, &$calculatedArray)	{
 			/*
 			 The conf-array for the payment/shipping configuration has numeric keys for the elements
 			 But there are also these properties:
@@ -165,7 +164,7 @@ class tx_ttproducts_paymentshipping {
 		$confArr = $this->cleanConfArr($this->conf[$key.'.']);
 		$out='';
 		$template = $this->conf[$key.'.']['template'] ? ereg_replace('\' *\. *\$key *\. *\'',$key, $this->conf[$key.'.']['template']) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$key.']" onClick="submit()" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
-		$wrap = $this->conf[$key.'.']['wrap'] ? $this->conf[$key.'.']['wrap'] :'<select name="recs[tt_products]['.$key.']" onChange="submit()">|</select>';
+		$wrap = $this->conf[$key.'.']['wrap'] ? $this->conf[$key.'.']['wrap'] :'<select id="'.$key.'-select" name="recs[tt_products]['.$key.']" onChange="submit()">|</select>';
 		while(list($key,$val) = each($confArr))	{
 			if (($val['show'] || !isset($val['show'])) &&
 				(doubleval($val['showLimit']) >= doubleval($this->basket->calculatedArray['count']) || !isset($val['showLimit']) ||

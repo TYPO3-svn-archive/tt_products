@@ -117,12 +117,13 @@ class tx_ttproducts_list_view {
 	function &printView(
 		&$templateCode,
 		$theCode,
-		&$memoItems,
+		$allowedItems,
 		&$error_code,
 		$templateArea = '###ITEM_LIST_TEMPLATE###',
 		$pageAsCategory
 	) {
 		global $TSFE, $TCA, $TYPO3_DB;
+		
 		$content = '';
 		$out = '';
 		$more = 0;		// If set during this loop, the next-item is drawn
@@ -148,6 +149,10 @@ class tx_ttproducts_list_view {
 		$cat = $this->tt_products_cat->getParamDefault();
 		$where .= $itemTable->addWhereCat($cat, $this->page->pid_list);
 		$formName = $this->conf['form.'][$theCode.'.']['name'];
+
+		if ($allowedItems)	{
+			$where .= ' AND uid IN ('.$allowedItems.')';
+		}
 
 		switch ($theCode) {
 			case 'SEARCH':
@@ -189,7 +194,7 @@ class tx_ttproducts_list_view {
 			case 'LISTNEWITEMS':
 				$formName = 'ListNewItemsForm';
 				$temptime = time() - 86400*intval(trim($this->conf['newItemDays']));
-				$where .= 'AND tstamp >= '.$temptime;
+				$where .= ' AND tstamp >= '.$temptime;
 			break;
 			case 'LISTARTICLES':
 				$formName = 'ListArticlesForm';
@@ -199,8 +204,6 @@ class tx_ttproducts_list_view {
 			break;
 			case 'MEMO':
 				$formName = 'ListMemoForm';
-				$where = ' AND '.($memoItems != '' ? 'uid IN ('.$memoItems.')' : '1=0' );
-				$templateArea = '###MEMO_TEMPLATE###';
 			break;
 			default:
 				// nothing here
@@ -240,7 +243,7 @@ class tx_ttproducts_list_view {
 				// Get products count
 			$selectConf = Array();
 			$selectConf['pidInList'] = $this->page->pid_list;
-			$wherestock = ($this->conf['showNotinStock'] || !is_array(($TCA[$itemTable->table->name]['columns']['inStock'])) ? '' : 'AND (inStock <> 0) ');
+			$wherestock = ($this->conf['showNotinStock'] || !is_array(($TCA[$itemTable->table->name]['columns']['inStock'])) ? '' : ' AND (inStock <> 0) ');
 			$whereNew = $wherestock.$where;
 			$whereNew = $itemTable->table->transformWhere($whereNew);
 			$selectConf['where'] = '1=1 '.$whereNew;
@@ -285,7 +288,6 @@ class tx_ttproducts_list_view {
 				'PRODUCT_SPECIAL_PREP' => 'special_preparation',
 				'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
 				'LINK_DATASHEET' => 'datasheet');
-			$markerPre = $itemTable->marker . '_'; 
 			$viewTagArray = array();
 			$fieldsArray = $this->marker->getMarkerFields(
 				$t['item'],
@@ -331,7 +333,7 @@ class tx_ttproducts_list_view {
 			$join = '';
 			$tmpTables = $itemTable->table->transformTable('',false,$join);
 			// $selectConf['where'] = $join.$itemTable->table->transformWhere($selectConf['where']);
-			$selectConf['where'] = $join.$selectConf['where'];
+			$selectConf['where'] = $join.' '.$selectConf['where'];
 			$selectConf['max'] = ($this->config['limit']+1);
 			$selectConf['begin'] = $begin_at;
 			// $selectConf['from'] = ($selectConf['from'] ? $selectConf['from'].', ':'').$itemTable->table->getAdditionalTables();
@@ -497,7 +499,7 @@ class tx_ttproducts_list_view {
 					}
 					$markerArray['###ITEM_SINGLE_PRE_HTML###'] = $temp;
 					$temp='';
-					if ($iColCount == $this->conf['displayBasketColumns']) {
+					if (!$this->conf['displayBasketColumns'] || $iColCount == $this->conf['displayBasketColumns']) {
 						$temp = '</tr>';
 						$tableRowOpen = 0;
 					}
@@ -580,13 +582,14 @@ class tx_ttproducts_list_view {
 			} else {
 				$subpartArray['###LINK_NEXT###']='';
 			}
+			$bUseCache = count($this->basket->itemArray)>0;
 			if ($begin_at)	{
 				$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
 				// $addQueryString=array();
 				// $addQueryString[$this->pibase->prefixId.'[begin_at]']= $prev;
 				// $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 				$addQueryString['begin_at'] = $prev;
-				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,1,0);
+				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,$bUseCache,0);
 				$wrappedSubpartArray['###LINK_PREV###']=explode ($splitMark, $tempUrl); // array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
 			} else {
 				$subpartArray['###LINK_PREV###']='';
@@ -604,7 +607,7 @@ class tx_ttproducts_list_view {
 						// $addQueryString[$this->pibase->prefixId.'[begin_at]']= (string)($i * $this->config['limit']);
 						// $tempUrl = $this->pibase->pi_linkToPage((string)($i+1).' ',$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 						$addQueryString['begin_at'] = (string)($i * $this->config['limit']);
-						$tempUrl = $this->pibase->pi_linkTP_keepPIvars((string)($i+1).' ',$addQueryString,1,0);
+						$tempUrl = $this->pibase->pi_linkTP_keepPIvars((string)($i+1).' ',$addQueryString,$bUseCache,0);
 						$markerArray['###BROWSE_LINKS###'].= $tempUrl; // ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
 					}
 				}

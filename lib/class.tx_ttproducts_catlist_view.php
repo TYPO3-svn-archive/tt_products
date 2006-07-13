@@ -44,7 +44,6 @@ class tx_ttproducts_catlist_view {
 	var $pibase; // reference to object of pibase
 	var $cnf;
 	var $conf;
-	var $config;
 	var $basket;
 	var $page;
 	var $tt_content; // element of class tx_table_db
@@ -58,7 +57,6 @@ class tx_ttproducts_catlist_view {
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$this->cnf->conf;
-		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
 		$this->tt_content = &$tt_content;
 		$this->tt_products_cat = &$tt_products_cat;
@@ -158,19 +156,21 @@ class tx_ttproducts_catlist_view {
 		$htmlTagMain = $this->conf['displayCatListType'];
 		$htmlTagElement = ($htmlTagMain == 'ul' ? 'li' : $htmlTagMain == 'select' ? 'option' : 'null');
 
-		if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])	{
+		if ($pageAsCategory)	{
 			$excludeCat = $this->pibase->cObj->data['pid'];
+			$rootCat = $this->cnf->config['storeRootPid'];
 			$categoryTable = &$this->page;
 		} else {
 				// read in all categories
 			$categoryTable = &$this->tt_products_cat;
-			$categoryTable->get(0, $this->page->pid_list);
+			$categoryTable->get(0, $this->page->pid_list);	// read all categories
 			ksort ($categoryTable->dataArray);
 			$excludeCat = 0;
 		}
 		
-		$categoryArray = $categoryTable->getRelationArray($excludeCat);
 		$currentCat = $categoryTable->getParamDefault();
+		$rootpathArray = $categoryTable->getRootpathArray($rootCat, $currentCat);
+		$categoryArray = $categoryTable->getRelationArray($excludeCat,$currentCat);
 
 		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_CATLIST_TEMPLATE###'));
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
@@ -300,7 +300,7 @@ class tx_ttproducts_catlist_view {
 					$this->page,
 					$actCategory, 
 					$row['pid'],
-					$this->config['limitImage'], 
+					$this->cnf->config['limitImage'], 
 					'listImage', 
 					$viewCatTagArray, 
 					array(), 

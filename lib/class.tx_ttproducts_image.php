@@ -46,6 +46,7 @@ class tx_ttproducts_image {
 	var $marker;
 	var $parenttable;
 
+
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
@@ -259,6 +260,7 @@ class tx_ttproducts_image {
 				$key = ($val ? $val : $c);
 			}
 			
+			$this->pibase->cObj->alternativeData = $row;
 			$theImgCode[$key] .= $this->pibase->cObj->IMAGE($imageConf);
 			$tagkey = '';
 			if ($val)	{

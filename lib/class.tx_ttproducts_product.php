@@ -44,6 +44,7 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_base.php');
 
 class tx_ttproducts_product extends tx_ttproducts_article_base {
 	var $dataArray; // array of read in products
+	var $relatedArray; // array of related products
 	var $table;		 // object of the type tx_table_db
 	var $fields = array();
 	var $bIsProduct=true;	// if this is the base for a product
@@ -89,7 +90,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			is_array($this->tableconf['language.']['field.'])
 			)	{
 			$addRequiredFields = array();
-			$addRequiredFields[] = $this->tableconf['language.']['field.'];
+			$addRequiredFields = $this->tableconf['language.']['field.'];
 			$this->table->addRequiredFieldArray ($addRequiredFields);
 		}
 	
@@ -105,7 +106,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		
 		parent::init($pibase, $cnf, $tt_content);
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
-		$this->variant->init($this->pibase, $tableconf['variant.'], $this, $useArticles);
+		$this->variant->init($this->pibase, $cnf, $tableconf['variant.'], $this, $useArticles);
 		$this->fields['itemnumber'] = ($tableconf['itemnumber'] ? $tableconf['itemnumber'] : 'itemnumber');
 	} // init
 
@@ -120,12 +121,26 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 //			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid)
 			$where = '1=1 '.$this->table->enableFields();
 			// Fetching the products
-			// $res = $sql->exec_SELECTquery();
-			$res = $this->table->exec_SELECTquery('*', $where.'AND uid = '.intval($uid));
+			$res = $this->table->exec_SELECTquery('*', $where.' AND uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
-			$rc = $this->dataArray[$row['uid']] = $row;
+			$rc = $this->dataArray[$uid] = $row;
 		}
 		return $rc;
+	}
+
+
+	function getRelated ($uid) {
+		global $TYPO3_DB;
+		$rowArray = $this->relatedArray[$uid];
+		$rcArray = array();
+		if (!is_array($rowArray) && $uid) {
+			$rowArray = $TYPO3_DB->exec_SELECTgetRows('*', 'tt_products_related_products_products_mm', 'uid_local = '.intval($uid));
+			$this->relatedArray[$uid] = $rowArray;
+		}
+		foreach ($rowArray as $k => $row)	{
+			$rcArray [] = $row['uid_foreign'];
+		}
+		return $rcArray;
 	}
 
 
@@ -196,7 +211,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	}
 
 
-
 	/**
 	 * Generates a search where clause.
 	 */
@@ -234,7 +248,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
-		$markerArray['###FIELD_NAME_BASKET###'] = 'ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $this->conf['bulkilyWarning'] : '';
 
@@ -310,6 +323,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$uidArray = array_unique($uidArray);
 		return (implode(',',$uidArray));
 	}
+
 
 	function getProductField(&$row, $field)	{
 		return $row[$field];

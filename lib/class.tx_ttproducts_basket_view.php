@@ -57,6 +57,7 @@ class tx_ttproducts_basket_view {
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
+	var $fe_users; // element of class tx_table_db
 	
 	var $price; // price object
 
@@ -88,6 +89,7 @@ class tx_ttproducts_basket_view {
  		$this->tt_content = &$basket->tt_content;
  		$this->tt_products = &$basket->tt_products;
  		$this->tt_products_cat = &$basket->tt_products_cat;
+ 		$this->fe_users = &$basket->fe_users;
  		$this->viewTable = &$basket->viewTable;
  		$this->price = &$basket->price;
 		$this->paymentshipping = &$basket->paymentshipping;
@@ -170,7 +172,7 @@ class tx_ttproducts_basket_view {
 		$this->basket->getCalculatedSums();
 		if ($handleScript)	{
 			$content.= $this->paymentshipping->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $this->conf['paymentActivity'], $bFinalize);
-		} else if (t3lib_extMgm::isLoaded ('paymentlib') && intval(phpversion()) == 5) {
+		} else if (t3lib_extMgm::isLoaded ('paymentlib') && version_compare(phpversion(), '5.0.0', '>=') ) {
 			$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
 			if ($handleLib == 'paymentlib')	{
 				// Payment Library
@@ -252,17 +254,11 @@ class tx_ttproducts_basket_view {
 			// only the code activities if there is no code BASKET or INFO set
 			$this->activityArray = $codeActivityArray;
 		}
-		
 		if (count($this->basket->basketExt) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
 			$basket_tmpl = '';
 			if (count($this->activityArray)) {
-//				if (!$this->page->pid_list) {
-//					$this->page->setPidlist($this->config['storeRootPid']);	// Set list of page id's to the storeRootPid.
-//				}
-//				$this->page->initRecursive(999);		// This add's all subpart ids to the pid_list based on the rootPid set in previous line
-				// $this->pibase->page->generatePageArray();		// Creates an array with page titles from the internal pid_list. Used for the display of category titles.
-				$this->basket->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
+				// $this->basket->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 				$mainMarkerArray=array();
 				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject.'';  // adding extra preprocessing CObject
 				$bFinalize = false; // no finalization must be called.
@@ -517,7 +513,6 @@ class tx_ttproducts_basket_view {
 		$count = 0;
 
 		// loop over all items in the basket indexed by itemnumber
-
 		foreach ($this->basket->itemArray as $itemnumber=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
 				$row = &$actItem['rec'];
@@ -527,7 +522,7 @@ class tx_ttproducts_basket_view {
 					continue;
 				}
 				$count++;
-				$pidcategory = ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1 ? $pid : '');
+				$pidcategory = ($this->pibase->pageAsCategory == 1 ? $pid : '');
 				$currentPnew = $pidcategory.'_'.$actItem['rec']['category'];
 					// Print Category Title
 				if ($currentPnew!=$currentP)	{
@@ -539,7 +534,7 @@ class tx_ttproducts_basket_view {
 					if ($this->conf['displayBasketCatHeader'])	{
 						$markerArray=array();
 						$pageCatTitle = '';
-						if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
+						if ($this->pibase->pageAsCategory == 1) {
 							$pageTmp = $this->page->get($pid);
 							$pageCatTitle = $pageTmp['title'].'/';
 						}
@@ -741,27 +736,8 @@ class tx_ttproducts_basket_view {
 		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
 		$markerArray['###DELIVERY_ADDRESS_DISPLAY###'] = nl2br($markerArray['###DELIVERY_ADDRESS###']);
 
-		$personSalutationText = $deliverySalutationText = '';
-		if ($this->activityArray['products_info'])	{
-				// Salutation		
-			$salutationText = '';
-			$prodTmp = explode(';', $row['size']);
-			foreach ($TCA['sys_products_orders']['columns']['salutation']['config']['items'] as $key => $salutation) {
-//				$temp = $this->pibase->sL($salutation[0]);
-//				$text = $this->pibase->pi_getLL($temp);
-				$text = $this->pibase->pi_getLL('salutation'.$salutation[1]);
-				$salutationText .= '<OPTION value="'.$salutation[1].'">'.$text.'</OPTION>';
-			}
-			$salutationText = '[salutation]">' . $salutationText.'</SELECT>';
-			$salutationPreText = '<SELECT name="recs';
-			$personSalutationText = $salutationPreText . '[personinfo]' . $salutationText;  
-			$deliverySalutationText = $salutationPreText . '[delivery]' . $salutationText;
-		} else {
-			$personSalutationText = $this->pibase->pi_getLL('salutation'.$this->basket->personInfo['salutation']); 
-			$deliverySalutationText = $this->pibase->pi_getLL('salutation'.$this->basket->deliveryInfo['salutation']);
-		}
-		$markerArray['###PERSON_SALUTATION###'] = $personSalutationText;
-		$markerArray['###DELIVERY_SALUTATION###'] = $deliverySalutationText;
+		$this->basket->fe_users->getItemMarkerArray($this->basket->personInfo, $markerArray, $this->activityArray['products_info'],'person');
+		$this->basket->fe_users->getItemMarkerArray($this->basket->deliveryInfo, $markerArray, $this->activityArray['products_info'],'delivery');
 
 			// Delivery note.
 		$markerArray['###DELIVERY_NOTE###'] = $this->basket->deliveryInfo['note'];
@@ -1014,6 +990,8 @@ class tx_ttproducts_basket_view {
 
 		$variants = $this->viewTable->variant->getVariantFromRow($row);
 		$markerArray['###FIELD_NAME###'] = $basketQuantityName;
+		$markerArray['###FIELD_NAME_BASKET###'] = 'ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
+
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		$quantity = $basketExt[$row['uid']][$variants];
 		$markerArray['###FIELD_QTY###'] = $quantity ? $quantity : '';

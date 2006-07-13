@@ -115,7 +115,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 				if (is_array($this->table->langArray) && $this->table->langArray[$row['title']])	{
 					$row['title'] = $this->table->langArray[$row['title']];
 				}
-				$rc = $this->dataArray[$row['uid']] = $row;
+				$rc = $this->dataArray[$uid] = $row;
 			} else {
 				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 					if (is_array($this->table->langArray) && $this->table->langArray[$row['title']])	{
@@ -152,7 +152,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	}
 
 
-	function &getRelationArray ($excludePid=0) {
+	function &getRelationArray ($excludeCat=0,$currentCat=0) {
 
 		$relationArray = array();
 		

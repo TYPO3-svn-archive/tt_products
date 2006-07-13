@@ -106,7 +106,6 @@ class tx_ttproducts_tracking {
 	*/
 
 	function getTrackingInformation($orderRow, $templateCode, $trackingCode, $updateCode, &$orderRecord, $admin) {
-
 		global $TSFE, $TYPO3_DB;
 
 		if ($orderRow['uid'])	{
@@ -175,11 +174,8 @@ class tx_ttproducts_tracking {
 
 			// Getting the template stuff and initialize order data.
 		$content=$this->pibase->cObj->getSubpart($templateCode,'###TRACKING_DISPLAY_INFO###');
-
 		$status_log = unserialize($orderRow['status_log']);
 		$orderData = unserialize($orderRow['orderData']);
-
-		// added by Franz begin
 		$orderPayed = false;
 		$orderClosed = false;
 		if (is_array($status_log)) {
@@ -203,8 +199,6 @@ class tx_ttproducts_tracking {
 
 			$content = $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
 		}
-
-		// added by Franz end
 
 			// Status:
 		$STATUS_ITEM=$this->pibase->cObj->getSubpart($content,'###STATUS_ITEM###');
@@ -262,7 +256,7 @@ class tx_ttproducts_tracking {
 		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
 		$markerArray['###TRACKING_NUMBER###'] =  $trackingCode;
 		$markerArray['###UPDATE_CODE###'] = $updateCode;
-
+		
 		$content= $this->pibase->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		return $content;
 	} // getTrackingInformation
