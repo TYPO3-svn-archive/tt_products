@@ -1,4 +1,0 @@
-plugin.tt_products {
- 
-}
-
