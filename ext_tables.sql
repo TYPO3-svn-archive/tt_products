@@ -16,6 +16,7 @@ CREATE TABLE tt_products (
 	title tinytext NOT NULL,
 	subtitle mediumtext NOT NULL,
 	prod_uid int(11) DEFAULT '0' NOT NULL,
+	related_uid varchar(255) DEFAULT '0' NOT NULL,
 	itemnumber varchar(40) DEFAULT '' NOT NULL,
 	price varchar(20) DEFAULT '' NOT NULL,
 	price2 varchar(20) DEFAULT '' NOT NULL,
@@ -43,6 +44,20 @@ CREATE TABLE tt_products (
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
+
+
+#
+# Table structure for table 'tt_products_related_products_products_mm'
+#
+#
+CREATE TABLE tt_products_related_products_products_mm (
+	uid_local int(11) DEFAULT '0' NOT NULL,
+	uid_foreign int(11) DEFAULT '0' NOT NULL,
+	sorting int(11) DEFAULT '0' NOT NULL,
+	KEY uid_local (uid_local),
+	KEY uid_foreign (uid_foreign),
+);
+
 
 #
 # Table structure for table 'tt_products_cat'
@@ -193,11 +208,11 @@ CREATE TABLE tt_products_gifts (
 #
 #
 CREATE TABLE tt_products_gifts_articles_mm (
-  uid_local int(11) DEFAULT '0' NOT NULL,
-  uid_foreign int(11) DEFAULT '0' NOT NULL,
-  count int(11) DEFAULT '0' NOT NULL,
-  KEY uid_local (uid_local),
-  KEY uid_foreign (uid_foreign),
+	uid_local int(11) DEFAULT '0' NOT NULL,
+	uid_foreign int(11) DEFAULT '0' NOT NULL,
+	count int(11) DEFAULT '0' NOT NULL,
+	KEY uid_local (uid_local),
+	KEY uid_foreign (uid_foreign),
 );
 
 
@@ -322,7 +337,6 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 CREATE TABLE fe_users (
 	tt_products_memoItems tinytext NOT NULL,
 	tt_products_discount int(11) DEFAULT '0' NOT NULL
-# Added els6: changed decimal 10,4 into 10,0
 	tt_products_creditpoints decimal(10,0) DEFAULT '0' NOT NULL,
 	tt_products_vouchercode varchar(50) DEFAULT ''
 );

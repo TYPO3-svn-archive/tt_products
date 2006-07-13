@@ -1,3 +1,12 @@
+2006-07-13 Franz Holzinger <franz@fholzinger.com>
+	* enable the altText.data and other image configuration by setting the cObj->alternativeData to the current row
+	* CSS ids for payment and shipping selector
+	* correct errors with wrong cache settings
+	* enable the salutation markers for the tracking user notification email
+	* correct errors mith missing space before 'AND' in SQL queries
+	* new feature: related products
+	* ###EMAIL_NEWUSER_TEMPLATE### for some other example templates
+
 2006-06-28 Franz Holzinger <franz@fholzinger.com>
 	* translation of some fields of a table in other fields
 	* correct error with wrong quotation in tracking

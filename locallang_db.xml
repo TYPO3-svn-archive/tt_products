@@ -12,6 +12,7 @@
 		<languageKey index="default" type="array">
 			<label index="tt_products">Products</label>
 			<label index="tt_products.prod_uid">Template Products</label>
+			<label index="tt_products.related_uid">Related products</label>
 			<label index="tt_products.price">Price:</label>
 			<label index="tt_products.price2">Price (2):</label>
 			<label index="tt_products.unit">Unit of measure</label>
@@ -36,6 +37,7 @@
 			<label index="tt_products.special_preparation">Special Preparation:</label>
 			<label index="tt_products.subtitle">Subtitle:</label>
 			<label index="tt_products.variants">Variants</label>
+			<label index="tt_products.relations">Relations</label>
 			<label index="tt_products_language">Products (alternative language)</label>
 			<label index="tt_products_language.prod_uid">Product record</label>
 			<label index="tt_products_language.sys_language_uid">Language</label>
@@ -105,6 +107,7 @@
 		<languageKey index="de" type="array">
 			<label index="tt_products">Produkte</label>
 			<label index="tt_products.prod_uid">Template Produkte</label>
+			<label index="tt_products.related_uid">verwandte Produkte</label>
 			<label index="tt_products.price">Preis:</label>
 			<label index="tt_products.price2">Preis (2):</label>
 			<label index="tt_products.unit">Maßeinheit</label>
@@ -128,6 +131,7 @@
 			<label index="tt_products.special_preparation">Spezialanfertigung:</label>
 			<label index="tt_products.subtitle">Untertitel:</label>
 			<label index="tt_products.variants">Varianten</label>
+			<label index="tt_products.relations">Beziehungen</label>
 			<label index="tt_products_language">Produkte (alternative Sprache)</label>
 			<label index="tt_products_language.prod_uid">Produkte Datensatz</label>
 			<label index="tt_products_language.sys_language_uid">Sprache</label>

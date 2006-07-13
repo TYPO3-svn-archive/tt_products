@@ -6,7 +6,7 @@
 $TCA['tt_products'] = Array (
 	'ctrl' => $TCA['tt_products']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,prod_uid,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,prod_uid,related_uid,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime'
 	),
 	'columns' => Array (
 		'hidden' => Array (
@@ -78,7 +78,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'prod_uid' => Array (
-			'exclude' => 0,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.prod_uid',
 			'config' => Array (
 				'type' => 'select',
@@ -250,6 +250,21 @@ $TCA['tt_products'] = Array (
 				'max' => '20'
 			)
 		),
+		'related_uid' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.related_uid',
+			'config' => Array (
+				'type' => 'select',
+				'MM' => 'tt_products_related_products_products_mm',
+				'foreign_table' => 'tt_products',
+				'foreign_table_where' => ' ORDER BY tt_products.uid',
+//				'local_key' => 'uid_local',
+//				'foreign_key' => 'uid_foreign',
+				'size' => 3,
+				'minitems' => 0,
+				'maxitems' => 12,
+			),
+		),
 		'color' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.color',
@@ -362,19 +377,18 @@ $TCA['tt_products'] = Array (
 		)
 	),
 	'types' => Array (
-		'0' => Array('showitem' => ';;;;1-1-1,hidden;;1, title;;2;;3-3-3,subtitle;;5;;3-3-3, itemnumber;;3, category, price;;4,weight;;6, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],image;;;;4-4-4,datasheet,' .
-				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.variants,color,size,gradings;;7,description,additional')
+		'0' => Array('showitem' => ';;;;1-1-1,hidden;;1, title;;;;3-3-3,subtitle;;5;;3-3-3, itemnumber;;3, category, price;;4,weight;;6, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],image;;;;4-4-4,datasheet,' .
+				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.variants,color,size,gradings;;7,description,additional,'.
+				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.relations,prod_uid,related_uid')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
-		'2' => Array('showitem' => 'prod_uid'),
 		'3' => Array('showitem' => 'inStock'),
 		'4' => Array('showitem' => 'price2, directcost, tax, offer, highlight'),
 		'5' => Array('showitem' => 'www'),
 		'6' => Array('showitem' => 'bulkily, special_preparation, unit, unit_factor'),
 		'7' => Array('showitem' => ''),
 	)
-
 );
 
 
