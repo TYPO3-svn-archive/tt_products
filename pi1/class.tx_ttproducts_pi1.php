@@ -50,6 +50,7 @@
 //require_once(PATH_tslib.'class.tslib_pibase.php');
 require_once(PATH_BE_fh_library.'/sysext/cms/tslib/class.fhlibrary_pibase.php');
 require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
+
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_basket.php');
@@ -78,7 +79,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $prefixId = 'tx_ttproducts_pi1';	// Same as class name
 	var $scriptRelPath = 'pi1/class.tx_ttproducts_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
-	var $version = '020412';			// version number
+	var $version;			// version number
 
 	var $cObj;		// The backReference to the mother cObj object set at call time
 
@@ -122,17 +123,21 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $javascript;				// JavaScript object
 	var $codeArray;					// Codes
 	var $template_suffix; 			// suffix for template subpart area markers
+	var $bNoCachePossible = TRUE;	// if the cache may be turned off
+	var $pageAsCategory;			// > 0 if pages are used as categories
 
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
-	function main_products($content,$conf)	{
+	function main($content,$conf)	{
 		global $TSFE;
 
 		$this->conf = &$conf;
 		$backPID = $this->piVars['backPID'];
 		$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
 
+		$eInfo = $this->getExtensionInfo(PATH_BE_ttproducts);
+		$this->version = $eInfo['version'];
 		$this->pi_initPIflexForm();
 		$config['code'] = 
 			$this->pi_getSetupOrFFvalue(
@@ -182,12 +187,60 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$this->xajax->processRequests();
 				exit();
 			}
-		}	
-		$content = $this->doProcessing($content, false);
+		}
+
+		if (is_array($conf['userFunc.']) && strstr($conf['userFunc.'],'callTime'))	{
+			$this->bNoCachePossible = FALSE;
+			foreach ($conf['userFunc.'] as $part => $setup) {		
+			    if(!strpos($part,'.')) {
+				$content .= $this->cObj->cObjGetSingle($setup,$conf['userFunc.'][$part.'.']);
+			    }
+			}
+		} else {
+			$content = $this->doProcessing($content, false);		
+		}
 
 		return $content;
 	}
 
+
+	function callTimeBasket() {
+		$this->codeArray[] = 'BASKET';
+		$content = $this->doProcessing($content, false);
+		$content .= strftime('%D - %H:%M:%S',time()); 
+	    return $content;
+	}
+
+	function callTimeSingle() {
+		$this->codeArray[] = 'SINGLE';
+		$content = $this->doProcessing($content, false);
+		$content .= strftime('%D - %H:%M:%S',time()); 
+	    return $content;
+	}
+
+	function callTimeCombined1() {
+		$this->codeArray[] = 'BASKET';
+		$this->codeArray[] = 'SINGLE';
+		$content = $this->doProcessing($content, false);
+		$content .= strftime('%D - %H:%M:%S',time()); 
+	    return $content;
+	}
+
+	function callTimeCombined2() {
+		$this->codeArray[] = 'SINGLE';
+		$this->codeArray[] = 'BASKET';
+		$content = $this->doProcessing($content, false);
+		$content .= strftime('%D - %H:%M:%S',time()); 
+	    return $content;
+	}
+
+	function set_no_cache() {
+		global $TSFE;
+
+		if ($this->bNoCachePossible)	{
+			$TSFE->set_no_cache();
+		}
+	}
 
 	function doProcessing($content='', $bRunAjax = false)	{
 		global $TSFE;
@@ -234,6 +287,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		if (!$this->errorMessage) {
 			$this->basketView->init ($this->basket, $this->order, $this->templateCode);
 			
+			$this->basket->getCalculatedBasket(); // get the basket->itemArray
 			$content .= $this->basketView->printView($this->codeArray, $this->errorMessage);
 		}
 		reset($this->codeArray);
@@ -245,7 +299,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$contentTmp = '';
 			switch($theCode)	{
 				case 'SEARCH':
-					$TSFE->set_no_cache();
+					$this->set_no_cache();
 					// no break!
 				case 'LIST':
 				case 'LISTGIFTS':
@@ -254,10 +308,11 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				case 'LISTOFFERS':
 				case 'LISTARTICLES':
 					if (count($this->tt_product_single) || !$this->conf['NoSingleViewOnList']) {
-						$TSFE->set_no_cache();
+						$this->set_no_cache();
 					}
+
 					if (count($this->basket->itemArray)) {
-						$TSFE->set_no_cache();
+						$this->set_no_cache();
 					}
 					$contentTmp=$this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
@@ -271,46 +326,46 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 //					} else {
 //						$idClass = 'ArticleId';
 //					}
-					$contentTmp = $categoryView->printView($this->templateCode, $error_code, $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory']);
+					$contentTmp = $categoryView->printView($this->templateCode, $error_code, $this->pageAsCategory);
 				break;
 				case 'SINGLE':
 					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList'] && 
 						!$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']) {
-						$TSFE->set_no_cache();
+						$this->set_no_cache();
 					}
 					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);				
 				break;
 				case 'OVERVIEW':
 					if (count($this->basket->itemArray)) {
-						$TSFE->set_no_cache();
+						$this->set_no_cache();
 					}
 					break;
 				case 'BASKET':
 				case 'FINALIZE':
 				case 'INFO':
 				case 'PAYMENT':
-					$TSFE->set_no_cache();
+					$this->set_no_cache();
 						// nothing here any more. This work is done in the call of $this->basketView->printView before
 						// This is necessary because some activities might have overriden these CODEs
 				break;
 				case 'BILL':
 				case 'DELIVERY':
 					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_billdelivery.php');
-					$TSFE->set_no_cache();
+					$this->set_no_cache();
 					$contentTmp=$this->products_tracking($theCode);
 				break;
 				case 'TRACKING':
 					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_tracking.php');
-					$TSFE->set_no_cache();
+					$this->set_no_cache();
 					$contentTmp=$this->products_tracking($theCode);
 				break;
 				case 'MEMO':
-					$TSFE->set_no_cache();
+					$this->set_no_cache();
 					$contentTmp=$this->memoView->printView($this->templateCode, $error_code);
 				break;
 				case 'CURRENCY':
 					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_currency_view.php');
-					$TSFE->set_no_cache();
+					$this->set_no_cache();
 						// currency view
 					$currencyView = t3lib_div::makeInstance('tx_ttproducts_currency_view');
 					$currencyView->init($this, $this->cnf, $this->basket);
@@ -319,7 +374,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				break;
 				case 'ORDERS':
 					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_order_view.php');
-					$TSFE->set_no_cache();
+					$this->set_no_cache();
 
 						// order view
 					$orderView = t3lib_div::makeInstance('tx_ttproducts_order_view');
@@ -327,7 +382,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$contentTmp=$orderView->printView($this->templateCode, $error_code);
 				break;
 				default:	// 'HELP'
-					$TSFE->set_no_cache();
+					$this->set_no_cache();
 					$contentTmp = 'error';
 				break;
 			}
@@ -348,7 +403,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			}
 			
 			if ($contentTmp == 'error') {
-					$content .= $this->pi_displayHelpPage($this->cObj->fileResource('EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl'));
+					$fileName = 'EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl';
+					$content .= $this->pi_displayHelpPage($this->cObj->fileResource($fileName));
 					unset($this->errorMessage);
 					break; // while
 			} else {
@@ -399,12 +455,12 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		}
 
 		$this->initTables();
-
-		// $TSFE->set_no_cache();
  
 		// *************************************
 		// *** getting configuration values:
 		// *************************************
+
+		$this->pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'];
 
 		// get template suffix string
 		$this->template_suffix = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template_suffix');
@@ -417,11 +473,21 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$config['limitImageSingle'] = $config['limitImageSingle'] ? $config['limitImageSingle'] : 1;
 		$recursive = ($this->cObj->data['recursive'] ? $this->cObj->data['recursive']: $this->conf['recursive']);
 		$config['recursive'] = t3lib_div::intInRange($recursive,0,100);
-		$config['storeRootPid'] = $this->conf['PIDstoreRoot'] ? $this->conf['PIDstoreRoot'] : $TSFE->tmpl->rootLine[0]['uid'];
+		if ($this->conf['PIDstoreRoot'])	{
+			$config['storeRootPid'] = $this->conf['PIDstoreRoot'];
+		} else {
+			foreach ($TSFE->tmpl->rootLine as $k => $row)	{
+				if ($row['doktype'] == 1)	{
+					$config['storeRootPid'] = $row['uid'];
+					break;
+				}
+			}
+		}
 		$config['priceNoReseller'] = $this->conf['priceNoReseller'] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
-		$pid_list = $config['pid_list'] = ($this->piVars['pid_list'] ? $this->piVars['pid_list'] : ($this->cObj->data['pages'] ? $this->cObj->data['pages'] : ($this->conf['pid_list.'] ? trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.'])) : $this->conf['pid_list'])));
+		$tmp = $this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.']);
+		$pid_list = $config['pid_list'] = ($this->piVars['pid_list'] ? $this->piVars['pid_list'] : ($this->conf['pid_list.'] ? trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.'])) : $this->conf['pid_list']));
+		$pid_list = ($pid_list ? $pid_list : $this->cObj->data['pages']);
 		$this->pid_list = ($pid_list ? $pid_list : $config['storeRootPid']);
-		//$config['pid_list'] = $this->config['pid_list'] ? $config['pid_list'] : $TSFE->id;
 
 			// If the current record should be displayed.
 		$config['displayCurrentRecord'] = $this->conf['displayCurrentRecord'];
@@ -535,13 +601,18 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this,
 			$this->cnf,
 			$this->basket,
+			$this->basketView,
 			$this->pid_list,
 			$this->tt_content,
 			$this->tt_products,
 			$this->tt_products_cat,
 			$this->tt_products_articles,
-			$this->pid
+			$this->fe_users,
+			$this->pid,
+			$this->LLkey,
+			$this->conf['useArticles']
 		);
+
 				
 			// price
 		$this->price = t3lib_div::makeInstance('tx_ttproducts_price');
@@ -863,8 +934,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	function products_display($theCode, &$errorMessage, $error_code)	{
 		global $TSFE;
 
-		$memoItems='';
-
 		if (($theCode=='SINGLE') || (strstr($theCode,'LIST') && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'])) {
 			if (!$this->tt_product_single) {
 				$this->tt_product_single['product'] = $this->conf['defaultProductID'];
@@ -873,9 +942,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$extVars = ($extVars ? $extVars : t3lib_div::_GP('ttp_extvars'));
 				// performing query:
 		
-			// $this->page->initRecursive($this->config['recursive']);
-			//tx_ttproducts_page_div::generatePageArray();
-
 			if (!is_object($this->singleView)) {
 				// List single product:
 				$this->singleView = t3lib_div::makeInstance('tx_ttproducts_single_view');
@@ -900,7 +966,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$content = $this->singleView->printView(
 					$this->templateCode, 
 					$error_code,
-					$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'],
+					$this->pageAsCategory,
 					$this->template_suffix
 				);
 			}
@@ -933,10 +999,11 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$content = $listView->printView(
 				$this->templateCode,
 				$theCode,
-				$memoItems,
+				'',
 				$error_code,
 				$templateArea,
-				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory']			);
+				$this->pageAsCategory
+			);
 		}
 
 		return $content;
