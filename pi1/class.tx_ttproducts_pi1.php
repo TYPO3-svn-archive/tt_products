@@ -189,6 +189,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			}
 		}
 
+			// only for testing purposes
 		if (is_array($conf['userFunc.']) && strstr($conf['userFunc.'],'callTime'))	{
 			$this->bNoCachePossible = FALSE;
 			foreach ($conf['userFunc.'] as $part => $setup) {		
@@ -204,6 +205,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	}
 
 
+// some temporary speed testing functions
 	function callTimeBasket() {
 		$this->codeArray[] = 'BASKET';
 		$content = $this->doProcessing($content, false);
@@ -899,7 +901,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		// if the code field has been filled in from TS Setup
 		// This has to be done because no articles shall be put into the basket in this case.
 		if (count($codes) == 1)	{
-			$changeBasketArray = array ('BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS', 'LISTNEWITEMS', 'LISTGIFTS', 'LISTCAT', 'LISTARTICLES', 'SINGLE', 'SEARCH');
+			$changeBasketArray = array ('BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS', 'LISTNEWITEMS', 'LISTGIFTS', 'LISTCAT', 'LISTARTICLES', 'MEMO', 'SINGLE', 'SEARCH');
 			$tmpCodeArray = array_flip($changeBasketArray);
 			if (!isset($tmpCodeArray[current($retCodes)]))	{
 				$bStoreBasket = false;
