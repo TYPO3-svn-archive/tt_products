@@ -113,16 +113,35 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		return $pid;	
 	}
 
+	function &getRootpathArray ($rootCat,$currentCat) {
+		$rootpathArray = array();
+		$uid = $currentCat;
+		$count = 0;
+		do	{
+			$count++;
+			$row = $this->get ($uid);
+			$rootpathArray[] = $row;
+			$lastUid = $uid;
+			$uid = $row['pid'];
+		} while ($lastUid != $rootCat && $count < 100);
+		return $rootpathArray;
+	}
 
-	function &getRelationArray ($excludePid=0) {
+	function &getRelationArray ($excludeCat=0,$currentCat=0) {
 		$relationArray = array();
+		if ($currentCat)	{
+			$pid_list = $currentCat;
+			$this->applyRecursive(1,$pid_list);
+		} else {
+			$pid_list = $this->pid_list;
+		}
 		
-		$pageArray = t3lib_div::trimExplode (',', $this->pid_list);
-		$excludeKey = array_search($excludePid, $pageArray);
+		$pageArray = t3lib_div::trimExplode (',', $pid_list);
+		$excludeKey = array_search($excludeCat, $pageArray);
 		unset($pageArray[$excludeKey]);
 		foreach ($pageArray as $k => $uid)	{
 			$row = $this->get ($uid);
-			if ($row['shortcut'] == $excludePid)	{	// do not show shortcuts to the excluded page
+			if ($row['shortcut'] == $excludeCat)	{	// do not show shortcuts to the excluded page
 				$excludeKey = array_search($row['uid'], $pageArray);
 				unset($pageArray[$excludeKey]);
 				continue;
@@ -167,7 +186,8 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			);
 		}
 		$pageObject->setPidlist($pid_list);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
-		$pageObject->initRecursive($recursive);
+		$tmp = '';
+		$pageObject->applyRecursive($recursive, $tmp);
 		return $pageObject;
 	}
 
@@ -257,23 +277,28 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	/**
 	 * Extends the internal pid_list by the levels given by $recursive
 	 */
-	function initRecursive($recursive)	{
+	function applyRecursive($recursive, &$pids)	{
 		global $TSFE;
 		
-		if (!$this->pid_list) {
-			$this->pid_list = $TSFE->id;
+		if (!$pids)	{
+			$pid_list = &$this->pid_list;
+		} else {
+			$pid_list = &$pids;
+		}
+		if (!$pid_list) {
+			$pid_list = $TSFE->id;
 		}
 		if ($recursive)	{		// get pid-list if recursivity is enabled
 			$recursive = intval($recursive);
-			$pid_list_arr = explode(',',$this->pid_list);
-			$this->pid_list = '';
+			$pid_list_arr = explode(',',$pid_list);
+			$pid_list = '';
 			while(list(,$val) = each($pid_list_arr))	{
-				$this->pid_list .= $val.','.$this->pibase->cObj->getTreeList($val,$recursive);
+				$pid_list .= $val.','.$this->pibase->cObj->getTreeList($val,$recursive);
 			}
-			$this->pid_list = ereg_replace(',$','',$this->pid_list);
-			$pid_list_arr = explode(',',$this->pid_list);
+			$pid_list = ereg_replace(',$','',$pid_list);
+			$pid_list_arr = explode(',',$pid_list);
 			$pid_list_arr = array_unique ($pid_list_arr);
-			$this->pid_list = implode(',', $pid_list_arr);
+			$pid_list = implode(',', $pid_list_arr);
 		}
 	}
 

@@ -51,19 +51,19 @@ class tx_ttproducts_variant {
 	/**
 	 * setting the local variables
 	 */
-	function init(&$pibase, &$conf, &$itemTable, $useArticles)  {
+	function init(&$pibase, &$cnf, &$conf, &$itemTable, $useArticles)  {
 		$this->pibase = &$pibase;
 		$this->conf = &$conf;
 		$this->itemTable = &$itemTable;
 		$this->useArticles = $useArticles;
 		$this->bSelectableArray = array();
-		if ($this->conf['selectColor'])
+		if ($cnf->conf['selectColor'])
 			$this->bSelectableArray[0] = true;
-		if ($this->conf['selectSize'])
+		if ($cnf->conf['selectSize'])
 			$this->bSelectableArray[1] = true;
-		if ($this->conf['selectDescription'])
+		if ($cnf->conf['selectDescription'])
 			$this->bSelectableArray[2] = true;
-		if ($this->conf['selectGradings'])
+		if ($cnf->conf['selectGradings'])
 			$this->bSelectableArray[3] = true;
 
 	} // init

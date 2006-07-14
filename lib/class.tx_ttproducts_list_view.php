@@ -215,6 +215,7 @@ class tx_ttproducts_list_view {
 		$begin_at=t3lib_div::intInRange($begin_at,0,100000);
 		if ($where || ($theCode != 'SEARCH' && !t3lib_div::_GP('swords')))	{
 			$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($templateArea));
+			// $templateArea = '###ITEM_LIST_TEMPLATE###'
 			if (!$t['listFrameWork']) {
 				$error_code[0] = 'no_subtemplate';
 				$error_code[1] = $templateArea;
@@ -252,7 +253,6 @@ class tx_ttproducts_list_view {
 				// performing query to count all products (we need to know it for browsing):
 			$selectConf['selectFields'] = 'count(*)';
 			$tablename = $itemTable->table->name;
-			// $queryParts = $this->pibase->cObj->getQuery($tablename, $selectConf, TRUE);
 			$queryParts = $itemTable->table->getQueryConf($this->pibase->cObj, $tablename, $selectConf, TRUE);
 			$res = $itemTable->table->exec_SELECT_queryArray($queryParts);
 			$row = $TYPO3_DB->sql_fetch_row($res);
@@ -343,6 +343,7 @@ class tx_ttproducts_list_view {
 			}
 			
 			$tablename = $itemTable->table->name;
+			debug ($selectConf, '$selectConf', __LINE__, __FILE__);
 			$queryParts = $itemTable->table->getQueryConf($this->pibase->cObj,$tablename, $selectConf, TRUE);
 			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
 			$itemArray=array();
@@ -536,24 +537,23 @@ class tx_ttproducts_list_view {
 					// multiple columns display and ITEM_SINGLE_POST_HTML is in the item's template?
 					if (
 							$nextP != $currentP &&
-							$itemsOut &&
-							$bItemPostHtml
+							$itemsOut
 						) {
-						// complete the last table row
-						$itemsOut .= $this->finishHTMLRow($iColCount, $tableRowOpen);
+						if ($bItemPostHtml)	{
+							// complete the last table row
+							$itemsOut .= $this->finishHTMLRow($iColCount, $tableRowOpen);
+						}
 						if ($t['itemFrameWork'])	{
 							$itemListOut .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$itemsOut,0);;
 							$itemsOut = '';
 						}
 					}
-	
 				}	// foreach ($itemArray as $k1 => $productList) {
 			} else {
-				$content = '';  // TODO: keine Produkte gefunden
+				$out = '';  // TODO: keine Produkte gefunden
 			}
 //			if ($t['itemFrameWork'])
 //				$out=$this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$out,0);
-			
 			if ($itemListOut || $categoryOut)	{
 				$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $itemListOut, $categoryOut);
 			}
@@ -568,8 +568,13 @@ class tx_ttproducts_list_view {
 			$splitMark = md5(microtime());
 
 			$addQueryString=array();
-			if ($cat)
+			if ($cat)	{
 				$addQueryString['cat'] = $cat;
+			}
+
+			$backPID = $this->pibase->piVars['backPID'];
+			$pid = ( $backPID ? $backPID : $TSFE->id);
+			$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>');
 
 			if ($more)	{
 				$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];

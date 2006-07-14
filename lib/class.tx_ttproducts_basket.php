@@ -557,7 +557,6 @@ class tx_ttproducts_basket {
 // Franz: is this needed?
 //			$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
 //			$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
-//			/* Added Els3: if oldpricenotax is 0 -> oldpricenotax = pricenotax, otherwise price_discount doesn't calculate correctly */
 //			if (doubleval($oldPriceNoTax) == 0) {
 //				$oldPriceNoTax = $priceNoTax;
 //			}

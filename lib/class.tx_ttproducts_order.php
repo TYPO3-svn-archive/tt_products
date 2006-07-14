@@ -250,13 +250,15 @@ class tx_ttproducts_order {
 			'comment' => $this->basket->deliveryInfo['note']
 		);
 		$fieldsArray['status_log']=serialize($status_log);
+		$itemArray = array();
+		$itemArray [$this->basket->viewTable->name] = $this->basket->itemArray;
 
 			// Order Data serialized
 		$fieldsArray['orderData'] = serialize(array(
 				'html_output' 			=>	$orderConfirmationHTML,
 				'deliveryInfo' 			=>	$this->basket->deliveryInfo,
 				'personInfo' 			=>	$this->basket->personInfo,
-				'itemArray'				=>	$this->basket->itemArray,
+				'itemArray'				=>	$itemArray,
 				'calculatedArray'		=>	$this->basket->calculatedArray,
 				'version'				=>  $this->pibase->version
 		));
@@ -266,12 +268,9 @@ class tx_ttproducts_order {
 		$fieldsArray['deleted'] = 0;
 		$fieldsArray['tracking_code'] = $this->basket->recs['tt_products']['orderTrackingNo'];
 		$fieldsArray['agb'] = $this->basket->personInfo['agb'];
-/* Added Els: write creditpointvalue into sys_products_order */
 		$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
-/* Added Els: write creditpoint_spended and saved value into sys_products_order */
 		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
 		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
-/* Added Els: write creditpoint_gifts value into sys_products_order */
 		$fieldsArray['creditpoints_gifts'] = t3lib_div::_GP('creditpoints_gifts');
 
 			// Saving the order record

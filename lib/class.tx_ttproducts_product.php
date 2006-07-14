@@ -62,13 +62,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$this->cnf = &$cnf;
 		$tablename = ($tablename ? $tablename : 'tt_products');
 		$this->tableconf = $this->cnf->getTableConf($tablename);
-//		if ($this->tableconf['orderBy'] == '{$plugin.tt_products.orderBy}')	{
-//			$this->tableconf['orderBy'] = '';
-//		}
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		
 		$tableConfig = array();
-		$tableConfig['orderBy'] = $conf['orderBy'];
+		$tableConfig['orderBy'] = $$this->cnf->conf['orderBy'];
 		
 		if (!$tableConfig['orderBy'])	{
 			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];				

@@ -946,10 +946,13 @@ class tx_ttproducts_basket_view {
 		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = $this->price->priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
 		$agb_url=array();
 		$pidagb = intval($this->conf['PIDagb']);
-		$addQueryString['id'] = $pidagb;
+		// $addQueryString['id'] = $pidagb;
 		if ($TSFE->type)
 			$addQueryString['type'] = $TSFE->type;
-		$wrappedSubpartArray['###LINK_AGB###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString, true)) .'" target="'.$this->conf['AGBtarget'].'">','</a>');
+		$wrappedSubpartArray['###LINK_AGB###']= array(
+			'<a href="'. $this->pibase->pi_getPageLink($pidagb,'',$this->marker->getLinkParams('', $addQueryString, true)) .'" target="'.$this->conf['AGBtarget'].'">',
+			'</a>'
+		);
 		
 		// $wrappedSubpartArray['###LINK_AGB###']=array('<a href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</a>');
 
