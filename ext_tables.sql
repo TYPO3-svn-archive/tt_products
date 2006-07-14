@@ -41,6 +41,9 @@ CREATE TABLE tt_products (
 	additional_type varchar(36) DEFAULT '' NOT NULL,
 	additional mediumtext NOT NULL,
 	special_preparation int(11) DEFAULT '0' NOT NULL,
+	shipping DECIMAL(19,2) NOT NULL,
+	shipping2 DECIMAL(19,2) NOT NULL,
+	handling DECIMAL(19,2) NOT NULL
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );

@@ -6,7 +6,7 @@
 $TCA['tt_products'] = Array (
 	'ctrl' => $TCA['tt_products']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,prod_uid,related_uid,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,prod_uid,related_uid,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime,shipping,shipping2,handling'
 	),
 	'columns' => Array (
 		'hidden' => Array (
@@ -374,12 +374,43 @@ $TCA['tt_products'] = Array (
 				'maxitems' => '6',
 				'minitems' => '0'
 			)
-		)
+		),
+		'shipping' => Array (		
+			'exclude' => 1,		
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.shipping',		
+			'config' => Array (
+				'type' => 'input',	
+				'size' => '10',	
+				'max' => '20',
+				'eval' => 'trim,double2',
+			)
+		),
+		'shipping2' => Array (		
+			'exclude' => 1,		
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.shipping2',		
+			'config' => Array (
+				'type' => 'input',	
+				'size' => '10',	
+				'max' => '20',
+				'eval' => 'trim,double2',
+			)
+		),
+		'handling' => Array (		
+			'exclude' => 1,		
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.handling',		
+			'config' => Array (
+				'type' => 'input',	
+				'size' => '10',	
+				'max' => '20',
+				'eval' => 'trim,double2',
+			)
+		),
 	),
 	'types' => Array (
 		'0' => Array('showitem' => ';;;;1-1-1,hidden;;1, title;;;;3-3-3,subtitle;;5;;3-3-3, itemnumber;;3, category, price;;4,weight;;6, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],image;;;;4-4-4,datasheet,' .
 				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.variants,color,size,gradings;;7,description,additional,'.
-				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.relations,prod_uid,related_uid')
+				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.relations,prod_uid,related_uid,'.
+				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.shippingdiv,shipping,shipping2,handling,')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
@@ -390,7 +421,6 @@ $TCA['tt_products'] = Array (
 		'7' => Array('showitem' => ''),
 	)
 );
-
 
 
 $TCA['tt_products_language'] = Array (

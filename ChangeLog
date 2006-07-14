@@ -1,4 +1,4 @@
-2006-07-13 Franz Holzinger <franz@fholzinger.com>
+2006-07-14 Franz Holzinger <franz@fholzinger.com>
 	* enable the altText.data and other image configuration by setting the cObj->alternativeData to the current row
 	* CSS ids for payment and shipping selector
 	* correct errors with wrong cache settings
@@ -6,6 +6,9 @@
 	* correct errors mith missing space before 'AND' in SQL queries
 	* new feature: related products
 	* ###EMAIL_NEWUSER_TEMPLATE### for some other example templates
+	* CSS shop template from Robert Markula
+	* new shipping fields for Paypal Payment Library extension
+	* correct errros with MEMO
 
 2006-06-28 Franz Holzinger <franz@fholzinger.com>
 	* translation of some fields of a table in other fields

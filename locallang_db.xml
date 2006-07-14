@@ -38,6 +38,10 @@
 			<label index="tt_products.subtitle">Subtitle:</label>
 			<label index="tt_products.variants">Variants</label>
 			<label index="tt_products.relations">Relations</label>
+			<label index="tt_products.shippingdiv">Shipping</label>
+			<label index="tt_products.shipping">shipping costs</label>
+			<label index="tt_products.shipping2">additional shipping costs</label>
+			<label index="tt_products.handling">fee for handling</label>
 			<label index="tt_products_language">Products (alternative language)</label>
 			<label index="tt_products_language.prod_uid">Product record</label>
 			<label index="tt_products_language.sys_language_uid">Language</label>
@@ -132,6 +136,10 @@
 			<label index="tt_products.subtitle">Untertitel:</label>
 			<label index="tt_products.variants">Varianten</label>
 			<label index="tt_products.relations">Beziehungen</label>
+			<label index="tt_products.shippingdiv">Versand</label>
+			<label index="tt_products.shipping">Versandkosten pro Produkt</label>
+			<label index="tt_products.shipping2">Zusätzliche Versandkosten</label>
+			<label index="tt_products.handling">Bearbeitungsgebühr</label>
 			<label index="tt_products_language">Produkte (alternative Sprache)</label>
 			<label index="tt_products_language.prod_uid">Produkte Datensatz</label>
 			<label index="tt_products_language.sys_language_uid">Sprache</label>
