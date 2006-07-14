@@ -804,7 +804,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 			Jakelu tehd‰‰n myyntipolitiikkamme mukaisesti. Tilauksesi on p‰iv‰tty ###ORDER_DATE###.<br>
 			<br>
 			Voit seurata tilauksesi k‰sittely‰ k‰ytt‰en seuraavaa seurantanumeroa: <br>
-			<strong>###ORDER_TRACKING_NO###</strong>. Klikkaa <a href="index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO##">t‰st‰</a> n‰hd‰ksesi nykyisen tilanteen.<br><br>
+			<strong>###ORDER_TRACKING_NO###</strong>. Klikkaa <a href="index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###">t‰st‰</a> n‰hd‰ksesi nykyisen tilanteen.<br><br>
 			<br>
 		###GW1E###
 		###EXTERNAL_COBJECT###				
@@ -1409,6 +1409,42 @@ Parhain terveisin
 
 
 
+ 	
+
+
+
+<HR>
+
+
+
+<h3>EMAIL_NEWUSER_TEMPLATE</h3>
+<em>
+Subpart used as template for the account-creation-emails. First line is
+used as subject for the mail.
+
+</em>
+
+<!-- ###EMAIL_NEWUSER_TEMPLATE### begin
+Subpart used as template for the account-creation-emails First line is
+used as subject for the mail.
+-->
+Your New User Account at ###DOMAIN###
+
+Dear ###PERSON_NAME###,
+
+Thank you for placing an order at our site!
+
+To make future purchases quick and easy, we've created a new account for you. When
+you return to our site, enter this information in the Customer Login form.
+
+Your username: ###USERNAME###
+Your password: ###PASSWORD###
+
+Best Regards,
+###DOMAIN###
+###SHOPADMIN_EMAIL###
+
+<!-- ###EMAIL_NEWUSER_TEMPLATE### end -->
 
 
 

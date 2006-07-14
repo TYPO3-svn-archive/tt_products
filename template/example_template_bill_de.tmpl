@@ -8,13 +8,6 @@
 
 <body>
 
-<br><hr><br>
-<h3>ITEM_LIST_TEMPLATE</h3>
-<em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
-<br>
-<br>
-
-
 <br><br><br><br><hr><br><br><br>
 <h3>ITEM_LIST_TEMPLATE</h3>
 <em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
@@ -113,13 +106,6 @@
 </table>
 <br>
 <!-- ###ITEM_LIST_TEMPLATE### end -->
-
-
-<br><hr><br>
-<h3>ARTICLE_LIST_TEMPLATE</h3>
-<em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
-<br>
-<br>
 
 
 <br><br><br><br><hr><br><br><br>
@@ -235,12 +221,19 @@
 
 				<B>Info:</B><br>
 				###PRODUCT_NOTE###<br>
+				Ident-Nr. ###PRODUCT_UID###
 			###GW1E###	<br>
+			<!-- ###display_variant2### -->
+		    ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
+		    name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+		    <!-- ###display_variant2### -->
+
 				<nobr>###GW2B### Menge: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">  
 				<input type="Submit" name="order" value="in den Warenkorb" onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 				</nobr>
 				<br>
                 <a href="mailto:###SHOPADMIN_EMAIL###?subject=Frage zum Artikel: ###PRODUCT_TITLE###&body=Ich habe folgenden Artikel gesehen: ###PRODUCT_TITLE### %0AMeine Fragen: "><B>Fragen zum Artikel</B></a>  <br>
+                ###PRODUCT_RELATED_UID###
 		</td>
 	</tr>
 </form>
@@ -254,7 +247,108 @@
 <!--###LINK_ITEM###-->
 ###GW2E###
 
+
 <!-- ###ITEM_SINGLE_DISPLAY### end -->
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>ITEM_LIST_RELATED_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of related products. to the one in the single view.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_LIST_RELATED_TEMPLATE### begin
+	This subpart is used to display the regular list of products. It's also used by search-results.
+-->
+<br>
+<h3>&auml;hnliche Produkte</h3>
+
+
+<table border="0" cellspacing="0" cellpadding="1" width=1>
+	<tr>
+		<!-- ###FE_GROUP_1_TEMPLATE### begin -->
+		<td>Du bist eingeloggt! </td>
+		<!-- ###FE_GROUP_1_TEMPLATE### end -->
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td><!-- ###LINK_BROWSE### begin -->
+			[ ###BROWSE_LINKS### ]
+			<!-- ###LINK_BROWSE### end-->
+		</td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>nächste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+	<tr>
+		<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
+	</tr>
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+		<!-- ###ITEM_CATEGORY### begin -->
+			<tr>
+				<td colspan=4><br>###GW1B###<font size=3><strong>###CATEGORY_TITLE###</strong></font> ###GW1E###
+				<br>
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<tr><td colspan="3">
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+
+        <table bordercolor="#003399" cellspacing="1" border="1">
+          <tr>
+            <td><img src="clear.gif" width="150" height="1"></td>
+            <td><img src="clear.gif" width="150" height="1"></td>
+            <td><img src="clear.gif" width="150" height="1"></td>
+          </tr>
+          <!-- ###ITEM_SINGLE### begin-->
+          ###ITEM_SINGLE_PRE_HTML###
+          <td height="150" bgcolor="###GC1###" valign="bottom" align="center">
+            <!--###LINK_ITEM###-->
+            ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+            <!--###LINK_ITEM###-->
+            <br>
+            ###PRODUCT_IMAGE1### <br>
+		  <!-- ###display_variant2### -->
+		  ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
+		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+		  <!-- ###display_variant2### -->
+            <!-- ###display_variant5_isSingle### -->
+            Einzelprodukt, das nur einmal gewählt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
+            <!-- ###display_variant5_isSingle### -->
+            <!-- ###display_variant5_isNotSingle### -->
+            ###GW1B### Stückzahl: ###GW1E### <INPUT size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+            <input type="image" name="addtomemo" src="typo3/ext/tt_products/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_ID###';" title="Add to memo">
+            <!-- ###display_variant5_isNotSingle### --> <p> </td>
+          ###ITEM_SINGLE_POST_HTML###
+          <!-- ###ITEM_SINGLE### end -->
+          <tr>
+            <td colspan="3" align="CENTER"> <input type="Submit" name="order2" value="In den Warenkorb"></td>
+          </tr>
+          <tr>
+            <td colspan="3" align="CENTER">
+            <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"></td>
+          </tr>
+          
+        </table>
+			</form>
+			</td></tr>
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td></td>
+		<td></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>nächste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+</table>
+###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Befüllung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte über den Link Kontakt/Bestellung per Email. Viel Spaß beim Einkaufen! ###GW1E###
+
+<br>
+<table width="163">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<br>
+<!-- ###ITEM_LIST_RELATED_TEMPLATE### end -->
 
 
 
@@ -423,7 +517,9 @@ In addition there's a number of fields used for delivery and payment information
 <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###-->
 
 </td>
-<td></td>
+<td>	  <!-- ###display_variant2### -->
+		  ###PRODUCT_SIZE###
+		  <!-- ###display_variant2### --></td>
 <td></td>
 <td valign=top>###GW1B### ###PRICE_TAX### (Steuer: ###PRICE_ONLY_TAX###) EUR ###GW1E###</td>
 <td valign=top> <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </td>
@@ -1562,7 +1658,9 @@ First line is used as subject for the mail.
 
 bananaGUARD.de Bestellstatus (####ORDER_UID###)
 
-BESETELLINFORMATION (####ORDER_UID###):
+###PERSON_SALUTATION###
+
+BESTELLINFORMATION (####ORDER_UID###):
 Der Status Ihrer Bestellung wurde geändert:
 
 Zeit: ###ORDER_STATUS_TIME###
