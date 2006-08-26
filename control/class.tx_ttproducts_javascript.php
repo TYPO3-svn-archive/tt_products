@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * JavaScript functions
  *
- * $Id$
+ * $Id: class.tx_ttproducts_javascript.php 3457 2006-07-13 09:25:06Z franzholz $
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -46,6 +46,7 @@ class tx_ttproducts_javascript {
 	var $config;
 	var $page;
 	var $xajax;
+	var $bXajaxAdded;
 
 
 	function init(&$pibase, &$cnf, &$page, &$xajax) {
@@ -55,6 +56,7 @@ class tx_ttproducts_javascript {
 		$this->config = &$this->cnf->config;
 		$this->page = &$page;
 		$this->xajax = &$xajax;
+		$this->bXajaxAdded = false;
 	}
 
 
@@ -71,8 +73,10 @@ class tx_ttproducts_javascript {
 		global $TSFE;
 		$bDirectHTML = false;
 		$code = '';
+		$bError = false;
 		$emailArr =  explode('|', $message = $this->pibase->pi_getLL('invalid_email'));
 
+		$JSfieldname = $fieldname;
 		switch ($fieldname) {
 			case 'email' :
 				$code =
@@ -111,9 +115,8 @@ class tx_ttproducts_javascript {
 					return rc;
 				}
 				';
-			break;
-			case 'catselect':
-
+				break;
+			case 'selectcat':
 				if ($this->pibase->pageAsCategory == 2)	{
 					$catIndex = 'pid';
 				} else {
@@ -152,17 +155,28 @@ class tx_ttproducts_javascript {
 		var category = select.options[index].value;
 		var subcategories;
 		var bShowArticle = 0;
+		var len;
+		var idel;
+        var b;
 	
 	    if (id > 0) {
-			id = "'.$catIndex.'" + id;
-			sb = document.getElementById(id);
+	        for (var l=boxCount; l>=id+1; l--)	{
+	        	idel = "'.$catIndex.'" + l;
+	        	sb = document.getElementById(idel);
+			    sb.length = 0;
+		        sb.selectedIndex = 0;
+	        }
+			idel = "'.$catIndex.'" + id;
+			sb = document.getElementById(idel);
 		    sb.length = 0;
+
 		    subcategories = c[category][2]; 
-		    if (typeof(subcategories) == "object" && showSubCategories == 1) {
-		        sb.options[0] = new Option("Anzahl: "+subcategories.length, 0);
-		        // sb.options[0] = new Option("","A"); 
-		        for (var i=0; i<subcategories.length; ++i) {
-			        sb.options[i+1] = new Option(c[c[category][2][i]][0], c[category][2][i]);
+		    if ((typeof(subcategories) == "object") && (showSubCategories == 1)) {
+		        sb.options[0] = new Option("", "A");
+		        len = subcategories.length;';
+		        	$code .= '
+		        for (var k = 0;k < len; k++) {
+			        sb.options[k+1] = new Option(c[c[category][2][k]][0], c[category][2][k]);
 		        }
 		    } else {
 		    	bShowArticle = 1;
@@ -174,44 +188,64 @@ class tx_ttproducts_javascript {
 	        /* sb.options[0] = new Option(len, "keine Unterkategorie");*/
 	        var data = new Array();
 			sb = document.getElementById("'.$catIndex.'"+2);
-	        sb.options[0] = new Option("Show article \'"+showSubCategories+"\'", "B");
+	        sb.options[0] = new Option("", "B");
 	        data["'.$this->pibase->prefixId.'"] = new Array();
 	        data["'.$this->pibase->prefixId.'"]["'.$catIndex.'"] = category;
 	        tt_products_showArticle(data);
 	    } else {
 			sb = document.getElementById("'.$catIndex.'"+2);
-	        sb.options[0] = new Option("keinen Artikel anzeigen \'"+bShowArticle+"\'", "C");	    	
+	        sb.options[0] = new Option("", "C");
+	        sb.selectedIndex = 0;
+	        select.selectedIndex = index;
+	        // sb.options[0] = new Option("keinen Artikel anzeigen \'"+bShowArticle+"\'", "C");
 	    }
-	    /* sb.options[0] = new Option("Test", "keine Unterkategorie"); */
-		sb.selectedIndex = 0;
+	    /* sb.options[0] = new Option("Test", "keine Unterkategorie");
+		sb.selectedIndex = 0; */
 		';
 					$code .= '
 		}
 		';
 				}
-			break;
+				break;
+
+			case 'direct':
+				if (is_array($params))	{
+					$code = current($params);
+					$JSfieldname = $fieldname .'-'. key($params);
+				}
+				break;
+
 			case 'ttpajax':
 				// XAJAX part
-				if (is_object($this->xajax))	{
+				if (!$this->bXajaxAdded && is_object($this->xajax))	{
 					$code .= $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax')); 
+					$this->bXajaxAdded = true;
 				}
 				$bDirectHTML = true;
-			break;
+				break;
+
+			default:
+				$bError = true;
+				break;
 		} // switch
 
-		if ($bDirectHTML)	{
-			// $TSFE->setHeaderHTML ($fieldname, $code);
-			$TSFE->additionalHeaderData['tx_ttproducts-js'] = $code;
-		} else {
-			$TSFE->setJS ($fieldname, $code);
+		if (!$bError)	{
+			if ($code)	{
+				if ($bDirectHTML)	{
+					// $TSFE->setHeaderHTML ($fieldname, $code);
+					$TSFE->additionalHeaderData['tx_ttproducts-xajax'] = $code;
+				} else {
+					$TSFE->setJS ($JSfieldname, $code);
+				}
+			}
 		}
 	} // setJS
 
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_javascript.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_javascript.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_javascript.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_javascript.php']);
 }
 
 

@@ -250,6 +250,8 @@ plugin.tt_products {
   notInStockMessage = not in stock
     # cat=plugin.products//; type=string; label=Unit for pieces
   inStockPieces = pieces
+    # cat=plugin.products//; type=int+; label=In stock warning limit: When this number of items in stock is reached a warning email will be sent.
+  warningInStockLimit =
 
     # cat=plugin.products//; type=int+; label=New Item Days: How many days list new items in LISTNEWITEMS
   newItemDays = 7

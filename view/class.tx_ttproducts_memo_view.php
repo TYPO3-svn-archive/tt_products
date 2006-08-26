@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * memo functions
  *
- * $Id$
+ * $Id: class.tx_ttproducts_memo_view.php 3457 2006-07-13 09:25:06Z franzholz $
  *
  * @author  Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3
@@ -90,7 +90,6 @@ class tx_ttproducts_memo_view {
 			$this->tt_content,
 			$this->pibase->LLkey,
 			$this->conf['table.']['pages'], 
-			$this->conf['table.']['pages.'],
 			$this->conf['conf.']['pages.'],
 			$this->page,
 			$pid_list,
@@ -153,38 +152,51 @@ class tx_ttproducts_memo_view {
 		$content = '';
 
 		$fe_user_uid = $TSFE->fe_user->user['uid'];
-		if ($fe_user_uid)	{				
-			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_list_view.php');
-
-			// List all products:
-			$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
-			$listView->init (
-				$this->pibase,
-				$this->cnf,
-				$this->basket,
-				$this->basketView,
-				$this->page,
-				$this->tt_content,
-				$this->tt_products,
-				$this->tt_products_articles,
-				$this->tt_products_cat,
-				$this->fe_users,
-				$this->pid,
-				$this->LLkey,
-				$this->useArticles
-			);
-
-			$templateArea = '###MEMO_TEMPLATE###';
-			$content = $listView->printView(
-				$templateCode,
-				'MEMO',
-				implode(',', $this->memoItems),
-				$error_code,
-				$templateArea,
-				$this->pibase->pageAsCategory
-			);
+		if ($fe_user_uid)	{		
+			if ($this->memoItems)	{
+				include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_list_view.php');
+	
+				// List all products:
+				$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
+				$listView->init (
+					$this->pibase,
+					$this->cnf,
+					$this->basket,
+					$this->basketView,
+					$this->page,
+					$this->tt_content,
+					$this->tt_products,
+					$this->tt_products_articles,
+					$this->tt_products_cat,
+					$this->fe_users,
+					$this->pid,
+					$this->LLkey,
+					$this->useArticles
+				);
+	
+				$templateArea = '###MEMO_TEMPLATE###';
+				$content = $listView->printView(
+					$templateCode,
+					'MEMO',
+					implode(',', $this->memoItems),
+					$error_code,
+					$templateArea,
+					$this->pibase->pageAsCategory
+				);
+			} else {
+				include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
+	
+				$marker = t3lib_div::makeInstance('tx_ttproducts_marker');
+				$marker->init(
+					$this->pibase,
+					$this->cnf,
+					$this->basket
+				);
+				
+				$content = $this->pibase->cObj->getSubpart($templateCode,$marker->spMarker('###MEMO_EMPTY###'));				
+			}
 		} else {
-			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
+			include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
 
 			$marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 			$marker->init(
@@ -202,8 +214,8 @@ class tx_ttproducts_memo_view {
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_memo_view.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_memo_view.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']);
 }
 
 

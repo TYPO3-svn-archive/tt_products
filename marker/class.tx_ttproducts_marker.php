@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * view functions
  *
- * $Id$
+ * $Id: class.tx_ttproducts_marker.php,v 1.14 2006/06/22 09:14:43 franzholz Exp $
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
@@ -68,7 +68,7 @@ class tx_ttproducts_marker {
 	/**
 	 * Adds link markers to a wrapped subpart array
 	 */
-	function getWrappedSubpartArray(&$wrappedSubpartArray,$addQueryString=array())	{
+	function getWrappedSubpartArray(&$wrappedSubpartArray,$addQueryString=array(),$css_current='')	{
 		global $TSFE;
 
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
@@ -180,12 +180,14 @@ class tx_ttproducts_marker {
 		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 
-		$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
+		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
 		if ($temp) {
-			$queryString['swords'] = $temp;
+			$queryString['sword'] = $temp;
 		}
-		foreach ($addQueryString as $param => $value){
-			$queryString[$param] = $value;
+		if (is_array($addQueryString))	{
+			foreach ($addQueryString as $param => $value){
+				$queryString[$param] = $value;
+			}
 		}
 		reset($queryString);
 		while(list($key,$val)=each($queryString))	{
@@ -214,7 +216,7 @@ class tx_ttproducts_marker {
 	 *
 	 * @access private
 	 */
-	function &getMarkerFields (&$templateCode, $tableName, &$tableFieldArray, &$requiredFieldArray, &$addCheckArray, $prefix, &$tagArray)	{
+	function &getMarkerFields (&$templateCode, $tableName, &$tableFieldArray, &$requiredFieldArray, &$addCheckArray, $prefix, &$tagArray, &$parentArray)	{
 		$retArray = $requiredFieldArray;
 		// obligatory fields uid and pid
 
@@ -229,17 +231,27 @@ class tx_ttproducts_marker {
 		if (is_array($tagArray))	{
 			$tagArray = array_flip($tagArray);
 			foreach ($tagArray as $tag => $k1)	{
-				$temp = strstr($tag, $prefix);
-				if ($temp)	{
-					$field = substr ($temp, $prefixLen);
+				$prefixFound = strstr($tag, $prefix);
+				$bFieldadded = false;
+				if ($prefixFound)	{
+					$field = substr ($prefixFound, $prefixLen);
 					$field = strtolower($field);
 					if (strstr($field,'image'))	{	// IMAGE markers can contain following number
 						$field = 'image';
 					}
 					if (is_array ($tableFieldArray[$field]))	{
 						$retArray[] = $field;
+						$bFieldadded = true;
 					}
-				} else if (is_array($addCheckArray)){
+					$parentFound = strpos($tag, 'PARENT');
+					if	($parentFound !== FALSE)	{
+						$parentEnd = strpos($tag, '_');
+						$parentLen = strlen('PARENT');
+						$temp = substr($tag, $parentLen, ($parentEnd - $parentFound) - $parentLen);
+						$parentArray[] = $temp;
+					}
+				}
+				if (!$bFieldadded && is_array($addCheckArray))	{
 					foreach ($addCheckArray as $marker => $field)	{
 						$temp = strstr($tag, $marker);
 						if ($temp)	{
@@ -250,6 +262,8 @@ class tx_ttproducts_marker {
 				}
 			}
 		}
+		
+		sort($parentArray);
 		
 		$generateArray = array('generateImage', 'generatePath');
 		foreach ($generateArray as $k => $generate)	{
@@ -276,8 +290,8 @@ class tx_ttproducts_marker {
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_marker.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_marker.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/marker/class.tx_ttproducts_marker.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/marker/class.tx_ttproducts_marker.php']);
 }
 
 ?>

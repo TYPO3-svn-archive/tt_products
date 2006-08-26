@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * functions for the product
  *
- * $Id$
+ * $Id: class.tx_ttproducts_product.php 3460 2006-07-14 12:00:13Z franzholz $
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -38,25 +38,26 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_base.php');
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 
 
 class tx_ttproducts_product extends tx_ttproducts_article_base {
-	var $dataArray; // array of read in products
+	var $dataArray = array(); // array of read in products
 	var $relatedArray; // array of related products
-	var $table;		 // object of the type tx_table_db
-	var $fields = array();
+	var $table;		   // object of the type tx_table_db
+	var $tt_products_articles; // element of class tx_table_db to get the article
 	var $bIsProduct=true;	// if this is the base for a product
 	var $marker = 'PRODUCT';
 	var $type = 'product';
 	var $tableconf;
+	var $articleArray = array();
 
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf, &$prodconf, $useArticles)  {
+	function init(&$pibase, &$cnf, &$tt_content, &$paymentshipping, $LLkey, $tablename, &$prodconf, $useArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->cnf = &$cnf;
@@ -101,21 +102,42 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$this->table->initLanguageFile($this->tableconf['language.']['file']);
 		}
 		
-		parent::init($pibase, $cnf, $tt_content);
+		parent::init($pibase, $cnf, $tablename, $tt_content, $paymentshipping);
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
-		$this->variant->init($this->pibase, $cnf, $tableconf['variant.'], $this, $useArticles);
-		$this->fields['itemnumber'] = ($tableconf['itemnumber'] ? $tableconf['itemnumber'] : 'itemnumber');
+		$this->variant->init($this->pibase, $cnf, $this, $useArticles);
 	} // init
+
+
+	function setArticleTable(&$tt_products_articles)	{
+		$this->tt_products_articles = &$tt_products_articles;
+	}
+
+
+	function &getArticleRows($uid)	{
+		$rowArray = $this->articleArray[$uid];
+		if (!$rowArray && $uid) {
+			$rowArray = $this->tt_products_articles->getWhereArray('uid_product=\''.intval($uid).'\'');
+			$this->articleArray[$uid] = $rowArray;
+		}
+		return $rowArray;	
+	}
+
+
+	function &getArticleRow ($row) {
+		global $TYPO3_DB;
+		
+		$articleRows = $this->getArticleRows(intval($row['uid']));
+		$articleRow = $this->variant->fetchArticle($row, $articleRows);
+//		$query='uid_product=\''.intval($row['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($row['color'],'tt_products').' AND size='.$TYPO3_DB->fullQuoteStr($row['size'],'tt_products').' AND description='.$TYPO3_DB->fullQuoteStr($row['description'],'tt_products').' AND gradings='.$TYPO3_DB->fullQuoteStr($row['gradings'],'tt_products');
+//		$articleRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_articles', $query);
+		return $articleRow;
+	}
 
 
 	function get ($uid) {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
-//			$sql = t3lib_div::makeInstance('tx_table_db_access');
-//			$sql->prepareFields($this->table, 'select', '*');
-//			$sql->prepareFields($this->table, 'where', 'uid = '.$uid);
-//			$sql->prepareWhereFields ($this->table, 'uid', '=', $uid)
 			$where = '1=1 '.$this->table->enableFields();
 			// Fetching the products
 			$res = $this->table->exec_SELECTquery('*', $where.' AND uid = '.intval($uid));
@@ -153,46 +175,53 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * Reduces the instock value of the orderRecord with the sold items and returns the result
 	 * 
 	 */
-	function reduceInStock(&$itemArray, $useArticles)	{
+	function &reduceInStockItems(&$itemArray, $useArticles)	{
 		global $TYPO3_DB, $TCA;
-		$rc = '';
+		$instockTableArray = array();
 
 		if ($this->table->name == 'tt_products' || is_array(($TCA[$this->table->name]['columns']['inStock'])) )	{		
 			// Reduce inStock
-	
-			// loop over all items in the basket indexed by a sorting text
-			foreach ($itemArray as $sort=>$actItemArray) {
-				if ($useArticles) {
+			if ($useArticles == 1) {
+				// loop over all items in the basket indexed by a sorting text
+				foreach ($itemArray as $sort=>$actItemArray) {
 					foreach ($actItemArray as $k1=>$actItem) {
-						$query='uid_product=\''.intval($actItem['rec']['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($actItem['rec']['color'],'tt_products_articles').' AND size='.$TYPO3_DB->fullQuoteStr($actItem['rec']['size'],'tt_products_articles').' AND description='.$TYPO3_DB->fullQuoteStr($actItem['rec']['description'],'tt_products_articles').' AND gradings='.$TYPO3_DB->fullQuoteStr($actItem['rec']['gradings'],'tt_products_articles');	
-						$res = $TYPO3_DB->exec_SELECTquery('inStock', 'tt_products_articles', $query);
-							//  TODO: Saving the order record support color, size, description and gradings here
+						$row = $this->getArticleRow ($actItem['rec']);
+						$this->tt_products_articles->reduceInStock($row['uid'], $actItem['count']);
+						$instockTableArray['tt_products_articles'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row['inStock'] - $actItem['count']);
 					}
-				} else {
+				} 
+			} else {
+				// loop over all items in the basket indexed by a sorting text
+				foreach ($itemArray as $sort=>$actItemArray) {
 					foreach ($actItemArray as $k1=>$actItem) {
-						$query='uid=\''.intval($actItem['rec']['uid']).'\'';
-
-						$res = $TYPO3_DB->exec_SELECTquery('inStock', $this->table->name, $query);
-
-						if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-							if ($row['inStock'] > 0) {
-								$newInStock = intval($row['inStock'])-intval($actItem['count']);
-								if ($newInStock < 0) {
-									$newInStock = 0;
-								}
-
-								$fieldsArray =array();
-										// Setting tstamp, deleted and tracking code
-								$fieldsArray['inStock']=$newInStock;
-
-								$res = $TYPO3_DB->exec_UPDATEquery($this->table->name, 'uid='.intval($actItem['rec']['uid']), $fieldsArray);
-							}
+						$row = $actItem['rec'];
+						if (!$this->hasAdditional($row,'alwaysInStock')) {
+							$this->reduceInStock($row['uid'], $actItem['count']);
+							$instockTableArray['tt_products'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row['inStock'] - $actItem['count']);
 						}
+//						$query='uid=\''.intval($actItem['rec']['uid']).'\'';
+//
+//						$res = $TYPO3_DB->exec_SELECTquery('inStock', $this->table->name, $query);
+//
+//						if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+//							if ($row['inStock'] > 0) {
+//								$newInStock = intval($row['inStock']) - intval($actItem['count']);
+//								if ($newInStock < 0) {
+//									$newInStock = 0;
+//								}
+//
+//								$fieldsArray =array();
+//										// Setting tstamp, deleted and tracking code
+//								$fieldsArray['inStock'] = $newInStock;
+//
+//								$res = $TYPO3_DB->exec_UPDATEquery($this->table->name, 'uid='.intval($actItem['rec']['uid']), $fieldsArray);
+//							}
+//						}
 					}
 				}
 			}
 		}
-		return $rc;
+		return $instockTableArray;
 	}
 
 
@@ -230,18 +259,18 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @access private
 	 */
 	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='', $id='1')	{
+	
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
 		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id);
 		
-		
 			// Subst. fields
-		$markerArray['###PRODUCT_UNIT###'] = $row['unit'];
-		$markerArray['###PRODUCT_UNIT_FACTOR###'] = $row['unit_factor'];
+		$markerArray['###'.$this->marker.'_UNIT###'] = $row['unit'];
+		$markerArray['###'.$this->marker.'_UNIT_FACTOR###'] = $row['unit_factor'];
 		$iconImgCode = $this->pibase->cObj->IMAGE($this->conf['datasheetIcon.']);
 		$markerArray['###ICON_DATASHEET###'] = $iconImgCode;
-		$markerArray['###PRODUCT_WWW###'] = $row['www'];
-		$markerArray['###CATEGORY_TITLE###'] = $catTitle;
+		$markerArray['###'.$this->marker.'_WWW###'] = $row['www'];
+//		$markerArray['###CATEGORY_TITLE###'] = $catTitle;
 
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
@@ -249,12 +278,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $this->conf['bulkilyWarning'] : '';
 
 		if ($row['special_preparation'])	{
-			$markerArray['###PRODUCT_SPECIAL_PREP###'] = $this->conf['specialPreparation'];
+			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = $this->conf['specialPreparation'];
 		} else	{
-			$markerArray['###PRODUCT_SPECIAL_PREP###'] = '';
+			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = '';
 		}
 
-		// Fill the Currency Symbol or not
 		if ($this->conf['itemMarkerArrayFunc'])	{
 			$markerArray = $this->pibase->userProcess('itemMarkerArrayFunc',$markerArray);
 		}
@@ -330,8 +358,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_product.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_product.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_product.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_product.php']);
 }
 
 

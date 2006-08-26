@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * functions for the frontend users
  *
@@ -38,12 +38,9 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_base.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_variant.php');
 
 
-
-class tx_ttproducts_fe_users {
+class tx_ttproducts_feuser {
 	var $pibase; // reference to object of pibase
 	var $cnf;
 	var $conf;
@@ -52,26 +49,28 @@ class tx_ttproducts_fe_users {
 	var $dataArray; // array of read in frontend users
 	var $table;		 // object of the type tx_table_db
 	var $fields = array();
-
+	var $tableconf;
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, $tablename, &$tableconf)  {
+	function init(&$pibase, &$cnf, $tablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$this->cnf->conf;
 		$this->config = &$this->cnf->config;
+
+		$this->tableconf = $this->cnf->getTableConf($tablename);
 		
 		$tablename = ($tablename ? $tablename : 'fe_users');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray($tablename);
-		$this->fields['payment'] = ($tableconf['payment'] ? $tableconf['payment'] : '');
+		$this->fields['payment'] = ($this->tableconf['payment'] ? $this->tableconf['payment'] : '');
 		$requiredFields = 'uid,pid,email'.($this->fields['payment'] ? ','.$this->fields['payment'] : '');
-		if (is_array($tableconf['ALL.']))	{
-			$tmp = $tableconf['ALL.']['requiredFields'];
+		if (is_array($this->tableconf['ALL.']))	{
+			$tmp = $this->tableconf['ALL.']['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
 		}
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
@@ -103,8 +102,7 @@ class tx_ttproducts_fe_users {
 	}
 
 
-	function isUserInGroup($feuser, $group)
-	{
+	function isUserInGroup($feuser, $group)	{
 		$groups = explode(',', $feuser['usergroup']);
 		foreach ($groups as $singlegroup)
 			if ($singlegroup == $group)
@@ -141,7 +139,6 @@ class tx_ttproducts_fe_users {
 		global $TCA;
 
 		$typeSalutationText = '';
-
 		if ($bSelect)	{
 				// Salutation		
 			$salutationText = '';
@@ -155,7 +152,7 @@ class tx_ttproducts_fe_users {
 			$salutationPreText = '<SELECT name="recs';
 			$typeSalutationText = $salutationPreText . '['.$type.'info]' . $salutationText;  
 		} else {
-			$typeSalutationText = $this->pibase->pi_getLL('salutation'.$row['salutation']); 
+			$typeSalutationText = ($row['salutation'] ? $this->pibase->pi_getLL('salutation'.$row['salutation']) : ''); 
 		}
 		
 		$markerArray['###'.strtoupper($type).'_SALUTATION###'] = $typeSalutationText;
@@ -165,8 +162,8 @@ class tx_ttproducts_fe_users {
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_fe_users.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_fe_users.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_feuser.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_feuser.php']);
 }
 
 

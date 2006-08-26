@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * basket price calculation functions without any object
  *
@@ -64,7 +64,7 @@ class tx_ttproducts_pricecalc {
 	/**
 	 * Include calculation script which should be programmed to manipulate internal data.
 	 */
-	function includeCalcScript($calcScript, &$confScript, &$basketView)	{
+	function includeCalcScript($calcScript, &$confScript)	{
 		include($calcScript);
 	} // includeCalcScript
 

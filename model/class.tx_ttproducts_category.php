@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * functions for the category
  *
- * $Id$
+ * $Id: class.tx_ttproducts_category.php 3457 2006-07-13 09:25:06Z franzholz $
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -40,20 +40,19 @@
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_email.php');
-require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_category_base.php');
+require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
 
 class tx_ttproducts_category extends tx_ttproducts_category_base {
 	var $tt_products_email;				// object of the type tx_table_db
 	var $tableconf;
 	var $image;
 	var $cnf;
-	var $marker = 'CATEGORY';
 	var $piVar = 'cat';
 
 	/**
 	 * initialization with table object and language table
 	 */
-	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf)	{
+	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename)	{
 		global $TYPO3_DB;
 		
 		$this->cnf = &$cnf;
@@ -129,6 +128,24 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			$rc = array();
 			$this->dataArray = array();
 		}
+		return $rc;
+	}
+
+
+	function getParent ($uid=0) {
+		$rc = array();
+		return $rc;
+	}
+
+
+	function getRowCategory ($row) {
+		$rc = $row['category'];
+		return $rc;
+	}
+
+
+	function getRowPid($row) {
+		$rc = $row['pid'];
 		return $rc;
 	}
 
@@ -214,11 +231,11 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id)	{
+	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
 		$row = ($category ? $this->get($category) : array ('title' => '', 'pid' => $pid));
 
 			// Get image	
-		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id);
+		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id, $prefix);
 		$pageCatTitle = '';
 		if ($pageAsCategory == 1) {
 			$pageTmp = $page->get($pid);
@@ -226,14 +243,15 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		}
 		
 		$catTitle = $pageCatTitle.($row['title']);
-		$this->setMarkerArrayCatTitle ($markerArray, $catTitle);
+		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
+		parent::getItemMarkerArray ($row, $markerArray, $code, $prefix);
 	}
 	
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_category.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_category.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_category.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_category.php']);
 }
 
 

@@ -431,6 +431,18 @@
 
 
 
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>MEMO_EMPTY</h3>
+<em>Subpart displayed when trying to view the memo but the logged in frontend user hasn't stored any memo yet.</em><br>
+<br>
+<br>
+
+<!-- ###MEMO_EMPTY### begin -->
+###GW1B###<B>Sie haben keine Produkte vorgemerkt.</B>###GW1E###
+<!-- ###MEMO_EMPTY### end -->
+
+
+
 
 <br><br><br><br><hr><br><br><br>
 <h3>ITEM_SEARCH</h3>
@@ -523,7 +535,7 @@ In addition there's a number of fields used for delivery and payment information
 <td></td>
 <td valign=top>###GW1B### ###PRICE_TAX### (Steuer: ###PRICE_ONLY_TAX###) EUR ###GW1E###</td>
 <td valign=top> <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </td>
-<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> <br>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)###GW1E###</td>
+<td valign=top align=right>###GW1B### <b>###TAX_INCL_EXCL### ###PRICE_TOTAL_TAX###</b> <br>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)###GW1E###</td>
 </tr>
 <!-- ###ITEM_SINGLE### end -->
 <!-- ###ITEM_LIST### end -->
@@ -553,7 +565,7 @@ In addition there's a number of fields used for delivery and payment information
 </tr></table>
 
 </td>
-      <td valign=top align=right>###GW1B### <b>###PRICE_SHIPPING_TAX###</b>
+      <td valign=top align=right>###GW1B### <b>###TAX_INCL_EXCL### ###PRICE_SHIPPING_TAX###</b>
          <br>(###PRICE_SHIPPING_NO_TAX###)
         ###GW1E###</td>
 </tr>
@@ -599,7 +611,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 
 </td>
 <td valign=top align=right>###GW1B###
-<b>###PRICE_PAYMENT_TAX###</b><br>
+<b>###TAX_INCL_EXCL### ###PRICE_PAYMENT_TAX###</b><br>
  (###PRICE_PAYMENT_NO_TAX###) ###GW1E###</td>
 </tr>
 <tr>
@@ -612,7 +624,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 </tr>
 <tr>
 <td valign=top colspan=5></td>
-<td valign=top align=right nowrap>###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b><br>
+<td valign=top align=right nowrap>###GW1B### <b>###TAX_INCL_EXCL### EUR ###PRICE_TOTAL_TAX###</b><br>
       (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)<br> (Steuer: ###PRICE_TOTAL_ONLY_TAX###) EUR  ###GW1E###</td>
 </tr>
 </table><br>
@@ -1722,7 +1734,7 @@ Ihre Bestellung:
 <!-- ###ITEM_LIST### begin -->
 <!-- ###ITEM_SINGLE### begin-->
 ###PRODUCT_TITLE### ###PRODUCT_IMAGE###
-Anzahl: ###FIELD_QTY###
+Anzahl: ###FIELD_QTY### Price: ###PRICE_TAX### (Steuer: ###PRICE_ONLY_TAX###)
 <!-- ###ITEM_SINGLE### end -->
 <!-- ###ITEM_LIST### end -->
 <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
@@ -2079,7 +2091,7 @@ Mein Typo3 Shop
 <!-- ###DELIVERY_TEMPLATE### end -->
 
 
-<!-- ###ITEM_CATLIST_TEMPLATE### begin
+<!-- ###ITEM_CATEGORY_SELECT_TEMPLATE### begin
 	This subpart is used to display the regular list of categories.
 -->
 	<!-- ###CATEGORY_SINGLE### begin-->
@@ -2101,10 +2113,10 @@ Mein Typo3 Shop
 
 	<div id="ArticleId">Das ersetzen</div>
 
-<!-- ###ITEM_CATLIST_TEMPLATE### end -->
+<!-- ###ITEM_CATEGORY_SELECT_TEMPLATE### end -->
 
 
-<!-- ###ITEM_CATLIST_TEMPLATE_UL### begin
+<!-- ###ITEM_CATLIST_TEMPLATE### begin
 	This subpart is used to display the regular list of categories.
 -->
 	<!-- ###CATEGORY_SINGLE### begin-->
@@ -2115,7 +2127,7 @@ Mein Typo3 Shop
 		###ITEM_SINGLE_POST_HTML###
 	<!-- ###CATEGORY_SINGLE### end-->
 
-<!-- ###ITEM_CATLIST_TEMPLATE_UL### end -->
+<!-- ###ITEM_CATLIST_TEMPLATE### end -->
 
 
 

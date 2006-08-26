@@ -21,6 +21,7 @@ CREATE TABLE tt_products (
 	price varchar(20) DEFAULT '' NOT NULL,
 	price2 varchar(20) DEFAULT '' NOT NULL,
 	note text NOT NULL,
+	note2 text NOT NULL,
 	unit varchar(20) DEFAULT '' NOT NULL,  
 	unit_factor varchar(6) DEFAULT '' NOT NULL,   
 	image tinyblob NOT NULL,
@@ -41,9 +42,9 @@ CREATE TABLE tt_products (
 	additional_type varchar(36) DEFAULT '' NOT NULL,
 	additional mediumtext NOT NULL,
 	special_preparation int(11) DEFAULT '0' NOT NULL,
-	shipping DECIMAL(19,2) NOT NULL,
-	shipping2 DECIMAL(19,2) NOT NULL,
-	handling DECIMAL(19,2) NOT NULL
+	shipping decimal(19,2) DEFAULT '0.00' NOT NULL,
+	shipping2 decimal(19,2) DEFAULT '0.00' NOT NULL,
+	handling decimal(19,2) DEFAULT '0.00' NOT NULL
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
@@ -107,6 +108,7 @@ CREATE TABLE tt_products_language (
 	subtitle tinytext NOT NULL,
 	prod_uid int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
+	note2 text NOT NULL,
 	unit varchar(20) DEFAULT '' NOT NULL,  
 	datasheet tinyblob NOT NULL,  
 	www varchar(80) DEFAULT '' NOT NULL,
@@ -242,6 +244,32 @@ CREATE TABLE tt_products_emails (
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
+
+
+
+#
+# Table structure for table 'tt_products_shipping'
+#
+#CREATE TABLE tt_products_shipping (
+#	uid int(11) DEFAULT '0' NOT NULL auto_increment,
+#	pid int(11) DEFAULT '0' NOT NULL,
+#	tstamp int(11) DEFAULT '0' NOT NULL,
+#	crdate int(11) DEFAULT '0' NOT NULL,
+#	cruser_id int(11) DEFAULT '0' NOT NULL,
+#	sorting int(10) DEFAULT '0' NOT NULL,
+#	t3ver_oid int(11) DEFAULT '0' NOT NULL,
+#	t3ver_id int(11) DEFAULT '0' NOT NULL,
+#	t3ver_label varchar(30) DEFAULT '' NOT NULL,
+#	deleted tinyint(4) DEFAULT '0' NOT NULL,
+#	hidden tinyint(4) DEFAULT '0' NOT NULL,
+#	starttime int(11) DEFAULT '0' NOT NULL,
+#	endtime int(11) DEFAULT '0' NOT NULL,
+#	fe_group int(11) DEFAULT '0' NOT NULL,
+#	title varchar(80) DEFAULT '' NOT NULL,
+#	countries mediumtext NOT NULL,
+#	shipping price(19,2) DEFAULT '0.00' NOT NULL
+#);
+#
 
 
 #

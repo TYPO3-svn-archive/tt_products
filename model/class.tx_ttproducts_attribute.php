@@ -8,7 +8,7 @@
 *  This script is part of the Typo3 project. The Typo3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
+*  the Free Software Foundation; either version 2 of the License or
 *  (at your option) any later version.
 *
 *  The GNU General Public License can be found at
@@ -29,7 +29,7 @@
  *
  * functions for the category
  *
- * $Id$
+ * $Id: class.tx_ttproducts_attribute.php,v 1.5 2006/02/27 16:31:44 franzholz Exp $
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -39,12 +39,9 @@
  */
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
-
-class tx_ttproducts_email {
-	var $emailArray;	// array of read in emails
-	var $table;		 // object of the type tx_table_db
+class tx_ttproducts_attribute {
+	var $attributeArray;	// array of read in attributes
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -52,36 +49,36 @@ class tx_ttproducts_email {
 	function init() {
 		global $TYPO3_DB;
 		
-		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
-		$this->table->setTCAFieldArray('tt_products_emails');
+		$this->attributeArray = array();
 	} // init
 
 
-	function getEmail ($uid) {
+	function comp($row1, $row2)  {
+		return strcmp($this->get[$row1['category']], $this->get[$row2['category']]);
+	} // comp
+
+	function hasAttribute ($uid) {
+		return ($this->attributeArray[$uid] > 0);
+	}
+
+	function getAttribute ($uid) {
 		global $TYPO3_DB;
-		$rc = $this->emailArray[$uid];;
+		$rc = $this->attributeArray[$uid];
 		if (!$rc) {
-			$sql = t3lib_div::makeInstance('tx_table_db_access');
-			$sql->prepareFields($this->table, 'select', '*');
-			$sql->prepareWhereFields ($this->table, 'uid', '=', intval($uid));
-			$this->table->enableFields();
-			// Fetching the email
-			$res = $sql->exec_SELECTquery();
-			$row = $TYPO3_DB->sql_fetch_assoc($res);
-			$rc = $this->emailArray[$row['uid']] = $row;
+			$rc = $this->attributeArray[$uid] = $uid;
 		}
 		return $rc;
 	}
 
-
+	function setAttribute ($uid) {
+		$this->attributeArray[$uid] = $uid;
+	}
+	
 }
 
 
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_email.php'])  {
-  include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_email.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_attribute.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_attribute.php']);
 }
-
 
 ?>

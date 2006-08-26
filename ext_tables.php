@@ -184,6 +184,7 @@ if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
 					Array('LISTGIFTS'.		'18', 'LISTGIFTS'),
 					Array('LISTCAT'.		'19', 'LISTCAT'),
 					Array('LISTARTICLES'.	'20', 'LISTARTICLES'),
+					Array('CONTROL'.		'21', 'CONTROL'),
 				),
 			)
 		)

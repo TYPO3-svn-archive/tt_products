@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * email functions
  *
@@ -39,7 +39,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_fe_users.php');
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_feuser.php');
 
 
 
@@ -49,6 +49,7 @@ class tx_ttproducts_email_div {
 	 * Extended mail function
 	 */
 	function send_mail($toEMail,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
+		
 		include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 
 		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
@@ -77,9 +78,12 @@ class tx_ttproducts_email_div {
 				$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
 				$Typo3_htmlmail->substHREFsInHTML();  
 				$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
+				if ($message)	{
+					$Typo3_htmlmail->addPlain($message);
+				}
+			} else {
+				$Typo3_htmlmail->addPlain($message);
 			}
-
-			$Typo3_htmlmail->addPlain($message);
 			$Typo3_htmlmail->setHeaders();
 			$Typo3_htmlmail->setContent();
 			$Typo3_htmlmail->setRecipient(explode(',', $toEMail));
@@ -112,10 +116,10 @@ class tx_ttproducts_email_div {
 				$markerArray['###ORDER_STATUS_INFO###'] = $v['info'];
 				$markerArray['###ORDER_STATUS_COMMENT###'] = $v['comment'];
 				$markerArray['###PID_TRACKING###'] = $this->conf['PIDtracking'];
-				$markerArray['###PERSON_NAME###'] = $orderData['personInfo']['name'];
-				$markerArray['###DELIVERY_NAME###'] = $orderData['deliveryInfo']['name'];
-				tx_ttproducts_fe_users::getItemMarkerArray ($orderData['personInfo'], $markerArray, false, 'person');
-				tx_ttproducts_fe_users::getItemMarkerArray ($orderData['deliveryInfo'], $markerArray, false, 'delivery');
+				$markerArray['###PERSON_NAME###'] = $orderData['billing']['name'];
+				$markerArray['###DELIVERY_NAME###'] = $orderData['delivery']['name'];
+				tx_ttproducts_feuser::getItemMarkerArray ($orderData['billing'], $markerArray, false, 'person');
+				tx_ttproducts_feuser::getItemMarkerArray ($orderData['delivery'], $markerArray, false, 'delivery');
 				
 				$markerArray['###ORDER_TRACKING_NO###']=$tracking;
 				$orderNumber = $order->getNumber($orderRow['uid']);
@@ -134,7 +138,7 @@ class tx_ttproducts_email_div {
 	/**
 	 * Send notification email for gift certificates
 	 */
-	function sendGiftEmail(&$pibase,&$conf,&$basket, $recipient, $comment, $giftRow, $templateCode, $templateMarker)	{
+	function sendGiftEmail(&$pibase,&$conf,&$address, $recipient, $comment, $giftRow, $templateCode, $templateMarker)	{
 		global $TSFE;
 
 		$sendername = ($giftRow['personname'] ? $giftRow['personname'] : $conf['orderEmail_fromName']);
@@ -169,7 +173,7 @@ class tx_ttproducts_email_div {
 					tx_ttproducts_email_div::send_mail(implode($recipients,','),  $subject, $emailContent, $HTMLmailContent, $senderemail, $sendername, $conf['GiftAttachment']);
 				} else {		// ... else just plain text...
 					tx_ttproducts_email_div::send_mail($recipients, $subject, $emailContent, $tmp='',$senderemail, $sendername, $conf['GiftAttachment']);
-					tx_ttproducts_email_div::send_mail($conf['orderEmail_to'], $subject, $emailContent, $tmp='', $basket->personInfo['email'], $basket->personInfo['name'], $conf['GiftAttachment']);
+					tx_ttproducts_email_div::send_mail($conf['orderEmail_to'], $subject, $emailContent, $tmp='', $address->infoArray['billing']['email'], $address->infoArray['billing']['name'], $conf['GiftAttachment']);
 				}
 			}
 		}

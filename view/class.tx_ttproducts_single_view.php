@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * product single view functions
  *
- * $Id$
+ * $Id: class.tx_ttproducts_single_view.php 3457 2006-07-13 09:25:06Z franzholz $
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	René Fritz <r.fritz@colorcube.de>
@@ -41,7 +41,8 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
+require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
+require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_javascript_marker.php');
 
 
 class tx_ttproducts_single_view {
@@ -50,7 +51,6 @@ class tx_ttproducts_single_view {
 	var $conf;
 	var $config;
 	var $basket;
-	var $basketView;
 	var $uid; 	// product id
 	var $type; 	// 'product' or 'article'
 	var $variants; 	// different attributes
@@ -61,11 +61,12 @@ class tx_ttproducts_single_view {
 	var $fe_users; // element of class tx_table_db
 
 	var $marker; // marker functions
+	var $javaScriptMarker; // JavaScript marker functions
 	var $pid; // PID where to go
 	var $LLkey; // language key
 	var $useArticles;
 
- 	function init(&$pibase, &$cnf, &$basket, &$basketView, &$page,
+ 	function init(&$pibase, &$cnf, &$basket, &$page,
  			&$tt_content, &$tt_products, &$tt_products_articles,
  			&$tt_products_cat, &$fe_users, $uidArray, $extVars,
  			$pid, $LLkey, $useArticles) {
@@ -74,7 +75,6 @@ class tx_ttproducts_single_view {
  		$this->conf = &$this->cnf->conf;
  		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
-		$this->basketView = &$basketView;
  		$this->page = &$page;
  		$this->tt_content = &$tt_content;
  		$this->uid = current($uidArray);
@@ -89,15 +89,16 @@ class tx_ttproducts_single_view {
 		$this->useArticles = $useArticles;	
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($pibase, $cnf, $basket);
+		$this->javaScriptMarker = t3lib_div::makeInstance('tx_ttproducts_javascript_marker');
+		$this->javaScriptMarker->init($pibase, $cnf, $this->pibase->javascript);
  	}
+
 
 	// returns the single view
 	function &printView(&$templateCode, &$error_code, $pageAsCategory, $templateSuffix = '') {
 		global $TSFE, $TCA, $TYPO3_DB;
+		global $TYPO3_CONF_VARS;
 
-		if ($templateSuffix != '') {
-			$templateSuffix = '_'.strtoupper($templateSuffix);
-		}		
 		$itemTableArray = array('product' => &$this->tt_products, 'article' => &$this->tt_products_articles);
 		$rowArray = array('product' => array(), 'article' => array());
 		$itemTableConf = $rowArray;
@@ -116,7 +117,7 @@ class tx_ttproducts_single_view {
 
 			if ($this->type == 'product')	{
 				if ($this->variants) {
-					$itemTableArray[$this->type]->variant->getRowFromVariant ($rowArray[$this->type], $this->variants);
+					$itemTableArray[$this->type]->variant->modifyRowFromVariant ($rowArray[$this->type], $this->variants);
 				}
 			} else {
 				$itemTableArray['product']->table->enableFields();
@@ -138,9 +139,6 @@ class tx_ttproducts_single_view {
 			}
 		}
 
-		if ($this->type == 'article')	{
-			
-		}
 		$row = $rowArray[$this->type];
 		if ($row) {
 		 	// $this->uid = intval ($row['uid']); // store the uid for later usage here
@@ -164,7 +162,6 @@ class tx_ttproducts_single_view {
 			}
 			// Add the template suffix
 			$itemFrameTemplate = substr($itemFrameTemplate, 0, -3).$templateSuffix.'###';
-			
 			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($itemFrameTemplate));
 			
 			$markerFieldArray = array(
@@ -173,14 +170,16 @@ class tx_ttproducts_single_view {
 				'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
 				'LINK_DATASHEET' => 'datasheet');
 			$viewTagArray = array();
+			$parentArray = array();
 			$fieldsArray = $this->marker->getMarkerFields(
 				$itemFrameWork,
 				$itemTableArray[$this->type]->table->name,
 				$itemTableArray[$this->type]->table->tableFieldArray,
 				$itemTableArray[$this->type]->table->requiredFieldArray,
 				$markerFieldArray,
-				$itemTableArray[$this->type]->table->marker,
-				$viewTagArray
+				$itemTableArray[$this->type]->marker,
+				$viewTagArray,
+				$parentArray
 			);
 
 			if (count($giftNumberArray)) {
@@ -205,21 +204,23 @@ class tx_ttproducts_single_view {
 					break;
 			}
 
-			$pageCatTitle = '';
-			if ($pageAsCategory >= 1) {
-				$pageTmp = $this->page->get($row['pid']);
-				$pageCatTitle = $pageTmp['title'];
-				if ($pageAsCategory == 1)	{
-					$pageCatTitle .= '/';
-				}	
-			}
+//			$pageCatTitle = '';
+//			if ($pageAsCategory >= 1) {
+//				$pageTmp = $this->page->get($row['pid']);
+//				$pageCatTitle = $pageTmp['title'];
+//				if ($pageAsCategory == 1)	{
+//					$pageCatTitle .= '/';
+//				}	
+//			}
+//			
+//			$catTmp = '';
+//			if ($row['category'] && ($pageAsCategory != 2)) {
+//				$catTmp = $this->tt_products_cat->get($row['category']);
+//				$catTmp = $catTmp['title'];
+//			}
 			
-			$catTmp = '';
-			if ($row['category'] && ($pageAsCategory != 2)) {
-				$catTmp = $this->tt_products_cat->get($row['category']);
-				$catTmp = $catTmp['title'];
-			}
-			$catTitle = $pageCatTitle.$catTmp;
+						
+//			$catTitle = $pageCatTitle.$catTmp;
 			$datasheetFile = $row['datasheet'];
 
 				// Fill marker arrays
@@ -239,7 +240,63 @@ class tx_ttproducts_single_view {
 			$item = $this->basket->getItem($row, $variant);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
 			$markerArray = array();
-			$this->basketView->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, 'SINGLE', 1);
+
+			// get categories
+			if (!$pageAsCategory || $pageAsCategory == 1)	{
+				$viewCatTable = &$this->tt_products_cat;
+			} else {
+				$viewCatTable = &$this->page;
+			}
+
+			$viewCatTagArray = array();
+			$catParentArray = array();
+			$catfieldsArray = $this->marker->getMarkerFields(
+				$itemFrameWork,
+				$viewCatTable->table->name,
+				$viewCatTable->table->tableFieldArray,
+				$viewCatTable->table->requiredFieldArray,
+				$tmp = array(),
+				$viewCatTable->marker,
+				$viewCatTagArray,
+				$catParentArray
+			);
+
+			$viewCatTable->getMarkerArray (
+				$markerArray, 
+				$this->page,
+				$row['category'], 
+				$row['pid'], 
+				$this->config['limitImage'], 
+				'listcatImage', 
+				$viewCatTagArray, 
+				array(), 
+				$pageAsCategory,
+				'SINGLE',
+				1,
+				''
+			);
+
+			$catTitle = $viewCatTable->getMarkerArrayCatTitle($markerArray);
+			$viewCatTable->getParentMarkerArray (
+				$parentArray,
+				$row,
+				$catParentArray, 
+				$this->page,
+				$row['category'], 
+				$row['pid'], 
+				$this->config['limitImage'], 
+				'listcatImage', 
+				$viewCatTagArray, 
+				array(), 
+				$pageAsCategory,
+				'SINGLE',
+				1,
+				''
+			);
+
+			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
+			$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
+			$basketItemView->getItemMarkerArray ($itemTableArray[$this->type], $item, $markerArray, $this->basket->basketExt, 'SINGLE', 1);
 			$itemTableArray[$this->type]->getItemMarkerArray (
 				$item,
 				$markerArray,
@@ -381,6 +438,8 @@ class tx_ttproducts_single_view {
 				}
 			}
 			
+			$this->javaScriptMarker->getMarkerArray($markerArray);
+			
 				// Substitute	
 			$content = $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 			if ($personDataFrameWork) {
@@ -411,8 +470,8 @@ class tx_ttproducts_single_view {
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_single_view.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_single_view.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_single_view.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_single_view.php']);
 }
 
 

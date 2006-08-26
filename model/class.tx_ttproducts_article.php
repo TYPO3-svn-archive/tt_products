@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * functions for the product
  *
- * $Id$
+ * $Id: class.tx_ttproducts_article.php 3457 2006-07-13 09:25:06Z franzholz $
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -39,7 +39,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_article_base.php');
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 
 class tx_ttproducts_article extends tx_ttproducts_article_base {
@@ -53,29 +53,29 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, $LLkey, $tablename, &$tableconf, &$articleConf)  {
+	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, &$paymentshipping, $LLkey, $tablename, &$articleConf)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		
 		$this->tt_products = &$tt_products;
+		$this->tt_products->setArticleTable($this);
 		$tablename = ($tablename ? $tablename : 'tt_products_articles');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->table->setConfig($conf['conf.'][$tablename.'.']);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 
 		$requiredFields = 'uid,pid,uid_product,price,price2';
-		if (is_array($tableconf['ALL.']))	{
-			$tmp = $tableconf['ALL.']['requiredFields'];
+		if (is_array($articleConf['ALL.']))	{
+			$tmp = $articleConf['ALL.']['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
 		}
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 
-		parent::init($pibase, $cnf, $tt_content);
+		parent::init($pibase, $cnf, $tablename, $tt_content, $paymentshipping);
 
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
-		$this->variant->init($this->pibase, $cnf, $tableconf['variant.'], $this, 0);
+		$this->variant->init($this->pibase, $cnf, $this, 0);
 	} // init
 
 
@@ -92,6 +92,21 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	}
 
 
+	function &getWhereArray ($where) {
+		global $TYPO3_DB;
+		$rowArray = array();
+		$this->table->enableFields();		
+		$res = $this->table->exec_SELECTquery('*',$where);
+		
+		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+			$uid = intval($row[uid]);
+			$this->dataArray[$uid] = $row;	// remember for later queries
+			$rowArray[] = $row;
+		}
+		return $rowArray;
+	}
+
+
 	function getProductField(&$row, $field)	{
 		$rc = '';
 		if ($field != 'uid')	{
@@ -102,6 +117,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		}
 		return $rc;
 	}
+
 
 	function &getProductRow($row)	{
 		$rc = $this->tt_products->get($row['uid_product']);
@@ -129,8 +145,8 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_article.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_article.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_article.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_article.php']);
 }
 
 

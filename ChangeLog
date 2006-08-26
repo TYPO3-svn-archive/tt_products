@@ -1,3 +1,28 @@
+2006-08--- Franz Holzinger <franz@fholzinger.com>
+	* rename swords to sword because this is TYPO3 compliant and no cache is used here
+	* use global $TYPO3_CONF_VARS before each include_once - PHP 5.1 would otherwise not allow XCLASS for HtmlMail, DAM aso.
+	* correct error with wrongly used TAXincluded for payment
+	* consider parent marker elements
+	* use CATEGORY markers in single view
+	* enable settings of reduced variants for articles in comparison to products
+	* correct error with alwaysInStock
+	* filter for product list by fields
+	* feature: notification email when instock is below a certain value
+	* consider 0 values for payment/shipping
+	* change getMarkerFields to make ###BULKILIY_WARNING### appear in list view
+	* new classes for control and activities
+	* use static_info_tables 2.0.0 instead of sr_static_info
+	* new feature: self expanding shipping menu using the where clause for static_countries
+	* use all fields from DAM as new markers with the field names as suffixes to the image markers
+	* enhances payment and shipping without taxes. For shipping consideration of the static_countries table
+	* round the price of a single product always by 2 digits after the comma.
+	* correct error with missing product category in basket view
+	* new feature: replacePayment gives the shipping item the possibility to override all payment settings
+	* new display mode for the select box of categories
+
+2006-08-15 Bjoern Kraus <kraus@phoenixwebsolutions.de>
+	* with "basketMaxQuantity" set to "inStock" you can limit the product count to the number in stock
+
 2006-07-14 Franz Holzinger <franz@fholzinger.com>
 	* enable the altText.data and other image configuration by setting the cObj->alternativeData to the current row
 	* CSS ids for payment and shipping selector

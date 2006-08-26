@@ -22,6 +22,12 @@
 			<label index="salutation1"></label>
 			<label index="salutation2"></label>
 			<label index="salutation3"></label>
+			<label index="instock_warning"></label>
+			<label index="product"></label>
+			<label index="article"></label>
+			<label index="tax_included"></label>
+			<label index="tax_excluded"></label>
+			<label index="tax_zero"></label>
 		</labelContext>
 	</meta>
 	<data type="array">
@@ -42,6 +48,12 @@
 			<label index="salutation1">Mrs.</label>
 			<label index="salutation2">Ms.</label>
 			<label index="salutation3">To</label>
+			<label index="instock_warning">Warning: | no. | runs out of stock.</label>
+			<label index="product">product</label>
+			<label index="article">article</label>
+			<label index="tax_included">VAT incl. price</label>
+			<label index="tax_excluded">w/o VAT</label>
+			<label index="tax_zero">without taxes</label>
 		</languageKey>
 		<languageKey index="dk" type="array">
 		</languageKey>
@@ -60,6 +72,12 @@
 			<label index="salutation1">Fräulein</label>
 			<label index="salutation2">Frau</label>
 			<label index="salutation3">An</label>
+			<label index="instock_warning">Warnung: | Nr. | ist bald nicht mehr auf Lager.</label>
+			<label index="product">Produkt</label>
+			<label index="article">Artikel</label>
+			<label index="tax_included">inkl. MWSt.</label>
+			<label index="tax_excluded">exkl. MWSt.</label>
+			<label index="tax_zero">ohne MWSt.</label>
 		</languageKey>
 		<languageKey index="no" type="array">
 			<label index="open_bill">Klikk her for å åpne kvitteringen</label>

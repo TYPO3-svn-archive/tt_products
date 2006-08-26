@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * functions for the product
  *
- * $Id$
+ * $Id: class.tx_ttproducts_article_base.php 3457 2006-07-13 09:25:06Z franzholz $
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -46,8 +46,14 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_variant.php');
 class tx_ttproducts_article_base {
 	var $table;	 // object of the type tx_table_db
 	var $pibase; // reference to object of pibase
+	var $cnf;
 	var $conf;
 	var $config;
+	var $paymentshipping;		// payment and shipping object to make the price dependant on it
+
+	var $tableconf;
+	var $TableDesc;
+	var $fields = array();
 	var $variantArray; // array of variants which are selectable
 	var $bIsProduct=true;	// if this is the base for a product
 	var $marker;	// marker prefix in the template file. must be overridden
@@ -59,13 +65,17 @@ class tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_content)  {
+	function init(&$pibase, &$cnf, $tablename, &$tt_content, &$paymentshipping)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		$this->pibase = &$pibase;
+		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
-
+		$this->tableconf = $this->cnf->getTableConf($tablename);
+		$this->tableDesc = $this->cnf->getTableDesc($tablename);
+ 		$this->paymentshipping = &$paymentshipping;
+ 
 		$this->variantArray = array();
 		$this->variantArray[1] = array('color', ($this->bIsProduct && $this->conf['selectColor']));
 		$this->variantArray[2] = array('size', ($this->bIsProduct && $this->conf['selectSize']));
@@ -75,14 +85,31 @@ class tx_ttproducts_article_base {
 			// image
 		$this->image = t3lib_div::makeInstance('tx_ttproducts_image');
 		$this->image->init($this->pibase, $cnf, $tt_content, $this->table, $this->marker);
+		$this->fields['itemnumber'] = ($this->tableconf['itemnumber'] ? $this->tableconf['itemnumber'] : 'itemnumber');
 	} // init
 
 
 	/**
-	 * Reduces the instock value of the orderRecord with the sold items and returns the result
+	 * Reduces the instock value of the orderRecord with the amount and returns the result
 	 * 
 	 */
-	function reduceInStock(&$itemArray, $useArticles)	{
+	function reduceInStock($uid, $count)	{
+		global $TYPO3_DB;
+
+		$instockField = $this->cnf->getTableDesc['inStock'];
+		$instockField = ($instockField ? $instockField : 'inStock');
+		$uid = intval($uid);
+		$fieldsArray = array();
+		$fieldsArray[$instockField] = $instockField.'-'.$count;
+		$res = $TYPO3_DB->exec_UPDATEquery($this->table->name,'uid=\''.$uid.'\'', $fieldsArray,$instockField);
+	}
+
+
+	/**
+	 * Reduces the instock value of the orderRecords with the sold items and returns the result
+	 * 
+	 */
+	function reduceInStockItems(&$itemArray, $useArticles)	{
 
 	}
 
@@ -101,6 +128,7 @@ class tx_ttproducts_article_base {
 	 * @access private
 	 */
 	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1')	{
+		
 		if (!$this->marker)
 			return array();
 		$row = &$item['rec'];
@@ -111,32 +139,50 @@ class tx_ttproducts_article_base {
 		$markerArray['###'.$this->marker.'_UID###'] = $row['uid'];
 		$markerArray['###'.$this->marker.'_TITLE###'] = $row['title'];
 		$markerArray['###'.$this->marker.'_SUBTITLE###'] = $row['subtitle'];
-		$markerArray['###'.$this->marker.'_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
-
-			// Extension CSS styled content
-		if (t3lib_extMgm::isLoaded('css_styled_content')) {
-			$markerArray['###'.$this->marker.'_NOTE###'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE###']);
-		} else if (is_array($this->conf['parseFunc.']))	{
-			$markerArray['###'.$this->marker.'_NOTE###'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE###'],$this->conf['parseFunc.']);
+		if ($code == 'EMAIL' && !$this->conf['orderEmail_htmlmail'])	{ // no formatting for emails
+			$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'];
+			$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'];			
+		} else {
+			$markerArray['###'.$this->marker.'_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
+			$markerArray['###'.$this->marker.'_NOTE2###'] = ($this->conf['nl2brNote'] ? nl2br($row['note2']) : $row['note2']);
+	
+				// Extension CSS styled content
+			if (t3lib_extMgm::isLoaded('css_styled_content')) {
+				$markerArray['###'.$this->marker.'_NOTE###'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE###']);
+				$markerArray['###'.$this->marker.'_NOTE2###'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE2###']);
+			} else if (is_array($this->conf['parseFunc.']))	{
+				$markerArray['###'.$this->marker.'_NOTE###'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE###'],$this->conf['parseFunc.']);
+				$markerArray['###'.$this->marker.'_NOTE2###'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE2###'],$this->conf['parseFunc.']);
+			}
 		}
 		$markerArray['###'.$this->marker.'_ITEMNUMBER###'] = $row[$this->fields['itemnumber']];
+		$markerArray['###'.$this->marker.'_TAX###'] = (!empty($row['tax'])) ? $row['tax'] : $this->conf['TAXpercentage'];
+
 		$markerArray['###CUR_SYM###'] = ' '.($this->conf['currencySymbol'] ? $this->conf['currencySymbol'] : '');
-		$markerArray['###PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']));
-		$markerArray['###PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax']));
-		$markerArray['###PRICE_ONLY_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
-		$oldPrice = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],1,$row['tax'])));
-		$oldPriceNoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],0,$row['tax'])));
-		$price2 = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],1,$row['tax'])));
-		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],0,$row['tax'])));
+
 		$priceNo = intval($this->config['priceNoReseller']);
+
+		$taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage();
+		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
+		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
+		$markerArray['###PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax'], $taxInclExcl));
+		$price2 = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'.$priceNo],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
+		$markerArray['###PRICE2_TAX###'] = $price2;
+		$oldPrice = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
+		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
+		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_excluded');
+		$markerArray['###PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax'], $taxInclExcl));
+		$oldPriceNoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],0,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
+		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
+		$markerArray['###PRICE_ONLY_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
+
+		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'.$priceNo],0,$row['tax'],$this->conf['TAXincluded'])));
+		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
+
 		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
 			$oldPrice = $oldPriceNoTax = '';
 		}
 
-		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
-		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
-		$markerArray['###PRICE2_TAX###'] = $price2;
-		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
 		$markerArray['###'.$this->marker.'_INSTOCK_UNIT###'] = '';
 		if ($row['inStock'] <> 0) {
 			$markerArray['###'.$this->marker.'_INSTOCK###'] = $row['inStock'];
@@ -209,8 +255,8 @@ class tx_ttproducts_article_base {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_article_base.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_article_base.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_article_base.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_article_base.php']);
 }
 
 

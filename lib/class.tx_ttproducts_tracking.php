@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * tracking functions
  *
@@ -53,7 +53,6 @@ class tx_ttproducts_tracking {
 
 
 	/**
-	 * Initialized the basket, setting the deliveryInfo if a users is logged in
 	 * $basket is the TYPO3 default shopping basket array from ses-data
 	 *
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for

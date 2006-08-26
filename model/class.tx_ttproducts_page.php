@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * functions for the page
  *
- * $Id$
+ * $Id: class.tx_ttproducts_page.php 3460 2006-07-14 12:00:13Z franzholz $
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -40,7 +40,7 @@
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
-require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_category_base.php');
+require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
 
 
 class tx_ttproducts_page extends tx_ttproducts_category_base {
@@ -52,7 +52,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf,  &$pageconf)	{
+	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$pageconf)	{
 		global $TYPO3_DB;
 		
 		$this->pibase = &$pibase;
@@ -87,7 +87,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	} // init
 
 
-	function get ($uid) {
+	function get ($uid,$pid=0) {
 		global $TYPO3_DB;
 		$bMultple = (strstr($uid, ',') ? true : false);
 		
@@ -106,10 +106,31 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	}
 
 
+	function getParent ($uid=0) {
+		$rc = array();
+		$row = $this->get ($uid);
+		if ($row['pid'])	{
+			$rc = $this->get ($row['pid']);
+		}
+		return $rc;
+	}
+
+  function getRowCategory ($row) {
+    $rc = $row['pid'];
+    return $rc;
+  }
+
+  function getRowPid($row) {
+    $rc = $row['uid'];
+    return $rc;
+  }
+  
 	function getParamDefault ()	{
 		$pid = $this->pibase->piVars[$this->piVar];
 		$pid = ($pid ? $pid : $this->conf['defaultPageID']);
-		$pid = implode(',',t3lib_div::intExplode(',', $pid));
+		if ($pid)	{
+			$pid = implode(',',t3lib_div::intExplode(',', $pid));
+		}
 		return $pid;	
 	}
 
@@ -137,8 +158,11 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		}
 		
 		$pageArray = t3lib_div::trimExplode (',', $pid_list);
-		$excludeKey = array_search($excludeCat, $pageArray);
-		unset($pageArray[$excludeKey]);
+		$excludeArray = t3lib_div::trimExplode (',', $excludeCat);
+		foreach ($excludeArray as $k => $cat)	{
+			$excludeKey = array_search($cat, $pageArray);
+			unset($pageArray[$excludeKey]);	
+		}
 		foreach ($pageArray as $k => $uid)	{
 			$row = $this->get ($uid);
 			if ($row['shortcut'] == $excludeCat)	{	// do not show shortcuts to the excluded page
@@ -172,7 +196,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * Getting the page table
 	 * On the basket page there will be a separate page table
 	 */
-	function &createPageTable(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$tableconf,  &$pageconf, &$pageObject, &$pid_list, $recursive)	{
+	function &createPageTable(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename,  &$pageconf, &$pageObject, &$pid_list, $recursive)	{
 		if (!is_object($pageObject)) {
 			$pageObject = t3lib_div::makeInstance('tx_ttproducts_page');
 			$pageObject->init(
@@ -181,7 +205,6 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 				$tt_content,
 				$LLkey,
 				$tablename,
-				$tableconf,
 				$pageconf
 			);
 		}
@@ -315,20 +338,23 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id)	{
+	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix='')	{
 		$row = $this->get($pid);
 
 			// Get image	
-		$this->image->getItemMarkerArray ($row, $markerArray, $pid, $imageNum, $imageRenderObj, $viewCatTagArray, $code);
+		$this->image->getItemMarkerArray ($row, $markerArray, $pid, $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id, $prefix);
 		$pageCatTitle = $row['title'];
-		$this->setMarkerArrayCatTitle ($markerArray, $pageCatTitle);
+		$this->setMarkerArrayCatTitle ($markerArray, $pageCatTitle, $prefix);
+		$markerArray['###'.$prefix.$this->marker.'_SUBTITLE###'] = $row['subtitle'];
+
+		parent::getItemMarkerArray($row, $markerArray, $code, $prefix);
 	}
 }
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_page.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_page.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_page.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_page.php']);
 }
 
 

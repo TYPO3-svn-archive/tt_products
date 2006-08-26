@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * category list view functions
  *
- * $Id$
+ * $Id: class.tx_ttproducts_catlist_view.php 3457 2006-07-13 09:25:06Z franzholz $
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -38,7 +38,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_marker.php');
+require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
 
 class tx_ttproducts_catlist_view {
 	var $pibase; // reference to object of pibase
@@ -51,7 +51,6 @@ class tx_ttproducts_catlist_view {
 	var $pid; // pid where to go
 	var $marker; // marker functions
 
-	var $searchFieldList='';
 
 	function init(&$pibase, &$cnf, &$basket, &$pid_list, &$tt_content, &$tt_products_cat, $pid) {
 		$this->pibase = &$pibase;
@@ -67,7 +66,6 @@ class tx_ttproducts_catlist_view {
 			$this->tt_content,
 			$this->pibase->LLkey,
 			$this->conf['table.']['pages'], 
-			$this->conf['table.']['pages.'],
 			$this->conf['conf.']['pages.'],
 			$this->page,
 			$pid_list,
@@ -75,9 +73,6 @@ class tx_ttproducts_catlist_view {
 		);
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($pibase, $cnf, $basket);
-
-			//extend standard search fields with user setup
-		$this->searchFieldList = trim($this->conf['stdSearchFieldExt']) ? implode(',', array_unique(t3lib_div::trimExplode(',',$this->searchFieldList.','.trim($this->conf['stdSearchFieldExt']),1))) : 'title,note,'.$this->tt_products->fields['itemnumber'];
 	}
 
 
@@ -144,7 +139,7 @@ class tx_ttproducts_catlist_view {
 
 
 	// returns the products list view
-	function &printView(&$templateCode, &$error_code, $pageAsCategory) {
+	function &printView(&$templateCode, &$error_code, $pageAsCategory, $htmlTagMain, $templateSuffix = '') {
 		global $TSFE, $TCA, $TYPO3_CONF_VARS;
 		$content='';
 		$out='';
@@ -153,7 +148,6 @@ class tx_ttproducts_catlist_view {
 		$bSeparated = false;
 		$categoryArray = array();
 		$categoryTable = '';
-		$htmlTagMain = $this->conf['displayCatListType'];
 		$htmlTagElement = ($htmlTagMain == 'ul' ? 'li' : $htmlTagMain == 'select' ? 'option' : 'null');
 
 		if ($pageAsCategory)	{
@@ -172,7 +166,7 @@ class tx_ttproducts_catlist_view {
 		$rootpathArray = $categoryTable->getRootpathArray($rootCat, $currentCat);
 		$categoryArray = $categoryTable->getRelationArray($excludeCat,$currentCat);
 
-		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_CATLIST_TEMPLATE###'));
+		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_CATLIST_TEMPLATE'.$templateSuffix.'###'));
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
 		$t['linkCategoryFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryFrameWork'],'###LINK_CATEGORY###');
 		$subpartArray = array();
@@ -181,15 +175,15 @@ class tx_ttproducts_catlist_view {
 		$htmlParts = t3lib_div::trimExplode ('###CATEGORY_TMP###', $tmp);
 		$htmlPartsMarkers = array('###ITEM_SINGLE_PRE_HTML###', '###ITEM_SINGLE_POST_HTML###');
 		
-		if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
-			$bSeparated = true;
-		}
+//		if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
+//			$bSeparated = true;
+//		}
 		
 		$maxDepth = 3;
 		$rootArray = $this->getRootArray($categoryArray);
 		$parentArray = $this->getParentsArray($currentCat, $categoryArray);
 		$this->setDepths($rootArray, $categoryArray);
-		$outArray = array();
+
 		$count = 0;
 		$depth = 1;
 		$catArray = array();
@@ -201,9 +195,9 @@ class tx_ttproducts_catlist_view {
 		$menu = $this->conf['CSS.'][$categoryTable->table->name.'.']['menu'];
 		$menu = ($menu ? $menu : $categoryTable->piVar.$depth);
 		$fill = '';
-		if ($bSeparated)	{
-			$fill = ' onchange="fillSelect(this,2,1);"';
-		}
+//		if ($bSeparated)	{
+//			$fill = ' onchange="fillSelect(this,2,1);"';
+//		}
 		if ($htmlTagMain != 'null')	{
 			$out = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
 		}
@@ -259,15 +253,7 @@ class tx_ttproducts_catlist_view {
 				}
 			}
 		} else if ($htmlTagMain == 'select') {  // if ($htmlTagMain == 'ul')
-			foreach ($catArray[$depth] as $k => $actCategory)	{
-				$css = ($actCategory == $currentCat ? 'class="act"' : $css);
-				$preOut = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
-				$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);
-				$linkOut = $categoryArray[$actCategory]['title'];
-				$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);
-				$postOut = '</'.$htmlTagElement.'>';
-				$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);				
-			}		
+			// nothing: use the SELECTCAT code
 		} else {
 			// ($htmlTagMain == 'null')  -- where no special HTML tags will be created
 
@@ -278,8 +264,9 @@ class tx_ttproducts_catlist_view {
 				$viewCatTable->table->tableFieldArray,
 				$viewCatTable->table->requiredFieldArray,
 				$tmp = array(),
-				$viewCatTable->table->marker,
-				$viewCatTagArray
+				$viewCatTable->marker,
+				$viewCatTagArray,
+				$parentArray
 			);
 
 			$iCount = 0;
@@ -306,7 +293,8 @@ class tx_ttproducts_catlist_view {
 					array(), 
 					$pageAsCategory,
 					'LISTCAT',
-					$iCount
+					$iCount,
+					''
 				);
 				$catTitle = $categoryTable->getMarkerArrayCatTitle($markerArray);
 				$markerArray['###LIST_LINK###'] = $linkOut;
@@ -328,20 +316,20 @@ class tx_ttproducts_catlist_view {
 		$this->marker->getWrappedSubpartArray($wrappedSubpartArray);
 		$subpartArray['###CATEGORY_SINGLE###'] = $out;
 	
-		if ($bSeparated)	{
-			$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
-			$this->pibase->javascript->set('catselect', $categoryArray);
-			
-			for ($i = 2; $i <= 1+$count; ++$i)	{
-				$menu = $categoryTable->piVar.$i;
-				$bShowSubcategories = ($i < 1+$count ? 1 : 0); 
-				$boxNumber = ($i < 1+$count ? ($i+1) : 0);
-				$fill = ' onchange="fillSelect(this,'.$boxNumber.','.$bShowSubcategories.');"';
-				$tmp = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
-				$tmp .= '</'.$htmlTagMain.'>';
-				$subpartArray['###CATEGORY_SINGLE_'.$i.'###'] = $tmp;
-			}
-		}
+//		if ($bSeparated)	{
+//			$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
+//		//	$this->pibase->javascript->set('selectcat', $categoryArray, 1+$count);
+//			
+//			for ($i = 2; $i <= 1+$count; ++$i)	{
+//				$menu = $categoryTable->piVar.$i;
+//				$bShowSubcategories = ($i < 1+$count ? 1 : 0); 
+//				$boxNumber = ($i < 1+$count ? ($i+1) : 0);
+//				$fill = ' onchange="fillSelect(this,'.$boxNumber.','.$bShowSubcategories.');"';
+//				$tmp = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
+//				$tmp .= '</'.$htmlTagMain.'>';
+//				$subpartArray['###CATEGORY_SINGLE_'.$i.'###'] = $tmp;
+//			}
+//		}
 		$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 		$content = $out;
 
@@ -350,8 +338,8 @@ class tx_ttproducts_catlist_view {
 	
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_catlist_view.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_catlist_view.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_catlist_view.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_catlist_view.php']);
 }
 
 ?>

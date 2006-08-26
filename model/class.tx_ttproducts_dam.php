@@ -2,13 +2,13 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
+*  the Free Software Foundation; either version 2 of the License or
 *  (at your option) any later version.
 *
 *  The GNU General Public License can be found at
@@ -25,13 +25,13 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
- * div functions
+ * functions for the images
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -39,26 +39,35 @@
  */
 
 
-class tx_ttproducts_div {
+class tx_ttproducts_dam {
+	var $pibase; // reference to object of pibase
+	var $cnf;
+	var $marker;
 
 
-	// **************************
-	// Utility functions
-	// **************************
-
-	function isUserInGroup($feuser, $group)
-	{
-		$groups = explode(',', $feuser['usergroup']);
-		foreach ($groups as $singlegroup)
-			if ($singlegroup == $group)
-				return true;
-		return false;
-	} // isUserInGroup
-
+	/**
+	 * Getting all tt_products_cat categories into internal array
+	 */
+	function init(&$pibase, &$cnf, $marker)  {
+		global $TYPO3_DB,$TSFE,$TCA;
+		
+		$this->pibase = &$pibase;
+		$this->cnf = &$cnf;
+		$this->marker = $marker;
+		
+		// DAM support
+		if (t3lib_extMgm::isLoaded('dam')) {
+			include_once(t3lib_extMgm::extPath('dam').'model/class.tx_dam.php');
+		}
+	} // init
 
 
 }
 
+
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_dam.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_dam.php']);
+}
 
 
 ?>

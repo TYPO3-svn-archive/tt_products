@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * basket price calculation functions
  *
@@ -44,16 +44,25 @@ class tx_ttproducts_price {
 	var $pibase;
 	var $conf;					// original configuration
 	var $config;				// modified configuration
-
+	var $cnf; 					// configuration object
+	var $basket;
+	var $paymentshipping;		// payment and shipping object to make the price dependant on it
+	var $taxIncluded;			// if tax is already included in the price
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$config)	{
+	function init(&$pibase, &$conf, &$cnf, &$basket, &$paymentshipping)	{
 		$this->pibase = &$pibase;
- 		$this->conf = &$conf;
- 		$this->config = &$config;
- 		
+		$this->cnf = &$cnf;
+		$this->conf = &$conf;
+		if (!isset($this->conf['TAXincluded']))	{
+			$this->conf['TAXincluded'] = '1';	// default '1' for TAXincluded
+		}
+		$this->taxIncluded = $this->conf['TAXincluded'];
+		$this->config = &$this->cnf->config;
+ 		$this->basket = &$basket;
+ 		$this->paymentshipping = &$paymentshipping;
 	} // init
 
 
@@ -77,27 +86,12 @@ class tx_ttproducts_price {
 		return $rc;
 	}
 
-	/**
-	 * Returns the $price with either tax or not tax, based on if $tax is true or false. 
-	 * This function reads the TypoScript configuration to see whether prices in the database 
-	 * are entered with or without tax. That's why this function is needed.
-	 */
-	function getPrice($price,$tax=1,$taxpercentage=0,$taxIncluded=0)	{
-		global $TSFE;
-		$rc = 0;
-		$price = $this->toNumber(true, $price);
+	function getTaxIncluded ()	{
+		return $this->taxIncluded; 
+	}
 
-		if (doubleval($taxpercentage) == 0)
-			$taxFactor = 1 + doubleval($this->conf['TAXpercentage'])/100;
-		else
-			$taxFactor = 1+$taxpercentage/100;
-	
-		if ($TSFE->fe_user->user['tt_products_discount'] != 0) {
-			$price = $price - ($price * ($TSFE->fe_user->user['tt_products_discount'] / 100));
-		}
-
-		$taxIncluded = ($taxIncluded ? $taxIncluded: $this->conf['TAXincluded']);
-		if ($tax)	{
+	function getPriceTax($price, $bTax, $taxIncluded, $taxFactor)	{
+		if ($bTax)	{
 			if ($taxIncluded)	{	// If the configuration says that prices in the database is with tax included
 				$rc = $price;
 			} else {
@@ -110,7 +104,52 @@ class tx_ttproducts_price {
 				$rc = $price;
 			}
 		}
+		return $rc;
+	}
+
+
+
+	/**
+	 * Returns the $price with either tax or not tax, based on if $tax is true or false. 
+	 * This function reads the TypoScript configuration to see whether prices in the database 
+	 * are entered with or without tax. That's why this function is needed.
+	 */
+	function getPrice($price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
+		global $TSFE;
 		
+		$rc = 0;
+		$bTax = ($tax==1);
+
+//		if (!$this->checkVatInclude())	{
+//			$bTax = false;
+//		}
+		$price = $this->toNumber(true, $price);
+		if ($TSFE->fe_user->user['tt_products_discount'] != 0) {
+			$price = $price - ($price * ($TSFE->fe_user->user['tt_products_discount'] / 100));
+		}
+		
+		if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
+			$taxpercentage = doubleval($this->conf['TAXpercentage']);
+		}
+
+		$taxFactor = 1 + $taxpercentage/100;
+		// $taxIncluded = ($taxIncluded ? $taxIncluded : $this->conf['TAXincluded']);
+		$taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage(); 		// if set then this has a tax which will override the tax of the products
+
+		if (isset($taxFromShipping) && is_double($taxFromShipping))	{
+//			$bUseTaxFromShopping = true;
+			$newtaxFactor = 1 + $taxFromShipping / 100;
+			$corrTaxFactor = 1;
+			// we need the net price in order to apply another tax
+			if ($taxIncluded)	{
+				$price = $price / $taxFactor;
+				$taxIncluded = false;
+			}
+			$taxFactor = $newtaxFactor * $corrTaxFactor;
+		}
+
+		$rc = $this->getPriceTax($price, $bTax, $taxIncluded, $taxFactor);
+		$rc = round ($rc, 2);
 		return $rc;
 	} // getPrice
 
@@ -123,57 +162,37 @@ class tx_ttproducts_price {
 		$priceNo = intval($this->config['priceNoReseller']);
 
 		if ($priceNo > 0) {
-			$returnPrice = $this->getPrice($row['price'.$priceNo],$tax,$row['tax']);
+			$returnPrice = $this->getPrice($row['price'.$priceNo],$tax,$row['tax'],$this->conf['TAXincluded']);
 		}
 		// normal price; if reseller price is zero then also the normal price applies
 		if ($returnPrice == 0) {
-			$returnPrice = $this->getPrice($row['price'],$tax,$row['tax']);
+			$returnPrice = $this->getPrice($row['price'],$tax,$row['tax'],$this->conf['TAXincluded']);
 		}
 		return $returnPrice;
 	} // getResellerPrice
 
 
-	/** mkl:
-	 * For shop inside EU country: check if TAX should be included
-	 */
-	function checkVatInclude()	{
-//		$include = 1;
-//		if( $this->conf['TAXeu'] )	{
-//			if( ($this->personInfo['country_code'] != '') && ($this->personInfo['country_code'] != $this->conf['countryCode']) )	{
-//				$whereString =  'cn_iso_3 = "'.$this->personInfo['country_code'].'"';
-//				$euMember = 0 ;
-//				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','static_countries', $whereString);
-//				if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
-//					$euMember = $row['cn_eu_member'];
-//				}
-//				// exclude VAT for EU companies with valid VAT id and for everyone outside EU
-//				if( !$euMember  ||  ($euMember && $this->personInfo['vat_id'] != '') )	{
-//					$include = 0;
-//				}
-//			}
-//		}
-//		return $include ;
-	} // checkVatInclude
-
-
-
 	/**
 	 * Generate a graphical price tag or print the price as text
 	 */
-	function printPrice($priceText)
+	function printPrice($priceText,$taxInclExcl='')
 	{
-		if (($this->conf['usePriceTag']) && (isset($this->conf['priceTagObj.'])))
-		{
+		if (($this->conf['usePriceTag']) && (isset($this->conf['priceTagObj.'])))	{
 			$ptconf = $this->conf['priceTagObj.'];
 			$markContentArray = array();
 			$markContentArray['###PRICE###'] = $priceText;
+			// $taxInclExcl = ($tax ? 'tax_included' : 'tax_zero');
+			$markContentArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
+			
+			// $taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage(); 		// if set then this has a tax which will override the tax of the products
+			
 			$this->pibase->cObj->substituteMarkerInObject($ptconf, $markContentArray);
 			return $this->pibase->cObj->cObjGetSingle($this->conf['priceTagObj'], $ptconf);
 		}
-		else
+		else	{
 			return $priceText;
+		}
 	}
-
 
 
 	/**

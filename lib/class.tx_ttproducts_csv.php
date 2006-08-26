@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * functions for the creation of CSV files
  *
@@ -65,7 +65,7 @@ class tx_ttproducts_csv {
 	} // init
 
 
-	function create(&$basket, $csvorderuid, &$csvfilepath, &$error_message) {
+	function create(&$basket, &$address, $csvorderuid, &$csvfilepath, &$error_message) {
 		if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
 			$csvfilepath .= '/';
 		}
@@ -87,8 +87,8 @@ class tx_ttproducts_csv {
 					$csvlinedelivery .= ';';
 				}
 				$csvlinehead .= '"' . $fName . '"';
-				$csvlineperson .= '"' . str_replace(chr(13).chr(10), '|', $basket->personInfo[$fName]) . '"';
-				$csvlinedelivery .= '"' . $basket->deliveryInfo[$fName] . '"';
+				$csvlineperson .= '"' . str_replace(chr(13).chr(10), '|', $address->infoArray['billing'][$fName]) . '"';
+				$csvlinedelivery .= '"' . $address->infoArray['delivery'][$fName] . '"';
 			}
 
 			// Generate shipping/payment information and delivery note
@@ -100,8 +100,8 @@ class tx_ttproducts_csv {
 				$this->price->priceFormat($this->calculatedArray['priceTax']['payment']) . '";"' .
 				$this->price->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '"';
 
-			$csvlinedeliverynote = '"'.$basket->deliveryInfo['note'].'"';
-			$csvlinedeliverydesireddate = '"'.$basket->deliveryInfo['desired_date'].'"';
+			$csvlinedeliverynote = '"'.$address->infoArray['delivery']['note'].'"';
+			$csvlinedeliverydesireddate = '"'.$address->infoArray['delivery']['desired_date'].'"';
 
 			// Build field list
 			$csvfields = explode(',', $this->conf['CSVfields']);

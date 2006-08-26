@@ -25,11 +25,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * basket functions for a basket object
  *
- * $Id$
+ * $Id: class.tx_ttproducts_basket_view.php 3460 2006-07-14 12:00:13Z franzholz $
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	René Fritz <r.fritz@colorcube.de>
@@ -52,21 +52,19 @@ class tx_ttproducts_basket_view {
 	var $conf;
 	var $config;
 	
-	var $order; // order object
 	var $page;
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
+	var $tt_products_articles; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
 	var $fe_users; // element of class tx_table_db
-	
 	var $price; // price object
 
-	var $basket; 	// the basket object
-	var $password;	// automatically generated random password for a new frontend user
+	var $paymentshipping; 			// object of the type tx_ttproducts_paymentshipping
 
+	var $basket; 	// the basket object
 	var $templateCode='';				// In init(), set to the content of the templateFile. Used by default in getView()
 
-	var $activityArray;					// activities for the CODEs
 	var $marker; // marker functions
 	var $viewTable;
 
@@ -78,16 +76,16 @@ class tx_ttproducts_basket_view {
 	 * @return	  void
  	 */
 
-	function init(&$basket, &$order, &$templateCode )	{
+	function init(&$basket, &$templateCode )	{
  		$this->pibase = &$basket->pibase;
  		$this->cnf = &$basket->cnf;
  		$this->conf = &$this->cnf->conf;
  		$this->config = &$this->cnf->config;
  		$this->basket = &$basket;
  		$this->page = &$basket->page;
-		$this->order = &$order;
  		$this->tt_content = &$basket->tt_content;
  		$this->tt_products = &$basket->tt_products;
+ 		$this->tt_products_articles = &$basket->tt_products_articles;
  		$this->tt_products_cat = &$basket->tt_products_cat;
  		$this->fe_users = &$basket->fe_users;
  		$this->viewTable = &$basket->viewTable;
@@ -100,362 +98,12 @@ class tx_ttproducts_basket_view {
 	} // init
 
 
-	/**
-	 * returns the activities in the order in which they have to be processed
-	 *
-	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
-	 * @return	  void
- 	 */
-	function transformActivities($activities)	{
-		$retActivities = array();
-		$codeActivities = array();
-		$codeActivityArray =  Array (
-			'1' =>  
-				'products_overview',
-				'products_basket',
-				'products_info',
-				'products_payment',
-				'products_customized_payment',
-				'products_finalize',
-		);
-
-		$activityArray =  Array (
-			'1' =>  
-			'products_redeem_gift',
-			'products_clear_basket'
-		);
-
-
-		if (is_array($activities)) {
-			foreach ($codeActivityArray as $k => $activity) {
-				if ($activities[$activity]) {
-					$codeActivities[$activity] = true;
-				}
-			}
-		}
-
-		if ($codeActivities['products_info']) {
-			if($codeActivities['products_payment']) {
-				$codeActivities['products_payment'] = false;
-			}
-			if($codeActivities['products_finalize']) {
-				$codeActivities['products_finalize'] = false;
-			}
-		}
-		if ($codeActivities['products_payment']) {
-			if($codeActivities['products_finalize']) {
-				$codeActivities['products_finalize'] = false;
-			}
-		}
-		if ($codeActivities['products_basket'] && count($codeActivities)>1) {
-			$codeActivities['products_basket'] = false;
-		}
-
-		
-		if (is_array($activities)) {
-			foreach ($activityArray as $k => $activity) {
-				if ($activities[$activity]) {
-					$retActivities[$activity] = true;
-				}
-			}
-			$retActivities = array_merge ($retActivities, $codeActivities);
-		}
-
-		return ($retActivities);
-	}
-
-
-	function processPayment(&$content, &$bFinalize)	{
-		global $TSFE;
-
-		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-		$this->basket->getCalculatedSums();
-		if ($handleScript)	{
-			$content.= $this->paymentshipping->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $this->conf['paymentActivity'], $bFinalize);
-		} else if (t3lib_extMgm::isLoaded ('paymentlib') && version_compare(phpversion(), '5.0.0', '>=') ) {
-			$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
-			if ($handleLib == 'paymentlib')	{
-				// Payment Library
-				require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
-				
-				$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $this, $this->price, $this->order);
-				$content.= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
-			}
-		}		
-	}
-
-
-	/**
-	 * Takes care of basket, address info, confirmation and gate to payment
-	 * Also the 'products_...' script parameters are used here.
-	 *
-	 * @param		array		  CODEs for display mode
-	 * @return	  void
- 	 */
-	function &printView(&$codes, &$error_message) {
-		global $TSFE;
-		global $TYPO3_DB;
-
-		$content = '';
-		$empty = '';
-		$activityArray = array();
-		$bBasketEmpty = false;
-
-			// use '_x' for coordinates from Internet Explorer if button images are used
-		if (t3lib_div::_GP('products_redeem_gift') || t3lib_div::_GP('products_redeem_gift_x'))    {
-		 	$activityArray['products_redeem_gift'] = true;
-		}
-		if (t3lib_div::_GP('products_clear_basket') || t3lib_div::_GP('products_clear_basket_x'))    {
-			$activityArray['products_clear_basket'] = true;
-		}
-
-      
-       	if (t3lib_div::_GP('products_overview') || t3lib_div::_GP('products_overview_x'))    { 
-			$activityArray['products_overview'] = true; 
-		}
-		if (t3lib_div::_GP('products_info') || t3lib_div::_GP('products_info_x'))    { 
-			$activityArray['products_info'] = true;
-		}
-		if (t3lib_div::_GP('products_payment') || t3lib_div::_GP('products_payment_x'))    { 
-			$activityArray['products_payment'] = true;
-		}
-		if (t3lib_div::_GP('products_customized_payment') || t3lib_div::_GP('products_customized_payment_x'))    {
-			$activityArray['products_customized_payment'] = true;
-		}
-		if (t3lib_div::_GP('products_finalize') || t3lib_div::_GP('products_finalize_x'))    { 
-			$activityArray['products_finalize'] = true; 
-		}
-
-		$codeActivityArray=array();
-		$bBasketCode = false;
-		if (is_array($codes)) {
-			foreach ($codes as $k => $code) {
-				if ($code=='BASKET')	{
-					$codeActivityArray['products_basket']=true;
-					$bBasketCode = true;
-				} elseif ($code=='INFO' && !($activityArray['products_payment'] || $activityArray['products_finalize']))	{
-					$codeActivityArray['products_info']=true;
-					$bBasketCode = true;
-				} elseif ($code=='OVERVIEW') {
-					$codeActivityArray['products_overview']=true;
-				} elseif ($code=='PAYMENT' && !($activityArray['products_finalize']))	{
-					$codeActivityArray['products_payment']=true;
-				} elseif ($code=='FINALIZE')	{
-					$codeActivityArray['products_finalize']=true;
-				}
-			}
-		}
-		
-		if ($bBasketCode)	{
-			$activityArray = array_merge ($activityArray, $codeActivityArray);
-			$this->activityArray = $this->transformActivities($activityArray);
-		} else {
-			// only the code activities if there is no code BASKET or INFO set
-			$this->activityArray = $codeActivityArray;
-		}
-		if (count($this->basket->basketExt) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
-				// prepare action
-			$basket_tmpl = '';
-			if (count($this->activityArray)) {
-				// $this->basket->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
-				$mainMarkerArray=array();
-				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject.'';  // adding extra preprocessing CObject
-				$bFinalize = false; // no finalization must be called.
-				
-				foreach ($this->activityArray as $activity => $value) {
-					if ($value) {
-							// perform action
-						switch($activity)	{
-							case 'products_clear_basket':
-								// Empties the shopping basket!
-								$this->basket->clearBasket();
-								$bBasketEmpty = true;
-							break;
-							case 'products_basket':
-								if (count($this->activityArray) == 1) {
-									$content .= $this->getView($empty, 'BASKET');
-								}
-							break;
-							case 'products_overview':
-								$this->pibase->load_noLinkExtCobj();	// TODO
-								$basket_tmpl  = 'BASKET_OVERVIEW_TEMPLATE';
-							break;
-							case 'products_redeem_gift': 	// this shall never be the only activity
-								if (trim($TSFE->fe_user->user['username']) == '') {
-									$basket_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
-								} else {
-									$uniqueId = t3lib_div::trimExplode ('-', $this->basket->recs['tt_products']['gift_certificate_unique_number'], true);
-									$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
-									$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
-									$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
-
-									$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
-									if ($row && $pricefactor > 0) {
-										$money = $row['amount'];
-										$uid = $row['uid'];
-										$fieldsArray = array();
-										$fieldsArray['deleted']=1;
-											// Delete the gift record
-										$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
-										$creditpoints = $money / $pricefactor;
-										tx_ttproducts_creditpoints_div::addCreditPoints($TSFE->fe_user->user['username'], $creditpoints);
-	/* Added els5: extra markers for inline comments */
-										// Fill marker arrays
-										$markerArray=Array();
-										$subpartArray=Array();
-										$markerArray['###GIFT_DISCOUNT###'] = $creditpoints;
-										$markerArray['###VALUE_GIFTCODE###'] = $this->basket->recs['tt_products']['gift_certificate_unique_number'];
-										$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###']= '';
-										$content = $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
-									} else {
-	/* Added els5: inline comments and errors in stead of new page */
-										//$basket_tmpl = 'BASKET_TEMPLATE_INVALID_GIFT_UNIQUE_ID';
-
-										// Fill marker arrays
-										$markerArray=Array();
-										$subpartArray=Array();
-										$markerArray['###VALUE_GIFTCODE###'] = $this->basket->recs['tt_products']['gift_certificate_unique_number'];
-										$subpartArray['###SUB_GIFTCODE_DISCOUNT###']= '';
-										$content = $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
-									}
-								}
-							break;
-							case 'products_info':
-								// if (!$this->activityArray['products_payment'] && !$this->activityArray['products_finalize']) {
-								$this->pibase->load_noLinkExtCobj(); // TODO
-								$basket_tmpl  = 'BASKET_INFO_TEMPLATE';
-								// }
-							break;
-							case 'products_payment':
-								$this->pibase->load_noLinkExtCobj();	// TODO
-								$pidagb = intval($this->conf['PIDagb']);
-								$this->basket->mapPersonIntoToDelivery();
-								$check = $this->basket->checkRequired();
-								if ($check=='' &&
-									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
-									$content.=$this->getView($empty, 'PAYMENT', '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
-									
-									if (trim($this->conf['paymentActivity'])=='payment')	{
-										$this->processPayment($content, $bFinalize);
-									}
-								} else {	// If not all required info-fields are filled in, this is shown instead:
-									$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-									$markerArray = $this->marker->addURLMarkers(0, array());
-									$label = '';
-									if ($check=='') {
-										 // so AGB has not been accepted
-										$label = $this->pibase->pi_getLL('accept_AGB');
-									} else {
-										if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-											$label = $TSFE->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
-											$editPID = $TSFE->tmpl->setup['plugin.']['tx_srfeuserregister_pi1.']['editPID'];
-											if ($TSFE->loginUser && $editPID) {
-												$addParams = array ('products_payment' => 1);
-												$addParams = $this->marker->getLinkParams('',$addParams,true);
-												$srfeuserBackUrl = $this->pibase->pi_getPageLink($TSFE->id,'',$addParams);
-												$srfeuserParams = array('tx_srfeuserregister_pi1[backURL]' => $srfeuserBackUrl);
-												$addParams = $this->marker->getLinkParams('',$srfeuserParams,true);
-												$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($editPID,'',$addParams);
-											}
-										} else {
-											$label = 'field: '.$check;
-										}
-									}
-									$markerArray['###ERROR_DETAILS###'] = $label;
-									$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
-								}
-							break;
-							// a special step after payment and before finalization needed for some payment systems
-							case 'products_customized':
-								if (trim($this->conf['paymentActivity'])=='customized')	{
-									$this->processPayment($content, $bFinalize);
-								}
-							break; 
-							case 'products_finalize':
-								$bFinalize = true;
-							break;
-							default:
-								// nothing yet
-							break;
-						} // switch
-					}	// if ($value)
-					if ($bBasketEmpty)	{
-						break;
-					}
-
-						// in case of an error
-					if ($basket_tmpl) {
-						$content.=$this->getView($empty, 'BASKET', '###'.$basket_tmpl.'###',$mainMarkerArray);
-						$bFinalize = false;
-						break; // foreach
-					}
-				} // foreach ($this->activityArray as $activity=>$value)
-				
-					// finalization at the end so that after every activity this can be called
-				if ($bFinalize)	{
-					$this->basket->mapPersonIntoToDelivery();
-					$check = $this->basket->checkRequired();
-					if ($check=='')	{
-						$this->pibase->load_noLinkExtCobj();	// TODO
-						$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-						$orderUid = $this->order->getBlankUid();
-						if (trim($this->conf['paymentActivity']) == 'finalize')	{
-							$this->processPayment($content, $bFinalize);
-						}
-
-						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
-						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
-						$orderConfirmationHTML=$this->getView($empty, 'BASKET', '###'.$tmpl.'###', $mainMarkerArray);
-						
-						$this->order->finalize($this->templateCode, 
-							$this, $this->viewTable, $this->price, 
-							$orderUid, $orderConfirmationHTML, $error_message); // Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
-						$contentTmp = $orderConfirmationHTML;
-
-						if ($this->conf['PIDthanks'] > 0) {
-							$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
-							$contentTmp = $this->getView($empty, 'BASKET', '###'.$tmpl.'###', $mainMarkerArray);
-						}
-						$content .= $contentTmp;
-						$content .= $this->getView($empty, 'BASKET', '###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
-						
-						// Empties the shopping basket!
-						$this->basket->clearBasket();
-					} else {	// If not all required info-fields are filled in, this is shown instead:
-						$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-						$content = $this->pibase->cObj->substituteMarkerArray($content, $this->marker->addURLMarkers(0, array()));
-					}
-				}
-			} else { // if (count($this->activityArray))
-				// nothing. no BASKET code or similar thing
-			}
-		} else { // if (count($this->basket->basketExt))
-			$bBasketEmpty = true;
-		}
-		
-		if ($bBasketEmpty)	{
-			if ($this->activityArray['products_overview']) {
-				$this->pibase->load_noLinkExtCobj();	//
-				$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_OVERVIEW_EMPTY###'));
-			}
-			else if ($this->activityArray['products_basket'] || $this->activityArray['products_info']) {
-				$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_TEMPLATE_EMPTY###'));
-			}			
-		}
-		$markerArray = array();
-		$markerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject;	// adding extra preprocessing CObject
-		$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
-
-		return $content;
-	} // products_basket
-
 
 
 	/**
 	 * This generates the shopping basket layout and also calculates the totals. Very important function.
 	 */
-	function getView(&$templateCode, $code, $subpartMarker='###BASKET_TEMPLATE###', $mainMarkerArray=array())	{
+	function getView(&$templateCode, $code, &$address, $bSelectSalutation, $bSelectVariants, $subpartMarker='###BASKET_TEMPLATE###', $mainMarkerArray=array())	{
 			/*
 				Very central function in the library.
 				By default it extracts the subpart, ###BASKET_TEMPLATE###, from the $templateCode (if given, else the default $this->templateCode)
@@ -471,7 +119,6 @@ class tx_ttproducts_basket_view {
 			$templateCode = &$this->templateCode;		
 		}
 		
-
 //		$this->basket->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 
 			// Getting subparts from the template code.
@@ -500,20 +147,23 @@ class tx_ttproducts_basket_view {
 			'PRODUCT_SPECIAL_PREP' => 'special_preparation',
 			'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
 			'LINK_DATASHEET' => 'datasheet');
+		$parentArray = array();
 		$fieldsArray = $this->marker->getMarkerFields(
 			$t['item'],
 			$this->viewTable->table->name,
 			$this->viewTable->table->tableFieldArray,
 			$this->viewTable->table->requiredFieldArray,
 			$markerFieldArray,
-			$this->viewTable->table->marker,
-			$viewTagArray
+			$this->viewTable->marker,
+			$viewTagArray,
+			$parentArray
 		);
 		
 		$count = 0;
+		$basketItemView = '';
 
-		// loop over all items in the basket indexed by itemnumber
-		foreach ($this->basket->itemArray as $itemnumber=>$actItemArray) {
+		// loop over all items in the basket indexed by sorting text
+		foreach ($this->basket->itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
 				$row = &$actItem['rec'];
 				$pid = intval($row['pid']);
@@ -555,16 +205,26 @@ class tx_ttproducts_basket_view {
 				$wrappedSubpartArray=array();
 				$subpartArray=array();
 				$markerArray = array();
-				$this->getItemMarkerArray ($actItem, $markerArray, $this->basket->basketExt, $code, $count);										
-				$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $code, $count);
+
+				if (!is_object($basketItemView))	{
+					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
+					$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
+				}
+					
+				$basketItemView->getItemMarkerArray ($this->viewTable, $actItem, $markerArray, $this->basket->basketExt, $code, $count);
+				$catRow = $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : array();
+				// $catTitle= $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : '';
+				$catTitle=$catRow['title'];
+				$tmp = array();
+				$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $tmp, $code, $count);
 				$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
 				$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
 				$markerArray['###PRODUCT_DESCRIPTION###'] = $actItem['rec']['description'];
 				$markerArray['###PRODUCT_GRADINGS###'] = $actItem['rec']['gradings'];
 				//$markerArray['###PRODUCT_ADDITIONAL###'] = $actItem['rec']['additional'];
 
-				$catTitle= $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : '';
 				$this->pibase->cObj->setCurrentVal($catTitle);
+
 				$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 				$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($actItem['totalTax']);
 				$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($actItem['totalNoTax']);
@@ -612,7 +272,7 @@ class tx_ttproducts_basket_view {
 				// Substitute
 				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
 				$this->viewTable->variant->getVariantSubpartArray ($subpartArray, $actItem['rec'], $tempContent, 
-					($subpartMarker == '###EMAIL_PLAINTEXT_TEMPLATE###'), $this->conf );
+					$bSelectVariants, $this->conf );
 				$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
 				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
 				$itemsOut .= $tempContent;
@@ -654,9 +314,16 @@ class tx_ttproducts_basket_view {
 		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['shipping']);
 		$markerArray['###PRICE_SHIPPING_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['shipping']-$this->basket->calculatedArray['priceNoTax']['shipping']);
 
-		$markerArray['###SHIPPING_SELECTOR###'] = $this->basket->paymentshipping->generateRadioSelect('shipping', $this->basket->calculatedArray);
+		$markerArray['###SHIPPING_SELECTOR###'] = $this->paymentshipping->generateRadioSelect('shipping', $this->basket->calculatedArray);
 		$markerArray['###SHIPPING_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basket->basketExtra['shipping.']['image.']);
-		$markerArray['###SHIPPING_TITLE###'] = $this->basket->basketExtra['shipping.']['title'];
+		
+//		$shippingMarkerArray = array();
+//		$itemTable->getItemMarkerArray ($this->basket->basketExtra['shipping.'], $markerArray, $fieldsArray);
+//		$this->paymentshipping->getItemMarkerArray ($this->basket->basketExtra['shipping.'], $shippingMarkerArray, '', array());
+//		$shippingTitle = $this->pibase->cObj->substituteMarkerArrayCached($this->basket->basketExtra['shipping.']['title'], $shippingMarkerArray);
+		
+		$shippingTitle = $this->basket->basketExtra['shipping.']['title'];
+		$markerArray['###SHIPPING_TITLE###'] = $shippingTitle;
 		$markerArray['###SHIPPING_WEIGHT###'] = doubleval($this->basket->calculatedArray['weight']);
 
 		$markerArray['###DELIVERYCOSTS###']=$this->price->priceFormat($this->basket->calculatedArray['priceTax']['shipping'] + $this->basket->calculatedArray['priceTax']['payment']);
@@ -665,18 +332,18 @@ class tx_ttproducts_basket_view {
 		$markerArray['###PRICE_PAYMENT_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['payment']);
 		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['payment']);
 		$markerArray['###PRICE_PAYMENT_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['payment']-$this->basket->calculatedArray['priceNoTax']['payment'] );
-
+		
 /* Added els4: payment layout (used in basket_payment_template, winkelwagen.tmpl) */
-		$markerArray['###PAYMENT_SELECTOR###'] = $this->basket->paymentshipping->generateRadioSelect('payment', $this->basket->calculatedArray);
+		$markerArray['###PAYMENT_SELECTOR###'] = $this->paymentshipping->generateRadioSelect('payment', $this->basket->calculatedArray);
 		$markerArray['###PAYMENT_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basket->basketExtra['payment.']['image.']);
 		$markerArray['###PAYMENT_TITLE###'] = $this->basket->basketExtra['payment.']['title'];
 
-			// Call all getItemMarkerArray hooks at the end of this method
+			// Call all getItemMarkerArrays hooks at the end of this method
 		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'])) {
 			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getBasketView')) {
-					$hookObj->getItemMarkerArray ($this, $subpartMarker, $markerArray, $subpartArray, $code, $count);
+					$hookObj->getItemMarkerArrays ($this, $templateCode, $code, $markerArray,$subpartArray,$wrappedSubpartArray, $code, $mainMarkerArray, $count);
 				}
 			}
 		}
@@ -708,55 +375,22 @@ class tx_ttproducts_basket_view {
 /* Added els4: discount based on total units (without articles in kurkenshop), necessary in winkelwagen.tmpl */
 		$markerArray['###PRICE_TOTUNITS_DISCOUNT###'] = $this->price->priceFormat($sum_pricediscount_total_totunits);
 
-			// Personal and delivery info:
-/* Add ELS: more fields */
-		$list = 'name,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country';
-		if ($this->basket->feuserextrafields) {
-			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,address,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
-		}
-		$infoFields = explode(',',$list); // Fields...
-	
-		while(list(,$fName)=each($infoFields))	{
-			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $this->basket->personInfo[$fName];
-			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $this->basket->deliveryInfo[$fName];
-		}
-				
-		if ($this->conf['useStaticInfoCountry'] && is_object($this->pibase->staticInfo))	{
-			$markerArray['###PERSON_COUNTRY_CODE###'] =
-				$this->pibase->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[personinfo][country_code]', '', $this->basket->personInfo['country_code'], '');
-			$markerArray['###PERSON_COUNTRY###'] =
-				$this->pibase->staticInfo->getStaticInfoName('COUNTRIES', $this->basket->personInfo['country_code'],'','');
-			$markerArray['###DELIVERY_COUNTRY_CODE###'] =
-				$this->pibase->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[delivery][country_code]', '', $this->basket->deliveryInfo['country_code'], '');
-			$markerArray['###DELIVERY_COUNTRY###'] =
-				$this->pibase->staticInfo->getStaticInfoName('COUNTRIES', $this->basket->deliveryInfo['country_code'],'','');
-		}
-				
-			// Markers for use if you want to output line-broken address information
-		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
-		$markerArray['###DELIVERY_ADDRESS_DISPLAY###'] = nl2br($markerArray['###DELIVERY_ADDRESS###']);
-
-		$this->basket->fe_users->getItemMarkerArray($this->basket->personInfo, $markerArray, $this->activityArray['products_info'],'person');
-		$this->basket->fe_users->getItemMarkerArray($this->basket->deliveryInfo, $markerArray, $this->activityArray['products_info'],'delivery');
-
-			// Delivery note.
-		$markerArray['###DELIVERY_NOTE###'] = $this->basket->deliveryInfo['note'];
-		$markerArray['###DELIVERY_NOTE_DISPLAY###'] = nl2br($markerArray['###DELIVERY_NOTE###']);
-
-			// Desired delivery date.
-		$markerArray['###DELIVERY_DESIRED_DATE###'] = $this->basket->deliveryInfo['desired_date'];
-
+		include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
+			// order
+		$order = t3lib_div::makeInstance('tx_ttproducts_order');
+		$order->init(
+			$this->pibase,
+			$this->cnf,
+			$this->tt_products,
+			$this->tt_products_articles,
+			$this->tt_products_cat,
+			$this->basket,
+			$this->conf['useArticles']
+		);
 			// Order:	NOTE: Data exist only if the order->getBlankUid() has been called. Therefore this field in the template should be used only when an order has been established
-		$markerArray['###ORDER_UID###'] = $this->order->getNumber($this->basket->recs['tt_products']['orderUid']);
+		$markerArray['###ORDER_UID###'] = $order->getNumber($this->basket->recs['tt_products']['orderUid']);
 		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($this->basket->recs['tt_products']['orderDate'],$this->conf['orderDate_stdWrap.']);
 		$markerArray['###ORDER_TRACKING_NO###'] = $this->basket->recs['tt_products']['orderTrackingNo'];
-
-			// Fe users:
-		$markerArray['###FE_USER_USERNAME###'] = $TSFE->fe_user->user['username'];
-		$markerArray['###FE_USER_UID###'] = $TSFE->fe_user->user['uid'];
-		$markerArray['###PERSON_AGB###'] = $this->basket->personInfo['agb'] ? ' checked' : '';
-		$markerArray['###USERNAME###'] = $this->basket->personInfo['email'];
-		$markerArray['###PASSWORD###'] = $this->basket->password;
 
 			// URL
 		$markerArray =  $this->marker->addURLMarkers(0, $markerArray);
@@ -770,6 +404,10 @@ class tx_ttproducts_basket_view {
 		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['total']);
 		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['total']);
 		$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['total']-$this->basket->calculatedArray['priceNoTax']['total']);
+
+		$taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage();
+		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
+		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
 
 /* Added els4: PRICE_GOODSTOTAL_TOTUNITS_NO_TAX: sum total price (winkelwagen.tmpl) */
 		$markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($sum_price_total_totunits_no_tax);
@@ -965,6 +603,10 @@ class tx_ttproducts_basket_view {
 		$subpartArray['###MESSAGE_PAYMENT###'] = $this->pibase->cObj->substituteMarkerArrayCached($this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_PAYMENT_'.$this->basket->basketExtra['payment'].'###'),$markerArray);
 
 		$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
+
+		if (is_object($address))	{
+			$address->getItemMarkerArray ($markerArray, $bSelectSalutation);
+		}
 		$bFrameWork=$this->pibase->cObj->substituteMarkerArrayCached($t['basketFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 
 			// substitute the main subpart with the rendered content.
@@ -974,39 +616,12 @@ class tx_ttproducts_basket_view {
 
 
 
-	/**
-	 * Template marker substitution
-	 * Fills in the markerArray with data for a product
-	 *
-	 * @param	array		reference to an item array with all the data of the item
-	 * @param	string		title of the category
-	 * @param	integer		number of images to be shown
-	 * @param	object		the image cObj to be used
-	 * @param	array		information about the parent HTML form
-	 * @return	array
-	 * @access private
-	 */
-	function getItemMarkerArray (&$item, &$markerArray, &$basketExt, $code, $id='1')	{
-			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
-		$row = &$item['rec'];
-		$basketQuantityName = 'ttp_basket['.$row['uid'].'][quantity]';
-
-		$variants = $this->viewTable->variant->getVariantFromRow($row);
-		$markerArray['###FIELD_NAME###'] = $basketQuantityName;
-		$markerArray['###FIELD_NAME_BASKET###'] = 'ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
-
-		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
-		$quantity = $basketExt[$row['uid']][$variants];
-		$markerArray['###FIELD_QTY###'] = $quantity ? $quantity : '';
-	}
-
-
 }
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_basket_view.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_basket_view.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_basket_view.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_basket_view.php']);
 }
 
 

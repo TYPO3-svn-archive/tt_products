@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * configuration
  *
@@ -51,6 +51,19 @@ class tx_ttproducts_config {
 		$this->conf = &$conf;
 		$this->config = &$config;
 	} // init
+
+
+	function &getTableDesc ($tablename)	{
+
+		$tableDesc = array();
+		if (is_array($this->conf['table.']) &&
+			is_array($this->conf['table.'][$tablename.'.'])
+			)	{
+			$tableDesc = $this->conf['table.'][$tablename.'.']; 
+		}
+		
+		return $tableDesc;
+	}
 
 
 	function &getTableConf ($tablename, $theCode='')	{
@@ -89,7 +102,8 @@ class tx_ttproducts_config {
 		
 		return $rc;
 	}
-	
+
+
 	function getTranslationFields($tableConf)	{
 		$fieldArray = array();
 		if (is_array($tableConf['language.']) && $tableConf['language.']['type'] == 'field')	{

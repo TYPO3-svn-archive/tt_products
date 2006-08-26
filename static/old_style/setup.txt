@@ -158,8 +158,8 @@ plugin.tt_products {
     200 = Order cancelled
   }
   update_code = {$plugin.tt_products.update_code}
-  statusDate_stdWrap.strftime= %e-%m-%y %H:%M
-  orderDate_stdWrap.strftime= %e-%m-%y
+  statusDate_stdWrap.strftime= %d-%m-%Y %H:%M
+  orderDate_stdWrap.strftime = %d-%m-%Y
   
   usePriceTag = {$plugin.tt_products.usePriceTag}
   useStaticInfoCountry = {$plugin.tt_products.useStaticInfoCountry}
@@ -208,6 +208,7 @@ plugin.tt_products {
   showNotinStock = {$plugin.tt_products.showNotinStock}
   notInStockMessage = {$plugin.tt_products.notInStockMessage}
   inStockPieces = {$plugin.tt_products.inStockPieces}
+  warningInStockLimit = {$plugin.tt_products.warningInStockLimit}
 
   newItemDays = {$plugin.tt_products.newItemDays}
 
@@ -256,6 +257,7 @@ plugin.tt_products {
       5 = additional
     }
   }
+
   conf.tt_products.articles.ALL {
     requiredFields = uid,pid,uid_product,price,price2,inStock  
   }
@@ -278,17 +280,17 @@ plugin.tt_products.payment {
   TAXpercentage = 15
   10.title = MasterCard
   10.image.file = typo3/sysext/cms/tslib/media/logos/mastercard.gif
-  10.priceTax = 
+  10.price = 1
   10.calculationScript = EXT:tt_products/pi1/products_comp_calcScript.inc
 
   40.title = Money transfer
   40.image.file = typo3/sysext/cms/tslib/media/logos/money.gif
-  40.priceTax = 
+  40.price = 
   40.percentOfGoodstotal = 1.45
 
   50.title = Credit in-store
   50.image.file = 
-  50.priceTax = 
+  50.price = 
 }
 
 ## EXAMPLE shipping config:
@@ -297,12 +299,12 @@ plugin.tt_products.shipping {
   10.title = Ground
   10.image.file = typo3/sysext/cms/tslib/media/logos/pakketrans.gif
   10.image.params = align=absmiddle
-  10.priceTax = 40
+  10.price = 40
 
   20.title = Airmail
   20.image.file = typo3/sysext/cms/tslib/media/logos/postdanmark.gif
   20.image.params = align=absmiddle
-  20.priceTax = 120
+  20.price = 120
 
   40.title = Pick up in store
   40.excludePayment = 10,40

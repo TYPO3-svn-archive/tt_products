@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * view functions
  *
@@ -107,7 +107,7 @@ class tx_ttproducts_gifts_div {
 			foreach ($rec['item'] as $productid => $product) {
 				foreach ($product as $variant => $count) {
 					$row = array();
-					$tt_products->variant->getRowFromVariant($row, $variant);
+					$tt_products->variant->modifyRowFromVariant($row, $variant);
 					$amount += intval($row['size']) * $count;
 				}
 			}
@@ -135,7 +135,7 @@ class tx_ttproducts_gifts_div {
 			foreach ($rec['item'] as $productid => $product) {
 				foreach ($product as $variant => $count) {
 					$row = array();
-					$tt_products->variant->getRowFromVariant	($row, $variant);
+					$tt_products->variant->modifyRowFromVariant	($row, $variant);
 
 					$query='uid_product=\''.intval($productid).'\' AND color='.$TYPO3_DB->fullQuoteStr($row['color'],'tt_products_articles').' AND size='.$TYPO3_DB->fullQuoteStr($row['size'],'tt_products_articles').' AND description='.$TYPO3_DB->fullQuoteStr($row['description'],'tt_products_articles').' AND gradings='.$TYPO3_DB->fullQuoteStr($row['gradings'],'tt_products_articles');
 					$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);

@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * article functions without object instance
  *
@@ -42,29 +42,27 @@
 
 class tx_ttproducts_variant {
 	var $pibase;
-	var $conf;
+	var $conf;	// reduced local conf
 	var $itemTable;
 	var $useArticles;
 	var $bSelectableArray;
+	var $fieldArray = array(0 => 'color','size','description','gradings');	// array of fields which are variants with comma separated values
 	
 
 	/**
 	 * setting the local variables
 	 */
-	function init(&$pibase, &$cnf, &$conf, &$itemTable, $useArticles)  {
+	function init(&$pibase, &$cnf, &$itemTable, $useArticles)  {
 		$this->pibase = &$pibase;
-		$this->conf = &$conf;
+		$tmpArray = $cnf->getTableDesc($itemTable->table->name);
+		$this->conf = (is_array($tmpArray) ? $tmpArray['variant.'] : '');
 		$this->itemTable = &$itemTable;
 		$this->useArticles = $useArticles;
 		$this->bSelectableArray = array();
-		if ($cnf->conf['selectColor'])
-			$this->bSelectableArray[0] = true;
-		if ($cnf->conf['selectSize'])
-			$this->bSelectableArray[1] = true;
-		if ($cnf->conf['selectDescription'])
-			$this->bSelectableArray[2] = true;
-		if ($cnf->conf['selectGradings'])
-			$this->bSelectableArray[3] = true;
+		foreach ($this->fieldArray as $k => $field)	{
+			if ($cnf->conf['select'.ucfirst($field)])
+				$this->bSelectableArray[$k] = true;			
+		}
 
 	} // init
 
@@ -78,7 +76,7 @@ class tx_ttproducts_variant {
 	 * @access private
 	 * @see getVariantFromRow
 	 */
-	 function getRowFromVariant (&$row, $variant) {
+	 function modifyRowFromVariant (&$row, $variant) {
 		$variantArray = explode(';', $variant);
 		
 		if (is_array($this->conf) && ($this->useArticles == 1 || count ($this->bSelectableArray)))	{
@@ -98,9 +96,10 @@ class tx_ttproducts_variant {
 	 * @param	string	  variants separated by ';'
 	 * @return  void
 	 * @access private
-	 * @see getRowFromVariant
+	 * @see modifyRowFromVariant
 	 */
 	 function getVariantFromRow (&$row) {
+	
 		// take only the first color, size and gradings, if there are more entries from the item table		
 		$variantArray = array();
 
@@ -168,6 +167,30 @@ class tx_ttproducts_variant {
 		foreach ($areaArray as $k => $area) {
 			$subpartArray['###'.$area.'###'] = '';
 		}
+	}
+
+
+	function fetchArticle($productRow, $articleRows) {
+		$fieldArray = array();
+		foreach ($this->fieldArray as $k => $field)	{
+			if ($productRow[$field])	{
+				$fieldArray[$field] = $productRow[$field];
+			}
+		}
+		$articleRow = array();
+		foreach ($articleRows as $k => $row)	{
+			$bFits = true;
+			foreach ($fieldArray as $field => $value)	{
+				if ($row[$field] && $row[$field] != $value)	{
+					$bFits = false;
+				}
+			}
+			if ($bFits)	{
+				$articleRow = $row;
+				break;
+			}
+		}
+		return $articleRow;
 	}
 
 

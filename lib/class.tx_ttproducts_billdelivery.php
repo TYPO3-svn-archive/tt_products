@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Part of the tt_products (Shopping System) extension.
+ * Part of the tt_products (Shop System) extension.
  *
  * bill and delivery functions
  *
@@ -136,7 +136,7 @@ class tx_ttproducts_billdelivery {
 	//
 		// Calculate quantities for all categories
 	
-		// loop over all items in the ordered items indexed by itemnumber
+		// loop over all items in the ordered items indexed by sorting text
 		foreach ($itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
 				$currentCategory=$actItem['rec']['category'];
@@ -150,6 +150,7 @@ class tx_ttproducts_billdelivery {
 	
 		$itemTable = &$this->tt_products;
 		$viewTagArray = array();
+		$parentArray = array();
 		$markerFieldArray = array('BULKILY_WARNING' => 'bulkily',
 			'PRODUCT_SPECIAL_PREP' => 'special_preparation',
 			'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
@@ -160,8 +161,9 @@ class tx_ttproducts_billdelivery {
 			$itemTable->table->tableFieldArray,
 			$itemTable->table->requiredFieldArray,
 			$markerFieldArray,
-			$itemTable->table->marker,
-			$viewTagArray
+			$itemTable->marker,
+			$viewTagArray,
+			$parentArray
 		);
 	
 		$count = 0;
@@ -215,16 +217,16 @@ class tx_ttproducts_billdelivery {
 			// Final things
 			// Personal and delivery info:
 	
-		$orderData['personInfo']['salutation'] = $this->pibase->pi_getLL('salutation'.$orderData['personInfo']['salutation']);
+		$orderData['billing']['salutation'] = $this->pibase->pi_getLL('salutation'.$orderData['billing']['salutation']);
 	
-		$orderData['deliveryInfo']['salutation'] = $this->pibase->pi_getLL('salutation'.$orderData['deliveryInfo']['salutation']);
+		$orderData['delivery']['salutation'] = $this->pibase->pi_getLL('salutation'.$orderData['delivery']['salutation']);
 	
 		/* Added Els: 'feusers_uid,'*/
 		$infoFields = explode(',','feusers_uid,name,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country');
 		  // Fields...
 		while(list(,$fName)=each($infoFields))	{
-			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['personInfo'][$fName];
-			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['deliveryInfo'][$fName];
+			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['billing'][$fName];
+			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['delivery'][$fName];
 		}
 	
 		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
@@ -240,6 +242,13 @@ class tx_ttproducts_billdelivery {
 		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['shipping']);
 		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['total']);
 		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['total']);
+
+			// Delivery note.
+		$markerArray['###DELIVERY_NOTE###'] = $orderData['deliveryInfo']['note'];
+		$markerArray['###DELIVERY_NOTE_DISPLAY###'] = nl2br($markerArray['###DELIVERY_NOTE###']);
+
+			// Desired delivery date.
+		$markerArray['###DELIVERY_DESIRED_DATE###'] = $orderData['deliveryInfo']['desired_date'];
 	
 		$markerArray['###ORDER_UID###'] = $this->order->getNumber($orderRow['uid']);
 		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
