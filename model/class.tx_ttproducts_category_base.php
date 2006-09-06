@@ -29,7 +29,7 @@
  *
  * functions for the category
  *
- * $Id: class.tx_ttproducts_category_base.php,v 1.3 2006/06/28 09:34:51 franzholz Exp $
+ * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3

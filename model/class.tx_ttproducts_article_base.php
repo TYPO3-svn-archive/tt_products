@@ -29,7 +29,7 @@
  *
  * functions for the product
  *
- * $Id: class.tx_ttproducts_article_base.php 3457 2006-07-13 09:25:06Z franzholz $
+ * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
