@@ -29,7 +29,7 @@
  *
  * class with functions to control all activities
  *
- * $Id$
+ * $Id:$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -532,8 +532,7 @@ class tx_ttproducts_control {
 			if ($this->activityArray['products_overview']) {
 				$this->pibase->load_noLinkExtCobj();	//
 				$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_OVERVIEW_EMPTY###'));
-			}
-			else if ($this->activityArray['products_basket'] || $this->activityArray['products_info']) {
+			} else if ($this->activityArray['products_basket'] || $this->activityArray['products_info']) {
 				$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_TEMPLATE_EMPTY###'));
 			}			
 		}

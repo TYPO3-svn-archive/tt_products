@@ -29,7 +29,7 @@
  *
  * AJAX control over select boxes for categories
  *
- * $Id$
+ * $Id:$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3

@@ -135,6 +135,7 @@ class tx_ttproducts_article_base {
 
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code);
+
 		$markerArray['###'.$this->marker.'_ID###'] = $row['uid'];
 		$markerArray['###'.$this->marker.'_UID###'] = $row['uid'];
 		$markerArray['###'.$this->marker.'_TITLE###'] = $row['title'];

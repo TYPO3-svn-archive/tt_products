@@ -29,7 +29,7 @@
  *
  * base class for the finalization activity
  *
- * $Id$
+ * $Id:$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3

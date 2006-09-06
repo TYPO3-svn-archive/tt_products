@@ -49,7 +49,7 @@ class tx_ttproducts_dam {
 	 * Getting all tt_products_cat categories into internal array
 	 */
 	function init(&$pibase, &$cnf, $marker)  {
-		global $TYPO3_DB,$TSFE,$TCA;
+		global $TYPO3_DB,$TSFE,$TCA,$TYPO3_CONF_VARS;
 		
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;

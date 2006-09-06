@@ -49,6 +49,7 @@ class tx_ttproducts_email_div {
 	 * Extended mail function
 	 */
 	function send_mail($toEMail,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
+		global $TYPO3_CONF_VARS;
 		
 		include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 
@@ -139,7 +140,7 @@ class tx_ttproducts_email_div {
 	 * Send notification email for gift certificates
 	 */
 	function sendGiftEmail(&$pibase,&$conf,&$address, $recipient, $comment, $giftRow, $templateCode, $templateMarker)	{
-		global $TSFE;
+		global $TSFE, $TYPO3_CONF_VARS;
 
 		$sendername = ($giftRow['personname'] ? $giftRow['personname'] : $conf['orderEmail_fromName']);
 		$senderemail = ($giftRow['personemail'] ? $giftRow['personemail'] : $conf['orderEmail_from']);

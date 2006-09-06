@@ -157,7 +157,6 @@ class tx_ttproducts_billdelivery {
 			'LINK_DATASHEET' => 'datasheet');	
 		$fieldsArray = $this->marker->getMarkerFields(
 			$t['item'],
-			$itemTable->table->name,
 			$itemTable->table->tableFieldArray,
 			$itemTable->table->requiredFieldArray,
 			$markerFieldArray,

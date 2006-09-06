@@ -63,6 +63,7 @@ class tx_ttproducts_list_view {
 	var $useArticles;
 	var $searchFieldList='';
 
+
 	function init(&$pibase, &$cnf, &$basket,
 		&$page, &$tt_content, &$tt_products,
 		&$tt_products_articles, &$tt_products_cat, &$fe_users,
@@ -106,13 +107,27 @@ class tx_ttproducts_list_view {
 	} // comp
 
 
-	function &advanceCategory(&$categoryAndItemsFrameWork, &$itemListOut, &$categoryOut)	{
+	function &advanceCategory(&$categoryAndItemsFrameWork, &$itemListOut, &$categoryOut, $itemListSubpart)	{
 		$subpartArray = array();
 		$subpartArray['###ITEM_CATEGORY###'] = $categoryOut;
-		$subpartArray['###ITEM_LIST###'] = $itemListOut;
+		$subpartArray[$itemListSubpart] = $itemListOut;
 		$rc = $this->pibase->cObj->substituteMarkerArrayCached($categoryAndItemsFrameWork,array(),$subpartArray);
 		$categoryOut = '';
 		$itemListOut = '';			// Clear the item-code var
+		return $rc;
+	}
+
+
+	function &advanceProduct(&$productAndItemsFrameWork, &$productFrameWork, &$itemListOut, &$productMarkerArray, &$categoryMarkerArray)	{
+		$markerArray = array_merge($productMarkerArray, $categoryMarkerArray);
+		$productOut = $this->pibase->cObj->substituteMarkerArray($productFrameWork,$markerArray);
+		$subpartArray = array();
+		$subpartArray['###ITEM_PRODUCT###'] = $productOut;
+		$subpartArray['###ITEM_LIST###'] = $itemListOut;
+		$rc = $this->pibase->cObj->substituteMarkerArrayCached($productAndItemsFrameWork,array(),$subpartArray);
+		$categoryOut = '';
+		$itemListOut = '';			// Clear the item-code var
+
 		return $rc;
 	}
 
@@ -249,6 +264,10 @@ class tx_ttproducts_list_view {
 			$t['listFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subPartArray,$wrappedSubpartArray);
 			$t['categoryAndItemsFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_CATEGORY_AND_ITEMS###');
 			$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryAndItemsFrameWork'],'###ITEM_CATEGORY###');
+			if ($itemTable->type == 'article')	{
+				$t['productAndItemsFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_PRODUCT_AND_ITEMS###');
+				$t['productFrameWork'] = $this->pibase->cObj->getSubpart($t['productAndItemsFrameWork'],'###ITEM_PRODUCT###');
+			}		
 			$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryAndItemsFrameWork'],'###ITEM_LIST###');
 			$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
 			$dum = strstr($t['item'], 'ITEM_SINGLE_POST_HTML');
@@ -305,7 +324,6 @@ class tx_ttproducts_list_view {
 			$parentArray = array();
 			$fieldsArray = $this->marker->getMarkerFields(
 				$t['item'],
-				$itemTable->table->name,
 				$itemTable->table->tableFieldArray,
 				$itemTable->table->requiredFieldArray,
 				$markerFieldArray,
@@ -313,14 +331,33 @@ class tx_ttproducts_list_view {
 				$viewTagArray,
 				$parentArray
 			);
+			
+			if ($itemTable->type == 'article')	{
+				$viewProductsTagArray = array();
+				$productsParentArray = array();
+				$tmpFramework = ($t['productAndItemsFrameWork'] ? $t['productAndItemsFrameWork'] : $t['categoryAndItemsFrameWork']);
+				$productsFieldsArray = $this->marker->getMarkerFields(
+					$tmpFramework,
+					$this->tt_products->table->tableFieldArray,
+					$this->tt_products->table->requiredFieldArray,
+					$markerFieldArray,
+					$this->tt_products->marker,
+					$viewProductsTagArray,
+					$productsParentArray
+				);
+			}
+			
 			$itemTableConf = $this->cnf->getTableConf($itemTable->table->name, $theCode);
 			$itemTableLangFields = $this->cnf->getTranslationFields($itemTableConf);
 			$fieldsArray = array_merge($fieldsArray, $itemTableLangFields);
+			$itemImageFields = $this->cnf->getImageFields($itemTableConf);
+			$fieldsArray = array_merge($fieldsArray, $itemImageFields);
 			$viewCatTagArray = array();
 			$catParentArray = array();
+			$catFramework = '';
+
 			$catfieldsArray = $this->marker->getMarkerFields(
-				$t['categoryFrameWork'],
-				$viewCatTable->table->name,
+				$t['categoryAndItemsFrameWork'], // categoryAndItemsFrameWork  categoryFrameWork
 				$viewCatTable->table->tableFieldArray,
 				$viewCatTable->table->requiredFieldArray,
 				$tmp = array(),
@@ -328,6 +365,7 @@ class tx_ttproducts_list_view {
 				$viewCatTagArray,
 				$catParentArray
 			);
+			
 			$catTitle = '';
 			if ($orderByCat && ($pageAsCategory < 2))	{
 				// $catFields = ($orderByCat == 'uid' ? $orderByCat : 'uid,'.$orderByCat);
@@ -348,7 +386,7 @@ class tx_ttproducts_list_view {
 			$selectFields = implode(',', $fieldsArray);
 			$selectConf['selectFields'] = $itemTable->table->transformSelect($selectFields);
 			$join = '';
-			$tmpTables = $itemTable->table->transformTable('',false,$join);
+			$tmpTables = $itemTable->table->transformTable('', false, $join);
 			// $selectConf['where'] = $join.$itemTable->table->transformWhere($selectConf['where']);
 			$selectConf['where'] = $join.' '.$selectConf['where'];
 			$selectConf['max'] = ($this->config['limit']+1);
@@ -387,38 +425,50 @@ class tx_ttproducts_list_view {
 			$t[$markerFramework] = $this->pibase->cObj->substituteMarkerArrayCached($t[$markerFramework],$markerArray,array(),array());
 			$this->pibase->javascript->set('email');
 			$t['itemFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,array(),array());
-			$currentP = '';
+			$currentArray = array();
+			$currentArray['category'] = '';
+			$currentArray['product'] = '';
+			$nextArray = array();
+			$nextArray['category'] = '';
+			$nextArray['product'] = '';
+			$productMarkerArray = array();
+			$categoryMarkerArray = array();
 			$out = '';
 			$categoryAndItemsOut = '';
 			$iCount = 0;
-			$iColCount = 0;	
+			$iColCount = 0;
+			$productListOut = '';
 			$itemsOut = '';
 			$itemListOut = '';
 			$categoryOut = '';
 			$tableRowOpen = 0;
+			$itemListSubpart = ($itemTable->type == 'article' && $t['productAndItemsFrameWork'] ? '###ITEM_PRODUCT_AND_ITEMS###' : '###ITEM_LIST###'); 
 
 			if (count ($itemArray))	{
 				foreach ($itemArray as $k2 => $row) {
 					$iColCount++;
 					$iCount++;
 	
-						// Print Category Title
+						// print category title
 					if	(
-							($pageAsCategory < 2) && ($row['category'] != $currentP) ||
-							($pageAsCategory == 2) && ($row['pid'] != $currentP)
+							($pageAsCategory < 2) && ($row['category'] != $currentArray['category']) ||
+							($pageAsCategory == 2) && ($row['pid'] != $currentArray['category'])
 						)	{
 
-						if ($itemListOut)	{
-							$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $itemListOut, $categoryOut);
-							$itemListOut = '';
+						$catItemsListOut = &$itemListOut;
+						if ($itemTable->type == 'article' && $productListOut && $t['productAndItemsFrameWork'])	{
+							$catItemsListOut = &$productListOut;
 						}
-						$currentP = (($pageAsCategory < 2) ? $row['category'] : $row['pid']);
+						if ($catItemsListOut)	{
+							$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart);
+						}
+						$currentArray['category'] = (($pageAsCategory < 2) ? $row['category'] : $row['pid']);
 						$bCategoryHasChanged = true;
 						$iColCount = 1;
-						$markerArray = array();
+						$categoryMarkerArray = array();
 						if ($where || $this->conf['displayListCatHeader'])	{
 							$viewCatTable->getMarkerArray (
-								$markerArray, 
+								$categoryMarkerArray, 
 								$this->page,
 								$row['category'], 
 								$row['pid'], 
@@ -432,30 +482,46 @@ class tx_ttproducts_list_view {
 								''
 							);
 
-  						$catTitle = $viewCatTable->getMarkerArrayCatTitle($markerArray);
-						$viewCatTable->getParentMarkerArray (
-							$catParentArray,
-							$row,
-	        				$markerArray, 
-	        				$this->page,
-	        				$row['category'], 
-	        				$row['pid'], 
-	        				$this->config['limitImage'], 
-	        				'listcatImage', 
-	        				$viewCatTagArray, 
-	        				array(), 
-	        				$pageAsCategory,
-	        				$theCode,
-	        				1,
-	        				'');
-
+	  						$catTitle = $viewCatTable->getMarkerArrayCatTitle($categoryMarkerArray);
+							$viewCatTable->getParentMarkerArray (
+								$catParentArray,
+								$row,
+		        				$categoryMarkerArray, 
+		        				$this->page,
+		        				$row['category'], 
+		        				$row['pid'], 
+		        				$this->config['limitImage'], 
+		        				'listcatImage', 
+		        				$viewCatTagArray, 
+		        				array(), 
+		        				$pageAsCategory,
+		        				$theCode,
+		        				1,
+		        				''
+		        			);
+	
 							if ($t['categoryFrameWork'])	{
-								$categoryOut = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
+								$categoryOut = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $categoryMarkerArray);
 							}
 						}
 					} else {
 						$bCategoryHasChanged = false;
 					}
+					
+						// relevant only for article list
+					if ($itemTable->type == 'article' && $t['productAndItemsFrameWork'] && $row['uid_product'] != $currentArray['product'])	{
+						$productMarkerArray = array();
+						// fetch new product if articles are listed
+						$prodRow = $this->tt_products->get($row['uid_product']);
+						$variant = $itemTable->variant->getVariantFromRow($prodRow);
+						$item = $this->basket->getItem($prodRow, $variant);
+						$this->tt_products->getItemMarkerArray ($item, $productMarkerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewProductsTagArray, array(), $theCode, $iCount);
+						if ($itemListOut)	{
+							$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);						
+						}		
+					}
+					$currentArray['product'] = $row['uid_product'];
+
 					$tmp = $this->conf['CSS.'][$itemTable->table->name.'.']['list.']['default'];
 					$css_current = ($tmp ? $tmp : $this->conf['CSSListDefault']);	// only for backwards compatibility
 	
@@ -494,13 +560,11 @@ class tx_ttproducts_list_view {
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 					$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 					$basketItemView->getItemMarkerArray ($itemTable, $item, $markerArray, $this->basket->basketExt, $theCode, $iCount);
-					$itemTable->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, $theCode, $iCount);
-					if ($itemTable->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
-						$prodRow = $this->tt_products->get($row['uid_product']);
-						$variant = $itemTable->variant->getVariantFromRow($prodRow);
-						$item = $this->basket->getItem($prodRow, $variant);
-						$this->tt_products->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, array(), $theCode, $iCount);
+					$itemTable->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, array(), $theCode, $iCount);
+					if ($itemTable->type == 'article')	{
+						array_merge ($markerArray, $productMarkerArray);
 					} else {
+						// fetch variants for a product
 						$this->tt_products->variant->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, $viewTagArray, $theCode, $iCount);
 					}
 					
@@ -544,20 +608,19 @@ class tx_ttproducts_list_view {
 					$markerArray['###FORM_MEMO###'] = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array(), true)); //$this->getLinkUrl($this->conf['PIDmemo']);
 	
 					// cuts note in list view
-					if (strlen($markerArray['###PRODUCT_NOTE###']) > $this->conf['max_note_length']) {
-						$markerArray['###PRODUCT_NOTE###'] = substr(strip_tags($markerArray['###PRODUCT_NOTE###']), 0, $this->conf['max_note_length']) . '...';
+					if (strlen($markerArray['###'.$itemTable->marker.'_NOTE###']) > $this->conf['max_note_length']) {
+						$markerArray['###'.$itemTable->marker.'_NOTE###'] = substr(strip_tags($markerArray['###'.$itemTable->marker.'_NOTE###']), 0, $this->conf['max_note_length']) . '...';
 					}
-					if (strlen($markerArray['###PRODUCT_NOTE2###']) > $this->conf['max_note_length']) {
-						$markerArray['###PRODUCT_NOTE2###'] = substr(strip_tags($markerArray['###PRODUCT_NOTE2###']), 0, $this->conf['max_note_length']) . '...';
+					if (strlen($markerArray['###'.$itemTable->marker.'_NOTE2###']) > $this->conf['max_note_length']) {
+						$markerArray['###'.$itemTable->marker.'_NOTE2###'] = substr(strip_tags($markerArray['###'.$itemTable->marker.'_NOTE2###']), 0, $this->conf['max_note_length']) . '...';
 					}					
 					if (is_object($itemTable->variant))	{
-						$itemTable->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
+						$itemTable->variant->removeEmptyMarkerSubpartArray($markerArray,$subpartArray, $row, $this->conf);
 					}
 					if ($t['item'])	{
 						$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
 					}
-					$itemsOut .= $tempContent;
-	
+					$itemsOut .= $tempContent;	
 	//				} // foreach ($productList as $k2 => $row)
 
 					// max. number of columns reached?
@@ -565,24 +628,33 @@ class tx_ttproducts_list_view {
 						if ($t['itemFrameWork'])	{
 							// complete the last table row
 							$itemsOut .= $this->finishHTMLRow($iColCount, $tableRowOpen);
-							$itemListOut .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$itemsOut,0);;
+							// $itemListOut .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$itemsOut,0);
+							$markerArray = array_merge ($productMarkerArray, $categoryMarkerArray, $markerArray);
+							$subpartArray = array();
+							$subpartArray['###ITEM_SINGLE###'] = $itemsOut;
+							$itemListOut .= $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,$subpartArray);
 							$itemsOut = '';
 						}
 						$iColCount = 0; // restart in the first column
 					}
 					$nextRow = $itemArray[$iCount];
-					$nextP = (($pageAsCategory < 2) ? $nextRow['category'] : $nextRow['pid']);
+					$nextArray['category'] = (($pageAsCategory < 2) ? $nextRow['category'] : $nextRow['pid']);
+					$nextArray['product'] = $nextRow['uid_product'];
+
 					// multiple columns display and ITEM_SINGLE_POST_HTML is in the item's template?
 					if (
-							$nextP != $currentP &&
-							$itemsOut
+							$nextArray['category']  !=  $currentArray['category'] && $itemsOut ||
+							$nextArray['product']   !=  $currentArray['product']  && $itemTable->type == 'article' && $t['productAndItemsFrameWork']
 						) {
 						if ($bItemPostHtml)	{
 							// complete the last table row
 							$itemsOut .= $this->finishHTMLRow($iColCount, $tableRowOpen);
 						}
-						if ($t['itemFrameWork'])	{
-							$itemListOut .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$itemsOut,0);;
+						if ($nextArray['category']  !=  $currentArray['category'] && $itemsOut && $t['itemFrameWork'])	{
+							// $itemListOut .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$itemsOut,0);
+							$markerArray = array_merge($productMarkerArray, $categoryMarkerArray, $markerArray);
+							$markerArray['###ITEM_SINGLE###'] = $itemsOut;
+							$itemListOut .= $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,$subpartArray);
 							$itemsOut = '';
 						}
 					}
@@ -590,10 +662,16 @@ class tx_ttproducts_list_view {
 			} else {
 				$out = '';  // TODO: keine Produkte gefunden
 			}
+
 //			if ($t['itemFrameWork'])
 //				$out=$this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$out,0);
-			if ($itemListOut || $categoryOut)	{
-				$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $itemListOut, $categoryOut);
+			if ($itemListOut || $categoryOut || $productListOut)	{
+				$catItemsListOut = &$itemListOut;
+				if ($itemTable->type == 'article' && $productListOut && $t['productAndItemsFrameWork'])	{
+					$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);
+					$catItemsListOut = &$productListOut;
+				}
+				$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart);
 			}
 		}	// if ($where ...
 		if ($out)	{

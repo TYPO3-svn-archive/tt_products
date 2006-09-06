@@ -113,7 +113,7 @@ class tx_ttproducts_basket_view {
 
 		global $TSFE, $TCA;
 /* ADDED Els: need for vouchercode conditions */
-		global $TYPO3_DB;
+		global $TYPO3_DB, $TYPO3_CONF_VARS;
 
 		if (!$templateCode)	{
 			$templateCode = &$this->templateCode;		
@@ -150,7 +150,6 @@ class tx_ttproducts_basket_view {
 		$parentArray = array();
 		$fieldsArray = $this->marker->getMarkerFields(
 			$t['item'],
-			$this->viewTable->table->name,
 			$this->viewTable->table->tableFieldArray,
 			$this->viewTable->table->requiredFieldArray,
 			$markerFieldArray,
@@ -210,7 +209,7 @@ class tx_ttproducts_basket_view {
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 					$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 				}
-					
+
 				$basketItemView->getItemMarkerArray ($this->viewTable, $actItem, $markerArray, $this->basket->basketExt, $code, $count);
 				$catRow = $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : array();
 				// $catTitle= $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : '';

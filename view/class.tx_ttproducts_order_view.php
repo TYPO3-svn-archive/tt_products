@@ -40,6 +40,8 @@
 
 
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 
 
 
@@ -54,6 +56,8 @@ class tx_ttproducts_order_view {
 	var $paymentshipping; 			// object of the type tx_ttproducts_paymentshipping
 
 	function init(&$pibase, &$cnf, &$basket, $formerBasket, &$fe_users, &$paymentshipping) {
+		global $TYPO3_CONF_VARS;
+
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$this->cnf->conf;
@@ -98,8 +102,6 @@ class tx_ttproducts_order_view {
 		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders','feusers_uid='.intval($feusers_uid).' AND NOT deleted ORDER BY crdate');
 
 		$content=$this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ORDERS_LIST_TEMPLATE###'));
- //CBY 11/11/2005 modifications : integrating order list template start
-	  //$orderlist=$this->pibase->cObj->getSubpart($content,'###ORDER_LIST###');
 		$orderitem=$this->pibase->cObj->getSubpart($content,'###ORDER_ITEM###');
 		if ($TYPO3_DB->sql_num_rows($res)) {
 			// Fill marker arrays

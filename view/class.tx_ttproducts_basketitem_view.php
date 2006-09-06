@@ -29,7 +29,7 @@
  *
  * view functions for a basket item object
  *
- * $Id$
+ * $Id:$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -70,6 +70,7 @@ class tx_ttproducts_basketitem_view {
 	 * @access private
 	 */
 	function getItemMarkerArray (&$viewTable, &$item, &$markerArray, &$basketExt, $code, $id='1')	{
+
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
 		$basketQuantityName = 'ttp_basket['.$row['uid'].'][quantity]';

@@ -260,7 +260,6 @@ class tx_ttproducts_catlist_view {
 			$viewCatTagArray = array();
 			$catfieldsArray = $this->marker->getMarkerFields(
 				$t['linkCategoryFrameWork'],
-				$viewCatTable->table->name,
 				$viewCatTable->table->tableFieldArray,
 				$viewCatTable->table->requiredFieldArray,
 				$tmp = array(),

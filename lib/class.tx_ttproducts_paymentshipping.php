@@ -201,6 +201,7 @@ class tx_ttproducts_paymentshipping {
 				.wrap		[string]	<select>|</select> - wrap for the selectorboxes.  Only if .radio is false. See default value below
 				.template	[string]	Template string for the display of radiobuttons.  Only if .radio is true. See default below
 			 */
+		global $TYPO3_CONF_VARS;
 
 		$type = $this->conf[$pskey.'.']['radio'];
 		$active = $this->basket->basketExtra[$pskey];
@@ -233,7 +234,6 @@ class tx_ttproducts_paymentshipping {
 						$parentArray = array();
 						$fieldsArray = $this->marker->getMarkerFields(
 							$item['title'],
-							$tableName,
 							$itemTable->table->tableFieldArray,
 							$itemTable->table->requiredFieldArray,
 							$markerFieldArray,
@@ -397,9 +397,6 @@ class tx_ttproducts_paymentshipping {
 			}
 			
 			if (!$priceShippingNoTaxAdd) {
-//				$priceShippingNoTax = $priceShippingTax; 
-//				debug ($priceShippingNoTax, '$priceShippingNoTax', __LINE__, __FILE__);
-//			} else {
 				$priceShippingNoTaxAdd = $this->price->getPrice($priceShippingTaxAdd,false,$taxpercentage,true,true);
 			}
 			$priceShippingNoTax += $priceShippingNoTaxAdd;
@@ -511,15 +508,6 @@ class tx_ttproducts_paymentshipping {
 		return $rc;
 	}
 
-
-	/**
-	 * get the country uid for a shipping entry
-	 * E.g.:  30.where.static_countries = cn_short_local = 'Deutschland'
-	 */
-	function getCountryUid()	{
-		$rc = $this->basket->basketExtra['shipping'][1];
-		return $rc;
-	}
 
 }
 

@@ -343,6 +343,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $pid, $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id, $prefix);
+		
 		$pageCatTitle = $row['title'];
 		$this->setMarkerArrayCatTitle ($markerArray, $pageCatTitle, $prefix);
 		$markerArray['###'.$prefix.$this->marker.'_SUBTITLE###'] = $row['subtitle'];

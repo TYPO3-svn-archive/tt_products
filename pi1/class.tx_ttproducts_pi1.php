@@ -133,7 +133,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
 	function main($content,$conf)	{
-		global $TSFE;
+		global $TSFE, $TYPO3_CONF_VARS;
 
 		$this->conf = &$conf;
 		$backPID = $this->piVars['backPID'];
@@ -156,8 +156,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		
 			// initialise AJAX at the beginning because the AJAX functions can set piVars
 		if (t3lib_extMgm::isLoaded('xajax')) {
-			global $TYPO3_CONF_VARS;
-
 			include_once(t3lib_extMgm::extPath('xajax').'class.tx_xajax.php');
 			$this->xajax = t3lib_div::makeInstance('tx_xajax');
 				// Decode form vars from utf8
@@ -254,7 +252,9 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		global $TYPO3_CONF_VARS; // needed for include_once and PHP 5.1 which otherwise would not allow XCLASS for HtmlMail, DAM aso.
 		$bStoreBasket = false;
 
-		if (!count($this->codeArray) && !$bRunAjax)	 $this->codeArray=array('HELP');
+		if (!count($this->codeArray) && !$bRunAjax)	{
+			$this->codeArray = array('HELP');
+		}
 		$this->codeArray = $this->pi_checkCodes($this->codeArray, $bStoreBasket);
 
 		$this->init ($content, $this->config);
@@ -452,7 +452,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			
 			if ($contentTmp == 'error') {
 					$fileName = 'EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl';
-					$content .= $this->pi_displayHelpPage($this->cObj->fileResource($fileName));
+					$helpTemplate = $this->cObj->fileResource($fileName);
+					$content .= $this->pi_displayHelpPage($helpTemplate, $theCode);
 					unset($this->errorMessage);
 					break; // while
 			} else {

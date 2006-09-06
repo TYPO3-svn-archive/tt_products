@@ -117,6 +117,27 @@ class tx_ttproducts_config {
 		return $fieldArray;
 	}
 	
+
+	function getImageFields($tableConf)	{
+		$retArray = array();
+
+		$generateArray = array('generateImage', 'generatePath');
+		foreach ($generateArray as $k => $generate)	{
+			if (is_array($tableConf) && is_array($tableConf[$generate.'.'])) {
+				$genPartArray = $tableConf[$generate.'.'];
+				if ($genPartArray['type'] == 'tablefields')	{
+					$fieldArray = $genPartArray['field.'];
+					if (is_array($fieldArray))	{ 
+						foreach ($fieldArray as $field => $count)	{
+							$retArray[] = $field;
+						}
+					}
+				}	
+			}
+		}		
+
+		return $retArray;
+	}
 	
 }
 

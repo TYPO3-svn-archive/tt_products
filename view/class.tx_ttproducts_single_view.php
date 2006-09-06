@@ -114,6 +114,7 @@ class tx_ttproducts_single_view {
 			$rowArray[$this->type] = $TYPO3_DB->sql_fetch_assoc($res);
 			$itemTableConf[$this->type] = $this->cnf->getTableConf($itemTableArray[$this->type]->table->name, 'SINGLE');
 			$itemTableLangFields[$this->type] = $this->cnf->getTranslationFields($itemTableConf[$this->type]);
+			// TODO: $itemImageFields[$this->type] = $this->cnf->getImageFields($itemTableConf[$this->type]);			
 
 			if ($this->type == 'product')	{
 				if ($this->variants) {
@@ -125,7 +126,8 @@ class tx_ttproducts_single_view {
 				$res = $itemTableArray['product']->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
 				$rowArray['product'] = $TYPO3_DB->sql_fetch_assoc($res);
 				$itemTableConf['product'] = $this->cnf->getTableConf($itemTableArray['product']->table->name, 'SINGLE');
-				$itemTableLangFields['product'] = $this->cnf->getTranslationFields($itemTableConf);
+				$itemTableLangFields['product'] = $this->cnf->getTranslationFields($itemTableConf['product']);
+				$itemImageFields['product'] = $this->cnf->getImageFields($itemTableConf['product']);
 				$itemTableArray['article']->mergeProductRow($rowArray['article'], $rowArray['product']);
 			}
 				
@@ -173,7 +175,6 @@ class tx_ttproducts_single_view {
 			$parentArray = array();
 			$fieldsArray = $this->marker->getMarkerFields(
 				$itemFrameWork,
-				$itemTableArray[$this->type]->table->name,
 				$itemTableArray[$this->type]->table->tableFieldArray,
 				$itemTableArray[$this->type]->table->requiredFieldArray,
 				$markerFieldArray,
@@ -252,7 +253,6 @@ class tx_ttproducts_single_view {
 			$catParentArray = array();
 			$catfieldsArray = $this->marker->getMarkerFields(
 				$itemFrameWork,
-				$viewCatTable->table->name,
 				$viewCatTable->table->tableFieldArray,
 				$viewCatTable->table->requiredFieldArray,
 				$tmp = array(),
@@ -261,8 +261,9 @@ class tx_ttproducts_single_view {
 				$catParentArray
 			);
 
+			$categoryMarkerArray = array();
 			$viewCatTable->getMarkerArray (
-				$markerArray, 
+				$categoryMarkerArray, 
 				$this->page,
 				$row['category'], 
 				$row['pid'], 
@@ -276,7 +277,8 @@ class tx_ttproducts_single_view {
 				''
 			);
 
-			$catTitle = $viewCatTable->getMarkerArrayCatTitle($markerArray);
+			$viewParentCatTagArray = array();
+			$catTitle = $viewCatTable->getMarkerArrayCatTitle($categoryMarkerArray);
 			$viewCatTable->getParentMarkerArray (
 				$parentArray,
 				$row,
@@ -286,7 +288,7 @@ class tx_ttproducts_single_view {
 				$row['pid'], 
 				$this->config['limitImage'], 
 				'listcatImage', 
-				$viewCatTagArray, 
+				$viewParentCatTagArray, 
 				array(), 
 				$pageAsCategory,
 				'SINGLE',
@@ -296,7 +298,11 @@ class tx_ttproducts_single_view {
 
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 			$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
-			$basketItemView->getItemMarkerArray ($itemTableArray[$this->type], $item, $markerArray, $this->basket->basketExt, 'SINGLE', 1);
+			
+			$basketMarkerArray = array();
+			$basketItemView->getItemMarkerArray ($itemTableArray[$this->type], $item, $basketMarkerArray, $this->basket->basketExt, 'SINGLE', 1);
+		
+			$markerArray = array();
 			$itemTableArray[$this->type]->getItemMarkerArray (
 				$item,
 				$markerArray,
@@ -396,7 +402,7 @@ class tx_ttproducts_single_view {
 			}
 
 			if ($this->type == 'product')	{
-				$itemTableArray[$this->type]->variant->removeEmptySubpartArray($subpartArray, $row, $this->conf);
+				$itemTableArray[$this->type]->variant->removeEmptyMarkerSubpartArray($markerArray, $subpartArray, $row, $this->conf);
 			}
 			
 			if ($this->type == 'product' && $key = array_search('related_uid', $fieldsArray))	{
@@ -438,8 +444,8 @@ class tx_ttproducts_single_view {
 				}
 			}
 			
-			$this->javaScriptMarker->getMarkerArray($markerArray);
-			
+			$this->javaScriptMarker->getMarkerArray($markerArray);		
+			$markerArray = array_merge ($categoryMarkerArray, $basketMarkerArray, $markerArray);
 				// Substitute	
 			$content = $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 			if ($personDataFrameWork) {

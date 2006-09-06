@@ -147,7 +147,7 @@ class tx_ttproducts_memo_view {
 	 */
 	function &printView(&$templateCode, &$error_code)
 	{
-		global $TSFE;
+		global $TSFE, $TYPO3_CONF_VARS;;
 		
 		$content = '';
 

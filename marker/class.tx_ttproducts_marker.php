@@ -47,6 +47,7 @@ class tx_ttproducts_marker {
 	var $conf;
 	var $config;
 	var $basket;
+	var $markerArray;
 
 
 	/**
@@ -63,6 +64,7 @@ class tx_ttproducts_marker {
  		$this->conf = &$this->cnf->conf;
  		$this->config = &$this->cnf->config;
  		$this->basket = &$basket;
+ 		$this->markerArray = array('CATEGORY', 'PRODUCT', 'ARTICLE');
 	}
 
 	/**
@@ -216,11 +218,11 @@ class tx_ttproducts_marker {
 	 *
 	 * @access private
 	 */
-	function &getMarkerFields (&$templateCode, $tableName, &$tableFieldArray, &$requiredFieldArray, &$addCheckArray, $prefix, &$tagArray, &$parentArray)	{
+	function &getMarkerFields (&$templateCode, &$tableFieldArray, &$requiredFieldArray, &$addCheckArray, $prefixParam, &$tagArray, &$parentArray)	{
 		$retArray = $requiredFieldArray;
 		// obligatory fields uid and pid
 
-		$prefix .= '_';
+		$prefix = $prefixParam.'_';
 		$prefixLen = strlen($prefix);
 		// $tagArray = explode ('###', $templateCode);
 		$treffer = array();
@@ -230,9 +232,10 @@ class tx_ttproducts_marker {
 		
 		if (is_array($tagArray))	{
 			$tagArray = array_flip($tagArray);
+			$retTagArray = $tagArray;
 			foreach ($tagArray as $tag => $k1)	{
 				$prefixFound = strstr($tag, $prefix);
-				$bFieldadded = false;
+				$bFieldadded = FALSE;
 				if ($prefixFound)	{
 					$field = substr ($prefixFound, $prefixLen);
 					$field = strtolower($field);
@@ -250,6 +253,16 @@ class tx_ttproducts_marker {
 						$temp = substr($tag, $parentLen, ($parentEnd - $parentFound) - $parentLen);
 						$parentArray[] = $temp;
 					}
+				} else {
+					// unset the tags of different tables
+					foreach ($this->markerArray as $k => $marker)	{
+						if ($marker != $prefixParam) 	{
+							$bMarkerFound = strpos($tag, $marker);
+							if ($bMarkerFound == 0 && $bMarkerFound !== FALSE)	{
+								unset($retTagArray[$tag]);
+							}
+						}
+					}
 				}
 				if (!$bFieldadded && is_array($addCheckArray))	{
 					foreach ($addCheckArray as $marker => $field)	{
@@ -261,24 +274,12 @@ class tx_ttproducts_marker {
 					}
 				}
 			}
+			$tagArray = $retTagArray;
 		}
 		
 		sort($parentArray);
 		
-		$generateArray = array('generateImage', 'generatePath');
-		foreach ($generateArray as $k => $generate)	{
-			if (is_array($this->conf['conf.']) && is_array($this->conf['conf.'][$tableName.'.']) && is_array($this->conf['conf.'][$tableName.'.'][$generate.'.'])) {
-				$genPartArray = $this->conf['conf.'][$tableName.'.'][$generate.'.'];
-				if ($genPartArray['type'] == 'tablefields')	{
-					$fieldArray = $genPartArray['field.'];
-					if (is_array($fieldArray))	{ 
-						foreach ($fieldArray as $field => $count)	{
-							$retArray[] = $field;
-						}
-					}
-				}	
-			}
-		}
+
 		if (is_array($retArray))	{
 			$retArray = array_unique($retArray);
 		}

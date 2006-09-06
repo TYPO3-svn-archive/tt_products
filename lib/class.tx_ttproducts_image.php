@@ -51,7 +51,7 @@ class tx_ttproducts_image {
 	 * Getting all tt_products_cat categories into internal array
 	 */
 	function init(&$pibase, &$cnf, &$tt_content, &$parenttable, $marker)  {
-		global $TYPO3_DB,$TSFE,$TCA;
+		global $TYPO3_DB,$TSFE,$TCA,$TYPO3_CONF_VARS;;
 		
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
@@ -147,10 +147,11 @@ class tx_ttproducts_image {
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getItemMarkerArray ($row, &$markerArray, $pid, $imageNum=0, $imageRenderObj='image', &$tagArray, $theCode, $prefix='')	{
+	function getItemMarkerArray ($row, &$markerArray, $pid, $imageNum=0, $imageRenderObj='image', &$tagArray, $theCode, $id='', $prefix='')	{
 		global $TYPO3_DB;
 // TODO: use $prefix
 
+		$imageRow = $row;
 		$bImages = false;
 		$marker = $this->marker;
 		$tableConf = $this->cnf->getTableConf($this->parenttable->name, $theCode);
@@ -191,10 +192,10 @@ class tx_ttproducts_image {
 					$localfield = $tempConf['uid_local'];
 					$foreignfield = $tempConf['uid_foreign'];
 					$fieldconfParent['generateImage'] = $tempConf['field.']; 
-					$where_clause = $conftable.'.'.$foreignfield .'='. $row[$localfield];
+					$where_clause = $conftable.'.'.$foreignfield .'='. $imageRow[$localfield];
 					$res = $TYPO3_DB->exec_SELECTquery('*',$conftable,$where_clause,'',$foreignfield,1);
 						// only first found row will be used
-					$row = $TYPO3_DB->sql_fetch_assoc($res);
+					$imageRow = $TYPO3_DB->sql_fetch_assoc($res);
 				}
 			}
 			
@@ -222,8 +223,8 @@ class tx_ttproducts_image {
 					 		}
 					 		
 					 		foreach ($fieldConf as $field => $count)	{
-								if ($row[$field])	{
-									$nameArray[$generate] .= substr($row[$field], 0, $count);
+								if ($imageRow[$field])	{
+									$nameArray[$generate] .= substr($imageRow[$field], 0, $count);
 									if ($generate == 'generateImage')
 										$bImages = true;
 								}
@@ -237,10 +238,10 @@ class tx_ttproducts_image {
 				if (is_array($conftableConf['generatePath.']))	{
 					$dirname = $conftableConf['generatePath.']['base'].'/'.$nameArray['generatePath'];
 				}
-				if (is_dir($dirname))	{
+				if ($nameArray['generateImage'] && is_dir($dirname))	{
 					$directory = dir($dirname);
 					while($entry=$directory->read())	{
-						if (strstr($entry, $nameArray['generateImage'].'_'))	{
+						if (strstr($entry, $nameArray['generateImage'].'_') !== FALSE)	{
 							$imgs[] = $entry;
 						}
 					}
@@ -252,7 +253,7 @@ class tx_ttproducts_image {
 		} 
 		
 		if (!$bImages)	{
-			$imgs = ($row['image'] ? explode(',',$row['image']) : array());
+			$imgs = ($imageRow['image'] ? explode(',',$imageRow['image']) : array());
 		}
 
 		$specialConf = array();
@@ -313,7 +314,7 @@ class tx_ttproducts_image {
 				$key = ($val ? $val : $c);
 			}
 			
-			$this->pibase->cObj->alternativeData = ($meta ? $meta : $row);
+			$this->pibase->cObj->alternativeData = ($meta ? $meta : $imageRow);
 			$this->replaceMarkerArray($confMarkerArray, $imageConf, $this->pibase->cObj->alternativeData);
 			$tmpImgCode = $this->pibase->cObj->IMAGE($imageConf);
 			$theImgCode[$key] .= $tmpImgCode;
@@ -327,7 +328,7 @@ class tx_ttproducts_image {
 			if (is_array($specialConf[$tagkey]))	{
 				foreach ($specialConf[$tagkey] as $specialConfType => $specialImageConf)	{
 					$theImageConf = array_merge($imageConf, $specialImageConf);
-					$this->pibase->cObj->alternativeData = ($meta ? $meta : $row); // has to be redone here
+					$this->pibase->cObj->alternativeData = ($meta ? $meta : $imageRow); // has to be redone here
 					$this->replaceMarkerArray($confMarkerArray, $theImageConf, $this->pibase->cObj->alternativeData);
 					$tmpImgCode = $this->pibase->cObj->IMAGE($theImageConf);
 					$key1 = $key.':'.$specialConfType;
@@ -339,10 +340,10 @@ class tx_ttproducts_image {
 		$markerArray['###'.$this->marker.'_IMAGE###'] = $actImgCode ? $actImgCode : ''; // for compatibility only
 		$c = 1;
 		while ((list($k1,$val)=each($theImgCode))) {
-			if (strstr($val, ':'))	{
-				// no duplicate images for the normal markers with numbers.
-				continue;
-			}
+//			if (strstr($k1, '_') === FALSE)	{
+//				// no duplicate images for the normal markers with numbers.
+//				continue;
+//			}
 			$key = $this->marker.'_IMAGE' . intval($c);
 			if (isset($tagArray[$key]))	{
 				$markerArray['###'.$key.'###'] = $val;
@@ -380,9 +381,9 @@ class tx_ttproducts_image {
 							$markerArray['###'.$key1.'###'] = $val2;
 						}
 					}
-				}	
+				}
 			}
-		} 
+		}
 
 //plugin.tt_products.conf.pages.imageMarker {
 //    type = imagename
@@ -395,8 +396,7 @@ class tx_ttproducts_image {
 				$markerArray[$keyMarker] = '';
 			}
 		}
-		
-		
+
 	}
 
 }

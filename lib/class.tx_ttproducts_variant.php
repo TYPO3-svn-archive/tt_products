@@ -141,31 +141,41 @@ class tx_ttproducts_variant {
 				$subpartArray['###'.$area.'###'] = $this->pibase->cObj->getSubpart($tempContent,'###'.$area.'###');
 			}
 		}
-		$this->removeEmptySubpartArray($subpartArray, $row, $conf);
+		$markerArray = array();
+		$this->removeEmptyMarkerSubpartArray($markerArray, $subpartArray, $row, $conf);
 	}
 
 
-	function removeEmptySubpartArray (&$subpartArray, &$row, &$conf) {
+	function removeEmptyMarkerSubpartArray (&$markerArray, &$subpartArray, &$row, &$conf) {
 		$areaArray = array();
+		$remMarkerArray = array();
 
 		if (is_array($this->conf))	{
 			foreach ($this->conf as $key => $field)	{
 				if ($key != 5)	{
 					if (trim($row[$field]) == '' || !$conf['select'.ucfirst($field)])	{
-						$areaArray[] = 'display_variant'.$key;
+						$remSubpartArray[] = 'display_variant'.$key;
+					} else {
+						$remMarkerArray[] = 'display_variant'.$key;
 					}
 				}
 			}
 		}
 
 		if ($this->itemTable->hasAdditional($row,'isSingle')) {
-			$areaArray[] = 'display_variant5_isNotSingle';
+			$remSubpartArray[] = 'display_variant5_isNotSingle';
+			$remMarkerArray[] = 'display_variant5_isSingle';
 		} else {
-			$areaArray[] = 'display_variant5_isSingle';
+			$remSubpartArray[] = 'display_variant5_isSingle';
+			$remMarkerArray[] = 'display_variant5_isNotSingle';
 		}
 
-		foreach ($areaArray as $k => $area) {
-			$subpartArray['###'.$area.'###'] = '';
+		foreach ($remSubpartArray as $k => $subpart) {
+			$subpartArray['###'.$subpart.'###'] = '';
+		}
+		
+		foreach ($remMarkerArray as $k => $marker)	{
+			$markerArray['<!-- ###'.$marker.'### -->'] = '';
 		}
 	}
 
