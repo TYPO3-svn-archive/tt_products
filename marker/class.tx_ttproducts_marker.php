@@ -29,7 +29,7 @@
  *
  * view functions
  *
- * $Id: class.tx_ttproducts_marker.php,v 1.14 2006/06/22 09:14:43 franzholz Exp $
+ * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
