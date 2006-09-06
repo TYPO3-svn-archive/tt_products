@@ -29,7 +29,7 @@
  *
  * product list view functions
  *
- * $Id: class.tx_ttproducts_list_view.php 3460 2006-07-14 12:00:13Z franzholz $
+ * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	Renè Fritz <r.fritz@colorcube.de>

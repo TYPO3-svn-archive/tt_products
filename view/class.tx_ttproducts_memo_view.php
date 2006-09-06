@@ -29,7 +29,7 @@
  *
  * memo functions
  *
- * $Id: class.tx_ttproducts_memo_view.php 3457 2006-07-13 09:25:06Z franzholz $
+ * $Id$
  *
  * @author  Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3

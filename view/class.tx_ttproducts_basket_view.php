@@ -29,7 +29,7 @@
  *
  * basket functions for a basket object
  *
- * $Id: class.tx_ttproducts_basket_view.php 3460 2006-07-14 12:00:13Z franzholz $
+ * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	René Fritz <r.fritz@colorcube.de>

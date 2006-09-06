@@ -29,7 +29,7 @@
  *
  * currency functions
  *
- * $Id: class.tx_ttproducts_currency_view.php,v 1.3 2006/06/09 12:09:38 franzholz Exp $
+ * $Id$
  *
  * @author  Milosz Klosowicz <typo3@miklobit.com>
  * @package TYPO3

@@ -29,7 +29,7 @@
  *
  * product single view functions
  *
- * $Id: class.tx_ttproducts_single_view.php 3457 2006-07-13 09:25:06Z franzholz $
+ * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	René Fritz <r.fritz@colorcube.de>

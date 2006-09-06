@@ -29,7 +29,7 @@
  *
  * order functions
  *
- * $Id: class.tx_ttproducts_order_view.php,v 1.6 2006/06/09 12:09:39 franzholz Exp $
+ * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
