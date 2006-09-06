@@ -1,4 +1,8 @@
-2006-08--- Franz Holzinger <franz@fholzinger.com>
+2006-09-06 Franz Holzinger <franz@fholzinger.com>
+	* listing of products with ###ITEM_PRODUCT_AND_ITEMS### and ###ITEM_PRODUCT### in the article list
+	* use new static_info_tables functionality with where clauses for country tables
+
+2006-08-26 Franz Holzinger <franz@fholzinger.com>
 	* rename swords to sword because this is TYPO3 compliant and no cache is used here
 	* use global $TYPO3_CONF_VARS before each include_once - PHP 5.1 would otherwise not allow XCLASS for HtmlMail, DAM aso.
 	* correct error with wrongly used TAXincluded for payment
