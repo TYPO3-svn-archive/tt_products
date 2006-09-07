@@ -598,9 +598,15 @@ class tx_ttproducts_basket_view {
 			$subpartArray['###FE_USER_SECTION###']='';
 		}
 		$bFrameWork = $t['basketFrameWork'];
-		$subpartArray['###MESSAGE_SHIPPING###'] = $this->pibase->cObj->substituteMarkerArrayCached($this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_SHIPPING_'.$this->basket->basketExtra['shipping'].'###'),$markerArray);
-		$subpartArray['###MESSAGE_PAYMENT###'] = $this->pibase->cObj->substituteMarkerArrayCached($this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_PAYMENT_'.$this->basket->basketExtra['payment'].'###'),$markerArray);
-
+		
+		$tmpKey = $this->basket->basketExtra['shipping'];
+		if (is_array($tmpKey))	{
+			$tmpKey = current($tmpKey);
+		}
+		$tmpSubpart = $this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_SHIPPING_'.$tmpKey.'###');
+		$subpartArray['###MESSAGE_SHIPPING###'] = $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
+		$tmpSubpart = $this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_PAYMENT_'.$this->basket->basketExtra['payment'].'###');
+		$subpartArray['###MESSAGE_PAYMENT###'] = $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
 		$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
 
 		if (is_object($address))	{
