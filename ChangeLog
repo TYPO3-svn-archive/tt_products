@@ -1,3 +1,6 @@
+2006-09-07 Franz Holzinger <franz@fholzinger.com>
+	* display special text in dependancy on the selected shipping item on the basket view
+
 2006-09-06 Franz Holzinger <franz@fholzinger.com>
 	* listing of products with ###ITEM_PRODUCT_AND_ITEMS### and ###ITEM_PRODUCT### in the article list
 	* use new static_info_tables functionality with where clauses for country tables
