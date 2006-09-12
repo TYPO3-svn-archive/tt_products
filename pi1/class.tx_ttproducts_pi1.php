@@ -338,12 +338,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				case 'LISTCAT':
 				case 'SELECTCAT':
 					$this->bListStartEmpty = true;
-					
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view.php');
 						// category view
 					$categoryView = t3lib_div::makeInstance('tx_ttproducts_catlist_view');
 					$categoryView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products_cat, $this->pid);
-
 					$htmlTagMain = $this->conf['displayCatListType'];
 					
 					if ($theCode == 'LISTCAT')	{
@@ -353,7 +351,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 							// category select view
 						$selectCatView = t3lib_div::makeInstance('tx_ttproducts_selectcat_view');
 						$selectCatView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products_cat, $this->pid);
-
 						$contentTmp = $selectCatView->printView($categoryView, $this->templateCode, $error_code, $this->pageAsCategory, $this->template_suffix);
 					}
 				break;

@@ -115,16 +115,19 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		return $rc;
 	}
 
-  function getRowCategory ($row) {
-    $rc = $row['pid'];
-    return $rc;
-  }
 
-  function getRowPid($row) {
-    $rc = $row['uid'];
-    return $rc;
-  }
-  
+	function getRowCategory ($row) {
+		$rc = $row['pid'];
+		return $rc;
+	}
+
+
+	function getRowPid($row) {
+		$rc = $row['uid'];
+		return $rc;
+	}
+
+ 
 	function getParamDefault ()	{
 		$pid = $this->pibase->piVars[$this->piVar];
 		$pid = ($pid ? $pid : $this->conf['defaultPageID']);
@@ -133,6 +136,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		}
 		return $pid;	
 	}
+
 
 	function &getRootpathArray ($rootCat,$currentCat) {
 		$rootpathArray = array();
@@ -147,6 +151,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		} while ($lastUid != $rootCat && $count < 100);
 		return $rootpathArray;
 	}
+
 
 	function &getRelationArray ($excludeCat=0,$currentCat=0) {
 		$relationArray = array();
@@ -232,7 +237,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	/**
 	 * Returning the pid out from the row using the where clause
 	 */
-	function getPID($conf, $confExt, $row) {
+	function getPID($conf, $confExt, $row, $rootRow=array()) {
 		$rc = 0;
 		if ($confExt) {
 			foreach ($confExt as $k1 => $param) {
@@ -271,9 +276,8 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			} else {
 				global $TSFE;
 				
-				$rc = intval ($TSFE->id);
-//				$pageTmp = $this->get($row['pid']);
-//				$rc = intval ($pageTmp['pid']);
+				$rc = ($rootRow['uid'] ? $rootRow['uid'] : $TSFE->id);
+				$rc = intval($rc);
 			}
 		}
 		return $rc;

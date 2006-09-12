@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Shop System',
-	'description' => 'Open Source Shop in multiple languages, photo gallery using DAM, product variants, payment gateways, bill, creditpoint, voucher system and gift certificates. Requires table v0.1.5 and fh_library v0.0.11! Tutorial at <a href=http://fholzinger.com/index.php?id=170>Shop System</a>',
+	'description' => 'Open Source Shop in multiple languages, photo gallery using DAM, product variants, payment gateways, bill, creditpoint, voucher system and gift certificates. Requires table v0.1.5 and fh_library v0.0.11! Tutorial at typo3.org/documentation',
 	'category' => 'plugin',
 	'shy' => 0,
 	'dependencies' => 'cms,table,fh_library',

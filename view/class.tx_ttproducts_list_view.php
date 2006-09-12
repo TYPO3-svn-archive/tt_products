@@ -632,7 +632,7 @@ class tx_ttproducts_list_view {
 							$markerArray = array_merge ($productMarkerArray, $categoryMarkerArray, $markerArray);
 							$subpartArray = array();
 							$subpartArray['###ITEM_SINGLE###'] = $itemsOut;
-							$itemListOut .= $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,$subpartArray);
+							$itemListOut .= $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 							$itemsOut = '';
 						}
 						$iColCount = 0; // restart in the first column
@@ -654,7 +654,7 @@ class tx_ttproducts_list_view {
 							// $itemListOut .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$itemsOut,0);
 							$markerArray = array_merge($productMarkerArray, $categoryMarkerArray, $markerArray);
 							$markerArray['###ITEM_SINGLE###'] = $itemsOut;
-							$itemListOut .= $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,$subpartArray);
+							$itemListOut .= $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 							$itemsOut = '';
 						}
 					}
@@ -690,7 +690,7 @@ class tx_ttproducts_list_view {
 
 			$backPID = $this->pibase->piVars['backPID'];
 			$pid = ( $backPID ? $backPID : $TSFE->id);
-			$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>');
+			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>');
 
 			if ($sword) 	{
 				$addQueryString['sword'] = $sword; 

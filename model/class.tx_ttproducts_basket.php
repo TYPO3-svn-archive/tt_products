@@ -194,6 +194,16 @@ class tx_ttproducts_basket {
 		$sameGiftData = true;
 		$identGiftnumber = 0;
 
+			// Call all changeBasket hooks
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'] as $classRef) {
+				$hookObj= &t3lib_div::getUserObj($classRef);
+				if (method_exists($hookObj, 'changeBasket')) {
+					$hookObj->changeBasket($this, $basketExtRaw, $extVars, $paramProduct, $uid, $sameGiftData, $identGiftnumber);
+				}
+			}
+		}
+
 		if ($newGiftData) {
 	 		$giftnumber = t3lib_div::_GP('giftnumber');
 			if ($updateMode) {

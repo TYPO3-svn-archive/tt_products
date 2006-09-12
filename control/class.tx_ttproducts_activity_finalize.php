@@ -29,7 +29,7 @@
  *
  * base class for the finalization activity
  *
- * $Id:$
+ * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -337,7 +337,7 @@ class tx_ttproducts_activity_finalize {
 			$this->pibase->userProcess('externalOrderProcessFunc',$this->basket);
 		}
 		
-			// Call all finalizeOrder hooks at the end of this method
+			// Call all finalizeOrder hooks
 		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
 			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
@@ -345,7 +345,7 @@ class tx_ttproducts_activity_finalize {
 					$hookObj->finalizeOrder($this, $address, $templateCode, $basketView, $viewTable, $price, $orderUid, $orderConfirmationHTML, $error_message);
 				}
 			}
-		}	
+		}
 	} // doProcessing
 
 

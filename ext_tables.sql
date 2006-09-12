@@ -44,7 +44,7 @@ CREATE TABLE tt_products (
 	special_preparation int(11) DEFAULT '0' NOT NULL,
 	shipping decimal(19,2) DEFAULT '0.00' NOT NULL,
 	shipping2 decimal(19,2) DEFAULT '0.00' NOT NULL,
-	handling decimal(19,2) DEFAULT '0.00' NOT NULL
+	handling decimal(19,2) DEFAULT '0.00' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );

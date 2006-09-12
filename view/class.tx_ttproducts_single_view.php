@@ -130,7 +130,7 @@ class tx_ttproducts_single_view {
 				$itemImageFields['product'] = $this->cnf->getImageFields($itemTableConf['product']);
 				$itemTableArray['article']->mergeProductRow($rowArray['article'], $rowArray['product']);
 			}
-				
+
 		}
 
 		foreach ($itemTableLangFields as $type => $fieldArray)	{
@@ -229,7 +229,7 @@ class tx_ttproducts_single_view {
 			$backPID = $this->pibase->piVars['backPID'];
 			$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
 			$pid = ( $backPID ? $backPID : $TSFE->id);
-			$wrappedSubpartArray['###LINK_ITEM###']= array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>');
+			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>');
 
 			if( $datasheetFile == '' )  {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
@@ -407,7 +407,7 @@ class tx_ttproducts_single_view {
 			
 			if ($this->type == 'product' && $key = array_search('related_uid', $fieldsArray))	{
 
-				include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_list_view.php');
+				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
 				$relatedIds = $itemTableArray[$this->type]->getRelated($this->uid);
 	
 				if (count($relatedIds))	{
@@ -417,7 +417,6 @@ class tx_ttproducts_single_view {
 						$this->pibase,
 						$this->cnf,
 						$this->basket,
-						$this->basketView,
 						$this->page,
 						$this->tt_content,
 						$this->tt_products,

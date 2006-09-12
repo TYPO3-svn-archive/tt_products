@@ -260,7 +260,7 @@ class tx_ttproducts_basket_view {
 					$sum_pricecreditpoints_total_totunits += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
 				}
 
-				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec']);
+				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec'], $TSFE->rootLine[1]);
 				$splitMark = md5(microtime());
 				$addQueryString=array();
 				$addQueryString[$this->pibase->prefixId.'[product]'] = intval($actItem['rec']['uid']);

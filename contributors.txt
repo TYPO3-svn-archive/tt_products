@@ -1,1 +1,4 @@
- 
+Robert Markula: English CSS styled template
+Masod Mohmand: Germand translation of CSS styled template
+Staffan Eriksson, Jens Schmietendorf: Swedish template
+
