@@ -112,14 +112,11 @@ class tx_ttproducts_basket_view {
 			*/
 
 		global $TSFE, $TCA;
-/* ADDED Els: need for vouchercode conditions */
 		global $TYPO3_DB, $TYPO3_CONF_VARS;
 
 		if (!$templateCode)	{
 			$templateCode = &$this->templateCode;		
 		}
-		
-//		$this->basket->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 
 			// Getting subparts from the template code.
 		$t=array();
@@ -201,8 +198,8 @@ class tx_ttproducts_basket_view {
 				}
 
 					// Fill marker arrays
-				$wrappedSubpartArray=array();
-				$subpartArray=array();
+				$wrappedSubpartArray = array();
+				$subpartArray = array();
 				$markerArray = array();
 
 				if (!is_object($basketItemView))	{
@@ -263,10 +260,10 @@ class tx_ttproducts_basket_view {
 				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec'], $TSFE->rootLine[1]);
 				$splitMark = md5(microtime());
 				$addQueryString=array();
-				$addQueryString[$this->pibase->prefixId.'[product]'] = intval($actItem['rec']['uid']);
+				$addQueryString[$this->pibase->prefixId.'['.$this->viewTable->type.']'] = intval($actItem['rec']['uid']);
 				$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($actItem['rec']['extVars']);
 				// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
-				$wrappedSubpartArray['###LINK_ITEM###'] =  array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true)).'"'.$css_current.'>','</a>'); 
+				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true)).'"'.$css_current.'>','</a>'); 
 
 				// Substitute
 				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
@@ -320,11 +317,10 @@ class tx_ttproducts_basket_view {
 //		$itemTable->getItemMarkerArray ($this->basket->basketExtra['shipping.'], $markerArray, $fieldsArray);
 //		$this->paymentshipping->getItemMarkerArray ($this->basket->basketExtra['shipping.'], $shippingMarkerArray, '', array());
 //		$shippingTitle = $this->pibase->cObj->substituteMarkerArrayCached($this->basket->basketExtra['shipping.']['title'], $shippingMarkerArray);
-		
+
 		$shippingTitle = $this->basket->basketExtra['shipping.']['title'];
 		$markerArray['###SHIPPING_TITLE###'] = $shippingTitle;
 		$markerArray['###SHIPPING_WEIGHT###'] = doubleval($this->basket->calculatedArray['weight']);
-
 		$markerArray['###DELIVERYCOSTS###']=$this->price->priceFormat($this->basket->calculatedArray['priceTax']['shipping'] + $this->basket->calculatedArray['priceTax']['payment']);
 
 		//$markerArray['###PRICE_PAYMENT_PERCENT###'] = $perc;
@@ -584,9 +580,10 @@ class tx_ttproducts_basket_view {
 		$agb_url=array();
 		$pidagb = intval($this->conf['PIDagb']);
 		// $addQueryString['id'] = $pidagb;
-		if ($TSFE->type)
+		if ($TSFE->type)	{
 			$addQueryString['type'] = $TSFE->type;
-		$wrappedSubpartArray['###LINK_AGB###']= array(
+		}
+		$wrappedSubpartArray['###LINK_AGB###'] = array(
 			'<a href="'. $this->pibase->pi_getPageLink($pidagb,'',$this->marker->getLinkParams('', $addQueryString, true)) .'" target="'.$this->conf['AGBtarget'].'">',
 			'</a>'
 		);
@@ -618,7 +615,6 @@ class tx_ttproducts_basket_view {
 		$out=$this->pibase->cObj->substituteSubpart($bFrameWork, '###ITEM_CATEGORY_AND_ITEMS###', $out);
 		return $out;
 	} // getView
-
 
 
 }

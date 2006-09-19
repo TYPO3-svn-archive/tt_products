@@ -54,6 +54,7 @@ class tx_ttproducts_single_view {
 	var $uid; 	// product id
 	var $type; 	// 'product' or 'article'
 	var $variants; 	// different attributes
+	var $page; // element of class tx_table_db
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
 	var $tt_products_articles;  // element of class tx_table_db
@@ -409,7 +410,6 @@ class tx_ttproducts_single_view {
 
 				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
 				$relatedIds = $itemTableArray[$this->type]->getRelated($this->uid);
-	
 				if (count($relatedIds))	{
 					// List all products:
 					$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');

@@ -146,14 +146,12 @@ class tx_ttproducts_list_view {
 		
 		$content = '';
 		$out = '';
+		$sword = t3lib_div::_GP('sword');
+		if (!$sword)	{
+			$sword = t3lib_div::_GP('swords');
+		}
 		$more = 0;		// If set during this loop, the next-item is drawn
 		$where = '';
-		$whereArray = $this->pibase->piVars['tt_products'];
-		if (is_array($whereArray))	{
-			foreach ($whereArray as $field => $value)	{
-				$where .= ' AND '.$field.'='.$TYPO3_DB->fullQuoteStr($value, 'tt_products');
-			}
-		}
 		$formName = 'ShopListForm';
 		$itemTable = &$this->tt_products;
 		if ($theCode == 'LISTARTICLES' && $this->conf['useArticles'])	{
@@ -163,6 +161,13 @@ class tx_ttproducts_list_view {
 			$viewCatTable = &$this->tt_products_cat;
 		} else {
 			$viewCatTable = &$this->page;
+		}
+
+		$whereArray = $this->pibase->piVars['tt_products'];
+		if (is_array($whereArray))	{
+			foreach ($whereArray as $field => $value)	{
+				$where .= ' AND '.$field.'='.$TYPO3_DB->fullQuoteStr($value, $itemTable->table->name);
+			}
 		}
  
 		// if parameter 'newitemdays' is specified, only new items from the last X days are displayed
@@ -191,14 +196,13 @@ class tx_ttproducts_list_view {
 				$t['search'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_SEARCH###'));
 					// Substitute a few markers
 				$out = $t['search'];
-				$sword = t3lib_div::_GP('sword');
-				$pid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $this->pibase->pid);
+				$htmlSwords = htmlspecialchars($sword);
+				$pid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $this->pibase->pid_list);
 				$markerArray = $this->marker->addURLMarkers($pid,array());
 				$markerArray['###FORM_NAME###'] = $formName;
+				$markerArray['###SWORD###'] = $htmlSwords;
+				$markerArray['###SWORDS###'] = $htmlSwords; // for backwards compatibility
 				$out = $this->pibase->cObj->substituteMarkerArrayCached($out,$markerArray);
-
-				$htmlSwords = htmlspecialchars($sword);
-				$out = $this->pibase->cObj->substituteMarker($out, '###SWORDS###', $htmlSwords);
 				if ($formName)	{
 						// Add to content
 					$content .= $out;
@@ -241,7 +245,7 @@ class tx_ttproducts_list_view {
 		$begin_at = $this->pibase->piVars['begin_at'];
 		$begin_at = ($begin_at ? $begin_at : t3lib_div::_GP('begin_at'));
 		$begin_at=t3lib_div::intInRange($begin_at,0,100000);
-		if ($where || ($theCode != 'SEARCH' && !t3lib_div::_GP('sword')))	{
+		if ($where || ($theCode != 'SEARCH' && !$sword))	{
 			$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($templateArea));
 			// $templateArea = '###ITEM_LIST_TEMPLATE###'
 			if (!$t['listFrameWork']) {
@@ -311,7 +315,7 @@ class tx_ttproducts_list_view {
 				$orderByArray = split (',', $selectConf['orderBy']);
 				$orderByArray = array_diff($orderByArray, array('category'));
 				$selectConf['orderBy'] = implode (',', $orderByArray);
-			} 
+			}
 			if ($itemTable->fields['itemnumber'])	{
 				$selectConf['orderBy'] = str_replace ('itemnumber', $itemTable->fields['itemnumber'], $selectConf['orderBy']);
 			}
@@ -365,7 +369,6 @@ class tx_ttproducts_list_view {
 				$viewCatTagArray,
 				$catParentArray
 			);
-			
 			$catTitle = '';
 			if ($orderByCat && ($pageAsCategory < 2))	{
 				// $catFields = ($orderByCat == 'uid' ? $orderByCat : 'uid,'.$orderByCat);
@@ -443,7 +446,7 @@ class tx_ttproducts_list_view {
 			$categoryOut = '';
 			$tableRowOpen = 0;
 			$itemListSubpart = ($itemTable->type == 'article' && $t['productAndItemsFrameWork'] ? '###ITEM_PRODUCT_AND_ITEMS###' : '###ITEM_LIST###'); 
-
+			$prodRow = array();
 			if (count ($itemArray))	{
 				foreach ($itemArray as $k2 => $row) {
 					$iColCount++;
@@ -509,16 +512,19 @@ class tx_ttproducts_list_view {
 					}
 					
 						// relevant only for article list
-					if ($itemTable->type == 'article' && $t['productAndItemsFrameWork'] && $row['uid_product'] != $currentArray['product'])	{
-						$productMarkerArray = array();
-						// fetch new product if articles are listed
-						$prodRow = $this->tt_products->get($row['uid_product']);
-						$variant = $itemTable->variant->getVariantFromRow($prodRow);
-						$item = $this->basket->getItem($prodRow, $variant);
-						$this->tt_products->getItemMarkerArray ($item, $productMarkerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewProductsTagArray, array(), $theCode, $iCount);
-						if ($itemListOut)	{
-							$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);						
-						}		
+					if ($itemTable->type == 'article')	{
+						if ($row['uid_product'] != $currentArray['product'])	{
+							$productMarkerArray = array();
+							// fetch new product if articles are listed
+							$prodRow = $this->tt_products->get($row['uid_product']);
+							$variant = $itemTable->variant->getVariantFromRow($prodRow);
+							$item = $this->basket->getItem($prodRow, $variant);
+							$this->tt_products->getItemMarkerArray ($item, $productMarkerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewProductsTagArray, array(), $theCode, $iCount);
+							if ($itemListOut && $t['productAndItemsFrameWork'])	{
+								$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);						
+							}
+						}
+						$itemTable->mergeProductRow($row, $prodRow);
 					}
 					$currentArray['product'] = $row['uid_product'];
 
@@ -562,7 +568,7 @@ class tx_ttproducts_list_view {
 					$basketItemView->getItemMarkerArray ($itemTable, $item, $markerArray, $this->basket->basketExt, $theCode, $iCount);
 					$itemTable->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, array(), $theCode, $iCount);
 					if ($itemTable->type == 'article')	{
-						array_merge ($markerArray, $productMarkerArray);
+						array_merge ($productMarkerArray, $markerArray);
 					} else {
 						// fetch variants for a product
 						$this->tt_products->variant->getItemMarkerArray ($item, $markerArray, $this->basket->basketExt, $viewTagArray, $theCode, $iCount);
