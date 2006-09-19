@@ -29,7 +29,7 @@
  *
  * class with functions to control all activities
  *
- * $Id:$
+ * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -260,6 +260,19 @@ class tx_ttproducts_control {
 				$mainMarkerArray=array();
 				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject.'';  // adding extra preprocessing CObject
 				$bFinalize = false; // no finalization must be called.
+
+				if ($this->activityArray['products_info'] || $this->activityArray['products_payment'] || $this->activityArray['products_customized'] || $this->activityArray['products_finalize'])	{
+					// get credit card info
+					include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_card.php');
+					$card = t3lib_div::makeInstance('tx_ttproducts_card');
+					$card->init(
+						$this->pibase,
+						$this->cnf,
+						$this->basket->recs
+					);
+					$card->getItemMarkerArray ($mainMarkerArray);
+				}	
+
 				
 				foreach ($this->activityArray as $activity => $value) {
 					if ($value) {

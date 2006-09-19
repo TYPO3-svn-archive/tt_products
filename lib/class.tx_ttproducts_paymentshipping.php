@@ -212,7 +212,7 @@ class tx_ttproducts_paymentshipping {
 		$template = $this->conf[$pskey.'.']['template'] ? ereg_replace('\' *\. *\$pskey *\. *\'',$pskey, $this->conf[$pskey.'.']['template']) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="submit()" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="submit()">|</select>';
 		$t = array();
-		$actTitle = $this->basket->basketExtra['shipping.']['title'];
+		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];
 		while(list($key,$item) = each($confArr))	{
 			if (($item['show'] || !isset($item['show'])) &&
 				(doubleval($item['showLimit']) >= doubleval($this->basket->calculatedArray['count']) || !isset($item['showLimit']) ||
@@ -283,6 +283,7 @@ class tx_ttproducts_paymentshipping {
 				}
 			}
 		}
+
 		$this->basket->basketExtra[$pskey.'.']['title'] = $actTitle;
 		if (!$type) {
 			$out = $this->pibase->cObj->wrap($out,$wrap);
@@ -306,6 +307,7 @@ class tx_ttproducts_paymentshipping {
 		reset($outArr);
 		return $outArr;
 	} // cleanConfArr
+
 
 
 	function getConfiguredPrice(&$tax, &$confArr, &$countTotal, &$priceTotalTax, &$priceTax, &$priceNoTax) {
@@ -368,6 +370,7 @@ class tx_ttproducts_paymentshipping {
 	}
 
 
+
 	function getPrices ($pskey, $countTotal, $priceTotalTax, &$priceShippingTax, &$priceShippingNoTax, &$taxpercentage)	{
 
 		$taxIncluded = $this->conf['TAXincluded'];
@@ -428,7 +431,6 @@ class tx_ttproducts_paymentshipping {
 		}
 		
 	}
-
 
 
 	function getPaymentShippingData(

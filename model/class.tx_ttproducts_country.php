@@ -56,10 +56,10 @@ class tx_ttproducts_country  {
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$tablename = ($tablename ? $tablename : 'pages');
-		$this->tableconf = $this->cnf->getTableConf($tablename);
+		$this->tableconf = $this->cnf->getTableConf('static_countries');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid'));		
-		$this->table->setTCAFieldArray($tablename, 'static_countries');
+		$this->table->setTCAFieldArray('static_countries');
 		
 		$requiredFields = 'uid,pid';
 		if ($this->tableconf['requiredFields'])	{

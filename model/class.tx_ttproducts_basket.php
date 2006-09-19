@@ -363,6 +363,7 @@ class tx_ttproducts_basket {
 		unset($this->recs['tt_products']);
 		unset($this->recs['personinfo']);
 		unset($this->recs['delivery']);
+		unset($this->recs['creditcard']);
 		return ($this->recs);
 	} // getClearBasketRecord
 
@@ -377,6 +378,7 @@ class tx_ttproducts_basket {
 			// Empties the shopping basket!
 		$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
 		$TSFE->fe_user->setKey('ses','basketExt',array());
+		$TSFE->fe_user->setKey('ses','cc',array());
 		unset($this->itemArray);
 		unset($this->basketExt);
 		

@@ -49,10 +49,11 @@ class tx_ttproducts_article_base {
 	var $cnf;
 	var $conf;
 	var $config;
+	var $tt_content; // element of class tx_table_db to get the content elements
 	var $paymentshipping;		// payment and shipping object to make the price dependant on it
 
 	var $tableconf;
-	var $TableDesc;
+	var $tabledesc;
 	var $fields = array();
 	var $variantArray; // array of variants which are selectable
 	var $bIsProduct=true;	// if this is the base for a product
@@ -72,8 +73,9 @@ class tx_ttproducts_article_base {
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
+		$this->tt_content = &$tt_content;
 		$this->tableconf = $this->cnf->getTableConf($tablename);
-		$this->tableDesc = $this->cnf->getTableDesc($tablename);
+		$this->tabledesc = $this->cnf->getTableDesc($tablename);
  		$this->paymentshipping = &$paymentshipping;
  
 		$this->variantArray = array();
@@ -85,7 +87,7 @@ class tx_ttproducts_article_base {
 			// image
 		$this->image = t3lib_div::makeInstance('tx_ttproducts_image');
 		$this->image->init($this->pibase, $cnf, $tt_content, $this->table, $this->marker);
-		$this->fields['itemnumber'] = ($this->tableconf['itemnumber'] ? $this->tableconf['itemnumber'] : 'itemnumber');
+		$this->fields['itemnumber'] = ($this->tabledesc['itemnumber'] ? $this->tabledesc['itemnumber'] : 'itemnumber');
 	} // init
 
 

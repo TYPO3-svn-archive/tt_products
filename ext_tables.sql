@@ -22,6 +22,7 @@ CREATE TABLE tt_products (
 	price2 varchar(20) DEFAULT '' NOT NULL,
 	note text NOT NULL,
 	note2 text NOT NULL,
+	note_uid varchar(255) DEFAULT '0' NOT NULL,
 	unit varchar(20) DEFAULT '' NOT NULL,  
 	unit_factor varchar(6) DEFAULT '' NOT NULL,   
 	image tinyblob NOT NULL,
@@ -55,6 +56,19 @@ CREATE TABLE tt_products (
 #
 #
 CREATE TABLE tt_products_related_products_products_mm (
+	uid_local int(11) DEFAULT '0' NOT NULL,
+	uid_foreign int(11) DEFAULT '0' NOT NULL,
+	sorting int(11) DEFAULT '0' NOT NULL,
+	KEY uid_local (uid_local),
+	KEY uid_foreign (uid_foreign),
+);
+
+
+#
+# Table structure for table 'tt_products_products_note_pages_mm'
+#
+#
+CREATE TABLE tt_products_products_note_pages_mm (
 	uid_local int(11) DEFAULT '0' NOT NULL,
 	uid_foreign int(11) DEFAULT '0' NOT NULL,
 	sorting int(11) DEFAULT '0' NOT NULL,
@@ -247,57 +261,31 @@ CREATE TABLE tt_products_emails (
 
 
 
-#
-# Table structure for table 'tt_products_shipping'
-#
-#CREATE TABLE tt_products_shipping (
-#	uid int(11) DEFAULT '0' NOT NULL auto_increment,
-#	pid int(11) DEFAULT '0' NOT NULL,
-#	tstamp int(11) DEFAULT '0' NOT NULL,
-#	crdate int(11) DEFAULT '0' NOT NULL,
-#	cruser_id int(11) DEFAULT '0' NOT NULL,
-#	sorting int(10) DEFAULT '0' NOT NULL,
-#	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-#	t3ver_id int(11) DEFAULT '0' NOT NULL,
-#	t3ver_label varchar(30) DEFAULT '' NOT NULL,
-#	deleted tinyint(4) DEFAULT '0' NOT NULL,
-#	hidden tinyint(4) DEFAULT '0' NOT NULL,
-#	starttime int(11) DEFAULT '0' NOT NULL,
-#	endtime int(11) DEFAULT '0' NOT NULL,
-#	fe_group int(11) DEFAULT '0' NOT NULL,
-#	title varchar(80) DEFAULT '' NOT NULL,
-#	countries mediumtext NOT NULL,
-#	shipping price(19,2) DEFAULT '0.00' NOT NULL
-#);
-#
 
+ Table structure for table 'sys_products_cards'
 
-#
-# Table structure for table 'tt_products_card_payments'
-#
-#CREATE TABLE tt_products_card_payments (
-#  uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
-#  pid int(11) unsigned DEFAULT '0' NOT NULL,
-#  tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-#  crdate int(11) unsigned DEFAULT '0' NOT NULL,
-#  deleted tinyint(4) unsigned DEFAULT '0' NOT NULL,
-#  ord_uid int(11) unsigned DEFAULT '0' NOT NULL,
-#  order_id varchar(20) DEFAULT '' NOT NULL,
+CREATE TABLE sys_products_cards (
+	uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+	pid int(11) unsigned DEFAULT '0' NOT NULL,
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+#	order_uid int(11) unsigned DEFAULT '0' NOT NULL,
 #  session_id varchar(30) DEFAULT '' NOT NULL,  
 #  amount_num int(10) DEFAULT '0' NOT NULL,
 #  response_code char(3) DEFAULT '' NOT NULL,   
+	cc_number varchar(255) DEFAULT '' NOT NULL,
 #  cc_number_hash1 varchar(255) DEFAULT '' NOT NULL,
 #  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,  
-#  card_type varchar(20) DEFAULT '' NOT NULL,
+	cc_type varchar(20) DEFAULT '' NOT NULL,
 #  address_ok char(1) DEFAULT '' NOT NULL, 
 #  test char(1) DEFAULT '' NOT NULL,   
 #  auth_code varchar(16) DEFAULT '' NOT NULL,
 #  bin int(6) unsigned DEFAULT '0' NOT NULL,
 #  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,  
 #  sequence int(6) unsigned DEFAULT '0' NOT NULL,                   
-#  PRIMARY KEY (uid),
-#  KEY parent (ord_uid)
-#);
+	PRIMARY KEY (uid),
+	KEY parent (pid)
+);
 
 
 #
@@ -342,11 +330,11 @@ CREATE TABLE sys_products_orders (
 	desired_date varchar(30) DEFAULT '' NOT NULL,
 	client_ip varchar(15) DEFAULT '' NOT NULL,
 	note text NOT NULL,
+	cc_uid int(11) unsigned DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid),
 	KEY tracking (tracking_code),
-	KEY status (status),
-	KEY uid (uid,amount)
+	KEY status (status)
 );
 
 #
@@ -372,9 +360,3 @@ CREATE TABLE fe_users (
 	tt_products_vouchercode varchar(50) DEFAULT ''
 );
 
-#
-# Extension of table 'tt_content' for zk_products compatibility where no flexforms have been used
-#
-#CREATE TABLE tt_content (
-#	tt_products_code varchar(30) DEFAULT 'HELP' NOT NULL
-#);

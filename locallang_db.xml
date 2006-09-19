@@ -17,6 +17,7 @@
 			<label index="tt_products.price2">Price (2):</label>
 			<label index="tt_products.unit">Unit of measure</label>
 			<label index="tt_products.unit_factor">Unit factor</label>
+			<label index="tt_products.note_uid">Describing pages</label>
 			<label index="tt_products.itemnumber">Item number:</label>
 			<label index="tt_products.inStock">In Stock (pcs):</label>
 			<label index="tt_products.datasheet">Datasheet</label>
@@ -55,6 +56,13 @@
 			<label index="tt_products_articles">Product articles</label>
 			<label index="tt_products_articles.uid_product">Product</label>
 			<label index="tt_products_emails">Products emails</label>
+			<label index="sys_products_cards">Credit cards for orders</label>
+			<label index="sys_products_cards.cc_number">number</label>
+			<label index="sys_products_cards.cc_type">organization</label>
+			<label index="sys_products_cards.cc_type.I.0">American Express</label>
+			<label index="sys_products_cards.cc_type.I.1">Diners Club</label>
+			<label index="sys_products_cards.cc_type.I.2">Mastercard</label>
+			<label index="sys_products_cards.cc_type.I.3">Visa</label>
 			<label index="sys_products_orders">Sys products orders</label>
 			<label index="sys_products_orders.payment">payment</label>
 			<label index="sys_products_orders.shipping">shipping</label>
@@ -119,6 +127,7 @@
 			<label index="tt_products.price2">Preis (2):</label>
 			<label index="tt_products.unit">Maßeinheit</label>
 			<label index="tt_products.unit_factor">Faktor der Maßeinheit</label>
+			<label index="tt_products.note_uid">beschreibende Seiten</label>
 			<label index="tt_products.itemnumber">Artikel Nr.:</label>
 			<label index="tt_products.inStock">Am Lager (St.):</label>
 			<label index="tt_products.datasheet">Datenblatt</label>
@@ -156,6 +165,9 @@
 			<label index="tt_products_articles">Produkt Artikel</label>
 			<label index="tt_products_articles.uid_product">Produkt</label>
 			<label index="tt_products_emails">Produkt Emails</label>
+			<label index="sys_products_cards">Kreditkarten für Bestellungen</label>
+			<label index="sys_products_cards.cc_number">Nummer</label>
+			<label index="sys_products_cards.cc_type">Organisation</label>
 			<label index="sys_products_orders">Sys Produkte Bestellungen</label>
 			<label index="sys_products_orders.payment">Bezahlung</label>
 			<label index="sys_products_orders.shipping">Versand</label>
@@ -472,6 +484,11 @@
 			<label index="tt_products_cat_language.cat_uid">Produkt-kategorie id</label>
 			<label index="tt_products_articles">Produkt artikelen</label>
 			<label index="tt_products_articles.uid_product">Produkt</label>
+			<label index="sys_products_orders.salutation">Aanhef</label>
+			<label index="sys_products_orders.salutation.I.0">De heer</label>
+			<label index="sys_products_orders.salutation.I.1">Mevr.</label>
+			<label index="sys_products_orders.salutation.I.2">Mej.</label>
+			<label index="sys_products_orders.salutation.I.3">Aan</label>
 			<label index="fe_users.tt_products_memoItems">Memo lijst</label>
 			<label index="fe_users.tt_products_discount">Korting</label>
 			<label index="fe_users.tt_products_creditpoints">Kurkensaldo</label>

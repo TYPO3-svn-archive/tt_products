@@ -256,7 +256,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->codeArray = array('HELP');
 		}
 		$this->codeArray = $this->pi_checkCodes($this->codeArray, $bStoreBasket);
-
 		$this->init ($content, $this->config);
 
 		if ((t3lib_extMgm::isLoaded('xajax')) && !$bRunAjax)	{
@@ -477,6 +476,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
  	 */
 	function init (&$content, &$config) {
 		global $TSFE;
+		global $TYPO3_CONF_VARS;
 
 		$this->pi_setPiVarDefaults();
 
@@ -498,14 +498,16 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 		if ($typoVersion < 3008000)	{
-			$this->pi_loadLL('../locallang_tca.php');
+			$dblangfile = 'locallang_tca.php';
 		} else {
-			$this->pi_loadLL('../locallang_db.xml');
+			$dblangfile = 'locallang_db.xml';
 		}
+		tx_fhlibrary_language::pi_loadLL($this,'EXT:tt_products/'.$dblangfile);
 
 			// get all extending TCAs
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']))	{
-			$this->pi_mergeExtendingTCAs($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']) && t3lib_extMgm::isLoaded(DIV_EXTkey))	{
+			include_once (PATH_BE_div.'class.tx_div.php');
+			tx_div::loadTcaAdditions($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
 		}
 
 		$this->initTables();
@@ -664,6 +666,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	 * Getting the table definitions
 	 */
 	function initTables()	{		
+		$this->tt_content = t3lib_div::makeInstance('tx_ttproducts_content');
+		$this->tt_content->init();
+
+
 		$this->fe_users = t3lib_div::makeInstance('tx_ttproducts_feuser');
 		$this->fe_users->init(
 			$this,
@@ -689,8 +695,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->conf['table.']['tt_products_cat'] 
 		);
 
-		$this->tt_content = t3lib_div::makeInstance('tx_ttproducts_content');
-		$this->tt_content->init();
 		$this->tt_products = t3lib_div::makeInstance('tx_ttproducts_product');
 		$this->tt_products->init(
 			$this,
@@ -699,7 +703,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->paymentshipping,
 			$this->LLkey,
 			$this->conf['table.']['tt_products'],
-			$this->conf['conf.']['tt_products.'],
 			$this->conf['useArticles']
 		);
 
@@ -711,10 +714,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->tt_content,
 			$this->paymentshipping,
 			$this->LLkey,
-			$this->conf['table.']['tt_products_articles'],
-			$this->conf['conf.']['tt_products_articles.']
+			$this->conf['table.']['tt_products_articles']
 		);
-
 		
 	} // initTables
 

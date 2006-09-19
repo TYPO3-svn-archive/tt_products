@@ -72,7 +72,6 @@ class tx_ttproducts_image {
 	} // init
 
 
-
 	/* returns the key for the tag array and marker array without leading and ending '###' */
 	function getMarkerkey(&$imageMarkerArray, $imageName)	{
 		$imageNameArray = t3lib_div::trimExplode('_', $imageName);
@@ -109,7 +108,6 @@ class tx_ttproducts_image {
 			$markerArray[$key] = $val;
 		}		
 	}
-
 
 
 	/**

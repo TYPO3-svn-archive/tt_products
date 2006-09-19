@@ -78,7 +78,7 @@ class tx_ttproducts_order {
 	/**
 	 * Create a new order record
 	 *
-	 * This creates a new order-record on the page with pid, .PID_sys_products_orders. That page must exist!
+	 * This creates a new order-record on the page with pid PID_sys_products_orders. That page must exist!
 	 * Should be called only internally by eg. $order->getBlankUid, that first checks if a blank record is already created.
 	 */
 	function create()	{
@@ -171,7 +171,8 @@ class tx_ttproducts_order {
 	 * Saves the order record and returns the result
 	 *
 	 */
-	function putRecord($orderUid, &$deliveryInfo, $feusers_uid, $email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML, &$address)	{
+	function putRecord($orderUid, &$deliveryInfo, $feusers_uid, $cardUid,
+		$email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML, &$address)	{
 		global $TYPO3_DB;
 		global $TSFE;
 
@@ -204,6 +205,7 @@ class tx_ttproducts_order {
 		$fieldsArray['status'] = 1;	// This means, "Order confirmed on website, next step: confirm from shop that order is received"
 		$fieldsArray['note'] = $deliveryInfo['note'];
 		$fieldsArray['client_ip'] = t3lib_div::getIndpEnv('REMOTE_ADDR');
+		$fieldsArray['cc_uid'] = $cardUid;
 
 /*
 		//<-- MKL 2004.09.21

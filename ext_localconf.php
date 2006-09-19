@@ -44,6 +44,17 @@ if (t3lib_extMgm::isLoaded(FH_LIBRARY_EXTkey)) {
 	}
 }
 
+if (!defined ('DIV_EXTkey')) {
+	define('DIV_EXTkey','div');
+}
+
+if (t3lib_extMgm::isLoaded(DIV_EXTkey)) {
+	if (!defined ('PATH_BE_div')) {
+		define('PATH_BE_div', t3lib_extMgm::extPath(DIV_EXTkey));
+	}
+}
+
+
 if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
 	define('TT_PRODUCTS_DIV_DLOG', '0');	// for development error logging
 }

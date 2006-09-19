@@ -57,7 +57,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		
 		$this->cnf = &$cnf;
 		$tablename = ($tablename ? $tablename : 'tt_products_cat');
-		$this->tableconf = $this->cnf->getTableConf($tablename);	
+		$this->tableconf = $this->cnf->getTableConf('tt_products_cat');	
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);

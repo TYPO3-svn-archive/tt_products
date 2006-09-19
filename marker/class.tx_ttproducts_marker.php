@@ -183,6 +183,9 @@ class tx_ttproducts_marker {
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 
 		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
+		if (!$temp)	{
+			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';		
+		}
 		if ($temp) {
 			$queryString['sword'] = $temp;
 		}

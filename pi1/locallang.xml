@@ -17,11 +17,6 @@
 			<label index="wrong_parameter"></label>
 			<label index="no_csv_creation"></label>
 			<label index="wrong_code"></label>
-			<label index="salutation"></label>
-			<label index="salutation0"></label>
-			<label index="salutation1"></label>
-			<label index="salutation2"></label>
-			<label index="salutation3"></label>
 			<label index="instock_warning"></label>
 			<label index="product"></label>
 			<label index="article"></label>
@@ -43,11 +38,6 @@
 			<label index="wrong_parameter">Wrong parameters. GET/POST var 'tx_ttproducts_pi1[product]' is missing or no product with uid = | found.</label>
 			<label index="no_csv_creation">Warning: Cannot create CSV file '|' for this order!</label>
 			<label index="wrong_code">Wrong display mode or code '|'.</label>
-			<label index="salutation">Salutation</label>
-			<label index="salutation0">Mr.</label>
-			<label index="salutation1">Mrs.</label>
-			<label index="salutation2">Ms.</label>
-			<label index="salutation3">To</label>
 			<label index="instock_warning">Warning: | no. | runs out of stock.</label>
 			<label index="product">product</label>
 			<label index="article">article</label>
@@ -67,11 +57,6 @@
 			<label index="additional_single">Produkt kaufen</label>
 			<label index="wrong_parameter">Falscher Parameter. GET/POST var 'tx_ttproducts_pi1[product]' wurde nicht angegeben oder kein Produkt mit uid = | gefunden.</label>
 			<label index="no_csv_creation">Warnung: Für diese Bestellung kann keine CSV Datei '|' erzeugt werden!</label>
-			<label index="salutation">Anrede</label>
-			<label index="salutation0">Herr</label>
-			<label index="salutation1">Fräulein</label>
-			<label index="salutation2">Frau</label>
-			<label index="salutation3">An</label>
 			<label index="instock_warning">Warnung: | Nr. | ist bald nicht mehr auf Lager.</label>
 			<label index="product">Produkt</label>
 			<label index="article">Artikel</label>
@@ -119,11 +104,6 @@
 			<label index="wrong_parameter">Verkeerde parameters, GET/POST var 'tx_ttproducts_pi1[product]' ontbreekt of er is geen product met uid = | gevonden.</label>
 			<label index="no_csv_creation">Waarschuwing: kan geen CSV bestand creëren '|' voor deze order!</label>
 			<label index="wrong_code">Verkeerde display modus of code '|'.</label>
-			<label index="salutation">Aanhef</label>
-			<label index="salutation0">De heer</label>
-			<label index="salutation1">Mevr.</label>
-			<label index="salutation2">Mej.</label>
-			<label index="salutation3">Aan</label>
 		</languageKey>
 		<languageKey index="cz" type="array">
 		</languageKey>
@@ -143,11 +123,6 @@
 			<label index="wrong_parameter">Väärät parametrit, GET/POST-parametrit puuttuvat 'tx_ttproducts_pi1[product]'-taulusta tai tuotetta, jonka uid = | ei löydy.</label>
 			<label index="no_csv_creation">Varoitus: Tälle tilaukselle ei voi luoda CSV-tiedostoa '|'!</label>
 			<label index="wrong_code">Väärä näyttömoodi tai koodi '|'.</label>
-			<label index="salutation">Puhuttelumuoto</label>
-			<label index="salutation0">Herra</label>
-			<label index="salutation1">Rouva</label>
-			<label index="salutation2">Neiti</label>
-			<label index="salutation3">Vastaanottaja</label>
 		</languageKey>
 		<languageKey index="tr" type="array">
 		</languageKey>
@@ -236,11 +211,6 @@
 			<label index="additional_single" type="integer">140525922</label>
 			<label index="wrong_parameter" type="integer">53824048</label>
 			<label index="no_csv_creation" type="integer">66778137</label>
-			<label index="salutation" type="integer">208251278</label>
-			<label index="salutation0" type="integer">19351194</label>
-			<label index="salutation1" type="integer">124994602</label>
-			<label index="salutation2" type="integer">43922038</label>
-			<label index="salutation3" type="integer">236066426</label>
 		</languageKey>
 		<languageKey index="no" type="array">
 			<label index="open_bill" type="integer">53599323</label>

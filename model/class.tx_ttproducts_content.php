@@ -43,8 +43,8 @@ require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
 
 class tx_ttproducts_content {
-	var $dataArray; // array of read in contents
-	var $dataPageArray; // array of read in contents with page id as index
+	var $dataArray=array(); // array of read in contents
+	var $dataPageArray=array(); // array of read in contents with page id as index
 	var $table;		 // object of the type tx_table_db
 
 	/**
@@ -79,21 +79,21 @@ class tx_ttproducts_content {
 
 	function getFromPid ($pid) {
 		global $TYPO3_DB;
-		$rc = $this->dataPageArray[$pid];
-		if (!$rc) {
+		$rcArray = $this->dataPageArray[$pid];
+		if (!is_array($rcArray)) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', '*');
 			$sql->prepareWhereFields ($this->table, 'pid', '=', intval($pid));
 			$this->table->enableFields();		
 			// Fetching the category
 			$res = $sql->exec_SELECTquery();
-			$row = '';
 			while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 				$this->dataPageArray[$pid][$row['uid']] = $row;
 			}
-			$rc = $this->dataPageArray[$pid];
+			$tmp = $this->dataPageArray[$pid];
+			$rcArray = (is_array($tmp) ? $tmp : array());
 		}
-		return $rc;
+		return $rcArray;
 	}
 
 

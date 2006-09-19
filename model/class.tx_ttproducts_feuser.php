@@ -62,9 +62,9 @@ class tx_ttproducts_feuser {
 		$this->conf = &$this->cnf->conf;
 		$this->config = &$this->cnf->config;
 
-		$this->tableconf = $this->cnf->getTableConf($tablename);
-		
 		$tablename = ($tablename ? $tablename : 'fe_users');
+		$this->tableconf = $this->cnf->getTableConf('fe_users');
+		
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray($tablename);
 		$this->fields['payment'] = ($this->tableconf['payment'] ? $this->tableconf['payment'] : '');
@@ -137,24 +137,31 @@ class tx_ttproducts_feuser {
 	 */
 	function getItemMarkerArray (&$row, &$markerArray, $bSelect, $type)	{
 		global $TCA;
+		global $TYPO3_CONF_VARS;
 
-		$typeSalutationText = '';
 		if ($bSelect)	{
+			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
+
+			$typeSalutationText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'info][salutation]');
+
 				// Salutation		
-			$salutationText = '';
-			foreach ($TCA['sys_products_orders']['columns']['salutation']['config']['items'] as $key => $salutation) {
-//				$temp = $this->pibase->sL($salutation[0]);
-//				$text = $this->pibase->pi_getLL($temp);
-				$text = $this->pibase->pi_getLL('salutation'.$salutation[1]);
-				$salutationText .= '<OPTION value="'.$salutation[1].'">'.$text.'</OPTION>';
-			}
-			$salutationText = '[salutation]">' . $salutationText.'</SELECT>';
-			$salutationPreText = '<SELECT name="recs';
-			$typeSalutationText = $salutationPreText . '['.$type.'info]' . $salutationText;  
+//			$salutationText = '';
+//			foreach ($TCA['sys_products_orders']['columns']['salutation']['config']['items'] as $key => $salutation) {
+//				$tmp = tx_fhlibrary_language::sL($salutation[0]);
+//				$text = $this->pibase->pi_getLL($tmp);
+//				$salutationText .= '<OPTION value="'.$salutation[1].'">'.$text.'</OPTION>';
+//			}
+//			$salutationText = '[salutation]">' . $salutationText.'</SELECT>';
+//			$salutationPreText = '<SELECT name="recs';
+//			$typeSalutationText = $salutationPreText . '['.$type.'info]' . $salutationText;  
+		} else if (is_int($row['salutation'])) {
+			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];
+			$tmp = tx_fhlibrary_language::sL($salutation[0]);
+			$typeSalutationText = $this->pibase->pi_getLL($tmp);
 		} else {
-			$typeSalutationText = ($row['salutation'] ? $this->pibase->pi_getLL('salutation'.$row['salutation']) : ''); 
+			$typeSalutationText = '';
 		}
-		
+
 		$markerArray['###'.strtoupper($type).'_SALUTATION###'] = $typeSalutationText;
 		
 	} // getMarkerArray

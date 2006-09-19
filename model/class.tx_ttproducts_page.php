@@ -45,9 +45,11 @@ require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
 
 class tx_ttproducts_page extends tx_ttproducts_category_base {
 	var $pid_list;		// list of page ids
-	var $pageArray;		// pid_list as array
+	var $pageArray = array();		// pid_list as array
+	var $noteArray = array(); 	// array of pages with notes
 	var $cnf;
 	var $piVar = 'pid';
+
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -58,7 +60,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$tablename = ($tablename ? $tablename : 'pages');
-		$this->tableconf = $this->cnf->getTableConf($tablename);
+		$this->tableconf = $this->cnf->getTableConf('pages');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'sorting'=> 'sorting',
  			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));		
@@ -104,6 +106,22 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		}
 		return $rc;
 	}
+
+
+	function getNotes ($uid) {
+		global $TYPO3_DB;
+		$rowArray = $this->noteArray[$uid];
+		$rcArray = array();
+		if (!is_array($rowArray) && $uid) {
+			$rowArray = $TYPO3_DB->exec_SELECTgetRows('*', 'tt_products_products_note_pages_mm', 'uid_local = '.intval($uid));
+			$this->noteArray[$uid] = $rowArray;
+		}
+		foreach ($rowArray as $k => $row)	{
+			$rcArray [] = $row['uid_foreign'];
+		}
+		return $rcArray;
+	}
+
 
 
 	function getParent ($uid=0) {
@@ -213,7 +231,9 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 				$pageconf
 			);
 		}
-		$pageObject->setPidlist($pid_list);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
+		if ($pid_list){
+			$pageObject->setPidlist($pid_list);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
+		}
 		$tmp = '';
 		$pageObject->applyRecursive($recursive, $tmp);
 		return $pageObject;

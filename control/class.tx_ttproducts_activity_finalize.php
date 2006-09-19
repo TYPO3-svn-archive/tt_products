@@ -156,10 +156,21 @@ class tx_ttproducts_activity_finalize {
 			}
 		}
 
+		// get credit card info
+		include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_card.php');
+		$card = t3lib_div::makeInstance('tx_ttproducts_card');
+		$card->init(
+			$this->pibase,
+			$this->cnf,
+			$this->basket->recs
+		);
+		$cardUid = $card->getUid();
+
 		$rc = $this->order->putRecord(
 			$orderUid,
 			$address->infoArray['delivery'],
 			$address->infoArray['billing']['feusers_uid'],
+			$cardUid,
 			$this->conf['email_notify_default'],		// Email notification is set here. Default email address is delivery email contact
 			$this->basket->basketExtra['payment'].': '.$this->basket->basketExtra['payment.']['title'],
 			$this->basket->basketExtra['shipping'].': '.$this->basket->basketExtra['shipping.']['title'],

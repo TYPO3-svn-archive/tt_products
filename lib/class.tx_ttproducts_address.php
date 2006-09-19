@@ -257,11 +257,12 @@ class tx_ttproducts_address {
 	 */
 	function getItemMarkerArray (&$markerArray, $bSelectSalutation)	{
 		global $TCA, $TSFE;
+		global $TYPO3_CONF_VARS;
 
 			// Personal and delivery info:
 		$list = 'name,first_name,last_name,title,address,telephone,fax,email,company,city,zip,state,country';
 		if ($this->feuserextrafields) {
-			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,address,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
+			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
 		}
 		$infoFields = explode(',',$list); // Fields...
 	
@@ -270,9 +271,10 @@ class tx_ttproducts_address {
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $this->infoArray['delivery'][$fName];
 		}
 		
+
 		if ($this->conf['useStaticInfoCountry'] && is_object($this->staticInfo))	{
-			$whereCountries = $this->getWhereAllowed();
 			$bReady = FALSE;
+			$whereCountries = $this->getWhereAllowed();
 
 			if (t3lib_extMgm::isLoaded('static_info_tables')) {
 				$path = t3lib_extMgm::extPath('static_info_tables');
@@ -283,10 +285,12 @@ class tx_ttproducts_address {
 				if (version_compare($sitVersion, '2.0.1', '>='))	{
 					$markerArray['###PERSON_COUNTRY_CODE###'] =
 						$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[personinfo][country_code]', '', $this->infoArray['billing']['country_code'], '', 0, '', '', $whereCountries);
+					$markerArray['###PERSON_COUNTRY_FIRST###'] = current($this->staticInfo->initCountries($whereCountries));
 					$markerArray['###PERSON_COUNTRY###'] =
 						$this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['billing']['country_code'],'','');
 					$markerArray['###DELIVERY_COUNTRY_CODE###'] =
 						$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[delivery][country_code]', '', $this->infoArray['delivery']['country_code'], '', 0, '', '', $whereCountries);
+					$markerArray['###DELIVERY_COUNTRY_FIRST###'] = $markerArray['###PERSON_COUNTRY_FIRST###'];
 					$markerArray['###DELIVERY_COUNTRY###'] =
 						$this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
 					$bReady = TRUE;		

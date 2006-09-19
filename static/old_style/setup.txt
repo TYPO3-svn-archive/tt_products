@@ -258,7 +258,7 @@ plugin.tt_products {
     }
   }
 
-  conf.tt_products.articles.ALL {
+  conf.tt_products_articles.ALL {
     requiredFields = uid,pid,uid_product,price,price2,inStock  
   }
 

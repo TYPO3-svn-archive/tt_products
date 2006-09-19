@@ -53,22 +53,26 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, &$paymentshipping, $LLkey, $tablename, &$articleConf)  {
-		global $TYPO3_DB,$TSFE,$TCA;
-		
+	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, &$paymentshipping, $LLkey, $tablename)  {
+		global $TYPO3_DB,$TSFE,$TCA;	
+
+		$this->cnf = &$cnf;
+		$tablename = ($tablename ? $tablename : 'tt_products_articles');
+		$this->tableconf = $this->cnf->getTableConf('tt_products_articles');
 		
 		$this->tt_products = &$tt_products;
 		$this->tt_products->setArticleTable($this);
-		$tablename = ($tablename ? $tablename : 'tt_products_articles');
+
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 
 		$requiredFields = 'uid,pid,uid_product,price,price2';
-		if (is_array($articleConf['ALL.']))	{
-			$tmp = $articleConf['ALL.']['requiredFields'];
+		if ($this->tableconf['requiredFields'])	{
+			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
-		}
+		}	
+
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 

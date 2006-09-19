@@ -44,7 +44,7 @@ require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 class tx_ttproducts_product extends tx_ttproducts_article_base {
 	var $dataArray = array(); // array of read in products
-	var $relatedArray; // array of related products
+	var $relatedArray = array(); // array of related products
 	var $table;		   // object of the type tx_table_db
 	var $tt_products_articles; // element of class tx_table_db to get the article
 	var $bIsProduct=true;	// if this is the base for a product
@@ -57,12 +57,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_content, &$paymentshipping, $LLkey, $tablename, &$prodconf, $useArticles)  {
+	function init(&$pibase, &$cnf, &$tt_content, &$paymentshipping, $LLkey, $tablename, $useArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$this->cnf = &$cnf;
-		$tablename = ($tablename ? $tablename : 'tt_products');
-		$this->tableconf = $this->cnf->getTableConf($tablename);
+		parent::init($pibase, $cnf, 'tt_products', $tt_content, $paymentshipping);
+
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		
 		$tableConfig = array();
@@ -74,6 +73,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 		$this->table->setConfig($tableConfig);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
+		$tablename = ($tablename ? $tablename : 'tt_products');
 		$this->table->setTCAFieldArray($tablename, 'products');
 		
 		$requiredFields = 'uid,pid,category,price,price2,tax,inStock';
@@ -102,7 +102,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$this->table->initLanguageFile($this->tableconf['language.']['file']);
 		}
 		
-		parent::init($pibase, $cnf, $tablename, $tt_content, $paymentshipping);
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $cnf, $this, $useArticles);
 	} // init
@@ -128,8 +127,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		
 		$articleRows = $this->getArticleRows(intval($row['uid']));
 		$articleRow = $this->variant->fetchArticle($row, $articleRows);
-//		$query='uid_product=\''.intval($row['uid']).'\' AND color='.$TYPO3_DB->fullQuoteStr($row['color'],'tt_products').' AND size='.$TYPO3_DB->fullQuoteStr($row['size'],'tt_products').' AND description='.$TYPO3_DB->fullQuoteStr($row['description'],'tt_products').' AND gradings='.$TYPO3_DB->fullQuoteStr($row['gradings'],'tt_products');
-//		$articleRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_articles', $query);
 		return $articleRow;
 	}
 
@@ -284,6 +281,56 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 		if ($this->conf['itemMarkerArrayFunc'])	{
 			$markerArray = $this->pibase->userProcess('itemMarkerArrayFunc',$markerArray);
+		}
+		
+		if ($code=='SINGLE')	{
+
+			if ($row['note_uid']) {
+					// pages
+				$page = tx_ttproducts_page::createPageTable(
+					$this->pibase,
+					$this->cnf,
+					$this->tt_content,
+					$this->pibase->LLkey,
+					$this->conf['table.']['pages'], 
+					$this->conf['conf.']['pages.'],
+					$this->pibase->page,
+					$tmp='',
+					99
+				);
+				$notePageArray = $page->getNotes ($row['uid']);
+				foreach ($notePageArray as $k => $pid)	{
+					$pageRow = $page->get($pid);
+					$pageMarkerKey = 'PRODUCT_NOTE_UID_'.($k + 1);
+					$contentArray = $this->tt_content->getFromPid($pid);
+					$countArray = array();
+					foreach ($contentArray as $k2 => $contentEl)	{
+						$cType = $contentEl['CType'];
+						$countArray[$cType] = intval($countArray[$cType]) + 1;
+						$markerKey = $pageMarkerKey.'_'.$countArray[$cType].'_'.strtoupper($cType);
+						foreach ($tagArray as $index => $v)	{
+							if (strstr($index, $pageMarkerKey) !== FALSE)	{
+								$fieldPos = strrpos($index, '_');
+								$fieldName = substr($index, $fieldPos+1);
+								$markerArray['###'.$index.'###'] = $pageRow[$fieldName];								
+							}
+							if (strstr($index, $markerKey) === FALSE)	{
+								continue;
+							}
+							$fieldPos = strrpos($index, '_');
+							$fieldName = substr($index, $fieldPos+1);
+							$markerArray['###'.$index.'###'] = $contentEl[$fieldName];
+						}
+					}
+				}
+			}
+			foreach ($tagArray as $key => $val)	{
+				if (strstr($key,'PRODUCT_NOTE_UID')!==FALSE)	{
+					if (!isset($markerArray['###'.$key.'###']))	{
+						$markerArray['###'.$key.'###'] = '';
+					}
+				}
+			}
 		}
 		
 	} // getItemMarkerArray
