@@ -230,6 +230,8 @@ auf <a href="http://fholzinger.com/index.php?id=170">tt_products - Open Source S
 
 				<B>Info:</B><br>
 				###PRODUCT_NOTE###<br>
+				###PRODUCT_NOTE_UID_1_title###:
+			 	###PRODUCT_NOTE_UID_1_1_TEXT_bodytext###<br>
 				Ident-Nr. ###PRODUCT_UID###
 			###GW1E###	<br>
 			<!-- ###display_variant2### -->
@@ -463,7 +465,7 @@ auf <a href="http://fholzinger.com/index.php?id=170">tt_products - Open Source S
 Subpart for the search-form
 -->
 <form method="post" action="###FORM_URL###">
-<INPUT size="30" maxlength="100" type="text" name="swords" value="###SWORDS###">
+<INPUT size="30" maxlength="100" type="text" name="sword" value="###SWORD###">
 <input type="Submit" name="order" value="Suchen">
 </form>
 <!-- ###ITEM_SEARCH### end -->
@@ -734,8 +736,6 @@ Exact same features as BASKET_TEMPLATE
 <em>Hinweis: Felder mit * sind Pflichtfelder.<br>Ihre Daten werden nicht an Dritte weitergegeben!</em>
 ###GW1E###
 <!-- ###BILLING_ADDRESS### end-->
-
-
 <!-- ###BILLING_ADDRESS_LOGIN### start
 If this part is not empty then this will be used instead of BILLING_ADDRESS if there is a FE-login user.
 -->
@@ -772,6 +772,12 @@ If this part is not empty then this will be used instead of BILLING_ADDRESS if t
 </tr>
 </table>
 <!-- ###BILLING_ADDRESS_LOGIN### end-->
+</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Kreditkarte:</strong>###GW1E###</td>
+<td>###PERSON_CARDS_CC_TYPE###</td>
+<td><input name="recs[creditcard][cc_number]" value="###PERSON_CARDS_CC_NUMBER###" />
 </td>
 </tr>
 <tr>
@@ -886,6 +892,9 @@ Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
 <!-- ###BASKET_INFO_TEMPLATE### end -->
 
 
+
+
+
 <!-- ###BASKET_OVERVIEW_TEMPLATE### begin -->
   <div class="shop_minibasket">
      <div class="shop_minibasket_image"><!--###LINK_BASKET###-->###IMAGE_BASKET###<!--###LINK_BASKET###--></div>
@@ -893,9 +902,14 @@ Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:
 <!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
 
 
+
+
+
 <!-- ###BASKET_OVERVIEW_EMPTY### begin -->
   <p>Keine Produkte im Warenkorb.</p>
 <!-- ###BASKET_OVERVIEW_EMPTY### end -->
+
+
 
 
 
