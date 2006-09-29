@@ -503,6 +503,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$dblangfile = 'locallang_db.xml';
 		}
 		tx_fhlibrary_language::pi_loadLL($this,'EXT:tt_products/'.$dblangfile);
+		tx_fhlibrary_language::pi_loadLL($this,'EXT:tt_products/pi1/locallang.xml');
 
 			// get all extending TCAs
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']) && t3lib_extMgm::isLoaded(DIV_EXTkey))	{

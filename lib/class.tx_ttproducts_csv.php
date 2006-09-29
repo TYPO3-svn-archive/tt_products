@@ -66,7 +66,8 @@ class tx_ttproducts_csv {
 
 
 	function create(&$basket, &$address, $csvorderuid, &$csvfilepath, &$error_message) {
-		if ($csvfilepath[strlen($csvfilepath)-1] != '/') {
+		$csvfilepath = trim($csvfilepath);
+		if ($csvfilepath{strlen($csvfilepath)-1} != '/') {
 			$csvfilepath .= '/';
 		}
 		$csvfilepath .= $this->order->getNumber($csvorderuid).'.csv';

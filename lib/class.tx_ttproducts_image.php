@@ -280,7 +280,7 @@ class tx_ttproducts_image {
 			}
 		}
 		$dirname = ($dirname ? $dirname : 'uploads/pics');
-		while(list($c,$val)=each($imgs))	{
+		while(list($c,$val) = each($imgs))	{
 			$confMarkerArray = array();
 			$imageConf = $this->conf[$imageRenderObj.'.'];
 			if ($c==$imageNum)	break;
@@ -289,8 +289,6 @@ class tx_ttproducts_image {
 			if ($val)	{
 				$imageConf['file'] = $dirname.'/'.$val;
 				$bUseImage = true;
-			} else {
-				$imageConf['file'] = $this->conf['noImageAvailable'];
 			}
 			if (t3lib_extMgm::isLoaded('dam') && $bUseImage) {
 				$damObj = &t3lib_div::getUserObj('tx_dam');
@@ -334,6 +332,13 @@ class tx_ttproducts_image {
 				}
 			}
 		}
+		if (!count($imgs))	{
+			$imageConf = $this->conf[$imageRenderObj.'.'];
+			$imageConf['file'] = $this->conf['noImageAvailable'];
+			$tmpImgCode = $this->pibase->cObj->IMAGE($imageConf);
+			$theImgCode[0] = $tmpImgCode;
+		}
+
 		$actImgCode = current($theImgCode);
 		$markerArray['###'.$this->marker.'_IMAGE###'] = $actImgCode ? $actImgCode : ''; // for compatibility only
 		$c = 1;

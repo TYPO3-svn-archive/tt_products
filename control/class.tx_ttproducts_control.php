@@ -385,7 +385,7 @@ class tx_ttproducts_control {
 									$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 									$markerArray = $this->marker->addURLMarkers(0, array());
 									$label = '';
-									if ($checkRequired=='' && $checkAllowed == '') {
+									if ($pidagb && !isset($_REQUEST['recs']['personinfo']['agb'])) {
 										 // so AGB has not been accepted
 										$label = $this->pibase->pi_getLL('accept_AGB');
 									} else {

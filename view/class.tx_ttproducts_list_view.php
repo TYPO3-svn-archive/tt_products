@@ -197,8 +197,8 @@ class tx_ttproducts_list_view {
 					// Substitute a few markers
 				$out = $t['search'];
 				$htmlSwords = htmlspecialchars($sword);
-				$pid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $this->pibase->pid_list);
-				$markerArray = $this->marker->addURLMarkers($pid,array());
+				$tmpPid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $this->pibase->pid);
+				$markerArray = $this->marker->addURLMarkers($tmpPid,array());
 				$markerArray['###FORM_NAME###'] = $formName;
 				$markerArray['###SWORD###'] = $htmlSwords;
 				$markerArray['###SWORDS###'] = $htmlSwords; // for backwards compatibility
@@ -659,7 +659,8 @@ class tx_ttproducts_list_view {
 						if ($nextArray['category']  !=  $currentArray['category'] && $itemsOut && $t['itemFrameWork'])	{
 							// $itemListOut .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$itemsOut,0);
 							$markerArray = array_merge($productMarkerArray, $categoryMarkerArray, $markerArray);
-							$markerArray['###ITEM_SINGLE###'] = $itemsOut;
+							$subpartArray = array();
+							$subpartArray['###ITEM_SINGLE###'] = $itemsOut;
 							$itemListOut .= $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 							$itemsOut = '';
 						}

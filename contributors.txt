@@ -1,4 +1,10 @@
 Robert Markula: English CSS styled template
-Masod Mohmand: Germand translation of CSS styled template
-Staffan Eriksson, Jens Schmietendorf: Swedish template
+Masod Mohmand: Germand translation of CSS styled template, documentation
+Staffan Eriksson: Swedish template
+Jens Schmietendorf: Swedish template, price2
+Else Verberne: Creditpoint and Voucher System
+Elmar Hinz: Help with XAJAX
+Tapio Markula: Finnish template
+
+
 
