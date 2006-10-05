@@ -130,13 +130,17 @@ class tx_ttproducts_article_base {
 	 * @access private
 	 */
 	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1')	{
-		
+
 		if (!$this->marker)
 			return array();
 		$row = &$item['rec'];
 
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code);
+
+		if (isset($row['delivery']))	{
+			$this->image->getSingleImageMarkerArray ($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.']);
+		}
 
 		$markerArray['###'.$this->marker.'_ID###'] = $row['uid'];
 		$markerArray['###'.$this->marker.'_UID###'] = $row['uid'];
@@ -169,29 +173,32 @@ class tx_ttproducts_article_base {
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
 		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
 		$markerArray['###PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax'], $taxInclExcl));
-		$price2 = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'.$priceNo],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
+		$price2 = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
 		$markerArray['###PRICE2_TAX###'] = $price2;
 		$oldPrice = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
-		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
-		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_excluded');
-		$markerArray['###PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax'], $taxInclExcl));
 		$oldPriceNoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],0,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
-		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
-		$markerArray['###PRICE_ONLY_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
-
-		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'.$priceNo],0,$row['tax'],$this->conf['TAXincluded'])));
-		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
-
 		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
 			$oldPrice = $oldPriceNoTax = '';
 		}
+		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
+		$markerArray['###PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax'], $taxInclExcl));
+		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
+		$markerArray['###PRICE_ONLY_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
 
+		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],0,$row['tax'],$this->conf['TAXincluded'])));
+		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
+
+
+		$instockField = $this->cnf->getTableDesc['inStock'];
+		$instockField = ($instockField ? $instockField : 'inStock');
 		$markerArray['###'.$this->marker.'_INSTOCK_UNIT###'] = '';
-		if ($row['inStock'] <> 0) {
-			$markerArray['###'.$this->marker.'_INSTOCK###'] = $row['inStock'];
-			$markerArray['###'.$this->marker.'_INSTOCK_UNIT###'] = $this->conf['inStockPieces'];
-		} else {
-			$markerArray['###'.$this->marker.'_INSTOCK###'] = $this->conf['notInStockMessage'];
+		if (isset($row[$instockField]))	{
+			if ($row[$instockField] <> 0) {
+				$markerArray['###'.$this->marker.'_INSTOCK###'] = $row['inStock'];
+				$markerArray['###'.$this->marker.'_INSTOCK_UNIT###'] = $this->conf['inStockPieces'];
+			} else {
+				$markerArray['###'.$this->marker.'_INSTOCK###'] = $this->conf['notInStockMessage'];
+			}
 		}
 		
 		foreach ($this->variantArray as $variant => $variantRec)	{
