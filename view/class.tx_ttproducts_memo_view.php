@@ -154,7 +154,7 @@ class tx_ttproducts_memo_view {
 		$fe_user_uid = $TSFE->fe_user->user['uid'];
 		if ($fe_user_uid)	{		
 			if ($this->memoItems)	{
-				include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_list_view.php');
+				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
 	
 				// List all products:
 				$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
