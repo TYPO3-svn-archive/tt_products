@@ -65,7 +65,7 @@ class tx_ttproducts_order_view {
 		$this->paymentshipping = &$paymentshipping;
 
 		$address = &t3lib_div::getUserObj('tx_ttproducts_address');
-		$address->init($pibase, $cnf, $formerBasket, $fe_users);
+		$address->init($pibase, $cnf, $formerBasket, $fe_users, $this->paymentshipping);
 
 		include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 		
