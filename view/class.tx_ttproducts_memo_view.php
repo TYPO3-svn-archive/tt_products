@@ -46,7 +46,6 @@ class tx_ttproducts_memo_view {
 	var $conf;
 	var $config;
 	var $basket;
-	var $basketView;
 	var $page;
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
@@ -63,7 +62,6 @@ class tx_ttproducts_memo_view {
 			&$pibase,
 			&$cnf,
 			&$basket,
-			&$basketView,
 			&$pid_list,
 			&$tt_content,
 			&$tt_products,
@@ -82,7 +80,6 @@ class tx_ttproducts_memo_view {
 		$this->conf = &$this->cnf->conf;
 		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
-		$this->basketView = &$basketView;
 		$this->tt_content = &$tt_content;
 		$this->page = tx_ttproducts_page::createPageTable(
 			$this->pibase,
@@ -111,8 +108,7 @@ class tx_ttproducts_memo_view {
 				$this->memoItems = explode(',', $TSFE->fe_user->user['tt_products_memoItems']);
 			}
 	
-			if ($this->pibase->piVars['addmemo'])
-			{
+			if ($this->pibase->piVars['addmemo'])	{
 				$addMemo = explode(',', $this->pibase->piVars['addmemo']);
 	
 				foreach ($addMemo as $addMemoSingle)
@@ -124,8 +120,7 @@ class tx_ttproducts_memo_view {
 				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
 			}
 	
-			if ($this->pibase->piVars['delmemo'])
-			{
+			if ($this->pibase->piVars['delmemo'])	{
 				$delMemo = explode(',', $this->pibase->piVars['delmemo']);
 	
 				foreach ($delMemo as $delMemoSingle)	{
@@ -135,7 +130,7 @@ class tx_ttproducts_memo_view {
 				}
 	
 				$fieldsArray = array();
-				$fieldsArray['tt_products_memoItems']=implode(',', $this->memoItems);
+				$fieldsArray['tt_products_memoItems'] = implode(',', $this->memoItems);
 				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
 			}			
 		}
@@ -162,7 +157,6 @@ class tx_ttproducts_memo_view {
 					$this->pibase,
 					$this->cnf,
 					$this->basket,
-					$this->basketView,
 					$this->page,
 					$this->tt_content,
 					$this->tt_products,

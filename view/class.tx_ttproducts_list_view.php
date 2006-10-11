@@ -107,11 +107,12 @@ class tx_ttproducts_list_view {
 	} // comp
 
 
-	function &advanceCategory(&$categoryAndItemsFrameWork, &$itemListOut, &$categoryOut, $itemListSubpart)	{
+	function &advanceCategory(&$categoryAndItemsFrameWork, &$itemListOut, &$categoryOut, $itemListSubpart, &$formCount)	{
 		$subpartArray = array();
 		$subpartArray['###ITEM_CATEGORY###'] = $categoryOut;
 		$subpartArray[$itemListSubpart] = $itemListOut;
 		$rc = $this->pibase->cObj->substituteMarkerArrayCached($categoryAndItemsFrameWork,array(),$subpartArray);
+		$formCount++; // next form must have another name
 		$categoryOut = '';
 		$itemListOut = '';			// Clear the item-code var
 		return $rc;
@@ -182,7 +183,8 @@ class tx_ttproducts_list_view {
 		$cat = $this->tt_products_cat->getParamDefault();
 		$pid = $this->page->getParamDefault();
 		$where .= $itemTable->addWhereCat($cat, $this->page->pid_list);
-		$formName = $this->conf['form.'][$theCode.'.']['name'];
+		$tmp = $this->conf['form.'][$theCode.'.']['name'];
+		$formName = ($tmp ? $tmp : $formName); 
 
 		if ($allowedItems || $allowedItems=='0')	{
 			$allowedItemArray = t3lib_div::trimExplode(',',$allowedItems);
@@ -422,8 +424,7 @@ class tx_ttproducts_list_view {
 			if ($theCode == 'LISTGIFTS') {
 				$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $this->giftnumber);
 			}
-			$markerArray['###FORM_NAME###'] = $formName;
-			$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].');';
+			// $markerArray['###FORM_NAME###'] = $formName;
 			$markerFramework = 'listFrameWork'; 
 			$t[$markerFramework] = $this->pibase->cObj->substituteMarkerArrayCached($t[$markerFramework],$markerArray,array(),array());
 			$this->pibase->javascript->set('email');
@@ -447,6 +448,7 @@ class tx_ttproducts_list_view {
 			$tableRowOpen = 0;
 			$itemListSubpart = ($itemTable->type == 'article' && $t['productAndItemsFrameWork'] ? '###ITEM_PRODUCT_AND_ITEMS###' : '###ITEM_LIST###'); 
 			$prodRow = array();
+			$formCount = 1;
 			if (count ($itemArray))	{
 				foreach ($itemArray as $k2 => $row) {
 					$iColCount++;
@@ -463,7 +465,7 @@ class tx_ttproducts_list_view {
 							$catItemsListOut = &$productListOut;
 						}
 						if ($catItemsListOut)	{
-							$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart);
+							$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $formCount);
 						}
 						$currentArray['category'] = (($pageAsCategory < 2) ? $row['category'] : $row['pid']);
 						$bCategoryHasChanged = true;
@@ -581,11 +583,12 @@ class tx_ttproducts_list_view {
 	
 					// $markerArray['###FORM_URL###']=$this->formUrl; // Applied later as well.
 					$this->marker->addURLMarkers($this->pid,$markerArray);
-					$markerArray['###FORM_NAME###'] = $formName;
+					$markerArray['###FORM_NAME###'] = $formName.$formCount;
 					$markerArray['###ITEM_NAME###'] = 'item_'.$iCount;
 					if (!$this->conf['displayBasketColumns'])	{
 						$markerArray['###FORM_NAME###'] = $markerArray['###ITEM_NAME###']; 						
 					}
+					$markerArray['###FORM_ONSUBMIT###']='return checkParams (document.'.$markerArray['###FORM_NAME###'].');';
 	
 					$rowEven = $this->conf['CSS.'][$itemTable->table->name.'.']['row.']['even'];
 					$rowEven = ($rowEven ? $rowEven : $this->conf['CSSRowEven']); // backwards compatible
@@ -611,7 +614,7 @@ class tx_ttproducts_list_view {
 					}
 					$markerArray['###ITEM_SINGLE_POST_HTML###'] = $temp;
 					$pid = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
-					$markerArray['###FORM_MEMO###'] = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array(), true)); //$this->getLinkUrl($this->conf['PIDmemo']);
+					$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array(), true))); //$this->getLinkUrl($this->conf['PIDmemo']);
 	
 					// cuts note in list view
 					if (strlen($markerArray['###'.$itemTable->marker.'_NOTE###']) > $this->conf['max_note_length']) {
@@ -678,7 +681,7 @@ class tx_ttproducts_list_view {
 					$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);
 					$catItemsListOut = &$productListOut;
 				}
-				$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart);
+				$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $formCount);
 			}
 		}	// if ($where ...
 		if ($out)	{
