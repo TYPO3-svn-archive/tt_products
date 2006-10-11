@@ -325,7 +325,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				case 'LISTNEWITEMS':
 				case 'LISTOFFERS':
 				case 'LISTARTICLES':
-					debug ($this->piVars, '$this->piVars', __LINE__, __FILE__);
 					if (count($this->tt_product_single) || !$this->conf['NoSingleViewOnList']) {
 						$this->set_no_cache();
 					}
@@ -386,7 +385,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$contentTmp=$this->products_tracking($theCode);
 				break;
 				case 'MEMO':
-					debug ($this->piVars, '$this->piVars', __LINE__, __FILE__);
 					$this->set_no_cache();
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_memo_view.php');
 
