@@ -101,12 +101,14 @@ class tx_ttproducts_activity_finalize {
 			$username = strtolower(trim($address->infoArray['billing']['email']));
 			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $this->conf['PIDuserFolder'].' AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
+			$pid = ($this->conf['PIDuserFolder'] ? $this->conf['PIDuserFolder'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
 
 			if (!$num_rows)	{
 				$address->password = substr(md5(rand()), 0, 6);
 				$insertFields = array(	// TODO: check with TCA
-					'pid' => intval($this->conf['PIDuserFolder']),
+					'pid' => intval($pid),
 					'tstamp' => time(),
+					'crdate' => time(),
 					'username' => $username,
 					'password' => $address->password,
 					'usergroup' => $this->conf['memberOfGroup'],
@@ -121,7 +123,7 @@ class tx_ttproducts_activity_finalize {
 					'email' => $address->infoArray['billing']['email'],
 					'zip' => $address->infoArray['billing']['zip'],
 					'city' => $address->infoArray['billing']['city'],
-					'crdate' => time()
+					'tt_products_vat' => $address->infoArray['billing']['tt_products_vat']
 				);
 
 				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country' : 'country');

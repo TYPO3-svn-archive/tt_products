@@ -175,7 +175,7 @@ class tx_ttproducts_basket_view {
 					if ($itemsOut)	{
 						$out .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
 					}
-					$itemsOut='';			// Clear the item-code var
+					$itemsOut = '';			// Clear the item-code var
 					$currentP = $currentPnew;
 					if ($this->conf['displayBasketCatHeader'])	{
 						$markerArray=array();
@@ -220,7 +220,6 @@ class tx_ttproducts_basket_view {
 				//$markerArray['###PRODUCT_ADDITIONAL###'] = $actItem['rec']['additional'];
 
 				$this->pibase->cObj->setCurrentVal($catTitle);
-
 				$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 				$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($actItem['totalTax']);
 				$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($actItem['totalNoTax']);
@@ -343,10 +342,10 @@ class tx_ttproducts_basket_view {
 			}
 		}
 
-/* Added els4: output for payment (used in basket_payment_template, winkelwagen.tmpl)*/
-		$markerArray['###PAYMENT_NUMBER###'] = t3lib_div::_GP('payment_number');
-		$markerArray['###PAYMENT_NAME###'] = t3lib_div::_GP('payment_name');
-		$markerArray['###PAYMENT_CITY###'] = t3lib_div::_GP('payment_city');
+///* Added els4: output for payment (used in basket_payment_template, winkelwagen.tmpl)*/
+//		$markerArray['###PAYMENT_NUMBER###'] = t3lib_div::_GP('payment_number');
+//		$markerArray['###PAYMENT_NAME###'] = t3lib_div::_GP('payment_name');
+//		$markerArray['###PAYMENT_CITY###'] = t3lib_div::_GP('payment_city');
 
 		// for receipt from DIBS script
 		$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
@@ -577,6 +576,7 @@ class tx_ttproducts_basket_view {
 /* Added Els4: total price = subtotal - bezorgkosten + voucher + gift + giftcertificate (winkelwagen.tmpl) */
 /* Added Els7: error in calcualtion */
 		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = $this->price->priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
+		
 		$agb_url=array();
 		$pidagb = intval($this->conf['PIDagb']);
 		// $addQueryString['id'] = $pidagb;
@@ -595,20 +595,31 @@ class tx_ttproducts_basket_view {
 			$subpartArray['###FE_USER_SECTION###']='';
 		}
 		$bFrameWork = $t['basketFrameWork'];
-		
-		$tmpKey = $this->basket->basketExtra['shipping'];
-		if (is_array($tmpKey))	{
-			$tmpKey = current($tmpKey);
-		}
-		$tmpSubpart = $this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_SHIPPING_'.$tmpKey.'###');
-		$subpartArray['###MESSAGE_SHIPPING###'] = $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
-		$tmpSubpart = $this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_PAYMENT_'.$this->basket->basketExtra['payment'].'###');
-		$subpartArray['###MESSAGE_PAYMENT###'] = $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
-		$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
 
 		if (is_object($address))	{
 			$address->getItemMarkerArray ($markerArray, $bSelectSalutation);
 		}
+		
+		$shipKeyArray = $this->basket->basketExtra['shipping'];
+		if (!is_array($shipKeyArray))	{
+			$shipKeyArray = array($shipKeyArray);
+		}
+		$shipKey = '';
+		$msgShipping = '';
+		foreach ($shipKeyArray as $k => $value)	{
+			if ($shipKey)	{
+				$shipKey .= '_';
+			}
+			$shipKey .= $value;
+			$tmpSubpart = $this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_SHIPPING_'.$shipKey.'###');
+			$msgShipping .= $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
+		}
+		$subpartArray['###MESSAGE_SHIPPING###'] = $msgShipping;
+		
+		$tmpSubpart = $this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_PAYMENT_'.$this->basket->basketExtra['payment'].'###');
+		$subpartArray['###MESSAGE_PAYMENT###'] = $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
+		$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
+
 		$bFrameWork=$this->pibase->cObj->substituteMarkerArrayCached($t['basketFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 
 			// substitute the main subpart with the rendered content.

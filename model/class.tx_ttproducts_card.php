@@ -84,7 +84,7 @@ class tx_ttproducts_card {
 		$pid = intval($this->conf['PID_sys_products_orders']);
 		if (!$pid)	$pid = intval($TSFE->id);
 
-		if ($TSFE->sys_page->getPage_noCheck ($pid))	{
+		if ($number && $type && $TSFE->sys_page->getPage_noCheck ($pid))	{
 			$time = time();
 			$newFields = array (
 				'pid' => intval($pid),

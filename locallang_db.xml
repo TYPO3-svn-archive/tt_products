@@ -92,6 +92,7 @@
 			<label index="fe_users.tt_products_discount">Discount</label>
 			<label index="fe_users.tt_products_creditpoints">Creditpoints</label>
 			<label index="fe_users.tt_products_vouchercode">Vouchercode</label>
+			<label index="fe_users.tt_products_vat">EU VAT number</label>
 			<label index="tt_content.list_type_pi1">Products</label>
 			<label index="tt_content.tt_products_code">Code</label>
 			<label index="tt_content.pi1_flexform.display_mode">Display mode</label>
@@ -197,6 +198,7 @@
 			<label index="fe_users.tt_products_discount">Rabatt</label>
 			<label index="fe_users.tt_products_creditpoints">Gutscheinpunkte</label>
 			<label index="fe_users.tt_products_vouchercode">Freundschaftswerbung Code</label>
+			<label index="fe_users.tt_products_vat">EU USt. - Identifikationsnummer</label>
 			<label index="tt_content.list_type_pi1">Produkte</label>
 			<label index="tt_content.pi1_flexform.display_mode">Anzeigetyp</label>
 			<label index="tt_content.pi1_flexform.display_mode.1">Produkte: Liste</label>
@@ -422,6 +424,7 @@
 			<label index="tt_products_articles.uid_product">Produit</label>
 			<label index="fe_users.tt_products_memoItems">Liste memo</label>
 			<label index="fe_users.tt_products_discount">Réduction</label>
+			<label index="fe_users.tt_products_vat">CE numéro intracommunautaire d'identification à la TVA</label>
 			<label index="tt_content.list_type_pi1">Produits</label>
 			<label index="tt_content.pi1_flexform.display_mode">Mode d'affichage</label>
 			<label index="tt_content.pi1_flexform.display_mode.1">Produits: lister</label>

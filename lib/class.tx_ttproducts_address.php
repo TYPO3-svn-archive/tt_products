@@ -134,7 +134,7 @@ class tx_ttproducts_address {
 			}
 			$this->infoArray['billing']['address'] = $address;
 			$fields = 'name, first_name, last_name, email, telephone, fax, zip, city, company';
-			$fields .= ',tt_products_creditpoints, tt_products_vouchercode';
+			$fields .= ',tt_products_creditpoints, tt_products_vouchercode, tt_products_vat';
 			if ($this->feuserextrafields) {
 				$fields .= ',tx_feuserextrafields_initials_name, tx_feuserextrafields_prefix_name, tx_feuserextrafields_gsm_tel,'.
 						'tx_feuserextrafields_company_deliv, tx_feuserextrafields_address_deliv, tx_feuserextrafields_housenumber,'.
@@ -151,7 +151,6 @@ class tx_ttproducts_address {
 			$this->infoArray['billing']['date_of_birth'] = date( 'd-m-Y', $TSFE->fe_user->user['date_of_birth']);
 		}
 	} // init
-
 
 
 
@@ -175,7 +174,7 @@ class tx_ttproducts_address {
 					'tx_feuserextrafields_country_deliv';
 			}
 			$infoFields = explode(',','feusers_uid,telephone,salutation,name,first_name,last_name,email,' .
-				'date_of_birth,company,address,city,zip,country,country_code'.
+				'date_of_birth,company,address,city,zip,country,country_code,tt_products_vat'.
 				$infoExtraFields
 			); // Fields...
 			while(list(,$fName)=each($infoFields))	{
@@ -260,7 +259,7 @@ class tx_ttproducts_address {
 		global $TYPO3_CONF_VARS;
 
 			// Personal and delivery info:
-		$list = 'name,first_name,last_name,title,address,telephone,fax,email,company,city,zip,state,country';
+		$list = 'name,first_name,last_name,title,address,telephone,fax,email,company,city,zip,state,country,tt_products_vat';
 		if ($this->feuserextrafields) {
 			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
 		}

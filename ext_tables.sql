@@ -357,6 +357,7 @@ CREATE TABLE fe_users (
 	tt_products_memoItems tinytext NOT NULL,
 	tt_products_discount int(11) DEFAULT '0' NOT NULL
 	tt_products_creditpoints decimal(10,0) DEFAULT '0' NOT NULL,
-	tt_products_vouchercode varchar(50) DEFAULT ''
+	tt_products_vouchercode varchar(50) DEFAULT '',
+	tt_products_vat varchar(15) DEFAULT '' NOT NULL
 );
 

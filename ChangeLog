@@ -1,5 +1,12 @@
 2006------ Franz Holzinger <franz@fholzinger.com>
 	* also negative values at inStock must be displayed as 'not in stock'
+	* new feature: filter allowed records by regular expressions on the fields
+	* new feature: account table
+	* more flexible select boxes
+	* new variants: color2, size2, material and quality
+
+2006-10-30 Franz Holzinger <franz@fholzinger.com>
+	* European Community VAT identifier codes
 
 2006-10-11 Franz Holzinger <franz@fholzinger.com>
 	* error correction: MEMO

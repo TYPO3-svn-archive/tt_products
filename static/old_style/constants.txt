@@ -136,6 +136,8 @@ plugin.tt_products {
   PID_sys_products_orders = 0
     # cat=plugin.products//; type=int+; label=PID for the tt_products_gifts records: By default they will get the pid of the payment (finalize) page.
   PIDGiftsTable = 0
+    # cat=plugin.products//; type=int+; label=User Sysfolder PID: PID of the sysfolder for the new users
+  PIDuserFolder = 
 
     # cat=plugin.products//; type=string; label=When the payment shall be executed. Possible values:  'payment', 'finalize'
   paymentActivity=finalize
@@ -215,8 +217,6 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=boolean; label=Create Users: Create an user account for each new customer
   createUsers = 0
-    # cat=plugin.products//; type=int+; label=User Sysfolder PID: PID of the sysfolder for the new users
-  PIDuserFolder = 116
     # cat=plugin.products//; type=string; label=Output folder: Folder where the bill and delivery sheets are created.
   outputFolder = fileadmin/data
     # cat=plugin.products//; type=int+; label=Group of customers

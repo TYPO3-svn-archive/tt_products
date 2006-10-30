@@ -299,6 +299,15 @@ $tempColumns = Array (
 			'max' => '256'
 		)
 	),
+	'tt_products_vat' => Array (
+		'exclude' => 1,
+		'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:fe_users.tt_products_vat',
+		'config' => Array (
+			'type' => 'input',
+			'size' => '15',
+			'max' => '15'
+		)
+	),
 );
 
 if ($typoVersion < 3008000)	{
@@ -311,6 +320,7 @@ if ($typoVersion < 3008000)	{
 t3lib_div::loadTCA('fe_users');
 
 t3lib_extMgm::addTCAcolumns('fe_users',$tempColumns,1);
-t3lib_extMgm::addToAllTCAtypes('fe_users','tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1');
+t3lib_extMgm::addToAllTCAtypes('fe_users','tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1,tt_products_vat;;;;1-1-1');
+
 
 ?>

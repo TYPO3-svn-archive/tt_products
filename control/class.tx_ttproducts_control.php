@@ -39,6 +39,8 @@
  */
 
 
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
+
 
 class tx_ttproducts_control {
 
@@ -197,7 +199,17 @@ class tx_ttproducts_control {
 		$activityArray = array();
 		$bBasketEmpty = false;
 		$basketView = '';
-		$address = '';
+//								if (!is_object($address))	{
+//									include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
+//									$address = &t3lib_div::getUserObj('tx_ttproducts_address');
+//									$address->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
+//									$address->mapPersonIntoDelivery();
+//								}
+
+		$address = &t3lib_div::getUserObj('tx_ttproducts_address');
+		$address->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
+		$address->mapPersonIntoDelivery();
+
 		$order = '';
 
 			// use '_x' for coordinates from Internet Explorer if button images are used
@@ -342,13 +354,6 @@ class tx_ttproducts_control {
 								$this->pibase->load_noLinkExtCobj();	// TODO
 								$pidagb = intval($this->conf['PIDagb']);
 
-								if (!is_object($address))	{
-									include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
-									$address = &t3lib_div::getUserObj('tx_ttproducts_address');
-									$address->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
-									$address->mapPersonIntoDelivery();
-								}
-
 								$checkRequired = $address->checkRequired();
 								$checkAllowed = $address->checkAllowed();
 								if ($checkRequired == '' && $checkAllowed == '' &&
@@ -450,13 +455,6 @@ class tx_ttproducts_control {
 							$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
 							$basketView->init ($this->basket, $this->templateCode);
 						}					
-
-						if (!is_object($address))	{
-							include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
-							$address = &t3lib_div::getUserObj('tx_ttproducts_address');
-							$address->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
-							$address->mapPersonIntoDelivery();
-						}
 						
 						$content .= $basketView->getView($empty, 'BASKET', $address, $this->activityArray['products_info'], false, '###'.$basket_tmpl.'###',$mainMarkerArray);
 						$bFinalize = false;
@@ -467,12 +465,6 @@ class tx_ttproducts_control {
 				
 					// finalization at the end so that after every activity this can be called
 				if ($bFinalize)	{
-					if (!is_object($address))	{
-						include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
-						$address = &t3lib_div::getUserObj('tx_ttproducts_address');
-						$address->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
-						$address->mapPersonIntoDelivery();
-					}
 					$checkRequired = $address->checkRequired();
 					$checkAllowed = $address->checkAllowed();
 					if ($checkRequired == '' && $checkAllowed == '')	{

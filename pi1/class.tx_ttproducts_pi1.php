@@ -334,8 +334,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					}
 					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
-				case 'LISTCAT':
 				case 'SELECTCAT':
+				case 'LISTCAT':
 					$this->bListStartEmpty = true;
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view.php');
 						// category view
