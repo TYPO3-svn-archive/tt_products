@@ -5,6 +5,13 @@
 	* more flexible select boxes
 	* new variants: color2, size2, material and quality
 
+2006-11-10 Franz Holzinger <franz@fholzinger.com>
+	* correct error with missing CONSTANTS if no flexforms are used (zk_products)
+	* bug 4081: catlist with wrong HTML tags
+	* correct error with XAJAX loosing the L parameter's language setting
+	* consider the basket empty warning if pid_list does not allow any item in the basket view
+	* modified method API for static_info_tables
+
 2006-10-30 Franz Holzinger <franz@fholzinger.com>
 	* European Community VAT identifier codes
 

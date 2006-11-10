@@ -350,6 +350,7 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 	KEY sys_products_orders_uid (sys_products_orders_uid)
 );
 
+
 #
 # Table structure for table 'fe_users'
 #
@@ -361,3 +362,10 @@ CREATE TABLE fe_users (
 	tt_products_vat varchar(15) DEFAULT '' NOT NULL
 );
 
+
+#
+# Extension of table 'tt_content'
+#
+CREATE TABLE tt_content (
+	tt_products_code varchar(30) DEFAULT 'LIST' NOT NULL
+);

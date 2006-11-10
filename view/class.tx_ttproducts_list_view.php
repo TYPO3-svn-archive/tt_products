@@ -147,9 +147,10 @@ class tx_ttproducts_list_view {
 		
 		$content = '';
 		$out = '';
-		$sword = t3lib_div::_GP('sword');
+		$sword = $this->pibase->piVars['sword'];
 		if (!$sword)	{
-			$sword = t3lib_div::_GP('swords');
+			$sword = t3lib_div::_GP('sword');
+			$sword = ($sword ? $sword : t3lib_div::_GP('swords'));
 		}
 		$more = 0;		// If set during this loop, the next-item is drawn
 		$where = '';
@@ -182,13 +183,39 @@ class tx_ttproducts_list_view {
 		
 		$cat = $this->tt_products_cat->getParamDefault();
 		$pid = $this->page->getParamDefault();
-		$where .= $itemTable->addWhereCat($cat, $this->page->pid_list);
+		$whereCat = $itemTable->addWhereCat($cat, $this->page->pid_list);
+
+		if ($whereCat == '' && $allowedItems == '')	{
+			$neededParams = $itemTable->getNeededUrlParams($theCode);
+			$needArray = t3lib_div::trimExplode(',', $neededParams);
+			$bListStartEmpty = false;
+			foreach ($needArray as $k => $param)	{
+				if ($param && !isset($this->pibase->piVars[$param]))	{
+					$bListStartEmpty = true;
+					break;
+				}
+			}
+			if ($bListStartEmpty)	{
+				$allowedItems = '0';	// not possible uid
+			}
+		}
+
+		$where .= $whereCat;
 		$tmp = $this->conf['form.'][$theCode.'.']['name'];
 		$formName = ($tmp ? $tmp : $formName); 
-
+		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 		if ($allowedItems || $allowedItems=='0')	{
-			$allowedItemArray = t3lib_div::trimExplode(',',$allowedItems);
-			$allowedItemArray = $TYPO3_DB->fullQuoteArray($allowedItemArray,$itemTable->table->name);
+
+			$allowedItemArray = array();
+			$tempArray = t3lib_div::trimExplode(',',$allowedItems);
+			if ($typoVersion < 4000000)	{
+				foreach ($tempArray as $k => $value)	{
+					$allowedItemArray[$k] = $TYPO3_DB->fullQuoteStr($value,$itemTable->table->name);
+				}
+			} else {
+				$dblangfile = 'locallang_db.xml';
+				$allowedItemArray = $TYPO3_DB->fullQuoteArray($tempArray,$itemTable->table->name);
+			}
 			$where .= ' AND uid IN ('.implode(',',$allowedItemArray).')';
 		}
 
@@ -735,7 +762,7 @@ class tx_ttproducts_list_view {
 				$wrappedSubpartArray['###LINK_BROWSE###']=array('',''); // <- this could be done better I think, or not?
 				for ($i = 0 ; $i < ($productsCount/$this->config['limit']); $i++)	 {
 					if (($begin_at >= $i*$this->config['limit']) && ($begin_at < $i*$this->config['limit']+$this->config['limit']))	{
-						$markerArray['###BROWSE_LINKS###'].= ' <b>'.(string)($i+1).'</b> ';
+						$markerArray['###BROWSE_LINKS###'] .= ' <b>'.(string)($i+1).'</b> ';
 						//	you may use this if you want to link to the current page also
 						//
 					} else {
@@ -744,23 +771,23 @@ class tx_ttproducts_list_view {
 						// $tempUrl = $this->pibase->pi_linkToPage((string)($i+1).' ',$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 						$addQueryString['begin_at'] = (string)($i * $this->config['limit']);
 						$tempUrl = $this->pibase->pi_linkTP_keepPIvars((string)($i+1).' ',$addQueryString,$bUseCache,0);
-						$markerArray['###BROWSE_LINKS###'].= $tempUrl; // ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
+						$markerArray['###BROWSE_LINKS###'] .= $tempUrl; // ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
 					}
 				}
 			} else {
 				$subpartArray['###LINK_BROWSE###']='';
 			}
 
-			$subpartArray['###ITEM_CATEGORY_AND_ITEMS###']=$out;
+			$subpartArray['###ITEM_CATEGORY_AND_ITEMS###'] = $out;
 			// $markerArray['###FORM_URL###']=$this->formUrl;	  // Applied it here also...
 			$markerArray = $this->marker->addURLMarkers($this->pid,$markerArray); //Applied it here also...
 			$markerArray['###AMOUNT_CREDITPOINTS###'] = number_format($TSFE->fe_user->user['tt_products_creditpoints'],0);
-			$markerArray['###ITEMS_SELECT_COUNT###']=$productsCount;
+			$markerArray['###ITEMS_SELECT_COUNT###'] = $productsCount;
  			$this->javaScriptMarker->getMarkerArray($markerArray);
 
 			$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 			$content .= $out;
-		} elseif ($where && $allowedItems!='0')	{
+		} elseif ($where && $allowedItems != '0')	{
 			$content .= $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_SEARCH_EMPTY###'));
 		} // if ($out)	
 

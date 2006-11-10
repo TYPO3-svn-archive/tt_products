@@ -192,8 +192,8 @@ class tx_ttproducts_address {
 	function checkRequired()	{
 		$flag = '';
 		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
-		if ($this->basketExtra['payment.']['addRequiredInfoFields'] != '')
-			$requiredInfoFields .= ','.trim($this->basketExtra['payment.']['addRequiredInfoFields']);
+		if ($this->paymentshipping->basket->basketExtra['payment.']['addRequiredInfoFields'] != '')
+			$requiredInfoFields .= ','.trim($this->paymentshipping->basket->basketExtra['payment.']['addRequiredInfoFields']);
 
 		if ($requiredInfoFields)	{
 			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
@@ -284,7 +284,7 @@ class tx_ttproducts_address {
 				if (version_compare($sitVersion, '2.0.1', '>='))	{
 					$markerArray['###PERSON_COUNTRY_CODE###'] =
 						$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[personinfo][country_code]', '', $this->infoArray['billing']['country_code'], '', 0, '', '', $whereCountries);
-					$markerArray['###PERSON_COUNTRY_FIRST###'] = current($this->staticInfo->initCountries($whereCountries));
+					$markerArray['###PERSON_COUNTRY_FIRST###'] = current($this->staticInfo->initCountries('ALL','',false,$whereCountries));
 					$markerArray['###PERSON_COUNTRY###'] =
 						$this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['billing']['country_code'],'','');
 					$markerArray['###DELIVERY_COUNTRY_CODE###'] =

@@ -174,7 +174,10 @@ if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='pi_flexform';
 	t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:'.TT_PRODUCTS_EXTkey.'/flexform_ds_pi1.xml');
 } else if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] == 1) {
-	//$tempStr = 'LLL:EXT:tt_products/locallang_db.php:tt_content.tt_products_code.I.';
+	$tempStr = 'LLL:EXT:tt_products/locallang_db.xml:tt_content.tt_products_code.I.';
+	if ($typoVersion < 3008000)	{
+		$tempStr = 'LLL:EXT:tt_products/locallang_tca.php:tt_content.tt_products_code.I.';
+	}
 	$tempColumns = Array (
 		'tt_products_code' => Array (
 			'exclude' => 0,
@@ -182,28 +185,27 @@ if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
 			'config' => Array (
 				'type' => 'select',
 				'items' => Array (
-					Array('LIST'.			'0',  'LIST'),
-					Array('LISTOFFERS'.		'1',  'LISTOFFERS'),
-					Array('LISTHIGHLIGHTS'. '2',  'LISTHIGHLIGHTS'),
-					Array('LISTNEWITEMS'.	'3',  'LISTNEWITEMS'),
-					Array('SINGLE'.			'4',  'SINGLE'),
-					Array('SEARCH'.			'5',  'SEARCH'),
-					Array('MEMO'.			'6',  'MEMO'),
-					Array('BASKET'.			'7',  'BASKET'),
-					Array('INFO'.			'8',  'INFO'),
-					Array('PAYMENT'.		'9',  'PAYMENT'),
-					Array('FINALIZE'.		'10', 'FINALIZE'),
-					Array('OVERVIEW'.		'11', 'OVERVIEW'),
-					Array('TRACKING'.		'12', 'TRACKING'),
-					Array('BILL'.			'13', 'BILL'),
-					Array('DELIVERY'.		'14', 'DELIVERY'),
-					Array('HELP'.			'15', 'HELP'),
-					Array('CURRENCY'.		'16', 'CURRENCY'),
-					Array('ORDERS'.			'17', 'ORDERS'),
-					Array('LISTGIFTS'.		'18', 'LISTGIFTS'),
-					Array('LISTCAT'.		'19', 'LISTCAT'),
-					Array('LISTARTICLES'.	'20', 'LISTARTICLES'),
-					Array('CONTROL'.		'21', 'CONTROL'),
+					Array($tempStr.'0',  'LIST'),
+					Array($tempStr.'1',  'LISTOFFERS'),
+					Array($tempStr.'2',  'LISTHIGHLIGHTS'),
+					Array($tempStr.'3',  'LISTNEWITEMS'),
+					Array($tempStr.'4',  'SINGLE'),
+					Array($tempStr.'5',  'SEARCH'),
+					Array($tempStr.'6',  'MEMO'),
+					Array($tempStr.'7',  'BASKET'),
+					Array($tempStr.'8',  'INFO'),
+					Array($tempStr.'9',  'PAYMENT'),
+					Array($tempStr.'10', 'FINALIZE'),
+					Array($tempStr.'11', 'OVERVIEW'),
+					Array($tempStr.'12', 'TRACKING'),
+					Array($tempStr.'13', 'BILL'),
+					Array($tempStr.'14', 'DELIVERY'),
+					Array($tempStr.'15', 'HELP'),
+					Array($tempStr.'16', 'CURRENCY'),
+					Array($tempStr.'17', 'ORDERS'),
+					Array($tempStr.'18', 'LISTGIFTS'),
+					Array($tempStr.'19', 'LISTCAT'),
+					Array($tempStr.'20', 'LISTARTICLES')
 				),
 			)
 		)

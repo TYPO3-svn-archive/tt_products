@@ -159,22 +159,24 @@ class tx_ttproducts_marker {
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function getLinkParams($excludeList='',$addQueryString=array(),$bUsePrefix=false) {
+	function getLinkParams($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true) {
 		global $TSFE;
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
 		$queryString=array();
 //		$fe_user = (is_array($TSFE->fe_user->user) ? 1 : 0);
-		if ($bUsePrefix)	{
-			$queryString[$this->pibase->prefixId.'[backPID]'] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
-//			if ($fe_user)	{
-//				$queryString[$this->pibase->prefixId.'[fegroup]'] = 1;
-//			}
-		} else {
-			$queryString['backPID'] = $TSFE->id;
-//			if ($fe_user)	{
-//				$queryString['fegroup'] = 1;
-//			}
+		if ($bUseBackPid)	{
+			if ($bUsePrefix)	{
+				$queryString[$this->pibase->prefixId.'[backPID]'] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
+	//			if ($fe_user)	{
+	//				$queryString[$this->pibase->prefixId.'[fegroup]'] = 1;
+	//			}
+			} else {
+				$queryString['backPID'] = $TSFE->id;
+	//			if ($fe_user)	{
+	//				$queryString['fegroup'] = 1;
+	//			}
+			}
 		}
 		
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
@@ -183,10 +185,10 @@ class tx_ttproducts_marker {
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 
 		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
+		if ($temp) {
 		if (!$temp)	{
 			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';		
 		}
-		if ($temp) {
 			$queryString['sword'] = $temp;
 		}
 		if (is_array($addQueryString))	{

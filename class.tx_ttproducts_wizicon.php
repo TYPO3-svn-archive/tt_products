@@ -39,15 +39,12 @@ class tx_ttproducts_wizicon {
 
 		$LL = $this->includeLocalLang();
 
-		$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=HELP';
-//		if ($TYPO3_CONF_VARS['EXTCONF']['tt_products']['pageAsCategory'] == 0)
-//		{
-//			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=HELP';
-//		}
-//		else
-//		{
-//			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]=HELP';
-//		}
+		if ($TYPO3_CONF_VARS['EXTCONF']['tt_products']['pageAsCategory'] == 0)	{
+			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=HELP';
+		} else {
+			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]=HELP';
+		}
+
 		$wizardItems['plugins_tx_ttproducts_pi1'] = array(
 			'icon'=>PATH_BE_ttproducts_rel.'res/icons/be/ce_wiz.gif',
 			'title'=>$LANG->getLLL('plugins_title',$LL),
@@ -56,6 +53,7 @@ class tx_ttproducts_wizicon {
 
 		return $wizardItems;
 	}
+
 	/**
 	 * Includes the locallang.xml and returns the $LOCAL_LANG array found in that file.
 	 */

@@ -196,7 +196,7 @@ class tx_ttproducts_activity_finalize {
 			// Fetching the order Record by selecing the newly saved one...
 		// $orderRecord = $this->getRecord($orderUid);  needed?
 
-		if (!$this->alwaysInStock) {
+		if (!$this->conf['alwaysInStock']) {
 			$instockTableArray = 
 				$viewTable->reduceInStockItems(
 					$this->basket->itemArray, 

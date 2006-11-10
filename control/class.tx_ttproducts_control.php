@@ -264,7 +264,9 @@ class tx_ttproducts_control {
 			// only the code activities if there is no code BASKET or INFO set
 			$this->activityArray = $codeActivityArray;
 		}
-		if (count($this->basket->basketExt) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
+//		if (count($this->basket->basketExt) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
+		if (count($this->basket->itemArray) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
+
 				// prepare action
 			$basket_tmpl = '';
 			if (count($this->activityArray)) {

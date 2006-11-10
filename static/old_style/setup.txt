@@ -1,5 +1,5 @@
 ## Includes the productsLib:
-#includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
+includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
 
 ## This enables the tt_content.list item to display the guestbook:
 plugin.tt_products >
@@ -73,7 +73,7 @@ plugin.tt_products {
   displayCatListType = {$plugin.tt_products.displayCatListType}
   basketPic = {$plugin.tt_products.basketPic}
   clickIntoBasket = {$plugin.tt_products.clickIntoBasket}
-  clickIntoSubmenu = {$plugin.tt_products.clickIntoSubmenu}
+  clickIntoSubmenu = {$plu	gin.tt_products.clickIntoSubmenu}
   basketMaxQuantity = {$plugin.tt_products.basketMaxQuantity}
   quantityIsFloat = {$plugin.tt_products.quantityIsFloat}
   
@@ -309,7 +309,6 @@ plugin.tt_products.shipping {
   40.title = Pick up in store
   40.excludePayment = 10,40
 }
-
 
 
 ## This enables the record item to display product items

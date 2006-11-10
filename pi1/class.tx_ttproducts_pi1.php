@@ -127,7 +127,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $template_suffix; 			// suffix for template subpart area markers
 	var $bNoCachePossible = TRUE;	// if the cache may be turned off
 	var $pageAsCategory;			// > 0 if pages are used as categories
-	var $bListStartEmpty = FALSE;	// if set, then the list view starts with no articles listed. This is used by CATLIST with select boxes to have no entries at start. 
 
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
@@ -172,8 +171,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// $this->xajax->statusMessagesOn();
 				// Turn only on during testing
 			// $this->xajax->debugOff();
-
-			$this->xajax->setRequestURI(t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . htmlspecialchars(t3lib_div::getIndpEnv('QUERY_STRING') ));
+			$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING');
+			$this->xajax->setRequestURI($reqURI);
 			$this->xajax->setWrapperPrefix('');
 			$this->xajax->registerFunction(array('tt_products_showArticle',&$this,'tt_products_showArticle'));
             $this->xajax->registerFunction(array('tt_products_changeValue',&$this,'tt_products_changeValue'));
@@ -336,7 +335,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				break;
 				case 'SELECTCAT':
 				case 'LISTCAT':
-					$this->bListStartEmpty = true;
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view.php');
 						// category view
 					$categoryView = t3lib_div::makeInstance('tx_ttproducts_catlist_view');
@@ -542,7 +540,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		}
 		$config['priceNoReseller'] = $this->conf['priceNoReseller'] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
 		$tmp = $this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.']);
-		$pid_list = $config['pid_list'] = ($this->piVars['pid_list'] ? $this->piVars['pid_list'] : ($this->conf['pid_list.'] ? trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.'])) : $this->conf['pid_list']));
+		$pid_list = ($this->piVars['pid_list'] ? $this->piVars['pid_list'] : ($this->conf['pid_list.'] ? trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.'])) : ''));		
+		$pid_list = $config['pid_list'] = ($pid_list ? $pid_list : $this->conf['pid_list']); 
 		$pid_list = ($pid_list ? $pid_list : $this->cObj->data['pages']);
 		$this->pid_list = ($pid_list ? $pid_list : $config['storeRootPid']);
 
@@ -646,7 +645,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 			// basket view
 		$this->control = t3lib_div::makeInstance('tx_ttproducts_control');
-
 				
 			// price
 		$this->price = t3lib_div::makeInstance('tx_ttproducts_price');
@@ -1026,9 +1024,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			}
 			
 			$allowedItems = '';
-			if ($this->bListStartEmpty)	{
-				$allowedItems = '0';	// not possible uid
-			}
 			$templateArea = '###'.$templateArea.$this->template_suffix.'###';
 			$content = $listView->printView(
 				$this->templateCode,

@@ -140,6 +140,8 @@ class tx_ttproducts_article_base {
 
 		if (isset($row['delivery']))	{
 			$this->image->getSingleImageMarkerArray ($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.']);
+		} else {
+			$markerArray['###'.$this->marker.'_DELIVERY###'] = '';
 		}
 
 		$markerArray['###'.$this->marker.'_ID###'] = $row['uid'];
@@ -259,6 +261,16 @@ class tx_ttproducts_article_base {
 	function hasAdditional(&$row, $check)  {
 		$hasAdditional = false;
 		return $hasAdditional; 
+	}
+
+
+	function getNeededUrlParams($theCode)	{
+		$rc = '';
+		$this->tableconf = $this->cnf->getTableConf($this->conftablename, $theCode);
+		if (is_array($this->tableconf) && $this->tableconf['urlparams'])	{
+			$rc = $this->tableconf['urlparams'];
+		}
+		return $rc;
 	}
 
 }
