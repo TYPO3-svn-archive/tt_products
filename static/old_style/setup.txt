@@ -103,6 +103,7 @@ plugin.tt_products {
   
   advanceOrderNumberWithInteger = {$plugin.tt_products.advanceOrderNumberWithInteger}
   alwaysAdvanceOrderNumber = {$plugin.tt_products.alwaysAdvanceOrderNumber}
+  alwaysUpdateOrderAmount = {$plugin.tt_products.alwaysUpdateOrderAmount}
 
   defaultProductID = {$plugin.tt_products.defaultProductID}
   defaultCategoryID = {$plugin.tt_products.defaultCategoryID}

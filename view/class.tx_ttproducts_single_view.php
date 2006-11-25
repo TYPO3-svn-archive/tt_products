@@ -154,7 +154,7 @@ class tx_ttproducts_single_view {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 			} else if (count($giftNumberArray)) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
-			} else if ($row['inStock'] == 0 && $this->conf['showNotInStock'] && is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ) {
+			} else if ($row['inStock'] <= 0 && $this->conf['showNotInStock'] && is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_NOT_IN_STOCK###';
 			} else {
 				if ($this->type == 'product')	{
@@ -299,6 +299,7 @@ class tx_ttproducts_single_view {
 
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 			$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
+			$basketItemView->init($this->tt_products_cat, $this->basket->basketExt);
 			
 			$basketMarkerArray = array();
 			$basketItemView->getItemMarkerArray ($itemTableArray[$this->type], $item, $basketMarkerArray, $this->basket->basketExt, 'SINGLE', 1);
@@ -326,7 +327,7 @@ class tx_ttproducts_single_view {
 					$markerArray,
 					$catTitle,
 					$this->basket->basketExt,
-					$this->config['limitImage'],
+					$this->config['limitImageSingle'],
 					'listImage',
 					$viewTagArray,
 					array(),

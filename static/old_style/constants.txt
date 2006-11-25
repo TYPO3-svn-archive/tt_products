@@ -82,7 +82,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item on a list view. 
   limitImage = 1
     # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item on a single view. 
-  limitImageSingle = 1
+  limitImageSingle = 10
     # cat=plugin.products//; type=boolean; label= Images from the page content used: The image of the page contents can be used instead of the images of the products table.
   usePageContentImage =
     # cat=plugin.products//; type=boolean; label= Separate images: Normally all images are displayed together. With separateImage=on you can use a ###PRODUCT_IMAGE3### for each image number separatly.
@@ -147,6 +147,8 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=boolean; label=always advance order number: If set then the order number will always get increased and the empty order numbers are not reused. 
   alwaysAdvanceOrderNumber =
+    # cat=plugin.products//; type=boolean; label=always update order amount: If set then the order amount will always be updated and not increased by the entered number
+  alwaysUpdateOrderAmount = 1
  
     # cat=plugin.products//; type=int+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
   defaultProductID = 1

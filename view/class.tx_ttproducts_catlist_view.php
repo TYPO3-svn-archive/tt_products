@@ -220,7 +220,7 @@ class tx_ttproducts_catlist_view {
 					
 					$addQueryString = array($categoryTable->piVar => $actCategory);
 					$tempUrl = $this->pibase->pi_linkTP_keepPIvars_url($addQueryString,1,1,$pid);
-					$linkOut = '<a href="'.$tempUrl.'" '.$css.'>'.$categoryArray[$actCategory]['title'].'</a>';
+					$linkOut = '<a href="'.$tempUrl.'" '.$css.'>'.htmlspecialchars($categoryArray[$actCategory]['title']).'</a>';
 					$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);
 					if (is_array($subCategories)	&&
 						(!$this->conf['clickIntoSubmenu'] || $parentArray[$actCategory] == true))	{

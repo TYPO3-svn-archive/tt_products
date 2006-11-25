@@ -97,11 +97,12 @@ class tx_ttproducts_activity_finalize {
 		
 		// Move the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
 		// Is no user is logged in --> create one
-		if ($this->conf['createUsers'] && $address->infoArray['billing']['email'] != '' && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == '')) {
-			$username = strtolower(trim($address->infoArray['billing']['email']));
-			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $this->conf['PIDuserFolder'].' AND deleted=0');
-			$num_rows = $TYPO3_DB->sql_num_rows($res);
+		if ($this->conf['createUsers'] && $address->infoArray['billing']['email'] != '' && (trim($TSFE->fe_user->user['username']) == '')) {
 			$pid = ($this->conf['PIDuserFolder'] ? $this->conf['PIDuserFolder'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
+			$pid = intval($pid);
+			$username = strtolower(trim($address->infoArray['billing']['email']));
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $pid.' AND deleted=0');
+			$num_rows = $TYPO3_DB->sql_num_rows($res);
 
 			if (!$num_rows)	{
 				$address->password = substr(md5(rand()), 0, 6);
@@ -115,8 +116,6 @@ class tx_ttproducts_activity_finalize {
 					'uid' => $address->infoArray['billing']['feusers_uid'],
 					'company' => $address->infoArray['billing']['company'],
 					'name' => $address->infoArray['billing']['name'],
-					'first_name' => $address->infoArray['billing']['first_name'],
-					'last_name' => $address->infoArray['billing']['last_name'],
 					'address' => $address->infoArray['billing']['address'],
 					'telephone' => $address->infoArray['billing']['telephone'],
 					'fax' => $address->infoArray['billing']['fax'],
@@ -125,6 +124,11 @@ class tx_ttproducts_activity_finalize {
 					'city' => $address->infoArray['billing']['city'],
 					'tt_products_vat' => $address->infoArray['billing']['tt_products_vat']
 				);
+
+				if ($address->infoArray['billing']['first_name'] || $address->infoArray['billing']['last_name'])	{
+					$insertFields['first_name'] = $address->infoArray['billing']['first_name'];
+					$insertFields['last_name'] = $address->infoArray['billing']['last_name'];
+				}
 
 				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country' : 'country');
 				$insertFields[$countryKey] =  $address->infoArray['billing']['country'];
@@ -151,7 +155,7 @@ class tx_ttproducts_activity_finalize {
 					'uid',
 					'fe_users',
 					'username='.$TYPO3_DB->fullQuoteStr($username,'fe_users') . 
-						' AND pid='. intval($this->conf['PIDuserFolder']).' AND deleted=0');
+						' AND pid='. $pid.' AND deleted=0');
 				while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 			 		 $address->infoArray['billing']['feusers_uid'] = intval($row['uid']);
 				}

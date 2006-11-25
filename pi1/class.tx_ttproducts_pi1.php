@@ -171,7 +171,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// $this->xajax->statusMessagesOn();
 				// Turn only on during testing
 			// $this->xajax->debugOff();
-			$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING');
+			$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING').'&amp;no_cache=1';
 			$this->xajax->setRequestURI($reqURI);
 			$this->xajax->setWrapperPrefix('');
 			$this->xajax->registerFunction(array('tt_products_showArticle',&$this,'tt_products_showArticle'));

@@ -1,9 +1,7 @@
-2006------ Franz Holzinger <franz@fholzinger.com>
-	* also negative values at inStock must be displayed as 'not in stock'
-	* new feature: filter allowed records by regular expressions on the fields
-	* new feature: account table
-	* more flexible select boxes
-	* new variants: color2, size2, material and quality
+2006-11-25 Franz Holzinger <franz@fholzinger.com>
+	* if mode_update=0 then items from the list must be added to the total amount and not update it
+	* correct normal numbered images to have special configurations
+	* use rootCategoryID only if it has a numeric value
 
 2006-11-10 Franz Holzinger <franz@fholzinger.com>
 	* correct error with missing CONSTANTS if no flexforms are used (zk_products)

@@ -59,6 +59,14 @@ class tx_ttproducts_javascript {
 		$this->bXajaxAdded = false;
 	}
 
+	/* 
+	 * Escapes strings to be included in javascript
+	 */
+	function jsspecialchars($s) {
+	   return preg_replace('/([^ !#$%@()*+,-.\x30-\x5b\x5d-\x7e])/e',
+	       "'\\x'.(ord('\\1')<16? '0': '').dechex(ord('\\1'))",$s);
+	}
+
 
 		/**
 		 * Sets JavaScript code in the additionalJavaScript array
@@ -129,7 +137,7 @@ class tx_ttproducts_javascript {
 					if (is_array($params))	{
 						foreach ($params as $k => $row)	{
 							$code .= 'c['.$k.'] = new Array(3);';
-							$code .= 'c['.$k.'][0] = "'.$row['title'].'"; ' ;
+							$code .= 'c['.$k.'][0] = "'.$this->jsspecialchars($row['title']).'"; ' ;
 							$code .= 'c['.$k.'][1] = "'.$row['pid'].'"; ' ;
 							$child_category = $row['child_category'];
 							if (is_array($child_category))	{

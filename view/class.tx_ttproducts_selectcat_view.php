@@ -29,7 +29,7 @@
  *
  * AJAX control over select boxes for categories
  *
- * $Id:$
+ * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -148,7 +148,7 @@ class tx_ttproducts_selectcat_view {
 			$css = ($actCategory == $currentCat ? 'class="act"' : $css);
 			$preOut = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
 			$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);
-			$linkOut = $categoryArray[$actCategory]['title'];
+			$linkOut = htmlspecialchars($categoryArray[$actCategory]['title']);
 			$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);
 			$postOut = '</'.$htmlTagElement.'>';
 			$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);				
@@ -171,6 +171,7 @@ class tx_ttproducts_selectcat_view {
 				$boxNumber = ($i < 1+$count ? ($i+1) : 0);
 				$fill = ' onchange="fillSelect(this,'.$boxNumber.','.$bShowSubcategories.');"';
 				$tmp = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
+				$tmp .= '<option value="0"></option>';
 				$tmp .= '</'.$htmlTagMain.'>';
 				$subpartArray['###CATEGORY_SINGLE_'.$i.'###'] = $tmp;
 			}

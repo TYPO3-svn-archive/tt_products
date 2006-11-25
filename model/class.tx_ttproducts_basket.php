@@ -282,7 +282,11 @@ class tx_ttproducts_basket {
 								}
 							}
 							if ($newcount)	{
-								$this->basketExt[$uid][$variant] = $newcount;
+								if ($this->conf['alwaysUpdateOrderAmount'] == 1)	{
+									$this->basketExt[$uid][$variant] = $newcount;
+								} else {
+									$this->basketExt[$uid][$variant] += $newcount;
+								}
 							} else {
 								unset ($this->basketExt[$uid][$variant]);
 							}
@@ -292,8 +296,7 @@ class tx_ttproducts_basket {
 
 						while(list($md5,$quantity)=each($basketItem)) {
 							$quantity = $this->price->toNumber($this->conf['quantityIsFloat'],$quantity);
-							if (is_array($this->basketExt[$uid]))
-							{
+							if (is_array($this->basketExt[$uid]))	{
 								reset($this->basketExt[$uid]);
 								while(list($variant,)=each($this->basketExt[$uid])) {
 									 // useArticles if you have different prices and therefore articles for color, size, additional and gradings
@@ -452,7 +455,6 @@ class tx_ttproducts_basket {
 		
 		$this->itemArray = array(); // array of the items in the basket
 		$this->calculatedArray = array(); // this array is usede for all calculated things
-
 		foreach ($productsArray as $k1 => $row)	{
 			$variant = $this->viewTable->variant->getVariantFromRow($row);
 			$newItem = $this->getItem($row,$variant);

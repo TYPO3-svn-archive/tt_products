@@ -338,7 +338,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	function addWhereCat($cat, $pid_list)	{
 		$where = '';
-		if($cat) {
+		if(is_numeric($cat)) {
 			$cat = implode(',',t3lib_div::intExplode(',', $cat));
 			$where = ' AND ( category IN ('.$cat.')';
 		}

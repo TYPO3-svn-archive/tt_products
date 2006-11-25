@@ -252,6 +252,9 @@ class tx_ttproducts_variant {
 	} // getItemMarkerArray
 
 
+	function &getFieldArray()	{	
+		return $this->fieldArray;
+	}
 }
 
 

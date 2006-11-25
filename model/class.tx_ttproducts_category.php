@@ -233,7 +233,6 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 */
 	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
 		$row = ($category ? $this->get($category) : array ('title' => '', 'pid' => $pid));
-
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id, $prefix);
 		$pageCatTitle = '';
@@ -241,7 +240,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			$pageTmp = $page->get($pid);
 			$pageCatTitle = $pageTmp['title'].'/';
 		}
-		
+
 		$catTitle = $pageCatTitle.($row['title']);
 		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
 		parent::getItemMarkerArray ($row, $markerArray, $code, $prefix);

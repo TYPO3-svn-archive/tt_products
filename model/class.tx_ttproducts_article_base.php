@@ -134,7 +134,6 @@ class tx_ttproducts_article_base {
 		if (!$this->marker)
 			return array();
 		$row = &$item['rec'];
-
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code);
 
@@ -216,7 +215,6 @@ class tx_ttproducts_article_base {
 			}
 			$markerArray['###'.$this->marker.'_'.strtoupper($variantRec[0]).'###'] = $text;
 		}
-
 		$markerArray['###'.$this->marker.'_WEIGHT###'] = doubleval($row['weight']);
 
 			// Call all getItemMarkerArray hooks at the end of this method
