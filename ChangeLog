@@ -1,3 +1,15 @@
+2006------ Franz Holzinger <franz@fholzinger.com>
+	* also negative values at inStock must be displayed as 'not in stock'
+	* new feature: filter allowed records by regular expressions on the fields
+	* new feature: account table
+	* more flexible select boxes
+	* new variants: color2, size2, material and quality
+	* use search sword in every list to filter the products or even articles now
+	* change the prices/amounts and weight from varchar(20) to decimal(19,2)
+		see http://wiki.typo3.org/index.php/Ext_tt_products#Voting
+	* support Swiss taxes with 7.6%
+
+
 2006-11-25 Franz Holzinger <franz@fholzinger.com>
 	* if mode_update=0 then items from the list must be added to the total amount and not update it
 	* correct normal numbered images to have special configurations

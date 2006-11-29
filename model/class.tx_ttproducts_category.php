@@ -153,7 +153,9 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	function getParamDefault ()	{
 		$cat = $this->pibase->piVars[$this->piVar];
 		$cat = ($cat ? $cat : $this->conf['defaultCategoryID']);
-		$cat = implode(',',t3lib_div::intExplode(',', $cat));
+		if ($cat)	{
+			$cat = implode(',',t3lib_div::intExplode(',', $cat));
+		}
 		return $cat;	
 	}
 
