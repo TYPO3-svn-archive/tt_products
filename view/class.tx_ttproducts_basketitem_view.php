@@ -41,6 +41,10 @@
 
 
 class tx_ttproducts_basketitem_view {
+	var $tt_products_cat; // element of class tx_table_db
+	var $basketExt; 	// basket
+	var $basketVar = 'ttp_basket';
+
 	
 	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in

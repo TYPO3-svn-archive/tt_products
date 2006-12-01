@@ -182,7 +182,7 @@ class tx_ttproducts_basket {
 		} else {
 			$this->basketExt = array();
 		}
-		
+
 		$basketExtRaw = t3lib_div::_GP('ttp_basket');
 		$this->giftnumber = count ($this->basketExt['gift']) + 1;
 		$newGiftData = t3lib_div::_GP('ttp_gift');
