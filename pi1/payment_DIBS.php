@@ -43,6 +43,7 @@
 
 if (!is_object($this->pibase) || !is_object($this->pibase->cObj)  || !is_object($this->basket))	die('tt_products: $pibase and $pibase->cObj must be objects!');
 
+global $TYPO3_CONF_VARS;
 
 // $lConf = $this->basketExtra["payment."]["handleScript."];		
 // Loads the handleScript TypoScript into $lConf.
@@ -57,7 +58,7 @@ $param = '&FE_SESSION_KEY='.rawurlencode(
 $GLOBALS['TSFE']->fe_user->id.'-'.
 	md5(
 	$GLOBALS['TSFE']->fe_user->id.'/'.
-	$GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
+	$TYPO3_CONF_VARS['SYS']['encryptionKey']
 	)
 );
 

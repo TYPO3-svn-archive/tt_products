@@ -148,7 +148,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$this->conf['defaultCode'], 
 				$this->cObj->data['pi_flexform'],
 				'display_mode',
-				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
+				$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
 				);
 
 		$this->codeArray=t3lib_div::trimExplode(',', $config['code'],1);
@@ -503,9 +503,9 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		tx_fhlibrary_language::pi_loadLL($this,'EXT:tt_products/pi1/locallang.xml');
 
 			// get all extending TCAs
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']) && t3lib_extMgm::isLoaded(DIV_EXTkey))	{
+		if (is_array($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']) && t3lib_extMgm::isLoaded(DIV_EXTkey))	{
 			include_once (PATH_BE_div.'class.tx_div.php');
-			tx_div::loadTcaAdditions($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
+			tx_div::loadTcaAdditions($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
 		}
 
 		$this->initTables();
@@ -514,7 +514,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		// *** getting configuration values:
 		// *************************************
 
-		$this->pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'];
+		$this->pageAsCategory = $TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'];
 
 		// get template suffix string
 		$this->template_suffix = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template_suffix');
@@ -712,7 +712,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->tt_content,
 			$this->paymentshipping,
 			$this->LLkey,
-			$this->conf['table.']['tt_products_articles']
+			$this->conf['table.']['tt_products_articles'],
+			$this->conf['useArticles']
 		);
 		
 	} // initTables
