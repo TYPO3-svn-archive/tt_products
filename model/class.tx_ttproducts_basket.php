@@ -136,6 +136,7 @@ class tx_ttproducts_basket {
 					&$tt_products_cat, &$fe_users, &$price,
 					&$paymentshipping, $bStoreBasket)	{
 		global $TSFE;
+		global $TYPO3_CONF_VARS;
 
  		$this->pibase = &$pibase;
  		$this->cnf = &$cnf;
@@ -195,8 +196,8 @@ class tx_ttproducts_basket {
 		$identGiftnumber = 0;
 
 			// Call all changeBasket hooks
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'] as $classRef) {
+		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'])) {
+			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'changeBasket')) {
 					$hookObj->changeBasket($this, $basketExtRaw, $extVars, $paramProduct, $uid, $sameGiftData, $identGiftnumber);

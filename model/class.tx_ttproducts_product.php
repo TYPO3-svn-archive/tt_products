@@ -104,6 +104,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $cnf, $this, $useArticles);
+
 	} // init
 
 
@@ -337,6 +338,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	function addWhereCat($cat, $pid_list)	{
+		global $TYPO3_CONF_VARS;
+
 		$where = '';
 		if(is_numeric($cat)) {
 			$cat = implode(',',t3lib_div::intExplode(',', $cat));
@@ -344,8 +347,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		}
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
+		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
+			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addWhereCat')) {
 					$whereNew = $hookObj->addWhereCat($this, $cat, $where, $pid_list);
@@ -362,11 +365,12 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	function addselectConfCat($cat, &$selectConf)	{
+		global $TYPO3_CONF_VARS;
 		$tableNameArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
+		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
+			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addselectConfCat')) {
 					$tableNameArray[] = $hookObj->addselectConfCat($this, $cat, $selectConf);
@@ -379,11 +383,13 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	function getPageUidsCat($cat)	{
+		global $TYPO3_CONF_VARS;
+
 		$uidArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
+		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
+			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getPageUidsCat')) {
 					$hookObj->getPageUidsCat($this, $cat, $uidArray);

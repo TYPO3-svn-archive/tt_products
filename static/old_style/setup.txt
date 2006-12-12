@@ -267,6 +267,7 @@ plugin.tt_products {
   conf.tt_products_cat.ALL {
   	language.type = noTranslation
     orderBy = sorting
+    separator = /
   }
   
   _CSS_DEFAULT_STYLE (

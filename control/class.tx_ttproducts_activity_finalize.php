@@ -85,6 +85,7 @@ class tx_ttproducts_activity_finalize {
 	function doProcessing($templateCode, &$basketView, &$viewTable, &$price, $orderUid, &$orderConfirmationHTML, &$error_message, &$address)	{
 		global $TSFE;
 		global $TYPO3_DB;
+		global $TYPO3_CONF_VARS;
 
 		$instockTableArray = array();
 		$recipientsArray = array();
@@ -355,8 +356,8 @@ class tx_ttproducts_activity_finalize {
 		}
 		
 			// Call all finalizeOrder hooks
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
+		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
+			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'finalizeOrder')) {
 					$hookObj->finalizeOrder($this, $address, $templateCode, $basketView, $viewTable, $price, $orderUid, $orderConfirmationHTML, $error_message);

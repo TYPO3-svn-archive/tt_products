@@ -336,7 +336,7 @@ class tx_ttproducts_list_view {
 			}
 			$tmpArray = t3lib_div::trimExplode(',', $selectConf['orderBy']);
 			$orderByProduct = $tmpArray[0];
-			$orderByCat = $viewCatTable->$this->catconf['ALL.']['orderBy'];
+			$orderByCat = $viewCatTable->tableconf['orderBy'];
 
 				// sorting by category not yet possible for articles
 			if ($itemTable->type == 'article')	{ // ($itemTable === $this->tt_products_articles)

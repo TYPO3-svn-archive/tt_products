@@ -84,6 +84,7 @@ class tx_ttproducts_marker {
 	 */
 	function addURLMarkers($pidNext,$markerArray,$addQueryString=array())	{
 		global $TSFE;
+		global $TYPO3_CONF_VARS;
 
 		// disable caching as soon as someone enters products into the basket, enters user data etc.
 		// $addQueryString['no_cache'] = 1; 
@@ -110,8 +111,8 @@ class tx_ttproducts_marker {
 		}
 		
 			// Call all addURLMarkers hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
+		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'])) {
+			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addURLMarkers')) {
 					$hookObj->addURLMarkers($pidNext,$markerArray,$addQueryString);
@@ -161,6 +162,7 @@ class tx_ttproducts_marker {
 	 */
 	function getLinkParams($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true) {
 		global $TSFE;
+		global $TYPO3_CONF_VARS;
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
 		$queryString=array();
@@ -204,8 +206,8 @@ class tx_ttproducts_marker {
 		}
 
 			// Call all getLinkParams hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'] as $classRef) {
+		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'])) {
+			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getLinkParams')) {
 					$hookObj->getLinkParams($this,$queryString,$excludeList,$addQueryString);

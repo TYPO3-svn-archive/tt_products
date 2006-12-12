@@ -44,7 +44,6 @@ require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
 
 class tx_ttproducts_category extends tx_ttproducts_category_base {
 	var $tt_products_email;				// object of the type tx_table_db
-	var $tableconf;
 	var $image;
 	var $cnf;
 	var $piVar = 'cat';
@@ -240,10 +239,12 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		$pageCatTitle = '';
 		if ($pageAsCategory == 1) {
 			$pageTmp = $page->get($pid);
-			$pageCatTitle = $pageTmp['title'].'/';
+			$pageCatTitle = $pageTmp['title'] . ($row['title'] ? '/' : '');
 		}
 
-		$catTitle = $pageCatTitle.($row['title']);
+		if ($row['title'])	{
+			$catTitle = $pageCatTitle.($row['title']);
+		}
 		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
 		parent::getItemMarkerArray ($row, $markerArray, $code, $prefix);
 	}

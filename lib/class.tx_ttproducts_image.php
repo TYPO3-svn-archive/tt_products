@@ -84,7 +84,9 @@ class tx_ttproducts_image {
 				$keyArray[] = $imageNameArray[$part-1];
 			}
 		}
-		$key = current(t3lib_div::trimExplode('.',(implode('_', $keyArray))));
+		$tmp = implode('_', $keyArray);
+		$tmpArray = t3lib_div::trimExplode('.',$tmp);
+		$key = current($tmpArray);
 		if (!is_array($imageMarkerArray))	{
 			$key .= $c;
 		}
@@ -134,6 +136,11 @@ class tx_ttproducts_image {
 		}		
 	}
 
+
+	function getSingleImageMarkerArray ($markerKey, &$markerArray, &$imageConf)	{
+		$tmpImgCode = $this->pibase->cObj->IMAGE($imageConf);
+		$markerArray['###'.$markerKey.'###'] = $tmpImgCode;
+	}
 
 
 	/**

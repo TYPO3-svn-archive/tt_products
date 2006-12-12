@@ -36,6 +36,7 @@
 class tx_ttproducts_wizicon {
 	function proc($wizardItems)	{
 		global $LANG;
+		global $TYPO3_CONF_VARS;
 
 		$LL = $this->includeLocalLang();
 
