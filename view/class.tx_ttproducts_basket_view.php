@@ -169,7 +169,7 @@ class tx_ttproducts_basket_view {
 				}
 				$count++;
 				$pidcategory = ($this->pibase->pageAsCategory == 1 ? $pid : '');
-				$currentPnew = $pidcategory.'_'.$actItem['rec']['category'];
+				$currentPnew = $pidcategory.'_'.$row['category'];
 					// Print Category Title
 				if ($currentPnew!=$currentP)	{
 					if ($itemsOut)	{
@@ -209,17 +209,11 @@ class tx_ttproducts_basket_view {
 				}
 
 				$basketItemView->getItemMarkerArray ($this->viewTable, $actItem, $markerArray, $this->basket->basketExt, $code, $count);
-				$catRow = $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : array();
+				$catRow = $row['category'] ? $this->tt_products_cat->get($row['category']) : array();
 				// $catTitle= $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : '';
 				$catTitle=$catRow['title'];
 				$tmp = array();
-				$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $tmp, $code, $count);
-				$markerArray['###PRODUCT_COLOR###'] = $actItem['rec']['color'];
-				$markerArray['###PRODUCT_SIZE###'] = $actItem['rec']['size'];
-				$markerArray['###PRODUCT_DESCRIPTION###'] = $actItem['rec']['description'];
-				$markerArray['###PRODUCT_GRADINGS###'] = $actItem['rec']['gradings'];
-				//$markerArray['###PRODUCT_ADDITIONAL###'] = $actItem['rec']['additional'];
-
+				$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $tmp, $code, $count, false);				
 				$this->pibase->cObj->setCurrentVal($catTitle);
 				$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 				$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($actItem['totalTax']);
@@ -227,26 +221,22 @@ class tx_ttproducts_basket_view {
 				$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $this->price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
 
 /* Added els4: calculating of price_discount necessary in winkelwagen.tmpl (articles in kurkenshop are excluded, because these articled will be payed with creditpoints) */
-				if ( ($actItem['rec']['price'] != '0.00') && doubleval($actItem['rec']['price2']) && ($actItem['rec']['category'] != $this->conf['creditsCategory']) ) {
+				if ( doubleval($row['price']) && doubleval($row['price2']) && ($row['category'] != $this->conf['creditsCategory']) ) {
 					$pricediscount_total_tot_units = "";
-
-/* Added els7: different calculation of pricediscount_total_tot_units */
-//						$oldprice_total_tot_units = ($actItem['totalNoTax']/$actItem['rec']['price2'])*$actItem['rec']['price'];
-//						$pricediscount_total_tot_units = ($oldprice_total_tot_units - $actItem['totalNoTax']) * $actItem['rec']['unit_factor'];
-					$pricediscount_total_tot_units = ($actItem['rec']['price'] - $actItem['rec']['price2']) * $actItem['rec']['unit_factor'] * $actItem['count'];
+					$pricediscount_total_tot_units = ($row['price'] - $row['price2']) * $row['unit_factor'] * $actItem['count'];
 					$sum_pricediscount_total_totunits += $pricediscount_total_tot_units;
 				}
 
 /* Added els4: TOTUNITS_: both prices mulitplied by unit_factor and third line is calculating the sum, necessary in winkelwagen.tmpl. All articles in kurkenshop are payed with creditpoints*/
-				$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###'] = $this->price->priceFormat($actItem['totalTax']*$actItem['rec']['unit_factor']);
-				if ($actItem['rec']['category'] == $this->conf['creditsCategory']) {
+				$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###'] = $this->price->priceFormat($actItem['totalTax']*$row['unit_factor']);
+				if ($row['category'] == $this->conf['creditsCategory']) {
 /* Added els7: different calculation of PRICECREDITS_TOTAL_TOTUNITS_NO_TAX */
 //						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']*$actItem['rec']['unit_factor']);
-					$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($actItem['rec']['price2']*$actItem['rec']['unit_factor']) * $actItem['count'];
+					$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($row['price2']*$row['unit_factor']) * $actItem['count'];
 				} else {
 /* Added els7: different calculation of PRICECREDITS_TOTAL_TOTUNITS_NO_TAX */
 //						$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###']=$actItem['totalNoTax']*$actItem['rec']['unit_factor'];
-					$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'] = $actItem['rec']['price2']*$actItem['rec']['unit_factor'] * $actItem['count'];
+					$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'] = $row['price2']*$row['unit_factor'] * $actItem['count'];
 				}
 
 				$sum_pricecredits_total_totunits_no_tax += $markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'];
@@ -257,18 +247,23 @@ class tx_ttproducts_basket_view {
 					$sum_pricecreditpoints_total_totunits += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
 				}
 
-				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $actItem['rec'], $TSFE->rootLine[1]);
+				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row, $TSFE->rootLine[1]);
 				$splitMark = md5(microtime());
 				$addQueryString=array();
-				$addQueryString[$this->pibase->prefixId.'['.$this->viewTable->type.']'] = intval($actItem['rec']['uid']);
-				$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($actItem['rec']['extVars']);
+				$addQueryString[$this->pibase->prefixId.'['.$this->viewTable->type.']'] = intval($row['uid']);
+				$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($row['extVars']);
 				// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
 				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true)).'"'.$css_current.'>','</a>'); 
 
 				// Substitute
 				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
-				$this->viewTable->variant->getVariantSubpartArray ($subpartArray, $actItem['rec'], $tempContent, 
-					$bSelectVariants, $this->conf );
+				$this->viewTable->variant->getVariantSubpartArray (
+					$subpartArray,
+					$row,
+					$tempContent,
+					$bSelectVariants,
+					$this->conf
+				);
 				$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
 				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
 				$itemsOut .= $tempContent;
@@ -297,7 +292,8 @@ class tx_ttproducts_basket_view {
 
 		// This is for the Basketoverview
 		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->basket->calculatedArray['count'];
-		$markerArray['###IMAGE_BASKET###'] = '<img src="'.$this->conf['basketPic'].'">';
+		$fileresource = $this->pibase->cObj->fileResource($this->conf['basketPic']);
+		$markerArray['###IMAGE_BASKET###'] = $fileresource;
 
 		$splitMark = md5(microtime());
 		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);

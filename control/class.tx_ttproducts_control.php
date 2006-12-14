@@ -84,9 +84,7 @@ class tx_ttproducts_control {
 		$this->fe_users = &$fe_users;
 		$this->price = &$price;
 		$this->paymentshipping = &$paymentshipping;
-
  		$this->viewTable = &$basket->viewTable;
-
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($this->pibase, $this->cnf, $this->basket);
 	} // init
@@ -159,7 +157,7 @@ class tx_ttproducts_control {
 
 
 
-	function processPayment(&$content, &$bFinalize, &$order)	{
+	function processPayment(&$content, &$bFinalize, &$order, &$basketView, &$address)	{
 		global $TSFE;
 
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
@@ -173,7 +171,7 @@ class tx_ttproducts_control {
 				require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
 				
 				$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $this, $this->price, $order);
+				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $address);
 				$content.= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
 			}
 		}		
@@ -386,7 +384,7 @@ class tx_ttproducts_control {
 												$this->conf['useArticles']
 											);
 										}
-										$this->processPayment($content, $bFinalize, $order);
+										$this->processPayment($content, $bFinalize, $order, $basketView, $address);
 									}
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
@@ -434,7 +432,13 @@ class tx_ttproducts_control {
 											$this->conf['useArticles']
 										);
 									}
-									$this->processPayment($content, $bFinalize, $order);
+									// basket view
+									if (!is_object($basketView))	{
+										include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
+										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
+										$basketView->init ($this->basket, $this->templateCode);
+									}
+									$this->processPayment($content, $bFinalize, $order, $basketView, $address);
 								}
 							break; 
 							case 'products_finalize':
@@ -488,14 +492,14 @@ class tx_ttproducts_control {
 							);
 						}
 						$orderUid = $order->getBlankUid();
-						if (trim($this->conf['paymentActivity']) == 'finalize')	{
-							$this->processPayment($content, $bFinalize, $order);
-						}
-
 						if (!is_object($basketView))	{
 							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
 							$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
 							$basketView->init ($this->basket, $this->templateCode);
+						}
+
+						if (trim($this->conf['paymentActivity']) == 'finalize')	{
+							$this->processPayment($content, $bFinalize, $order, $basketView, $address);
 						}
 
 						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page

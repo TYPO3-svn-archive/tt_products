@@ -1,3 +1,7 @@
+2006-12-14 Franz Holzinger <franz@fholzinger.com>
+	* new feature: debug setup to not delete the items in the basket after order. Use this only for testing purposes.
+	* fix bug with no uploadable images in backend
+
 2006-12-12 Franz Holzinger <franz@fholzinger.com>
 	* correction to category title with pages as categories
 

@@ -315,7 +315,8 @@ class tx_ttproducts_single_view {
 				$viewTagArray,
 				$forminfoArray,
 				'SINGLE',
-				1
+				1,
+				true
 			);
 
 			if ($this->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
@@ -332,7 +333,8 @@ class tx_ttproducts_single_view {
 					$viewTagArray,
 					array(),
 					'SINGLE',
-					1
+					1,
+					true
 				);
 			} else {
 				$itemTableArray['product']->variant->getItemMarkerArray (
