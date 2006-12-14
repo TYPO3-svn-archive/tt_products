@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<TITLE>meer wijn Shop-Total-Template: wijnen</TITLE>
+</head>
+
+<body>
+
+<br>
+<H1>meer wijn Shop-Total-Template: wijnen</H1>
+
+<BR><HR><BR>
+<h3>ITEM_LIST_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of wines.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_LIST_TEMPLATE### begin -->
+   <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+     <!-- ###ITEM_LIST### begin -->
+       <!-- ###ITEM_SINGLE### begin-->
+        <div class="shopLeftNavItem">
+          <!--###LINK_ITEM###-->
+	  <span style="float:left; padding: 0 5px 30px 0;">###PRODUCT_IMAGE###</span>
+	  <span class="heading">###PRODUCT_TITLE###</span><br>
+	  <span class="wijnhuis">###PRODUCT_WWW###</span><br>
+	  ###PRODUCT_SUBTITLE###<br>
+	  ###DETAIL_PRICE_ITEMLIST### <span class="recycle-bin">###PRODUCT_SPECIAL_PREP###</span><br>
+	  <span class="aanbieding"><!---###GRADINGS###--></span>
+          <!--###LINK_ITEM###-->
+        </div>
+       <!-- ###ITEM_SINGLE### end -->
+     <!-- ###ITEM_LIST### end -->
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+<!-- ###ITEM_LIST_TEMPLATE### end -->
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>ITEM_SINGLE_DISPLAY</h3>
+<em>This subpart is used to display single products.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_SINGLE_DISPLAY### begin -->
+<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
+<input type="hidden" name="###FIELD_COLOR_NAME###" value="###PRODUCT_COLOR###">
+<input type="hidden" name="###FIELD_SIZE_NAME###" value="###PRODUCT_SIZE###">
+<span style="margin:0 10px 0 35px; float:right;">###PRODUCT_IMAGE2###</span>
+<H1>###PRODUCT_TITLE###</H1>
+<p>Wijnhuis: ###PRODUCT_WWW###<br>
+Inhoud: ###PRODUCT_SIZE###</p>
+<p>###PRODUCT_NOTE###</p>
+<p>&nbsp;</p>
+
+<div class="top"></div>
+<div class="middle">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="25%" class="noborder">Aantal dozen:</td>
+      <td width="24%" class="noborder"><input class="number" id="aantal1" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><img src="img/content/shop/table/+.gif" class="quantity" onClick="javascript:document.forms['###FORM_NAME###']['###FIELD_NAME###'].value++;"><br><img src="img/content/shop/table/_.gif" class="quantity" onClick="javascript:if(document.forms['###FORM_NAME###']['###FIELD_NAME###'].value*1)document.forms['###FORM_NAME###']['###FIELD_NAME###'].value--;"></td>
+      <td width="51%" class="noborder"></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="noborder"><div class="voegToeSub"><input name="order" type="submit" class="buttonAdd" value="voeg toe" onClick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></div></td>
+      <td class="noborder"><div class="floatRight">###DETAIL_PRICE_ITEMSINGLE###</div></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="noborder"></td>
+      <td class="noborder"></td>
+    </tr>
+  </table>
+</div>
+<div class="bottom"></div>
+</FORM>
+<!-- ###ITEM_SINGLE_DISPLAY### end -->
+
+
+<!-- ###BASKET_OVERVIEW_TEMPLATE### begin -->
+<ul class="top">
+<li class="shopchart"><!--###LINK_BASKET###-->winkelwagen<br>###CUR_SYM###&nbsp;###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###<!--###LINK_BASKET###--></li>
+</ul>
+<!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
+
+
+<!-- ###BASKET_OVERVIEW_EMPTY### begin -->
+<ul class="top">
+<li class="shopchart"><!--###LINK_BASKET###-->winkelwagen is leeg<!--###LINK_BASKET###--></li>
+</ul>
+<!-- ###BASKET_OVERVIEW_EMPTY### end -->

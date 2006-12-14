@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<TITLE>meer wijn GIFTS-Template: cadeaubonnen</TITLE>
+</head>
+
+<body>
+
+<br>
+<H1>meer wijn GIFTS-Template: cadeaubonnen</H1>
+
+
+
+<!-- ###ITEM_LIST_GIFTS_TEMPLATE### begin
+
+This subpart is used to display the regular list of gift products.
+
+-->
+
+<form method="post" action="###FORM_URL###" name="###FORM_NAME###" onsubmit="###FORM_ONSUBMIT###">
+<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+   <!-- ###ITEM_CATEGORY### begin -->
+   <!-- ###ITEM_CATEGORY### end -->
+   <!-- ###ITEM_LIST### begin -->
+      <!-- ###ITEM_SINGLE### begin-->
+
+      <div class="shopTable-content-leftcolomn">
+         <div class="shop-leftNav">
+           <div class="shopLeftNavItem"><a href="#" id="current"><span class="heading">###PRODUCT_TITLE###</span><br><span class="wijnhuis">###PRODUCT_WWW###</span><br>###PRODUCT_SUBTITLE###</a></div>
+         </div>
+         <div class="withRightMargin">
+
+            <H1>###PRODUCT_TITLE###</H1>
+            <p>###PRODUCT_NOTE###</p>
+            <p>###PRODUCT_IMAGE###</p>
+
+            <div class="top"></div>
+            <div class="middle">
+              <table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="noborder"><!-- ###display_variant2### -->Bedrag cadeaubon </td>
+                  <td class="noborder"><SELECT style="font-size: 10px" name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><!-- ###display_variant2### -->
+<!-- hide quantity of gift certificates
+                  <input name="###FIELD_NAME###" type="hidden" value="1">
+-->
+                  </td>
+                </tr>
+                <tr>
+                  <td class="noborder">Aantal cadeaubonnen</td>
+                  <td class="noborder"><input name="###FIELD_NAME###" type="text" class="fieldsmall" value="###FIELD_QTY###"></td>
+                </tr>
+         <!-- ###ITEM_SINGLE### end -->
+                <tr>
+                  <td width="38%" class="noborder">Uw naam </td>
+                  <td width="62%" class="noborder"><input name="###FIELD_NAME_PERSON_NAME###" type="text" class="field" value="###GIFT_PERSON_NAME###"></td></tr>
+                <tr>
+                  <td class="noborder">Uw e-mail </td>
+                  <td class="noborder"><input name="###FIELD_NAME_PERSON_EMAIL###" type="text" class="field" value="###GIFT_PERSON_EMAIL###"></td></tr>
+                <tr>
+                  <td class="noborder">Naam ontvanger </td>
+                  <td class="noborder"><input name="###FIELD_NAME_DELIVERY_NAME###" type="text" class="field" value="###GIFT_DELIVERY_NAME###"></td></tr>
+                <tr>
+                  <td class="noborder">E-mail ontvanger </td>
+                  <td class="noborder"><input name="###FIELD_NAME_DELIVERY_EMAIL###" type="text" class="field" value="###GIFT_DELIVERY_EMAIL###"></td></tr>
+                <tr>
+                  <td class="noborder">Uw boodschap </td>
+                  <td class="noborder"><textarea name="###FIELD_NAME_GIFT_NOTE###" cols="" rows="5" class="textarea">###GIFT_NOTE###</textarea></td></tr>
+                <tr>
+                  <td class="noborder"><input type="hidden" name="giftnumber" value="###GIFTNO###"></td>
+                  <td class="noborder"><input name="order" type="Submit" class="buttonAdd" value="voeg toe"></td>
+                </tr>
+              </table>
+            </div>
+            <div class="bottom"></div>
+         </div>
+      </div>
+
+      <!-- ###ITEM_LIST### end -->
+   <!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+</form>
+
+
+
+<br><br>
+<!-- ###ITEM_LIST_GIFTS_TEMPLATE### -->
+
+
+
+
+<!-- ###ITEM_SINGLE_DISPLAY_GIFT### begin
+
+This subpart is used to display single gift products.
+
+-->
+<!-- ###PRODUCT_DATA### begin-->
+      <div class="shopTable-content-leftcolomn">
+         <div class="shop-leftNav">
+           <div class="shopLeftNavItem"><a href="#" id="current"><span class="heading">###PRODUCT_TITLE###</span><br><span class="wijnhuis">###PRODUCT_WWW###</span><br>###PRODUCT_SUBTITLE###</a></div>
+         </div>
+         <div class="withRightMargin">
+
+            <H1>###PRODUCT_TITLE###</H1>
+            <p>###PRODUCT_NOTE###</p>
+            <p>###PRODUCT_IMAGE###</p>
+
+<!-- ###PRODUCT_DATA### end-->
+<!-- ###PERSON_DATA### begin-->
+            <div class="top"></div>
+            <div class="middle">
+              <table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="noborder"><!-- ###display_variant2### -->Bedrag cadeaubon</td>
+                  <td class="noborder">###FIELD_SIZE_VALUE###<!-- ###display_variant2### --></td>
+                </tr>
+                <form method="post" action="###FORM_URL###" name="###FORM_NAME###" onsubmit="###FORM_ONSUBMIT###">
+<!-- hide quantity of gift certificates
+                  <input name="###FIELD_NAME###" type="hidden" value="1">
+-->
+                <tr>
+                  <td class="noborder">Aantal cadeaubonnen</td>
+                  <td class="noborder"><input name="###FIELD_NAME###" type="text" class="fieldsmall" value="###FIELD_QTY###"></td>
+                </tr>
+                <tr>
+                  <td width="38%" class="noborder">Uw naam </td>
+                  <td width="62%" class="noborder"><input name="###FIELD_NAME_PERSON_NAME###" type="text" class="field" value="###GIFT_PERSON_NAME###"></td></tr>
+                <tr>
+                  <td class="noborder">Uw e-mail </td>
+                  <td class="noborder"><input name="###FIELD_NAME_PERSON_EMAIL###" type="text" class="field" value="###GIFT_PERSON_EMAIL###"></td></tr>
+                <tr>
+                  <td class="noborder">Naam ontvanger </td>
+                  <td class="noborder"><input name="###FIELD_NAME_DELIVERY_NAME###" type="text" class="field" value="###GIFT_DELIVERY_NAME###"></td></tr>
+                <tr>
+                  <td class="noborder">E-mail ontvanger </td>
+                  <td class="noborder"><input name="###FIELD_NAME_DELIVERY_EMAIL###" type="text" class="field" value="###GIFT_DELIVERY_EMAIL###"></td></tr>
+                <tr>
+                  <td class="noborder">Uw boodschap </td>
+                  <td class="noborder"><textarea name="###FIELD_NAME_GIFT_NOTE###" cols="" rows="5" class="textarea">###GIFT_NOTE###</textarea></td></tr>
+                <tr>
+                  <td class="noborder"><input type="hidden" name="giftnumber" value="###GIFTNO###"><input type="hidden" name="mode_update" value="1"></td>
+                  <td class="noborder"><input name="order" type="Submit" class="buttonAdd" value="voeg toe" onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></td>
+                </tr>
+                </form>
+              </table>
+            </div>
+            <div class="bottom"></div>
+            <br>
+<!-- ###PERSON_DATA### end-->
+         </div>
+      </div>
+
+
+<!-- ###ITEM_SINGLE_DISPLAY_GIFT### end -->
+
+
+
+
+
+
+
+<!-- ###BASKET_OVERVIEW_TEMPLATE### begin -->
+<ul class="top">
+<li class="shopchart"><!--###LINK_BASKET###-->winkelwagen<br>###CUR_SYM###&nbsp;###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###<!--###LINK_BASKET###--></li>
+</ul>
+<!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
+
+
+<!-- ###BASKET_OVERVIEW_EMPTY### begin -->
+<ul class="top">
+<li class="shopchart"><!--###LINK_BASKET###-->winkelwagen is leeg<!--###LINK_BASKET###--></li>
+</ul>
+<!-- ###BASKET_OVERVIEW_EMPTY### end -->

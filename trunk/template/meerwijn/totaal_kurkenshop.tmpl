@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<TITLE>meer wijn  Shop-Detail-Template</TITLE>
+</head>
+
+<body>
+<H1>meer wijn  Shop-Detail-Template</H1>
+<BR><BR><BR><BR><HR><BR><BR><BR>
+
+<!-- ###ITEM_LIST_TEMPLATE### begin This subpart is used to display the regular list of products. -->
+
+ <!--
+	Start van het kurkenshop verhaal.
+ -->
+	<div class="ShopABoxMessage">
+	<a name="uitleg"></a>
+	<img src="fileadmin/html/img/content/shop/table/shop-a-box.jpg" width="104" height="77" class="floatRight">
+	<p>U kunt op deze pagina artikelen kopen door middel van de door u gespaarde kurken (<b>###AMOUNT_CREDITPOINTS###</b>).</p>
+	<p class="foutmelding" id="foutmelding" style="display:none;">U kurkensaldo is niet toereikend. Verlaag het aantal geselecteerde producten.</p>
+	</div>
+<!--
+	Eind van het kurkenshop verhaal.
+-->
+<!-- name form: do not print dynamically because otherwise the javascript doesn't work properly -->
+  <FORM method="post" action="###FORM_URL###" name="ShopForm" onsubmit="return FormManager.checkCredits();">
+  <h3 class="groupheading">Assortiment</h3>
+  <table width="678" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="213" class="tableheading">wijn<img src="clear.gif" width="200" height="1"></td>
+      <td width="90" class="tableheading">wijnhuis&nbsp;<img src="clear.gif" width="25" height="1"></td>
+      <td width="76" class="tableheading">soort&nbsp;</td>
+      <td width="71" class="tableheading">eenheid&nbsp;</td>
+      <td width="53" class="tableheading-rightalign">prijs&nbsp;</td>
+      <td width="51" class="tableheading">&nbsp;<img src="clear.gif" width="40" height="1"></td>
+      <td width="48" class="tableheading">aantal&nbsp;&nbsp;&nbsp;&nbsp;</td>
+      <td width="53" class="tableheading-rightalign">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;totaal</td>
+      <td width="23" class="recycle-bin">&nbsp;</td>
+    </tr>
+   <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+     <!-- ###ITEM_LIST### begin -->
+       <!-- ###ITEM_SINGLE### begin-->
+        ###ITEM_SINGLE_PRE_HTML### 
+	    <td><nobr><!--###LINK_ITEM###-->###PRODUCT_TITLE###<!--###LINK_ITEM###--></nobr><br><span class="aanbieding"><!---###GRADINGS###--></span></td>
+	    <td><nobr>###PRODUCT_WWW###&nbsp;</nobr></td>
+	    <td><nobr>###PRODUCT_COLOR###&nbsp;</nobr></td>
+	    <td><nobr>###PRODUCT_SIZE###&nbsp;<nobr></td>
+	    <td class="###OLD_PRICE_NO_TAX_CLASS###"><nobr>###CUR_SYM###&nbsp;###OLD_PRICE_NO_TAX###&nbsp;</nobr></td>
+	    <td class="prijsvoor"><nobr>&nbsp;###PRICE_NO_TAX_CUR_SYM###&nbsp;</nobr></td>
+	    <td><input class="number" id="aantal1" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###" onchange="FormManager.changeQuantityCredits(###PRODUCT_ID###);"><img src="img/content/shop/table/+.gif" width="12" height="11" class="quantity" onclick="FormManager.changeQuantityCredits(###PRODUCT_ID###, 1);"><br><img src="img/content/shop/table/_.gif" width="12" height="11" class="quantity" onclick="FormManager.changeQuantityCredits(###PRODUCT_ID###, -1);"></td>
+	    <td class="rowtotal" id="td_rowtotal_###PRODUCT_ID###">###PRICE_ITEM_X_QTY###</td>
+	    <td class="recycle-bin"><img src="fileadmin/html/img/bullets/kurk.gif" height="17" width="17"></td>
+	<input name="eenheid_###PRODUCT_ID###" type="hidden" value="###PRODUCT_UNIT_FACTOR###">
+	<input name="prijs_korting_###PRODUCT_ID###" type="hidden" value="###PRICE_NO_TAX###">
+	<input name="prijs_###PRODUCT_ID###" type="hidden" value="###OLD_PRICE_NO_TAX###">
+	<input type="hidden" name="###FIELD_COLOR_NAME###" value="###PRODUCT_COLOR###">
+	<input type="hidden" name="###FIELD_SIZE_NAME###" value="###PRODUCT_SIZE###">
+        ###ITEM_SINGLE_POST_HTML### 
+       <!-- ###ITEM_SINGLE### end -->
+     <!-- ###ITEM_LIST### end -->
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+	<input type="hidden" name="amountcredits" value="###AMOUNT_CREDITPOINTS###">
+	</table>
+	<p>&nbsp;</p>
+	 <div class="shopTable-content-color">
+	  <div id="shop-buttonbar" align="right"><input name="order" type="submit" class="buttonAdd" value="voeg toe"></div>
+	</div>
+  </FORM>
+<!-- ###ITEM_LIST_TEMPLATE### end -->
+
+
+<!-- ###BASKET_OVERVIEW_TEMPLATE### begin. Used in top of each shop page. -->
+<ul class="top">
+<li class="shopchart"><!--###LINK_BASKET###-->winkelwagen<br>###CUR_SYM###&nbsp;###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###<!--###LINK_BASKET###--></li>
+</ul>
+<!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
+
+<!-- ###BASKET_OVERVIEW_EMPTY### begin. Used in top of each shop page. -->
+<ul class="top">
+<li class="shopchart"><!--###LINK_BASKET###-->winkelwagen is leeg<!--###LINK_BASKET###--></li>
+</ul>
+<!-- ###BASKET_OVERVIEW_EMPTY### end -->
+
