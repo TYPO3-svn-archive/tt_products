@@ -113,13 +113,13 @@ class tx_ttproducts_csv {
 			// Write description header
 			$csvdescr = '"uid";"count";"color";"size";"description";"gradings"';
 			reset($csvfields);
-			foreach($csvfields as $csvfield)
+			foreach($csvfields as $csvfield)	{
 				$csvdescr .= ';"'.$csvfield.'"';
-			if ($this->conf['CSVinOneLine'])
-			{
-				$csvdescr .= '"deliverynote";"desired date";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
-				$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
 			}
+			if ($this->conf['CSVinOneLine'])	{
+				$csvdescr .= ';"deliverynote";"desired date";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
+				$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
+			}			
 			$csvdescr .= chr(13);
 			fwrite($csvfile, $csvdescr);
 
