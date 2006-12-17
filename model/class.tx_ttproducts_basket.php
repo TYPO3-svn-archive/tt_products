@@ -372,22 +372,25 @@ class tx_ttproducts_basket {
 	} // getClearBasketRecord
 
 
-
 	/**
 	 * Empties the shopping basket!
 	 */
 	function clearBasket()	{
 		global $TSFE;
 
-			// Empties the shopping basket!
-		$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
-		$TSFE->fe_user->setKey('ses','basketExt',array());
-		$TSFE->fe_user->setKey('ses','cc',array());
-		unset($this->itemArray);
-		unset($this->basketExt);
-		
-	} // clearBasket
+		if (!$this->conf['debug'])	{
+			
+			// TODO: delete only records from relevant pages
+				// Empties the shopping basket!
+			$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
+			$TSFE->fe_user->setKey('ses','basketExt',array());
+			unset($this->itemArray);
+			unset($this->basketExt);
+		}
 
+		$TSFE->fe_user->setKey('ses','ac',array());
+		$TSFE->fe_user->setKey('ses','cc',array());
+	} // clearBasket
 
 
 	/**

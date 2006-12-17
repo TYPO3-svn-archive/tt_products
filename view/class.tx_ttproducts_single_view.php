@@ -143,6 +143,7 @@ class tx_ttproducts_single_view {
 		}
 
 		$row = $rowArray[$this->type];
+		$tablename = $itemTableArray[$this->type]->table->name;
 		if ($row) {
 		 	// $this->uid = intval ($row['uid']); // store the uid for later usage here
 
@@ -315,7 +316,8 @@ class tx_ttproducts_single_view {
 				$viewTagArray,
 				$forminfoArray,
 				'SINGLE',
-				1
+				1,
+				true
 			);
 
 			if ($this->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
@@ -332,7 +334,8 @@ class tx_ttproducts_single_view {
 					$viewTagArray,
 					array(),
 					'SINGLE',
-					1
+					1,
+					true
 				);
 			} else {
 				$itemTableArray['product']->variant->getItemMarkerArray (
@@ -360,9 +363,9 @@ class tx_ttproducts_single_view {
 			$nextOrderby = ''; 
 
 			if ($this->conf['orderByItemNumberSg']) {
-				$itemnumberField = $itemTableArray[$this->type]->fields['itemnumber'];
-				$queryPrevPrefix = $itemnumberField.' < '.intval($row[$itemnumberField]);
-				$queryNextPrefix = $itemnumberField.' > '.intval($row[$itemnumberField]);
+				$itemnumberField = $TYPO3_DB->fullQuoteStr($itemTableArray[$this->type]->fields['itemnumber'],$tablename);
+				$queryPrevPrefix = $itemnumberField.' < '.$TYPO3_DB->fullQuoteStr($row[$itemnumberField],$tablename);
+				$queryNextPrefix = $itemnumberField.' > '.$TYPO3_DB->fullQuoteStr($row[$itemnumberField],$tablename);
 				$prevOrderby= $itemnumberField.' DESC';
 				$nextOrderby= $itemnumberField.' ASC';
 

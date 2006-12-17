@@ -129,7 +129,7 @@ class tx_ttproducts_article_base {
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1')	{
+	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1', $bSelect=true)	{
 		global $TYPO3_CONF_VARS;
 
 		if (!$this->marker)
@@ -207,14 +207,15 @@ class tx_ttproducts_article_base {
 			$text = '';
 			$variantRow = $row[$variantRec[0]];
 			$prodTmp = explode(';', $variantRow);
-			if ($variantRow && $variantRec[1])	{
+			if ($bSelect && $variantRow && $variantRec[1])	{
 				foreach ($prodTmp as $prodVal)	{
 					$text .= '<OPTION value="'.$prodVal.'">'.$prodVal.'</OPTION>';
 				}
 			} else {
 				$text = $prodTmp[0];
 			}
-			$markerArray['###'.$this->marker.'_'.strtoupper($variantRec[0]).'###'] = $text;
+			$markerKey = '###'.$this->marker.'_'.strtoupper($variantRec[0]).'###';
+			$markerArray[$markerKey] = $text;
 		}
 		$markerArray['###'.$this->marker.'_WEIGHT###'] = doubleval($row['weight']);
 

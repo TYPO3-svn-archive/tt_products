@@ -75,7 +75,7 @@ class tx_ttproducts_basketitem_view {
 	function &getItemMarkerArray (&$viewTable, &$item, &$markerArray, &$tagArray, $code='', $id='1')	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 
-		$row = &$item['rec'];		
+		$row = &$item['rec'];
 		$basketQuantityName = $this->basketVar.'['.$row['uid'].'][quantity]';
 		$quantity = $item['count'];
 		$markerArray['###FIELD_NAME###']=$basketQuantityName;
@@ -93,8 +93,10 @@ class tx_ttproducts_basketitem_view {
 				$markerArray['###FIELD_'.$fieldMarker.'_NAME###'] = $this->basketVar.'['.$row['uid'].']['.$field.']';
 				$markerArray['###FIELD_'.$fieldMarker.'_VALUE###'] = $row[$field];
 				$markerArray['###FIELD_'.$fieldMarker.'_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
-			}		
-			$markerArray['###PRODUCT_'.strtoupper($field).'###'] = $row[$field];
+			}
+			if (isset($row['extVars']))	{	
+				$markerArray['###PRODUCT_'.strtoupper($field).'###'] = $row[$field];
+			}
 		}
 		// $markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
 		$prodAdditionalText['single'] = '';	
@@ -107,7 +109,6 @@ class tx_ttproducts_basketitem_view {
 			}
  		}
 		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
-
 	} // getItemMarkerArray
 
 }

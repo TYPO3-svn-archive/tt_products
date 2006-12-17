@@ -548,7 +548,7 @@ class tx_ttproducts_list_view {
 							$prodRow = $this->tt_products->get($row['uid_product']);
 							$variant = $itemTable->variant->getVariantFromRow($prodRow);
 							$item = $this->basket->getItem($prodRow, $variant);
-							$this->tt_products->getItemMarkerArray ($item, $productMarkerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewProductsTagArray, array(), $theCode, $iCount);
+							$this->tt_products->getItemMarkerArray ($item, $productMarkerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewProductsTagArray, array(), $theCode, $iCount, true);
 							if ($itemListOut && $t['productAndItemsFrameWork'])	{
 								$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);						
 							}
@@ -596,7 +596,7 @@ class tx_ttproducts_list_view {
 					$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 					$basketItemView->init($this->tt_products_cat, $this->basket->basketExt);
 					$basketItemView->getItemMarkerArray ($itemTable, $item, $markerArray, $this->basket->basketExt, $theCode, $iCount);
-					$itemTable->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, array(), $theCode, $iCount);
+					$itemTable->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, array(), $theCode, $iCount, true);
 					if ($itemTable->type == 'article')	{
 						array_merge ($productMarkerArray, $markerArray);
 					} else {

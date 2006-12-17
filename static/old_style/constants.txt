@@ -57,7 +57,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label= cObj settings: If set, certain settings are manipulated in order to let the script render a single item - the $cObj->data.
   displayCurrentRecord = 
     # cat=plugin.products//; type=string; label= URL of the basket image
-  basketPic =
+  basketPic = EXT:tt_products/res/icons/fe/minibasket1.gif
     # cat=plugin.products//; type=boolean; label= Click into basket: If set the basket page will be shown after a product has been put there. PIDbasket needs to be set.
   clickIntoBasket =
     # cat=plugin.products//; type=int+; label= maximum basket quantity: This is the maximal possible amount of one product in the basket.
@@ -264,5 +264,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=string; label=gift selection: SQL where clause to form the gift products from the tt_products table
   whereGift = 
 
+    # cat=plugin.products//; type=boolean; label=debug: Turn this on and no basket will be deleted. Only for testing purposes. Must not be set in online shops.
+  debug = 
 }
 

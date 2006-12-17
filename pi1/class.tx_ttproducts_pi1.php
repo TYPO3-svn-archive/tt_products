@@ -128,6 +128,14 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $bNoCachePossible = TRUE;	// if the cache may be turned off
 	var $pageAsCategory;			// > 0 if pages are used as categories
 
+	/* 
+	 * Escapes strings to be included in javascript
+	 */
+	function jsspecialchars($s) {
+	   return preg_replace('/([\x1b-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e])/e',
+	       "'\\x'.(ord('\\1')<16? '0': '').dechex(ord('\\1'))",$s);
+	}
+
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
@@ -171,7 +179,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// $this->xajax->statusMessagesOn();
 				// Turn only on during testing
 			// $this->xajax->debugOff();
-			$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING').'&amp;no_cache=1';
+			$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING');
+			$reqURI .= $this->jsspecialchars('&no_cache=1');
 			$this->xajax->setRequestURI($reqURI);
 			$this->xajax->setWrapperPrefix('');
 			$this->xajax->registerFunction(array('tt_products_showArticle',&$this,'tt_products_showArticle'));
