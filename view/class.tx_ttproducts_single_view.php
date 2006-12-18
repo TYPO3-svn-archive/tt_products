@@ -363,7 +363,7 @@ class tx_ttproducts_single_view {
 			$nextOrderby = ''; 
 
 			if ($this->conf['orderByItemNumberSg']) {
-				$itemnumberField = $TYPO3_DB->fullQuoteStr($itemTableArray[$this->type]->fields['itemnumber'],$tablename);
+				$itemnumberField = $itemTableArray[$this->type]->fields['itemnumber'];
 				$queryPrevPrefix = $itemnumberField.' < '.$TYPO3_DB->fullQuoteStr($row[$itemnumberField],$tablename);
 				$queryNextPrefix = $itemnumberField.' > '.$TYPO3_DB->fullQuoteStr($row[$itemnumberField],$tablename);
 				$prevOrderby= $itemnumberField.' DESC';
