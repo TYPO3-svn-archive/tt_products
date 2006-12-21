@@ -1,3 +1,6 @@
+2006-12-21 Franz Holzinger <franz@fholzinger.com>
+	* make related products in backend browsable from all pages
+
 2006-12-17 Franz Holzinger <franz@fholzinger.com>
 	* fix bug 4505: set the ';' as a separator in the csv output correctly with 'CSVinOneLine=1'
 

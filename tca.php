@@ -276,9 +276,11 @@ $TCA['tt_products'] = Array (
 		),
 		'related_uid' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.related_uid',
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.related_uid',
 			'config' => Array (
-				'type' => 'select',
+				'type' => 'group',
+				'internal_type' => 'db',
+				'allowed' => 'tt_products',
 				'MM' => 'tt_products_related_products_products_mm',
 				'foreign_table' => 'tt_products',
 				'foreign_table_where' => ' ORDER BY tt_products.uid',
