@@ -207,23 +207,6 @@ class tx_ttproducts_single_view {
 					break;
 			}
 
-//			$pageCatTitle = '';
-//			if ($pageAsCategory >= 1) {
-//				$pageTmp = $this->page->get($row['pid']);
-//				$pageCatTitle = $pageTmp['title'];
-//				if ($pageAsCategory == 1)	{
-//					$pageCatTitle .= '/';
-//				}	
-//			}
-//			
-//			$catTmp = '';
-//			if ($row['category'] && ($pageAsCategory != 2)) {
-//				$catTmp = $this->tt_products_cat->get($row['category']);
-//				$catTmp = $catTmp['title'];
-//			}
-			
-						
-//			$catTitle = $pageCatTitle.$catTmp;
 			$datasheetFile = $row['datasheet'];
 
 				// Fill marker arrays
@@ -363,7 +346,7 @@ class tx_ttproducts_single_view {
 			$nextOrderby = ''; 
 
 			if ($this->conf['orderByItemNumberSg']) {
-				$itemnumberField = $TYPO3_DB->fullQuoteStr($itemTableArray[$this->type]->fields['itemnumber'],$tablename);
+				$itemnumberField = $itemTableArray[$this->type]->fields['itemnumber'];
 				$queryPrevPrefix = $itemnumberField.' < '.$TYPO3_DB->fullQuoteStr($row[$itemnumberField],$tablename);
 				$queryNextPrefix = $itemnumberField.' > '.$TYPO3_DB->fullQuoteStr($row[$itemnumberField],$tablename);
 				$prevOrderby= $itemnumberField.' DESC';

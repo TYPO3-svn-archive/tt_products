@@ -1000,7 +1000,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$this->LLkey,
 					$this->conf['useArticles']
 				);
-
+ 
 				$content = $this->singleView->printView(
 					$this->templateCode, 
 					$error_code,
