@@ -1,3 +1,6 @@
+2006-12-27 Franz Holzinger <franz@fholzinger.com>
+	* fix bug with not used language table of tt_products
+
 2006-12-21 Franz Holzinger <franz@fholzinger.com>
 	* make related products in backend browsable from all pages
 

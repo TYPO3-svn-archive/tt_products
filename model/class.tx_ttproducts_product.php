@@ -94,7 +94,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	
 		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
-			$this->table->setLangName('tt_products_language');
+			$this->table->setLangName($this->tableconf['language.']['table']);
 			$this->table->setTCAFieldArray($this->table->langname);
 		}
 
