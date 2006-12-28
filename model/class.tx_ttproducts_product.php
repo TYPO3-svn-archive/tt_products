@@ -341,7 +341,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		global $TYPO3_CONF_VARS;
 
 		$where = '';
-		if($cat) {
+		if($cat || $cat=='0') {
 			$cat = implode(',',t3lib_div::intExplode(',', $cat));
 			$where = ' AND ( category IN ('.$cat.')';
 		}
