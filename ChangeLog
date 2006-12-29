@@ -1,3 +1,6 @@
+2006-12-29 Franz Holzinger <franz@fholzinger.com>
+	* fix bug with wrong object in basket item view
+
 2006-12-27 Franz Holzinger <franz@fholzinger.com>
 	* fix bug with not used language table of tt_products
 	* fix bug where only one category has been allowed for a filter of a product

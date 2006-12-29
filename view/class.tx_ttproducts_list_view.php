@@ -594,7 +594,7 @@ class tx_ttproducts_list_view {
 					$markerArray = array();
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 					$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
-					$basketItemView->init($this->tt_products_cat, $this->basket->basketExt);
+					$basketItemView->init($this->pibase, $this->tt_products_cat, $this->basket->basketExt);
 					$basketItemView->getItemMarkerArray ($itemTable, $item, $markerArray, $this->basket->basketExt, $theCode, $iCount);
 					$itemTable->getItemMarkerArray ($item, $markerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewTagArray, array(), $theCode, $iCount, true);
 					if ($itemTable->type == 'article')	{
