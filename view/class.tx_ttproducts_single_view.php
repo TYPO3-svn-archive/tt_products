@@ -283,7 +283,7 @@ class tx_ttproducts_single_view {
 
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 			$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
-			$basketItemView->init($this->tt_products_cat, $this->basket->basketExt);
+			$basketItemView->init($this->pibase,$this->tt_products_cat, $this->basket->basketExt);
 			
 			$basketMarkerArray = array();
 			$basketItemView->getItemMarkerArray ($itemTableArray[$this->type], $item, $basketMarkerArray, $this->basket->basketExt, 'SINGLE', 1);

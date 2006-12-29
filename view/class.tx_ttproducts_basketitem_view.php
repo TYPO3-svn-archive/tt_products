@@ -41,6 +41,7 @@
 
 
 class tx_ttproducts_basketitem_view {
+	var $pibase; // reference to object of pibase
 	var $tt_products_cat; // element of class tx_table_db
 	var $basketExt; 	// basket
 	var $basketVar = 'ttp_basket';
@@ -54,7 +55,8 @@ class tx_ttproducts_basketitem_view {
 	 * @return	  void
  	 */
 
-	function init(&$tt_products_cat, &$basketExt)	{
+	function init(&$pibase, &$tt_products_cat, &$basketExt)	{
+		$this->pibase = &$pibase;
  		$this->tt_products_cat = &$tt_products_cat;
  		$this->basketExt = &$basketExt;
 	} // init

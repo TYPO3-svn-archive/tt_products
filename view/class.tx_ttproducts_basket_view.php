@@ -205,7 +205,7 @@ class tx_ttproducts_basket_view {
 				if (!is_object($basketItemView))	{
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 					$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
-					$basketItemView->init($this->tt_products_cat, $this->basket->basketExt);
+					$basketItemView->init($this->pibase, $this->tt_products_cat, $this->basket->basketExt);
 				}
 
 				$basketItemView->getItemMarkerArray ($this->viewTable, $actItem, $markerArray, $this->basket->basketExt, $code, $count);
