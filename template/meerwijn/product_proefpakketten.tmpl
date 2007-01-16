@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<TITLE>BENDOO Shop-Template</TITLE>
+</head>
+
+<body>
+
+<br>
+<H1>BENDOO Shop-Template</H1>
+
+<BR><HR><BR>
+<h3>ITEM_LIST_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_LIST_TEMPLATE### begin This subpart is used to display the regular list of products. It's also used by search-results.-->
+   <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+     <!-- ###ITEM_LIST### begin -->
+       <!-- ###ITEM_SINGLE### begin-->
+        <div class="shopLeftNavItem"><!--###LINK_ITEM###-->
+	  <span style="float:left; padding: 0 5px 30px 0;"> ###PRODUCT_IMAGE0###</span>
+	  <span class="heading">###PRODUCT_TITLE###</span><br>
+	  <span class="wijnhuis">###CATEGORY_TITLE###</span><br>
+	  ###PRODUCT_SUBTITLE### 
+	  <span class="prijsvan">van € ###OLD_PRICE_NO_TAX###</span> <span class="prijsvoor">voor € ###PRICE_NO_TAX### </span><!--###LINK_ITEM###-->
+        </div>
+       <!-- ###ITEM_SINGLE### end -->
+     <!-- ###ITEM_LIST### end -->
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+<!-- ###ITEM_LIST_TEMPLATE### end -->
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>ITEM_SINGLE_DISPLAY</h3>
+<em>This subpart is used to display single products.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_SINGLE_DISPLAY### begin
+	This subpart is used to display single products.
+-->
+<FORM method="post" action="###FORM_URL###" name="ShopForm">
+<input type="hidden" name="###FIELD_COLOR_NAME###" value="###PRODUCT_COLOR###">
+<input type="hidden" name="###FIELD_SIZE_NAME###" value="###PRODUCT_SIZE###">
+         <span style="margin:0 10px 0 35px; float:right;"> ###PRODUCT_IMAGE1###</span>
+	 <H1>###PRODUCT_TITLE###</H1>
+	  <p>###PRODUCT_NOTE###</p>
+	 <div class="voegToeblock">
+	   <div class="left"></div>
+	   
+	   <div class="middle"><div class="voegToeSub">Aantal dozen (###PRODUCT_UNIT###): <br><input size="4" class="number" id="aantal1" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><img src="img/content/shop/table/+.gif" class="quantity" onClick="javascript:document.forms['ShopForm']['###FIELD_NAME###'].value++;"><br><img src="img/content/shop/table/_.gif" class="quantity" onClick="javascript:document.forms['ShopForm']['###FIELD_NAME###'].value--;"><div class="voegToeSub"><input name="order" type="submit" class="buttonAdd" value="voeg toe" onClick="if (!document.forms['ShopForm']['###FIELD_NAME###'].value!=''){document.forms['ShopForm']['###FIELD_NAME###'].value=1;};">
+	   </div>
+	   </div>
+	   <div class="floatRight"><p class="prijsvan">van € ###OLD_PRICE_NO_TAX### ( per doos) </p><p class="prijsvoor">voor € ###PRICE_NO_TAX###</p>
+	   </div>
+	   </div>
+	   <div class="right"></div>
+	 </div>
+</FORM>
+<!-- ###ITEM_SINGLE_DISPLAY### end -->
+
+
+
+
