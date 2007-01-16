@@ -116,7 +116,8 @@ class tx_ttproducts_category_base {
 
 
 	function getMarkerArrayCatTitle(&$markerArray,$prefix='')	{
-		return ($markerArray['###'.$prefix.$this->marker.'_TITLE###']);
+		$rc = $markerArray['###'.$prefix.$this->marker.'_TITLE###'];
+		return ($rc);
 	}
 
 
@@ -174,7 +175,6 @@ class tx_ttproducts_category_base {
 			}
 		}
 	}
-  
   
   
 	function getItemMarkerArray (&$row, &$markerArray, $code, $prefix='')	{ 

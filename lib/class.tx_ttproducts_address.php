@@ -77,6 +77,16 @@ class tx_ttproducts_address {
 		$this->infoArray = array();
 		$this->infoArray['billing'] = $formerBasket['personinfo'];
 		$this->infoArray['delivery'] = $formerBasket['delivery'];
+		$allowedTags = '<br><a><b><td><tr><div>';
+		foreach ($this->infoArray as $type => $infoRowArray)	{
+			if (is_array($infoRowArray))	{
+				foreach ($infoRowArray as $k => $infoRow)	{
+					$this->infoArray[$type][$k] = strip_tags ($infoRow, $allowedTags);
+				}
+			} else {
+				$this->infoArray[$type] = strip_tags ($infoRowArray, $allowedTags);
+			}
+		}
 
 		if (t3lib_extMgm::isLoaded('static_info_tables')) {
 			$path = t3lib_extMgm::extPath('static_info_tables');

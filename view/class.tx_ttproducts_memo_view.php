@@ -173,6 +173,7 @@ class tx_ttproducts_memo_view {
 					$templateCode,
 					'MEMO',
 					implode(',', $this->memoItems),
+					false,
 					$error_code,
 					$templateArea,
 					$this->pibase->pageAsCategory

@@ -116,10 +116,12 @@ class tx_ttproducts_csv {
 			foreach($csvfields as $csvfield)	{
 				$csvdescr .= ';"'.$csvfield.'"';
 			}
+
 			if ($this->conf['CSVinOneLine'])	{
 				$csvdescr .= ';"deliverynote";"desired date";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
 				$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
 			}			
+
 			$csvdescr .= chr(13);
 			fwrite($csvfile, $csvdescr);
 

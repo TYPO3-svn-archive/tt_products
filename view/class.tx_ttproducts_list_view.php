@@ -138,6 +138,7 @@ class tx_ttproducts_list_view {
 		&$templateCode,
 		$theCode,
 		$allowedItems,
+		$additionalPages,
 		&$error_code,
 		$templateArea = '###ITEM_LIST_TEMPLATE###',
 		$pageAsCategory
@@ -274,6 +275,10 @@ class tx_ttproducts_list_view {
 		$begin_at = $this->pibase->piVars['begin_at'];
 		$begin_at = ($begin_at ? $begin_at : t3lib_div::_GP('begin_at'));
 		$begin_at=t3lib_div::intInRange($begin_at,0,100000);
+		if ($theCode == 'SINGLE')	{
+			$begin_at = ''; // no page browser in single view for related products
+		}
+
 		if ($where || ($theCode != 'SEARCH' && !$sword))	{
 			$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($templateArea));
 			// $templateArea = '###ITEM_LIST_TEMPLATE###'
@@ -303,12 +308,20 @@ class tx_ttproducts_list_view {
 			}		
 			$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryAndItemsFrameWork'],'###ITEM_LIST###');
 			$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
+
 			$dum = strstr($t['item'], 'ITEM_SINGLE_POST_HTML');
 			$bItemPostHtml = (strstr($t['item'], 'ITEM_SINGLE_POST_HTML') != false);
 
 				// Get products count
 			$selectConf = Array();
-			$selectConf['pidInList'] = ($pid ? $pid : $this->page->pid_list);
+
+				// Get products count
+			$selectConf = Array();
+			$allowedPages = ($pid ? $pid : $this->page->pid_list);
+			if ($additionalPages)	{
+				$allowedPages .= ','.$additionalPages;
+			}
+			$selectConf['pidInList'] = $allowedPages;
 			$wherestock = ($this->conf['showNotinStock'] || !is_array(($TCA[$itemTable->table->name]['columns']['inStock'])) ? '' : ' AND (inStock <> 0) ');
 			$whereNew = $wherestock.$where;
 			$whereNew = $itemTable->table->transformWhere($whereNew);
@@ -428,7 +441,7 @@ class tx_ttproducts_list_view {
 			if ($selectConf['orderBy'])	{
 				$selectConf['orderBy'] = $TYPO3_DB->stripOrderBy($selectConf['orderBy']);
 			}
-			
+
 			$tablename = $itemTable->table->name;
 			$queryParts = $itemTable->table->getQueryConf($this->pibase->cObj,$tablename, $selectConf, TRUE);
 			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
@@ -441,13 +454,12 @@ class tx_ttproducts_list_view {
 						$row[$field] = $row[$langfield];
 					}
 				}
-				
 				$itemArray[]=$row;
 			}
 			if ($iCount == $this->config['limit'] && ($row = $TYPO3_DB->sql_fetch_assoc($res)))	{
 				$more = 1;
 			}
-	
+
 			if ($theCode == 'LISTGIFTS') {
 				$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $this->giftnumber);
 			}
@@ -548,7 +560,7 @@ class tx_ttproducts_list_view {
 							$prodRow = $this->tt_products->get($row['uid_product']);
 							$variant = $itemTable->variant->getVariantFromRow($prodRow);
 							$item = $this->basket->getItem($prodRow, $variant);
-							$this->tt_products->getItemMarkerArray ($item, $productMarkerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewProductsTagArray, array(), $theCode, $iCount, true);
+							$this->tt_products->getItemMarkerArray ($item, $productMarkerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewProductsTagArray, array(), $theCode, $iCount);
 							if ($itemListOut && $t['productAndItemsFrameWork'])	{
 								$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);						
 							}
@@ -576,7 +588,7 @@ class tx_ttproducts_list_view {
 					} else {
 						$addQueryString[$itemTable->type] = intval($row['uid']);
 						$addQueryString['cat'] = $cat;
-						$queryString = $this->marker->getLinkParams('', $addQueryString);	
+						$queryString = $this->marker->getLinkParams('begin_at', $addQueryString);	
 						// $pageLink = $this->pibase->pi_getPageLink($pid,'',$queryString);
 						// 1-$TSFE->no_cache
 						$pageLink = $this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid);
@@ -740,7 +752,7 @@ class tx_ttproducts_list_view {
 				// $addQueryString[$this->pibase->prefixId.'[begin_at]']= $next;
 				// $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 				$addQueryString['begin_at'] = $next;
-				
+				$this->marker->getSearchParams($addQueryString);
 				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,1,0);
 				$wrappedSubpartArray['###LINK_NEXT###'] = explode ($splitMark, $tempUrl);
 			} else {
@@ -753,6 +765,7 @@ class tx_ttproducts_list_view {
 				// $addQueryString[$this->pibase->prefixId.'[begin_at]']= $prev;
 				// $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 				$addQueryString['begin_at'] = $prev;
+				$this->marker->getSearchParams($addQueryString);
 				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,$bUseCache,0);
 				$wrappedSubpartArray['###LINK_PREV###']=explode ($splitMark, $tempUrl); // array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
 			} else {

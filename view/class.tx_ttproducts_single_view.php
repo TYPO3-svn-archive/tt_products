@@ -147,6 +147,10 @@ class tx_ttproducts_single_view {
 		if ($row) {
 		 	// $this->uid = intval ($row['uid']); // store the uid for later usage here
 
+			$markerArray = array();
+			$subpartArray = array();
+			$wrappedSubpartArray = array();
+
 				// Get the subpart code
 			$itemFrameTemplate ='';
 			$giftNumberArray = tx_ttproducts_gifts_div::getGiftNumbers ($this->basket, $rowArray['product']['uid'], $this->variants);
@@ -167,7 +171,10 @@ class tx_ttproducts_single_view {
 			// Add the template suffix
 			$itemFrameTemplate = substr($itemFrameTemplate, 0, -3).$templateSuffix.'###';
 			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($itemFrameTemplate));
-			
+
+			$this->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
+			$itemFrameWork = $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
+
 			$markerFieldArray = array(
 				'BULKILY_WARNING' => 'bulkily',
 				'PRODUCT_SPECIAL_PREP' => 'special_preparation',
@@ -283,7 +290,7 @@ class tx_ttproducts_single_view {
 
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 			$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
-			$basketItemView->init($this->pibase,$this->tt_products_cat, $this->basket->basketExt);
+			$basketItemView->init($this->pibase, $this->tt_products_cat, $this->basket->basketExt);
 			
 			$basketMarkerArray = array();
 			$basketItemView->getItemMarkerArray ($itemTableArray[$this->type], $item, $basketMarkerArray, $this->basket->basketExt, 'SINGLE', 1);
@@ -414,12 +421,15 @@ class tx_ttproducts_single_view {
 						$this->LLkey,
 						$this->useArticles
 					);
+					$listPids = $this->conf['pidsRelatedProducts'];
+					$this->page->applyRecursive($this->config['recursive'], $listPids);
 		
 					$templateArea = '###ITEM_LIST_RELATED_TEMPLATE###';
 					$tmpContent = $listView->printView(
 						$templateCode,
 						'SINGLE',
 						implode(',', $relatedIds),
+						$listPids,
 						$error_code,
 						$templateArea,
 						$this->pibase->pageAsCategory
@@ -432,6 +442,7 @@ class tx_ttproducts_single_view {
 			
 			$this->javaScriptMarker->getMarkerArray($markerArray);		
 			$markerArray = array_merge ($categoryMarkerArray, $basketMarkerArray, $markerArray);
+
 				// Substitute	
 			$content = $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 			if ($personDataFrameWork) {

@@ -47,6 +47,8 @@ class tx_ttproducts_javascript {
 	var $page;
 	var $xajax;
 	var $bXajaxAdded;
+	var $bCopyrightShown;
+	var $copyright;
 
 
 	function init(&$pibase, &$cnf, &$page, &$xajax) {
@@ -57,6 +59,33 @@ class tx_ttproducts_javascript {
 		$this->page = &$page;
 		$this->xajax = &$xajax;
 		$this->bXajaxAdded = false;
+		$this->bCopyrightShown = false; 
+		$this->copyright = '
+/***************************************************************
+*
+*  javascript functions for the tt_products Shop System
+*  relies on the javascript library "xajax"
+*
+*
+*  Copyright notice
+*
+*  (c) 2006	2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  All rights reserved
+*
+*  This script is part of the TYPO3 t3lib/ library provided by
+*  Kasper Skaarhoj <kasper@typo3.com> together with TYPO3
+*
+*  Released under GNU/GPL (see license file in tslib/)
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*  This copyright notice MUST APPEAR in all copies of this script
+***************************************************************/
+';
+
+
 	}
 
 	/* 
@@ -84,10 +113,15 @@ class tx_ttproducts_javascript {
 		$bError = false;
 		$emailArr =  explode('|', $message = $this->pibase->pi_getLL('invalid_email'));
 
+		if (!$this->bCopyrightShown && $fieldname != 'xajax')	{
+			$code = $this->copyright;
+			$this->bCopyrightShown = TRUE;
+		}
+
 		$JSfieldname = $fieldname;
 		switch ($fieldname) {
 			case 'email' :
-				$code =
+				$code .=
 				'function test (eing) {
 					var reg = /@/;
 					var rc = true;
@@ -218,15 +252,15 @@ class tx_ttproducts_javascript {
 
 			case 'direct':
 				if (is_array($params))	{
-					$code = current($params);
+					$code .= current($params);
 					$JSfieldname = $fieldname .'-'. key($params);
 				}
 				break;
 
-			case 'ttpajax':
+			case 'xajax':
 				// XAJAX part
 				if (!$this->bXajaxAdded && is_object($this->xajax))	{
-					$code .= $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax')); 
+					$code = $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax')); 
 					$this->bXajaxAdded = true;
 				}
 				$bDirectHTML = true;

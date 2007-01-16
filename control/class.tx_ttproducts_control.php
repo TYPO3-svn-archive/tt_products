@@ -84,7 +84,9 @@ class tx_ttproducts_control {
 		$this->fe_users = &$fe_users;
 		$this->price = &$price;
 		$this->paymentshipping = &$paymentshipping;
+
  		$this->viewTable = &$basket->viewTable;
+
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($this->pibase, $this->cnf, $this->basket);
 	} // init
@@ -157,7 +159,7 @@ class tx_ttproducts_control {
 
 
 
-	function processPayment(&$content, &$bFinalize, &$order, &$basketView, &$address)	{
+	function processPayment(&$content, &$bFinalize, &$order, &$basketView, &$address)       {
 		global $TSFE;
 
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
@@ -433,7 +435,7 @@ class tx_ttproducts_control {
 										);
 									}
 									// basket view
-									if (!is_object($basketView))	{
+									if (!is_object($basketView))    {
 										include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
 										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
 										$basketView->init ($this->basket, $this->templateCode);
@@ -492,16 +494,15 @@ class tx_ttproducts_control {
 							);
 						}
 						$orderUid = $order->getBlankUid();
+
 						if (!is_object($basketView))	{
 							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
 							$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
 							$basketView->init ($this->basket, $this->templateCode);
 						}
-
-						if (trim($this->conf['paymentActivity']) == 'finalize')	{
+						if (trim($this->conf['paymentActivity']) == 'finalize') {
 							$this->processPayment($content, $bFinalize, $order, $basketView, $address);
 						}
-
 						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $address, false, false, '###'.$tmpl.'###', $mainMarkerArray);
@@ -550,7 +551,6 @@ class tx_ttproducts_control {
 		$markerArray = array();
 		$markerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject;	// adding extra preprocessing CObject
 		$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
-
 		return $content;
 	} // 
 

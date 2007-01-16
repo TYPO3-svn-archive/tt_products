@@ -82,7 +82,7 @@ class tx_ttproducts_marker {
 	/**
 	 * Adds URL markers to a markerArray
 	 */
-	function addURLMarkers($pidNext,$markerArray,$addQueryString=array())	{
+	function addURLMarkers($pidNext,$markerArray,$addQueryString=array(),$excludeList='')	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
@@ -91,15 +91,20 @@ class tx_ttproducts_marker {
 			// Add's URL-markers to the $markerArray and returns it
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
 		$pidFormUrl = ($pidNext ? $pidNext : $pidBasket);
-		$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink($pidFormUrl,'',$this->getLinkParams('',$addQueryString,true)) ;
+		$url = $this->pibase->cObj->getTypoLink_URL($pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,true));
+		$markerArray['###FORM_URL###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $pidBasket);
-		$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString,true)) ;
+		$url = $this->pibase->cObj->getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true));
+		$markerArray['###FORM_URL_INFO###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDpayment'] ? $this->conf['PIDpayment'] : $pidBasket);
-		$markerArray['###FORM_URL_PAYMENT###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString,true)) ;
+		$url = $this->pibase->cObj->getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true));
+		$markerArray['###FORM_URL_PAYMENT###'] = htmlspecialchars($url);  
 		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $pidBasket);
-		$markerArray['###FORM_URL_FINALIZE###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString,true)) ;
+		$url = $this->pibase->cObj->getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true));
+		$markerArray['###FORM_URL_FINALIZE###'] = htmlspecialchars($url);  
 		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $pidBasket);
-		$markerArray['###FORM_URL_THANKS###'] = $this->pibase->pi_getPageLink($pid,'',$this->getLinkParams('',$addQueryString,true)) ;
+		$url = $this->pibase->cObj->getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true));
+		$markerArray['###FORM_URL_THANKS###'] = htmlspecialchars($url);
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 
 		// This handleURL is called instead of the THANKS-url in order to let handleScript process the information if payment by credit card or so.
@@ -123,6 +128,39 @@ class tx_ttproducts_marker {
 		return $markerArray;
 	} // addURLMarkers
 
+
+	/**
+	 * getting the global markers
+	 */
+	function &getGlobalMarkers ()	{
+		$markerArray = array();
+
+			// globally substituted markers, fonts and colors.
+		$splitMark = md5(microtime());
+		list($markerArray['###GW1B###'],$markerArray['###GW1E###']) = explode($splitMark,$this->pibase->cObj->stdWrap($splitMark,$this->conf['wrap1.']));
+		list($markerArray['###GW2B###'],$markerArray['###GW2E###']) = explode($splitMark,$this->pibase->cObj->stdWrap($splitMark,$this->conf['wrap2.']));
+		list($markerArray['###GW3B###'],$markerArray['###GW3E###']) = explode($splitMark,$this->pibase->cObj->stdWrap($splitMark,$this->conf['wrap3.'])); 
+		$markerArray['###GC1###'] = $this->pibase->cObj->stdWrap($this->conf['color1'],$this->conf['color1.']);
+		$markerArray['###GC2###'] = $this->pibase->cObj->stdWrap($this->conf['color2'],$this->conf['color2.']);
+		$markerArray['###GC3###'] = $this->pibase->cObj->stdWrap($this->conf['color3'],$this->conf['color3.']);
+		$markerArray['###DOMAIN###'] = $this->conf['domain'];
+		$pidMarkerArray = array('agb','basket','info','finalize','payment', 'thanks','itemDisplay','listDisplay','search','storeRoot',
+								'memo','tracking','billing','delivery');
+		foreach ($pidMarkerArray as $k => $function)	{
+			$markerArray['###PID_'.strtoupper($function).'###'] = $this->conf['PID'.$function]; 
+		}
+
+		$markerArray['###SHOPADMIN_EMAIL###'] = $this->conf['orderEmail_from'];
+		
+		if (is_array($this->conf['marks.']))	{
+				// Substitute Marker Array from TypoScript Setup
+			foreach ($this->conf['marks.'] as $key => $value)	{
+				$markerArray['###'.$key.'###'] = $value;
+			}
+		}
+		
+		return $markerArray;	
+	}
 
 
 	/**
@@ -157,6 +195,19 @@ class tx_ttproducts_marker {
 	}
 
 
+	function getSearchParams(&$queryString) {
+		
+		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
+
+		if (!$temp)	{
+			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';		
+		}
+
+		if ($temp) {
+			$queryString['sword'] = $temp;
+		}
+	}
+
 	/**
 	 * Returns a url for use in forms and links
 	 */
@@ -186,13 +237,6 @@ class tx_ttproducts_marker {
 		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 
-		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
-		if ($temp) {
-		if (!$temp)	{
-			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';		
-		}
-			$queryString['sword'] = $temp;
-		}
 		if (is_array($addQueryString))	{
 			foreach ($addQueryString as $param => $value){
 				$queryString[$param] = $value;

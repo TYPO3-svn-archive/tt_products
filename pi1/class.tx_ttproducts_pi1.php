@@ -128,6 +128,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $bNoCachePossible = TRUE;	// if the cache may be turned off
 	var $pageAsCategory;			// > 0 if pages are used as categories
 
+
 	/* 
 	 * Escapes strings to be included in javascript
 	 */
@@ -135,6 +136,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	   return preg_replace('/([\x1b-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e])/e',
 	       "'\\x'.(ord('\\1')<16? '0': '').dechex(ord('\\1'))",$s);
 	}
+
 
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
@@ -181,6 +183,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// $this->xajax->debugOff();
 			$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING');
 			$reqURI .= $this->jsspecialchars('&no_cache=1');
+
 			$this->xajax->setRequestURI($reqURI);
 			$this->xajax->setWrapperPrefix('');
 			$this->xajax->registerFunction(array('tt_products_showArticle',&$this,'tt_products_showArticle'));
@@ -255,6 +258,30 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		}
 	}
 
+	function &getTemplateCode($theCode) {
+		$templateCode = '';
+		$templateFile = $this->cnf->getTemplateFile($theCode);
+		if ($templateFile) {
+			// template file is fetched. The whole template file from which the various subpart are extracted.
+			$templateCode = $this->cObj->fileResource($templateFile);
+		}
+
+		if (!$templateFile || empty($templateCode)) {
+			if ($this->conf['templateFile.'][$theCode])	{
+				$tmplText = $theCode.'.';
+			}
+			$tmplText .= 'templateFile';
+			$this->errorMessage .= $this->pi_getLL('no_template').' plugin.tt_products.'.$tmplText.' = ';
+			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '""');
+		} else {
+
+				// Substitute Global Marker Array
+			$templateCode = $this->cObj->substituteMarkerArrayCached($templateCode, $this->globalMarkerArray);			
+		}
+
+		return $templateCode;
+	}
+
 	function doProcessing($content='', $bRunAjax = false)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS; // needed for include_once and PHP 5.1 which otherwise would not allow XCLASS for HtmlMail, DAM aso.
@@ -267,7 +294,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$this->init ($content, $this->config);
 
 		if ((t3lib_extMgm::isLoaded('xajax')) && !$bRunAjax)	{
-			$this->javascript->set('ttpajax');
+			$this->javascript->set('xajax');
 		}
 
 		$error_code = array();		
@@ -301,6 +328,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		// *************************************
 		if (!$this->errorMessage) {
 			$this->basket->getCalculatedBasket(); // get the basket->itemArray
+			$this->templateCode=$this->getTemplateCode('BASKET');
+
 			$this->control->init (
 				$this,
 				$this->cnf,
@@ -323,6 +352,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		while(!$this->errorMessage && list($key,$theCode)=each($this->codeArray))	{
 			$theCode = (string) trim($theCode);
 			$contentTmp = '';
+			$this->templateCode=$this->getTemplateCode($theCode);
 			switch($theCode)	{
 				case 'SEARCH':
 					$this->set_no_cache();
@@ -570,16 +600,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			}			
 		}
 
-		if ($this->conf['templateFile']) {
-			// template file is fetched. The whole template file from which the various subpart are extracted.
-			$this->templateCode = $this->cObj->fileResource($this->conf['templateFile']);
-		}
-
-		if (!$this->conf['templateFile'] || empty($this->templateCode)) {
-			$this->errorMessage .= $this->pi_getLL('no_template').' plugin.tt_products.file.templateFile = ';
-			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '""');
-		}
-
 		// mkl - multicurrency support
 //		if (t3lib_extMgm::isLoaded('mkl_currxrate')) {
 //			include_once(t3lib_extMgm::extPath('mkl_currxrate').'pi1/class.tx_mklcurrxrate_pi1.php');
@@ -594,38 +614,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 //			$this->xrate = floatval ( $result['rate'] );
 //		}
 
-
-			// globally substituted markers, fonts and colors.
-		$splitMark = md5(microtime());
-		$globalMarkerArray=array();
-		list($globalMarkerArray['###GW1B###'],$globalMarkerArray['###GW1E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap1.']));
-		list($globalMarkerArray['###GW2B###'],$globalMarkerArray['###GW2E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap2.']));
-		list($globalMarkerArray['###GW3B###'],$globalMarkerArray['###GW3E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap3.'])); 
-		$globalMarkerArray['###GC1###'] = $this->cObj->stdWrap($this->conf['color1'],$this->conf['color1.']);
-		$globalMarkerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'],$this->conf['color2.']);
-		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'],$this->conf['color3.']);
-		$globalMarkerArray['###DOMAIN###'] = $this->conf['domain'];
-		$pidMarkerArray = array('agb','basket','info','finalize','payment', 'thanks','itemDisplay','listDisplay','search','storeRoot',
-								'memo','tracking','billing','delivery');
-		foreach ($pidMarkerArray as $k => $function)	{
-			$globalMarkerArray['###PID_'.strtoupper($function).'###'] = $this->conf['PID'.$function]; 
-		}
-
-		$globalMarkerArray['###SHOPADMIN_EMAIL###'] = $this->conf['orderEmail_from'];
-		
-		if (is_array($this->conf['marks.']))	{
-				// Substitute Marker Array from TypoScript Setup
-			foreach ($this->conf['marks.'] as $key => $value)	{
-				$globalMarkerArray['###'.$key.'###'] = $value;
-			}
-		}
-
-			// Substitute Global Marker Array
-		$this->templateCode= $this->cObj->substituteMarkerArrayCached($this->templateCode, $globalMarkerArray);
-		
-			// This cObject may be used to call a function which manipulates the shopping basket based on settings in an external order system. The output is included in the top of the order (HTML) on the basket-page.
-		$this->externalCObject = $this->getExternalCObject('externalProcessing');
-		$this->globalMarkerArray = $globalMarkerArray;
 
 			// pages
 		$this->page = tx_ttproducts_page::createPageTable(
@@ -652,6 +640,15 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// basket
 		$this->basket = t3lib_div::makeInstance('tx_ttproducts_basket');
 
+		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
+		$this->marker->init(
+			$this,
+			$this->cnf,
+			$this->basket
+		);
+
+		$this->globalMarkerArray = $this->marker->getGlobalMarkers();
+
 			// basket view
 		$this->control = t3lib_div::makeInstance('tx_ttproducts_control');
 				
@@ -666,6 +663,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		);
 
 		$this->tableArray = array ('static_countries' => 'country');
+
+			// This cObject may be used to call a function which manipulates the shopping basket based on settings in an external order system. The output is included in the top of the order (HTML) on the basket-page.
+		$this->externalCObject = $this->getExternalCObject('externalProcessing');
+
 	} // init
 
 
@@ -1000,7 +1001,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$this->LLkey,
 					$this->conf['useArticles']
 				);
- 
+
 				$content = $this->singleView->printView(
 					$this->templateCode, 
 					$error_code,
@@ -1034,11 +1035,13 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			}
 			
 			$allowedItems = '';
+			$bAllPages = false;
 			$templateArea = '###'.$templateArea.$this->template_suffix.'###';
 			$content = $listView->printView(
 				$this->templateCode,
 				$theCode,
 				$allowedItems,
+				$bAllPages,
 				$error_code,
 				$templateArea,
 				$this->pageAsCategory

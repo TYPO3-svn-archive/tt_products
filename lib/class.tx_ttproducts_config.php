@@ -105,7 +105,6 @@ class tx_ttproducts_config {
 	}
 
 
-
 	function getTranslationFields($tableConf)	{
 		$fieldArray = array();
 		if (is_array($tableConf['language.']) && $tableConf['language.']['type'] == 'field')	{
@@ -140,7 +139,19 @@ class tx_ttproducts_config {
 
 		return $retArray;
 	}
-	
+
+
+	function getTemplateFile($theCode) {
+		$rc = '';
+		if (is_array($this->conf['templateFile.']) && ($this->conf['templateFile.'][$theCode]))	{
+			$rc = $this->conf['templateFile.'][$theCode];
+		} else {
+			$rc = $this->conf['templateFile'];
+		}
+
+		return $rc;
+	}
+
 }
 
 
