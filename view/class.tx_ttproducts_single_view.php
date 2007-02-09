@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj <kasperYYYY@typo3.com>
+*  (c) 1999-2007 Kasper Skårhøj <kasperYYYY@typo3.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -219,9 +219,15 @@ class tx_ttproducts_single_view {
 				// Fill marker arrays
 			$wrappedSubpartArray=array();
 			$backPID = $this->pibase->piVars['backPID'];
+			$backPID = $this->pibase->piVars['backPID'];
 			$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
-			$pid = ( $backPID ? $backPID : $TSFE->id);
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>');
+			if ($this->conf['clickIntoBasket'] && $backPID)	{
+				$pid = $backPID;
+			} else {
+				$pid = $TSFE->id;
+			}
+
+			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true), array('useCacheHash' => true)) .'">','</a>');
 
 			if( $datasheetFile == '' )  {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
@@ -345,7 +351,7 @@ class tx_ttproducts_single_view {
 			$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $this->uid;
 			
 			// $markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, array('tt_products' => $this->uid)); // Applied it here also...
-			$markerArray = $this->marker->addURLMarkers($this->pid, $markerArray, $addQueryString); // Applied it here also...
+			$markerArray = $this->marker->addURLMarkers($pid, $markerArray, $addQueryString); // Applied it here also...
 			// $url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams()) ; // $this->getLinkUrl('','tt_products');
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
@@ -377,7 +383,7 @@ class tx_ttproducts_single_view {
 				$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $rowprev['uid'];
 				$addQueryString[$this->pibase->prefixId.'[backPID]'] = $backPID;
 				// $wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,true)) .'">','</a>');
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,true),array('useCacheHash' => true)) .'">','</a>');
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
@@ -391,7 +397,7 @@ class tx_ttproducts_single_view {
 				$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $rownext['uid'];
 				$addQueryString[$this->pibase->prefixId.'[backPID]'] = $backPID;				
 				// $wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rownext['uid'].'">','</a>');
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,true)) .'">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,true),array('useCacheHash' => true)) .'">','</a>');
 			} else {
 				$subpartArray['###LINK_NEXT_SINGLE###'] = '';
 			}

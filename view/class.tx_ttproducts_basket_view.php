@@ -253,7 +253,7 @@ class tx_ttproducts_basket_view {
 				$addQueryString[$this->pibase->prefixId.'['.$this->viewTable->type.']'] = intval($row['uid']);
 				$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($row['extVars']);
 				// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
-				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true)).'"'.$css_current.'>','</a>'); 
+				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true), array('useCacheHash' => true)).'"'.$css_current.'>','</a>'); 
 
 				// Substitute
 				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);

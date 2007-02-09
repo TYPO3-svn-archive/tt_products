@@ -740,7 +740,7 @@ class tx_ttproducts_list_view {
 
 			$backPID = $this->pibase->piVars['backPID'];
 			$pid = ( $backPID ? $backPID : $TSFE->id);
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>');
+			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>',array('useCacheHash' => true));
 
 			if ($sword) 	{
 				$addQueryString['sword'] = $sword; 

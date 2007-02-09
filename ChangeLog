@@ -1,3 +1,6 @@
+2007-02-09 Franz Holzinger <franz@fholzinger.com>
+	* fix bug 4940: $TSFE->reqCHash() must not be called. The new parameter useCacheHash must be passed to all link functions in the fh_library 0.0.16.
+
 2007-01-16 Franz Holzinger <franz@fholzinger.com>
 	* fix CSS issue: check the recs array for $this->infoArray in lib/class.tx_ttproducts_address.php
 	* related products can have additional allowed pages: pidsRelatedProducts

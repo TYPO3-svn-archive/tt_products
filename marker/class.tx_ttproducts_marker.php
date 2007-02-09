@@ -64,7 +64,7 @@ class tx_ttproducts_marker {
  		$this->conf = &$this->cnf->conf;
  		$this->config = &$this->cnf->config;
  		$this->basket = &$basket;
- 		$this->markerArray = array('CATEGORY', 'PRODUCT', 'ARTICLE');
+ 		$this->markerArray = array('CATEGORY', 'PRODUCT', 'ARTICLE', 'DAM');
 	}
 
 	/**
@@ -85,25 +85,27 @@ class tx_ttproducts_marker {
 	function addURLMarkers($pidNext,$markerArray,$addQueryString=array(),$excludeList='')	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
+		$conf = array('useCacheHash' => true);
+		$target = '';
 
 		// disable caching as soon as someone enters products into the basket, enters user data etc.
 		// $addQueryString['no_cache'] = 1; 
 			// Add's URL-markers to the $markerArray and returns it
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
 		$pidFormUrl = ($pidNext ? $pidNext : $pidBasket);
-		$url = $this->pibase->cObj->getTypoLink_URL($pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,true));
+		$url = $this->pibase->pi_getTypoLink_URL($pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
 		$markerArray['###FORM_URL###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $pidBasket);
-		$url = $this->pibase->cObj->getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true));
+		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
 		$markerArray['###FORM_URL_INFO###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDpayment'] ? $this->conf['PIDpayment'] : $pidBasket);
-		$url = $this->pibase->cObj->getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true));
+		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
 		$markerArray['###FORM_URL_PAYMENT###'] = htmlspecialchars($url);  
 		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $pidBasket);
-		$url = $this->pibase->cObj->getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true));
+		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
 		$markerArray['###FORM_URL_FINALIZE###'] = htmlspecialchars($url);  
 		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $pidBasket);
-		$url = $this->pibase->cObj->getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true));
+		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
 		$markerArray['###FORM_URL_THANKS###'] = htmlspecialchars($url);
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 
