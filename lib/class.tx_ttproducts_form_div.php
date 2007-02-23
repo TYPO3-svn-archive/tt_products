@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -32,6 +32,7 @@
  * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -41,16 +42,22 @@
 class tx_ttproducts_form_div {
 
 
-	function createSelect (&$pibase, &$tcaArray, $name) {
+	function createSelect (&$pibase, &$tcaArray, $name, $indexSelected, $allowedArray) {
 		global $TYPO3_DB;
 
 		$text = '';
 		foreach ($tcaArray as $key => $parts) {
 			$tmp = tx_fhlibrary_language::sL($parts[0]);
 			$text = $pibase->pi_getLL($tmp);
-			$totaltext .= '<OPTION value="'.$parts[1].'">'.$text.'</OPTION>';
+			if (!count($allowedArray) || in_array($parts[1], $allowedArray))	{
+				$selectedText = '';
+				if (intval($parts[1]) == intval($indexSelected))	{
+					$selectedText = ' selected';
+				}
+				$totaltext .= '<OPTION value="'.$parts[1].'"'.$selectedText.'>'.$text.'</OPTION>';
+			}
 		}
-		$text = '<SELECT name="'.$name.'">' . $totaltext.'</SELECT>';  
+		$text = '<SELECT name="'.$name.'">' . $totaltext.'</SELECT>';
 
 		return $text;
 	}
