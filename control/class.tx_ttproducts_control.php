@@ -39,7 +39,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_info.php');
 
 
 class tx_ttproducts_control {
@@ -159,7 +159,7 @@ class tx_ttproducts_control {
 
 
 
-	function processPayment(&$content, &$bFinalize, &$order, &$basketView, &$address)       {
+	function processPayment(&$content, &$bFinalize, &$order, &$basketView, &$info)       {
 		global $TSFE;
 
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
@@ -173,7 +173,7 @@ class tx_ttproducts_control {
 				require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
 				
 				$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $address);
+				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $info);
 				$content.= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
 			}
 		}		
@@ -199,16 +199,16 @@ class tx_ttproducts_control {
 		$activityArray = array();
 		$bBasketEmpty = false;
 		$basketView = '';
-//								if (!is_object($address))	{
-//									include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
-//									$address = &t3lib_div::getUserObj('tx_ttproducts_address');
-//									$address->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
-//									$address->mapPersonIntoDelivery();
+//								if (!is_object($info))	{
+//									include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_info.php');
+//									$info = &t3lib_div::getUserObj('tx_ttproducts_info');
+//									$info->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
+//									$info->mapPersonIntoDelivery();
 //								}
 
-		$address = &t3lib_div::getUserObj('tx_ttproducts_address');
-		$address->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
-		$address->mapPersonIntoDelivery();
+		$info = &t3lib_div::getUserObj('tx_ttproducts_info');
+		$info->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
+		$info->mapPersonIntoDelivery();
 
 		$order = '';
 
@@ -356,8 +356,8 @@ class tx_ttproducts_control {
 								$this->pibase->load_noLinkExtCobj();	// TODO
 								$pidagb = intval($this->conf['PIDagb']);
 
-								$checkRequired = $address->checkRequired();
-								$checkAllowed = $address->checkAllowed();
+								$checkRequired = $info->checkRequired();
+								$checkAllowed = $info->checkAllowed();
 								if ($checkRequired == '' && $checkAllowed == '' &&
 									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']))) {
 
@@ -368,7 +368,7 @@ class tx_ttproducts_control {
 										$basketView->init ($this->basket, $this->templateCode);
 									}					
 
-									$content.=$basketView->getView($empty, 'PAYMENT', $address, $this->activityArray['products_info'], false, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
+									$content.=$basketView->getView($empty, 'PAYMENT', $info, $this->activityArray['products_info'], false, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
 									
 									if (trim($this->conf['paymentActivity'])=='payment')	{
 										if (!is_object($order))	{
@@ -386,7 +386,7 @@ class tx_ttproducts_control {
 												$this->conf['useArticles']
 											);
 										}
-										$this->processPayment($content, $bFinalize, $order, $basketView, $address);
+										$this->processPayment($content, $bFinalize, $order, $basketView, $info);
 									}
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
@@ -440,7 +440,7 @@ class tx_ttproducts_control {
 										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
 										$basketView->init ($this->basket, $this->templateCode);
 									}
-									$this->processPayment($content, $bFinalize, $order, $basketView, $address);
+									$this->processPayment($content, $bFinalize, $order, $basketView, $info);
 								}
 							break; 
 							case 'products_finalize':
@@ -464,7 +464,7 @@ class tx_ttproducts_control {
 							$basketView->init ($this->basket, $this->templateCode);
 						}					
 						
-						$content .= $basketView->getView($empty, 'BASKET', $address, $this->activityArray['products_info'], false, '###'.$basket_tmpl.'###',$mainMarkerArray);
+						$content .= $basketView->getView($empty, 'BASKET', $info, $this->activityArray['products_info'], false, '###'.$basket_tmpl.'###',$mainMarkerArray);
 						$bFinalize = false;
 						// stop here as soon as the first basket content has been drawn
 						break; // foreach
@@ -473,8 +473,8 @@ class tx_ttproducts_control {
 				
 					// finalization at the end so that after every activity this can be called
 				if ($bFinalize)	{
-					$checkRequired = $address->checkRequired();
-					$checkAllowed = $address->checkAllowed();
+					$checkRequired = $info->checkRequired();
+					$checkAllowed = $info->checkAllowed();
 					if ($checkRequired == '' && $checkAllowed == '')	{
 						$this->pibase->load_noLinkExtCobj();	// TODO
 						$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
@@ -501,11 +501,11 @@ class tx_ttproducts_control {
 							$basketView->init ($this->basket, $this->templateCode);
 						}
 						if (trim($this->conf['paymentActivity']) == 'finalize') {
-							$this->processPayment($content, $bFinalize, $order, $basketView, $address);
+							$this->processPayment($content, $bFinalize, $order, $basketView, $info);
 						}
 						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
-						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $address, false, false, '###'.$tmpl.'###', $mainMarkerArray);
+						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $info, false, false, '###'.$tmpl.'###', $mainMarkerArray);
 						
 						include_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_finalize.php');
 														
@@ -515,16 +515,16 @@ class tx_ttproducts_control {
 						
 						$activityFinalize->doProcessing($this->templateCode, 
 							$basketView, $this->viewTable, $this->price, 
-							$orderUid, $orderConfirmationHTML, $error_message, $address); 
+							$orderUid, $orderConfirmationHTML, $error_message, $info); 
 								// Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
 						$contentTmp = $orderConfirmationHTML;
 
 						if ($this->conf['PIDthanks'] > 0) {
 							$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
-							$contentTmp = $basketView->getView($empty, 'BASKET', $address, false, false, '###'.$tmpl.'###', $mainMarkerArray);
+							$contentTmp = $basketView->getView($empty, 'BASKET', $info, false, false, '###'.$tmpl.'###', $mainMarkerArray);
 						}
 						$content .= $contentTmp;
-						$content .= $basketView->getView($empty, 'BASKET', $address, false, false, '###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
+						$content .= $basketView->getView($empty, 'BASKET', $info, false, false, '###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
 						
 						// Empties the shopping basket!
 						$this->basket->clearBasket();

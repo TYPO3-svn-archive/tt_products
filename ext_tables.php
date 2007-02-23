@@ -30,7 +30,7 @@ $TCA['tt_products'] = Array (
 		'dividers2tabs' => '1',
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden,title,subtitle,itemnumber,price,price2,note,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',
+		'fe_admin_fieldList' => 'hidden,title,subtitle,itemnumber,price,price2,note,category,address,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',
 	)
 );
 

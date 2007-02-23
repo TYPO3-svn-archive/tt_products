@@ -192,6 +192,7 @@ plugin.tt_products {
   createUsers = {$plugin.tt_products.createUsers}
   PIDuserFolder = {$plugin.tt_products.PIDuserFolder}
   pidsRelatedProducts = {$plugin.tt_products.pidsRelatedProducts}
+  pidsAddresses = {$plugin.tt_products.pidsAddresses}
   outputFolder = {$plugin.tt_products.outputFolder} 
   memberOfGroup = {$plugin.tt_products.memberOfGroup}
 
@@ -232,8 +233,13 @@ plugin.tt_products {
   # table settings
   # attention: Do not change the tt_products fields if you don't know what you do
 
+  table.tt_address {
+    name = name
+  }
+
   table.tt_products = tt_products
   table.tt_products {
+    address = address
     itemnumber = itemnumber
     variant {
       1 = color

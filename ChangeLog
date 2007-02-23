@@ -1,3 +1,6 @@
+2007-02-23 Franz Holzinger <franz@fholzinger.com>
+	* tt_address table can be used for manufacturer with the new address field of tt_products
+
 2007-02-09 Franz Holzinger <franz@fholzinger.com>
 	* fix bug 4940: $TSFE->reqCHash() must not be called. The new parameter useCacheHash must be passed to all link functions in the fh_library 0.0.16.
 

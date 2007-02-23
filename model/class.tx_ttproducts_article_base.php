@@ -87,6 +87,7 @@ class tx_ttproducts_article_base {
 			// image
 		$this->image = t3lib_div::makeInstance('tx_ttproducts_image');
 		$this->image->init($this->pibase, $cnf, $tt_content, $this->table, $this->marker);
+		$this->fields['address'] = ($this->tabledesc['address'] ? $this->tabledesc['address'] : 'address');
 		$this->fields['itemnumber'] = ($this->tabledesc['itemnumber'] ? $this->tabledesc['itemnumber'] : 'itemnumber');
 	} // init
 
@@ -129,7 +130,7 @@ class tx_ttproducts_article_base {
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1', $bSelect=true)	{
+	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1')	{
 		global $TYPO3_CONF_VARS;
 
 		if (!$this->marker)
@@ -207,15 +208,14 @@ class tx_ttproducts_article_base {
 			$text = '';
 			$variantRow = $row[$variantRec[0]];
 			$prodTmp = explode(';', $variantRow);
-			if ($bSelect && $variantRow && $variantRec[1])	{
+			if ($variantRow && $variantRec[1])	{
 				foreach ($prodTmp as $prodVal)	{
 					$text .= '<OPTION value="'.$prodVal.'">'.$prodVal.'</OPTION>';
 				}
 			} else {
 				$text = $prodTmp[0];
 			}
-			$markerKey = '###'.$this->marker.'_'.strtoupper($variantRec[0]).'###';
-			$markerArray[$markerKey] = $text;
+			$markerArray['###'.$this->marker.'_'.strtoupper($variantRec[0]).'###'] = $text;
 		}
 		$markerArray['###'.$this->marker.'_WEIGHT###'] = doubleval($row['weight']);
 

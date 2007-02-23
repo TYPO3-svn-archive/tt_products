@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -32,6 +32,7 @@
  * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -46,20 +47,23 @@ class tx_ttproducts_selectcat_view {
 	var $basket;
 	var $page;
 	var $tt_content; // element of class tx_table_db
-	var $tt_products_cat; // element of class tx_table_db
+	var $categoryTable; // element of class tx_table_db
+	var $javascript;
 	var $pid; // pid where to go
 	var $marker; // marker functions
 
 
 
-	function init(&$pibase, &$cnf, &$basket, &$pid_list, &$tt_content, &$tt_products_cat, $pid) {
+	function init(&$pibase, &$cnf, &$basket, &$pid_list, &$tt_content, &$categoryTable, &$javascript, $pid) {
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$this->cnf->conf;
 		$this->basket = &$basket;
 		$this->tt_content = &$tt_content;
-		$this->tt_products_cat = &$tt_products_cat;
-		$this->pid = $pid;		
+		$this->categoryTable = &$categoryTable;
+		$this->javascript = &$javascript;
+
+		$this->pid = $pid;	
 		$this->page = tx_ttproducts_page::createPageTable(
 			$this->pibase,
 			$this->cnf,
@@ -73,40 +77,38 @@ class tx_ttproducts_selectcat_view {
 		);
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($pibase, $cnf, $basket);
-
 	}
 
-
-
 	// returns the products list view
-	function &printView(&$categoryView, &$templateCode, &$error_code, $pageAsCategory, $templateSuffix = '') {
+	function &printView(&$categoryView, &$templateCode, $theCode, &$error_code, $templateArea = 'ITEM_CATEGORY_SELECT_TEMPLATE', $pageAsCategory, $templateSuffix = '') {
 		global $TSFE, $TCA, $TYPO3_CONF_VARS;
 		$content='';
 		$out='';
 		$where='';
 		$bSeparated = false;
 		$categoryArray = array();
-		$categoryTable = '';
 		$htmlTagMain = 'select';
 		$htmlTagElement = 'option';
 
+		$rootCat = $this->categoryTable->getRootCat();
 		if ($pageAsCategory)	{
 			$excludeCat = $this->pibase->cObj->data['pages'];
-			$rootCat = $this->cnf->config['storeRootPid'];
-			$categoryTable = &$this->page;
-		} else {
+			if (!$rootCat)	{
+				$rootCat = $excludeCat;
+			}
+		} else {			
 				// read in all categories
-			$categoryTable = &$this->tt_products_cat;
-			$categoryTable->get(0, $this->page->pid_list);	// read all categories
-			ksort ($categoryTable->dataArray);
+			$this->categoryTable->get(0, $this->page->pid_list);	// read all categories
+			ksort ($this->categoryTable->dataArray);
 			$excludeCat = 0;
 		}
 		
-		$currentCat = $categoryTable->getParamDefault();
-		$rootpathArray = $categoryTable->getRootpathArray($rootCat, $currentCat);
-		$categoryArray = $categoryTable->getRelationArray($excludeCat,$currentCat);
+		$currentCat = $this->categoryTable->getParamDefault();
+		$categoryArray = $this->categoryTable->getRelationArray($excludeCat,$currentCat);
+		$rootpathArray = $this->categoryTable->getRootpathArray($categoryArray, $rootCat, $currentCat);
 
-		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_CATEGORY_SELECT_TEMPLATE'.$templateSuffix.'###'));
+		$t = array();
+		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###'.$templateArea.$templateSuffix.'###'));
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
 		$t['linkCategoryFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryFrameWork'],'###LINK_CATEGORY###');
 		$subpartArray = array();
@@ -120,7 +122,7 @@ class tx_ttproducts_selectcat_view {
 		}
 		
 		$maxDepth = 3;
-		$rootArray = $categoryView->getRootArray($categoryArray);
+		$rootArray = $this->categoryTable->getRootArray($rootCat,$categoryArray);
 		$categoryView->setDepths($rootArray, $categoryArray);
 
 		$count = 0;
@@ -128,20 +130,52 @@ class tx_ttproducts_selectcat_view {
 		$catArray = array();
 		$catArray [(int) $depth] = &$rootArray;
 
-		$count = 0;
-		$menu = $this->conf['CSS.'][$categoryTable->table->name.'.']['menu'];
-		$menu = ($menu ? $menu : $categoryTable->piVar.$depth);
+		$menu = $this->conf['CSS.'][$this->categoryTable->table->name.'.']['menu'];
+		$menu = ($menu ? $menu : $this->categoryTable->piVar.$depth);
 		$fill = '';
 		if ($bSeparated)	{
 			$fill = ' onchange="fillSelect(this,2,1);"';
 		}
-		if ($htmlTagMain != 'null')	{
-			$out = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
+
+		$selectArray = array();
+		if (is_array($this->conf['form.'][$theCode.'.']) && is_array($this->conf['form.'][$theCode.'.']['dataArray.']))	{
+			foreach ($this->conf['form.'][$theCode.'.']['dataArray.'] as $k => $setting)	{
+				if (is_array($setting))	{
+					$selectArray[$k] = array();
+					$type = $setting['type'];
+					if ($type)	{
+						$parts = t3lib_div::trimExplode('=', $type);
+						if ($parts[1] == 'select')	{
+							$selectArray[$k]['name'] = $parts[0];
+						}
+					}
+					$label = $setting['label'];
+					if ($label)	{
+						$selectArray[$k]['label'] = $label;
+					}
+					$params = $setting['params'];
+					if ($params)	{
+						$selectArray[$k]['params'] = $params;
+					}
+				}
+			}
 		}
-		if ($htmlTagMain == 'select')	{
-			// empty select entry at the beginning
-			$out .= '<option value="0"></option>';
+
+		$select = current($selectArray);
+		if (is_array($select))	{
+			if ($select['name'])	{
+				$name = 'name="'.$select['name'].'" ';
+			}
+			if ($select['label'])	{
+				$label = $select['label'].' ';
+			}
+			if ($select['params'])	{
+				$params = $select['params'];
+			}
 		}
+		$out = $label.'<'.$htmlTagMain.' id="'.$menu.'" '.$name.$fill.$params.'>';
+		// empty select entry at the beginning
+		$out .= '<option value="0"></option>';
 		$out = str_replace($htmlPartsMarkers[0], $out, $htmlParts[0]);
 
 		foreach ($catArray[$depth] as $k => $actCategory)	{
@@ -151,11 +185,10 @@ class tx_ttproducts_selectcat_view {
 			$linkOut = htmlspecialchars($categoryArray[$actCategory]['title']);
 			$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);
 			$postOut = '</'.$htmlTagElement.'>';
-			$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);				
-		}		
+			$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);
+		}
 		
 		$out .= '</'.$htmlTagMain.'>';
-
 		$markerArray = array();
 		$subpartArray = array();
 		$wrappedSubpartArray = array();
@@ -163,22 +196,30 @@ class tx_ttproducts_selectcat_view {
 		$subpartArray['###CATEGORY_SINGLE###'] = $out;
 		if ($bSeparated)	{
 			$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
-			$this->pibase->javascript->set('selectcat', $categoryArray, 1+$count);
+			if ($this->pibase->pageAsCategory == 2)	{
+				// $catid = 'pid';
+				$parentFieldArray = array('pid');
+			} else {
+				// $catid = 'cat';
+				$parentFieldArray = array('parent_category');
+			}
+			$piVar = $this->categoryTable->piVar;
+			$this->javascript->set('selectcat', array($categoryArray), 1+$count, $piVar, $parentFieldArray, array($catid), array(), 'clickShow');
 			
 			for ($i = 2; $i <= 1+$count; ++$i)	{
-				$menu = $categoryTable->piVar.$i;
+				$menu = $this->categoryTable->piVar.$i;
 				$bShowSubcategories = ($i < 1+$count ? 1 : 0); 
 				$boxNumber = ($i < 1+$count ? ($i+1) : 0);
-				$fill = ' onchange="fillSelect(this,'.$boxNumber.','.$bShowSubcategories.');"';
+				$fill = ' onchange="fillSelect(this, '.$boxNumber.','.$bShowSubcategories.');"';
 				$tmp = '<'.$htmlTagMain.' id="'.$menu.'"'.$fill.'>';
 				$tmp .= '<option value="0"></option>';
 				$tmp .= '</'.$htmlTagMain.'>';
 				$subpartArray['###CATEGORY_SINGLE_'.$i.'###'] = $tmp;
 			}
+			// $subpartArray['###CATEGORY_SINGLE_BUTTON'] = '<input type="button" value="Laden" onclick="fillSelect(0, '.$boxNumber.','.$bShowSubcategories.');">';
 		}
 		$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 		$content = $out;
-
 		return $content;
 	}
 	

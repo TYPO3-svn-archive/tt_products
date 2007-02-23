@@ -178,11 +178,11 @@
 			<label index="open_bill" type="integer">53599323</label>
 			<label index="open_delivery" type="integer">154190750</label>
 			<label index="invalid_email" type="integer">31763511</label>
-			<label index="no_template" type="integer">248006334</label>
+			<label index="no_template" type="integer">161875206</label>
 			<label index="no_subtemplate" type="integer">246602036</label>
 			<label index="accept_AGB" type="integer">48367452</label>
 			<label index="additional_single" type="integer">140525922</label>
-			<label index="wrong_parameter" type="integer">139669760</label>
+			<label index="wrong_parameter" type="integer">263795251</label>
 			<label index="no_csv_creation" type="integer">66778137</label>
 			<label index="wrong_code" type="integer">93247658</label>
 			<label index="instock_warning" type="integer">123773386</label>
@@ -299,11 +299,11 @@
 			<label index="open_bill">Click here to open the bill</label>
 			<label index="open_delivery">Click here to open the delivery sheet</label>
 			<label index="invalid_email">Invalid E-mail address |! Please re-enter.</label>
-			<label index="no_template">The shop template file has not been found. Check your constants about</label>
+			<label index="no_template">The shop template file has not been found. Check your template setup about</label>
 			<label index="no_subtemplate">The part | or the template file | has not been found.</label>
 			<label index="accept_AGB">You have to accept the general trading conditions to proceed.</label>
 			<label index="additional_single">buy this product</label>
-			<label index="wrong_parameter">Wrong parameters. GET/POST var 'tx_ttproducts_pi1[product]' is missing or no product with uid = | found.</label>
+			<label index="wrong_parameter">Wrong parameters. GET/POST var 'tx_ttproducts_pi1[product]' is missing or no product with uid = | found on allowed pages.</label>
 			<label index="no_csv_creation">Warning: Cannot create CSV file '|' for this order!</label>
 			<label index="wrong_code">Wrong display mode or code '|'.</label>
 			<label index="instock_warning">Warning: | no. | runs out of stock.</label>

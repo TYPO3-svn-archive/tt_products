@@ -372,6 +372,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
 				case 'SELECTCAT':
+				case 'SELECTAD':
 				case 'LISTCAT':
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view.php');
 						// category view
@@ -382,12 +383,31 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					if ($theCode == 'LISTCAT')	{
 						$contentTmp = $categoryView->printView($this->templateCode, $error_code, $this->pageAsCategory, $htmlTagMain, $this->template_suffix);
 					} else {
+						$templateArea = 'ITEM_CATEGORY_SELECT_TEMPLATE';
+						if ($theCode == 'SELECTAD')	{
+							include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
+							$categoryTable = t3lib_div::makeInstance('tx_ttproducts_address');
+							$categoryTable->init(
+								$this,
+								$this->cnf,
+								$this->conf['table.']['tt_address']
+							);
+							$templateArea = 'ITEM_ADDRESS_SELECT_TEMPLATE';
+						} else {
+							if ($this->pageAsCategory)	{
+								$categoryTable = &$this->page;
+							} else {
+								$categoryTable = &$this->tt_products_cat;
+							}
+						}
+
 						include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_selectcat_view.php');
 							// category select view
 						$selectCatView = t3lib_div::makeInstance('tx_ttproducts_selectcat_view');
-						$selectCatView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products_cat, $this->pid);
-						$contentTmp = $selectCatView->printView($categoryView, $this->templateCode, $error_code, $this->pageAsCategory, $this->template_suffix);
+						$selectCatView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $categoryTable, $this->javascript, $this->pid);
+						$contentTmp = $selectCatView->printView($categoryView, $this->templateCode, $theCode, $error_code, $templateArea, $this->pageAsCategory, $this->templateSuffix);
 					}
+
 				break;
 				case 'SINGLE':
 					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList'] && 

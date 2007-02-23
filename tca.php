@@ -6,7 +6,7 @@
 $TCA['tt_products'] = Array (
 	'ctrl' => $TCA['tt_products']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,prod_uid,related_uid,itemnumber,price,price2,note,note2,note_uid,category,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime,shipping,shipping2,handling'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,prod_uid,related_uid,itemnumber,price,price2,note,note2,note_uid,category,address,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime,shipping,shipping2,handling'
 	),
 	'columns' => Array (
 		'hidden' => Array (
@@ -192,6 +192,17 @@ $TCA['tt_products'] = Array (
 					Array('', 0)
 				),
 				'foreign_table' => 'tt_products_cat'
+			)
+		),
+		'address' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.address',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('', 0)
+				),
+				'foreign_table' => 'tt_address'
 			)
 		),
 		'inStock' => Array (
@@ -439,7 +450,7 @@ $TCA['tt_products'] = Array (
 		),
 	),
 	'types' => Array (
-		'0' => Array('showitem' => 'title;;5;;3-3-3, itemnumber;;3, category, price;;4,weight;;6, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],note_uid;;;;1-1-1,image;;;;4-4-4,datasheet;;;;1-1-1,hidden;;1,' .
+		'0' => Array('showitem' => 'title;;5;;3-3-3, itemnumber;;3, category, address, price;;4,weight;;6, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],note_uid;;;;1-1-1,image;;;;4-4-4,datasheet;;;;1-1-1,hidden;;1,' .
 				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.variants,color,size,gradings;;7,description,additional,'.
 				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.relations,prod_uid,related_uid,'.
 				'--div--;LLL:EXT:tt_products/locallang_db.xml:tt_products.shippingdiv,shipping,shipping2,handling,')

@@ -103,7 +103,7 @@ class tx_ttproducts_basket_view {
 	/**
 	 * This generates the shopping basket layout and also calculates the totals. Very important function.
 	 */
-	function getView(&$templateCode, $code, &$address, $bSelectSalutation, $bSelectVariants, $subpartMarker='###BASKET_TEMPLATE###', $mainMarkerArray=array())	{
+	function getView(&$templateCode, $code, &$info, $bSelectSalutation, $bSelectVariants, $subpartMarker='###BASKET_TEMPLATE###', $mainMarkerArray=array())	{
 			/*
 				Very central function in the library.
 				By default it extracts the subpart, ###BASKET_TEMPLATE###, from the $templateCode (if given, else the default $this->templateCode)
@@ -593,8 +593,8 @@ class tx_ttproducts_basket_view {
 		}
 		$bFrameWork = $t['basketFrameWork'];
 
-		if (is_object($address))	{
-			$address->getItemMarkerArray ($markerArray, $bSelectSalutation);
+		if (is_object($info))	{
+			$info->getItemMarkerArray ($markerArray, $bSelectSalutation);
 		}
 		
 		$shipKeyArray = $this->basket->basketExtra['shipping'];

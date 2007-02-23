@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -132,7 +132,7 @@ class tx_ttproducts_card {
 
 		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 
-		$ccTypeText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_cards']['columns']['cc_type']['config']['items'], 'recs[creditcard][cc_type]');
+		$ccTypeText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_cards']['columns']['cc_type']['config']['items'], 'recs[creditcard][cc_type]', $this->ccArray['cc_type'], array());
 
 		$markerArray['###PERSON_CARDS_CC_TYPE###'] = $ccTypeText;
 		$markerArray['###PERSON_CARDS_CC_NUMBER###'] = $this->ccArray['cc_number'];		

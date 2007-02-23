@@ -130,6 +130,10 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		return $rc;
 	}
 
+	function getRootCat()	{
+		$rc = $this->cnf->config['rootCategoryID'];
+		return $rc;
+	}
 
 	function getParent ($uid=0) {
 		$rc = array();

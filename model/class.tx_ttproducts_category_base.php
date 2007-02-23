@@ -81,6 +81,11 @@ class tx_ttproducts_category_base {
 		return $rc;
 	}
 
+	function getRootCat()	{
+		$rc = 0;
+		return $rc;
+	}
+
 	function getRowCategory ($row) {
 		$rc = '';
 	return $rc;
@@ -95,6 +100,22 @@ class tx_ttproducts_category_base {
 		$rc = '';
 		return $rc;
 	}
+
+
+	function &getRootArray($rootCat, &$categoryArray)	{
+		$rootArray = array();
+		$rootCatArray = t3lib_div::trimExplode(',', $rootCat);
+
+		foreach ($categoryArray as $uid => $row)	{
+			if (!$row['parent_category']	||
+				in_array($uid, $rootCatArray))	{
+				$rootArray[] = $uid;
+			}
+		}
+
+		return $rootArray;
+	}
+
 
 
 	function &getRootpathArray ($rootCat,$currentCat) {
@@ -163,9 +184,9 @@ class tx_ttproducts_category_base {
 						$parentCategory, 
 						$parentPid, 
 						$this->config['limitImage'], 
-						'listcatImage', 
-						$viewCatTagArray, 
-						array(), 
+						'listcatImage',
+						$viewCatTagArray,
+						array(),
 						$pageAsCategory,
 						'SINGLE',
 						1,
@@ -175,7 +196,8 @@ class tx_ttproducts_category_base {
 			}
 		}
 	}
-  
+			
+
   
 	function getItemMarkerArray (&$row, &$markerArray, $code, $prefix='')	{ 
 		$marker = $prefix.$this->marker;

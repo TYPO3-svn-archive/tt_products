@@ -140,9 +140,9 @@ class tx_ttproducts_feuser {
 		global $TYPO3_CONF_VARS;
 
 		if ($bSelect)	{
-			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 
-			$typeSalutationText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'info][salutation]');
+			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
+			$typeSalutationText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'info][salutation]', $row['salutation'], array());
 
 		} else if (is_numeric($row['salutation'])) {
 			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];

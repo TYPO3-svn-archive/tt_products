@@ -98,9 +98,13 @@
 					    <numindex index="22">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.21</numindex>
 							<numindex index="1">LISTARTICLES</numindex>					    
-					    </numindex>						    				   					    			    
+					    </numindex>
+					    <numindex index="23">
+						    <numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.25</numindex>
+						    <numindex index="1">SELECTAD</numindex>					    
+					    </numindex>
 					</items>
-					<size>22</size>
+					<size>23</size>
 					<minitems>1</minitems>
 					<maxitems>5</maxitems>
 				</config>

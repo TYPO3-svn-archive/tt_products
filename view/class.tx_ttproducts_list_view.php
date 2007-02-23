@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2007 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -184,25 +184,46 @@ class tx_ttproducts_list_view {
 		
 		$cat = $this->tt_products_cat->getParamDefault();
 		$pid = $this->page->getParamDefault();
-		$whereCat = $itemTable->addWhereCat($cat, $this->page->pid_list);
 
-		if ($whereCat == '' && $allowedItems == '')	{
-			$neededParams = $itemTable->getNeededUrlParams($theCode);
-			$needArray = t3lib_div::trimExplode(',', $neededParams);
-			$bListStartEmpty = false;
-			foreach ($needArray as $k => $param)	{
-				if ($param && !isset($this->pibase->piVars[$param]))	{
-					$bListStartEmpty = true;
-					break;
-				}
-			}
-			if ($bListStartEmpty)	{
-				$allowedItems = '0';	// not possible uid
-			}
+		if ($itemTable->type == 'product')	{
+			$address = $this->pibase->piVars['address'];
 		}
 
-		$where .= $whereCat;
-		$tmp = $this->conf['form.'][$theCode.'.']['name'];
+		if ($address && $itemTable->fields['address'])	{
+			$where = ' AND ('.$itemTable->fields['address'].'='.intval($address);
+			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
+			$addressObj = t3lib_div::makeInstance('tx_ttproducts_address');
+			$addressObj->init(
+				$this,
+				$this->cnf,
+				$this->conf['table.']['tt_address']
+			);
+			$addressRow = $addressObj->get($address);
+			$addressText = $addressRow[$addressObj->fields['name']];
+			$where .= ' OR '.$itemTable->fields['address'].'='.$TYPO3_DB->fullQuoteStr($addressText,$address->table->name).')';
+		} else {	// do not mix address with category filter
+			$whereCat = $itemTable->addWhereCat($cat, $this->page->pid_list);
+
+			if ($whereCat == '' && $allowedItems == '')	{
+				$neededParams = $itemTable->getNeededUrlParams($theCode);
+				$needArray = t3lib_div::trimExplode(',', $neededParams);
+				$bListStartEmpty = false;
+				foreach ($needArray as $k => $param)	{
+					if ($param && !isset($this->pibase->piVars[$param]))	{
+						$bListStartEmpty = true;
+						break;
+					}
+				}
+				if ($bListStartEmpty)	{
+					$allowedItems = '0';	// not possible uid
+				}
+			}
+			$where .= $whereCat;
+		}
+
+		if (is_array($this->conf['form.'][$theCode.'.']) && is_array($this->conf['form.'][$theCode.'.']['data.']))	{
+			$tmp = $this->conf['form.'][$theCode.'.']['data.']['name'];
+		}
 		$formName = ($tmp ? $tmp : $formName); 
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 		if ($allowedItems || $allowedItems=='0')	{

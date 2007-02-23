@@ -219,7 +219,6 @@ class tx_ttproducts_single_view {
 				// Fill marker arrays
 			$wrappedSubpartArray=array();
 			$backPID = $this->pibase->piVars['backPID'];
-			$backPID = $this->pibase->piVars['backPID'];
 			$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
 			if ($this->conf['clickIntoBasket'] && $backPID)	{
 				$pid = $backPID;
@@ -348,7 +347,9 @@ class tx_ttproducts_single_view {
 
 			//$markerArray['###FORM_URL###']=$this->formUrl.'&tt_products='.$this->uid ;
 			$addQueryString = array();
-			$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $this->uid;
+			if ($pid == $TSFE->pid)	{
+				$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $this->uid;
+			}
 			
 			// $markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, array('tt_products' => $this->uid)); // Applied it here also...
 			$markerArray = $this->marker->addURLMarkers($pid, $markerArray, $addQueryString); // Applied it here also...

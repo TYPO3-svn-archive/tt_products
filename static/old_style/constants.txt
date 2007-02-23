@@ -140,6 +140,8 @@ plugin.tt_products {
   PIDuserFolder = 
     # cat=plugin.products//; type=int+; label=allowed pages for related products
   pidsRelatedProducts = 
+    # cat=plugin.products//; type=int+; label=allowed pages for addresses
+  pidsAddresses = 
 
     # cat=plugin.products//; type=string; label=When the payment shall be executed. Possible values:  'payment', 'finalize'
   paymentActivity=finalize

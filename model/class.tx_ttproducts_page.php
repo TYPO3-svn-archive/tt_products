@@ -108,6 +108,12 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	}
 
 
+	function getRootCat()	{
+		$rc = $this->cnf->config['rootPageID'];
+		return $rc;
+	}
+
+
 	function getNotes ($uid) {
 		global $TYPO3_DB;
 		$rowArray = $this->noteArray[$uid];
@@ -121,7 +127,6 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		}
 		return $rcArray;
 	}
-
 
 
 	function getParent ($uid=0) {
