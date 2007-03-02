@@ -44,15 +44,15 @@ This is some text here.
 
 
 <form action="###REDIRECT_URL###" method="post" autocomplete="off" name="connectForm">
-<input type="submit" name="pay" value="Connect to the Transaction Central payment server">&nbsp;&nbsp;<img src="typo3/ext/tt_products/res/icons/fe/amex.gif" width="53" height="33" hspace=10 border="0" alt="" align=absmiddle>
+<input type="submit" name="pay" value="Connect to the ###PAYMENTLIB_TITLE### server">&nbsp;&nbsp;<img src="###PAYMENTLIB_IMAGE###" width="53" height="33" hspace=10 border="0" alt="" align=absmiddle>
 	###HIDDEN_FIELDS###
 </form>
 
 
 <table BORDER="0" CELLPADDING="0" CELLSPACING="5">
 <TR>
-<TD><A HREF="http://primerchants.com/" TARGET="_blank"><IMG SRC="typo3/ext/tt_products/res/icons/fe/visa.gif" BORDER="0"></A></TD>
-<TD><FONT FACE="Verdana, Arial, Helvetica" SIZE=1>Here is some text about the Transaction Central Gateway.</FONT></TD>
+<TD><A HREF="http://primerchants.com/" TARGET="_blank"><IMG SRC="###PAYMENTLIB_IMAGE###" BORDER="0"></A></TD>
+<TD><FONT FACE="Verdana, Arial, Helvetica" SIZE=1>###PAYMENTLIB_INFO###</FONT></TD>
 </TR>
 </table>
 

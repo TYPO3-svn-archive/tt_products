@@ -113,6 +113,10 @@ class tx_ttproducts_card {
 		return $ccArray['cc_uid'];
 	}
 
+	function get ($uid, $bFieldArrayAll=false) {
+		// TODO
+	}
+
 
 	/**
 	 * Template marker substitution

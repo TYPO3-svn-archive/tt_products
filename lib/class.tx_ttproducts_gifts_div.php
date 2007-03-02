@@ -78,7 +78,7 @@ class tx_ttproducts_gifts_div {
 		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $basket->basketExt['gift'][$giftnumber]['deliveryemail'];
 		$markerArray['###GIFT_NOTE###'] = $basket->basketExt['gift'][$giftnumber]['note'];
 		//	 
-		$markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]';
+		// $markerArray['###FIELD_NAME###']='ttp_basket['.$row['uid'].'][quantity]';
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		// here again, because this is here in ITEM_LIST view
 		//	  $markerArray['###FIELD_QTY###'] =  '';

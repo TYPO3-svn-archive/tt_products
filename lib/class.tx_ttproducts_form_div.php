@@ -42,11 +42,11 @@
 class tx_ttproducts_form_div {
 
 
-	function createSelect (&$pibase, &$tcaArray, $name, $indexSelected, $allowedArray) {
+	function createSelect (&$pibase, &$valueArray, $name, $indexSelected, $allowedArray) {
 		global $TYPO3_DB;
 
 		$text = '';
-		foreach ($tcaArray as $key => $parts) {
+		foreach ($valueArray as $key => $parts) {
 			$tmp = tx_fhlibrary_language::sL($parts[0]);
 			$text = $pibase->pi_getLL($tmp);
 			if (!count($allowedArray) || in_array($parts[1], $allowedArray))	{
