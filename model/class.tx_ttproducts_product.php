@@ -61,21 +61,19 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($pibase, $cnf, 'tt_products', $tt_content, $paymentshipping);
-
 		$this->table = t3lib_div::makeInstance('tx_table_db');
-		
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $this->cnf->conf['orderBy'];
 		
 		if (!$tableConfig['orderBy'])	{
-			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];				
+			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];	
 		}
 
 		$this->table->setConfig($tableConfig);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$tablename = ($tablename ? $tablename : 'tt_products');
 		$this->table->setTCAFieldArray($tablename, 'products');
-		
+
 		$requiredFields = 'uid,pid,category,price,price2,tax,inStock';
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
@@ -91,7 +89,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$addRequiredFields = $this->tableconf['language.']['field.'];
 			$this->table->addRequiredFieldArray ($addRequiredFields);
 		}
-	
+
 		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
 			$this->table->setLangName($this->tableconf['language.']['table']);

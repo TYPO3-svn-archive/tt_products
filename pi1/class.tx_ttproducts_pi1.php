@@ -317,7 +317,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$content .= $this->control->doProcessing($this->codeArray, $this->errorMessage);
 		}
 		reset($this->codeArray);
-		$TSFE->reqCHash();
 
 		// $TSFE->set_no_cache(); uncomment this line if you have a problem with the cache
 		while(!$this->errorMessage && list($key,$theCode)=each($this->codeArray))	{

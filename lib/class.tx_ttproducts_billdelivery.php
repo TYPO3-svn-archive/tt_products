@@ -241,6 +241,7 @@ class tx_ttproducts_billdelivery {
 		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['shipping']);
 		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['total']);
 		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['total']);
+		$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$this->price->priceFormat($calculatedArray['priceTax']['total']-$calculatedArray['priceNoTax']['total']);
 
 			// Delivery note.
 		$markerArray['###DELIVERY_NOTE###'] = $orderData['deliveryInfo']['note'];
