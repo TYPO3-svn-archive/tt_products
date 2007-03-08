@@ -38,6 +38,10 @@ if (!defined ('FH_LIBRARY_EXTkey')) {
 	define('FH_LIBRARY_EXTkey','fh_library');
 }
 
+if (!defined ('TT_ADDRESS_EXTkey')) {
+	define('TT_ADDRESS_EXTkey','tt_address');
+}
+
 if (t3lib_extMgm::isLoaded(FH_LIBRARY_EXTkey)) {
 	if (!defined ('PATH_BE_fh_library')) {
 		define('PATH_BE_fh_library', t3lib_extMgm::extPath(FH_LIBRARY_EXTkey));
@@ -126,6 +130,6 @@ $TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] 
   ## Extending TypoScript from static template uid=43 to set up userdefined tag:
 t3lib_extMgm::addTypoScript($_EXTKEY,'editorcfg','tt_content.CSS_editor.ch.tt_products = < plugin.tt_products.CSS_editor ',43);
 
-t3lib_extMgm::addPItoST43($_EXTKEY,'pi1/class.tx_ttproducts_pi1.php','_pi1','list_type',1);
+t3lib_extMgm::addPItoST43($_EXTKEY,'pi1/class.tx_ttproducts_pi1.php','_pi1','list_type',1 );
 
 ?>

@@ -40,7 +40,7 @@
 
 
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
+require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_info.php');
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 
 
@@ -64,8 +64,8 @@ class tx_ttproducts_order_view {
 		$this->basket = &$basket;
 		$this->paymentshipping = &$paymentshipping;
 
-		$address = &t3lib_div::getUserObj('tx_ttproducts_address');
-		$address->init($pibase, $cnf, $formerBasket, $fe_users, $this->paymentshipping);
+		$info = &t3lib_div::getUserObj('tx_ttproducts_info');
+		$info->init($pibase, $cnf, $formerBasket, $fe_users, $this->paymentshipping);
 
 		include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 		
@@ -78,7 +78,7 @@ class tx_ttproducts_order_view {
 			$this->tt_products_articles,
 			$this->tt_products_cat,
 			$this->basket,
-			$address,
+			$info,
 			$this->conf['useArticles']
 		);
 

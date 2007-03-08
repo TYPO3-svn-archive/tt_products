@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2007 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -385,14 +385,21 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					} else {
 						$templateArea = 'ITEM_CATEGORY_SELECT_TEMPLATE';
 						if ($theCode == 'SELECTAD')	{
-							include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
-							$categoryTable = t3lib_div::makeInstance('tx_ttproducts_address');
-							$categoryTable->init(
-								$this,
-								$this->cnf,
-								$this->conf['table.']['tt_address']
-							);
-							$templateArea = 'ITEM_ADDRESS_SELECT_TEMPLATE';
+							if ($this->conf['table.']['tt_address.']['name'] != 'tt_address' ||
+							t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) {
+								include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
+								$categoryTable = t3lib_div::makeInstance('tx_ttproducts_address');
+								$categoryTable->init(
+									$this,
+									$this->cnf,
+									$this->conf['table.']['tt_address']
+								);
+								$templateArea = 'ITEM_ADDRESS_SELECT_TEMPLATE';
+							} else {
+								$message = $this->pibase->pi_getLL('extension_missing');
+								$messageArr =  explode('|', $message);
+								$this->errorMessage=$messageArr[0]. TT_ADDRESS_EXTkey .$messageArr[1];
+							}
 						} else {
 							if ($this->pageAsCategory)	{
 								$categoryTable = &$this->page;
@@ -401,11 +408,13 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 							}
 						}
 
-						include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_selectcat_view.php');
-							// category select view
-						$selectCatView = t3lib_div::makeInstance('tx_ttproducts_selectcat_view');
-						$selectCatView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $categoryTable, $this->javascript, $this->pid);
-						$contentTmp = $selectCatView->printView($categoryView, $this->templateCode, $theCode, $error_code, $templateArea, $this->pageAsCategory, $this->templateSuffix);
+						if (!$this->errorMessage)	{
+							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_selectcat_view.php');
+								// category select view
+							$selectCatView = t3lib_div::makeInstance('tx_ttproducts_selectcat_view');
+							$selectCatView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $categoryTable, $this->javascript, $this->pid);
+							$contentTmp = $selectCatView->printView($categoryView, $this->templateCode, $theCode, $error_code, $templateArea, $this->pageAsCategory, $this->templateSuffix);
+						}
 					}
 
 				break;

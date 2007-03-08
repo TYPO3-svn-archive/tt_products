@@ -153,6 +153,7 @@ class tx_ttproducts_list_view {
 			$sword = t3lib_div::_GP('sword');
 			$sword = ($sword ? $sword : t3lib_div::_GP('swords'));
 		}
+		$sword = rawurldecode($sword);
 		$more = 0;		// If set during this loop, the next-item is drawn
 		$where = '';
 		$formName = 'ShopListForm';
@@ -189,7 +190,7 @@ class tx_ttproducts_list_view {
 			$address = $this->pibase->piVars['address'];
 		}
 
-		if ($address && $itemTable->fields['address'])	{
+		if (($this->conf['table.']['tt_address.']['name'] != 'tt_address' || t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) && $address && $itemTable->fields['address'])	{
 			$where = ' AND ('.$itemTable->fields['address'].'='.intval($address);
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
 			$addressObj = t3lib_div::makeInstance('tx_ttproducts_address');

@@ -27,6 +27,7 @@
 			<label index="tax_included">VAT incl. price</label>
 			<label index="tax_excluded">w/o VAT</label>
 			<label index="tax_zero">without taxes</label>
+			<label index="extension_missing">The extension | has not been installed.</label>
 		</languageKey>
 		<languageKey index="dk" type="array">
 		</languageKey>
@@ -47,6 +48,7 @@
 			<label index="tax_included">inkl. MWSt.</label>
 			<label index="tax_excluded">exkl. MWSt.</label>
 			<label index="tax_zero">ohne MWSt.</label>
+			<label index="extension_missing">Die Extension | wurde nicht installiert.</label>
 		</languageKey>
 		<languageKey index="no" type="array">
 			<label index="open_bill">Klikk her for å åpne kvitteringen</label>

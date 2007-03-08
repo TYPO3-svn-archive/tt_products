@@ -1,5 +1,11 @@
 <?php
 
+if (t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) {
+	$addressTable = 'tt_address';
+} else {
+	$addressTable = '';
+}
+
 // ******************************************************************
 // This is the standard TypoScript products table, tt_products
 // ******************************************************************
@@ -202,7 +208,7 @@ $TCA['tt_products'] = Array (
 				'items' => Array (
 					Array('', 0)
 				),
-				'foreign_table' => 'tt_address'
+				'foreign_table' => $addressTable
 			)
 		),
 		'inStock' => Array (
@@ -464,6 +470,11 @@ $TCA['tt_products'] = Array (
 		'7' => Array('showitem' => ''),
 	)
 );
+
+
+if (!t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) {
+	$TCA['tt_products']['types']['0']['showitem'] = str_replace ('address,','',$TCA['tt_products']['types']['0']['showitem']);
+}
 
 
 $TCA['tt_products_language'] = Array (

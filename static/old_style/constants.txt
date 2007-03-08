@@ -57,7 +57,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label= cObj settings: If set, certain settings are manipulated in order to let the script render a single item - the $cObj->data.
   displayCurrentRecord = 
     # cat=plugin.products//; type=string; label= URL of the basket image
-  basketPic =
+  basketPic = EXT:tt_products/res/icons/fe/minibasket1.gif
     # cat=plugin.products//; type=boolean; label= Click into basket: If set the basket page will be shown after a product has been put there. PIDbasket needs to be set.
   clickIntoBasket =
     # cat=plugin.products//; type=int+; label= maximum basket quantity: This is the maximal possible amount of one product in the basket.
@@ -155,7 +155,7 @@ plugin.tt_products {
   alwaysUpdateOrderAmount = 1
  
     # cat=plugin.products//; type=int+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
-  defaultProductID = 1
+  defaultProductID =
     # cat=plugin.products//; type=int+; label=default category ID: ID of the default category that will be shown in the list view when not tx_ttproducts_pi1[cat] parameter is given
   defaultCategoryID = 
     # cat=plugin.products//; type=int+; label=recursive levels: Number of recursive levels to select tt_products from in lists.
