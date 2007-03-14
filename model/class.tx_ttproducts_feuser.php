@@ -116,7 +116,9 @@ class tx_ttproducts_feuser {
 
 		if ($TSFE->fe_user->user)	{
 			$wrappedSubpartArray['###FE_GROUP_1_TEMPLATE###'] = array('','');
+			$subpartArray['###FE_GROUP_0_TEMPLATE###'] = '';
 		} else {
+			$wrappedSubpartArray['###FE_GROUP_0_TEMPLATE###'] = array('','');
 			$subpartArray['###FE_GROUP_1_TEMPLATE###'] = '';
 		}
 		return;		

@@ -1,3 +1,7 @@
+2007-03-14 Franz Holzinger <franz@fholzinger.com>
+	* publish code for Payment Library. Thanks to the main sponsors http://gkmb.de/ and http://www.pil.dk/
+	* ###FE_GROUP_0_TEMPLATE### if no frontend user has logged in
+
 2007-03-08 Franz Holzinger <franz@fholzinger.com>
 	* check the installation of tt_address if addresses for products are used
 
