@@ -109,12 +109,11 @@ class tx_ttproducts_single_view {
 		if ($this->config['displayCurrentRecord'])	{
 			$rowArray[$this->type] = $this->pibase->cObj->data;  
 		} else {
-			$itemTableArray[$this->type]->table->enableFields();
-			$where = 'uid='.intval($this->uid) .' AND pid IN ('.$this->page->pid_list.')';
-			$res = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $where );
-			$rowArray[$this->type] = $TYPO3_DB->sql_fetch_assoc($res);
+ 			$where = ' AND pid IN ('.$this->page->pid_list.')';
+			$rowArray[$this->type] = $itemTableArray[$this->type]->get($this->uid, $where);
 			$itemTableConf[$this->type] = $this->cnf->getTableConf($itemTableArray[$this->type]->table->name, 'SINGLE');
 			$itemTableLangFields[$this->type] = $this->cnf->getTranslationFields($itemTableConf[$this->type]);
+
 			// TODO: $itemImageFields[$this->type] = $this->cnf->getImageFields($itemTableConf[$this->type]);			
 
 			if ($this->type == 'product')	{
@@ -122,12 +121,11 @@ class tx_ttproducts_single_view {
 					$itemTableArray[$this->type]->variant->modifyRowFromVariant ($rowArray[$this->type], $this->variants);
 				}
 			} else {
-				$itemTableArray['product']->table->enableFields();
-				$where = 'uid='.intval($rowArray[$this->type]['uid_product']);
-				$res = $itemTableArray['product']->table->exec_SELECTquery('*', $where .' AND pid IN ('.$this->page->pid_list.')');
-				$rowArray['product'] = $TYPO3_DB->sql_fetch_assoc($res);
+				$where = ' AND pid IN ('.$this->page->pid_list.')';
+				$rowArray['product'] = $itemTableArray['product']->get(intval($rowArray[$this->type]['uid_product']), $where);
 				$itemTableConf['product'] = $this->cnf->getTableConf($itemTableArray['product']->table->name, 'SINGLE');
 				$itemTableLangFields['product'] = $this->cnf->getTranslationFields($itemTableConf['product']);
+
 				$itemImageFields['product'] = $this->cnf->getImageFields($itemTableConf['product']);
 				$itemTableArray['article']->mergeProductRow($rowArray['article'], $rowArray['product']);
 			}
@@ -372,6 +370,9 @@ class tx_ttproducts_single_view {
 				$prevOrderby = 'uid DESC';
 				$nextOrderby = 'uid ASC';
 			}
+
+			$prevOrderby = $itemTableArray[$this->type]->table->transformOrderby($prevOrderby);
+			$nextOrderby = $itemTableArray[$this->type]->table->transformOrderby($nextOrderby);
 
 			$queryprev = '';
 			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ? '' : ' AND (inStock <>0) ');

@@ -83,18 +83,22 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	} // init
 
 
-	function get ($uid) {
+	function get ($uid,$where_clause='') {
 		global $TYPO3_DB;
+		
 		$rc = $this->dataArray[$uid];
-		if (!$rc) {
+		if (!$rc && $uid) {
 			$where = '1=1 '.$this->table->enableFields().' AND uid = '.intval($uid);
-			$res = $this->table->exec_SELECTquery('*',$where);
+			if ($where_clause)	{
+				$where .= ' '.$where_clause;
+			}
+			// Fetching the articles
+			$res = $this->table->exec_SELECTquery('*', $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$uid] = $row;
 		}
 		return $rc;
 	}
-
 
 	function &getWhereArray ($where) {
 		global $TYPO3_DB;

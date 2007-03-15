@@ -131,14 +131,17 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		return $articleRow;
 	}
 
-
-	function get ($uid) {
+	function get ($uid,$where_clause='') {
 		global $TYPO3_DB;
+		
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
-			$where = '1=1 '.$this->table->enableFields();
+			$where = '1=1 '.$this->table->enableFields().' AND uid = '.intval($uid);
+			if ($where_clause)	{
+				$where .= ' '.$where_clause;
+			}
 			// Fetching the products
-			$res = $this->table->exec_SELECTquery('*', $where.' AND uid = '.intval($uid));
+			$res = $this->table->exec_SELECTquery('*', $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$uid] = $row;
 		}
@@ -256,10 +259,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='', $id='1', $bSelect=true)	{
+	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='', $id='1')	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
-		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id, $bSelect);
+		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id);
 		
 			// Subst. fields
 		$markerArray['###'.$this->marker.'_UNIT###'] = $row['unit'];

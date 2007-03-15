@@ -1,3 +1,6 @@
+2007-03-15 Franz Holzinger <franz@fholzinger.com>
+	* fix bug with ORDER BY and missing table name in single view.
+
 2007-03-14 Franz Holzinger <franz@fholzinger.com>
 	* publish code for Payment Library. Thanks to the main sponsors http://gkmb.de/ and http://www.pil.dk/
 	* ###FE_GROUP_0_TEMPLATE### if no frontend user has logged in
