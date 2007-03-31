@@ -250,7 +250,7 @@ class tx_ttproducts_list_view {
 				$out = $t['search'];
 				$htmlSwords = htmlspecialchars($sword);
 				$tmpPid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $this->pibase->pid);
-				$markerArray = $this->marker->addURLMarkers($tmpPid,array());
+				$markerArray = $this->marker->addURLMarkers($tmpPid,array(),array(),'sword');
 				$markerArray['###FORM_NAME###'] = $formName;
 				$markerArray['###SWORD###'] = $htmlSwords;
 				$markerArray['###SWORDS###'] = $htmlSwords; // for backwards compatibility

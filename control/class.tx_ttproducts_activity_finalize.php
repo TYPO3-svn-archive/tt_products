@@ -50,14 +50,16 @@ class tx_ttproducts_activity_finalize {
 	var $config;
 
 	var $basket; 	// the basket object
+	var $tt_products;
 	var $tt_products_cat;
 	var $order;
+	var $useArticles;
 
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$basket, &$tt_products_cat, &$order)  {
+	function init(&$pibase, &$cnf, &$basket, &$tt_products, &$tt_products_cat, &$order)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 		
 		$this->pibase = &$pibase;
@@ -66,8 +68,12 @@ class tx_ttproducts_activity_finalize {
 		$this->config = &$cnf->config;
 
  		$this->basket = &$basket;	
+		$this->tt_products = &$tt_products;
 		$this->tt_products_cat = &$tt_products_cat;
 		$this->order = &$order;
+
+		$this->useArticles = $this->conf['useArticles'];
+
 	} // init
 
 

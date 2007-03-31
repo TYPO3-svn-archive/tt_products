@@ -135,6 +135,7 @@ class tx_ttproducts_marker {
 	 * getting the global markers
 	 */
 	function &getGlobalMarkers ()	{
+		global $TYPO3_CONF_VARS;
 		$markerArray = array();
 
 			// globally substituted markers, fonts and colors.
@@ -160,9 +161,18 @@ class tx_ttproducts_marker {
 				$markerArray['###'.$key.'###'] = $value;
 			}
 		}
-		
+
+			// Call all addURLMarkers hooks at the end of this method
+		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'])) {
+			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'] as $classRef) {
+				$hookObj= &t3lib_div::getUserObj($classRef);
+				if (method_exists($hookObj, 'addGlobalMarkers')) {
+					$hookObj->addGlobalMarkers($markerArray);
+				}
+			}
+		}
 		return $markerArray;	
-	}
+	} // getGlobalMarkers
 
 
 	/**
@@ -198,7 +208,6 @@ class tx_ttproducts_marker {
 
 
 	function getSearchParams(&$queryString) {
-		
 		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
 
 		if (!$temp)	{

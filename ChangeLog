@@ -1,3 +1,9 @@
+2007-03-31 Franz Holzinger <franz@fholzinger.com>
+	* fix bug with sword form URL parameter which has overridden the entered search value
+	* xAjax response needs charset as first parameter
+	* no call to tx_ttproducts_javascript::jsspecialchars is necessary with latest xajax 0.2.4 having CDATA comment to have the no_cache=1 parameter also with MS Internet Explorer on Windows
+	* fix bug with missing reduction of instock count for products and articles
+
 2007-03-15 Franz Holzinger <franz@fholzinger.com>
 	* fix bug with ORDER BY and missing table name in single view.
 

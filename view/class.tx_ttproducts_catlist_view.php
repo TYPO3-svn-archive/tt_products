@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -277,7 +277,7 @@ class tx_ttproducts_catlist_view {
 					$actCategory, 
 					$row['pid'],
 					$this->cnf->config['limitImage'], 
-					'listImage', 
+					'listImage',
 					$viewCatTagArray, 
 					array(), 
 					$pageAsCategory,
