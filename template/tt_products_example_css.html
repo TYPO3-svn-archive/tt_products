@@ -4,6 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
 <head>
 <title>Andrea Herzog-Kienast 2007 CSS Shop-Template tt_products 2.5.4</title>
+<!-- $Id$ -->
 </head>
 
 <body>
@@ -46,9 +47,9 @@
   <!-- <input type="image" name="addtomemo" src="typo3/ext/tt_products/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_ID###';" title="Add to memo">-->
   <div id="display_variant2_LIST">
     <!-- ###display_variant2### -->
-    ###GW2B### Grï¿½e: ###GW2E### 
-    <SELECT style="font-size: 10px" name="###FIELD_SIZE_NAME###" id="###PRODUCT_SIZE_ID###" onchange=" ###PRODUCT_SIZE_FUNCTION1###">###PRODUCT_SIZE###</SELECT>
- 		<!-- ###display_variant2### -->
+    ###GW2B### Größe: ###GW2E### 
+    <SELECT style="font-size: 10px" name="###FIELD_SIZE_NAME###" id="###PRODUCT_SIZE_ID###" onchange="###PRODUCT_SIZE_FUNCTION1###">###PRODUCT_SIZE###</SELECT>
+    <!-- ###display_variant2### -->
   </div>  
   <div id="display_variant1_LIST">
     <!--###display_variant1### -->
@@ -56,25 +57,24 @@
     <SELECT style="font-size: 10px" name="###FIELD_COLOR_NAME###" id="###PRODUCT_COLOR_ID###" onchange=" ###PRODUCT_COLOR_FUNCTION1###">###PRODUCT_COLOR###</SELECT>
     <!--###display_variant1### -->
   </div>
-  <div id="display_variant5_isSingle_LIST">  
+  <div id="display_variant5_isSingle_LIST">
      <!-- ###display_variant5_isSingle### -->
      Einzelprodukt, das nur einmal gew&#65533;lt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
      <!-- ###display_variant5_isSingle### -->
      <!-- ###display_variant5_isNotSingle### -->
-     <!-- ###display_variant5_isNotSingle### --> 
+     <!-- ###display_variant5_isNotSingle### -->
      <!--###ITEM_SINGLE_POST_HTML###--> <!--Andrea: wozu braucht man das? Das macht den Quelltext haputt, da ist irgendwas drin-->
      <!-- ###ITEM_SINGLE### end -->
   </div>
   <div id="web_price_LIST">
-  
+
             ###GW1B###Web-Preis: <p id="###PRICE_TAX_ID###">###PRICE_TAX###</p> &euro;###GW1E###
 						###GW2B###(enth. MwSt.: <p id="###PRICE_ONLY_TAX_ID###">###PRICE_ONLY_TAX###</p> &euro;)###GW2E###
   </div>
   <div id="anzahl_LIST">         
     ###GW1B### Anzahl: ###GW1E### <INPUT size="4" maxlength="6" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-    <input type="image" src="fileadmin/img/tt_products/basket1.gif" name="basket" id="inputimage_list" alt="In den Warenkorb" /> 
-  </div>   
-    
+    <input type="image" src="###IMAGE_BASKET_SRC###" name="basket" id="inputimage_list" alt="In den Warenkorb" /> 
+  </div>
     <input type="button" id="button2_LIST" name="warenkorb" value="Warenkorbinhalt ansehen" onclick="self.location.href='index.php?id=###PID_BASKET###'" />
 </div> 
 
@@ -405,29 +405,27 @@ Andrea: Warenkorbansicht Anfang -->
       <div id="text_Anzahl">###GW2B###<b>Anzahl:</b>###GW2E###</div>
       <div id="text_Gesamt">###GW2B###<b>Gesamt in Euro:</b>###GW2E###</div>
     </div>  
-    
+
     <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
     <!-- ###ITEM_CATEGORY### begin -->
-    
     <br />###CATEGORY_TITLE###<br />
-      
+
     <!-- ###ITEM_CATEGORY### end -->
     <!-- ###ITEM_LIST### begin -->
     <!-- ###ITEM_SINGLE### begin-->
-    
     <div class="floatbox_BASKET2">   
       <div id="PRODUCT_TITLE_BASKET2">   
         <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###-->
       </div>
-      <!--<div id="display_variant_BASKET2">
+      <div id="display_variant_BASKET2">
         <!-- ###display_variant2### -->
   		  ###PRODUCT_SIZE###
-  		  <!-- ###display_variant2### -->
+  	<!-- ###display_variant2### -->
         <br />
         <!-- ###display_variant1### -->
   		  ###PRODUCT_COLOR###
-  		  <!-- ###display_variant1### -->
-      </div>-->
+  	<!-- ###display_variant1### -->
+      </div>
       <div id="PRICE_TAX_BASKET2">
         ###GW1B### ###PRICE_TAX###<br />(MwSt. ###PRICE_ONLY_TAX###)###GW1E###
       </div>
@@ -438,7 +436,7 @@ Andrea: Warenkorbansicht Anfang -->
         ###GW1B### <b>###TAX_INCL_EXCL### ###PRICE_TOTAL_TAX###</b> <br />(exkl. MwSt. ###PRICE_TOTAL_NO_TAX###)###GW1E###
       </div>
     </div>   
-    
+
       <!-- ###ITEM_SINGLE### end -->
       <!-- ###ITEM_LIST### end -->
       <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
@@ -569,7 +567,7 @@ Exact same features as BASKET_TEMPLATE
     </div>       
     <div id="label_PERSON_NAME###">    
       ###GW1B###<strong>Name: </strong>*###GW1E###
-    </div> 
+    </div>
     <div id="field_PERSON_NAME>     
       <input type="text" name="recs[personinfo][name]" size="30" value="###PERSON_NAME###">
     </div>    
@@ -625,7 +623,7 @@ Exact same features as BASKET_TEMPLATE
     <div id="label_PERSON_NAME2">      
       ###GW1B###<strong>Name:</strong>###GW1E###
     </div>
-    <div id="field_PERSON_NAME2>      
+    <div id="field_PERSON_NAME2">
       ###GW1B######PERSON_NAME######GW1E###
     </div>    
     <div id="label_PERSON_ADDRESS2">   
