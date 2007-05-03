@@ -13,84 +13,56 @@
 <em>This subpart is used to display the regular list of products. It's also used by search-results.</em>
 
 
+<!----------------------------------------------------------------------------------->
 <!-- ###ITEM_LIST_TEMPLATE### begin
 	This subpart is used to display the regular list of products. It's also used by search-results.-->
-	  <!-- ###FE_GROUP_1_TEMPLATE### begin -->
-		Sie sind angemeldet!
-		<!-- ###FE_GROUP_1_TEMPLATE### end -->
-		<!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b>###GW2E###</div><!--###LINK_PREV###-->
-		<!-- ###LINK_BROWSE### begin -->[ ###BROWSE_LINKS### ]<!-- ###LINK_BROWSE### end-->
-		<!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&#65533;hste Seite</b>###GW2E###</div><!--###LINK_NEXT###-->
 	
-	  <!--###GW2B###Produktauswahl:###GW2E###	-->
-	  <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
-		<!-- ###ITEM_CATEGORY### begin -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+<!-- ###ITEM_CATEGORY### begin -->
+<h1>###CATEGORY_TITLE###</h1>
+<!-- ###ITEM_CATEGORY### end -->
 	
-		<div id="CATEGORY_TITLE_LIST" align="left">
-      ###GW1B######CATEGORY_TITLE### ###GW1E###
-    </div>
-
-    <!-- ###ITEM_CATEGORY### end -->
-	  <!-- ###ITEM_LIST### begin -->
-    <!-- ###ITEM_SINGLE### begin-->
-    <!-- ###ITEM_SINGLE_PRE_HTML###--> 
-
-<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
-
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
 <div id="PRODUCT_TITLE_LIST">
-  <!--###LINK_ITEM###-->###GW1B###<b><h2 id="###PRODUCT_TITLE_ID###"> ###PRODUCT_TITLE###</h2></b>###GW1E###<!--###LINK_ITEM###-->
+	<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+	  
+	  ###PRODUCT_IMAGE1###
+	  
+	  <!--###LINK_ITEM###--><h2> ###PRODUCT_TITLE###</h2><!--###LINK_ITEM###-->
+	  <p>###PRODUCT_SUBTITLE###</p>
+	  <span class="right"><!--###LINK_ITEM###-->mehr Infos<!--###LINK_ITEM###-->
+	 
+	  <span class="right"><INPUT size="3" maxlength="4" type="hidden" name="###FIELD_NAME###" value="###FIELD_QTY###"><input type="image" src="fileadmin/img/shop/jetzt_kaufen_DE.jpg" name="basket" id="inputimage" alt="Jetzt Kaufen" onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;}; submit();"/></span>
+	  
+	  <div id="display_variant5_isSingle_LIST">
+		 <!-- ###display_variant5_isSingle### -->
+		 Einzelprodukt, das nur einmal gew&#65533;lt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
+		 <!-- ###display_variant5_isSingle### -->
+		 <!-- ###display_variant5_isNotSingle### -->
+		 <!-- ###display_variant5_isNotSingle### -->
+		
+	  </div>
+	</form>
 </div>
-<div class="floatbox_LIST"> 
-  <div id="PRODUCT_IMAGE_LIST">
-    ###PRODUCT_IMAGE1### 
-  </div>
-  <!-- <input type="image" name="addtomemo" src="typo3/ext/tt_products/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_ID###';" title="Add to memo">-->
-  <div id="display_variant2_LIST">
-    <!-- ###display_variant2### -->
-    ###GW2B### Größe: ###GW2E### 
-    <SELECT style="font-size: 10px" name="###FIELD_SIZE_NAME###" id="###PRODUCT_SIZE_ID###" onchange="###PRODUCT_SIZE_FUNCTION1###">###PRODUCT_SIZE###</SELECT>
-    <!-- ###display_variant2### -->
-  </div>  
-  <div id="display_variant1_LIST">
-    <!--###display_variant1### -->
-    ###GW2B### Art: ###GW2E### 
-    <SELECT style="font-size: 10px" name="###FIELD_COLOR_NAME###" id="###PRODUCT_COLOR_ID###" onchange=" ###PRODUCT_COLOR_FUNCTION1###">###PRODUCT_COLOR###</SELECT>
-    <!--###display_variant1### -->
-  </div>
-  <div id="display_variant5_isSingle_LIST">
-     <!-- ###display_variant5_isSingle### -->
-     Einzelprodukt, das nur einmal gew&#65533;lt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
-     <!-- ###display_variant5_isSingle### -->
-     <!-- ###display_variant5_isNotSingle### -->
-     <!-- ###display_variant5_isNotSingle### -->
-     <!--###ITEM_SINGLE_POST_HTML###--> <!--Andrea: wozu braucht man das? Das macht den Quelltext haputt, da ist irgendwas drin-->
-     <!-- ###ITEM_SINGLE### end -->
-  </div>
-  <div id="web_price_LIST">
+ <!-- ###ITEM_SINGLE### end -->
 
-            ###GW1B###Web-Preis: <p id="###PRICE_TAX_ID###">###PRICE_TAX###</p> &euro;###GW1E###
-						###GW2B###(enth. MwSt.: <p id="###PRICE_ONLY_TAX_ID###">###PRICE_ONLY_TAX###</p> &euro;)###GW2E###
-  </div>
-  <div id="anzahl_LIST">         
-    ###GW1B### Anzahl: ###GW1E### <INPUT size="4" maxlength="6" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-    <input type="image" src="###IMAGE_BASKET_SRC###" name="basket" id="inputimage_list" alt="In den Warenkorb" /> 
-  </div>
-    <input type="button" id="button2_LIST" name="warenkorb" value="Warenkorbinhalt ansehen" onclick="self.location.href='index.php?id=###PID_BASKET###'" />
-</div> 
-
-</form>
-		<!-- ###ITEM_LIST### end -->
-	  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
- 
-  	<!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b>###GW2E###</div><!--###LINK_PREV###-->
-  	<!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&#65533;hste Seite</b>###GW2E###</div><!--###LINK_NEXT###-->
-
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
 <!-- ###ITEM_LIST_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
+
+
+
 
 
 <h3>ARTICLE_LIST_TEMPLATE</h3>
 <em>This subpart is used to display the regular list of articles.</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###ARTICLE_LIST_TEMPLATE### begin
 	This subpart is used to display the regular list of articles. -->
 
@@ -128,7 +100,7 @@
     <br />
     ###ARTICLE_IMAGE### <br />
     <!-- ###display_variant2### -->
-    ###GW2B### Grï¿½e: ###GW2E### ###ARTICLE_SIZE###<br />
+    ###GW2B### Gr&ouml;&szlig;e: ###GW2E### ###ARTICLE_SIZE###<br />
     <!-- ###display_variant2### -->
     ###ITEM_SINGLE_POST_HTML###
     <!-- ###ITEM_SINGLE### end -->   
@@ -140,145 +112,225 @@
 		<!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&#65533;hste Seite</b>###GW2E###</div><!--###LINK_NEXT###-->
 	
     ###GW1B### Zusatztext ###GW1E###
+<!-- ###ARTICLE_LIST_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
 
-    <!-- ###ARTICLE_LIST_TEMPLATE### end -->
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>ITEM_LIST_RELATED_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of related products. to the one in the single view.</em><br>
+<br>
+<br>
+
+<!----------------------------------------------------------------------------------->
+<!-- ###ITEM_LIST_RELATED_ARTICLES_TEMPLATE### begin
+	This subpart is used to display the regular list of products. It's also used by search-results.
+-->
+<!-- ###ITEM_LIST_RELATED_TEMPLATE### begin
+	This subpart is used to display the regular list of products. It's also used by search-results.
+-->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+		<!-- ###ITEM_CATEGORY### begin -->
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+
+
+          <!-- ###ITEM_SINGLE### begin-->
+          ###ITEM_SINGLE_PRE_HTML###
+
+            <!--###LINK_ITEM###-->
+           ###PRODUCT_TITLE###
+            <!--###LINK_ITEM###-->
+            <br>
+            ###PRODUCT_IMAGE1### <br>
+		  <!-- ###display_variant2### -->
+		  ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
+		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+		  <!-- ###display_variant2### -->
+          ###ITEM_SINGLE_POST_HTML###
+          <!-- ###ITEM_SINGLE### end -->
+ <input type="Submit" name="order2" value="In den Warenkorb">
+
+            <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"></td>
+
+
+		</form>
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+
+<!-- ###ITEM_LIST_RELATED_TEMPLATE### end -->
+<!-- ###ITEM_LIST_RELATED_ARTICLES_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
+
 
 <h3>ITEM_SINGLE_DISPLAY</h3>
 <em>This subpart is used to display single products.</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###ITEM_SINGLE_DISPLAY### begin
 	This subpart is used to display single products.-->
+ Singleansicht Produkt ! <br />
 
-		<!--###LINK_PREV_SINGLE###-->###GW2B###<div align="left">&lt;&lt; voriger Artikel###GW2E###</div><!--###LINK_PREV_SINGLE###-->
-	  <!--###LINK_NEXT_SINGLE###-->###GW2B###<div align="right">nï¿½hster Artikel &gt;&gt;###GW2E###</div><!--###LINK_NEXT_SINGLE###-->
+<!--###LINK_ITEM###-->###PRODUCT_TITLE### <br /> ###PRODUCT_SUBTITLE###<!--###LINK_ITEM###--><br /><br /><br />
 
-<form method="post" name="###FORM_NAME###" action="###FORM_URL###">
-  <div id="PRODUCT_TITLE_SINGLE"><!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###-->
-  </div>
-	<div class="floatbox_SINGLE">
-    <div id="PRODUCT_IMAGE_SINGLE">
-		  ###PRODUCT_IMAGE###
-		</div>
-    <div id="PRODUCT_NOTE_SINGLE">  
-      ###GW1B###
-      <B>Info:</B><br />
-      Ident-Nr. ###PRODUCT_UID### 
-      ###PRODUCT_NOTE###
-      ###PRODUCT_NOTE_UID_1_title###
-     	###PRODUCT_NOTE_UID_1_1_TEXT_bodytext###
-      ###GW1E###  
-    </div>    
-    <div id="display_variant2_SINGLE">  
-      <!-- ###display_variant2### -->
-      ###GW2B### Gr&ouml;&szlig;e: ###GW2E### <SELECT style="font-size: 10px"
-      name="###FIELD_SIZE_NAME###" id="###PRODUCT_SIZE_ID###" onchange="###PRODUCT_SIZE_FUNCTION1###">###PRODUCT_SIZE###</SELECT>&nbsp;
-      <!-- ###display_variant2### -->
-    </div>          
-    <div id="display_variant1_SINGLE">   
-      <!--###display_variant1### -->
-      ###GW2B### Art: ###GW2E### 
-      <SELECT style="font-size: 10px" name="###FIELD_COLOR_NAME###" id="###PRODUCT_COLOR_ID###" onchange=" ###PRODUCT_COLOR_FUNCTION1###">###PRODUCT_COLOR###</SELECT>
-      <!--###display_variant1### -->
-    </div>
-    <div id="web_price_SINGLE">
-  
-            ###GW1B###Web-Preis: <p id="###PRICE_TAX_ID###">###PRICE_TAX###</p> &euro;###GW1E###
-						###GW2B###(enth. MwSt.: <p id="###PRICE_ONLY_TAX_ID###">###PRICE_ONLY_TAX###</p> &euro;)###GW2E###
-    </div>
-  	<div id="anzahl_SINGLE">
-      ###GW2B### Menge: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-      <input type="image" src="fileadmin/img/tt_products//basket1.gif" name="basket" id="inputimage" alt="In den Warenkorb" onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"/> 
-    </div>
-    <div id="SHOPADMIN_EMAIL_SINGLE">  
-      <a href="mailto:###SHOPADMIN_EMAIL###?subject=Frage zum Artikel: ###PRODUCT_TITLE###&body=Ich habe folgenden Artikel gesehen: ###PRODUCT_TITLE### %0AMeine Fragen: "><B>Fragen zum Artikel</B></a>  <br />
-    </div>
-    <div id="PRODUCT_RELATED_UID_SINGLE">      
-      ###PRODUCT_RELATED_UID###
-    </div>       
-  </div>
-</form>
+<!--Tab_content: Beginn-->
+<div id="tab_content" style="position:relative;">	
+	<!--tab_menu: Beginn-->	
+	<div id="tab_menu" class="clearfix">
+		<ul>
+			<li id="current_tab" onclick="showHideLayers('produktfinder','','show','kategorien','','hide','produkte','','hide','anfragen','','hide'); setCurrent(this)"><a href="#"><span>Beschreibung</span></a></li>
+			<li id="" onclick="showHideLayers('produktfinder','','hide','kategorien','','show','produkte','','hide','anfragen','','hide'); setCurrent(this)"><a href="#"><span>Teschnische Daten</span></a></li>
+			<li id="" onclick="showHideLayers('produktfinder','','hide','kategorien','','hide','produkte','','show','anfragen','','hide'); setCurrent(this)"><a href="#"><span>Konfiguration</span></a></li>
+			<li id="" onclick="showHideLayers('produktfinder','','hide','kategorien','','hide','produkte','','hide','anfragen','','show'); setCurrent(this)"><a href="#"><span>Anfragen & Angebote</span></a></li>
+		</ul>
+	</div>
+	<!--tab_menu: Ende-->	
+	
+	<div id="produktfinder" style="display: block; ">
+		<h2>Beschreibung</h2>
 
+		###PRODUCT_IMAGE###
 
-<!--<div id="backtolist_SINGLE">-->
-  ###GW2B###
-  <!--###LINK_ITEM###-->
-  <b><- zurck zur Liste</b>
-  <!--###LINK_ITEM###-->
-  ###GW2E###
+		###PRODUCT_NOTE### <br />
+		###PRODUCT_NOTE2###	
+		###PRODUCT_NOTE_UID_1_title###
+		###PRODUCT_NOTE_UID_1_1_TEXT_bodytext###	</div>
+	
+	<div id="kategorien" style="display: none; ">
+		<h2>Kategorien</h2>
+		
+    </div>
+	
+	<div id="produkte" style="display: none; ">
+		<h2>Produkte</h2>
+		<p class="bodytext">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+	</div>
+	
+	<div id="anfragen" style="display: none; ">
+		<h2>Anfragen & Angebote</h2>
+		<p class="bodytext">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+
+	</div>
 </div>
+<!--Tab_content: Ende-->
+
+
+<!-- hier stehen die Artikel eines Produktes -->
+<h3>Artikel zu diesem Produkt</h3>
+###PRODUCT_RELATED_ARTICLES###
+<!-- ende: Artikel -->
+
+	 
+
+
+<div id="PRODUCT_RELATED_UID_SINGLE">
+   <h1>Zubeh&ouml;r</h1>     
+  ###PRODUCT_RELATED_UID###
+</div>
+						
 <!-- ###ITEM_SINGLE_DISPLAY### end -->
+<!----------------------------------------------------------------------------------->
 
-<h3>ITEM_LIST_RELATED_TEMPLATE</h3>
-<em>This subpart is used to display the regular list of related products. to the one in the single view.</em>
 
+<!----------------------------------------------------------------------------------->
+<!-- ###ITEM_LIST_RELATED_ARTICLES_TEMPLATE### begin
+	This subpart is used to display the regular list of products. It's also used by search-results.
+-->
 <!-- ###ITEM_LIST_RELATED_TEMPLATE### begin
-This subpart is used to display the regular list of products. It's also used by search-results.-->
+	This subpart is used to display the regular list of products. It's also used by search-results.
+-->
+<br>
+<h3>&auml;hnliche Produkte oder zugeh&ouml;rige Artikel</h3>
 
-<h3>&auml;hnliche Produkte</h3>
-	
-<!-- ###FE_GROUP_1_TEMPLATE### begin -->
-Sie sind eingeloggt! 
-<!-- ###FE_GROUP_1_TEMPLATE### end -->
-<!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b>###GW2E###</div><!--###LINK_PREV###-->
-<!-- ###LINK_BROWSE### begin -->
-[ ###BROWSE_LINKS### ]
-<!-- ###LINK_BROWSE### end-->
-<!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&#65533;hste Seite</b>###GW2E###</div><!--###LINK_NEXT###-->
-	
-	
-<div align="justify">
-  ###GW2B###<b>Produkt - Auswahl:</b>###GW2E###
-</div>
-<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
-<!-- ###ITEM_CATEGORY### begin -->
-			
-<br />###GW1B###<font size="3"><strong>###CATEGORY_TITLE###</strong></font> ###GW1E###
-<br />
-				
-<!-- ###ITEM_CATEGORY### end -->
-<!-- ###ITEM_LIST### begin -->
-			
-     
-<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
-  <!-- ###ITEM_SINGLE### begin-->
-  ###ITEM_SINGLE_PRE_HTML###
-  <div align="left" style="height:150px;" valign="bottom">
-    <!--###LINK_ITEM###-->
-    ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
-    <!--###LINK_ITEM###-->
-    <br />
-    ###PRODUCT_IMAGE1### <br />
-    <!-- ###display_variant2### -->
-    ###GW2B### Grï¿½e: ###GW2E### <SELECT style="font-size: 10px"
-    name="###FIELD_SIZE_NAME###" >###PRODUCT_SIZE###</SELECT><br />
-    <!-- ###display_variant2### -->
-    <!-- ###display_variant5_isSingle### -->
-    Einzelprodukt, das nur einmal gew&#65533;lt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
-    <!-- ###display_variant5_isSingle### -->
-    <!-- ###display_variant5_isNotSingle### -->
-    ###GW1B### Stckzahl: ###GW1E### <INPUT size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-    <input type="image" name="addtomemo" src="typo3/ext/tt_products/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_ID###';" title="Add to memo">
-    <!-- ###display_variant5_isNotSingle### -->  
-    ###ITEM_SINGLE_POST_HTML###
-    <!-- ###ITEM_SINGLE### end -->
-  </div> 
-  <div align="justify"> 
-    <input type="submit" name="order2" value="In den Warenkorb">
-  </div>
-  <div align="justify">
-    <input type="button" id="button3" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'">
-  </div>
-</form>
-			   
+
+<table border="0" cellspacing="0" cellpadding="1" width=1>
+	<tr>
+		<!-- ###FE_GROUP_1_TEMPLATE### begin -->
+		<td>Du bist eingeloggt! </td>
+		<!-- ###FE_GROUP_1_TEMPLATE### end -->
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td><!-- ###LINK_BROWSE### begin -->
+			[ ###BROWSE_LINKS### ]
+			<!-- ###LINK_BROWSE### end-->
+		</td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;hste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+	<tr>
+		<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
+	</tr>
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+		<!-- ###ITEM_CATEGORY### begin -->
+			<tr>
+				<td colspan=4><br>###GW1B###<font size=3><strong>###CATEGORY_TITLE###</strong></font> ###GW1E###
+				<br>
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<tr><td colspan="3">
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+
+        <table bordercolor="#003399" cellspacing="1" border="1">
+          <tr>
+            <td><img src="clear.gif" width="150" height="1"></td>
+            <td><img src="clear.gif" width="150" height="1"></td>
+            <td><img src="clear.gif" width="150" height="1"></td>
+          </tr>
+          <!-- ###ITEM_SINGLE### begin-->
+          ###ITEM_SINGLE_PRE_HTML###
+          <td height="150" bgcolor="###GC1###" valign="bottom" align="center">
+            <!--###LINK_ITEM###-->
+            ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+            <!--###LINK_ITEM###-->
+            <br>
+            ###PRODUCT_IMAGE1### <br>
+		  <!-- ###display_variant2### -->
+		  ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
+		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+		  <!-- ###display_variant2### -->
+          ###ITEM_SINGLE_POST_HTML###
+          <!-- ###ITEM_SINGLE### end -->
+          <tr>
+            <td colspan="3" align="CENTER"> <input type="Submit" name="order2" value="In den Warenkorb"></td>
+          </tr>
+          <tr>
+            <td colspan="3" align="CENTER">
+            <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"></td>
+          </tr> 
+        </table>
+			</form>
+			</td></tr>
 		<!-- ###ITEM_LIST### end -->
-	  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
-	
-		<!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b>###GW2E###</div><!--###LINK_PREV###-->
-		<!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&#65533;hste Seite</b>###GW2E###</div><!--###LINK_NEXT###-->
-	
-###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br />Sollte die Befllung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte ber den Link Kontakt/Bestellung per Email. Viel Spa&#65533;beim Einkaufen! ###GW1E###
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td></td>
+		<td></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&iuml;&iquest;&frac12;hste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+</table>
+###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Bef&uuml;llung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte ber den Link Kontakt/Bestellung per Email. Viel Spa&szlig; beim Einkaufen! ###GW1E###
 
+<br>
+<table width="163">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<br>
 <!-- ###ITEM_LIST_RELATED_TEMPLATE### end -->
+<!-- ###ITEM_LIST_RELATED_ARTICLES_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
+<!----------------------------------------------------------------------------------->
 <!-- ###MEMO_TEMPLATE### begin
 This subpart is used to display the regular list of products. It's also used by search-results.-->
   
@@ -343,26 +395,38 @@ This subpart is used to display the regular list of products. It's also used by 
 </div>
   
 <!-- ###MEMO_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
 
 <h3>MEMO_NOT_LOGGED_IN</h3>
 <em>Subpart displayed when trying to view the memo without being logged in as frontend user.</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###MEMO_NOT_LOGGED_IN### begin -->
 ###GW1B###<B>Sie sind nicht angemeldet.</B>###GW1E###
 <!-- ###MEMO_NOT_LOGGED_IN### end -->
+<!----------------------------------------------------------------------------------->
+
+
 
 
 <h3>MEMO_EMPTY</h3>
 <em>Subpart displayed when trying to view the memo but the logged in frontend user hasn't stored any memo yet.</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###MEMO_EMPTY### begin -->
 ###GW1B###<B>Sie haben keine Produkte vorgemerkt.</B>###GW1E###
 <!-- ###MEMO_EMPTY### end -->
+<!----------------------------------------------------------------------------------->
+
+
 
 
 <h3>ITEM_SEARCH</h3>
 <em>Subpart for the search-form.</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###ITEM_SEARCH### begin
 Subpart for the search-form
 -->
@@ -371,16 +435,23 @@ Subpart for the search-form
   <input type="submit" name="order" value="Suchen">
 </form>
 <!-- ###ITEM_SEARCH### end -->
+<!----------------------------------------------------------------------------------->
+
 
 
 <h3>ITEM_SEARCH_EMPTY</h3>
 <em>Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###ITEM_SEARCH_EMPTY### begin
 Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.
 -->
 ###GW1B###<B>Es wurden keine Artikel gefunden.</B>###GW1E###
 <!-- ###ITEM_SEARCH_EMPTY### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
 
 <h3>BASKET_TEMPLATE</h3>
 <em>
@@ -389,6 +460,7 @@ The product list part has the exact same features as the regular LIST_ITEM_TEMPL
 In addition there's a number of fields used for delivery and payment information.
 </em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###BASKET_TEMPLATE###
 Subpart used to display the content of the shopping basket.
 The product list part has the exact same features as the regular LIST_ITEM_TEMPLATE subpart.
@@ -532,6 +604,9 @@ Andrea: Warenkorbansicht Anfang -->
 </div>
 
 <!-- ###BASKET_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
 
 
 <h3>BASKET_INFO_TEMPLATE</h3>
@@ -540,6 +615,7 @@ Subpart used if the GPvar "products_info" was set. This is normally used to let 
 Exact same features as BASKET_TEMPLATE
 </em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###BASKET_INFO_TEMPLATE### begin
 Subpart used if the GPvar "products_info" was set. This is normally used to let people enter address information separately from the real basket
 Exact same features as BASKET_TEMPLATE
@@ -559,55 +635,55 @@ Exact same features as BASKET_TEMPLATE
   </div>
   
   <div id="floatbox_BASKETINFO1">
-    <div id="label_PERSON_SALUTATION">     
+    <div id="label_PERSON_SALUTATION">
       ###GW1B###<strong>Anrede:</strong>###GW1E###
     </div>
-    <div id="field_PERSON_SALUTATION"></div>      
+    <div id="field_PERSON_SALUTATION"></div>
       ###GW1B######PERSON_SALUTATION######GW1E###
-    </div>       
-    <div id="label_PERSON_NAME###">    
+    </div>
+    <div id="label_PERSON_NAME###">
       ###GW1B###<strong>Name: </strong>*###GW1E###
     </div>
-    <div id="field_PERSON_NAME">     
+    <div id="field_PERSON_NAME">
       <input type="text" name="recs[personinfo][name]" size="30" value="###PERSON_NAME###">
-    </div>    
-    <div id="label_PERSON_ADDRESS##">     
+    </div>
+    <div id="label_PERSON_ADDRESS##">
       ###GW1B###<strong>Adresse: </strong>*###GW1E###
     </div>
     <div id="field_PERSON_ADDRESS">
       <textarea cols="30" rows="5" name="recs[personinfo][address]" wrap="off">###PERSON_ADDRESS###</textarea>
     </div>    
-    <div id="label_PERSON_ZIP###">     
+    <div id="label_PERSON_ZIP###">
       ###GW1B###<strong>PLZ: </strong>*###GW1E###
     </div>
-    <div id="field_PERSON_ZIP">     
+    <div id="field_PERSON_ZIP">
       <input type="text" name="recs[personinfo][zip]" size="10" value="###PERSON_ZIP###">
-    </div>    
-    <div id="label_PERSON_CITY###">     
+    </div>
+    <div id="label_PERSON_CITY###">
       ###GW1B###<strong>Stadt: </strong>*###GW1E###
     </div>
-    <div id="field_PERSON_CITY">     
+    <div id="field_PERSON_CITY">
       <input type="text" name="recs[personinfo][city]" size="30" value="###PERSON_CITY###">
-    </div>    
-    <div id="label_PERSON_COUNTRY_CODE###">     
+    </div>
+    <div id="label_PERSON_COUNTRY_CODE###">
       ###GW1B###<strong>Land: </strong>*###GW1E###
     </div> 
-    <div id="field_PERSON_COUNTRY_CODE">     
+    <div id="field_PERSON_COUNTRY_CODE">
       ###PERSON_COUNTRY_CODE###
-    </div>    
-    <div id="label_PERSON_TELEPHONE###">     
+    </div>
+    <div id="label_PERSON_TELEPHONE###">
       ###GW1B###<strong>Telefon: </strong>*###GW1E###
     </div>  
-    <div id="field_PERSON_TELEPHONE">   
+    <div id="field_PERSON_TELEPHONE">
       <input type="text" name="recs[personinfo][telephone]" size="30" value="###PERSON_TELEPHONE###">
     </div>    
-    <div id="label_PERSON_EMAIL###">     
+    <div id="label_PERSON_EMAIL###">
       ###GW1B###<strong>Email: </strong>*###GW1E###
     </div>
-    <div id="field_PERSON_EMAIL">    
+    <div id="field_PERSON_EMAIL">
       <input type="text" name="recs[personinfo][email]" size="30" value="###PERSON_EMAIL###">
-    </div>   
-  </div>    
+    </div>
+  </div>
   
   ###GW1B###
   <div id="text_hinweis_BASKETINFO">
@@ -620,7 +696,7 @@ Exact same features as BASKET_TEMPLATE
   If this part is not empty then this will be used instead of BILLING_ADDRESS if there is a FE-login user.-->
 
   <div id="floatbox_BASKETINFO2">
-    <div id="label_PERSON_NAME2">      
+    <div id="label_PERSON_NAME2">
       ###GW1B###<strong>Name:</strong>###GW1E###
     </div>
     <div id="field_PERSON_NAME2">
@@ -715,34 +791,34 @@ Exact same features as BASKET_TEMPLATE
     <div id="label_DELIVERY_COUNTRY_CODE">
       ###GW1B###<strong>Land: </strong>*###GW1E###
     </div>
-    <div id="field_DELIVERY_NAME">  
+    <div id="field_DELIVERY_NAME">
       ###DELIVERY_COUNTRY_CODE###
     </div>
-    <div id="label_DELIVERY_TELEPHONE">    
+    <div id="label_DELIVERY_TELEPHONE">
       ###GW1B###<strong>Telefon:</strong>###GW1E###
     </div>
-    <div id="field_DELIVERY_TELEPHONE">      
+    <div id="field_DELIVERY_TELEPHONE">
       <input type="text" name="recs[delivery][telephone]" size="30" value="###DELIVERY_TELEPHONE###">
     </div> 
-    <div id="label_DELIVERY_EMAIL"> 
+    <div id="label_DELIVERY_EMAIL">
       ###GW1B###<strong>Email:</strong>###GW1E###
-    </div>  
-    <div id="field_DELIVERY_EMAIL">  
+    </div>
+    <div id="field_DELIVERY_EMAIL">
       <input type="text" name="recs[delivery][email]" size="30" value="###DELIVERY_EMAIL###">
-    </div>   
+    </div> 
     <div id="label_DELIVERY_DESIRED_DATE">
       ###GW1B###Gewnschtes Lieferdatum:###GW1E###
-    </div> 
+    </div>
     <div id="field_DELIVERY_DESIRED_DATE">
       <input name="recs[delivery][desired_date]" value="###DELIVERY_DESIRED_DATE###">
     </div>
     <div id="label_DELIVERY_NOTE"> 
       ###GW1B###Kommentar:###GW1E###
     </div>
-    <div id="field_DELIVERY_NOTE">  
+    <div id="field_DELIVERY_NOTE">
       <textarea cols="30" rows="5" name="recs[delivery][note]">###DELIVERY_NOTE###</textarea>
     </div> 
-    <div id="text_agb_BASKETINFO">   
+    <div id="text_agb_BASKETINFO">
       ###GW1B### Sie best&#65533;igen hiermit, dass Sie
       die AGB des Testshop - Online Vertrieb gelesen haben und diese akzeptieren.<br /><br />
       ###GW1E###
@@ -754,22 +830,31 @@ Exact same features as BASKET_TEMPLATE
       <input type="submit" id="button4" name="products_payment" value="ABGs akzeptiert" onclick="document.forms[0].action='###FORM_URL_FINALIZE###';">
       <!--<input type="submit" id="button4" name="products_payment" value="ABGs ansehen" />-->
     <!--</div>-->
-  <!--</div>-->       
+  <!--</div>-->
   <!-- ###BASKET_INFO_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
 
 
 
+<!----------------------------------------------------------------------------------->
 <!-- ###BASKET_OVERVIEW_TEMPLATE### begin -->
 
 	<a href="index.php?id=###PID_BASKET###" title="###TITLE_LINK_BASKET###"> ###NUMBER_GOODSTOTAL### Produkte ( EUR ###PRICE_GOODSTOTAL_TAX###.- )</a>
       
 <!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
-   
+<!----------------------------------------------------------------------------------->
+
+
+
+<!----------------------------------------------------------------------------------->   
 <!-- ###BASKET_OVERVIEW_EMPTY### begin -->
 
 	Keine Produkte im Warenkorb.
 
 <!-- ###BASKET_OVERVIEW_EMPTY### end -->
+<!----------------------------------------------------------------------------------->
+
+
 
 
 
@@ -777,6 +862,7 @@ Exact same features as BASKET_TEMPLATE
 <em>Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.
 Exact same features as BASKET_TEMPLATE</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###BASKET_PAYMENT_TEMPLATE### begin
 Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.
 Exact same features as BASKET_TEMPLATE
@@ -845,34 +931,34 @@ Exact same features as BASKET_TEMPLATE
   <div id="PERSON_NAME_BASKET_PAYMENT_TEMPLATE3">      
     ###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###
   </div>    
-  <!--<div id="text_PERSON_ADDRESS_DISPLAY_PAYMENT_BASKET_TEMPLATE3">     
+  <!--<div id="text_PERSON_ADDRESS_DISPLAY_PAYMENT_BASKET_TEMPLATE3">
     ###GW1B###Adresse:###GW1E###
   </div>--> 
-  <div id="PERSON_ADDRESS_DISPLAY_BASKET_PAYMENT_TEMPLATE3">        
+  <div id="PERSON_ADDRESS_DISPLAY_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###
   </div>    
-  <!--<div id="text_PERSON_CITY_BASKET_PAYMENT_TEMPLATE3">       
+  <!--<div id="text_PERSON_CITY_BASKET_PAYMENT_TEMPLATE3"> 
     ###GW1B###PLZ Stadt:###GW1E###
   </div>--> 
   <div id="PERSON_CITY_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_ZIP### ###PERSON_CITY###</strong>###GW1E###
   </div>    
-  <!--<div id="text_PERSON_COUNTRY_BASKET_PAYMENT_TEMPLATE3">    
+  <!--<div id="text_PERSON_COUNTRY_BASKET_PAYMENT_TEMPLATE3">
      ###GW1B###Land:###GW1E###
   </div>--> 
-  <div id="PERSON_COUNTRY_BASKET_PAYMENT_TEMPLATE3">  
+  <div id="PERSON_COUNTRY_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_COUNTRY###</strong>###GW1E###
   </div>    
-  <!--<div id="text_PERSON_TELEPHONE_BASKET_PAYMENT_TEMPLATE3">    
+  <!--<div id="text_PERSON_TELEPHONE_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###Telefon:###GW1E###
   </div>--> 
   <div id="PERSON_TELEPHONE_BASKET_PAYMENT_TEMPLATE3"> 
     ###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###
   </div>    
-  <!--<div id="text_PERSON_EMAIL_BASKET_PAYMENT_TEMPLATE3">    
+  <!--<div id="text_PERSON_EMAIL_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###Email:###GW1E###
   </div>--> 
-  <div id="text_PERSON_EMAIL_BASKET_PAYMENT_TEMPLATE3">      
+  <div id="text_PERSON_EMAIL_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E### ###GW2B###<br />
   </div>      
   <div id="text_email_BASKET_PAYMENT_TEMPLATE3">
@@ -920,16 +1006,16 @@ Exact same features as BASKET_TEMPLATE
   <div id="DELIVERY_TELEPHONE_PAYMENT_TEMPLATE4">  
 	  ###GW1B###<strong>###DELIVERY_TELEPHONE###</strong>###GW1E###
 	</div>
-  <!--<div id="text_DELIVERY_EMAIL_BASKET_PAYMENT_TEMPLATE4">   
+  <!--<div id="text_DELIVERY_EMAIL_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###Email:###GW1E###
   </div>  --> 
-  <div id="DELIVERY_EMAIL_BASKET_PAYMENT_TEMPLATE4">   
+  <div id="DELIVERY_EMAIL_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E### ###GW2B###<br />
   </div>
-  <div id="text_email_DELIVERY_EMAIL_BASKET_PAYMENT_TEMPLATE4">       
+  <div id="text_email_DELIVERY_EMAIL_BASKET_PAYMENT_TEMPLATE4">
     (An diese Email-Adresse wird die Best&#65533;igung Ihrer Bestellung geschickt!)###GW2E###<br />
   </div>
-  <div id="text_DELIVERY_DESIRED_DATE_BASKET_PAYMENT_TEMPLATE4">        
+  <div id="text_DELIVERY_DESIRED_DATE_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###gewnschtes Lieferdatum:###GW1E###
   </div> 
   <div id="DELIVERY_DESIRED_DATE_BASKET_PAYMENT_TEMPLATE4">       
@@ -991,14 +1077,23 @@ Exact same features as BASKET_TEMPLATE
 </form>
 
 <!-- ###BASKET_PAYMENT_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
 
 <h3>BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE</h3>
 <em>Wie BASKET_ORDERCONFIRMATION_TEMPLATE, aber wird nicht in der Datenbank gespeichert. Hier kann Code fr externe Systeme eingefgt werden, der nicht mit angezeigt werden darf, wenn die Seite im Trackingmodus nochmal dargestellt wird.</em>
 
+
+<!----------------------------------------------------------------------------------->
 <!-- ###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE### begin -->
 
 <!-- ###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
 
+
+<!----------------------------------------------------------------------------------->
 <!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### begin
 Subpart used if the order is finalized and this is thus the confirmation shown.-->
 
@@ -1319,10 +1414,15 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
 </div> 
 
 <!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
 
 <h3>BASKET_TEMPLATE_EMPTY</h3>
 <em>If the basket is empty this subpart is displayed</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###BASKET_TEMPLATE_EMPTY### begin
 If the basket is empty this subpart is displayed -->
 
@@ -1331,10 +1431,15 @@ If the basket is empty this subpart is displayed -->
 </div>  
 
   <!-- ###BASKET_TEMPLATE_EMPTY### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
 
 <h3>BASKET_REQUIRED_INFO_MISSING</h3>
 <em>If payment is initiated but the required information fields are not filled in correctly, this happens.</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###BASKET_REQUIRED_INFO_MISSING### begin
 If payment is initiated but the required information fields are not filled in correctly, this happens-->
 
@@ -1347,11 +1452,15 @@ If payment is initiated but the required information fields are not filled in co
 </div>
 
 <!-- ###BASKET_REQUIRED_INFO_MISSING### end -->
+<!----------------------------------------------------------------------------------->
+
+
 
 
 <h3>TRACKING_DISPLAY_INFO</h3>
 <em>Displays the view of the order status by tracking codes.</em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###TRACKING_DISPLAY_INFO### begin
 Displays the view of the order status by tracking codes.-->
 
@@ -1487,6 +1596,10 @@ Hier k&#65533;nen Sie uns eine Nachricht bezglich Ihrer Bestellung schicken.<br 
 
 ###ORDER_HTML_OUTPUT###
 <!-- ###TRACKING_DISPLAY_INFO### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
 
 
 <h3>TRACKING_ENTER_NUMBER</h3>
@@ -1494,6 +1607,7 @@ Hier k&#65533;nen Sie uns eine Nachricht bezglich Ihrer Bestellung schicken.<br 
 Displays form for entering the tracking number.
 </em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###TRACKING_ENTER_NUMBER### begin
 Displays form for entering the tracking number.
 -->
@@ -1514,13 +1628,15 @@ Displays form for entering the tracking number.
 </form>
 <!-- ###ADMIN_CONTROL_DENY### begin -->
 
-
 <br />
 <!-- ###ADMIN_CONTROL### end -->
 
 
-
 <!-- ###TRACKING_ENTER_NUMBER### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
 
 
 <h3>TRACKING_WRONG_NUMBER</h3>
@@ -1528,6 +1644,7 @@ Displays form for entering the tracking number.
 Displays error message if no tracking code.
 </em>
 
+<!----------------------------------------------------------------------------------->
 <!-- ###TRACKING_WRONG_NUMBER### begin
 Displays error message if no tracking code.
 -->
@@ -1539,12 +1656,18 @@ Displays error message if no tracking code.
 </form>
 
 <!-- ###TRACKING_WRONG_NUMBER### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
 
 
 <h3>TRACKING_EMAILNOTIFY_TEMPLATE</h3>
 <em>Subpart used as template for the notify emails. First line is used as subject for the mail.</em>
 
 <pre>
+
+<!----------------------------------------------------------------------------------->
 <!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### begin
 Subpart used as template for the notify emails. First line is used as subject for the mail.-->
 
@@ -1580,9 +1703,13 @@ Tel.: +49 (0)1111 1111
 Email: info@testshop.de
 
 <!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
-
-
+<!----------------------------------------------------------------------------------->
 </pre>
+
+
+
+
+
 
 <h3>EMAIL_PLAINTEXT_TEMPLATE</h3>
 <em>
@@ -1590,6 +1717,8 @@ Subpart used as template for the order-emails.
 First line is used as subject for the mail.
 </em>
 <pre>
+
+<!----------------------------------------------------------------------------------->
 <!-- ###EMAIL_PLAINTEXT_TEMPLATE### begin
 Subpart used as template for the order-emails
 First line is used as subject for the mail.
@@ -1651,13 +1780,20 @@ Tel.: +49 (0)7195 4545454
 Email: info@testshop.de
 
 <!-- ###EMAIL_PLAINTEXT_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
 </pre>
+
+
+
+
 
 
 <h3>EMAIL_NEWUSER_TEMPLATE</h3>
 <br />
 <br />
 <pre>
+
+<!----------------------------------------------------------------------------------->
 <!-- ###EMAIL_NEWUSER_TEMPLATE### begin -->
 
 Ihre Zugangsdaten bei meintypo3shop.com
@@ -1677,12 +1813,15 @@ Mit freundlichen Gr&#65533;n,
 Mein Typo3 Shop
 
 <!-- ###EMAIL_NEWUSER_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
 </pre>
 
 
 
 
 
+<!----------------------------------------------------------------------------------->
 <!-- ###EMAIL_HTML_SHELL### begin -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
@@ -1722,7 +1861,11 @@ Mein Typo3 Shop
 </body></html>
 
 <!-- ###EMAIL_HTML_SHELL### end -->
+<!----------------------------------------------------------------------------------->
 
+
+
+<!----------------------------------------------------------------------------------->
 <!-- ###BILL_TEMPLATE### start -->
         
 <img src="http://shopms.de/images/header_rechnung.jpg" width="669" height="90">
@@ -1816,7 +1959,13 @@ Mein Typo3 Shop
         ###GW1E### </p>
 
 <!-- ###BILL_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
 
+
+
+
+
+<!----------------------------------------------------------------------------------->
 <!-- ###DELIVERY_TEMPLATE### start -->
         
 <img src="http://shopms.de/images/header_rechnung.jpg" width="669" height="90">
@@ -1884,7 +2033,12 @@ Mein Typo3 Shop
   
 
 <!-- ###DELIVERY_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
 
+
+
+
+<!----------------------------------------------------------------------------------->
 <!-- ###ITEM_CATEGORY_SELECT_TEMPLATE### begin
 	This subpart is used to display the regular list of categories.
 -->
@@ -1908,9 +2062,57 @@ Mein Typo3 Shop
 	<div id="ArticleId">Das ersetzen</div>
 
 <!-- ###ITEM_CATEGORY_SELECT_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
 
 
+
+
+
+<!----------------------------------------------------------------------------------->
 <!-- ###ITEM_CATLIST_TEMPLATE### begin
+	This subpart is used to display the regular list of categories.
+-->
+<!-- ###CATEGORY_SINGLE### begin-->
+<div class="subcolumns">
+	<!--###LINK_CATEGORY### begin-->
+	<div class="c33l">
+		<div class="subcl">
+			<h1>###LIST_LINK###</h1>
+			###CATEGORY_SUBTITLE###
+			###CATEGORY_IMAGE###
+			
+			###SUBCATEGORY_A_1###
+
+		</div>
+	</div>
+	<!--###LINK_CATEGORY### end-->
+</div>
+<!-- ###CATEGORY_SINGLE### end-->
+<!-- ###ITEM_CATLIST_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
+
+<!----------------------------------------------------------------------------------->
+<!-- ###SUBCATEGORY_A_1_TEMPLATE### begin-->
+	<!-- ###CATEGORY_SINGLE### begin-->
+	<div class="mainMenu">
+		<ul>
+		<!--###LINK_CATEGORY### begin-->
+				<li>###LIST_LINK###</li>
+		<!--###LINK_CATEGORY### end-->
+		</ul>
+	</div>
+	<!-- ###CATEGORY_SINGLE### end-->
+<!-- ###SUBCATEGORY_A_1_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
+
+<!----------------------------------------------------------------------------------->
+<!-- ###ITEM_CATEGORY_MENU_TEMPLATE### begin
 	This subpart is used to display the regular list of categories.
 -->
 <div class="mainMenu">
@@ -1918,16 +2120,17 @@ Mein Typo3 Shop
 		###ITEM_SINGLE_PRE_HTML###
 		<!--###LINK_CATEGORY### begin-->
 			###LIST_LINK###
-			###CATEGORY_IMAGE###
-			###CATEGORY_SUBTITLE###
 		<!--###LINK_CATEGORY### end-->
 		###ITEM_SINGLE_POST_HTML###
 	<!-- ###CATEGORY_SINGLE### end-->
 </div>
-<!-- ###ITEM_CATLIST_TEMPLATE### end -->
+<!-- ###ITEM_CATEGORY_MENU_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
 
 
 
+
+<!----------------------------------------------------------------------------------->
 <!-- ###ITEM_ADLIST_TEMPLATE### begin
 	This subpart is used to display the regular list of categories.
 -->
@@ -1941,3 +2144,35 @@ Mein Typo3 Shop
 	<!-- ###CATEGORY_SINGLE### end-->
 </div>
 <!-- ###ITEM_ADLIST_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
+
+<!----------------------------------------------------------------------------------->
+<!-- ###ITEM_ADDRESS_MENU_TEMPLATE### begin
+	This subpart is used to display the regular list of categories.
+-->
+<div class="mainMenu">
+	<!-- ###CATEGORY_SINGLE### begin-->
+		###ITEM_SINGLE_PRE_HTML###
+		<!--###LINK_CATEGORY### begin-->
+			###LIST_LINK###
+			###CATEGORY_SUBTITLE###
+		<!--###LINK_CATEGORY### end-->
+		###ITEM_SINGLE_POST_HTML###
+	<!-- ###CATEGORY_SINGLE### end-->
+</div>
+<!-- ###ITEM_ADDRESS_MENU_TEMPLATE### end -->
+<!----------------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+
+
