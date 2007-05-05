@@ -511,6 +511,17 @@ class tx_ttproducts_paymentshipping {
 	}
 
 
+	function useGatewayRequest ()	{
+		$rc = false;
+		if (t3lib_extMgm::isLoaded ('paymentlib') && version_compare(phpversion(), '5.0.0', '>='))	{
+			$payConf = &$this->basket->basketExtra['payment.'];
+			if (is_array($payConf) && $payConf['handleLib'] == 'paymentlib' && is_array($payConf['handleLib.']) && $payConf['handleLib.']['gatewaymode'] == 'request')	{
+				$rc = true;
+			}
+		}
+		return $rc;
+	}
+
 }
 
 
