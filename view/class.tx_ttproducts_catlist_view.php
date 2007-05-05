@@ -174,7 +174,7 @@ class tx_ttproducts_catlist_view {
 		$tmp = $this->pibase->cObj->substituteMarkerArrayCached($t['categoryFrameWork'],array(),$subpartArray);
 		$htmlParts = t3lib_div::trimExplode ('###CATEGORY_TMP###', $tmp);
 		$htmlPartsMarkers = array('###ITEM_SINGLE_PRE_HTML###', '###ITEM_SINGLE_POST_HTML###');
-		
+
 		$maxDepth = 3;
 		$rootArray = $this->getRootArray($categoryArray);
 		$parentArray = $this->getParentsArray($currentCat, $categoryArray);
@@ -217,7 +217,7 @@ class tx_ttproducts_catlist_view {
 					} else {
 						$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $categoryArray[$actCategory]);
 					}
-					
+
 					$addQueryString = array($categoryTable->piVar => $actCategory);
 					$tempUrl = $this->pibase->pi_linkTP_keepPIvars_url($addQueryString,1,1,$pid);
 					$linkOut = '<a href="'.$tempUrl.'" '.$css.'>'.htmlspecialchars($categoryArray[$actCategory]['title']).'</a>';
@@ -276,7 +276,7 @@ class tx_ttproducts_catlist_view {
 					$this->page,
 					$actCategory, 
 					$row['pid'],
-					$this->cnf->config['limitImage'], 
+					$this->config['limitImage'],
 					'listImage',
 					$viewCatTagArray, 
 					array(), 
@@ -287,7 +287,6 @@ class tx_ttproducts_catlist_view {
 				);
 				$catTitle = $categoryTable->getMarkerArrayCatTitle($markerArray);
 				$markerArray['###LIST_LINK###'] = $linkOut;
-				
 				if ($t['linkCategoryFrameWork'])	{
 					$categoryOut = $this->pibase->cObj->substituteMarkerArray($t['linkCategoryFrameWork'], $markerArray);
 					$out .= $linkOutArray[0].$categoryOut.$linkOutArray[1];

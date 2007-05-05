@@ -1,3 +1,8 @@
+2007-05-05 Franz Holzinger <franz@fholzinger.com>
+	* news: Yesterday tt_products has been listed under the Top-10 TYPO3 of most downloaded extensions for the first time
+	* Change of the pid_list settings. No parameter will be accepted any more. Otherwise a check must be made that the parameter's pages were only a subpart of an allowed pid_list range.
+	* new intermediate function useGatewayRequest as a state when a payment via a gateway has started. no activity products_customized will be needed then (It would have been more complicated to set it).
+
 2007-03-31 Franz Holzinger <franz@fholzinger.com>
 	* fix bug with sword form URL parameter which has overridden the entered search value
 	* xAjax response needs charset as first parameter

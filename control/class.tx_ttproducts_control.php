@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -159,7 +159,7 @@ class tx_ttproducts_control {
 
 
 
-	function processPayment(&$content, &$bFinalize, &$order, &$basketView, &$info)       {
+	function processPayment(&$content, &$bFinalize, &$order, &$basketView, &$info, &$card, &$account)	{
 		global $TSFE;
 
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
@@ -173,10 +173,10 @@ class tx_ttproducts_control {
 				require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
 				
 				$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $info);
-				$content.= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
+				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $info, $card, $account);
+				$content .= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
 			}
-		}		
+		}
 	}
 
 
@@ -209,6 +209,7 @@ class tx_ttproducts_control {
 		$info = &t3lib_div::getUserObj('tx_ttproducts_info');
 		$info->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
 		$info->mapPersonIntoDelivery();
+		$account = ''; // will come in tt_products 2.5.3
 
 		$order = '';
 
@@ -386,7 +387,7 @@ class tx_ttproducts_control {
 												$this->conf['useArticles']
 											);
 										}
-										$this->processPayment($content, $bFinalize, $order, $basketView, $info);
+										$this->processPayment($content, $bFinalize, $order, $basketView, $info, $card, $account);
 									}
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
@@ -440,11 +441,40 @@ class tx_ttproducts_control {
 										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
 										$basketView->init ($this->basket, $this->templateCode);
 									}
-									$this->processPayment($content, $bFinalize, $order, $basketView, $info);
+									$this->processPayment($content, $bFinalize, $order, $basketView, $info, $card, $account);
 								}
 							break; 
 							case 'products_finalize':
-								$bFinalize = true;
+								// ############## florian Strauß ############# add an etxra step for pre-finalize payment
+								if ($this->paymentshipping->useGatewayRequest ()) {
+									if (!is_object($order)) {
+										include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
+										// order
+										$order = &t3lib_div::getUserObj('tx_ttproducts_order');
+										$order->init(
+											$this->pibase,
+											$this->cnf,
+											$this->tt_products,
+											$this->tt_products_articles,
+											$this->tt_products_cat,
+											$this->basket,
+											$this->conf['useArticles']
+										);
+									}
+									$test = $this->processPayment($content, $bFinalize, $order, $basketView, $info, $card, $account);
+									if($content != 1 ){
+										$label = $content;
+										$content= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+										$markerArray['###ERROR_DETAILS###'] = $label;
+										$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
+										$bFinalize = false;
+									} else {
+										$bFinalize = true;
+									}
+								} else {
+									$bFinalize = true;
+								}
+								// ############## florian Strauß  ############# 
 							break;
 							default:
 								// nothing yet
@@ -501,7 +531,7 @@ class tx_ttproducts_control {
 							$basketView->init ($this->basket, $this->templateCode);
 						}
 						if (trim($this->conf['paymentActivity']) == 'finalize') {
-							$this->processPayment($content, $bFinalize, $order, $basketView, $info);
+							$this->processPayment($content, $bFinalize, $order, $basketView, $info, $card, $account);
 						}
 						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
@@ -511,7 +541,7 @@ class tx_ttproducts_control {
 														
 							// order finalization
 						$activityFinalize = t3lib_div::makeInstance('tx_ttproducts_activity_finalize');
-						$activityFinalize->init($this->pibase, $this->cnf, $this->basket, $this->tt_products_cat, $order);
+						$activityFinalize->init($this->pibase, $this->cnf, $this->basket, $this->tt_products, $this->tt_products_cat, $order);
 						
 						$activityFinalize->doProcessing($this->templateCode, 
 							$basketView, $this->viewTable, $this->price, 

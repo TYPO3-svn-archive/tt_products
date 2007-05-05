@@ -607,9 +607,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		}
 		$config['priceNoReseller'] = $this->conf['priceNoReseller'] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
 		$tmp = $this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.']);
-		$pid_list = ($this->piVars['pid_list'] ? $this->piVars['pid_list'] : ($this->conf['pid_list.'] ? trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.'])) : ''));		
+		$pid_list = ($this->cObj->data['pages'] ? $this->cObj->data['pages'] : ($this->conf['pid_list.'] ? trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.'])) : ''));
 		$pid_list = $config['pid_list'] = ($pid_list ? $pid_list : $this->conf['pid_list']); 
-		$pid_list = ($pid_list ? $pid_list : $this->cObj->data['pages']);
 		$this->pid_list = ($pid_list ? $pid_list : $config['storeRootPid']);
 
 			// If the current record should be displayed.

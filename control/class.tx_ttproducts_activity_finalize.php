@@ -93,7 +93,7 @@ class tx_ttproducts_activity_finalize {
 		global $TYPO3_DB;
 		global $TYPO3_CONF_VARS;
 
-		$instockTableArray = array();
+		$instockTableArray = '';
 		$recipientsArray = array();
 		$recipientsArray['customer'] = array();
 		$recipientsArray['customer'][] = ($this->conf['orderEmail_toDelivery'] ? $address->infoArray['delivery']['email'] : $address->infoArray['billing']['email']); // former: deliveryInfo
