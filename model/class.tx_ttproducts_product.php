@@ -61,19 +61,21 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($pibase, $cnf, 'tt_products', $tt_content, $paymentshipping);
+
 		$this->table = t3lib_div::makeInstance('tx_table_db');
+		
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $this->cnf->conf['orderBy'];
 		
 		if (!$tableConfig['orderBy'])	{
-			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];	
+			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];				
 		}
 
 		$this->table->setConfig($tableConfig);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$tablename = ($tablename ? $tablename : 'tt_products');
 		$this->table->setTCAFieldArray($tablename, 'products');
-
+		
 		$requiredFields = 'uid,pid,category,price,price2,tax,inStock';
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
@@ -89,10 +91,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$addRequiredFields = $this->tableconf['language.']['field.'];
 			$this->table->addRequiredFieldArray ($addRequiredFields);
 		}
-
+	
 		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
-			$this->table->setLangName($this->tableconf['language.']['table']);
+			$this->table->setLangName('tt_products_language');
 			$this->table->setTCAFieldArray($this->table->langname);
 		}
 
@@ -102,7 +104,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $cnf, $this, $useArticles);
-
 	} // init
 
 
@@ -254,10 +255,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='', $id='1', $bSelect=true)	{
+	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='', $id='1')	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
-		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id, $bSelect);
+		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id);
 		
 			// Subst. fields
 		$markerArray['###'.$this->marker.'_UNIT###'] = $row['unit'];
@@ -336,17 +337,15 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	function addWhereCat($cat, $pid_list)	{
-		global $TYPO3_CONF_VARS;
-
 		$where = '';
-		if($cat || $cat=='0') {
+		if($cat) {
 			$cat = implode(',',t3lib_div::intExplode(',', $cat));
 			$where = ' AND ( category IN ('.$cat.')';
 		}
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addWhereCat')) {
 					$whereNew = $hookObj->addWhereCat($this, $cat, $where, $pid_list);
@@ -355,20 +354,20 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			}
 		}
 
-		if ($where)	{
+		if ($cat && $where)	{
 			$where .= ' )';
 		}
+
 		return $where;
 	}
 
 
 	function addselectConfCat($cat, &$selectConf)	{
-		global $TYPO3_CONF_VARS;
 		$tableNameArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addselectConfCat')) {
 					$tableNameArray[] = $hookObj->addselectConfCat($this, $cat, $selectConf);
@@ -381,13 +380,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	function getPageUidsCat($cat)	{
-		global $TYPO3_CONF_VARS;
-
 		$uidArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getPageUidsCat')) {
 					$hookObj->getPageUidsCat($this, $cat, $uidArray);

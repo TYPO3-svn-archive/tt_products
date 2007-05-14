@@ -1,3 +1,7 @@
+2007-05-14 Franz Holzinger <franz@fholzinger.com>
+	* use pidAGB in setup
+	* fix bug with wrong closed bracket in SQL query withoud uid=0 coming from category
+
 2007-03-02 Franz Holzinger <franz@fholzinger.com>
 	* enable language table for tt_products by default
 

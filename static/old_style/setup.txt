@@ -1,5 +1,5 @@
 ## Includes the productsLib:
-includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
+#includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
 
 ## This enables the tt_content.list item to display the guestbook:
 plugin.tt_products >
@@ -73,7 +73,7 @@ plugin.tt_products {
   displayCatListType = {$plugin.tt_products.displayCatListType}
   basketPic = {$plugin.tt_products.basketPic}
   clickIntoBasket = {$plugin.tt_products.clickIntoBasket}
-  clickIntoSubmenu = {$plu	gin.tt_products.clickIntoSubmenu}
+  clickIntoSubmenu = {$plugin.tt_products.clickIntoSubmenu}
   basketMaxQuantity = {$plugin.tt_products.basketMaxQuantity}
   quantityIsFloat = {$plugin.tt_products.quantityIsFloat}
   
@@ -84,6 +84,7 @@ plugin.tt_products {
   
   NoSingleViewOnList = {$plugin.tt_products.NoSingleViewOnList}
 
+  PIDagb = {$plugin.tt_products.PIDagb}
   PIDinfo = {$plugin.tt_products.PIDinfo}
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
   PIDpayment = {$plugin.tt_products.PIDpayment}
@@ -103,7 +104,6 @@ plugin.tt_products {
   
   advanceOrderNumberWithInteger = {$plugin.tt_products.advanceOrderNumberWithInteger}
   alwaysAdvanceOrderNumber = {$plugin.tt_products.alwaysAdvanceOrderNumber}
-  alwaysUpdateOrderAmount = {$plugin.tt_products.alwaysUpdateOrderAmount}
 
   defaultProductID = {$plugin.tt_products.defaultProductID}
   defaultCategoryID = {$plugin.tt_products.defaultCategoryID}
@@ -195,7 +195,6 @@ plugin.tt_products {
   memberOfGroup = {$plugin.tt_products.memberOfGroup}
 
   stdSearchFieldExt = {$plugin.tt_products.stdSearchFieldExt}
-  PIDagb = {$plugin.tt_products.PIDagb}
   AGBtarget = {$plugin.tt_products.AGBtarget}
   AGBattachment = {$plugin.tt_products.AGBattachment}
 
@@ -245,8 +244,6 @@ plugin.tt_products {
   conf.tt_products.ALL {
     orderBy = {$plugin.tt_products.orderBy}
     requiredFields = uid,pid,category,price,price2,tax,inStock
-  	language.type = table
-  	language.table = tt_products_language
   }
 
   table.tt_products_articles = tt_products_articles
@@ -269,11 +266,8 @@ plugin.tt_products {
   conf.tt_products_cat.ALL {
   	language.type = noTranslation
     orderBy = sorting
-    separator = /
   }
-
-  debug = {$plugin.tt_products.debug}
-
+  
   _CSS_DEFAULT_STYLE (
       .tx-ttproducts-pi1-wrap1 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }
       .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }   
@@ -315,6 +309,7 @@ plugin.tt_products.shipping {
   40.title = Pick up in store
   40.excludePayment = 10,40
 }
+
 
 
 ## This enables the record item to display product items
