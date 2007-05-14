@@ -1,5 +1,5 @@
 ## Includes the productsLib:
-#includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
+includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
 
 ## This enables the tt_content.list item to display the guestbook:
 plugin.tt_products >
@@ -104,6 +104,7 @@ plugin.tt_products {
   
   advanceOrderNumberWithInteger = {$plugin.tt_products.advanceOrderNumberWithInteger}
   alwaysAdvanceOrderNumber = {$plugin.tt_products.alwaysAdvanceOrderNumber}
+  alwaysUpdateOrderAmount = {$plugin.tt_products.alwaysUpdateOrderAmount}
 
   defaultProductID = {$plugin.tt_products.defaultProductID}
   defaultCategoryID = {$plugin.tt_products.defaultCategoryID}
@@ -244,6 +245,8 @@ plugin.tt_products {
   conf.tt_products.ALL {
     orderBy = {$plugin.tt_products.orderBy}
     requiredFields = uid,pid,category,price,price2,tax,inStock
+    language.type = table
+    language.table = tt_products_language
   }
 
   table.tt_products_articles = tt_products_articles
@@ -264,14 +267,17 @@ plugin.tt_products {
 
   table.tt_products_cat = tt_products_cat
   conf.tt_products_cat.ALL {
-  	language.type = noTranslation
+    language.type = noTranslation
     orderBy = sorting
+    separator = /
   }
-  
+
+  debug = {$plugin.tt_products.debug}
+
   _CSS_DEFAULT_STYLE (
       .tx-ttproducts-pi1-wrap1 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }
       .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }   
-  )   
+  )
 }
 
 ## EXAMPLE payment config:
