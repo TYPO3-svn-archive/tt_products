@@ -111,7 +111,6 @@ class tx_ttproducts_selectcat_view {
 		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###'.$templateArea.$templateSuffix.'###'));
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
 		$t['linkCategoryFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryFrameWork'],'###LINK_CATEGORY###');
-debug ($t, '$t', __LINE__, __FILE__);
 		$subpartArray = array();
 		$subpartArray['###LINK_CATEGORY###'] = '###CATEGORY_TMP###';
 		$tmp = $this->pibase->cObj->substituteMarkerArrayCached($t['categoryFrameWork'],array(),$subpartArray);
@@ -195,7 +194,6 @@ debug ($t, '$t', __LINE__, __FILE__);
 		$wrappedSubpartArray = array();
 
 		$markerArray = $this->marker->addURLMarkers($this->conf['PIDsearch'],$markerArray);
-debug ($markerArray, '$markerArray', __LINE__, __FILE__);
 		$this->marker->getWrappedSubpartArray($wrappedSubpartArray);
 		$subpartArray['###CATEGORY_SINGLE###'] = $out;
 		if ($bSeparated)	{
@@ -223,10 +221,8 @@ debug ($markerArray, '$markerArray', __LINE__, __FILE__);
 			// $subpartArray['###CATEGORY_SINGLE_BUTTON'] = '<input type="button" value="Laden" onclick="fillSelect(0, '.$boxNumber.','.$bShowSubcategories.');">';
 		}
 
-debug ($markerArray, '$markerArray', __LINE__, __FILE__);
 		$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 		$content = $out;
-debug ($content, '$content', __LINE__, __FILE__);
 		return $content;
 	}
 	

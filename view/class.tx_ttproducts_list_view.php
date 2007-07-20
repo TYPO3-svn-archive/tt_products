@@ -174,8 +174,6 @@ class tx_ttproducts_list_view {
 			}
 		}
 
-debug ($where, '$where', __LINE__, __FILE__);
-
 		// if parameter 'newitemdays' is specified, only new items from the last X days are displayed
 		$newitemdays = $this->pibase->piVars['newitemdays'];
 		$newitemdays = ($newitemdays ? $newitemdays : t3lib_div::_GP('newitemdays'));  
@@ -348,11 +346,8 @@ debug ($where, '$where', __LINE__, __FILE__);
 			$selectConf['pidInList'] = $allowedPages;
 			$wherestock = ($this->conf['showNotinStock'] || !is_array(($TCA[$itemTable->table->name]['columns']['inStock'])) ? '' : ' AND (inStock <> 0) ');
 			$whereNew = $wherestock.$where;
-debug ($whereNew, '$whereNew', __LINE__, __FILE__);
 			$whereNew = $itemTable->table->transformWhere($whereNew);
-debug ($whereNew, '$whereNew', __LINE__, __FILE__);
 			$selectConf['where'] = '1=1 '.$whereNew;
-debug ($selectConf['where'], '$selectConf[\'where\']', __LINE__, __FILE__);
 			$selectConf['from'] = $itemTable->table->getAdditionalTables();
 	
 				// performing query to count all products (we need to know it for browsing):
@@ -446,18 +441,14 @@ debug ($selectConf['where'], '$selectConf[\'where\']', __LINE__, __FILE__);
 					($selectConf['orderBy'] ? ','. $selectConf['orderBy'] : '');
 
 				$prodAlias = $itemTable->table->getAliasName();
-debug ($prodAlias, '$prodAlias', __LINE__, __FILE__);
 				$catAlias = $viewCatTable->table->getAliasName();
-debug ($catAlias, '$catAlias', __LINE__, __FILE__);
 
 				// SELECT *
 				// FROM tt_products
 				// LEFT OUTER JOIN tt_products_cat ON tt_products.category = tt_products_cat.uid
 				$selectConf['leftjoin'] = $viewCatTable->table->name.' '.$catAlias.' ON '.$catAlias.'.uid='.$prodAlias.'.category';
-debug ($selectConf['leftjoin'], '$selectConf[\'leftjoin\']', __LINE__, __FILE__);
 				$catTables = $viewCatTable->table->getAdditionalTables();
 				$selectConf['from'] = ($catTables ? $catTables.', '.$selectConf['from']:$selectConf['from']);
-debug ($selectConf, '$selectConf', __LINE__, __FILE__);
 			}
 
 			$selectFields = implode(',', $fieldsArray);
@@ -476,7 +467,6 @@ debug ($selectConf, '$selectConf', __LINE__, __FILE__);
 
 			$tablename = $itemTable->table->name;
 			$queryParts = $itemTable->table->getQueryConf($this->pibase->cObj,$tablename, $selectConf, TRUE);
-debug ($queryParts, '$queryParts', __LINE__, __FILE__);
 			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
 			$itemArray=array();
 			$iCount = 0;
