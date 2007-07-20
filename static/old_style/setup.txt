@@ -73,7 +73,7 @@ plugin.tt_products {
   displayCatListType = {$plugin.tt_products.displayCatListType}
   basketPic = {$plugin.tt_products.basketPic}
   clickIntoBasket = {$plugin.tt_products.clickIntoBasket}
-  clickIntoSubmenu = {$plu	gin.tt_products.clickIntoSubmenu}
+  clickIntoSubmenu = {$plugin.tt_products.clickIntoSubmenu}
   basketMaxQuantity = {$plugin.tt_products.basketMaxQuantity}
   quantityIsFloat = {$plugin.tt_products.quantityIsFloat}
   
@@ -84,6 +84,7 @@ plugin.tt_products {
   
   NoSingleViewOnList = {$plugin.tt_products.NoSingleViewOnList}
 
+  PIDagb = {$plugin.tt_products.PIDagb}
   PIDinfo = {$plugin.tt_products.PIDinfo}
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
   PIDpayment = {$plugin.tt_products.PIDpayment}
@@ -197,7 +198,6 @@ plugin.tt_products {
   memberOfGroup = {$plugin.tt_products.memberOfGroup}
 
   stdSearchFieldExt = {$plugin.tt_products.stdSearchFieldExt}
-  PIDagb = {$plugin.tt_products.PIDagb}
   AGBtarget = {$plugin.tt_products.AGBtarget}
   AGBattachment = {$plugin.tt_products.AGBattachment}
 

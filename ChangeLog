@@ -1,3 +1,8 @@
+2007-07-20 Franz Holzinger <franz@fholzinger.com>
+	* Fix bug with not working translations of categories using language tables
+	* Change function addWhereCat to use ony the categories found in a mm table if present
+	* use subparts ###PRODUCT_HAS_IMAGE1### in single view if there is image no.1 available
+
 2007-05-05 Franz Holzinger <franz@fholzinger.com>
 	* news: Yesterday tt_products has been listed under the Top-10 TYPO3 of most downloaded extensions for the first time
 	* Change of the pid_list settings. No parameter will be accepted any more. Otherwise a check must be made that the parameter's pages were only a subpart of an allowed pid_list range.

@@ -51,7 +51,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	/**
 	 * initialization with table object and language table
 	 */
-	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename)	{
+	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, $parentField, $pivar = 'cat')	{
 		global $TYPO3_DB;
 		
 		$this->cnf = &$cnf;
@@ -60,6 +60,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
+		$this->parentField = $parentField;
 
 //		if ($TSFE->config['config']['sys_language_uid'] && 
 //				(!$this->catconf['language.'] ||
@@ -69,11 +70,21 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			$this->table->setLangName('tt_products_cat_language');
 			$this->table->setTCAFieldArray($this->table->langname);
 		}
-		
+
+		$this->piVar = $pivar;
+
 		if ($this->tableconf['language.'] && $this->tableconf['language.']['type'] == 'csv')	{
 			$this->table->initLanguageFile($this->tableconf['language.']['file']);
 		}
 
+		if (t3lib_extMgm::isLoaded('mbi_products_categories')) {
+
+			if ($this->piVar == 'cat')	{
+				$this->mm_table = 'tx_mbiproductscategories_mm';
+			} else if($this->piVar == 'damcat')	{
+				$this->mm_table = 'tx_dam_mm_cat';
+			}
+		}
 		parent::init($pibase, $cnf, $tt_content);
 	} // init
 
@@ -84,7 +95,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 */
 	function get ($uid=0,$pid=0) {
 		global $TYPO3_DB;
-		
+
 		if (is_array($this->dataArray[$uid]))	{
 			if (($pid && $this->dataArray[$uid]['pid'] == $pid) || ($pid == 0))	{
 				$rc = $this->dataArray[$uid];
@@ -177,13 +188,12 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	function &getRelationArray ($excludeCat=0,$currentCat=0) {
 
 		$relationArray = array();
-		
 		foreach ($this->dataArray as $k => $row)	{
 			$uid = $row['uid'];
 			$relationArray [$uid]['title'] = $row['title'];
 			$relationArray [$uid]['pid'] = $row['pid'];
-			$relationArray [$uid]['parent_category'] = $row['parent_category'];
-			$parentId = $row['parent_category'];
+			$relationArray [$uid]['parent_category'] = $row[$this->parentField];
+			$parentId = $row[$this->parentField];
 			if ($parentId)	{
 				$count = 0;
 				if (!is_array($relationArray[$parentId]['child_category']))	{

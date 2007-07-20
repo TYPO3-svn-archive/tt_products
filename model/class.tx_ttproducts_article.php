@@ -67,7 +67,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
 
-		$requiredFields = 'uid,pid,uid_product,price,price2';
+		$requiredFields = 'uid,pid,uid_product,price,price2,directcost';
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
@@ -136,7 +136,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	function mergeProductRow(&$row, &$productRow)	{
 		$fieldArray = array();
 		$fieldArray['text'] = array('title', 'subtitle', 'itemnumber', 'image');
-		$fieldArray['number'] = array('price', 'price2', 'weight');
+		$fieldArray['number'] = array('price', 'price2', 'directcost', 'weight');
 		
 		foreach ($fieldArray as $type => $fieldTypeArray)	{
 			foreach ($fieldTypeArray as $k => $field)	{

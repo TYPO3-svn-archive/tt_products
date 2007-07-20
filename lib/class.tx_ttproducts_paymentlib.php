@@ -100,7 +100,7 @@ class tx_ttproducts_paymentlib {
 		
 		if ($handleLib=='paymentlib')	{
 
-			$providerFactoryObj = tx_paymentlib_providerfactory::getInstance();
+			$providerFactoryObj = &tx_paymentlib_providerfactory::getInstance();
 			$paymentMethod = $confScript['paymentMethod'];
 			$providerObject = $providerFactoryObj->getProviderObjectByPaymentMethod($paymentMethod);
 			if (is_object($providerObject))	{
@@ -109,14 +109,14 @@ class tx_ttproducts_paymentlib {
 				$ok =  $providerObject->transaction_init (TX_PAYMENTLIB_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER, $paymentMethod, $gatewayMode, 'tt_products');
 ///######### Florian Strauß -  Hier Aufruf Ändern  TX_PAYMENTLIB_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER
 
-				if (!$ok) return 'ERROR: Could not initialize transaction.';	
+				if (!$ok) return 'ERROR: Could not initialize transaction.';
 
 //*******************************************************************************//
 //* Changed by Udo Gerhards: If the $providerObject has a basket fill it, begin *//
 //*******************************************************************************//
 
 				if (is_object($providerObject->payment_basket))	{
-						$this->initPaymentBasket($providerObject);
+					$this->initPaymentBasket($providerObject);
 				}
 
 //*******************************************************************************//

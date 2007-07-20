@@ -6,6 +6,9 @@ Else Verberne: Creditpoint and Voucher System
 Elmar Hinz: Help with XAJAX
 Tapio Markula: Finnish template
 Andrea Giorgini: Italian template
+Florian Strauß: Payment methods
+Udo Gerhards: Payment methods
+Andrea Herzog-Kienast: Tutorial, Backend icons
 
 
 

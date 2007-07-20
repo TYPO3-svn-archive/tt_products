@@ -77,7 +77,7 @@ class tx_ttproducts_email_div {
 				$Typo3_htmlmail->extractHyperLinks();
 				$Typo3_htmlmail->fetchHTMLMedia();
 				$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
-				$Typo3_htmlmail->substHREFsInHTML();  
+				$Typo3_htmlmail->substHREFsInHTML();
 				$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
 				if ($message)	{
 					$Typo3_htmlmail->addPlain($message);
@@ -121,7 +121,7 @@ class tx_ttproducts_email_div {
 				$markerArray['###DELIVERY_NAME###'] = $orderData['delivery']['name'];
 				tx_ttproducts_feuser::getItemMarkerArray ($orderData['billing'], $markerArray, false, 'person');
 				tx_ttproducts_feuser::getItemMarkerArray ($orderData['delivery'], $markerArray, false, 'delivery');
-				
+
 				$markerArray['###ORDER_TRACKING_NO###']=$tracking;
 				$orderNumber = $order->getNumber($orderRow['uid']);
 				$markerArray['###ORDER_UID###'] = $orderNumber;
@@ -164,7 +164,7 @@ class tx_ttproducts_email_div {
 
 				if ($this->conf['orderEmail_htmlmail'])	{
 					include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
-					$cls  = t3lib_div::makeInstanceClassName('t3lib_htmlmail');				
+					$cls  = t3lib_div::makeInstanceClassName('t3lib_htmlmail');
 				}
 				if (class_exists($cls)) {	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$pibase->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');

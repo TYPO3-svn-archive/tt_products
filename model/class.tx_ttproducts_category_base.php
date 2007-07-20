@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -51,6 +51,8 @@ class tx_ttproducts_category_base {
 	var $tableconf;
 	var $marker = 'CATEGORY';
 	var $piVar = ''; // must be overridden
+	var $mm_table = ''; // only set if a mm table is used
+	var $parentField; // reference field name for parent 
 
 
 	/**
@@ -127,6 +129,39 @@ class tx_ttproducts_category_base {
 	function &getRelationArray ($excludeCat=0,$currentCat=0) {
 		$relationArray = array();
 		return $relationArray;
+	}
+
+
+	function getCategoryArray ($uid)	{
+		global $TYPO3_CONF_VARS;
+
+		$catArray = array();
+		if($this->mm_table) {
+			$hookVar = '';
+			if ($this->piVar == 'cat')	{
+				$hookVar = 'prodCategory';
+			} else if($this->piVar == 'damcat')	{
+				$hookVar = 'DAMCategory';
+			}
+			$tmpArray = array();
+				// Call all addWhere hooks for categories at the end of this method
+			if ($hookVar && is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
+				foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
+					$hookObj= &t3lib_div::getUserObj($classRef);
+					if (method_exists($hookObj, 'init')) {
+						$hookObj->init($this->parentField);
+					}
+					if (method_exists($hookObj, 'getCategories')) {
+						$tmpArray = $hookObj->getCategories($uid, $this->mm_table);
+					}
+				}
+			}
+			foreach ($tmpArray as $k => $row)	{
+				$catArray[] = $row['cat'];
+			}
+		}
+		
+		return $catArray;
 	}
 
 

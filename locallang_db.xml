@@ -18,7 +18,9 @@
 			<label index="tt_products.unit">Unit of measure</label>
 			<label index="tt_products.unit_factor">Unit factor</label>
 			<label index="tt_products.note_uid">Describing pages</label>
-			<label index="tt_products.itemnumber">Item number:</label>
+			<label index="tt_products.note">Description</label>
+			<label index="tt_products.note2">Commentary</label>
+			<label index="tt_products.itemnumber">Identifier:</label>
 			<label index="tt_products.inStock">In Stock (pcs):</label>
 			<label index="tt_products.datasheet">Datasheet</label>
 			<label index="tt_products.www">WWW URL</label>
@@ -56,6 +58,7 @@
 			<label index="tt_products_articles">Product articles</label>
 			<label index="tt_products_articles.uid_product">Product</label>
 			<label index="tt_products_emails">Products emails</label>
+			<label index="tt_products.title">Name:</label>
 			<label index="sys_products_cards">Credit cards for orders</label>
 			<label index="sys_products_cards.cc_number">number</label>
 			<label index="sys_products_cards.cc_type">organization</label>
@@ -153,6 +156,8 @@
 			<label index="tt_products.unit">Maßeinheit</label>
 			<label index="tt_products.unit_factor">Faktor der Maßeinheit</label>
 			<label index="tt_products.note_uid">beschreibende Seiten</label>
+			<label index="tt_products.note">Beschreibung</label>
+			<label index="tt_products.note2">Kommentar</label>
 			<label index="tt_products.itemnumber">Artikel Nr.:</label>
 			<label index="tt_products.inStock">Am Lager (St.):</label>
 			<label index="tt_products.datasheet">Datenblatt</label>

@@ -162,7 +162,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				);
 
 		$this->codeArray=t3lib_div::trimExplode(',', $config['code'],1);
-		
+
 			// initialise AJAX at the beginning because the AJAX functions can set piVars
 		if (t3lib_extMgm::isLoaded('xajax')) {
 			include_once(t3lib_extMgm::extPath('xajax').'class.tx_xajax.php');
@@ -525,7 +525,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		if ($this->errorMessage) {
 			$content = '<p><b>'.$this->errorMessage.'</b></p>';
 		}
-		$rc = ($bRunAjax ? $content : $this->pi_wrapInBaseClass($content));
+		$rc = ($bRunAjax || !intval($this->conf['wrapInBaseClass']) ? $content : $this->pi_wrapInBaseClass($content));
 		return $rc;	
 	}
 
@@ -570,9 +570,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		tx_fhlibrary_language::pi_loadLL($this,'EXT:tt_products/pi1/locallang.xml');
 
 			// get all extending TCAs
-		if (is_array($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']) && t3lib_extMgm::isLoaded(DIV_EXTkey))	{
-			include_once (PATH_BE_div.'class.tx_div.php');
-			tx_div::loadTcaAdditions($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
+		if (is_array($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']))	{
+			$this->pi_loadTcaAdditions($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
 		}
 
 		$this->initTables();
@@ -624,7 +623,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$tmp = ($this->piVars['article'] ? $this->piVars['article'] : '');
 			if ($tmp)	{
 				$this->tt_product_single['article'] = $tmp;
-			}			
+			}
 		}
 
 		// mkl - multicurrency support
@@ -727,7 +726,9 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->cnf,
 			$this->tt_content,
 			$this->LLkey,
-			$this->conf['table.']['tt_products_cat'] 
+			$this->conf['table.']['tt_products_cat'],
+			'parent_category',
+			'cat'
 		);
 
 		$this->tt_products = t3lib_div::makeInstance('tx_ttproducts_product');
@@ -926,7 +927,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$content=$this->cObj->getSubpart($this->templateCode,$marker->spMarker($msgSubpart));
 			if (!$TSFE->beUserLogin)	{
 				$content = $this->cObj->substituteSubpart($content,'###ADMIN_CONTROL###','');
-			}			
+			}
 		}
 		
 		$markerArray=array();
@@ -1056,11 +1057,11 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$this->conf['useArticles']
 			);
 			if ($theCode == 'LISTARTICLES' && $this->conf['useArticles'])	{
-				$templateArea = 'ARTICLE_LIST_TEMPLATE';						
+				$templateArea = 'ARTICLE_LIST_TEMPLATE';	
 			} else {
 				$templateArea = 'ITEM_LIST_TEMPLATE';
 			}
-			
+
 			$allowedItems = '';
 			$bAllPages = false;
 			$templateArea = '###'.$templateArea.$this->template_suffix.'###';

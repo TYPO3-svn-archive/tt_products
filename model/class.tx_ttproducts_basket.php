@@ -372,6 +372,7 @@ class tx_ttproducts_basket {
 	} // getClearBasketRecord
 
 
+
 	/**
 	 * Empties the shopping basket!
 	 */
@@ -391,6 +392,7 @@ class tx_ttproducts_basket {
 		$TSFE->fe_user->setKey('ses','ac',array());
 		$TSFE->fe_user->setKey('ses','cc',array());
 	} // clearBasket
+
 
 
 	/**

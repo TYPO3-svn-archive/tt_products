@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -117,6 +117,33 @@ class tx_ttproducts_article_base {
 	}
 
 
+	function &getItemSubpartArrays (&$item, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $code='', $id='1')	{
+		global $TCA;
+
+		$row = &$item['rec'];
+		foreach ($row as $field => $value)	{
+
+			$upperField = strtoupper($field);
+			$markerKey = $this->marker.'_HAS_'.$upperField;
+			if ($TCA[$this->table->name]['columns'][$field]['config']['type'] == 'group')	{
+				$valueArray = t3lib_div::trimExplode(',', $value);
+
+				foreach ($valueArray as $k => $partValue)	{
+					$partMarkerKey = $markerKey.($k+1);
+					if (isset($tagArray[$partMarkerKey]))	{
+						if ($partValue)	{
+							$wrappedSubpartArray['###'.$partMarkerKey.'###'] = array('','');
+						} else {
+							$subpartArray['###'.$partMarkerKey.'###'] = '';
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+
 	/**
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
@@ -136,6 +163,7 @@ class tx_ttproducts_article_base {
 		if (!$this->marker)
 			return array();
 		$row = &$item['rec'];
+
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code);
 
@@ -188,9 +216,10 @@ class tx_ttproducts_article_base {
 		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
 		$markerArray['###PRICE_ONLY_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
 
-		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],0,$row['tax'],$this->conf['TAXincluded'])));
+		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],0,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
 		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
-
+		$markerArray['###DIRECTCOST_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['directcost'],1,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
+		$markerArray['###DIRECTCOST_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['directcost'],0,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
 
 		$instockField = $this->cnf->getTableDesc['inStock'];
 		$instockField = ($instockField ? $instockField : 'inStock');

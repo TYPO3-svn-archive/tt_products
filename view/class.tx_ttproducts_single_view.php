@@ -105,16 +105,16 @@ class tx_ttproducts_single_view {
 		$itemTableConf = $rowArray;
 		$itemTableLangFields = $rowArray; 
 		$content = '';
-		
+
 		if ($this->config['displayCurrentRecord'])	{
 			$rowArray[$this->type] = $this->pibase->cObj->data;  
 		} else {
- 			$where = ' AND pid IN ('.$this->page->pid_list.')';
+			$where = ' AND pid IN ('.$this->page->pid_list.')';
 			$rowArray[$this->type] = $itemTableArray[$this->type]->get($this->uid, $where);
 			$itemTableConf[$this->type] = $this->cnf->getTableConf($itemTableArray[$this->type]->table->name, 'SINGLE');
 			$itemTableLangFields[$this->type] = $this->cnf->getTranslationFields($itemTableConf[$this->type]);
 
-			// TODO: $itemImageFields[$this->type] = $this->cnf->getImageFields($itemTableConf[$this->type]);			
+			// TODO: $itemImageFields[$this->type] = $this->cnf->getImageFields($itemTableConf[$this->type]);
 
 			if ($this->type == 'product')	{
 				if ($this->variants) {
@@ -143,7 +143,7 @@ class tx_ttproducts_single_view {
 		$row = $rowArray[$this->type];
 		$tablename = $itemTableArray[$this->type]->table->name;
 		if ($row) {
-		 	// $this->uid = intval ($row['uid']); // store the uid for later usage here
+			// $this->uid = intval ($row['uid']); // store the uid for later usage here
 
 			$markerArray = array();
 			$subpartArray = array();
@@ -215,7 +215,6 @@ class tx_ttproducts_single_view {
 			$datasheetFile = $row['datasheet'];
 
 				// Fill marker arrays
-			$wrappedSubpartArray=array();
 			$backPID = $this->pibase->piVars['backPID'];
 			$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
 			if ($this->conf['clickIntoBasket'] && $backPID)	{
@@ -256,16 +255,22 @@ class tx_ttproducts_single_view {
 				$catParentArray
 			);
 
+			$cat = $row['category'];
+			$catArray = $viewCatTable->getCategoryArray($row['uid']);
+			if (count($catArray))	{
+				$cat = current($catArray);
+			}
+
 			$categoryMarkerArray = array();
 			$viewCatTable->getMarkerArray (
-				$categoryMarkerArray, 
+				$categoryMarkerArray,
 				$this->page,
-				$row['category'], 
-				$row['pid'], 
-				$this->config['limitImage'], 
-				'listcatImage', 
-				$viewCatTagArray, 
-				array(), 
+				$cat,
+				$row['pid'],
+				$this->config['limitImage'],
+				'listcatImage',
+				$viewCatTagArray,
+				array(),
 				$pageAsCategory,
 				'SINGLE',
 				1,
@@ -294,10 +299,20 @@ class tx_ttproducts_single_view {
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 			$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 			$basketItemView->init($this->pibase, $this->tt_products_cat, $this->basket->basketExt);
-			
+
 			$basketMarkerArray = array();
-			$basketItemView->getItemMarkerArray ($itemTableArray[$this->type], $item, $basketMarkerArray, $this->basket->basketExt, 'SINGLE', 1);
-		
+			$subpartArray = array();
+			$basketItemView->getItemMarkerArray ($itemTableArray[$this->type], $item, $basketMarkerArray, $viewTagArray, 'SINGLE', 1);
+			$basketItemView->getItemSubpartArrays (
+				$itemTableArray[$this->type],
+				$item,
+				$subpartArray,
+				$wrappedSubpartArray,
+				$viewTagArray,
+				'SINGLE',
+				1
+			);
+
 			$markerArray = array();
 			$itemTableArray[$this->type]->getItemMarkerArray (
 				$item,
@@ -309,8 +324,7 @@ class tx_ttproducts_single_view {
 				$viewTagArray,
 				$forminfoArray,
 				'SINGLE',
-				1,
-				true
+				1
 			);
 
 			if ($this->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
@@ -340,7 +354,6 @@ class tx_ttproducts_single_view {
 					1
 				);
 			}
-			$subpartArray = array();
 			$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'];
 
 			//$markerArray['###FORM_URL###']=$this->formUrl.'&tt_products='.$this->uid ;
@@ -348,7 +361,7 @@ class tx_ttproducts_single_view {
 			if ($pid == $TSFE->pid)	{
 				$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $this->uid;
 			}
-			
+
 			// $markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, array('tt_products' => $this->uid)); // Applied it here also...
 			$markerArray = $this->marker->addURLMarkers($pid, $markerArray, $addQueryString); // Applied it here also...
 			// $url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams()) ; // $this->getLinkUrl('','tt_products');
@@ -379,7 +392,7 @@ class tx_ttproducts_single_view {
 			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->page->pid_list.')'. $wherestock . $itemTableArray[$this->type]->table->enableFields();
 			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
 			$resprev = $itemTableArray[$this->type]->table->exec_SELECTquery('*', $queryprev, '', $TYPO3_DB->stripOrderBy($prevOrderby));
-			
+
 			if ($rowprev = $TYPO3_DB->sql_fetch_assoc($resprev) )	{
 				$addQueryString=array();
 				$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $rowprev['uid'];
@@ -447,7 +460,7 @@ class tx_ttproducts_single_view {
 					$markerArray['###PRODUCT_RELATED_UID###'] = '';
 				}
 			}
-			
+
 			$this->javaScriptMarker->getMarkerArray($markerArray);		
 			$markerArray = array_merge ($categoryMarkerArray, $basketMarkerArray, $markerArray);
 
@@ -471,7 +484,7 @@ class tx_ttproducts_single_view {
 				}
 				$this->pibase->javascript->set('email');  // other JavaScript checks can come here
 			}
-			
+
 		} else {
 			$error_code[0] = 'wrong_parameter';
 			$error_code[1] = intval($this->uid);

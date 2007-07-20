@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -149,12 +149,12 @@ class tx_ttproducts_activity_finalize {
 						$subject=trim($parts[0]);
 						$plain_message = trim($parts[1]);
 						tx_ttproducts_email_div::send_mail(
-							$address->infoArray['billing']['email'],
-							$subject,
+							'"'.$address->infoArray['billing']['email'].'"',
+							'"'.$subject.'"',
 							$plain_message,
 							$tmp='',
 							$this->conf['orderEmail_from'],
-							$this->conf['orderEmail_fromName']
+							'"'.$this->conf['orderEmail_fromName'].'"'
 						);
 					}
 				}
@@ -302,24 +302,24 @@ class tx_ttproducts_activity_finalize {
 				$agbAttachment = ($this->conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($this->conf['AGBattachment']) : '');
 				foreach ($recipientsArray['customer'] as $key => $recipient) {
 					tx_ttproducts_email_div::send_mail(
-						$recipient,
-						$subjectArray['customer'],
+						'"'.$recipient.'"',
+						'"'.$subjectArray['customer'].'"',
 						$plainMessageArray['customer'],
 						$HTMLmailContent,
 						$this->conf['orderEmail_from'],
-						$this->conf['orderEmail_fromName'],
+						'"'.$this->conf['orderEmail_fromName'].'"',
 						$agbAttachment
 					);
 				}
 				foreach ($recipientsArray['shop'] as $key => $recipient) {
 					// $headers variable removed everywhere!
 					tx_ttproducts_email_div::send_mail(
-						$recipient,
-						$subjectArray['shop'],
+						'"'.$recipient.'"',
+						'"'.$subjectArray['shop'].'"',
 						$plainMessageArray['shop'],
 						$HTMLmailContent,
 						$address->infoArray['billing']['email'],
-						$address->infoArray['billing']['name'],
+						'"'.$address->infoArray['billing']['name'].'"',
 						$addcsv
 					);
 				}
@@ -331,19 +331,19 @@ class tx_ttproducts_activity_finalize {
 							$uidItemnrTitle = t3lib_div::trimExplode(',', $instockTmp);
 							if ($count <= $this->conf['warningInStockLimit'])	{
 								$messageArr =  explode('|', $message = $this->pibase->pi_getLL('instock_warning'));
-								$subject = $messageArr[0].$tableDesc.' "'.$uidItemnrTitle[2].'"'.$messageArr[1].$uidItemnrTitle[1].$messageArr[2];
+								$subject = $messageArr[0].$tableDesc. '"'.$uidItemnrTitle[2].'"'.$messageArr[1].$uidItemnrTitle[1].$messageArr[2];
 	
 								foreach ($recipientsArray['shop'] as $key => $recipient) {
 									// $headers variable removed everywhere!
 									tx_ttproducts_email_div::send_mail(
-										$recipient,
-										$subject,
+										'"'.$recipient.'"',
+										'"'.$subject.'"',
 										$subject,
 										$tmp='',	// no HTML order confirmation email for shop admins
 										$this->conf['orderEmail_from'],
-										$this->conf['orderEmail_fromName']
+										".$this->conf['orderEmail_fromName']."
 									);
-								}							
+								}
 							}
 						}
 					}

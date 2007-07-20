@@ -35,7 +35,6 @@
  * @package TYPO3
  * @subpackage tt_products
  *
- *
  */
 
 
@@ -61,6 +60,9 @@ class tx_ttproducts_basketitem_view {
  		$this->basketExt = &$basketExt;
 	} // init
 
+	function &getItemSubpartArrays (&$viewTable, &$item, &$subparArray, &$wrappedSubparArray, &$tagArray, $code='', $id='1')	{
+		$viewTable->getItemSubpartArrays ($item, $subparArray, $wrappedSubparArray, $tagArray, $code, $id);
+	}
 
 	/**
 	 * Template marker substitution

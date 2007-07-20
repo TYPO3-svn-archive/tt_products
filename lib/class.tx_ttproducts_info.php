@@ -29,7 +29,7 @@
  *
  * functions for the info addresses
  *
- * $Id:$
+ * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -91,21 +91,26 @@ class tx_ttproducts_info {
 		if (t3lib_extMgm::isLoaded('static_info_tables')) {
 			$path = t3lib_extMgm::extPath('static_info_tables');
 			include_once(PATH_BE_fh_library.'lib/class.tx_fhlibrary_system.php');
-			$eInfo = tx_fhlibrary_system::getExtensionInfo($path, 'static_info_tables');
-			$sitVersion = $eInfo['version'];
-			
-			if (version_compare($sitVersion, '2.0.0', '>='))	{
-				include_once($path.'pi1/class.tx_staticinfotables_pi1.php');
-				// Initialise static info library
-				$this->staticInfo = t3lib_div::makeInstance('tx_staticinfotables_pi1');
-				$this->staticInfo->init();
-			} else if (t3lib_extMgm::isLoaded('sr_static_info')) {
-				include_once(t3lib_extMgm::extPath('sr_static_info').'pi1/class.tx_srstaticinfo_pi1.php');
-				// Initialise static info library
-				$this->staticInfo = t3lib_div::makeInstance('tx_srstaticinfo_pi1');
-				$this->staticInfo->init();
+			$eInfo = tx_fhlibrary_system::getExtensionInfo('static_info_tables');
+
+			if (is_array($eInfo))	{
+				$sitVersion = $eInfo['version'];
+
+				if (version_compare($sitVersion, '2.0.0', '>='))	{
+					include_once($path.'pi1/class.tx_staticinfotables_pi1.php');
+					// Initialise static info library
+					$this->staticInfo = t3lib_div::makeInstance('tx_staticinfotables_pi1');
+					$this->staticInfo->init();
+				} else if (t3lib_extMgm::isLoaded('sr_static_info')) {
+					include_once(t3lib_extMgm::extPath('sr_static_info').'pi1/class.tx_srstaticinfo_pi1.php');
+					// Initialise static info library
+					$this->staticInfo = t3lib_div::makeInstance('tx_srstaticinfo_pi1');
+					$this->staticInfo->init();
+				}
+			} else	{
+				echo $eInfo;
 			}
-			
+
 			if (is_object($this->staticInfo))	{
 				include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_country.php');
 	
@@ -116,11 +121,11 @@ class tx_ttproducts_info {
 					$this->cnf,
 					$this->pibase->LLkey,
 					'static_countries'
-				);				
+				);
 			}
 		}
-		
-		if ($this->conf['useStaticInfoCountry'] && $this->infoArray['billing']['country_code'])	{
+
+		if ($this->conf['useStaticInfoCountry'] && $this->infoArray['billing']['country_code'] && is_object($this->staticInfo))	{
 			$this->infoArray['billing']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['billing']['country_code'],'','');
 			if ($this->infoArray['delivery']['name'])	{
 				$this->infoArray['delivery']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
@@ -150,12 +155,12 @@ class tx_ttproducts_info {
 						'tx_feuserextrafields_company_deliv, tx_feuserextrafields_address_deliv, tx_feuserextrafields_housenumber,'.
 						'tx_feuserextrafields_housenumber_deliv, tx_feuserextrafields_housenumberadd, tx_feuserextrafields_housenumberadd_deliv,'.
 						'tx_feuserextrafields_pobox, tx_feuserextrafields_pobox_deliv, tx_feuserextrafields_zip_deliv, tx_feuserextrafields_city_deliv,'.
-						'tx_feuserextrafields_country, tx_feuserextrafields_country_deliv';				
+						'tx_feuserextrafields_country, tx_feuserextrafields_country_deliv';
 			}
 			$fieldArray = t3lib_div::trimExplode(',',$fields);
 			foreach ($fieldArray as $k => $field)	{
 				$this->infoArray['billing'][$field] = ($this->infoArray['billing'][$field] ? $this->infoArray['billing'][$field]: $TSFE->fe_user->user[$field]);
-			}					
+			}
 			$this->infoArray['billing']['country'] = ($this->infoArray['billing']['country'] ? $this->infoArray['billing']['country'] : ($this->conf['useStaticInfoCountry'] ? $TSFE->fe_user->user['static_info_country']:$TSFE->fe_user->user['country']));
 			$this->infoArray['billing']['agb'] = (isset($this->infoArray['billing']['agb']) ? $this->infoArray['billing']['agb'] : $TSFE->fe_user->user['agb']);
 			$this->infoArray['billing']['date_of_birth'] = date( 'd-m-Y', $TSFE->fe_user->user['date_of_birth']);
@@ -186,14 +191,12 @@ class tx_ttproducts_info {
 			$infoFields = explode(',','feusers_uid,telephone,salutation,name,first_name,last_name,email,' .
 				'date_of_birth,company,address,city,zip,country,country_code,tt_products_vat'.
 				$infoExtraFields
-			); // Fields...
+			); // Fields
 			while(list(,$fName)=each($infoFields))	{
 				$this->infoArray['delivery'][$fName] = $this->infoArray['billing'][$fName];
 			}
 		}
-
 	} // mapPersonIntoDelivery
-
 
 
 	/**
@@ -232,7 +235,6 @@ class tx_ttproducts_info {
 				$flag = 'country';
 			}
 		}
-		
 		return $flag;
 	} // checkAllowed
 
@@ -279,7 +281,7 @@ class tx_ttproducts_info {
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $this->infoArray['billing'][$fName];
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $this->infoArray['delivery'][$fName];
 		}
-		
+
 		if ($this->conf['useStaticInfoCountry'] && is_object($this->staticInfo))	{
 			$bReady = FALSE;
 			$whereCountries = $this->getWhereAllowed();
@@ -301,10 +303,10 @@ class tx_ttproducts_info {
 					$markerArray['###DELIVERY_COUNTRY_FIRST###'] = $markerArray['###PERSON_COUNTRY_FIRST###'];
 					$markerArray['###DELIVERY_COUNTRY###'] =
 						$this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
-					$bReady = TRUE;		
+					$bReady = TRUE;
 				}
 			}
-			
+
 			if (!$bReady)	{
 				$markerArray['###PERSON_COUNTRY_CODE###'] =
 					$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[personinfo][country_code]', '', $this->infoArray['billing']['country_code'],'');
@@ -317,7 +319,7 @@ class tx_ttproducts_info {
 			}
 
 		}
-				
+
 			// Markers for use if you want to output line-broken address information
 		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
 		$markerArray['###DELIVERY_ADDRESS_DISPLAY###'] = nl2br($markerArray['###DELIVERY_ADDRESS###']);

@@ -161,7 +161,7 @@ class tx_ttproducts_catlist_view {
 			ksort ($categoryTable->dataArray);
 			$excludeCat = 0;
 		}
-		
+
 		$currentCat = $categoryTable->getParamDefault();
 		$rootpathArray = $categoryTable->getRootpathArray($rootCat, $currentCat);
 		$categoryArray = $categoryTable->getRelationArray($excludeCat,$currentCat);
@@ -199,6 +199,7 @@ class tx_ttproducts_catlist_view {
 			$out .= '<option value="0"></option>';
 		}
 		$out = str_replace($htmlPartsMarkers[0], $out, $htmlParts[0]);
+
 		if ($htmlTagMain == 'ul')	{
 			while ($depth > 0 && $count < 300)	{
 				$count++;
@@ -207,7 +208,7 @@ class tx_ttproducts_catlist_view {
 					$markerArray = array();
 					$actCategory = $catArray[$depth][$countArray[$depth]];
 					$subCategories = $categoryArray[$actCategory]['child_category'];
-					$countArray[$depth]++;				
+					$countArray[$depth]++;
 					$css = ($actCategory == $currentCat ? 'class="act"' : $css);
 					$preOut = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
 					$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);

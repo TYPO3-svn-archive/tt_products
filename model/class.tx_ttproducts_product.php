@@ -68,7 +68,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$tableConfig['orderBy'] = $this->cnf->conf['orderBy'];
 		
 		if (!$tableConfig['orderBy'])	{
-			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];				
+			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];
 		}
 
 		$this->table->setConfig($tableConfig);
@@ -76,7 +76,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$tablename = ($tablename ? $tablename : 'tt_products');
 		$this->table->setTCAFieldArray($tablename, 'products');
 		
-		$requiredFields = 'uid,pid,category,price,price2,tax,inStock';
+		$requiredFields = 'uid,pid,category,price,price2,directcost,tax,inStock';
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
@@ -95,7 +95,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
 			$this->table->setLangName($this->tableconf['language.']['table']);
-			$this->table->setTCAFieldArray($this->table->langname);
+			$this->table->setTCAFieldArray($this->table->langname, 'productslang', FALSE);
 		}
 
 		if ($this->tableconf['language.'] && $this->tableconf['language.']['type'] == 'csv')	{
@@ -110,6 +110,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	function setArticleTable(&$tt_products_articles)	{
 		$this->tt_products_articles = &$tt_products_articles;
+	}
+
+
+	public function &getTableObj ()	{
+		return $this->table;
 	}
 
 
@@ -200,24 +205,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 							$this->reduceInStock($row['uid'], $actItem['count']);
 							$instockTableArray['tt_products'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row['inStock'] - $actItem['count']);
 						}
-//						$query='uid=\''.intval($actItem['rec']['uid']).'\'';
-//
-//						$res = $TYPO3_DB->exec_SELECTquery('inStock', $this->table->name, $query);
-//
-//						if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-//							if ($row['inStock'] > 0) {
-//								$newInStock = intval($row['inStock']) - intval($actItem['count']);
-//								if ($newInStock < 0) {
-//									$newInStock = 0;
-//								}
-//
-//								$fieldsArray =array();
-//										// Setting tstamp, deleted and tracking code
-//								$fieldsArray['inStock'] = $newInStock;
-//
-//								$res = $TYPO3_DB->exec_UPDATEquery($this->table->name, 'uid='.intval($actItem['rec']['uid']), $fieldsArray);
-//							}
-//						}
 					}
 				}
 			}
@@ -336,33 +323,30 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				}
 			}
 		}
-		
 	} // getItemMarkerArray
 
 
 	function addWhereCat($cat, $pid_list)	{
 		global $TYPO3_CONF_VARS;
+		$bOpenBracket = FALSE;
 
 		$where = '';
-		if($cat || $cat=='0') {
-			$cat = implode(',',t3lib_div::intExplode(',', $cat));
-			$where = ' AND ( category IN ('.$cat.')';
-		}
 
 			// Call all addWhere hooks for categories at the end of this method
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addWhereCat')) {
-					$whereNew = $hookObj->addWhereCat($this, $cat, $where, $pid_list);
-					$where .= ($whereNew ? ' OR '.$whereNew : '');
+					$whereNew = $hookObj->addWhereCat($this, $cat, $where, $operator, $pid_list);
+					$operator = ($operator ? $operator : 'OR');
+					$where .= ($whereNew ? ' '.$operator.' '.$whereNew : '');
 				}
 			}
+		} else if($cat || $cat=='0') {
+			$cat = implode(',',t3lib_div::intExplode(',', $cat));
+			$where = ' AND ( category IN ('.$cat.') )';
 		}
 
-		if ($where)	{
-			$where .= ' )';
-		}
 		return $where;
 	}
 

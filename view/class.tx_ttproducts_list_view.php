@@ -145,7 +145,7 @@ class tx_ttproducts_list_view {
 	) {
 		global $TSFE, $TCA, $TYPO3_DB;
 		global $TYPO3_CONF_VARS;
-		
+
 		$content = '';
 		$out = '';
 		$sword = $this->pibase->piVars['sword'];
@@ -173,7 +173,9 @@ class tx_ttproducts_list_view {
 				$where .= ' AND '.$field.'='.$TYPO3_DB->fullQuoteStr($value, $itemTable->table->name);
 			}
 		}
- 
+
+debug ($where, '$where', __LINE__, __FILE__);
+
 		// if parameter 'newitemdays' is specified, only new items from the last X days are displayed
 		$newitemdays = $this->pibase->piVars['newitemdays'];
 		$newitemdays = ($newitemdays ? $newitemdays : t3lib_div::_GP('newitemdays'));  
@@ -181,8 +183,8 @@ class tx_ttproducts_list_view {
 			$temptime = time() - 86400*intval(trim($newitemdays));
 			// $where = ' AND tstamp >= '.$temptime;
 			$where .= ' AND (starttime >= '.$temptime . ' OR tstamp >= '. $temptime . ')'; 
-		}			
-		
+		}
+
 		$cat = $this->tt_products_cat->getParamDefault();
 		$pid = $this->page->getParamDefault();
 
@@ -346,8 +348,11 @@ class tx_ttproducts_list_view {
 			$selectConf['pidInList'] = $allowedPages;
 			$wherestock = ($this->conf['showNotinStock'] || !is_array(($TCA[$itemTable->table->name]['columns']['inStock'])) ? '' : ' AND (inStock <> 0) ');
 			$whereNew = $wherestock.$where;
+debug ($whereNew, '$whereNew', __LINE__, __FILE__);
 			$whereNew = $itemTable->table->transformWhere($whereNew);
+debug ($whereNew, '$whereNew', __LINE__, __FILE__);
 			$selectConf['where'] = '1=1 '.$whereNew;
+debug ($selectConf['where'], '$selectConf[\'where\']', __LINE__, __FILE__);
 			$selectConf['from'] = $itemTable->table->getAdditionalTables();
 	
 				// performing query to count all products (we need to know it for browsing):
@@ -361,13 +366,13 @@ class tx_ttproducts_list_view {
 				// range check to current productsCount
 			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount)?($productsCount > $this->config['limit'] ? $productsCount-$this->config['limit'] : $productsCount):$begin_at,0);
 			
-				// Get products count			
+				// Get products count
 			$selectConf['orderBy'] = $this->conf['orderBy'];
 			$productsConf = $this->cnf->getTableConf($itemTable->table->name,$theCode);
 
 				// performing query for display:	
 			if (!$selectConf['orderBy'])	{
-				 $selectConf['orderBy'] = $productsConf['orderBy'];				
+				 $selectConf['orderBy'] = $productsConf['orderBy'];
 			}
 			$tmpArray = t3lib_div::trimExplode(',', $selectConf['orderBy']);
 			$orderByProduct = $tmpArray[0];
@@ -434,20 +439,25 @@ class tx_ttproducts_list_view {
 				$catParentArray
 			);
 			$catTitle = '';
-			if ($orderByCat && ($pageAsCategory < 2))	{
+			$catTableConf = $this->cnf->getTableConf($viewCatTable->table->name, $theCode);
+			if ($orderByCat && ($pageAsCategory < 2) && $catTableConf['language.']['type'] == 'table')	{
 				// $catFields = ($orderByCat == 'uid' ? $orderByCat : 'uid,'.$orderByCat);
 				$selectConf['orderBy'] = $viewCatTable->table->transformOrderby($orderByCat).
 					($selectConf['orderBy'] ? ','. $selectConf['orderBy'] : '');
 
 				$prodAlias = $itemTable->table->getAliasName();
+debug ($prodAlias, '$prodAlias', __LINE__, __FILE__);
 				$catAlias = $viewCatTable->table->getAliasName();
+debug ($catAlias, '$catAlias', __LINE__, __FILE__);
 
 				// SELECT *
 				// FROM tt_products
 				// LEFT OUTER JOIN tt_products_cat ON tt_products.category = tt_products_cat.uid
 				$selectConf['leftjoin'] = $viewCatTable->table->name.' '.$catAlias.' ON '.$catAlias.'.uid='.$prodAlias.'.category';
+debug ($selectConf['leftjoin'], '$selectConf[\'leftjoin\']', __LINE__, __FILE__);
 				$catTables = $viewCatTable->table->getAdditionalTables();
 				$selectConf['from'] = ($catTables ? $catTables.', '.$selectConf['from']:$selectConf['from']);
+debug ($selectConf, '$selectConf', __LINE__, __FILE__);
 			}
 
 			$selectFields = implode(',', $fieldsArray);
@@ -466,6 +476,7 @@ class tx_ttproducts_list_view {
 
 			$tablename = $itemTable->table->name;
 			$queryParts = $itemTable->table->getQueryConf($this->pibase->cObj,$tablename, $selectConf, TRUE);
+debug ($queryParts, '$queryParts', __LINE__, __FILE__);
 			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
 			$itemArray=array();
 			$iCount = 0;
@@ -534,38 +545,38 @@ class tx_ttproducts_list_view {
 						$categoryMarkerArray = array();
 						if ($where || $this->conf['displayListCatHeader'])	{
 							$viewCatTable->getMarkerArray (
-								$categoryMarkerArray, 
+								$categoryMarkerArray,
 								$this->page,
-								$row['category'], 
-								$row['pid'], 
-								$this->config['limitImage'], 
-								'listcatImage', 
-								$viewCatTagArray, 
-								array(), 
+								$row['category'],
+								$row['pid'],
+								$this->config['limitImage'],
+								'listcatImage',
+								$viewCatTagArray,
+								array(),
 								$pageAsCategory,
 								$theCode,
 								$iCount,
 								''
 							);
 
-	  						$catTitle = $viewCatTable->getMarkerArrayCatTitle($categoryMarkerArray);
+							$catTitle = $viewCatTable->getMarkerArrayCatTitle($categoryMarkerArray);
 							$viewCatTable->getParentMarkerArray (
 								$catParentArray,
 								$row,
-		        				$categoryMarkerArray, 
-		        				$this->page,
-		        				$row['category'], 
-		        				$row['pid'], 
-		        				$this->config['limitImage'], 
-		        				'listcatImage', 
-		        				$viewCatTagArray, 
-		        				array(), 
-		        				$pageAsCategory,
-		        				$theCode,
-		        				1,
-		        				''
-		        			);
-	
+								$categoryMarkerArray,
+								$this->page,
+								$row['category'],
+								$row['pid'],
+								$this->config['limitImage'],
+								'listcatImage',
+								$viewCatTagArray,
+								array(),
+								$pageAsCategory,
+								$theCode,
+								1,
+								''
+							);
+
 							if ($t['categoryFrameWork'])	{
 								$categoryOut = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $categoryMarkerArray);
 							}
@@ -573,7 +584,7 @@ class tx_ttproducts_list_view {
 					} else {
 						$bCategoryHasChanged = false;
 					}
-					
+
 						// relevant only for article list
 					if ($itemTable->type == 'article')	{
 						if ($row['uid_product'] != $currentArray['product'])	{
@@ -584,7 +595,7 @@ class tx_ttproducts_list_view {
 							$item = $this->basket->getItem($prodRow, $variant);
 							$this->tt_products->getItemMarkerArray ($item, $productMarkerArray, $catTitle, $this->basket->basketExt, $this->config['limitImage'],'listImage', $viewProductsTagArray, array(), $theCode, $iCount);
 							if ($itemListOut && $t['productAndItemsFrameWork'])	{
-								$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);						
+								$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);
 							}
 						}
 						$itemTable->mergeProductRow($row, $prodRow);

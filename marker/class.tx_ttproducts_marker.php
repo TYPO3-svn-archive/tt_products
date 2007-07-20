@@ -88,24 +88,32 @@ class tx_ttproducts_marker {
 		$conf = array('useCacheHash' => true);
 		$target = '';
 
+debug ($pidNext, 'addURLMarkers $pidNext', __LINE__, __FILE__);
 		// disable caching as soon as someone enters products into the basket, enters user data etc.
 		// $addQueryString['no_cache'] = 1; 
 			// Add's URL-markers to the $markerArray and returns it
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
+debug ($pidBasket, '$pidBasket', __LINE__, __FILE__);
 		$pidFormUrl = ($pidNext ? $pidNext : $pidBasket);
+debug ($pidFormUrl, '$pidFormUrl', __LINE__, __FILE__);
 		$url = $this->pibase->pi_getTypoLink_URL($pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
+debug ($url, '$url', __LINE__, __FILE__);
 		$markerArray['###FORM_URL###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $pidBasket);
 		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
+debug ($url, '$url', __LINE__, __FILE__);
 		$markerArray['###FORM_URL_INFO###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDpayment'] ? $this->conf['PIDpayment'] : $pidBasket);
 		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
+debug ($url, '$url', __LINE__, __FILE__);
 		$markerArray['###FORM_URL_PAYMENT###'] = htmlspecialchars($url);  
 		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $pidBasket);
 		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
+debug ($url, '$url', __LINE__, __FILE__);
 		$markerArray['###FORM_URL_FINALIZE###'] = htmlspecialchars($url);  
 		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $pidBasket);
 		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
+debug ($url, '$url', __LINE__, __FILE__);
 		$markerArray['###FORM_URL_THANKS###'] = htmlspecialchars($url);
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 
@@ -116,7 +124,9 @@ class tx_ttproducts_marker {
 		if ($this->basket->basketExtra['payment.']['handleTarget'])	{	// Alternative target
 			$markerArray['###FORM_URL_TARGET###'] = $this->basket->basketExtra['payment.']['handleTarget'];
 		}
-		
+
+debug ($markerArray, '$markerArray', __LINE__, __FILE__);
+
 			// Call all addURLMarkers hooks at the end of this method
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
@@ -126,6 +136,8 @@ class tx_ttproducts_marker {
 				}
 			}
 		}
+
+debug ($markerArray, '$markerArray', __LINE__, __FILE__);
 
 		return $markerArray;
 	} // addURLMarkers
@@ -242,7 +254,7 @@ class tx_ttproducts_marker {
 	//			}
 			}
 		}
-		
+
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'cat', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);

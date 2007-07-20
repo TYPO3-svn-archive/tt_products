@@ -289,7 +289,8 @@ $tempColumns = Array (
 		'config' => Array (
 			'type' => 'input',
 			'size' => '5',
-			'max' => '20'
+			'max' => '20',
+			'eval' => 'trim,integer',
 		)
 	),
 	'tt_products_vouchercode' => Array (

@@ -66,7 +66,7 @@ $TCA['tt_products'] = Array (
 		),
 		'title' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.title',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '40',
@@ -110,7 +110,7 @@ $TCA['tt_products'] = Array (
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.price',
 			'config' => Array (
 				'type' => 'input',
-				'size' => '12',
+				'size' => '20',
 				'eval' => 'trim,double2',
 				'max' => '20'
 			)
@@ -120,14 +120,14 @@ $TCA['tt_products'] = Array (
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.price2',
 			'config' => Array (
 				'type' => 'input',
-				'size' => '12',
+				'size' => '20',
 				'eval' => 'trim,double2',
 				'max' => '20'
 			)
 		),
 		'note' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -136,7 +136,7 @@ $TCA['tt_products'] = Array (
 		),
 		'note2' => Array (
 			'exclude' => 1,
-			'label' => '2:',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
