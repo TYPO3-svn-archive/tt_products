@@ -151,11 +151,11 @@ class tx_ttproducts_activity_finalize {
 						$plain_message = trim($parts[1]);
 						tx_ttproducts_email_div::send_mail(
 							$address->infoArray['billing']['email'],
-							'"'.$subject.'"',
+							$apostrophe.$subject.$apostrophe,
 							$plain_message,
 							$tmp='',
 							$this->conf['orderEmail_from'],
-							'"'.$this->conf['orderEmail_fromName'].'"'
+							$apostrophe.$this->conf['orderEmail_fromName'].$apostrophe
 						);
 					}
 				}
@@ -304,11 +304,11 @@ class tx_ttproducts_activity_finalize {
 				foreach ($recipientsArray['customer'] as $key => $recipient) {
 					tx_ttproducts_email_div::send_mail(
 						$recipient,
-						'"'.$subjectArray['customer'].'"',
+						$apostrophe.$subjectArray['customer'].$apostrophe,
 						$plainMessageArray['customer'],
 						$HTMLmailContent,
 						$this->conf['orderEmail_from'],
-						'"'.$this->conf['orderEmail_fromName'].'"',
+						$apostrophe.$this->conf['orderEmail_fromName'].$apostrophe,
 						$agbAttachment
 					);
 				}
@@ -316,11 +316,11 @@ class tx_ttproducts_activity_finalize {
 					// $headers variable removed everywhere!
 					tx_ttproducts_email_div::send_mail(
 						$recipient,
-						'"'.$subjectArray['shop'].'"',
+						$apostrophe.$subjectArray['shop'].$apostrophe,
 						$plainMessageArray['shop'],
 						$HTMLmailContent,
 						$address->infoArray['billing']['email'],
-						'"'.$address->infoArray['billing']['name'].'"',
+						$apostrophe.$address->infoArray['billing']['name'].$apostrophe,
 						$addcsv
 					);
 				}
@@ -338,11 +338,11 @@ class tx_ttproducts_activity_finalize {
 									// $headers variable removed everywhere!
 									tx_ttproducts_email_div::send_mail(
 										$recipient,
-										'"'.$subject.'"',
+										$apostrophe.$subject.$apostrophe,
 										$subject,
 										$tmp='',	// no HTML order confirmation email for shop admins
 										$this->conf['orderEmail_from'],
-										".$this->conf['orderEmail_fromName']."
+										$apostrophe.$this->conf['orderEmail_fromName'].$apostrophe
 									);
 								}
 							}

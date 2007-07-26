@@ -399,7 +399,7 @@ class tx_ttproducts_list_view {
 				$viewTagArray,
 				$parentArray
 			);
-			
+
 			if ($itemTable->type == 'article')	{
 				$viewProductsTagArray = array();
 				$productsParentArray = array();
@@ -414,7 +414,7 @@ class tx_ttproducts_list_view {
 					$productsParentArray
 				);
 			}
-			
+
 			$itemTableConf = $this->cnf->getTableConf($itemTable->table->name, $theCode);
 			$itemTableLangFields = $this->cnf->getTranslationFields($itemTableConf);
 			$fieldsArray = array_merge($fieldsArray, $itemTableLangFields);
@@ -486,7 +486,7 @@ class tx_ttproducts_list_view {
 			if ($theCode == 'LISTGIFTS') {
 				$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $this->giftnumber);
 			}
-			// $markerArray['###FORM_NAME###'] = $formName;
+			$markerArray['###FORM_NAME###'] = $formName; // needed if form starts e.g. between ###ITEM_LIST_TEMPLATE### and ###ITEM_CATEGORY_AND_ITEMS###
 			$markerFramework = 'listFrameWork'; 
 			$t[$markerFramework] = $this->pibase->cObj->substituteMarkerArrayCached($t[$markerFramework],$markerArray,array(),array());
 			$this->pibase->javascript->set('email');
