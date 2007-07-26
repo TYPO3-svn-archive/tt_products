@@ -1,4 +1,8 @@
 2007-07-20 Franz Holzinger <franz@fholzinger.com>
+	* Do not use PHP5
+	* Do not use apostrophes by default in email headers
+
+2007-07-20 Franz Holzinger <franz@fholzinger.com>
 	* Fix bug with not working translations of categories using language tables
 	* Change function addWhereCat to use ony the categories found in a mm table if present
 	* use subparts ###PRODUCT_HAS_IMAGE1### in single view if there is image no.1 available

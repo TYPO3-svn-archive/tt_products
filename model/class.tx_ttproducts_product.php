@@ -113,7 +113,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	}
 
 
-	public function &getTableObj ()	{
+	function &getTableObj ()	{
 		return $this->table;
 	}
 
@@ -135,6 +135,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$articleRow = $this->variant->fetchArticle($row, $articleRows);
 		return $articleRow;
 	}
+
 
 	function get ($uid,$where_clause='') {
 		global $TYPO3_DB;

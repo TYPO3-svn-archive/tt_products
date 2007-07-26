@@ -43,23 +43,22 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_info.php');
 
 
 class tx_ttproducts_control {
-
 	var $pibase; // reference to object of pibase
 	var $cnf;
 	var $conf;
 	var $config;
 	var $basket; 	// the basket object
 
-	var $tt_products; 				// object of the type tx_ttproducts_product
+	var $tt_products; 			// object of the type tx_ttproducts_product
 	var $tt_products_articles;		// object of the type tx_table_db
 	var $tt_products_cat; 			// object of the type tx_ttproducts_category
 
 	var $paymentshipping; 			// object of the type tx_ttproducts_paymentshipping
 
-	var $templateCode='';				// In init(), set to the content of the templateFile. Used by default in getView()
+	var $templateCode='';			// In init(), set to the content of the templateFile. Used by default in getView()
 
-	var $fe_users;					// object of the type tx_table_db
-	var $activityArray;				// activities for the CODEs
+	var $fe_users;				// object of the type tx_table_db
+	var $activityArray;			// activities for the CODEs
 	var $viewTable;
 	var $price;
 
@@ -70,7 +69,7 @@ class tx_ttproducts_control {
 	 */
 	function init(&$pibase, &$cnf, &$templateCode, &$basket, &$tt_products, &$tt_products_articles, &$tt_products_cat, &$fe_users, &$price, &$paymentshipping)  {
 		global $TYPO3_DB,$TSFE,$TCA;
-		
+
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
@@ -103,7 +102,7 @@ class tx_ttproducts_control {
 		$retActivities = array();
 		$codeActivities = array();
 		$codeActivityArray =  Array (
-			'1' =>  
+			'1' =>
 				'products_overview',
 				'products_basket',
 				'products_info',
@@ -113,7 +112,7 @@ class tx_ttproducts_control {
 		);
 
 		$activityArray =  Array (
-			'1' =>  
+			'1' =>
 			'products_redeem_gift',
 			'products_clear_basket'
 		);
@@ -171,7 +170,7 @@ class tx_ttproducts_control {
 			if ($handleLib == 'paymentlib')	{
 				// Payment Library
 				require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
-				
+
 				$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
 				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $info, $card, $account);
 				$content .= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
@@ -288,7 +287,6 @@ class tx_ttproducts_control {
 					$card->getItemMarkerArray ($mainMarkerArray);
 				}	
 
-				
 				foreach ($this->activityArray as $activity => $value) {
 					if ($value) {
 							// perform action
@@ -367,10 +365,10 @@ class tx_ttproducts_control {
 										include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
 										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
 										$basketView->init ($this->basket, $this->templateCode);
-									}					
+									}
 
 									$content.=$basketView->getView($empty, 'PAYMENT', $info, $this->activityArray['products_info'], false, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
-									
+
 									if (trim($this->conf['paymentActivity'])=='payment')	{
 										if (!is_object($order))	{
 											include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');

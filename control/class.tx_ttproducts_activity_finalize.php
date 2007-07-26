@@ -101,7 +101,8 @@ class tx_ttproducts_activity_finalize {
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
 		$markerArray = array('###CUSTOMER_RECIPIENTS_EMAIL###' => implode(',', $recipientsArray['customer']));
 		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
-		
+		$apostrophe = $this->conf['orderEmail_apostrophe'];
+
 		// Move the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
 		// Is no user is logged in --> create one
 		if ($this->conf['createUsers'] && $address->infoArray['billing']['email'] != '' && (trim($TSFE->fe_user->user['username']) == '')) {
@@ -149,7 +150,7 @@ class tx_ttproducts_activity_finalize {
 						$subject=trim($parts[0]);
 						$plain_message = trim($parts[1]);
 						tx_ttproducts_email_div::send_mail(
-							'"'.$address->infoArray['billing']['email'].'"',
+							$address->infoArray['billing']['email'],
 							'"'.$subject.'"',
 							$plain_message,
 							$tmp='',
@@ -302,7 +303,7 @@ class tx_ttproducts_activity_finalize {
 				$agbAttachment = ($this->conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($this->conf['AGBattachment']) : '');
 				foreach ($recipientsArray['customer'] as $key => $recipient) {
 					tx_ttproducts_email_div::send_mail(
-						'"'.$recipient.'"',
+						$recipient,
 						'"'.$subjectArray['customer'].'"',
 						$plainMessageArray['customer'],
 						$HTMLmailContent,
@@ -314,7 +315,7 @@ class tx_ttproducts_activity_finalize {
 				foreach ($recipientsArray['shop'] as $key => $recipient) {
 					// $headers variable removed everywhere!
 					tx_ttproducts_email_div::send_mail(
-						'"'.$recipient.'"',
+						$recipient,
 						'"'.$subjectArray['shop'].'"',
 						$plainMessageArray['shop'],
 						$HTMLmailContent,
@@ -336,7 +337,7 @@ class tx_ttproducts_activity_finalize {
 								foreach ($recipientsArray['shop'] as $key => $recipient) {
 									// $headers variable removed everywhere!
 									tx_ttproducts_email_div::send_mail(
-										'"'.$recipient.'"',
+										$recipient,
 										'"'.$subject.'"',
 										$subject,
 										$tmp='',	// no HTML order confirmation email for shop admins
@@ -350,7 +351,6 @@ class tx_ttproducts_activity_finalize {
 				}
 			}
 		}
-		
 		// 3 different hook methods - There must be one for your needs, too.
 
 			// This cObject may be used to call a function which clears settings in an external order system.
@@ -360,7 +360,7 @@ class tx_ttproducts_activity_finalize {
 		if ($this->conf['externalOrderProcessFunc'])    {
 			$this->pibase->userProcess('externalOrderProcessFunc',$this->basket);
 		}
-		
+
 			// Call all finalizeOrder hooks
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
@@ -371,15 +371,11 @@ class tx_ttproducts_activity_finalize {
 			}
 		}
 	} // doProcessing
-
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_activity_finalize.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_activity_finalize.php']);
 }
-
 
 ?>
