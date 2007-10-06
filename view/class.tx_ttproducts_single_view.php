@@ -143,7 +143,6 @@ class tx_ttproducts_single_view {
 		}
 
 		$row = $rowArray[$this->type];
-		$tablename = $itemTableArray[$this->type]->table->name;
 		if ($row) {
 		 	// $this->uid = intval ($row['uid']); // store the uid for later usage here
 
@@ -155,7 +154,7 @@ class tx_ttproducts_single_view {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 			} else if (count($giftNumberArray)) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
-			} else if ($row['inStock'] <= 0 && $this->conf['showNotinStock'] && is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ) {
+			} else if ($row['inStock'] == 0 && $this->conf['showNotInStock'] && is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_NOT_IN_STOCK###';
 			} else {
 				if ($this->type == 'product')	{
@@ -207,6 +206,23 @@ class tx_ttproducts_single_view {
 					break;
 			}
 
+//			$pageCatTitle = '';
+//			if ($pageAsCategory >= 1) {
+//				$pageTmp = $this->page->get($row['pid']);
+//				$pageCatTitle = $pageTmp['title'];
+//				if ($pageAsCategory == 1)	{
+//					$pageCatTitle .= '/';
+//				}	
+//			}
+//			
+//			$catTmp = '';
+//			if ($row['category'] && ($pageAsCategory != 2)) {
+//				$catTmp = $this->tt_products_cat->get($row['category']);
+//				$catTmp = $catTmp['title'];
+//			}
+			
+						
+//			$catTitle = $pageCatTitle.$catTmp;
 			$datasheetFile = $row['datasheet'];
 
 				// Fill marker arrays
@@ -283,7 +299,6 @@ class tx_ttproducts_single_view {
 
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 			$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
-			$basketItemView->init($this->pibase,$this->tt_products_cat, $this->basket->basketExt);
 			
 			$basketMarkerArray = array();
 			$basketItemView->getItemMarkerArray ($itemTableArray[$this->type], $item, $basketMarkerArray, $this->basket->basketExt, 'SINGLE', 1);
@@ -299,8 +314,7 @@ class tx_ttproducts_single_view {
 				$viewTagArray,
 				$forminfoArray,
 				'SINGLE',
-				1,
-				true
+				1
 			);
 
 			if ($this->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
@@ -312,13 +326,12 @@ class tx_ttproducts_single_view {
 					$markerArray,
 					$catTitle,
 					$this->basket->basketExt,
-					$this->config['limitImageSingle'],
+					$this->config['limitImage'],
 					'listImage',
 					$viewTagArray,
 					array(),
 					'SINGLE',
-					1,
-					true
+					1
 				);
 			} else {
 				$itemTableArray['product']->variant->getItemMarkerArray (
@@ -347,8 +360,8 @@ class tx_ttproducts_single_view {
 
 			if ($this->conf['orderByItemNumberSg']) {
 				$itemnumberField = $itemTableArray[$this->type]->fields['itemnumber'];
-				$queryPrevPrefix = $itemnumberField.' < '.$TYPO3_DB->fullQuoteStr($row[$itemnumberField],$tablename);
-				$queryNextPrefix = $itemnumberField.' > '.$TYPO3_DB->fullQuoteStr($row[$itemnumberField],$tablename);
+				$queryPrevPrefix = $itemnumberField.' < '.intval($row[$itemnumberField]);
+				$queryNextPrefix = $itemnumberField.' > '.intval($row[$itemnumberField]);
 				$prevOrderby= $itemnumberField.' DESC';
 				$nextOrderby= $itemnumberField.' ASC';
 

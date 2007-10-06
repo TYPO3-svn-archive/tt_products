@@ -129,20 +129,14 @@ class tx_ttproducts_article_base {
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1', $bSelect=true)	{
-		global $TYPO3_CONF_VARS;
-
+	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1')	{
+		
 		if (!$this->marker)
 			return array();
 		$row = &$item['rec'];
+
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code);
-
-		if (isset($row['delivery']))	{
-			$this->image->getSingleImageMarkerArray ($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.']);
-		} else {
-			$markerArray['###'.$this->marker.'_DELIVERY###'] = '';
-		}
 
 		$markerArray['###'.$this->marker.'_ID###'] = $row['uid'];
 		$markerArray['###'.$this->marker.'_UID###'] = $row['uid'];
@@ -175,53 +169,50 @@ class tx_ttproducts_article_base {
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
 		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
 		$markerArray['###PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax'], $taxInclExcl));
-		$price2 = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
+		$price2 = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'.$priceNo],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
 		$markerArray['###PRICE2_TAX###'] = $price2;
 		$oldPrice = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
-		$oldPriceNoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],0,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
-		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
-			$oldPrice = $oldPriceNoTax = '';
-		}
 		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
+		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_excluded');
 		$markerArray['###PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax'], $taxInclExcl));
+		$oldPriceNoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],0,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
 		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
 		$markerArray['###PRICE_ONLY_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
 
-		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],0,$row['tax'],$this->conf['TAXincluded'])));
+		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'.$priceNo],0,$row['tax'],$this->conf['TAXincluded'])));
 		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
 
+		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
+			$oldPrice = $oldPriceNoTax = '';
+		}
 
-		$instockField = $this->cnf->getTableDesc['inStock'];
-		$instockField = ($instockField ? $instockField : 'inStock');
 		$markerArray['###'.$this->marker.'_INSTOCK_UNIT###'] = '';
-		if (isset($row[$instockField]))	{
-			if ($row[$instockField] <> 0) {
-				$markerArray['###'.$this->marker.'_INSTOCK###'] = $row['inStock'];
-				$markerArray['###'.$this->marker.'_INSTOCK_UNIT###'] = $this->conf['inStockPieces'];
-			} else {
-				$markerArray['###'.$this->marker.'_INSTOCK###'] = $this->conf['notInStockMessage'];
-			}
+		if ($row['inStock'] <> 0) {
+			$markerArray['###'.$this->marker.'_INSTOCK###'] = $row['inStock'];
+			$markerArray['###'.$this->marker.'_INSTOCK_UNIT###'] = $this->conf['inStockPieces'];
+		} else {
+			$markerArray['###'.$this->marker.'_INSTOCK###'] = $this->conf['notInStockMessage'];
 		}
 		
 		foreach ($this->variantArray as $variant => $variantRec)	{
 			$text = '';
 			$variantRow = $row[$variantRec[0]];
 			$prodTmp = explode(';', $variantRow);
-			if ($bSelect && $variantRow && $variantRec[1])	{
+			if ($variantRow && $variantRec[1])	{
 				foreach ($prodTmp as $prodVal)	{
 					$text .= '<OPTION value="'.$prodVal.'">'.$prodVal.'</OPTION>';
 				}
 			} else {
 				$text = $prodTmp[0];
 			}
-			$markerKey = '###'.$this->marker.'_'.strtoupper($variantRec[0]).'###';
-			$markerArray[$markerKey] = $text;
+			$markerArray['###'.$this->marker.'_'.strtoupper($variantRec[0]).'###'] = $text;
 		}
+
 		$markerArray['###'.$this->marker.'_WEIGHT###'] = doubleval($row['weight']);
 
 			// Call all getItemMarkerArray hooks at the end of this method
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getItemMarkerArray')) {
 					$hookObj->getItemMarkerArray ($this, $markerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $code, $id);
@@ -261,16 +252,6 @@ class tx_ttproducts_article_base {
 	function hasAdditional(&$row, $check)  {
 		$hasAdditional = false;
 		return $hasAdditional; 
-	}
-
-
-	function getNeededUrlParams($theCode)	{
-		$rc = '';
-		$this->tableconf = $this->cnf->getTableConf($this->conftablename, $theCode);
-		if (is_array($this->tableconf) && $this->tableconf['urlparams'])	{
-			$rc = $this->tableconf['urlparams'];
-		}
-		return $rc;
 	}
 
 }

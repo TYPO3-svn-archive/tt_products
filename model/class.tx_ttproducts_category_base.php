@@ -48,7 +48,6 @@ class tx_ttproducts_category_base {
 	var $config;
 	var $dataArray;  // array of read in categories
 	var $image;
-	var $tableconf;
 	var $marker = 'CATEGORY';
 	var $piVar = ''; // must be overridden
 

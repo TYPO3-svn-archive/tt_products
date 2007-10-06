@@ -84,7 +84,6 @@ class tx_ttproducts_marker {
 	 */
 	function addURLMarkers($pidNext,$markerArray,$addQueryString=array())	{
 		global $TSFE;
-		global $TYPO3_CONF_VARS;
 
 		// disable caching as soon as someone enters products into the basket, enters user data etc.
 		// $addQueryString['no_cache'] = 1; 
@@ -111,8 +110,8 @@ class tx_ttproducts_marker {
 		}
 		
 			// Call all addURLMarkers hooks at the end of this method
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addURLMarkers')) {
 					$hookObj->addURLMarkers($pidNext,$markerArray,$addQueryString);
@@ -160,25 +159,22 @@ class tx_ttproducts_marker {
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function getLinkParams($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true) {
+	function getLinkParams($excludeList='',$addQueryString=array(),$bUsePrefix=false) {
 		global $TSFE;
-		global $TYPO3_CONF_VARS;
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
 		$queryString=array();
 //		$fe_user = (is_array($TSFE->fe_user->user) ? 1 : 0);
-		if ($bUseBackPid)	{
-			if ($bUsePrefix)	{
-				$queryString[$this->pibase->prefixId.'[backPID]'] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
-	//			if ($fe_user)	{
-	//				$queryString[$this->pibase->prefixId.'[fegroup]'] = 1;
-	//			}
-			} else {
-				$queryString['backPID'] = $TSFE->id;
-	//			if ($fe_user)	{
-	//				$queryString['fegroup'] = 1;
-	//			}
-			}
+		if ($bUsePrefix)	{
+			$queryString[$this->pibase->prefixId.'[backPID]'] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
+//			if ($fe_user)	{
+//				$queryString[$this->pibase->prefixId.'[fegroup]'] = 1;
+//			}
+		} else {
+			$queryString['backPID'] = $TSFE->id;
+//			if ($fe_user)	{
+//				$queryString['fegroup'] = 1;
+//			}
 		}
 		
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
@@ -187,10 +183,10 @@ class tx_ttproducts_marker {
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 
 		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
-		if ($temp) {
 		if (!$temp)	{
 			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';		
 		}
+		if ($temp) {
 			$queryString['sword'] = $temp;
 		}
 		if (is_array($addQueryString))	{
@@ -206,8 +202,8 @@ class tx_ttproducts_marker {
 		}
 
 			// Call all getLinkParams hooks at the end of this method
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getLinkParams')) {
 					$hookObj->getLinkParams($this,$queryString,$excludeList,$addQueryString);

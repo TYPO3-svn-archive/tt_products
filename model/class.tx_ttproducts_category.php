@@ -44,6 +44,7 @@ require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
 
 class tx_ttproducts_category extends tx_ttproducts_category_base {
 	var $tt_products_email;				// object of the type tx_table_db
+	var $tableconf;
 	var $image;
 	var $cnf;
 	var $piVar = 'cat';
@@ -152,9 +153,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	function getParamDefault ()	{
 		$cat = $this->pibase->piVars[$this->piVar];
 		$cat = ($cat ? $cat : $this->conf['defaultCategoryID']);
-		if ($cat)	{
-			$cat = implode(',',t3lib_div::intExplode(',', $cat));
-		}
+		$cat = implode(',',t3lib_div::intExplode(',', $cat));
 		return $cat;	
 	}
 
@@ -234,17 +233,16 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 */
 	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
 		$row = ($category ? $this->get($category) : array ('title' => '', 'pid' => $pid));
+
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id, $prefix);
 		$pageCatTitle = '';
 		if ($pageAsCategory == 1) {
 			$pageTmp = $page->get($pid);
-			$pageCatTitle = $pageTmp['title'] . ($row['title'] ? '/' : '');
+			$pageCatTitle = $pageTmp['title'].'/';
 		}
-
-		if ($row['title'])	{
-			$catTitle = $pageCatTitle.($row['title']);
-		}
+		
+		$catTitle = $pageCatTitle.($row['title']);
 		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
 		parent::getItemMarkerArray ($row, $markerArray, $code, $prefix);
 	}

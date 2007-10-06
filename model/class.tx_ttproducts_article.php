@@ -53,7 +53,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, &$paymentshipping, $LLkey, $tablename, $useArticles)  {
+	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, &$paymentshipping, $LLkey, $tablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;	
 
 		$this->cnf = &$cnf;
@@ -79,7 +79,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		parent::init($pibase, $cnf, $tablename, $tt_content, $paymentshipping);
 
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
-		$this->variant->init($this->pibase, $cnf, $this, $useArticles);
+		$this->variant->init($this->pibase, $cnf, $this, 0);
 	} // init
 
 
@@ -87,8 +87,8 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
 		if (!$rc) {
-			$where = '1=1 '.$this->table->enableFields().' AND uid = '.intval($uid);
-			$res = $this->table->exec_SELECTquery('*',$where);
+			$this->table->enableFields();		
+			$res = $this->table->exec_SELECTquery('*','uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$uid] = $row;
 		}

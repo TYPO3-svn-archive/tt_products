@@ -93,17 +93,15 @@ class tx_ttproducts_config {
 		global $TSFE;
 
 		$rc = false;
-		$sys_language_uid = $TSFE->config['config']['sys_language_uid']; 
-		if (is_numeric($sys_language_uid))	{
+		if ($TSFE->config['config']['sys_language_uid'])	{
 
-			if ((is_array($tableConf['language.']) && $tableConf['language.']['type'] == 'table' && $sys_language_uid > 0))	{
+			if ((!$tableConf['language.'] || !$tableConf['language.']['type']))	{
 				$rc = true;
 			}
 		}
 		
 		return $rc;
 	}
-
 
 
 	function getTranslationFields($tableConf)	{

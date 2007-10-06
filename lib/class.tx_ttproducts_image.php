@@ -73,23 +73,16 @@ class tx_ttproducts_image {
 
 
 	/* returns the key for the tag array and marker array without leading and ending '###' */
-	function getMarkerkey(&$imageMarkerArray, $imageName, $c = 1)	{
+	function getMarkerkey(&$imageMarkerArray, $imageName)	{
+		$imageNameArray = t3lib_div::trimExplode('_', $imageName);
+		$partsArray = t3lib_div::trimExplode(',', $imageMarkerArray['parts']);
 		$keyArray = array();
 		$keyArray[] = $this->marker;
 		$keyArray[] = 'IMAGE';
-		if (is_array($imageMarkerArray))	{
-			$imageNameArray = t3lib_div::trimExplode('_', $imageName);
-			$partsArray = t3lib_div::trimExplode(',', $imageMarkerArray['parts']);
-			foreach ($partsArray as $k2 => $part)	{
-				$keyArray[] = $imageNameArray[$part-1];
-			}
+		foreach ($partsArray as $k2 => $part)	{
+			$keyArray[] = $imageNameArray[$part-1];
 		}
-		$tmp = implode('_', $keyArray);
-		$tmpArray = t3lib_div::trimExplode('.',$tmp);
-		$key = current($tmpArray);
-		if (!is_array($imageMarkerArray))	{
-			$key .= $c;
-		}
+		$key = current(t3lib_div::trimExplode('.',(implode('_', $keyArray))));
 		return $key;
 	}
 
@@ -136,11 +129,6 @@ class tx_ttproducts_image {
 		}		
 	}
 
-
-	function getSingleImageMarkerArray ($markerKey, &$markerArray, &$imageConf)	{
-		$tmpImgCode = $this->pibase->cObj->IMAGE($imageConf);
-		$markerArray['###'.$markerKey.'###'] = $tmpImgCode;
-	}
 
 
 	/**
@@ -331,7 +319,7 @@ class tx_ttproducts_image {
 			}
 			$tagkey = '';
 			if ($val)	{
-				$tagkey = $this->getMarkerkey($imageMarkerArray, $key, $c + 1);
+				$tagkey = $this->getMarkerkey($imageMarkerArray, $key);
 			}
 			if (is_array($specialConf[$tagkey]))	{
 				foreach ($specialConf[$tagkey] as $specialConfType => $specialImageConf)	{
@@ -340,7 +328,7 @@ class tx_ttproducts_image {
 					$this->replaceMarkerArray($confMarkerArray, $theImageConf, $this->pibase->cObj->alternativeData);
 					$tmpImgCode = $this->pibase->cObj->IMAGE($theImageConf);
 					$key1 = $key.':'.$specialConfType;
-					$theImgCode[$key1] .= $tmpImgCode;
+					$theImgCode[$key1] .= $tmpImgCode; 
 				}
 			}
 		}
@@ -348,41 +336,21 @@ class tx_ttproducts_image {
 			$imageConf = $this->conf[$imageRenderObj.'.'];
 			$imageConf['file'] = $this->conf['noImageAvailable'];
 			$tmpImgCode = $this->pibase->cObj->IMAGE($imageConf);
-			$theImgCode[0] = $tmpImgCode;
+			$theImgCode[1] = $tmpImgCode;
 		}
 
 		$actImgCode = current($theImgCode);
 		$markerArray['###'.$this->marker.'_IMAGE###'] = $actImgCode ? $actImgCode : ''; // for compatibility only
 		$c = 1;
-		$countArray = array();
 		while ((list($k1,$val)=each($theImgCode))) {
-			$bIsSpecial = true;
-			if (strstr($k1, ':') === FALSE)	{
-				$bIsSpecial = false;
-			}
+//			if (strstr($k1, '_') === FALSE)	{
+//				// no duplicate images for the normal markers with numbers.
+//				continue;
+//			}
 			$key = $this->marker.'_IMAGE' . intval($c);
-			
 			if (isset($tagArray[$key]))	{
 				$markerArray['###'.$key.'###'] = $val;
 			}
-			if (!$bIsSpecial)	{
-				$countArray[$k1] = $c;
-			}
-
-			if ($bIsSpecial)	{
-				$keyArray = t3lib_div::trimExplode(':', $k1);
-				$count = $countArray[$keyArray[0]];
-				$key = $this->marker.'_IMAGE' . intval($count); 
-				if (isset($count) && is_array($specialConf[$key]))	{
-					foreach ($specialConf[$key] as $special => $sconf)	{
-						$combkey = $key.':'.strtoupper($special);
-						if (isset($tagArray[$combkey]))	{
-							$markerArray['###'.$combkey.'###'] = $val;
-						}
-					}
-				}
-			}
-			
 			if (is_array($theImgDAM[$k1]))	{
 				foreach ($theImgDAM[$k1] as $field => $val2)	{
 					$key1 = '###'.$key.'_'.strtoupper($field).'###';
@@ -390,10 +358,8 @@ class tx_ttproducts_image {
 						$markerArray[$key1] = $val2;
 					}
 				}
-			}
-			if (!$bIsSpecial)	{
-				$c++;
-			}
+			}	
+			$c++;
 		}
 
 		$bImageMarker = false;
@@ -433,7 +399,7 @@ class tx_ttproducts_image {
 				$markerArray[$keyMarker] = '';
 			}
 		}
-		
+
 	}
 
 }
