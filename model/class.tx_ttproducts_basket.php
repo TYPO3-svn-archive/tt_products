@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2007 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -67,13 +67,13 @@ class tx_ttproducts_basket {
 		// Internal: initBasket():
 
 	var $basket=array();				// initBasket() sets this array based on the registered items
-	var $basketExtra;					// initBasket() uses this for additional information like the current payment/shipping methods
+	var $basketExtra;				// initBasket() uses this for additional information like the current payment/shipping methods
 	var $recs = Array(); 				// in initBasket this is set to the recs-array of fe_user.
 
 	var $basketExt=array();				// "Basket Extension" - holds extended attributes
-	var $giftnumber;					// current counter of the gifts
+	var $giftnumber;				// current counter of the gifts
 
-	var $itemArray;						// the items in the basket; database row, how many (quantity, count) and the price; this has replaced the former $calculatedBasket
+	var $itemArray;					// the items in the basket; database row, how many (quantity, count) and the price; this has replaced the former $calculatedBasket
 	var $calculatedArray;				// all calculated totals from the basket e.g. priceTax and weight
 
 	var $viewTable;	// link to tt_products or tt_products_articles
@@ -118,7 +118,7 @@ class tx_ttproducts_basket {
 		} else {
 			$count=t3lib_div::intInRange($quantity,0,$this->conf['basketMaxQuantity'],0);		
 		}
-		
+
 		return $count;
 	}
 
@@ -132,26 +132,25 @@ class tx_ttproducts_basket {
  	 */
 
 	function init( &$pibase, &$cnf, $formerBasket, $updateMode, &$pid_list,
-					&$tt_content, &$tt_products, &$tt_products_articles, 
-					&$tt_products_cat, &$fe_users, &$price,
-					&$paymentshipping, $bStoreBasket)	{
+			&$tt_content, &$tt_products, &$tt_products_articles, 
+			&$tt_products_cat, &$fe_users, &$price,
+			&$paymentshipping, $bStoreBasket)	{
 		global $TSFE;
-		global $TYPO3_CONF_VARS;
 
- 		$this->pibase = &$pibase;
- 		$this->cnf = &$cnf;
- 		$this->conf = &$this->cnf->conf;
- 		$this->config = &$this->cnf->config;
- 		$this->tt_content = &$tt_content;
- 		$this->tt_products = &$tt_products;
- 		$this->tt_products_articles = &$tt_products_articles;
- 		$this->tt_products_cat = &$tt_products_cat;
- 		$this->fe_users = &$fe_users;
+		$this->pibase = &$pibase;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
+		$this->tt_content = &$tt_content;
+		$this->tt_products = &$tt_products;
+		$this->tt_products_articles = &$tt_products_articles;
+		$this->tt_products_cat = &$tt_products_cat;
+		$this->fe_users = &$fe_users;
 		$this->recs = $formerBasket;	// Sets it internally
 		$this->basket=array();
 		$this->price = &$price;
- 		$this->pricecalc = t3lib_div::makeInstance('tx_ttproducts_pricecalc');
- 		$this->pricecalc->init($pibase, $this, $tt_products);		
+		$this->pricecalc = t3lib_div::makeInstance('tx_ttproducts_pricecalc');
+		$this->pricecalc->init($pibase, $this, $tt_products);
 		$this->paymentshipping = &$paymentshipping;
 
 			// pages
@@ -166,7 +165,7 @@ class tx_ttproducts_basket {
 			$pid_list,
 			99
 		);
-		
+
 		$this->useArticles = $this->conf['useArticles'];
 		
 		if ($this->useArticles == 2)	{
@@ -196,8 +195,8 @@ class tx_ttproducts_basket {
 		$identGiftnumber = 0;
 
 			// Call all changeBasket hooks
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'changeBasket')) {
 					$hookObj->changeBasket($this, $basketExtRaw, $extVars, $paramProduct, $uid, $sameGiftData, $identGiftnumber);
@@ -206,7 +205,7 @@ class tx_ttproducts_basket {
 		}
 
 		if ($newGiftData) {
-	 		$giftnumber = t3lib_div::_GP('giftnumber');
+			$giftnumber = t3lib_div::_GP('giftnumber');
 			if ($updateMode) {
 				$this->basketExt['gift'][$giftnumber] = $newGiftData;
 				$giftcount = intval($this->basketExt['gift'][$giftnumber]['item'][$uid][$extVars]);
@@ -248,10 +247,9 @@ class tx_ttproducts_basket {
 
 		if (is_array($basketExtRaw)) {
 			while(list($uid,$basketItem) = each($basketExtRaw)) {
-			
 				$variant = $this->viewTable->variant->getVariantFromRow($basketItem);
 				if (t3lib_div::testInt($uid))	{
-					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked  
+					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked
 					if (is_array($basketItem['quantity']))	{
 						$basketItem['quantity'] = current($basketItem['quantity']);
 					}
@@ -261,7 +259,7 @@ class tx_ttproducts_basket {
 					if ($this->conf['quantityIsFloat'])	{
 						$this->basketExt[$uid][$variant] = $quantity;
 					}
-					
+
 					if (!$updateMode) {
 						$count=$this->getMaxCount ($quantity, $uid);
 						if ($count >= 0) {
@@ -283,11 +281,7 @@ class tx_ttproducts_basket {
 								}
 							}
 							if ($newcount)	{
-								if ($this->conf['alwaysUpdateOrderAmount'] == 1)	{
-									$this->basketExt[$uid][$variant] = $newcount;
-								} else {
-									$this->basketExt[$uid][$variant] += $newcount;
-								}
+								$this->basketExt[$uid][$variant] = $newcount;
 							} else {
 								unset ($this->basketExt[$uid][$variant]);
 							}
@@ -297,7 +291,8 @@ class tx_ttproducts_basket {
 
 						while(list($md5,$quantity)=each($basketItem)) {
 							$quantity = $this->price->toNumber($this->conf['quantityIsFloat'],$quantity);
-							if (is_array($this->basketExt[$uid]))	{
+							if (is_array($this->basketExt[$uid]))
+							{
 								reset($this->basketExt[$uid]);
 								while(list($variant,)=each($this->basketExt[$uid])) {
 									 // useArticles if you have different prices and therefore articles for color, size, additional and gradings
@@ -330,8 +325,8 @@ class tx_ttproducts_basket {
 					}
 				}
 			}
-	
-	
+
+
 			// I did not find another possibility to delete elements complete from a multidimensional array
 			// than to recreate the array
 			$basketExtNew = array();
@@ -345,7 +340,7 @@ class tx_ttproducts_basket {
 			}
 			$this->basketExt = $basketExtNew;
 
-			if ($bStoreBasket)	{		
+			if ($bStoreBasket)	{
 				if (is_array($this->basketExt) && count($this->basketExt))
 					$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
 				else
@@ -372,6 +367,7 @@ class tx_ttproducts_basket {
 	} // getClearBasketRecord
 
 
+
 	/**
 	 * Empties the shopping basket!
 	 */
@@ -379,9 +375,9 @@ class tx_ttproducts_basket {
 		global $TSFE;
 
 		if (!$this->conf['debug'])	{
-			
+
 			// TODO: delete only records from relevant pages
-				// Empties the shopping basket!
+			// Empties the shopping basket!
 			$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
 			$TSFE->fe_user->setKey('ses','basketExt',array());
 			unset($this->itemArray);
@@ -390,14 +386,14 @@ class tx_ttproducts_basket {
 
 		$TSFE->fe_user->setKey('ses','ac',array());
 		$TSFE->fe_user->setKey('ses','cc',array());
+		$TSFE->fe_user->setKey('ses','cp',array());
 	} // clearBasket
-
 
 	/**
 	 * This calculates the totals. Very important function.
 	This function also calculates the internal arrays
 
-	$this->itemArray				- The basked elements, how many (quantity, count) and the price
+	$this->itemArray	- The basked elements, how many (quantity, count) and the price
 	$this->calculatedArray	- Sums of goods, shipping, payment and total amount WITH TAX included
 
 	... which holds the total amount, the final list of products and the price of payment and shipping!!
@@ -421,15 +417,15 @@ class tx_ttproducts_basket {
 		if (count($uidArr) == 0) {
 			return;
 		}
-		
+
 		// $taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage();
-		
+
 		//$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->pibase->cObj->enableFields('tt_products'));
 		$res = $this->viewTable->table->exec_SELECTquery('*','uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->viewTable->table->enableFields());
 
 		$productsArray = array();
 		$this->page->setPageArray();
-		while($row = $TYPO3_DB->sql_fetch_assoc($res))		{
+		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 			$pid = $row['pid'];
 
 			// only the basket items for the pages belonging to this shop shall be used here
@@ -452,17 +448,16 @@ class tx_ttproducts_basket {
 						$this->viewTable->mergeProductRow($row, $productRow);
 					}
 					$productsArray[] = $row;
-					
 				}
 			}
 		}
-		
 		$this->itemArray = array(); // array of the items in the basket
 		$this->calculatedArray = array(); // this array is usede for all calculated things
+
 		foreach ($productsArray as $k1 => $row)	{
 			$variant = $this->viewTable->variant->getVariantFromRow($row);
 			$newItem = $this->getItem($row,$variant);
-			$this->itemArray [$row[$this->viewTable->fields['itemnumber']]][] = $newItem;
+			$this->itemArray[$row[$this->viewTable->fields['itemnumber']]][] = $newItem;
 			$count = $newItem['count'];
 			$priceTax = $newItem['priceTax'];
 			$priceNoTax = $newItem['priceNoTax'];
@@ -470,46 +465,54 @@ class tx_ttproducts_basket {
 			$this->calculatedArray['count']		+= $count;
 			$this->calculatedArray['weight']	+= $row['weight']*$count;
 			// if reseller is logged in then take 'price2', default is 'price'
-			$price2Tax = $this->price->getPrice($row['price2'],1,$row['tax'],$this->conf['TAXincluded']);
-			$price2NoTax = $this->price->getPrice($row['price2'],0,$row['tax'],$this->conf['TAXincluded']);
-			$this->calculatedArray['price2Tax']['goodstotal']	+= $price2Tax * $count;
-			$this->calculatedArray['price2NoTax']['goodstotal']	+= $price2NoTax * $count;
-
-// Franz: is this needed?
-//			$oldPriceTax = $this->price->getPrice($row['price'],1,$row['tax']);
-//			$oldPriceNoTax = $this->price->getPrice($row['price'],0,$row['tax']);
-//			if (doubleval($oldPriceNoTax) == 0) {
-//				$oldPriceNoTax = $priceNoTax;
-//			}
-//			$this->calculatedArray['oldPriceTax']	+= $oldPriceTax * $count;
-//			$this->calculatedArray['oldPriceNoTax']	+= $oldPriceNoTax * $count;
 		}
-		
+
 		// set the 'calcprice' in itemArray
 		if ($this->conf['pricecalc.'] || $this->conf['discountprice.']) {
 			// do the price calculation
 			$this->pricecalc->GetCalculatedData($this->conf);
 		}
-		
+
+		if ($this->conf['TAXmode'] == '1')	{
+			$this->calculatedArray['priceNoTax']['goodssametaxtotal'] = array();
+			$this->calculatedArray['price2NoTax']['goodssametaxtotal'] = array();
+			$this->calculatedArray['categoryPriceNoTax']['goodssametaxtotal'] = array();
+		}
+
 		// loop over all items in the basket indexed by a sort string
 		foreach ($this->itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
 				$row = &$actItem['rec'];
+				$count = $actItem['count'];
 
 				// has the price been calculated before take it if it gets cheaper now
 				if (($actItem['calcprice'] > 0) && ($actItem['calcprice'] < $actItem['priceTax'])) {
 					$this->itemArray[$sort][$k1]['priceTax'] = $this->price->getPrice($actItem['calcprice'],true,$row['tax'],$this->conf['TAXincluded']);
 					$this->itemArray[$sort][$k1]['priceNoTax'] = $this->price->getPrice($actItem['calcprice'],false,$row['tax'],$this->conf['TAXincluded']);
 				}
-				//  multiplicate it with the count :
-				$this->itemArray[$sort][$k1]['totalTax'] = $this->itemArray[$sort][$k1]['priceTax'] * $actItem['count'];
+					//  multiplicate it with the count :
 				$this->itemArray[$sort][$k1]['totalNoTax'] = $this->itemArray[$sort][$k1]['priceNoTax'] * $actItem['count'];
-						// Fills this array with the product records. Reason: Sorting them by category (based on the page, they reside on)
-				$this->calculatedArray['priceTax']['goodstotal'] += $this->itemArray[$sort][$k1]['totalTax'];
-				$this->calculatedArray['priceNoTax']['goodstotal'] += $this->itemArray[$sort][$k1]['totalNoTax'];
 
-				$this->calculatedArray['categoryPriceTax']['goodstotal'][$row['category']]+= $this->itemArray[$sort][$k1]['totalTax'];
-				$this->calculatedArray['categoryPriceNoTax']['goodstotal'][$row['category']]+= $this->itemArray[$sort][$k1]['totalNoTax'];
+				$price2NoTax = $this->price->getPrice($row['price2'],0,$row['tax'],$this->conf['TAXincluded']);
+				$this->calculatedArray['price2NoTax']['goodstotal'] += $price2NoTax * $count;
+				$this->calculatedArray['priceNoTax']['goodstotal'] += $this->itemArray[$sort][$k1]['totalNoTax'];
+				$this->calculatedArray['categoryPriceNoTax']['goodstotal'][$row['category']] += $this->itemArray[$sort][$k1]['totalNoTax'];
+
+				if ($this->conf['TAXmode'] == '1')	{
+					$this->itemArray[$sort][$k1]['totalTax'] = $this->price->getPrice($this->itemArray[$sort][$k1]['totalNoTax'],true,$tax,false);
+					$this->calculatedArray['priceNoTax']['goodssametaxtotal'][$row['tax']] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
+					$this->calculatedArray['price2NoTax']['goodssametaxtotal'][$row['tax']] += $price2NoTax * $count;
+					$this->calculatedArray['categoryPriceNoTax']['goodssametaxtotal'][$row['tax']][$row['category']] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
+				} else if ($this->conf['TAXmode'] == '2')	{
+					//  multiplicate it with the count :
+					$this->itemArray[$sort][$k1]['totalTax'] = $this->itemArray[$sort][$k1]['priceTax'] * $actItem['count'];
+
+						// Fills this array with the product records. Reason: Sorting them by category (based on the page, they reside on)
+					$this->calculatedArray['priceTax']['goodstotal'] += $this->itemArray[$sort][$k1]['totalTax'];
+					$this->calculatedArray['categoryPriceTax']['goodstotal'][$row['category']] += $this->itemArray[$sort][$k1]['totalTax'];
+					$price2Tax = $this->price->getPrice($row['price2'],1,$row['tax'],$this->conf['TAXincluded']);
+					$this->calculatedArray['price2Tax']['goodstotal']	+= $price2Tax * $count;
+				}
 			}
 		}
 
@@ -522,16 +525,55 @@ class tx_ttproducts_basket {
 			}
 		}
 
-		// TAXpercentage replaces priceNoTax
-		if ($this->conf['shipping.']['TAXpercentage']) {
-			$taxPercentage = $this->conf['shipping.']['TAXpercentage'];
-			
-//			if (isset($taxFromShipping) && is_double($taxFromShipping))	{
-//				$taxPercentage = $taxFromShipping; 
-//			}
-			$this->calculatedArray['priceNoTax']['shipping'] = $this->price->getPrice($this->calculatedArray['priceTax']['shipping'],0,$taxPercentage,$this->conf['TAXincluded'],true); 
+		$shippingTax = $this->conf['shipping.']['TAXpercentage'];
+
+		// repair with the TAXpercentage replaces from shipping
+		if ($shippingTax != '') {
+			if ($this->conf['TAXincluded'] == '1')	{
+				$this->calculatedArray['priceNoTax']['shipping'] = $this->price->getPrice($this->calculatedArray['priceTax']['shipping'],0,$shippingTax,$this->conf['TAXincluded'],true);
+			} else {
+				$this->calculatedArray['priceTax']['shipping'] = $this->price->getPrice($this->calculatedArray['priceNoTax']['shipping'],1,$shippingTax,$this->conf['TAXincluded'],true);
+			}
 		}
-		
+
+		if ($this->conf['TAXmode'] == '1')	{
+			$controlCalcArray = array('priceTax' => 'priceNoTax', 'price2Tax' => 'price2NoTax');
+
+			foreach ($controlCalcArray as $keyTax => $keyNoTax)	{
+				$priceTax = 0;
+				foreach ($this->calculatedArray[$keyNoTax]['goodssametaxtotal'] as $tax => $value)	{
+					$newPriceTax = $this->price->getPrice($value,true,$tax,false);
+					$priceTax += $newPriceTax;
+				}
+				$this->calculatedArray[$keyTax]['goodstotal'] = $priceTax;
+				$this->calculatedArray['priceTax']['total'] += $priceTax;
+			}
+
+			$controlCatCalcCatArray = array('categoryPriceTax' => 'categoryPriceNoTax');
+			foreach ($controlCatCalcCatArray as $keyTax => $keyNoTax)	{
+				$priceTaxArray = array();
+				$priceTax = 0;
+				foreach ($this->calculatedArray[$keyNoTax]['goodssametaxtotal'] as $tax => $catArray)	{
+					if (is_array($catArray))	{
+						foreach ($catArray as $cat => $value)	{
+							$newPriceTax = $this->price->getPrice($value,true,$tax,false);
+							$priceTax += $newPriceTax;
+							$priceTaxArray [$cat] = $newPriceTax;
+						}
+					}
+				}
+				$this->calculatedArray[$keyTax]['goodstotal'] = $priceTaxArray;
+				$this->calculatedArray['priceTax']['total'] += $priceTax;
+			}
+
+			krsort($this->calculatedArray['priceNoTax']['goodssametaxtotal']);
+			$maxTax = key($this->calculatedArray['priceNoTax']['goodssametaxtotal']);
+			$this->calculatedArray['maxtax']['goodstotal'] = $maxTax;
+
+			$shippingTax = ($shippingTax ? $shippingTax : $maxTax);
+			$this->calculatedArray['priceTax']['shipping'] = $this->price->getPrice($this->calculatedArray['priceNoTax']['shipping'],true,$shippingTax,$this->conf['TAXincluded'],false);
+		}
+
 			// Shipping must be at the end in order to use the calculated values from before
 		$this->paymentshipping->getPaymentShippingData(
 			$this->calculatedArray['count'],
@@ -541,15 +583,20 @@ class tx_ttproducts_basket {
 			$this->calculatedArray['priceTax']['payment'],
 			$this->calculatedArray['priceNoTax']['payment']
 		);
-		
 	} // getCalculatedBasket
 
 
-
 	function &getItem (&$row, $variant) {
+		if (!isset($this->basketExt[$row['uid']][$variant]))	{
+			$variantArray = t3lib_div::trimExplode(';', $variant);
+			foreach ($variantArray as $k => $v)	{
+				$variantArray[$k] = '';
+			}
+			$variant = implode(';', $variantArray);
+		}
 		$count = $this->basketExt[$row['uid']][$variant];
 		if (!$this->conf['quantityIsFloat'])	{
-			$count = intval($count);	
+			$count = intval($count);
 		}
 		$priceTax = $this->price->getResellerPrice($row,1);
 		$priceNoTax = $this->price->getResellerPrice($row,0);
@@ -566,21 +613,18 @@ class tx_ttproducts_basket {
 	}
 
 
-
 	// This calculates the total for everything in the basket
 	function getCalculatedSums () {
-		$this->calculatedArray['priceTax']['total']  = $this->calculatedArray['priceTax']['goodstotal'];
-		$this->calculatedArray['priceTax']['total'] += $this->calculatedArray['priceTax']['payment'];
-		$this->calculatedArray['priceTax']['total'] += $this->calculatedArray['priceTax']['shipping'];
-
-		$this->calculatedArray['priceTax']['total'] -= $this->calculatedArray['priceTax']['creditpoints'];
-		$this->calculatedArray['priceTax']['total'] -= $this->calculatedArray['priceTax']['voucher'];
-
 		$this->calculatedArray['priceNoTax']['total']  = $this->calculatedArray['priceNoTax']['goodstotal'];
 		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['payment'];
 		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['shipping'];
-	}
 
+		$this->calculatedArray['priceTax']['total']  = $this->calculatedArray['priceTax']['goodstotal'];
+		$this->calculatedArray['priceTax']['total'] += $this->calculatedArray['priceTax']['payment'];
+		$this->calculatedArray['priceTax']['total'] += $this->calculatedArray['priceTax']['shipping'];
+		$this->calculatedArray['priceTax']['total'] -= $this->calculatedArray['priceTax']['creditpoints'];
+		$this->calculatedArray['priceTax']['total'] -= $this->calculatedArray['priceTax']['voucher'];
+	}
 }
 
 

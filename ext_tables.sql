@@ -275,14 +275,14 @@ CREATE TABLE sys_products_cards (
 #  response_code char(3) DEFAULT '' NOT NULL,   
 	cc_number varchar(255) DEFAULT '' NOT NULL,
 #  cc_number_hash1 varchar(255) DEFAULT '' NOT NULL,
-#  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,  
+#  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,
 	cc_type varchar(20) DEFAULT '' NOT NULL,
 #  address_ok char(1) DEFAULT '' NOT NULL, 
-#  test char(1) DEFAULT '' NOT NULL,   
+#  test char(1) DEFAULT '' NOT NULL,
 #  auth_code varchar(16) DEFAULT '' NOT NULL,
 #  bin int(6) unsigned DEFAULT '0' NOT NULL,
-#  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,  
-#  sequence int(6) unsigned DEFAULT '0' NOT NULL,                   
+#  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,
+#  sequence int(6) unsigned DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
@@ -350,7 +350,6 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 	KEY sys_products_orders_uid (sys_products_orders_uid)
 );
 
-
 #
 # Table structure for table 'fe_users'
 #
@@ -358,14 +357,6 @@ CREATE TABLE fe_users (
 	tt_products_memoItems tinytext NOT NULL,
 	tt_products_discount int(11) DEFAULT '0' NOT NULL
 	tt_products_creditpoints decimal(10,0) DEFAULT '0' NOT NULL,
-	tt_products_vouchercode varchar(50) DEFAULT '',
-	tt_products_vat varchar(15) DEFAULT '' NOT NULL
+	tt_products_vouchercode varchar(50) DEFAULT ''
 );
 
-
-#
-# Extension of table 'tt_content'
-#
-CREATE TABLE tt_content (
-	tt_products_code varchar(30) DEFAULT 'LIST' NOT NULL
-);

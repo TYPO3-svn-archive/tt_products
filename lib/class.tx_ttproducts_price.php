@@ -116,7 +116,7 @@ class tx_ttproducts_price {
 	 */
 	function getPrice($price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
 		global $TSFE;
-		
+
 		$rc = 0;
 		$bTax = ($tax==1);
 
@@ -132,7 +132,7 @@ class tx_ttproducts_price {
 			$taxpercentage = doubleval($this->conf['TAXpercentage']);
 		}
 
-		$taxFactor = 1 + $taxpercentage/100;
+		$taxFactor = 1 + $taxpercentage / 100;
 		// $taxIncluded = ($taxIncluded ? $taxIncluded : $this->conf['TAXincluded']);
 		$taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage(); 		// if set then this has a tax which will override the tax of the products
 
@@ -149,7 +149,6 @@ class tx_ttproducts_price {
 		}
 
 		$rc = $this->getPriceTax($price, $bTax, $taxIncluded, $taxFactor);
-		$rc = round ($rc, 2);
 		return $rc;
 	} // getPrice
 

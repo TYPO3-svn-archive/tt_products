@@ -138,6 +138,10 @@ plugin.tt_products {
   PIDGiftsTable = 0
     # cat=plugin.products//; type=int+; label=User Sysfolder PID: PID of the sysfolder for the new users
   PIDuserFolder = 
+    # cat=plugin.products//; type=int+; label=allowed pages for related products
+  pidsRelatedProducts = 
+    # cat=plugin.products//; type=int+; label=allowed pages for addresses
+  pidsAddresses = 
 
     # cat=plugin.products//; type=string; label=When the payment shall be executed. Possible values:  'payment', 'finalize'
   paymentActivity=finalize
@@ -151,7 +155,7 @@ plugin.tt_products {
   alwaysUpdateOrderAmount = 1
  
     # cat=plugin.products//; type=int+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
-  defaultProductID = 1
+  defaultProductID =
     # cat=plugin.products//; type=int+; label=default category ID: ID of the default category that will be shown in the list view when not tx_ttproducts_pi1[cat] parameter is given
   defaultCategoryID = 
     # cat=plugin.products//; type=int+; label=recursive levels: Number of recursive levels to select tt_products from in lists.
@@ -162,8 +166,10 @@ plugin.tt_products {
     # cat=plugin.products//; type=small; label=TAX percentage: Type= Double (means, "use . as decimal point")
   TAXpercentage = 25
 
-    # TAX included in database prices?
+    # cat=plugin.products//; type=boolean; label=TAX included in database prices?
   TAXincluded = 1
+    # cat=plugin.products//; type=int+; label=TAX mode. 1 ... add taxes to the end net sum - 2 ... add taxes on each single product first
+  TAXmode = 1
     # Price decimals
   priceDec = 2
     # cat=plugin.products//; type=small; label=Price decimal point
@@ -195,6 +201,8 @@ plugin.tt_products {
   orderEmail_subject = this is the subject
     # cat=plugin.products//; type=boolean; label=HTML email: If set, the order confirmation email is sent as HTML
   orderEmail_htmlmail = 0
+    # cat=plugin.products//; type=string; label=header in apostrophes: If set, the order email subject and sender name will be set inside of apostrophes.
+  orderEmail_apostrophe =
     # cat=plugin.products//; type=boolean; label=email notify: If email-notification for the customer is enabled by default (he can change it himself in the tracking module later)
   email_notify_default = 1
   
@@ -264,7 +272,5 @@ plugin.tt_products {
     # cat=plugin.products//; type=string; label=gift selection: SQL where clause to form the gift products from the tt_products table
   whereGift = 
 
-    # cat=plugin.products//; type=boolean; label=debug: Turn this on and no basket will be deleted. Only for testing purposes. Must not be set in online shops.
-  debug = 
 }
 

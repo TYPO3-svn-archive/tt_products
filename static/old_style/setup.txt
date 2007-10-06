@@ -122,6 +122,7 @@ plugin.tt_products {
 
   TAXpercentage = {$plugin.tt_products.TAXpercentage}
   TAXincluded = {$plugin.tt_products.TAXincluded}
+  TAXmode = {$plugin.tt_products.TAXmode}
 
   lockLoginUserInfo = {$plugin.tt_products.lockLoginUserInfo}
   editLockedLoginInfo = {$plugin.tt_products.editLockedLoginInfo}

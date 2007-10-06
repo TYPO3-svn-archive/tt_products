@@ -124,7 +124,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	function &getArticleRow ($row) {
 		global $TYPO3_DB;
-		
+
 		$articleRows = $this->getArticleRows(intval($row['uid']));
 		$articleRow = $this->variant->fetchArticle($row, $articleRows);
 		return $articleRow;

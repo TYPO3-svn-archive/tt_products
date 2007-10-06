@@ -85,7 +85,6 @@ class tx_ttproducts_activity_finalize {
 	function doProcessing($templateCode, &$basketView, &$viewTable, &$price, $orderUid, &$orderConfirmationHTML, &$error_message, &$address)	{
 		global $TSFE;
 		global $TYPO3_DB;
-		global $TYPO3_CONF_VARS;
 
 		$instockTableArray = array();
 		$recipientsArray = array();
@@ -95,41 +94,35 @@ class tx_ttproducts_activity_finalize {
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
 		$markerArray = array('###CUSTOMER_RECIPIENTS_EMAIL###' => implode(',', $recipientsArray['customer']));
 		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
-		
+
 		// Move the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
 		// Is no user is logged in --> create one
-		if ($this->conf['createUsers'] && $address->infoArray['billing']['email'] != '' && (trim($TSFE->fe_user->user['username']) == '')) {
-			$pid = ($this->conf['PIDuserFolder'] ? $this->conf['PIDuserFolder'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
-			$pid = intval($pid);
+		if ($this->conf['createUsers'] && $address->infoArray['billing']['email'] != '' && $this->conf['PIDuserFolder'] && (trim($TSFE->fe_user->user['username']) == '')) {
 			$username = strtolower(trim($address->infoArray['billing']['email']));
-			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $pid.' AND deleted=0');
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $this->conf['PIDuserFolder'].' AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 
 			if (!$num_rows)	{
 				$address->password = substr(md5(rand()), 0, 6);
 				$insertFields = array(	// TODO: check with TCA
-					'pid' => intval($pid),
+					'pid' => intval($this->conf['PIDuserFolder']),
 					'tstamp' => time(),
-					'crdate' => time(),
 					'username' => $username,
 					'password' => $address->password,
 					'usergroup' => $this->conf['memberOfGroup'],
 					'uid' => $address->infoArray['billing']['feusers_uid'],
 					'company' => $address->infoArray['billing']['company'],
 					'name' => $address->infoArray['billing']['name'],
+					'first_name' => $address->infoArray['billing']['first_name'],
+					'last_name' => $address->infoArray['billing']['last_name'],
 					'address' => $address->infoArray['billing']['address'],
 					'telephone' => $address->infoArray['billing']['telephone'],
 					'fax' => $address->infoArray['billing']['fax'],
 					'email' => $address->infoArray['billing']['email'],
 					'zip' => $address->infoArray['billing']['zip'],
 					'city' => $address->infoArray['billing']['city'],
-					'tt_products_vat' => $address->infoArray['billing']['tt_products_vat']
+					'crdate' => time()
 				);
-
-				if ($address->infoArray['billing']['first_name'] || $address->infoArray['billing']['last_name'])	{
-					$insertFields['first_name'] = $address->infoArray['billing']['first_name'];
-					$insertFields['last_name'] = $address->infoArray['billing']['last_name'];
-				}
 
 				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country' : 'country');
 				$insertFields[$countryKey] =  $address->infoArray['billing']['country'];
@@ -156,7 +149,7 @@ class tx_ttproducts_activity_finalize {
 					'uid',
 					'fe_users',
 					'username='.$TYPO3_DB->fullQuoteStr($username,'fe_users') . 
-						' AND pid='. $pid.' AND deleted=0');
+						' AND pid='. intval($this->conf['PIDuserFolder']).' AND deleted=0');
 				while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 			 		 $address->infoArray['billing']['feusers_uid'] = intval($row['uid']);
 				}
@@ -201,7 +194,7 @@ class tx_ttproducts_activity_finalize {
 			// Fetching the order Record by selecing the newly saved one...
 		// $orderRecord = $this->getRecord($orderUid);  needed?
 
-		if (!$this->conf['alwaysInStock']) {
+		if (!$this->alwaysInStock) {
 			$instockTableArray = 
 				$viewTable->reduceInStockItems(
 					$this->basket->itemArray, 
@@ -337,14 +330,14 @@ class tx_ttproducts_activity_finalize {
 										$this->conf['orderEmail_from'],
 										$this->conf['orderEmail_fromName']
 									);
-								}							
+								}	
 							}
 						}
 					}
 				}
 			}
 		}
-		
+
 		// 3 different hook methods - There must be one for your needs, too.
 
 			// This cObject may be used to call a function which clears settings in an external order system.
@@ -354,10 +347,10 @@ class tx_ttproducts_activity_finalize {
 		if ($this->conf['externalOrderProcessFunc'])    {
 			$this->pibase->userProcess('externalOrderProcessFunc',$this->basket);
 		}
-		
+
 			// Call all finalizeOrder hooks
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'finalizeOrder')) {
 					$hookObj->finalizeOrder($this, $address, $templateCode, $basketView, $viewTable, $price, $orderUid, $orderConfirmationHTML, $error_message);

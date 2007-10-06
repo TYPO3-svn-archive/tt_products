@@ -119,7 +119,7 @@ class tx_ttproducts_feuser {
 		} else {
 			$subpartArray['###FE_GROUP_1_TEMPLATE###'] = '';
 		}
-		return;		
+		return;
 	}
 
 
@@ -144,7 +144,17 @@ class tx_ttproducts_feuser {
 
 			$typeSalutationText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'info][salutation]');
 
-		} else if (is_numeric($row['salutation'])) {
+				// Salutation		
+//			$salutationText = '';
+//			foreach ($TCA['sys_products_orders']['columns']['salutation']['config']['items'] as $key => $salutation) {
+//				$tmp = tx_fhlibrary_language::sL($salutation[0]);
+//				$text = $this->pibase->pi_getLL($tmp);
+//				$salutationText .= '<OPTION value="'.$salutation[1].'">'.$text.'</OPTION>';
+//			}
+//			$salutationText = '[salutation]">' . $salutationText.'</SELECT>';
+//			$salutationPreText = '<SELECT name="recs';
+//			$typeSalutationText = $salutationPreText . '['.$type.'info]' . $salutationText;  
+		} else if (is_int($row['salutation'])) {
 			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];
 			$tmp = tx_fhlibrary_language::sL($salutation[0]);
 			$typeSalutationText = $this->pibase->pi_getLL($tmp);

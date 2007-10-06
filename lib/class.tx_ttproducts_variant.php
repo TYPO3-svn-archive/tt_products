@@ -78,11 +78,16 @@ class tx_ttproducts_variant {
 	 */
 	 function modifyRowFromVariant (&$row, $variant) {
 		$variantArray = explode(';', $variant);
-		
+
 		if (is_array($this->conf) && ($this->useArticles == 1 || count ($this->bSelectableArray)))	{
 			foreach ($this->conf as $key => $field)	{
 				if ($key != 5)	{
-					$row[$field] = $variantArray[$key-1];
+					if ($variantArray[$key-1])	{
+						$row[$field] = $variantArray[$key-1];
+					} else {
+						$tmpArray = t3lib_div::trimExplode(';', $row[$field]);
+						$row[$field] = $tmpArray[0];
+					}
 				}
 			}
 		}
@@ -99,10 +104,9 @@ class tx_ttproducts_variant {
 	 * @see modifyRowFromVariant
 	 */
 	 function getVariantFromRow (&$row) {
-	
+
 		// take only the first color, size and gradings, if there are more entries from the item table		
 		$variantArray = array();
-
 		if (is_array($this->conf) && ($this->useArticles == 1 || count ($this->bSelectableArray)))	{
 			foreach ($this->conf as $key => $field)	{
 				if ($key != 5)	{
@@ -111,14 +115,14 @@ class tx_ttproducts_variant {
 				}
 			}
 		}
-		
+
 		$rc = implode (';', $variantArray);
 		return $rc; 
 	 }
 
 
 	function getVariantSubpartArray (&$subpartArray, &$row, &$tempContent, $useSelects, &$conf)  {
-		
+
 		if ($useSelects) {
 			$areaArray = array();
 			if (is_array($this->conf))	{
@@ -173,7 +177,7 @@ class tx_ttproducts_variant {
 		foreach ($remSubpartArray as $k => $subpart) {
 			$subpartArray['###'.$subpart.'###'] = '';
 		}
-		
+
 		foreach ($remMarkerArray as $k => $marker)	{
 			$markerArray['<!-- ###'.$marker.'### -->'] = '';
 		}
@@ -238,7 +242,6 @@ class tx_ttproducts_variant {
 		$markerArray['###FIELD_GRADINGS_NAME###'] = 'ttp_basket['.$row['uid'].'][gradings]';
 		$markerArray['###FIELD_GRADINGS_VALUE###'] = $row['gradings'];
 		$markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
-		
 		$prodAdditionalText['single'] = '';	
 		if ($this->conf['selectAdditional']) {
 			$isSingleProduct = $this->hasAdditional($row,'isSingle');
@@ -251,10 +254,6 @@ class tx_ttproducts_variant {
 		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
 	} // getItemMarkerArray
 
-
-	function &getFieldArray()	{	
-		return $this->fieldArray;
-	}
 }
 
 

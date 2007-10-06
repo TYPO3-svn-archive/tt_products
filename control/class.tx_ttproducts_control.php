@@ -430,7 +430,7 @@ class tx_ttproducts_control {
 									}
 									$this->processPayment($content, $bFinalize, $order);
 								}
-							break; 
+							break;
 							case 'products_finalize':
 								$bFinalize = true;
 							break;
@@ -450,7 +450,7 @@ class tx_ttproducts_control {
 							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
 							$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
 							$basketView->init ($this->basket, $this->templateCode);
-						}					
+						}
 
 						if (!is_object($address))	{
 							include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_address.php');
@@ -458,14 +458,14 @@ class tx_ttproducts_control {
 							$address->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
 							$address->mapPersonIntoDelivery();
 						}
-						
+
 						$content .= $basketView->getView($empty, 'BASKET', $address, $this->activityArray['products_info'], false, '###'.$basket_tmpl.'###',$mainMarkerArray);
 						$bFinalize = false;
 						// stop here as soon as the first basket content has been drawn
 						break; // foreach
 					}
 				} // foreach ($this->activityArray as $activity=>$value)
-				
+
 					// finalization at the end so that after every activity this can be called
 				if ($bFinalize)	{
 					if (!is_object($address))	{
@@ -481,7 +481,7 @@ class tx_ttproducts_control {
 						$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
 						if (!is_object($order))	{
 							include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-							
+
 								// order
 							$order = &t3lib_div::getUserObj('tx_ttproducts_order');
 							$order->init(
@@ -508,26 +508,22 @@ class tx_ttproducts_control {
 						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $address, false, false, '###'.$tmpl.'###', $mainMarkerArray);
-						
 						include_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_finalize.php');
-														
 							// order finalization
 						$activityFinalize = t3lib_div::makeInstance('tx_ttproducts_activity_finalize');
 						$activityFinalize->init($this->pibase, $this->cnf, $this->basket, $this->tt_products_cat, $order);
-						
+
 						$activityFinalize->doProcessing($this->templateCode, 
 							$basketView, $this->viewTable, $this->price, 
 							$orderUid, $orderConfirmationHTML, $error_message, $address); 
 								// Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
 						$contentTmp = $orderConfirmationHTML;
-
 						if ($this->conf['PIDthanks'] > 0) {
 							$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
 							$contentTmp = $basketView->getView($empty, 'BASKET', $address, false, false, '###'.$tmpl.'###', $mainMarkerArray);
 						}
 						$content .= $contentTmp;
 						$content .= $basketView->getView($empty, 'BASKET', $address, false, false, '###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
-						
 						// Empties the shopping basket!
 						$this->basket->clearBasket();
 					} else {	// If not all required info-fields are filled in, this is shown instead:

@@ -41,11 +41,6 @@
 
 
 class tx_ttproducts_basketitem_view {
-	var $pibase; // reference to object of pibase
-	var $tt_products_cat; // element of class tx_table_db
-	var $basketExt; 	// basket
-	var $basketVar = 'ttp_basket';
-
 	
 	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
@@ -55,10 +50,7 @@ class tx_ttproducts_basketitem_view {
 	 * @return	  void
  	 */
 
-	function init(&$pibase, &$tt_products_cat, &$basketExt)	{
-		$this->pibase = &$pibase;
- 		$this->tt_products_cat = &$tt_products_cat;
- 		$this->basketExt = &$basketExt;
+	function init()	{
 	} // init
 
 
@@ -74,44 +66,29 @@ class tx_ttproducts_basketitem_view {
 	 * @return	array
 	 * @access private
 	 */
-	function &getItemMarkerArray (&$viewTable, &$item, &$markerArray, &$tagArray, $code='', $id='1')	{
-			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
+	function getItemMarkerArray (&$viewTable, &$item, &$markerArray, &$basketExt, $code, $id='1')	{
 
+			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
-		$basketQuantityName = $this->basketVar.'['.$row['uid'].'][quantity]';
-		$quantity = $item['count'];
-		$markerArray['###FIELD_NAME###']=$basketQuantityName;
-		$markerArray['###FIELD_NAME_BASKET###'] = $this->basketVar.'['.$row['uid'].']['.md5($row['extVars']).']';
-		$markerArray['###FIELD_QTY###']= $quantity ? $quantity : '';
+		$basketQuantityName = 'ttp_basket['.$row['uid'].'][quantity]';
+
+		$variants = $viewTable->variant->getVariantFromRow($row);
+		$markerArray['###FIELD_NAME###'] = $basketQuantityName;
+		$markerArray['###FIELD_NAME_BASKET###'] = 'ttp_basket['.$row['uid'].']['.md5($row['extVars']).']';
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 
-		$fieldArray = $viewTable->variant->getFieldArray();
-		$keyAdditional = '';
-		foreach ($fieldArray as $k => $field)	{
-			if ($field == 'additional')	{
-				$keyAdditional = $k;
-			} else {
-				$fieldMarker = strtoupper($field);
-				$markerArray['###FIELD_'.$fieldMarker.'_NAME###'] = $this->basketVar.'['.$row['uid'].']['.$field.']';
-				$markerArray['###FIELD_'.$fieldMarker.'_VALUE###'] = $row[$field];
-				$markerArray['###FIELD_'.$fieldMarker.'_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
+		if (!isset($basketExt[$row['uid']][$variants]))	{
+			$variantArray = t3lib_div::trimExplode(';', $variants);
+			foreach ($variantArray as $k => $v)	{
+				$variantArray[$k] = '';
 			}
-			if (isset($row['extVars']))	{	
-				$markerArray['###PRODUCT_'.strtoupper($field).'###'] = $row[$field];
-			}
+			$variants = implode(';', $variantArray);
 		}
-		// $markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
-		$prodAdditionalText['single'] = '';	
-		if (isset($keyAdditional)) {
-			$isSingleProduct = $viewTable->hasAdditional($row,'isSingle');
-			if ($isSingleProduct)	{
-				$message = $this->pibase->pi_getLL('additional_single');
-				$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($quantity ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="1">';
-				$prodAdditionalText['single'] .= '<input type="hidden" name="'.$basketQuantityName.'[1]" value="'.($quantity ? '1' : '0') .'">';
-			}
- 		}
-		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
+
+		$quantity = $basketExt[$row['uid']][$variants];
+		$markerArray['###FIELD_QTY###'] = $quantity ? $quantity : '';
 	} // getItemMarkerArray
+
 
 }
 

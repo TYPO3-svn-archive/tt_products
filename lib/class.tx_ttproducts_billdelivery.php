@@ -93,14 +93,14 @@ class tx_ttproducts_billdelivery {
 		See Tracking for further information
 		*/
 		global $TSFE;
-	
+
 			// initialize order data.
 		$orderData = unserialize($orderRow['orderData']);
-	
+
 		$markerArray = array();
 		$subpartArray = array();
 		$wrappedSubpartArray = array();
-	
+
 		$tmp = $orderData['itemArray'];
 		$version = $orderData['version'];
 		if (version_compare($version, '2.5.0', '>=') && is_array($tmp))	{
@@ -109,7 +109,7 @@ class tx_ttproducts_billdelivery {
 		} else {
 			$itemArray = (is_array($tmp) ? $tmp : array());
 		}
-		
+
 		$tmp = $orderData['calculatedArray'];
 		$calculatedArray = ($tmp ? $tmp : array());
 	
@@ -118,36 +118,37 @@ class tx_ttproducts_billdelivery {
 		} else {
 			$subpartMarker='###DELIVERY_TEMPLATE###';
 		}
-	
+
 			// Getting subparts from the template code.
 		$t=array();
 			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
 		$t['orderFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($subpartMarker));
-	
+
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_CATEGORY###');
 		$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_LIST###');
 		$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
-	
+
 		$categoryQty = array();
 	//	  $categoryPrice = array();
 		$categoryArray = array();
-	
+
 	//	  $countTotal = 0;
 	//
 		// Calculate quantities for all categories
-	
+
 		// loop over all items in the ordered items indexed by sorting text
 		foreach ($itemArray as $sort=>$actItemArray) {
+
 			foreach ($actItemArray as $k1=>$actItem) {
 				$currentCategory=$actItem['rec']['category'];
 				$categoryArray[$currentCategory] = 1;
 				$categoryQty[$currentCategory] += $actItem['count'];
 			}
 		}
-	
+
 		$itemsOut='';
 		$out='';
-	
+
 		$itemTable = &$this->tt_products;
 		$viewTagArray = array();
 		$parentArray = array();
@@ -164,13 +165,14 @@ class tx_ttproducts_billdelivery {
 			$viewTagArray,
 			$parentArray
 		);
-	
+
 		$count = 0;
 		foreach ($categoryArray as $currentCategory=>$value)	{
 			$categoryChanged = 1;
 			// loop over all ordered items indexed by a sorting text
 			foreach ($itemArray as $sort=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
+
 					$count++;
 						// Print Category Title
 					if ($actItem['rec']['category']==$currentCategory)	{
@@ -186,11 +188,10 @@ class tx_ttproducts_billdelivery {
 							$categoryPriceNoTax = $calculatedArray['categoryPriceNoTax']['goodstotal'][$currentCategory];
 							$markerArray['###PRICE_GOODS_NO_TAX###'] = $this->price->priceFormat($categoryPriceNoTax);
 							$markerArray['###PRICE_GOODS_ONLY_TAX###'] = $this->price->priceFormat($categoryPriceTax - $categoryPriceNoTax);
-							
 							$out2 = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
 							$out.= $out2;
 						}
-		
+
 						// Print Item Title
 						$wrappedSubpartArray=array();
 						$markerArray = array();
@@ -241,7 +242,6 @@ class tx_ttproducts_billdelivery {
 		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['shipping']);
 		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['total']);
 		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['total']);
-		$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$this->price->priceFormat($calculatedArray['priceTax']['total']-$calculatedArray['priceNoTax']['total']);
 
 			// Delivery note.
 		$markerArray['###DELIVERY_NOTE###'] = $orderData['deliveryInfo']['note'];
