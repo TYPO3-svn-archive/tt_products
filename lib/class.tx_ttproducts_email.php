@@ -38,6 +38,10 @@
  *
  */
 
+
+global $TYPO3_CONF_VARS;
+
+
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 

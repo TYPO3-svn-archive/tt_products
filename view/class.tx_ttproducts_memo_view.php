@@ -39,6 +39,9 @@
  */
 
 
+global $TYPO3_CONF_VARS;
+
+
 
 class tx_ttproducts_memo_view {
 	var $pibase; // reference to object of pibase

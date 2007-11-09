@@ -38,6 +38,10 @@
  *
  */
 
+
+global $TYPO3_CONF_VARS;
+
+
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
@@ -179,7 +183,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		} else {
 			$pid_list = $this->pid_list;
 		}
-		
+
 		$pageArray = t3lib_div::trimExplode (',', $pid_list);
 		$excludeArray = t3lib_div::trimExplode (',', $excludeCat);
 		foreach ($excludeArray as $k => $cat)	{
@@ -210,7 +214,6 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 				$relationArray[$parentId]['child_category'][] = (int) $uid;
 			}
 		}
-		
 		return $relationArray;
 	}
 
@@ -232,7 +235,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			);
 		}
 		if ($pid_list){
-			$pageObject->setPidlist($pid_list);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
+			$pageObject->setPidlist($pid_list);		// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
 		}
 		$tmp = '';
 		$pageObject->applyRecursive($recursive, $tmp);
@@ -326,7 +329,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 */
 	function applyRecursive($recursive, &$pids)	{
 		global $TSFE;
-		
+
 		if (!$pids)	{
 			$pid_list = &$this->pid_list;
 		} else {
@@ -339,7 +342,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			$recursive = intval($recursive);
 			$pid_list_arr = explode(',',$pid_list);
 			$pid_list = '';
-			while(list(,$val) = each($pid_list_arr))	{
+			foreach($pid_list_arr as $val)	{
 				$pid_list .= $val.','.$this->pibase->cObj->getTreeList($val,$recursive);
 			}
 			$pid_list = ereg_replace(',$','',$pid_list);
@@ -367,7 +370,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 
 			// Get image	
 		$this->image->getItemMarkerArray ($row, $markerArray, $pid, $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id, $prefix);
-		
+
 		$pageCatTitle = $row['title'];
 		$this->setMarkerArrayCatTitle ($markerArray, $pageCatTitle, $prefix);
 		$markerArray['###'.$prefix.$this->marker.'_SUBTITLE###'] = $row['subtitle'];

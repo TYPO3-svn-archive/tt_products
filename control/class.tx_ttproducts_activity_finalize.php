@@ -38,9 +38,10 @@
  *
  */
 
-
+global $TYPO3_CONF_VARS;
 
 require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_base.php');
+
 
 class tx_ttproducts_activity_finalize {
 
@@ -59,7 +60,7 @@ class tx_ttproducts_activity_finalize {
 	 */
 	function init(&$pibase, &$cnf, &$basket, &$tt_products_cat, &$order)  {
 		global $TYPO3_DB,$TSFE,$TCA;
-		
+
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
@@ -359,10 +360,7 @@ class tx_ttproducts_activity_finalize {
 		}
 	} // doProcessing
 
-
 }
-
-
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_activity_finalize.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_activity_finalize.php']);

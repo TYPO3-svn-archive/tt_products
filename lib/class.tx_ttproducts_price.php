@@ -35,9 +35,11 @@
  * @package TYPO3
  * @subpackage tt_products
  *
- *  
+ *
  */
 
+
+global $TYPO3_CONF_VARS;
 
 
 class tx_ttproducts_price {

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2007 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2007 Kasper SkÃ¥rhÃ¸j (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	René Fritz <r.fritz@colorcube.de>
+ * @author	Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
+ * @author	RenÃ© Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
  * @author	Els Verberne <verberne@bendoo.nl>
@@ -41,6 +41,9 @@
  *
  *
  */
+
+global $TYPO3_CONF_VARS;
+
 
 require_once(PATH_t3lib.'class.t3lib_div.php');
 
@@ -246,7 +249,7 @@ class tx_ttproducts_basket {
 		}
 
 		if (is_array($basketExtRaw)) {
-			while(list($uid,$basketItem) = each($basketExtRaw)) {
+			foreach($basketExtRaw as $uid => $basketItem) {
 				$variant = $this->viewTable->variant->getVariantFromRow($basketItem);
 				if (t3lib_div::testInt($uid))	{
 					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked
@@ -349,9 +352,7 @@ class tx_ttproducts_basket {
 			}
 		}
 		$this->paymentshipping->setBasketExtras($formerBasket);
-
 	} // init
-
 
 
 	/**
@@ -365,7 +366,6 @@ class tx_ttproducts_basket {
 		unset($this->recs['creditcard']);
 		return ($this->recs);
 	} // getClearBasketRecord
-
 
 
 	/**
@@ -383,11 +383,11 @@ class tx_ttproducts_basket {
 			unset($this->itemArray);
 			unset($this->basketExt);
 		}
-
 		$TSFE->fe_user->setKey('ses','ac',array());
 		$TSFE->fe_user->setKey('ses','cc',array());
 		$TSFE->fe_user->setKey('ses','cp',array());
 	} // clearBasket
+
 
 	/**
 	 * This calculates the totals. Very important function.
@@ -499,10 +499,14 @@ class tx_ttproducts_basket {
 				$this->calculatedArray['categoryPriceNoTax']['goodstotal'][$row['category']] += $this->itemArray[$sort][$k1]['totalNoTax'];
 
 				if ($this->conf['TAXmode'] == '1')	{
+					$tax = doubleval($row['tax']);
+					if (!$tax)	{
+						$tax = doubleval($this->conf['TAXpercentage']);
+					}
 					$this->itemArray[$sort][$k1]['totalTax'] = $this->price->getPrice($this->itemArray[$sort][$k1]['totalNoTax'],true,$tax,false);
-					$this->calculatedArray['priceNoTax']['goodssametaxtotal'][$row['tax']] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
-					$this->calculatedArray['price2NoTax']['goodssametaxtotal'][$row['tax']] += $price2NoTax * $count;
-					$this->calculatedArray['categoryPriceNoTax']['goodssametaxtotal'][$row['tax']][$row['category']] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
+					$this->calculatedArray['priceNoTax']['goodssametaxtotal'][strval($tax)] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
+					$this->calculatedArray['price2NoTax']['goodssametaxtotal'][strval($tax)] += $price2NoTax * $count;
+					$this->calculatedArray['categoryPriceNoTax']['goodssametaxtotal'][$tax][$row['category']] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
 				} else if ($this->conf['TAXmode'] == '2')	{
 					//  multiplicate it with the count :
 					$this->itemArray[$sort][$k1]['totalTax'] = $this->itemArray[$sort][$k1]['priceTax'] * $actItem['count'];
@@ -546,7 +550,7 @@ class tx_ttproducts_basket {
 					$priceTax += $newPriceTax;
 				}
 				$this->calculatedArray[$keyTax]['goodstotal'] = $priceTax;
-				$this->calculatedArray['priceTax']['total'] += $priceTax;
+				// $this->calculatedArray['priceTax']['total'] += $priceTax;
 			}
 
 			$controlCatCalcCatArray = array('categoryPriceTax' => 'categoryPriceNoTax');
@@ -563,7 +567,7 @@ class tx_ttproducts_basket {
 					}
 				}
 				$this->calculatedArray[$keyTax]['goodstotal'] = $priceTaxArray;
-				$this->calculatedArray['priceTax']['total'] += $priceTax;
+				// $this->calculatedArray['priceTax']['total'] += $priceTax;
 			}
 
 			krsort($this->calculatedArray['priceNoTax']['goodssametaxtotal']);
@@ -583,6 +587,7 @@ class tx_ttproducts_basket {
 			$this->calculatedArray['priceTax']['payment'],
 			$this->calculatedArray['priceNoTax']['payment']
 		);
+
 	} // getCalculatedBasket
 
 

@@ -39,6 +39,8 @@
  */
 
 
+global $TYPO3_CONF_VARS;
+
 
 class tx_ttproducts_config {
 	var $conf;

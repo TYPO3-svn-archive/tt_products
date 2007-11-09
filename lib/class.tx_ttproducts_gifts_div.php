@@ -40,6 +40,9 @@ franzholz Exp $
  */
 
 
+global $TYPO3_CONF_VARS;
+
+
 
 class tx_ttproducts_gifts_div {
 	/**

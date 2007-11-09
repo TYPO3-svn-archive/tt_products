@@ -40,6 +40,8 @@
  */
 
 
+global $TYPO3_CONF_VARS;
+
 
 class tx_ttproducts_csv {
 	var $pibase; // reference to object of pibase

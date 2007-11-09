@@ -1,3 +1,7 @@
+2007-11-09 Franz Holzinger <franz@fholzinger.com>
+	* fix bug 3950: use marker DELIVERY_NOTE instead of DELIVERY_NOTE_DISPLAY in EMAIL_PLAINTEXT_TEMPLATE
+	* fix bug 6614: global $TYPO3_CONF_VARS must be set in the beginning of each PHP file
+
 2007-10-06 Franz Holzinger <franz@fholzinger.com>
 	* fix bug with wrong rounding of prices before the taxcalculation. Use the TAXmode setup=2 to get the former behaviour.
 	  All the prices get counted without taxes first and without doing any roundings. The tax will be added at the end sums.

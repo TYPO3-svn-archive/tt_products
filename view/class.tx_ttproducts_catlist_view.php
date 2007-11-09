@@ -38,6 +38,9 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
+
+
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
 
 class tx_ttproducts_catlist_view {

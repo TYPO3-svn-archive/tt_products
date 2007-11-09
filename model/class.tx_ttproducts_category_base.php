@@ -38,6 +38,9 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
+
+
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_image.php');
 
 class tx_ttproducts_category_base {

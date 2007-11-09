@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj <kasperYYYY@typo3.com>
+*  (c) 1999-2006 Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	René Fritz <r.fritz@colorcube.de>
+ * @author	Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
+ * @author	RenÃ© Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3
@@ -40,6 +40,9 @@
  *
  *
  */
+
+
+global $TYPO3_CONF_VARS;
 
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_javascript_marker.php');

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper SkÃ¥rhÃ¸j (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -33,8 +33,8 @@
  *
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	René Fritz <r.fritz@colorcube.de>
+ * @author	Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
+ * @author	RenÃ© Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
  * @author	Milosz Klosowicz <typo3@miklobit.com>
@@ -46,6 +46,7 @@
  *
  *
  */
+
 
 //require_once(PATH_tslib.'class.tslib_pibase.php');
 require_once(PATH_BE_fh_library.'/sysext/cms/tslib/class.fhlibrary_pibase.php');
@@ -1044,6 +1045,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		return $content;
 	}	// products_display
 }
+
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1.php'])	{
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1.php']);

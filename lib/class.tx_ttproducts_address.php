@@ -38,7 +38,7 @@
  *
  */
 
-
+global $TYPO3_CONF_VARS;
 
 
 class tx_ttproducts_address {
@@ -110,12 +110,14 @@ class tx_ttproducts_address {
 			}
 		}
 
+
 		if ($this->conf['useStaticInfoCountry'] && $this->infoArray['billing']['country_code'])	{
 			$this->infoArray['billing']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['billing']['country_code'],'','');
 			if ($this->infoArray['delivery']['name'])	{
 				$this->infoArray['delivery']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
 			}
 		}
+
 
 		if ($TSFE->loginUser && (!$this->infoArray['billing'] || !$this->infoArray['billing']['name'] || $this->conf['editLockedLoginInfo']) && $this->conf['lockLoginUserInfo'])	{
 			$address = '';
@@ -178,7 +180,8 @@ class tx_ttproducts_address {
 				'date_of_birth,company,address,city,zip,country,country_code'.
 				$infoExtraFields
 			); // Fields...
-			while(list(,$fName)=each($infoFields))	{
+
+			foreach($infoFields as $fName)	{
 				$this->infoArray['delivery'][$fName] = $this->infoArray['billing'][$fName];
 			}
 		}

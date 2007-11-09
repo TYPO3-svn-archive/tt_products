@@ -39,6 +39,9 @@
  */
 
 
+global $TYPO3_CONF_VARS;
+
+
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_feuser.php');
 
 

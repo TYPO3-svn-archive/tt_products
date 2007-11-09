@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author  René Fritz <r.fritz@colorcube.de>
+ * @author  Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
+ * @author  RenÃ© Fritz <r.fritz@colorcube.de>
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @author  Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3
@@ -40,6 +40,10 @@
  *
  *
  */
+
+
+global $TYPO3_CONF_VARS;
+
 
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_feuser.php');
 
