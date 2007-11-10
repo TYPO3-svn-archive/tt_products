@@ -38,6 +38,7 @@
  *  
  */
 
+global $TYPO3_CONF_VARS;
 
 
 class tx_ttproducts_price {
@@ -108,6 +109,16 @@ class tx_ttproducts_price {
 	}
 
 
+	/**
+	 * return the price with tax mode considered
+	 */
+	function getModePrice($taxMode,$price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
+		$rc = $this->getPrice($price,$tax,$taxpercentage,$taxIncluded,$bEnableTaxZero);
+		if ($taxMode == '2')	{
+			$rc = round ($rc, 2);
+		}
+		return $rc;
+	}
 
 	/**
 	 * Returns the $price with either tax or not tax, based on if $tax is true or false. 
@@ -127,12 +138,12 @@ class tx_ttproducts_price {
 		if ($TSFE->fe_user->user['tt_products_discount'] != 0) {
 			$price = $price - ($price * ($TSFE->fe_user->user['tt_products_discount'] / 100));
 		}
-		
+
 		if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
 			$taxpercentage = doubleval($this->conf['TAXpercentage']);
 		}
 
-		$taxFactor = 1 + $taxpercentage/100;
+		$taxFactor = 1 + $taxpercentage / 100;
 		// $taxIncluded = ($taxIncluded ? $taxIncluded : $this->conf['TAXincluded']);
 		$taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage(); 		// if set then this has a tax which will override the tax of the products
 
@@ -149,7 +160,6 @@ class tx_ttproducts_price {
 		}
 
 		$rc = $this->getPriceTax($price, $bTax, $taxIncluded, $taxFactor);
-		$rc = round ($rc, 2);
 		return $rc;
 	} // getPrice
 

@@ -39,6 +39,8 @@
  */
 
 
+global $TYPO3_CONF_VARS;
+
 
 
 class tx_ttproducts_info {
@@ -148,7 +150,7 @@ class tx_ttproducts_info {
 				$address = $TSFE->fe_user->user['address'];
 			}
 			$this->infoArray['billing']['address'] = $address;
-			$fields = 'name, first_name, last_name, username, email, telephone, fax, zip, city, company';
+			$fields = 'name, first_name, last_name, username, email, telephone, salutation, fax, zip, city, company';
 			$fields .= ',tt_products_creditpoints, tt_products_vouchercode, tt_products_vat';
 			if ($this->feuserextrafields) {
 				$fields .= ',tx_feuserextrafields_initials_name, tx_feuserextrafields_prefix_name, tx_feuserextrafields_gsm_tel,'.
@@ -276,7 +278,7 @@ class tx_ttproducts_info {
 			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
 		}
 		$infoFields = explode(',',$list); // Fields...
-	
+
 		while(list(,$fName)=each($infoFields))	{
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $this->infoArray['billing'][$fName];
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $this->infoArray['delivery'][$fName];

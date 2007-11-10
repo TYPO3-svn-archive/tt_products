@@ -84,7 +84,7 @@ if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProduct
 }
 
 
-if ($typoVersion >= 4005000 &&
+if ($_EXTCONF['usePatch1822'] &&
 !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
 	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = array (
 		'default' => array(

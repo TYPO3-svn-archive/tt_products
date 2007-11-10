@@ -38,6 +38,8 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
+
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
 
 class tx_ttproducts_catlist_view {
@@ -279,8 +281,8 @@ class tx_ttproducts_catlist_view {
 					$row['pid'],
 					$this->config['limitImage'],
 					'listImage',
-					$viewCatTagArray, 
-					array(), 
+					$viewCatTagArray,
+					array(),
 					$pageAsCategory,
 					'LISTCAT',
 					$iCount,

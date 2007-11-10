@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -27,11 +27,11 @@
 /**
  * Part of the tt_products (Shop System) extension.
  *
- * functions for the display of forms
+ * hook functions for the TYPO3 cms
  *
- * $Id$
+ * $Id:$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
  * @package TYPO3
  * @subpackage tt_products
@@ -39,36 +39,41 @@
  *
  */
 
-
 global $TYPO3_CONF_VARS;
 
 
-class tx_ttproducts_form_div {
+class tx_ttproducts_cms {
+	var $cObj;
+	var $conf;
+	var $config;
+	var $markerArray;
+	var $globalMarkerArray;
+	var $urlArray;
 
 
-	function createSelect (&$pibase, &$valueArray, $name, $indexSelected, $allowedArray) {
-		global $TYPO3_DB;
+	/**
+	 * Draw the item in the page module
+	 *
+	 * @param	array		parameters
+	 * @param	object		the parent object
+	 * @return	  string
+	 */
 
-		$text = '';
-		foreach ($valueArray as $key => $parts) {
-			$tmp = tx_fhlibrary_language::sL($parts[0]);
-			$text = $pibase->pi_getLL($tmp);
-			if (!count($allowedArray) || in_array($parts[1], $allowedArray))	{
-				$selectedText = '';
-				if (intval($parts[1]) == intval($indexSelected))	{
-					$selectedText = ' selected';
-				}
-				$totaltext .= '<OPTION value="'.$parts[1].'"'.$selectedText.'>'.$text.'</OPTION>';
-			}
+	function pmDrawItem(&$params, &$pObj)	{
+		if ($pObj->pageRecord['doktype'] == 1 && $params['row']['pi_flexform'] && t3lib_extMgm::isLoaded(DIV_EXTkey))	{
+			include_once (PATH_BE_div.'class.tx_div_ff.php');
+
+			tx_div_ff::load($params['row']['pi_flexform'],TT_PRODUCTS_EXTkey);
+			$codes = 'CODE: '.tx_div_ff::get(TT_PRODUCTS_EXTkey, 'display_mode');
 		}
-		$text = '<SELECT name="'.$name.'">' . $totaltext.'</SELECT>';
-
-		return $text;
+		return $codes;
 	}
 
 }
 
 
-
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/hooks/class.tx_ttproducts_cms.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/hooks/class.tx_ttproducts_cms.php']);
+}
 
 ?>

@@ -38,6 +38,8 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
+
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 
@@ -110,11 +112,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	function setArticleTable(&$tt_products_articles)	{
 		$this->tt_products_articles = &$tt_products_articles;
-	}
-
-
-	function &getTableObj ()	{
-		return $this->table;
 	}
 
 

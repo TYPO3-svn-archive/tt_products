@@ -38,9 +38,10 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
+
 
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_feuser.php');
-
 
 
 class tx_ttproducts_email_div {
@@ -50,7 +51,7 @@ class tx_ttproducts_email_div {
 	 */
 	function send_mail($toEMail,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
 		global $TYPO3_CONF_VARS;
-		
+
 		include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 
 		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');

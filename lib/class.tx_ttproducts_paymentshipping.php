@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author  René Fritz <r.fritz@colorcube.de>
+ * @author  Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
+ * @author  RenÃ© Fritz <r.fritz@colorcube.de>
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @author  Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3
@@ -40,6 +40,8 @@
  *
  *
  */
+
+global $TYPO3_CONF_VARS;
 
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_feuser.php');
 
@@ -65,7 +67,7 @@ class tx_ttproducts_paymentshipping {
 		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
 		$this->fe_users = &$fe_users;
-		
+
 		$this->conf['TAXincluded'] = ($this->conf['TAXincluded'] ? $this->conf['TAXincluded'] : $this->pibase->conf['TAXincluded']);
 		$this->conf['TAXpercentage'] = ($this->conf['TAXpercentage'] ? $this->conf['TAXpercentage'] : $this->pibase->conf['TAXpercentage']);
 
@@ -120,7 +122,7 @@ class tx_ttproducts_paymentshipping {
 					unset($this->conf['payment.'][$theVal.'.']);
 				}
 			}
-	
+
 			$confArr = $this->cleanConfArr($this->conf['payment.']);
 			while(list($key,$val) = each($confArr)) {
 				if ($val['show'] || !isset($val['show']))	{
@@ -139,7 +141,7 @@ class tx_ttproducts_paymentshipping {
 					}
 				}
 			}
-	
+
 			ksort($this->conf['payment.']);
 			reset($this->conf['payment.']);
 			$k=intval($basketRec['tt_products']['payment']);
@@ -201,16 +203,26 @@ class tx_ttproducts_paymentshipping {
 				.wrap		[string]	<select>|</select> - wrap for the selectorboxes.  Only if .radio is false. See default value below
 				.template	[string]	Template string for the display of radiobuttons.  Only if .radio is true. See default below
 			 */
-		global $TYPO3_CONF_VARS;
+		global $TYPO3_CONF_VARS, $TSFE;
+
+		if ($this->conf['PIDbasket'])	{
+			$basketPid = $this->conf['PIDbasket'];
+		} else {
+			$basketPid = $TSFE->id;
+		}
+
+		$urlMarkerArray = array();
+		$urlMarkerArray = $this->marker->addURLMarkers($basketPid, $urlMarkerArray);
+		$basketUrl = $urlMarkerArray['###FORM_URL###'];	// the former parameters must be preserved
 
 		$type = $this->conf[$pskey.'.']['radio'];
 		$active = $this->basket->basketExtra[$pskey];
 		$activeArray = is_array($active) ? $active : array($active);
-
 		$confArr = $this->cleanConfArr($this->conf[$pskey.'.']);
 		$out='';
-		$template = $this->conf[$pskey.'.']['template'] ? ereg_replace('\' *\. *\$pskey *\. *\'',$pskey, $this->conf[$pskey.'.']['template']) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="submit()" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
-		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="submit()">|</select>';
+		$submitCode = 'this.form.action=\''.$basketUrl.'\';this.form.submit();';
+		$template = $this->conf[$pskey.'.']['template'] ? ereg_replace('\' *\. *\$pskey *\. *\'',$pskey, $this->conf[$pskey.'.']['template']) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
+		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
 		$t = array();
 		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];
 		while(list($key,$item) = each($confArr))	{
@@ -220,7 +232,6 @@ class tx_ttproducts_paymentshipping {
 				$addItems = array();
 				$itemTable = '';
 				$t['title'] = $item['title'];
-				
 				if ($item['where.'] && strstr($t['title'], '###'))	{
 					$tableName = key($item['where.']);
 					if ($this->pibase->tableArray[$tableName])	{
@@ -324,45 +335,41 @@ class tx_ttproducts_paymentshipping {
 					}
 				}
 			}
-	
+
 			krsort($confArr);
 			reset($confArr);
-	
 			if ($confArr['type'] == 'count') {
 				foreach ($confArr as $k1 => $price1)	{
 					if ($countTotal >= $k1) {
 						$priceNew = $price1;
-						break;						
+						break;
 					}
 				}
 			} else if ($confArr['type'] == 'weight') {
 				foreach ($confArr as $k1 => $price1)	{
 					if ($this->basket->calculatedArray['weight'] * 1000 >= $k1) {
 						$priceNew = $price1;
-						break;						
+						break;
 					}
 				}
 			} else if ($confArr['type'] == 'price') {
 				foreach ($confArr as $k1 => $price1)	{
 					if ($priceTotalTax >= $k1) {
 						$priceNew = $price1;
-						break;						
+						break;
 					}
 				}
 			}
-	
 			// compare the price to the min. price
 			if ($minPrice > $priceNew) {
 				$priceNew = $minPrice;
 			}
-	
 			// constant noCostsAmount by Christoph Zipper <info@chriszip.de>
 			// the total products price as from the payment/shipping is free
 			$noCostsAmount = (double) $confArr['noCostsAmount'];
 			if ($noCostsAmount && ($priceTotalTax >= $noCostsAmount)) {
 				$priceNew = 0;
 			}
-	
 			$taxIncluded = $this->price->getTaxIncluded();
 			$priceTax += $this->price->getPrice($priceNew,1,$tax,$taxIncluded,true);
 			$priceNoTax += $this->price->getPrice($priceNew,0,$tax,$taxIncluded,true);
@@ -387,7 +394,6 @@ class tx_ttproducts_paymentshipping {
 			$this->getConfiguredPrice($taxpercentage, $confArr, $countTotal, $priceTotalTax, $priceShippingTax, $priceShippingNoTax); 
 		} else {
 			$priceShippingAdd = doubleVal($this->basket->basketExtra[$pskey.'.']['price']);
-			
 			if ($priceShippingAdd)	{
 				$priceShippingTaxAdd = $this->price->getPrice($priceShippingAdd,true,$taxpercentage,$taxIncluded,true);
 			} else {
@@ -398,7 +404,6 @@ class tx_ttproducts_paymentshipping {
 			if (isset($taxFromShipping) && is_double($taxFromShipping))	{
 				$taxpercentage = $taxFromShipping;
 			}
-			
 			if (!$priceShippingNoTaxAdd) {
 				$priceShippingNoTaxAdd = $this->price->getPrice($priceShippingTaxAdd,false,$taxpercentage,true,true);
 			}
@@ -429,7 +434,6 @@ class tx_ttproducts_paymentshipping {
 				);
 			}
 		}
-		
 	}
 
 
@@ -454,9 +458,7 @@ class tx_ttproducts_paymentshipping {
 			$priceShippingTax += $this->price->getPrice($priceShipping,true,$taxpercentage,$taxIncluded,true);
 			$priceShippingNoTax += $this->price->getPrice($priceShipping,false,$taxpercentage,$taxIncluded,true);
 		}
-		
 		$this->getSpecialPrices ('shipping', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
-		
 
 			// Payment
 		$pricePayment = $pricePaymentTax = $pricePaymentNoTax = 0;
@@ -473,8 +475,6 @@ class tx_ttproducts_paymentshipping {
 		}
 
 		$this->getSpecialPrices ('payment', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
-
-
 	} // getPaymentShippingData
 
 

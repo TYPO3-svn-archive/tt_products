@@ -38,6 +38,8 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
+
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
 
 class tx_ttproducts_order {

@@ -39,6 +39,8 @@
  */
 
 
+global $TYPO3_CONF_VARS;
+
 
 class tx_ttproducts_variant {
 	var $pibase;
@@ -78,11 +80,16 @@ class tx_ttproducts_variant {
 	 */
 	 function modifyRowFromVariant (&$row, $variant) {
 		$variantArray = explode(';', $variant);
-		
+
 		if (is_array($this->conf) && ($this->useArticles == 1 || count ($this->bSelectableArray)))	{
 			foreach ($this->conf as $key => $field)	{
 				if ($key != 5)	{
-					$row[$field] = $variantArray[$key-1];
+					if ($variantArray[$key-1])	{
+						$row[$field] = $variantArray[$key-1];
+					} else {
+						$tmpArray = t3lib_div::trimExplode(';', $row[$field]);
+						$row[$field] = $tmpArray[0];
+					}
 				}
 			}
 		}
@@ -99,7 +106,7 @@ class tx_ttproducts_variant {
 	 * @see modifyRowFromVariant
 	 */
 	 function getVariantFromRow (&$row) {
-	
+
 		// take only the first color, size and gradings, if there are more entries from the item table		
 		$variantArray = array();
 
@@ -111,10 +118,9 @@ class tx_ttproducts_variant {
 				}
 			}
 		}
-		
 		$rc = implode (';', $variantArray);
 		return $rc; 
-	 }
+	}
 
 
 	function getVariantSubpartArray (&$subpartArray, &$row, &$tempContent, $useSelects, &$conf)  {
@@ -130,13 +136,12 @@ class tx_ttproducts_variant {
 					}
 				}
 			}
-					
 			if ($this->itemTable->hasAdditional($row,'isSingle')) {
 				$areaArray[] = 'display_variant5_isSingle';
 			} else {
 				$areaArray[] = 'display_variant5_isNotSingle';
 			}
-			
+
 			foreach ($areaArray as $k => $area) {
 				$subpartArray['###'.$area.'###'] = $this->pibase->cObj->getSubpart($tempContent,'###'.$area.'###');
 			}
@@ -238,7 +243,7 @@ class tx_ttproducts_variant {
 		$markerArray['###FIELD_GRADINGS_NAME###'] = 'ttp_basket['.$row['uid'].'][gradings]';
 		$markerArray['###FIELD_GRADINGS_VALUE###'] = $row['gradings'];
 		$markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
-		
+
 		$prodAdditionalText['single'] = '';	
 		if ($this->conf['selectAdditional']) {
 			$isSingleProduct = $this->hasAdditional($row,'isSingle');

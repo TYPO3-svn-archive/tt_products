@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2007 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2007 Kasper SkÃ¥rhÃ¸j (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @author	Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
@@ -39,7 +39,7 @@
  *
  */
 
-
+global $TYPO3_CONF_VARS;
 
 class tx_ttproducts_marker {
 	var $pibase; // reference to object of pibase
@@ -147,6 +147,7 @@ class tx_ttproducts_marker {
 		$markerArray['###GC2###'] = $this->pibase->cObj->stdWrap($this->conf['color2'],$this->conf['color2.']);
 		$markerArray['###GC3###'] = $this->pibase->cObj->stdWrap($this->conf['color3'],$this->conf['color3.']);
 		$markerArray['###DOMAIN###'] = $this->conf['domain'];
+		$markerArray['###PATH_FE_REL###'] = PATH_FE_ttproducts_rel;
 		$pidMarkerArray = array('agb','basket','info','finalize','payment', 'thanks','itemDisplay','listDisplay','search','storeRoot',
 								'memo','tracking','billing','delivery');
 		foreach ($pidMarkerArray as $k => $function)	{
@@ -338,7 +339,7 @@ class tx_ttproducts_marker {
 			}
 			$tagArray = $retTagArray;
 		}
-		
+
 		sort($parentArray);
 		
 

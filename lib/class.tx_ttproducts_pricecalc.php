@@ -38,7 +38,7 @@
  *  
  */
 
-
+global $TYPO3_CONF_VARS;
 
 class tx_ttproducts_pricecalc {
 	var $pibase; // reference to object of pibase
@@ -113,8 +113,8 @@ class tx_ttproducts_pricecalc {
 					if (!is_array($priceCalcTemp)) {
 						switch ($k2) {
 							case 'uid':
-								$uid = $v2;								
-								break;						
+								$uid = $v2;
+								break;
 							case 'type':
 								$type = $v2;
 								break;
@@ -165,7 +165,7 @@ class tx_ttproducts_pricecalc {
 								// store the discount price in all calculated items from before
 								foreach ($countedItems[$pricefor1Index] as $k4 => $v4) {
 									foreach ($this->basket->itemArray [$v4['sort']] as $k5=>$actItem) {
-										//=> discountprice always or if uid is set then only for items with the same price2 and uid 									
+										//=> discountprice always or if uid is set then only for items with the same price2 and uid
 										if (!$uid || $uid == $actItem ['rec']['uid'] && $actItem['rec']['price2'] == $price2 )	{
 										 	$this->basket->itemArray [$v4['sort']][$k5] ['calcprice'] = $price2;
 										}

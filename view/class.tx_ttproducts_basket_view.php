@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper SkÃ¥rhÃ¸j (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	René Fritz <r.fritz@colorcube.de>
+ * @author	Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
+ * @author	RenÃ© Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
  * @author	Els Verberne <verberne@bendoo.nl>
@@ -42,6 +42,7 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
 
@@ -51,7 +52,6 @@ class tx_ttproducts_basket_view {
 	var $pibase; // reference to object of pibase
 	var $conf;
 	var $config;
-	
 	var $page;
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
@@ -60,10 +60,10 @@ class tx_ttproducts_basket_view {
 	var $fe_users; // element of class tx_table_db
 	var $price; // price object
 
-	var $paymentshipping; 			// object of the type tx_ttproducts_paymentshipping
+	var $paymentshipping; 		// object of the type tx_ttproducts_paymentshipping
 
 	var $basket; 	// the basket object
-	var $templateCode='';				// In init(), set to the content of the templateFile. Used by default in getView()
+	var $templateCode='';		// In init(), set to the content of the templateFile. Used by default in getView()
 
 	var $marker; // marker functions
 	var $viewTable;
@@ -74,25 +74,25 @@ class tx_ttproducts_basket_view {
 	 *
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
 	 * @return	  void
- 	 */
+	 */
 
 	function init(&$basket, &$templateCode )	{
- 		$this->pibase = &$basket->pibase;
- 		$this->cnf = &$basket->cnf;
- 		$this->conf = &$this->cnf->conf;
- 		$this->config = &$this->cnf->config;
- 		$this->basket = &$basket;
- 		$this->page = &$basket->page;
- 		$this->tt_content = &$basket->tt_content;
- 		$this->tt_products = &$basket->tt_products;
- 		$this->tt_products_articles = &$basket->tt_products_articles;
- 		$this->tt_products_cat = &$basket->tt_products_cat;
- 		$this->fe_users = &$basket->fe_users;
- 		$this->viewTable = &$basket->viewTable;
- 		$this->price = &$basket->price;
+		$this->pibase = &$basket->pibase;
+		$this->cnf = &$basket->cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
+		$this->basket = &$basket;
+		$this->page = &$basket->page;
+		$this->tt_content = &$basket->tt_content;
+		$this->tt_products = &$basket->tt_products;
+		$this->tt_products_articles = &$basket->tt_products_articles;
+		$this->tt_products_cat = &$basket->tt_products_cat;
+		$this->fe_users = &$basket->fe_users;
+		$this->viewTable = &$basket->viewTable;
+		$this->price = &$basket->price;
 		$this->paymentshipping = &$basket->paymentshipping;
- 		$this->templateCode = &$templateCode;
- 
+		$this->templateCode = &$templateCode;
+
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($this->pibase, $this->cnf, $this->basket);
 	} // init
@@ -115,7 +115,7 @@ class tx_ttproducts_basket_view {
 		global $TYPO3_DB, $TYPO3_CONF_VARS;
 
 		if (!$templateCode)	{
-			$templateCode = &$this->templateCode;		
+			$templateCode = &$this->templateCode;
 		}
 
 			// Getting subparts from the template code.
@@ -135,7 +135,6 @@ class tx_ttproducts_basket_view {
 		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['basketFrameWork'],'###ITEM_CATEGORY###');
 		$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['basketFrameWork'],'###ITEM_LIST###');
 		$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
-
 		$currentP='';
 		$out='';
 		$itemsOut='';
@@ -154,7 +153,6 @@ class tx_ttproducts_basket_view {
 			$viewTagArray,
 			$parentArray
 		);
-		
 		$count = 0;
 		$basketItemView = '';
 
@@ -573,7 +571,7 @@ class tx_ttproducts_basket_view {
 /* Added Els4: total price = subtotal - bezorgkosten + voucher + gift + giftcertificate (winkelwagen.tmpl) */
 /* Added Els7: error in calcualtion */
 		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = $this->price->priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
-		
+
 		$agb_url=array();
 		$pidagb = intval($this->conf['PIDagb']);
 		// $addQueryString['id'] = $pidagb;
@@ -584,7 +582,7 @@ class tx_ttproducts_basket_view {
 			'<a href="'. $this->pibase->pi_getPageLink($pidagb,'',$this->marker->getLinkParams('', $addQueryString, true)) .'" target="'.$this->conf['AGBtarget'].'">',
 			'</a>'
 		);
-		
+
 		// $wrappedSubpartArray['###LINK_AGB###']=array('<a href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</a>');
 
 			// Final substitution:
@@ -596,7 +594,6 @@ class tx_ttproducts_basket_view {
 		if (is_object($info))	{
 			$info->getItemMarkerArray ($markerArray, $bSelectSalutation);
 		}
-		
 		$shipKeyArray = $this->basket->basketExtra['shipping'];
 		if (!is_array($shipKeyArray))	{
 			$shipKeyArray = array($shipKeyArray);
@@ -612,18 +609,15 @@ class tx_ttproducts_basket_view {
 			$msgShipping .= $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
 		}
 		$subpartArray['###MESSAGE_SHIPPING###'] = $msgShipping;
-		
 		$tmpSubpart = $this->pibase->cObj->getSubpart($bFrameWork,'###MESSAGE_PAYMENT_'.$this->basket->basketExtra['payment'].'###');
 		$subpartArray['###MESSAGE_PAYMENT###'] = $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
 		$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
-
 		$bFrameWork=$this->pibase->cObj->substituteMarkerArrayCached($t['basketFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 
 			// substitute the main subpart with the rendered content.
 		$out=$this->pibase->cObj->substituteSubpart($bFrameWork, '###ITEM_CATEGORY_AND_ITEMS###', $out);
 		return $out;
 	} // getView
-
 
 }
 

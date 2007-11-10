@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2007 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2007 Kasper SkÃ¥rhÃ¸j (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -33,8 +33,8 @@
  *
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	René Fritz <r.fritz@colorcube.de>
+ * @author	Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
+ * @author	RenÃ© Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
  * @author	Milosz Klosowicz <typo3@miklobit.com>
@@ -144,11 +144,42 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	function main($content,$conf)	{
 		global $TSFE, $TYPO3_CONF_VARS;
 
+// Test Anfang
+
+// 	error_reporting(E_ALL | E_WARNING);
+// 
+// require_once ('das gibt es nicht.php');
+// 
+// 	// $tmp ist hier nicht definiert
+// 
+// 	if (is_array($tmp['a']))	{
+// 		foreach ($tmp['a'] as $k => $v)	{
+// 			echo $tmp['a']['1']['2'];
+// 		}
+// 	}
+// 
+// 	$tmp = array();
+// 
+// 	if (is_array($tmp['a']))	{
+// 		foreach ($tmp['a'] as $k => $v)	{
+// 			echo $tmp['a']['1']['2'];
+// 		}
+// 	}
+// 
+// 	$keinArray['10'] = 12;
+// 	foreach ($keinArray as $k => $v)	{
+// 		vorher im foreach schon der Fehler
+// 	}
+// 
+// ein PHP Fehler zur Kontrolle;
+
+// Test Ende
+
 		$this->conf = &$conf;
 		$backPID = $this->piVars['backPID'];
 		$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
 
-		$eInfo = $this->getExtensionInfo(PATH_BE_ttproducts);
+		$eInfo = $this->getExtensionInfo(TT_PRODUCTS_EXTkey);
 		$this->version = $eInfo['version'];
 		$this->pi_initPIflexForm();
 		$config['code'] = 
@@ -171,7 +202,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// $this->xajax->decodeUTF8InputOn();
 				// Encoding of the response to iso-8859-1.
 			$this->xajax->setCharEncoding('iso-8859-1');
-			
+
 				// Encoding of the response to utf-8. 
 			// $this->xajax->setCharEncoding('utf-8');
 				// To prevent conflicts, prepend the extension prefix.
@@ -187,8 +218,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->xajax->setRequestURI($reqURI);
 			$this->xajax->setWrapperPrefix('');
 			$this->xajax->registerFunction(array('tt_products_showArticle',&$this,'tt_products_showArticle'));
-            $this->xajax->registerFunction(array('tt_products_changeValue',&$this,'tt_products_changeValue'));
-            $this->xajax->registerFunction(array('tt_products_processFormData',&$this,'tt_products_processFormData'));
+			$this->xajax->registerFunction(array('tt_products_changeValue',&$this,'tt_products_changeValue'));
+			$this->xajax->registerFunction(array('tt_products_processFormData',&$this,'tt_products_processFormData'));
 		}
 	
 		// page where to go usually
@@ -206,13 +237,13 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// only for testing purposes
 		if (is_array($conf['userFunc.']) && strstr($conf['userFunc.'],'callTime'))	{
 			$this->bNoCachePossible = FALSE;
-			foreach ($conf['userFunc.'] as $part => $setup) {		
+			foreach ($conf['userFunc.'] as $part => $setup) {
 			    if(!strpos($part,'.')) {
 				$content .= $this->cObj->cObjGetSingle($setup,$conf['userFunc.'][$part.'.']);
 			    }
 			}
 		} else {
-			$content = $this->doProcessing($content, false);		
+			$content = $this->doProcessing($content, false);
 		}
 
 		return $content;
@@ -1002,7 +1033,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
-		if (($theCode=='SINGLE') || (strstr($theCode,'LIST') && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'])) {
+		if (($theCode=='SINGLE') || (strstr($theCode,'LIST') && $theCode != 'LISTARTICLES' && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'])) {
 			if (!$this->tt_product_single) {
 				$this->tt_product_single['product'] = $this->conf['defaultProductID'];
 			}

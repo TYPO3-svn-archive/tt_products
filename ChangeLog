@@ -1,3 +1,12 @@
+2007-11-10 Franz Holzinger <franz@fholzinger.com>
+	* the field used with LISTNEWITEMS is configurable now: conf.tt_products.ALL.controlFields.newItemDays = starttime
+	* fix bug 3950: use marker DELIVERY_NOTE instead of DELIVERY_NOTE_DISPLAY in EMAIL_PLAINTEXT_TEMPLATE
+	* fix bug 6614: global $TYPO3_CONF_VARS must be set in the beginning of each PHP file
+	* fix bug with wrong rounding of prices before the taxcalculation. Use the TAXmode setup=2 to get the former behaviour.
+	  All the prices get counted without taxes first and without doing any roundings. The tax will be added at the end sums.
+	* support to show the CODE field for TYPO3 4.2 in the page module which will come from the flexform
+	* fix bug where some products variants have not been shown in the basket
+
 2007-07-20 Franz Holzinger <franz@fholzinger.com>
 	* Do not use PHP5
 	* Do not use apostrophes by default in email headers

@@ -38,6 +38,8 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
+
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_image.php');
 
 class tx_ttproducts_category_base {
@@ -70,6 +72,11 @@ class tx_ttproducts_category_base {
 		$this->image = t3lib_div::makeInstance('tx_ttproducts_image');
 		$this->image->init($this->pibase, $cnf, $tt_content, $this->table, $this->marker);
 	} // init
+
+
+	function &getTableObj ()	{
+		return $this->table;
+	}
 
 
 	function get ($uid=0,$pid=0) {
@@ -231,9 +238,8 @@ class tx_ttproducts_category_base {
 			}
 		}
 	}
-			
 
-  
+
 	function getItemMarkerArray (&$row, &$markerArray, $code, $prefix='')	{ 
 		$marker = $prefix.$this->marker;
 		$markerArray['###'.$marker.'_ID###'] = $row['uid'];

@@ -38,6 +38,9 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
+
+
 require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_image.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_variant.php');
@@ -90,6 +93,11 @@ class tx_ttproducts_article_base {
 		$this->fields['address'] = ($this->tabledesc['address'] ? $this->tabledesc['address'] : 'address');
 		$this->fields['itemnumber'] = ($this->tabledesc['itemnumber'] ? $this->tabledesc['itemnumber'] : 'itemnumber');
 	} // init
+
+
+	function &getTableObj ()	{
+		return $this->table;
+	}
 
 
 	/**

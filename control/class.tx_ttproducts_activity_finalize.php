@@ -38,6 +38,7 @@
  *
  */
 
+global $TYPO3_CONF_VARS;
 
 
 require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_base.php');
@@ -67,7 +68,7 @@ class tx_ttproducts_activity_finalize {
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
- 		$this->basket = &$basket;	
+		$this->basket = &$basket;	
 		$this->tt_products = &$tt_products;
 		$this->tt_products_cat = &$tt_products_cat;
 		$this->order = &$order;
@@ -96,7 +97,8 @@ class tx_ttproducts_activity_finalize {
 		$instockTableArray = '';
 		$recipientsArray = array();
 		$recipientsArray['customer'] = array();
-		$recipientsArray['customer'][] = ($this->conf['orderEmail_toDelivery'] ? $address->infoArray['delivery']['email'] : $address->infoArray['billing']['email']); // former: deliveryInfo
+		$customerEmail = ($this->conf['orderEmail_toDelivery'] && $address->infoArray['delivery']['email'] || !$address->infoArray['billing']['email'] ? $address->infoArray['delivery']['email'] : $address->infoArray['billing']['email']); // former: deliveryInfo
+		$recipientsArray['customer'][] = $customerEmail;
 		$recipientsArray['shop'] = $this->tt_products_cat->getEmail($this->basket->itemArray);
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
 		$markerArray = array('###CUSTOMER_RECIPIENTS_EMAIL###' => implode(',', $recipientsArray['customer']));
@@ -179,7 +181,6 @@ class tx_ttproducts_activity_finalize {
 			$this->basket->recs
 		);
 		$cardUid = $card->getUid();
-
 		$rc = $this->order->putRecord(
 			$orderUid,
 			$address->infoArray['delivery'],
@@ -247,6 +248,8 @@ class tx_ttproducts_activity_finalize {
 			$emailContentArray = array();
 			$subjectArray = array();
 			$plainMessageArray = array();
+			$markerArray = array();
+			$markerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 			$empty = '';
 			foreach ($emailTemplateArray as $key => $emailTemplate) {
 				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, false, true, '###'.$emailTemplate.'###'));
@@ -257,6 +260,7 @@ class tx_ttproducts_activity_finalize {
 					if (empty($plainMessageArray[$key])) {	// the user did not use the subject field
 						$plainMessageArray[$key] = $subjectArray[$key];
 					}
+					$plainMessageArray[$key] = $this->pibase->cObj->substituteMarkerArrayCached($plainMessageArray[$key],$markerArray);
 					if (empty($subjectArray[$key])) {	
 						$subjectArray[$key] = $this->conf['orderEmail_subject'];
 					}
@@ -267,7 +271,7 @@ class tx_ttproducts_activity_finalize {
 				$plainMessageArray['shop'] = $plainMessageArray['customer'];
 				$subjectArray['shop'] = $subjectArray['customer'];
 			}
-	
+
 			$HTMLmailContent = '';
 			if ($emailContentArray['customer'])	{		// If there is plain text content - which is required!!
 				if ($this->conf['orderEmail_htmlmail'])	{
@@ -319,7 +323,7 @@ class tx_ttproducts_activity_finalize {
 						$apostrophe.$subjectArray['shop'].$apostrophe,
 						$plainMessageArray['shop'],
 						$HTMLmailContent,
-						$address->infoArray['billing']['email'],
+						$customerEmail,
 						$apostrophe.$address->infoArray['billing']['name'].$apostrophe,
 						$addcsv
 					);
