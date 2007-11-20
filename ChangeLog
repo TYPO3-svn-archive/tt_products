@@ -1,3 +1,6 @@
+2007--- Franz Holzinger <franz@fholzinger.com>
+	* fix bug with tt_products versioning in check of paymentlib function
+
 2007-11-10 Franz Holzinger <franz@fholzinger.com>
 	* the field used with LISTNEWITEMS is configurable now: conf.tt_products.ALL.controlFields.newItemDays = starttime
 	* fix bug 3950: use marker DELIVERY_NOTE instead of DELIVERY_NOTE_DISPLAY in EMAIL_PLAINTEXT_TEMPLATE
