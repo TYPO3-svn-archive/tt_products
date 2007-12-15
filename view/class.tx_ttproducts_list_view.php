@@ -197,7 +197,6 @@ class tx_ttproducts_list_view {
 			}
 		}
 
-
 		$cat = $this->tt_products_cat->getParamDefault();
 		$pid = $this->page->getParamDefault();
 
@@ -218,7 +217,9 @@ class tx_ttproducts_list_view {
 			$addressText = $addressRow[$addressObj->fields['name']];
 			$where .= ' OR '.$itemTable->fields['address'].'='.$TYPO3_DB->fullQuoteStr($addressText,$address->table->name).')';
 		} else {	// do not mix address with category filter
-			$whereCat = $itemTable->addWhereCat($cat, $this->page->pid_list);
+			if ($allowedItems == '')	{
+				$whereCat = $itemTable->addWhereCat($cat, $this->page->pid_list);
+			}
 
 			if ($whereCat == '' && $allowedItems == '')	{
 				$neededParams = $itemTable->getNeededUrlParams($theCode);

@@ -97,7 +97,6 @@ class tx_ttproducts_info {
 
 			if (is_array($eInfo))	{
 				$sitVersion = $eInfo['version'];
-
 				if (version_compare($sitVersion, '2.0.0', '>='))	{
 					include_once($path.'pi1/class.tx_staticinfotables_pi1.php');
 					// Initialise static info library
@@ -137,6 +136,10 @@ class tx_ttproducts_info {
 		if ($TSFE->loginUser && (!$this->infoArray['billing'] || !$this->infoArray['billing']['name'] || $this->conf['editLockedLoginInfo']) && $this->conf['lockLoginUserInfo'])	{
 			$address = '';
 			$this->infoArray['billing']['feusers_uid'] = $TSFE->fe_user->user['uid'];
+
+			if ($this->conf['useStaticInfoCountry'] && !$this->infoArray['billing']['country_code'])	{
+				$this->infoArray['billing']['country_code'] = $this->infoArray['delivery']['country_code'] = $TSFE->fe_user->user['static_info_country'];
+			}
 
 			if ($this->conf['loginUserInfoAddress']) {
 				$address = implode(chr(10),

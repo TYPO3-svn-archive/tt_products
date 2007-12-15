@@ -131,7 +131,6 @@ class tx_ttproducts_single_view {
 				$itemImageFields['product'] = $this->cnf->getImageFields($itemTableConf['product']);
 				$itemTableArray['article']->mergeProductRow($rowArray['article'], $rowArray['product']);
 			}
-
 		}
 
 		foreach ($itemTableLangFields as $type => $fieldArray)	{
@@ -360,13 +359,12 @@ class tx_ttproducts_single_view {
 
 			//$markerArray['###FORM_URL###']=$this->formUrl.'&tt_products='.$this->uid ;
 			$addQueryString = array();
-			if ($pid == $TSFE->pid)	{
+			if ($pid == $TSFE->id)	{
 				$addQueryString[$this->pibase->prefixId.'['.$this->type.']'] = $this->uid;
 			}
 
-			// $markerArray = $this->marker->addURLMarkers($this->pid,$markerArray, array('tt_products' => $this->uid)); // Applied it here also...
 			$markerArray = $this->marker->addURLMarkers($pid, $markerArray, $addQueryString); // Applied it here also...
-			// $url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams()) ; // $this->getLinkUrl('','tt_products');
+
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
 			$prevOrderby = '';
@@ -444,7 +442,8 @@ class tx_ttproducts_single_view {
 						$this->LLkey,
 						$this->useArticles
 					);
-					$listPids = $this->conf['pidsRelatedProducts'];
+					$listPids = ($this->conf['pidsRelatedProducts'] != '' ? $this->conf['pidsRelatedProducts'] : $this->page->pid_list);
+
 					$this->page->applyRecursive($this->config['recursive'], $listPids);
 		
 					$templateArea = '###ITEM_LIST_RELATED_TEMPLATE###';

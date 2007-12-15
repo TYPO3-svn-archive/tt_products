@@ -62,7 +62,7 @@ class tx_ttproducts_email_div {
 
 			$Typo3_htmlmail->subject = $subject;
 			$Typo3_htmlmail->from_email = $fromEMail;
-			$Typo3_htmlmail->from_name = $fromName;
+			$Typo3_htmlmail->from_name = str_replace(',' , ' ', $fromName);
 			$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
 			$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
 			$Typo3_htmlmail->organisation = '';

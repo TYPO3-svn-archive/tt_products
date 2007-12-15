@@ -65,7 +65,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		parent::init($pibase, $cnf, 'tt_products', $tt_content, $paymentshipping);
 
 		$this->table = t3lib_div::makeInstance('tx_table_db');
-		
+
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $this->cnf->conf['orderBy'];
 		

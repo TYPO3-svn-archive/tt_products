@@ -184,10 +184,12 @@ class tx_ttproducts_paymentlib {
 							$markerArray['###PAYMENTLIB_INFO###'] = $lConf['extInfo'];
 							$markerArray['###PAYMENTLIB_IMAGE###'] = $lConf['extImage'];
 
-							if (version_compare($this->pibase->version, '2.5.2', '=='))	{
+							if (version_compare($this->pibase->version, '2.5.2', '>=') &&
+							version_compare($this->pibase->version, '2.6.0', '<'))	{
 								$content=$this->basketView->getView($localTemplateCode,'PAYMENT', $this->info, false, false, '###PAYMENTLIB_FORM_TEMPLATE###',$markerArray);
-							} else if (version_compare($this->pibase->version, '2.5.3', '==')) {
+							} else if (version_compare($this->pibase->version, '2.6.0', '==')) {
 								$content=$this->basketView->getView($localTemplateCode,'PAYMENT', $this->info, false, false, true, '###PAYMENTLIB_FORM_TEMPLATE###',$markerArray);
+
 							} else {
 								$tmp = t3lib_div::debug_trail();
 								t3lib_div::debug($tmp);
@@ -455,9 +457,9 @@ class tx_ttproducts_paymentlib {
 					'on1' => $row['www'],
 					'os2' => $row['note2'],
 					'quantity' => $count,
-					'singlepricenotax' => $this->fFloat($actItem['priceNoTax']),
-					'singleprice' =>  $this->fFloat($actItem['priceTax']),
-					'amount' => $this->fFloat($actItem['totalNoTax']),
+/*					'singlepricenotax' => $this->fFloat($actItem['priceNoTax']),
+					'singleprice' =>  $this->fFloat($actItem['priceTax']),*/
+					'amount' => $this->fFloat($actItem['priceNoTax']),
 					'shipping' => $this->fFloat($count * $totalArr['shippingtax'] / $totalCount),
 					'handling' => $this->fFloat($this->price->getPrice($row['handling'],0,$tax)),
 					'taxpercent' => $tax,

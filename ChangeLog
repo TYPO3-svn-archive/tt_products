@@ -1,5 +1,8 @@
-2007--- Franz Holzinger <franz@fholzinger.com>
+2007-12-15 Franz Holzinger <franz@fholzinger.com>
 	* fix bug with tt_products versioning in check of paymentlib function
+	* fix bug with Masquerading of emails if the sender name has a comma ',' inside. replace the ',' by a blank.
+	* fix bug with unwanted change of page after putting a product into basket from single view
+	* fix bug with page ids in related products
 
 2007-11-10 Franz Holzinger <franz@fholzinger.com>
 	* the field used with LISTNEWITEMS is configurable now: conf.tt_products.ALL.controlFields.newItemDays = starttime
