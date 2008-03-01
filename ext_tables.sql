@@ -261,29 +261,28 @@ CREATE TABLE tt_products_emails (
 );
 
 
-
-
- Table structure for table 'sys_products_cards'
-
+#
+#  Table structure for table 'sys_products_cards'
+#
 CREATE TABLE sys_products_cards (
 	uid int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
 	pid int(11) unsigned DEFAULT '0' NOT NULL,
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 #	order_uid int(11) unsigned DEFAULT '0' NOT NULL,
-#  session_id varchar(30) DEFAULT '' NOT NULL,  
+#  session_id varchar(30) DEFAULT '' NOT NULL,
 #  amount_num int(10) DEFAULT '0' NOT NULL,
-#  response_code char(3) DEFAULT '' NOT NULL,   
+#  response_code char(3) DEFAULT '' NOT NULL,
 	cc_number varchar(255) DEFAULT '' NOT NULL,
 #  cc_number_hash1 varchar(255) DEFAULT '' NOT NULL,
-#  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,  
+#  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,
 	cc_type varchar(20) DEFAULT '' NOT NULL,
-#  address_ok char(1) DEFAULT '' NOT NULL, 
-#  test char(1) DEFAULT '' NOT NULL,   
+#  address_ok char(1) DEFAULT '' NOT NULL,
+#  test char(1) DEFAULT '' NOT NULL,
 #  auth_code varchar(16) DEFAULT '' NOT NULL,
 #  bin int(6) unsigned DEFAULT '0' NOT NULL,
-#  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,  
-#  sequence int(6) unsigned DEFAULT '0' NOT NULL,                   
+#  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,
+#  sequence int(6) unsigned DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );

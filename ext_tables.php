@@ -156,7 +156,6 @@ $TCA['sys_products_orders'] = Array (
 		'delete' => 'deleted',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
-		'sortby' => 'crdate',
 		'mainpalette' => 1,
 		'iconfile' => PATH_ttproducts_icon_table_rel.'sys_products_orders.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',

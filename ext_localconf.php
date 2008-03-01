@@ -48,13 +48,13 @@ if (t3lib_extMgm::isLoaded(FH_LIBRARY_EXTkey)) {
 	}
 }
 
-if (!defined ('DIV_EXTkey')) {
-	define('DIV_EXTkey','div');
+if (!defined ('DIV2007_EXTkey')) {
+	define('DIV2007_EXTkey','div2007');
 }
 
-if (t3lib_extMgm::isLoaded(DIV_EXTkey)) {
-	if (!defined ('PATH_BE_div')) {
-		define('PATH_BE_div', t3lib_extMgm::extPath(DIV_EXTkey));
+if (t3lib_extMgm::isLoaded(DIV2007_EXTkey)) {
+	if (!defined ('PATH_BE_div2007')) {
+		define('PATH_BE_div2007', t3lib_extMgm::extPath(DIV2007_EXTkey));
 	}
 }
 
@@ -62,6 +62,8 @@ if (t3lib_extMgm::isLoaded(DIV_EXTkey)) {
 if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
 	define('TT_PRODUCTS_DIV_DLOG', '0');	// for development error logging
 }
+
+$bPhp5 = version_compare(phpversion(), '5.0.0', '>=');
 
 t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products=1');
 
@@ -83,7 +85,6 @@ if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProduct
 	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'] = '';
 }
 
-
 if ($_EXTCONF['usePatch1822'] &&
 !defined($TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
 	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = array (
@@ -103,7 +104,7 @@ if ($_EXTCONF['usePatch1822'] &&
 			'icon' => TRUE
 		)
 	);
-	
+
 $TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articles'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
@@ -124,6 +125,11 @@ $TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] 
 			'icon' => TRUE
 		)
 	);
+}
+
+if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] && $bPhp5)	{
+	// replace the output of the former CODE field with the flexform
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][5][] = 'EXT:'.TT_PRODUCTS_EXTkey.'/hooks/class.tx_ttproducts_cms.php:&tx_ttproducts_cms->pmDrawItem';
 }
 
 
