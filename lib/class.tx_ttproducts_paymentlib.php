@@ -161,6 +161,9 @@ class tx_ttproducts_paymentlib {
 					if (!$ok) {
 						return 'ERROR: Setting details of transaction failed.';
 					}
+					$providerObject->transaction_setOkPage ($transactionDetailsArr['successlink']);
+					$providerObject->transaction_setErrorPage ($transactionDetailsArr['faillink']);
+
 					if ($gatewayMode == TX_PAYMENTLIB_GATEWAYMODE_FORM)	{
 
 						$localTemplateCode = $this->pibase->cObj->fileResource($lConf['templateFile'] ? $lConf['templateFile'] : 'EXT:tt_products/template/paymentlib.tmpl');

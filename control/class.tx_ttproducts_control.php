@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -162,7 +162,7 @@ class tx_ttproducts_control {
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
 		$this->basket->getCalculatedSums();
 		if ($handleScript)	{
-			$content.= $this->paymentshipping->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $this->conf['paymentActivity'], $bFinalize);
+			$content.= $this->paymentshipping->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $order, $this->conf['paymentActivity'], $bFinalize);
 		} else if (t3lib_extMgm::isLoaded ('paymentlib') && version_compare(phpversion(), '5.0.0', '>=') ) {
 			$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
 			if ($handleLib == 'paymentlib')	{
@@ -175,7 +175,6 @@ class tx_ttproducts_control {
 			}
 		}
 	}
-
 
 
 	/**
@@ -218,7 +217,7 @@ class tx_ttproducts_control {
 			$activityArray['products_clear_basket'] = true;
 		}
 
-       	if (t3lib_div::_GP('products_overview') || t3lib_div::_GP('products_overview_x'))    { 
+		if (t3lib_div::_GP('products_overview') || t3lib_div::_GP('products_overview_x'))    { 
 			$activityArray['products_overview'] = true; 
 		}
 		if (t3lib_div::_GP('products_info') || t3lib_div::_GP('products_info_x'))    { 
@@ -253,7 +252,7 @@ class tx_ttproducts_control {
 				}
 			}
 		}
-		
+
 		if ($bBasketCode)	{
 			$activityArray = array_merge ($activityArray, $codeActivityArray);
 			$this->activityArray = $this->transformActivities($activityArray);

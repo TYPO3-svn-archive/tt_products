@@ -91,6 +91,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 		// Internal: init():
 	var $templateCode='';				// In init(), set to the content of the templateFile.
+	var $templateFile;
 	var $config=array();				// updated configuration
 	var $cnf;							// object for configuration purposes
 	var $tt_product_single=array();
@@ -305,11 +306,11 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->errorMessage .= $this->pi_getLL('no_template').' plugin.tt_products.'.$tmplText.' = ';
 			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '""');
 		} else {
-
 				// Substitute Global Marker Array
-			$templateCode = $this->cObj->substituteMarkerArrayCached($templateCode, $this->globalMarkerArray);			
+			$templateCode = $this->cObj->substituteMarkerArrayCached($templateCode, $this->globalMarkerArray);
 		}
 
+		$this->templateFile = $templateFile;
 		return $templateCode;
 	}
 
@@ -585,6 +586,9 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		
 		$this->conf['alwaysInStock'] = ($this->conf['alwaysInStock'] ? $this->conf['alwaysInStock']: $this->conf['AlwaysInStock']);
 
+ 		if ($this->conf['TAXmode'] == '' ||  $this->conf['TAXmode'] == '{$plugin.tt_products.TAXmode}')	{
+			$this->conf['TAXmode'] == 1;
+		}
 		$this->cnf = t3lib_div::makeInstance('tx_ttproducts_config');
 		$this->cnf->init(
 			$this->conf,
@@ -1029,7 +1033,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	/**
 	 * Displaying single products/ the products list / searching
 	 */
-	function products_display($theCode, &$errorMessage, $error_code)	{
+	function products_display($theCode, &$errorMessage, &$error_code)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
@@ -1060,14 +1064,14 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					$this->LLkey,
 					$this->conf['useArticles']
 				);
-
-				$content = $this->singleView->printView(
-					$this->templateCode, 
-					$error_code,
-					$this->pageAsCategory,
-					$this->template_suffix
-				);
 			}
+			$content = $this->singleView->printView(
+				$this->templateCode, 
+				$error_code,
+				$this->pageAsCategory,
+				$this->template_suffix
+			);
+
 		} else {
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
 

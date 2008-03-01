@@ -1458,7 +1458,6 @@ $TCA['sys_products_orders'] = Array (
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
 	)
-
 );
 
 

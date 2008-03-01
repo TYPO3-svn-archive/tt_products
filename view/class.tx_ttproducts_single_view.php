@@ -69,32 +69,32 @@ class tx_ttproducts_single_view {
 	var $LLkey; // language key
 	var $useArticles;
 
- 	function init(&$pibase, &$cnf, &$basket, &$page,
- 			&$tt_content, &$tt_products, &$tt_products_articles,
- 			&$tt_products_cat, &$fe_users, $uidArray, $extVars,
- 			$pid, $LLkey, $useArticles) {
- 		$this->pibase = &$pibase;
- 		$this->cnf = &$cnf;
- 		$this->conf = &$this->cnf->conf;
- 		$this->config = &$this->cnf->config;
+	function init(&$pibase, &$cnf, &$basket, &$page,
+			&$tt_content, &$tt_products, &$tt_products_articles,
+			&$tt_products_cat, &$fe_users, $uidArray, $extVars,
+			$pid, $LLkey, $useArticles) {
+		$this->pibase = &$pibase;
+		$this->cnf = &$cnf;
+		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
- 		$this->page = &$page;
- 		$this->tt_content = &$tt_content;
- 		$this->uid = current($uidArray);
- 		$this->type = key($uidArray);
- 		$this->variants = $extVars;
- 		$this->tt_products = &$tt_products;
- 		$this->tt_products_articles = &$tt_products_articles;
- 		$this->tt_products_cat = &$tt_products_cat;
+		$this->page = &$page;
+		$this->tt_content = &$tt_content;
+		$this->uid = current($uidArray);
+		$this->type = key($uidArray);
+		$this->variants = $extVars;
+		$this->tt_products = &$tt_products;
+		$this->tt_products_articles = &$tt_products_articles;
+		$this->tt_products_cat = &$tt_products_cat;
 		$this->fe_users = &$fe_users;
- 		$this->pid = $pid;
+		$this->pid = $pid;
 		$this->LLkey = $LLkey;
 		$this->useArticles = $useArticles;	
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$this->marker->init($pibase, $cnf, $basket);
 		$this->javaScriptMarker = t3lib_div::makeInstance('tx_ttproducts_javascript_marker');
 		$this->javaScriptMarker->init($pibase, $cnf, $this->pibase->javascript);
- 	}
+	}
 
 
 	// returns the single view
@@ -158,7 +158,7 @@ class tx_ttproducts_single_view {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 			} else if (count($giftNumberArray)) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_GIFT###';
-			} else if ($row['inStock'] <= 0 && $this->conf['showNotinStock'] && is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ) {
+			} else if (!$this->conf['alwaysInStock'] && $row['inStock'] <= 0 && $this->conf['showNotinStock'] && is_array($TCA[$itemTableArray[$this->type]->table->name]['columns']['inStock']) ) {
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_NOT_IN_STOCK###';
 			} else {
 				if ($this->type == 'product')	{
@@ -170,6 +170,13 @@ class tx_ttproducts_single_view {
 			// Add the template suffix
 			$itemFrameTemplate = substr($itemFrameTemplate, 0, -3).$templateSuffix.'###';
 			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($itemFrameTemplate));
+
+			if (!$itemFrameWork) {
+				$error_code[0] = 'no_subtemplate';
+				$error_code[1] = $itemFrameTemplate;
+				$error_code[2] = $this->pibase->templateFile;
+				return '';
+			}
 
 			$this->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
 			$itemFrameWork = $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
@@ -235,6 +242,9 @@ class tx_ttproducts_single_view {
 			$variant = $itemTableArray[$this->type]->variant->getVariantFromRow ($row);
 			$item = $this->basket->getItem($row, $variant);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
+			$pidMemo = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
+			$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pidMemo,'',$this->marker->getLinkParams('', array(), true)));
+
 			$markerArray = array();
 
 			// get categories

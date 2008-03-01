@@ -248,7 +248,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
 		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id);
-		
+
 			// Subst. fields
 		$markerArray['###'.$this->marker.'_UNIT###'] = $row['unit'];
 		$markerArray['###'.$this->marker.'_UNIT_FACTOR###'] = $row['unit_factor'];
@@ -271,7 +271,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		if ($this->conf['itemMarkerArrayFunc'])	{
 			$markerArray = $this->pibase->userProcess('itemMarkerArrayFunc',$markerArray);
 		}
-		
+
 		if ($code=='SINGLE')	{
 
 			if ($row['note_uid']) {
@@ -288,6 +288,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 					99
 				);
 				$notePageArray = $page->getNotes ($row['uid']);
+				$contentConf = $this->cnf->getTableConf('tt_content', $code);
+
 				foreach ($notePageArray as $k => $pid)	{
 					$pageRow = $page->get($pid);
 					$pageMarkerKey = 'PRODUCT_NOTE_UID_'.($k + 1);
@@ -301,7 +303,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 							if (strstr($index, $pageMarkerKey) !== FALSE)	{
 								$fieldPos = strrpos($index, '_');
 								$fieldName = substr($index, $fieldPos+1);
-								$markerArray['###'.$index.'###'] = $pageRow[$fieldName];								
+								$markerArray['###'.$index.'###'] = $pageRow[$fieldName];
 							}
 							if (strstr($index, $markerKey) === FALSE)	{
 								continue;
@@ -309,6 +311,16 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 							$fieldPos = strrpos($index, '_');
 							$fieldName = substr($index, $fieldPos+1);
 							$markerArray['###'.$index.'###'] = $contentEl[$fieldName];
+							if (isset ($contentConf['displayFields.']) && is_array ($contentConf['displayFields.']) && $contentConf['displayFields.'][$fieldName] == 'RTEcssText')	{
+									// Extension CSS styled content
+								if (t3lib_extMgm::isLoaded('css_styled_content')) {
+									$markerArray['###'.$index.'###'] =
+										$this->pibase->pi_RTEcssText($contentEl[$fieldName]);
+								} else if (is_array($this->conf['parseFunc.']))	{
+									$markerArray['###'.$index.'###'] = 
+										$this->pibase->cObj->parseFunc($contentEl[$fieldName],$this->conf['parseFunc.']);
+								}
+							}
 						}
 					}
 				}

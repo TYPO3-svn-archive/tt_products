@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2008 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -295,6 +295,26 @@ class tx_ttproducts_paymentshipping {
 			}
 		}
 
+		if (strstr($actTitle, '###'))	{
+			$markerArray = array();
+			$viewTagArray = array();
+			$parentArray = array();
+			$fieldsArray = $this->marker->getMarkerFields(
+				$actTitle,
+				$tmp = array(),
+				$tmp = array(),
+				$tmp = array(),
+				$itemTable->marker,
+				$viewTagArray,
+				$parentArray
+			);
+			$markerArray = array();
+			foreach ($viewTagArray as $tag => $v)	{
+				$markerArray['###'.$tag.'###'] = '?';
+			}
+			$actTitle = $this->pibase->cObj->substituteMarkerArrayCached($actTitle, $markerArray);
+		}
+
 		$this->basket->basketExtra[$pskey.'.']['title'] = $actTitle;
 		if (!$type) {
 			$out = $this->pibase->cObj->wrap($out,$wrap);
@@ -481,7 +501,7 @@ class tx_ttproducts_paymentshipping {
 	/**
 	 * Include handle script
 	 */
-	function includeHandleScript($handleScript, &$confScript, $activity, &$bFinalize)	{
+	function includeHandleScript($handleScript, &$confScript, $order, $activity, &$bFinalize)	{
 		$content = '';
 		include($handleScript);
 		return $content;

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -249,8 +249,8 @@ class tx_ttproducts_basket {
 		}
 
 		if (is_array($basketExtRaw)) {
-			while(list($uid,$basketItem) = each($basketExtRaw)) {
-			
+			foreach($basketExtRaw as $uid => $basketItem) {
+
 				$variant = $this->viewTable->variant->getVariantFromRow($basketItem);
 				if (t3lib_div::testInt($uid))	{
 					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked  
@@ -259,11 +259,9 @@ class tx_ttproducts_basket {
 					}
 					$quantity = 0;
 					$quantity = $this->price->toNumber($this->conf['quantityIsFloat'],$basketItem['quantity']);
-
 					if ($this->conf['quantityIsFloat'])	{
 						$this->basketExt[$uid][$variant] = $quantity;
 					}
-
 					if (!$updateMode) {
 						$count=$this->getMaxCount ($quantity, $uid);
 						if ($count >= 0) {
@@ -306,15 +304,15 @@ class tx_ttproducts_basket {
 									if (md5($variant)==$md5) {
 										$count=$this->getMaxCount ($quantity, $uid);
 										$this->basketExt[$uid][$variant] = $count;
-									 	if (is_array($this->basketExt['gift'])) {
-									 		$count = count($this->basketExt['gift']);
-									 		$giftCount = 0;
-									 		$restQuantity = $quantity;
-									 		for ($giftnumber = 1; $giftnumber <= $count; ++$giftnumber) {
-									 			if ($restQuantity == 0) {
-									 				$this->removeGift($giftnumber, $uid, $variant);
-									 			} else {
-										 			if ($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] > $restQuantity) {
+										if (is_array($this->basketExt['gift'])) {
+											$count = count($this->basketExt['gift']);
+											$giftCount = 0;
+											$restQuantity = $quantity;
+											for ($giftnumber = 1; $giftnumber <= $count; ++$giftnumber) {
+												if ($restQuantity == 0) {
+													$this->removeGift($giftnumber, $uid, $variant);
+												} else {
+													if ($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] > $restQuantity) {
 										 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
 										 				$restQuantity = 0;
 										 			} else if ($giftnumber < $count) {
@@ -322,9 +320,9 @@ class tx_ttproducts_basket {
 										 			} else {
 										 				$this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] = $restQuantity;
 										 			}
-									 			}
-									 		}
-									 	}
+												}
+											}
+										}
 									}
 								}
 							}
@@ -332,8 +330,7 @@ class tx_ttproducts_basket {
 					}
 				}
 			}
-	
-	
+
 			// I did not find another possibility to delete elements completely from a multidimensional array
 			// than to recreate the array
 			$basketExtNew = array();
@@ -347,8 +344,7 @@ class tx_ttproducts_basket {
 			}
 
 			$this->basketExt = $basketExtNew;
-
-			if ($bStoreBasket)	{		
+			if ($bStoreBasket)	{
 				if (is_array($this->basketExt) && count($this->basketExt))
 					$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
 				else
@@ -383,7 +379,6 @@ class tx_ttproducts_basket {
 		global $TSFE;
 
 		if (!$this->conf['debug'])	{
-			
 			// TODO: delete only records from relevant pages
 				// Empties the shopping basket!
 			$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
@@ -461,19 +456,20 @@ class tx_ttproducts_basket {
 				}
 			}
 		}
-
 		$this->itemArray = array(); // array of the items in the basket
 		$this->calculatedArray = array(); // this array is usede for all calculated things
 		foreach ($productsArray as $k1 => $row)	{
 			$variant = $this->viewTable->variant->getVariantFromRow($row);
 			$newItem = $this->getItem($row,$variant);
-			$this->itemArray [$row[$this->viewTable->fields['itemnumber']]][] = $newItem;
 			$count = $newItem['count'];
 			$priceTax = $newItem['priceTax'];
 			$priceNoTax = $newItem['priceNoTax'];
 
-			$this->calculatedArray['count']		+= $count;
-			$this->calculatedArray['weight']	+= $row['weight']*$count;
+			if ($count > 0)	{
+				$this->itemArray [$row[$this->viewTable->fields['itemnumber']]][] = $newItem;
+				$this->calculatedArray['count']		+= $count;
+				$this->calculatedArray['weight']	+= $row['weight']*$count;
+			}
 			// if reseller is logged in then take 'price2', default is 'price'
 		}
 
@@ -590,7 +586,6 @@ class tx_ttproducts_basket {
 			$this->calculatedArray['priceTax']['shipping'] = $this->price->getModePrice($this->conf['TAXmode'], $this->calculatedArray['priceNoTax']['shipping'],true,$shippingTax,$this->conf['TAXincluded'],false);
 		}
 
-
 			// Shipping must be at the end in order to use the calculated values from before
 		$this->paymentshipping->getPaymentShippingData(
 			$this->calculatedArray['count'],
@@ -600,7 +595,6 @@ class tx_ttproducts_basket {
 			$this->calculatedArray['priceTax']['payment'],
 			$this->calculatedArray['priceNoTax']['payment']
 		);
-
 	} // getCalculatedBasket
 
 

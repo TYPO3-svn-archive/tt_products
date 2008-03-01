@@ -233,7 +233,7 @@ class tx_ttproducts_activity_finalize {
 				$this->order
 			);
 			
-			$csvfilepath = PATH_site.'/'. $this->conf['CSVdestination'];
+			$csvfilepath = PATH_site.$this->conf['CSVdestination'];
 			$csvorderuid = $this->basket->recs['tt_products']['orderUid'];
 			$csv->create($this->basket, $address, $csvorderuid, $csvfilepath, $error_message);
 			$addcsv = $csvfilepath;

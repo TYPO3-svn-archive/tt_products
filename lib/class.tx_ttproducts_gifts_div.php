@@ -71,8 +71,7 @@ class tx_ttproducts_gifts_div {
 	/**
 	 * Adds gift markers to a markerArray
 	 */
-	function addGiftMarkers(&$basket, $markerArray, $giftnumber, $code='LISTGIFTS', $id='1')	
-{
+	function addGiftMarkers(&$basket, $markerArray, $giftnumber, $code='LISTGIFTS', $id='1')	{
 
 		$markerArray['###GIFTNO###'] = $giftnumber;
 		$markerArray['###GIFT_PERSON_NAME###'] = $basket->basketExt['gift'][$giftnumber]['personname'];
@@ -153,7 +152,7 @@ class tx_ttproducts_gifts_div {
 			}
 		}
 
-	return $rc;
+		return $rc;
 	}
 
 }

@@ -1,3 +1,12 @@
+2008-03-01 Franz Holzinger <franz@fholzinger.com>
+	* fix bug 7197: add comment symbol # to table sys_products_cards
+	* fix bug 5874: ###FORM_MEMO### has not been rendered in single view
+	* fix bug 6178: Sorting orders discards order date
+	* fix bug 3684: shipping title gets replaced in bill - has been fixed before
+	* add &nbsp; after the preview markers in the CSS HTML template as a workaround for a bug in MS Internet Explorer 7
+	* additional error messages if a template subpart is not found in the single view or basket view
+	* do not show product in basket if the variant does not fit to the article
+
 2007-12-15 Franz Holzinger <franz@fholzinger.com>
 	* fix bug with tt_products versioning in check of paymentlib function
 	* fix bug with Masquerading of emails if the sender name has a comma ',' inside. replace the ',' by a blank.

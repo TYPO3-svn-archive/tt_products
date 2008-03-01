@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -121,6 +121,14 @@ class tx_ttproducts_basket_view {
 			// Getting subparts from the template code.
 		$t=array();
 		$t['basketFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($subpartMarker));
+
+		$SubpartEmptyArray = array('###EMAIL_PLAINTEXT_TEMPLATE_SHOP###', '###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
+		if (!$t['basketFrameWork'] && !in_array($subpartMarker, $SubpartEmptyArray)) {
+			$this->error_code[0] = 'no_subtemplate';
+			$this->error_code[1] = $subpartMarker;
+			$this->error_code[2] = $this->conf['templateFile'];
+			return '';
+		}
 
 			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
 		if (trim($this->pibase->cObj->getSubpart($t['basketFrameWork'],'###BILLING_ADDRESS_LOGIN###')))	{
