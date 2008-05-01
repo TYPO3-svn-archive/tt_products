@@ -1,3 +1,11 @@
+2008-05-01 Franz Holzinger <franz@fholzinger.com>
+	* improve clickIntoBasket in single view
+	* add enable fields to the where clause of articles
+	* fix bug 7842: when in render mode 'checkbox' the checkbox has not been displayed as selected
+	* change in template: ###PERSON_AGB### instead of value="###PERSON_AGB###" The marker will be replaced by checked="checked" or empty.
+	* do not overwrite product variants fields from corresponding article
+	* support the mydashboard extension with list for latest products, latest orders and stock informations
+
 2008-03-01 Franz Holzinger <franz@fholzinger.com>
 	* fix bug 7197: add comment symbol # to table sys_products_cards
 	* fix bug 5874: ###FORM_MEMO### has not been rendered in single view
@@ -25,8 +33,6 @@
 	* Do not use PHP5
 	* Do not use apostrophes by default in email headers
 	* Replace the ###FORM_NAME### marker in all cases
-
-2007-07-20 Franz Holzinger <franz@fholzinger.com>
 	* Fix bug with not working translations of categories using language tables
 	* Change function addWhereCat to use ony the categories found in a mm table if present
 	* use subparts ###PRODUCT_HAS_IMAGE1### in single view if there is image no.1 available

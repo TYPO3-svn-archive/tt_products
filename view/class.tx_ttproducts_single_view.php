@@ -33,7 +33,7 @@
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	René Fritz <r.fritz@colorcube.de>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <contact@fholzinger.com>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3
  * @subpackage tt_products
@@ -222,10 +222,15 @@ class tx_ttproducts_single_view {
 
 			$datasheetFile = $row['datasheet'];
 
-				// Fill marker arrays
 			$backPID = $this->pibase->piVars['backPID'];
 			$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
-			if ($this->conf['clickIntoBasket'] && $backPID)	{
+			$basketPID = $this->conf['PIDbasket'];
+
+			if ($this->conf['clickIntoBasket'] && $basketPID)	{
+				$pid = $basketPID;
+			} else if ($this->conf['clickIntoList'] || !$backPID)	{
+				$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $row);
+			} else if ($backPID) {
 				$pid = $backPID;
 			} else {
 				$pid = $TSFE->id;

@@ -105,7 +105,8 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	function &getWhereArray ($where) {
 		global $TYPO3_DB;
 		$rowArray = array();
-		$this->table->enableFields();		
+		$enableWhere = $this->table->enableFields();
+		$where = ($where ? $where.' '.$enableWhere : '1=1 '.$enableWhere);
 		$res = $this->table->exec_SELECTquery('*',$where);
 		
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -33,7 +33,7 @@
  *
  * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author  René Fritz <r.fritz@colorcube.de>
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <contact@fholzinger.com>
  * @author  Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3
  * @subpackage tt_products
@@ -345,6 +345,7 @@ class tx_ttproducts_paymentshipping {
 		if (is_array($confArr))	{
 			$minPrice=0;
 			$priceNew=0;
+
 			if ($confArr['WherePIDMinPrice.']) {
 					// compare PIDList with values set in priceTaxWherePIDMinPrice in the SETUP
 					// if they match, get the min. price
@@ -360,21 +361,21 @@ class tx_ttproducts_paymentshipping {
 			reset($confArr);
 			if ($confArr['type'] == 'count') {
 				foreach ($confArr as $k1 => $price1)	{
-					if ($countTotal >= $k1) {
+					if (t3lib_div::testInt($k1) && $countTotal >= $k1) {
 						$priceNew = $price1;
 						break;
 					}
 				}
 			} else if ($confArr['type'] == 'weight') {
 				foreach ($confArr as $k1 => $price1)	{
-					if ($this->basket->calculatedArray['weight'] * 1000 >= $k1) {
+					if (t3lib_div::testInt($k1) && $this->basket->calculatedArray['weight'] * 1000 >= $k1) {
 						$priceNew = $price1;
 						break;
 					}
 				}
 			} else if ($confArr['type'] == 'price') {
 				foreach ($confArr as $k1 => $price1)	{
-					if ($priceTotalTax >= $k1) {
+					if (t3lib_div::testInt($k1) && $priceTotalTax >= $k1) {
 						$priceNew = $price1;
 						break;
 					}
@@ -387,9 +388,11 @@ class tx_ttproducts_paymentshipping {
 			// constant noCostsAmount by Christoph Zipper <info@chriszip.de>
 			// the total products price as from the payment/shipping is free
 			$noCostsAmount = (double) $confArr['noCostsAmount'];
+
 			if ($noCostsAmount && ($priceTotalTax >= $noCostsAmount)) {
 				$priceNew = 0;
 			}
+
 			$taxIncluded = $this->price->getTaxIncluded();
 			$priceTax += $this->price->getPrice($priceNew,1,$tax,$taxIncluded,true);
 			$priceNoTax += $this->price->getPrice($priceNew,0,$tax,$taxIncluded,true);
@@ -411,7 +414,7 @@ class tx_ttproducts_paymentshipping {
 		$taxFromShipping = $this->getReplaceTAXpercentage();
 		$this->price->init($this->pibase, $this->conf[$pskey.'.'], $this->cnf, $this->basket, $this);
 		if ($confArr) {
-			$this->getConfiguredPrice($taxpercentage, $confArr, $countTotal, $priceTotalTax, $priceShippingTax, $priceShippingNoTax); 
+			$this->getConfiguredPrice($taxpercentage, $confArr, $countTotal, $priceTotalTax, $priceShippingTax, $priceShippingNoTax);
 		} else {
 			$priceShippingAdd = doubleVal($this->basket->basketExtra[$pskey.'.']['price']);
 			if ($priceShippingAdd)	{
@@ -541,7 +544,6 @@ class tx_ttproducts_paymentshipping {
 		}
 		return $rc;
 	}
-
 }
 
 

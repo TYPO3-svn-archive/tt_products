@@ -353,7 +353,6 @@ class tx_ttproducts_basket {
 			}
 		}
 		$this->paymentshipping->setBasketExtras($formerBasket);
-
 	} // init
 
 
@@ -405,7 +404,7 @@ class tx_ttproducts_basket {
 	 */
 	function getCalculatedBasket()	{
 		global $TYPO3_DB;
-		
+
 		if ($this->itemArray[0]) {// the item array contains all the data for the elements found in the basket
 			return;	// this function is called in a loop from basketView->getView
 					// all the calculations however need to be done only once
@@ -414,6 +413,7 @@ class tx_ttproducts_basket {
 
 		$uidArr = array();
 		reset($this->basketExt);
+
 		while(list($uidTmp,)=each($this->basketExt))
 			if ($uidTmp != 'gift' && !in_array($uidTmp, $uidArr))
 				$uidArr[] = intval($uidTmp);
@@ -422,16 +422,13 @@ class tx_ttproducts_basket {
 			return;
 		}
 
-		// $taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage();
-		
-		//$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->pibase->cObj->enableFields('tt_products'));
-		$res = $this->viewTable->table->exec_SELECTquery('*','uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->viewTable->table->enableFields());
+		$where = 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->viewTable->table->enableFields();
+		$res = $this->viewTable->table->exec_SELECTquery('*',$where);
 
 		$productsArray = array();
 		$this->page->setPageArray();
 		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 			$pid = $row['pid'];
-
 			// only the basket items for the pages belonging to this shop shall be used here
 			if (isset($this->page->pageArray[$pid]))	{
 				reset($this->basketExt[$row['uid']]);
@@ -441,9 +438,11 @@ class tx_ttproducts_basket {
 					if ($this->useArticles == 1 && $this->viewTable->table->name == 'tt_products') {
 						// get the article uid with these colors, sizes and gradings
 						$articleRow = $this->viewTable->getArticleRow($row);
+						$variantFieldArray = $this->viewTable->variant->getFieldArray();
+
 							// use the fields of the article instead of the product
 						foreach ($articleRow as $field => $fieldValue) {
-							if ($field != 'uid') {
+							if (($field != 'uid') && !in_array($field,$variantFieldArray)) {
 								$row[$field] = $fieldValue;
 							}
 						}
@@ -610,7 +609,7 @@ class tx_ttproducts_basket {
 
 		$count = $this->basketExt[$row['uid']][$variant];
 		if (!$this->conf['quantityIsFloat'])	{
-			$count = intval($count);	
+			$count = intval($count);
 		}
 		$priceTax = $this->price->getResellerPrice($row,1);
 		$priceNoTax = $this->price->getResellerPrice($row,0);
@@ -622,7 +621,7 @@ class tx_ttproducts_basket {
 			'totalTax' => 0,
 			'totalNoTax' => 0,
 			'rec' => $row,
-			);
+		);
 		return $item;
 	}
 

@@ -342,7 +342,7 @@ class tx_ttproducts_info {
 			// Fe users:
 		$markerArray['###FE_USER_USERNAME###'] = $TSFE->fe_user->user['username'];
 		$markerArray['###FE_USER_UID###'] = $TSFE->fe_user->user['uid'];
-		$markerArray['###PERSON_AGB###'] = $this->infoArray['billing']['agb'] ? ' checked' : '';
+		$markerArray['###PERSON_AGB###'] = $this->infoArray['billing']['agb'] ? 'checked="checked"' : '';
 		$markerArray['###USERNAME###'] = $this->infoArray['billing']['email'];
 		$markerArray['###PASSWORD###'] = $this->password;
 	} // getMarkerArray

@@ -146,7 +146,7 @@ plugin.tt_products {
     10 = Shop is awaiting goods from third-party
     11 = Shop is awaiting customer payment
     12 = Shop is awaiting material from customer
-    13 = Order has been payed    
+    13 = Order has been paid    
     20 = Goods shipped to customer
     21 = Gift certificates shipped to customer
     30 = Other message from store
