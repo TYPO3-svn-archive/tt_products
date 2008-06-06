@@ -117,7 +117,7 @@ $TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articl
 			'icon' => TRUE
 		)
 	);
-	
+
 $TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
@@ -131,7 +131,6 @@ if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] && $bPhp5)	{
 	// replace the output of the former CODE field with the flexform
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][5][] = 'EXT:'.TT_PRODUCTS_EXTkey.'/hooks/class.tx_ttproducts_cms.php:&tx_ttproducts_cms->pmDrawItem';
 }
-
 
   ## Extending TypoScript from static template uid=43 to set up userdefined tag:
 t3lib_extMgm::addTypoScript($_EXTKEY,'editorcfg','tt_content.CSS_editor.ch.tt_products = < plugin.tt_products.CSS_editor ',43);

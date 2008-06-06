@@ -237,7 +237,6 @@ class tx_ttproducts_single_view {
 			}
 
 			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true), array('useCacheHash' => true)) .'">','</a>');
-
 			if( $datasheetFile == '' )  {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
 			}  else  {

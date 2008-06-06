@@ -154,8 +154,7 @@ class tx_ttproducts_paymentlib {
 					$content = '<span style="color:red;">'.htmlspecialchars($providerObject->transaction_message($transactionResultsArr)).'</span><br />';
 					$content .= '<br />';
 				} else {
-					$transactionDetailsArr = &$this->getTransactionDetails($confScript, $totalArr, $addrArr, $paymentBasketArray);
-
+					$transactionDetailsArr = &$this->getTransactionDetails($transactionId, $confScript, $totalArr, $addrArr, $paymentBasketArray);
 						// Set payment details and get the form data:
 					$ok = $providerObject->transaction_setDetails ($transactionDetailsArr);
 					if (!$ok) {
@@ -234,7 +233,7 @@ class tx_ttproducts_paymentlib {
 	/**
 	 * Checks if required fields for credit cards and bank accounts are filled in correctly
 	 */
-	function checkRequired(&$confScript)	{
+	function checkRequired($transactionId, &$confScript)	{
 		$rc = '';
 
 		$providerFactoryObj = tx_paymentlib_providerfactory::getInstance();
@@ -242,7 +241,7 @@ class tx_ttproducts_paymentlib {
 		$providerObject = $providerFactoryObj->getProviderObjectByPaymentMethod($paymentMethod);
 		if (is_object($providerObject))	{
 			$providerKey = $providerObject->getProviderKey();
-			$transactionDetailsArr = &$this->GetTransactionDetails($confScript);
+			$transactionDetailsArr = &$this->GetTransactionDetails($transactionId, $confScript);
 			echo "<br><br>ausgabe details: ";
 			print_r ($transactionDetailsArr);
 			echo "<br><br>";
@@ -278,13 +277,13 @@ class tx_ttproducts_paymentlib {
 	 * Gets all the data needed for the transaction or the verification check
 	 */
 
-	function &getTransactionDetails(&$confScript, &$totalArr, &$addrArr, &$paymentBasketArray)	{
+	function &getTransactionDetails($transactionId, &$confScript, &$totalArr, &$addrArr, &$paymentBasketArray)	{
 		global $TSFE;
 
 		$param = '&FE_SESSION_KEY='.rawurlencode(
 			$TSFE->fe_user->id.'-'.
 				md5(
-				$TSFE->fe_user->idcheckRequired.'/'.
+				$TSFE->fe_user->id.'/'.
 				$GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
 				)
 			);
@@ -298,15 +297,6 @@ class tx_ttproducts_paymentlib {
 		$totalPrice = $this->basket->calculatedArray['priceTax']['total'];
 		$totalPriceFormatted = $this->price->priceFormat($totalPrice);
 		$orderUid = $this->order->getBlankUid();	// Gets an order number, creates a new order if no order is associated with the current session
-		
-// 		$transactionDetailsArr = array (
-// 			'transaction' => array (
-// 				'amount' => $totalPrice,
-// 				'currency' => $confScript['Currency'],
-// 				'orderuid' => $orderUid,
-// 				'returi' => t3lib_div::getIndpEnv ('TYPO3_REQUEST_URL').$param
-// 			),
-// 		);
 
 		$successPid = ($this->conf['paymentActivity'] == 'payment' ? ($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDfinalize']) : $TSFE->id);
 		$conf = array('returnLast' => 'url');
@@ -325,7 +315,10 @@ class tx_ttproducts_paymentlib {
 			),
 			'total' => $totalArr,
 			'address' => $addrArr,
-			'basket' => $paymentBasketArray
+			'basket' => $paymentBasketArray,
+			'options' => array (
+				'reference' => $transactionId,
+			)
 		);
 
 		$gatewayMode = $this->getGatewayMode ($confScript);

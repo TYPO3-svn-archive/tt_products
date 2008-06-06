@@ -346,6 +346,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			$recursive = intval($recursive);
 			$pid_list_arr = explode(',',$pid_list);
 			$pid_list = '';
+			reset ($pid_list_arr);
 			while(list(,$val) = each($pid_list_arr))	{
 				$pid_list .= $val.','.$this->pibase->cObj->getTreeList($val,$recursive);
 			}

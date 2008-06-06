@@ -350,11 +350,10 @@ class tx_ttproducts_control {
 							case 'products_payment':
 								$this->pibase->load_noLinkExtCobj();	// TODO
 								$pidagb = intval($this->conf['PIDagb']);
-
 								$checkRequired = $info->checkRequired();
 								$checkAllowed = $info->checkAllowed();
 								if ($checkRequired == '' && $checkAllowed == '' &&
-									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb'])) || $info->infoArray['billing']['agb']) {
+									(empty($pidagb) || isset($_REQUEST['recs']['personinfo']['agb']) || $info->infoArray['billing']['agb'])) {
 
 									// basket view
 									if (!is_object($basketView))	{

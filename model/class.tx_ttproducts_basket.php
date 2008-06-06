@@ -336,6 +336,7 @@ class tx_ttproducts_basket {
 			$basketExtNew = array();
 			reset($this->basketExt);
 			while(list($tmpUid,$tmpSubArr)=each($this->basketExt)) {
+				reset ($tmpSubArr);
 				while(list($tmpExtVar,$tmpCount)=each($tmpSubArr)) {
 					if ($tmpCount > 0) {
 						$basketExtNew[$tmpUid][$tmpExtVar] = $tmpCount;

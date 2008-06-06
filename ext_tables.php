@@ -2,7 +2,6 @@
 if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
 t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXTkey, 'static/old_style/', 'Shop System Old Style');
-t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXTkey, 'static/test/', 'Shop System Test');
 $typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
 		
 $TCA['tt_products'] = Array (

@@ -125,6 +125,7 @@ class tx_ttproducts_tracking {
 				$status_log = unserialize($orderRow['status_log']);
 				reset($orderRecord['status']);
 				$update=0;
+				reset ($orderRecord['status']);
 				while(list(,$val)=each($orderRecord['status'])) {
 					$status_log_element = array(
 						'time' => time(),

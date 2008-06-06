@@ -293,7 +293,7 @@ class tx_ttproducts_image {
 		}
 		$dirname = ($dirname ? $dirname : 'uploads/pics');
 		$markerArray['###'.$this->marker.'_IMAGE_PATH###'] = $dirname.'/';
-
+		reset ($imgs);
 		while(list($c,$val) = each($imgs))	{
 			$confMarkerArray = array();
 			$imageConf = $this->conf[$imageRenderObj.'.'];
@@ -357,6 +357,7 @@ class tx_ttproducts_image {
 			$theImgCode[0] = $tmpImgCode;
 		}
 
+		reset ($theImgCode);
 		$actImgCode = current($theImgCode);
 		$markerArray['###'.$this->marker.'_IMAGE###'] = $actImgCode ? $actImgCode : ''; // for compatibility only
 		$c = 1;

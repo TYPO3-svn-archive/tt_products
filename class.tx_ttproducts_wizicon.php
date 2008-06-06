@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper SkÃ¥rhÃ¸j (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,7 +27,7 @@
 /**
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @author	Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
@@ -60,7 +60,7 @@ class tx_ttproducts_wizicon {
 	 */
 	function includeLocalLang()	{
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
-		
+
 		if ($typoVersion >= 3008000)	{
 			$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(PATH_BE_ttproducts.'locallang.xml',FALSE);
 		} else {
@@ -68,7 +68,7 @@ class tx_ttproducts_wizicon {
 		}
 		return $LOCAL_LANG;
 	}
-	
+
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/class.tx_ttproducts_wizicon.php'])	{

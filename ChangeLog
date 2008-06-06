@@ -1,3 +1,7 @@
+2008-06-06 Franz Holzinger <franz@fholzinger.com>
+	* fix bug to consider the required address fields
+	' fix bug with markers for tx_feuserextrafields
+
 2008-05-01 Franz Holzinger <franz@fholzinger.com>
 	* improve clickIntoBasket in single view
 	* add enable fields to the where clause of articles

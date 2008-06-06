@@ -117,6 +117,7 @@ class tx_ttproducts_paymentshipping {
 		if ($this->conf['payment.']) {
 			if ($excludePayment)	{
 				$exclArr = t3lib_div::intExplode(',',$excludePayment);
+				reset($exclArr);
 				while(list(,$theVal)=each($exclArr))	{
 					unset($this->conf['payment.'][$theVal]);
 					unset($this->conf['payment.'][$theVal.'.']);
