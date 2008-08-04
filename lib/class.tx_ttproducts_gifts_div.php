@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -29,10 +29,9 @@
  *
  * view functions
  *
- * $Id: class.tx_ttproducts_gifts_div.php,v 1.5 2005/12/12 17:39:39
-franzholz Exp $
+ * $Id:$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *

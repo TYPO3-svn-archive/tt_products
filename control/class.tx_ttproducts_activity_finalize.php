@@ -275,12 +275,8 @@ class tx_ttproducts_activity_finalize {
 			$markerArray = array();
 			$markerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 			$empty = '';
-debug ($emailTemplateArray, '$emailTemplateArray', __LINE__, __FILE__);
-debug ($this->conf['orderEmail_htmlmail'], '$this->conf[\'orderEmail_htmlmail\']', __LINE__, __FILE__);
 			foreach ($emailTemplateArray as $key => $emailTemplate) {
 				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, false, true, $this->conf['orderEmail_htmlmail'], '###'.$emailTemplate.'###'));
-debug ($emailContentArray[$key], '$emailContentArray['.$key.']', __LINE__, __FILE__);
-debug ($emailContentArray, '$emailContentArray', __LINE__, __FILE__);
 
 				if ($emailContentArray[$key])	{	// If there is plain text content - which is required!!
 					$parts = preg_split('/[\n\r]+/',$emailContentArray[$key],2);		// First line is subject
@@ -403,7 +399,6 @@ debug ($emailContentArray, '$emailContentArray', __LINE__, __FILE__);
 			}
 		}
 	} // doProcessing
-
 
 }
 
