@@ -64,7 +64,7 @@ class tx_ttproducts_email {
 	function getEmail ($uid) {
 		global $TYPO3_DB;
 		$rc = $this->emailArray[$uid];;
-		if (!$rc) {
+		if ($uid && !$rc) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', '*');
 			$sql->prepareWhereFields ($this->table, 'uid', '=', intval($uid));

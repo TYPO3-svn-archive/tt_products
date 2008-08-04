@@ -196,7 +196,8 @@ class tx_ttproducts_billdelivery {
 						// Print Item Title
 						$wrappedSubpartArray=array();
 						$markerArray = array();
-						$this->tt_products->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt,1,'image', $viewTagArray, array(), strtoupper($this->type), $count);
+						$this->tt_products->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt,1,'image', $viewTagArray, array(), strtoupper($this->type), $count,'','');
+						
 						$markerArray['###FIELD_QTY###'] = $actItem['count'];
 						$markerArray['###PRICE_TOTAL_TAX###']=$this->price->priceFormat($actItem['totalTax']);
 						$markerArray['###PRICE_TOTAL_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']);
@@ -229,6 +230,7 @@ class tx_ttproducts_billdelivery {
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['billing'][$fName];
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['delivery'][$fName];
 		}
+	
 		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
 		$markerArray['###DELIVERY_ADDRESS_DISPLAY###'] = nl2br($markerArray['###DELIVERY_ADDRESS###']);
 	
@@ -243,6 +245,19 @@ class tx_ttproducts_billdelivery {
 		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($calculatedArray['priceTax']['total']);
 		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($calculatedArray['priceNoTax']['total']);
 		$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$this->price->priceFormat($calculatedArray['priceTax']['total']-$calculatedArray['priceNoTax']['total']);
+
+		$taxRateArray = t3lib_div::trimExplode(',', $this->conf['TAXrates']);
+		if (isset($taxRateArray) && is_array($taxRateArray))	{
+			foreach ($taxRateArray as $k => $taxrate)	{
+				$label = chr(ord('A')+$k);
+				$markerArray['###PRICE_TAXRATE_NAME'.($k+1).'###'] = $label;
+				$markerArray['###PRICE_TAXRATE_TAX'.($k+1).'###'] = $taxrate;
+				$label = $this->price->priceFormat($calculatedArray['priceNoTax']['sametaxtotal'][$taxrate]);
+				$markerArray['###PRICE_TAXRATE_TOTAL'.($k+1).'###'] = $label;
+				$label = $this->price->priceFormat($calculatedArray['priceNoTax']['sametaxtotal'][$taxrate] * ($taxrate/100));
+				$markerArray['###PRICE_TAXRATE_ONLY_TAX'.($k+1).'###'] = $label;
+			}
+		}
 
 			// Delivery note.
 		$markerArray['###DELIVERY_NOTE###'] = $orderData['deliveryInfo']['note'];

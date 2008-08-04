@@ -31,13 +31,20 @@
 			<label index="tt_products.highlight">Highlight:</label>
 			<label index="tt_products.directcost">Direct Cost:</label>
 			<label index="tt_products.color">Color (Variant 1):</label>
-			<label index="tt_products.size">Size (Variant 2):</label>
+			<label index="tt_products.color2">2nd Color (Variant 6):</label>
+			<label index="tt_products.color3">3rd Color (Variant 7):</label>
+			<label index="tt_products.size">Size Length (Variant 2):</label>
+			<label index="tt_products.size2">2nd Size Width (Variant 8):</label>
+			<label index="tt_products.size3">3rd Size Height (Variant 9):</label>
 			<label index="tt_products.description">Description (Variant 3):</label>
 			<label index="tt_products.gradings">Gradings (Variant 4):</label>
+			<label index="tt_products.material">Material (Variant 10):</label>
+			<label index="tt_products.quality">Quality (Variant 11):</label>
 			<label index="tt_products.additional">Additional (Variant 5):</label>
 			<label index="tt_products.additional.issingle">Buy only once:</label>
 			<label index="tt_products.additional.isimage">Is an image:</label>
 			<label index="tt_products.additional.alwaysInStock">always in stock:</label>
+			<label index="tt_products.additional.noMinPrice">no minimum price:</label>
 			<label index="tt_products.special_preparation">Special Preparation:</label>
 			<label index="tt_products.subtitle">Subtitle:</label>
 			<label index="tt_products.variants">Variants</label>
@@ -45,7 +52,14 @@
 			<label index="tt_products.shippingdiv">Shipping</label>
 			<label index="tt_products.shipping">shipping costs</label>
 			<label index="tt_products.shipping2">additional shipping costs</label>
+			<label index="tt_products.delivery">delivery:</label>
+			<label index="tt_products.delivery.availableImmediate">immediate delivery</label>
+			<label index="tt_products.delivery.availableShort">soon available</label>
+			<label index="tt_products.delivery.availableDemand">only on demand</label>
 			<label index="tt_products.handling">fee for handling</label>
+			<label index="tt_products.title">Name:</label>
+			<label index="tt_products.sellstarttime">Starttime for selling:</label>
+			<label index="tt_products.sellendtime">Endtime for selling:</label>
 			<label index="tt_products_language">Products (alternative language)</label>
 			<label index="tt_products_language.prod_uid">Product record</label>
 			<label index="tt_products_language.sys_language_uid">Language</label>
@@ -57,15 +71,28 @@
 			<label index="tt_products_cat_language.cat_uid">Product category record</label>
 			<label index="tt_products_articles">Product articles</label>
 			<label index="tt_products_articles.uid_product">Product</label>
+			<label index="tt_products_articles_language">Product articles (alternative language)</label>
+			<label index="tt_products_articles_language.uid_article">Product article</label>
 			<label index="tt_products_emails">Products emails</label>
-			<label index="tt_products.title">Name:</label>
 			<label index="sys_products_cards">Credit cards for orders</label>
+			<label index="sys_products_cards.owner_name">owner name</label>
 			<label index="sys_products_cards.cc_number">number</label>
+			<label index="sys_products_cards.cc_number_1">number part 1</label>
+			<label index="sys_products_cards.cc_number_2">number part 2</label>
+			<label index="sys_products_cards.cc_number_3">number part 3</label>
+			<label index="sys_products_cards.cc_number_4">number part 4</label>
 			<label index="sys_products_cards.cc_type">organization</label>
 			<label index="sys_products_cards.cc_type.I.0">American Express</label>
 			<label index="sys_products_cards.cc_type.I.1">Diners Club</label>
 			<label index="sys_products_cards.cc_type.I.2">Mastercard</label>
 			<label index="sys_products_cards.cc_type.I.3">Visa</label>
+			<label index="sys_products_cards.cvv2">Card Security Code</label>
+			<label index="sys_products_cards.endtime_mm">Card endtime: month</label>
+			<label index="sys_products_cards.endtime_yy">Card endtime: year</label>
+			<label index="sys_products_accounts">Bank accounts for orders</label>
+			<label index="sys_products_accounts.owner_name">owner name</label>
+			<label index="sys_products_accounts.ac_number">account number</label>
+			<label index="sys_products_accounts.bic">bank identifier code</label>
 			<label index="sys_products_orders">Sys products orders</label>
 			<label index="sys_products_orders.payment">payment</label>
 			<label index="sys_products_orders.shipping">shipping</label>
@@ -144,6 +171,8 @@
 			<label index="tt_content.pi1_flexform.display_mode.20">Categories: list</label>
 			<label index="tt_content.pi1_flexform.display_mode.21">Articles: list</label>
 			<label index="tt_content.pi1_flexform.display_mode.22">Categories: select</label>
+			<label index="tt_content.pi1_flexform.display_mode.23">DAM: list</label>
+			<label index="tt_content.pi1_flexform.display_mode.24">DAM Categories: list</label>
 			<label index="tt_content.pi1_flexform.display_mode.25">Addresses: select</label>
 			<label index="tt_content.pi1_flexform.template_suffix">Template suffix</label>
 		</languageKey>
@@ -168,13 +197,20 @@
 			<label index="tt_products.highlight">Besonderheit:</label>
 			<label index="tt_products.directcost">Einkaufspreis:</label>
 			<label index="tt_products.color">Farbe (Variante 1):</label>
+			<label index="tt_products.color2">2. Farbe (Variante 6):</label>
+			<label index="tt_products.color3">3. Farbe (Variante 7):</label>
 			<label index="tt_products.size">Größe (Variante 2):</label>
+			<label index="tt_products.size2">2. Größe Breite (Variante 8):</label>
+			<label index="tt_products.size3">3. Größe Höhe (Variante 9):</label>
 			<label index="tt_products.description">Beschreibung (Variante 3):</label>
 			<label index="tt_products.gradings">Staffelungen (Variante 4):</label>
+			<label index="tt_products.material">Material (Variante 10):</label>
+			<label index="tt_products.quality">Qualität (Variante 11):</label>
 			<label index="tt_products.additional">Zusätzliches (Variante 5):</label>
 			<label index="tt_products.additional.issingle">nur einzeln:</label>
 			<label index="tt_products.additional.isimage">ist ein Bild:</label>
 			<label index="tt_products.additional.alwaysInStock">immer auf Lager:</label>
+			<label index="tt_products.additional.noMinPrice">kein Mindestbestellwert:</label>
 			<label index="tt_products.special_preparation">Spezialanfertigung:</label>
 			<label index="tt_products.subtitle">Untertitel:</label>
 			<label index="tt_products.variants">Varianten</label>
@@ -182,7 +218,14 @@
 			<label index="tt_products.shippingdiv">Versand</label>
 			<label index="tt_products.shipping">Versandkosten pro Produkt</label>
 			<label index="tt_products.shipping2">Zusätzliche Versandkosten</label>
+			<label index="tt_products.delivery">Lieferung:</label>
+			<label index="tt_products.delivery.availableImmediate">sofort lieferbar</label>
+			<label index="tt_products.delivery.availableShort">in kürze lieferbar</label>
+			<label index="tt_products.delivery.availableDemand">auf Kundenwunsch</label>
 			<label index="tt_products.handling">Bearbeitungsgebühr</label>
+			<label index="tt_products.title">Name:</label>
+			<label index="tt_products.sellstarttime">Verkaufsstart:</label>
+			<label index="tt_products.sellendtime">Verkaufsende:</label>
 			<label index="tt_products_language">Produkte (alternative Sprache)</label>
 			<label index="tt_products_language.prod_uid">Produkte Datensatz</label>
 			<label index="tt_products_language.sys_language_uid">Sprache</label>
@@ -194,10 +237,24 @@
 			<label index="tt_products_cat_language.cat_uid">Produkt Kategorie Datensatz</label>
 			<label index="tt_products_articles">Produkt Artikel</label>
 			<label index="tt_products_articles.uid_product">Produkt</label>
+			<label index="tt_products_articles_language">Produkt Artikel (alternative Sprache)</label>
+			<label index="tt_products_articles_language.uid_article">Produkt Artikel</label>
 			<label index="tt_products_emails">Produkt Emails</label>
 			<label index="sys_products_cards">Kreditkarten für Bestellungen</label>
+			<label index="sys_products_cards.owner_name">Name des Besitzers</label>
 			<label index="sys_products_cards.cc_number">Nummer</label>
+			<label index="sys_products_cards.cc_number_1">Nummer Teil 1</label>
+			<label index="sys_products_cards.cc_number_2">Nummer Teil 2</label>
+			<label index="sys_products_cards.cc_number_3">Nummer Teil 3</label>
+			<label index="sys_products_cards.cc_number_4">Nummer Teil 4</label>
 			<label index="sys_products_cards.cc_type">Organisation</label>
+			<label index="sys_products_cards.cvv2">Kartenprüfnummer</label>
+			<label index="sys_products_cards.endtime_mm">Kreditkarte Endedatum: Monat</label>
+			<label index="sys_products_cards.endtime_yy">Kreditkarte Endedatum: Jahr</label>
+			<label index="sys_products_accounts">Bankverbindungen für Bestellungen</label>
+			<label index="sys_products_accounts.owner_name">Name des Besitzers</label>
+			<label index="sys_products_accounts.ac_number">Kontonummer</label>
+			<label index="sys_products_accounts.bic">Bankleitzahl</label>
 			<label index="sys_products_orders">Sys Produkte Bestellungen</label>
 			<label index="sys_products_orders.payment">Bezahlung</label>
 			<label index="sys_products_orders.shipping">Versand</label>
@@ -252,6 +309,8 @@
 			<label index="tt_content.pi1_flexform.display_mode.20">Kategorien: Liste</label>
 			<label index="tt_content.pi1_flexform.display_mode.21">Artikel: Liste</label>
 			<label index="tt_content.pi1_flexform.display_mode.22">Kategorien: Auswahl</label>
+			<label index="tt_content.pi1_flexform.display_mode.23">DAM: Liste</label>
+			<label index="tt_content.pi1_flexform.display_mode.24">DAM Kategorien: Liste</label>
 			<label index="tt_content.pi1_flexform.display_mode.25">Adressen: Auswahl</label>
 			<label index="tt_content.pi1_flexform.template_suffix">Template Suffix</label>
 		</languageKey>
@@ -883,7 +942,7 @@
 			<label index="tt_products.highlight" type="integer">157133979</label>
 			<label index="tt_products.directcost" type="integer">151602474</label>
 			<label index="tt_products.color" type="integer">251294659</label>
-			<label index="tt_products.size" type="integer">60928027</label>
+			<label index="tt_products.size" type="integer">72713898</label>
 			<label index="tt_products.description" type="integer">71151333</label>
 			<label index="tt_products.gradings" type="integer">207533014</label>
 			<label index="tt_products.additional" type="integer">76748518</label>
@@ -973,6 +1032,29 @@
 			<label index="fe_users.tt_products_vat" type="integer">21195238</label>
 			<label index="tt_content.pi1_flexform.display_mode.22" type="integer">59165406</label>
 			<label index="tt_content.pi1_flexform.display_mode.25" type="integer">10397551</label>
+			<label index="tt_products.color2" type="integer">185851410</label>
+			<label index="tt_products.color3" type="integer">68957289</label>
+			<label index="tt_products.size2" type="integer">222057140</label>
+			<label index="tt_products.size3" type="integer">128215817</label>
+			<label index="tt_products.material" type="integer">149516526</label>
+			<label index="tt_products.quality" type="integer">99296277</label>
+			<label index="tt_products.additional.noMinPrice" type="integer">171321550</label>
+			<label index="tt_products.delivery" type="integer">195349539</label>
+			<label index="tt_products.delivery.availableImmediate" type="integer">147102867</label>
+			<label index="tt_products.delivery.availableShort" type="integer">15822043</label>
+			<label index="tt_products.delivery.availableDemand" type="integer">89193598</label>
+			<label index="sys_products_cards.owner_name" type="integer">95429635</label>
+			<label index="sys_products_cards.cc_number_1" type="integer">262382996</label>
+			<label index="sys_products_cards.cc_number_2" type="integer">161255906</label>
+			<label index="sys_products_cards.cc_number_3" type="integer">201050313</label>
+			<label index="sys_products_cards.cc_number_4" type="integer">124510173</label>
+			<label index="sys_products_cards.cvv2" type="integer">20448983</label>
+			<label index="sys_products_cards.endtime_mm" type="integer">18410583</label>
+			<label index="sys_products_cards.endtime_yy" type="integer">21121156</label>
+			<label index="sys_products_accounts" type="integer">32330835</label>
+			<label index="sys_products_accounts.owner_name" type="integer">95429635</label>
+			<label index="sys_products_accounts.ac_number" type="integer">163063708</label>
+			<label index="sys_products_accounts.bic" type="integer">231328459</label>
 		</languageKey>
 		<languageKey index="dk" type="array">
 			<label index="tt_content.tt_products_code" type="integer">211868589</label>
@@ -1592,7 +1674,7 @@
 			<label index="tt_products.highlight">Highlight:</label>
 			<label index="tt_products.directcost">Direct Cost:</label>
 			<label index="tt_products.color">Color (Variant 1):</label>
-			<label index="tt_products.size">Size (Variant 2):</label>
+			<label index="tt_products.size">Size Length (Variant 2):</label>
 			<label index="tt_products.description">Description (Variant 3):</label>
 			<label index="tt_products.gradings">Gradings (Variant 4):</label>
 			<label index="tt_products.additional">Additional (Variant 5):</label>
@@ -1678,6 +1760,29 @@
 			<label index="tt_content.pi1_flexform.display_mode.22">Categories: select</label>
 			<label index="tt_content.pi1_flexform.template_suffix">Template suffix</label>
 			<label index="tt_content.pi1_flexform.display_mode.25">Addresses: select</label>
+			<label index="tt_products.color2">2nd Color (Variant 6):</label>
+			<label index="tt_products.color3">3rd Color (Variant 7):</label>
+			<label index="tt_products.size2">2nd Size Width (Variant 8):</label>
+			<label index="tt_products.size3">3rd Size Height (Variant 9):</label>
+			<label index="tt_products.material">Material (Variant 10):</label>
+			<label index="tt_products.quality">Quality (Variant 11):</label>
+			<label index="tt_products.additional.noMinPrice">no minimum price:</label>
+			<label index="tt_products.delivery">delivery:</label>
+			<label index="tt_products.delivery.availableImmediate">immediate delivery</label>
+			<label index="tt_products.delivery.availableShort">soon available</label>
+			<label index="tt_products.delivery.availableDemand">only on demand</label>
+			<label index="sys_products_cards.owner_name">owner name</label>
+			<label index="sys_products_cards.cc_number_1">number part 1</label>
+			<label index="sys_products_cards.cc_number_2">number part 2</label>
+			<label index="sys_products_cards.cc_number_3">number part 3</label>
+			<label index="sys_products_cards.cc_number_4">number part 4</label>
+			<label index="sys_products_cards.cvv2">Card Security Code</label>
+			<label index="sys_products_cards.endtime_mm">Card endtime: month</label>
+			<label index="sys_products_cards.endtime_yy">Card endtime: year</label>
+			<label index="sys_products_accounts">Bank accounts for orders</label>
+			<label index="sys_products_accounts.owner_name">owner name</label>
+			<label index="sys_products_accounts.ac_number">account number</label>
+			<label index="sys_products_accounts.bic">bank identifier code</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="tt_products">Products</label>

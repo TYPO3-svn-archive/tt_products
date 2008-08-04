@@ -36,7 +36,7 @@ If the basket is empty this subpart is displayed
 <br>
 <h1>Shop System f&uuml;r TYPO3</h1>
 <p> Willkommen bei der Verwendung des tt_products Shop Systems f&uuml;r TYPO3. Bevor Sie damit starten, sollten Sie das Tutorial
-auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop System</a> durchgearbeitet haben. Es gibt dort auch ein Forum, um Fragen zu stellen.
+auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop System</a> oder als Anfänger auch das Buch "<a href="https://www.opensourcepress.de/index.php?26&amp;backPID=15&amp;tt_products=153">Der TYPO3-Webshop</a>" durchgearbeitet haben. Es gibt dort auch ein Forum, um Fragen zu stellen.
 </p>
 <br>
 <h1>bananaGUARD Shop-Template</h1>
@@ -53,7 +53,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 			[ ###BROWSE_LINKS### ]
 			<!-- ###LINK_BROWSE### end-->
 		</td>
-		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n?hste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 	</tr>
 	<tr>
 		<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
@@ -81,12 +81,13 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
           <td height="150" bgcolor="###GC1###" valign="bottom" align="center">
             <!--###LINK_ITEM###-->
             ###GW1B###<b><h2 id="###PRODUCT_TITLE_ID###">###PRODUCT_TITLE###</h2></b>###GW1E###
+	   ###GW2B###<b><h3>###PRODUCT_ITEMNUMBER###</h3></b>###GW2E###
             <!--###LINK_ITEM###-->
             <br>
             ###PRODUCT_IMAGE1### <br>
 		  <!-- ###display_variant2### -->
-		  ###GW2B### Size: ###GW2E### <SELECT id="###PRODUCT_SIZE_ID###" style="font-size: 10px"
-		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+		  ###GW2B### Size: ###GW2E### <select id="###PRODUCT_SIZE_ID###" style="font-size: 10px"
+		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</select><br>
 		  <!-- ###display_variant2### -->
             <!-- ###display_variant5_isSingle### -->
             Einzelprodukt, das nur einmal gew&auml;hlt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
@@ -94,7 +95,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 	<nobr>###GW1B### Preis:###GW1E### <strong><p id="###PRICE_TAX_ID###">###PRICE_TAX### &euro;</p><BR>
             <!-- ###display_variant5_isNotSingle### -->
             ###PRODUCT_DELIVERY###
-            ###GW1B### St&uuml;ckzahl: ###GW1E### <INPUT size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+            ###GW1B### St&uuml;ckzahl: ###GW1E### <input size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
             <input type="image" name="addtomemo" src="###PATH_FE_REL###/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_UID###';" title="Add to memo">
             <!-- ###display_variant5_isNotSingle### --> <p> </td>
           ###ITEM_SINGLE_POST_HTML###
@@ -116,10 +117,10 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
 		<td></td>
 		<td></td>
-		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n?chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 	</tr>
 </table>
-###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Befllung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte ber den Link Kontakt/Bestellung per Email. Viel Spa� beim Einkaufen! ###GW1E###
+###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Bef&uuml;llung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte ber den Link Kontakt/Bestellung per Email. Viel Spa� beim Einkaufen! ###GW1E###
 
 <br>
 <table width="163">
@@ -149,7 +150,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 			[ ###BROWSE_LINKS### ]
 			<!-- ###LINK_BROWSE### end-->
 		</td>
-		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n?hste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 	</tr>
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
 		<!-- ###ITEM_CATEGORY### begin -->
@@ -190,12 +191,13 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
         </table>
 			</td></tr>
 		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_PRODUCT_AND_ITEMS### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
 	<tr>
 		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
 		<td></td>
 		<td></td>
-		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n?hste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 	</tr>
 </table>
 ###GW1B### Zusatztext ###GW1E###
@@ -241,7 +243,9 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		<td colspan=3 bgcolor="###GC1###"><!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--></td>
 	</tr>
 	<tr>
-		<td valign=top>###PRODUCT_IMAGE###</td>
+		<td valign=top><!-- ###PRODUCT_HAS_IMAGE1### begin -->
+		Bild 1 zum Produkt: <br />
+		<!-- ###PRODUCT_HAS_IMAGE1### end -->###PRODUCT_IMAGE###</td>
 		<td></td>
 		<td valign=top>
 			###GW1B###
@@ -253,17 +257,16 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 				Ident-Nr. ###PRODUCT_UID###
 			###GW1E###	<br>
 			<!-- ###display_variant2### -->
-		    ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
-		    name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+		    ###GW2B### Size: ###GW2E### <select style="font-size: 10px"
+		    name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</select><br>
 		    <!-- ###display_variant2### -->
 			<nobr>###GW2B### Preis:###GW2E### ###GW1B###<strong>###PRICE_TAX### &euro;###GW1E###<BR>
-				<nobr>###GW2B### Menge: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">  
+
+				<nobr>###GW2B### Menge: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">  
 				<input type="Submit" name="order" value="in den Warenkorb" onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 				</nobr>
 				<br>
-		<!-- ###PRODUCT_HAS_IMAGE1### begin -->
-		Es gibt ein Bild 1 zum Produkt
-		<!-- ###PRODUCT_HAS_IMAGE1### end -->
+
                 <a href="mailto:###SHOPADMIN_EMAIL###?subject=Frage zum Artikel: ###PRODUCT_TITLE###&body=Ich habe folgenden Artikel gesehen: ###PRODUCT_TITLE### %0AMeine Fragen: "><B>Fragen zum Artikel</B></a>  <br>
                 ###PRODUCT_RELATED_UID###
 		</td>
@@ -338,14 +341,14 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
             <br>
             ###PRODUCT_IMAGE1### <br>
 		  <!-- ###display_variant2### -->
-		  ###GW2B### Size: ###GW2E### <SELECT style="font-size: 10px"
-		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
+		  ###GW2B### Size: ###GW2E### <select style="font-size: 10px"
+		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</select><br>
 		  <!-- ###display_variant2### -->
             <!-- ###display_variant5_isSingle### -->
-            Einzelprodukt, das nur einmal gew?lt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
+            Einzelprodukt, das nur einmal gew&auml;hlt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
             <!-- ###display_variant5_isSingle### -->
             <!-- ###display_variant5_isNotSingle### -->
-            ###GW1B### St&uuml;ckzahl: ###GW1E### <INPUT size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+            ###GW1B### St&uuml;ckzahl: ###GW1E### <input size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
             <input type="image" name="addtomemo" src="###PATH_FE_REL###/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_ID###';" title="Add to memo">
             <!-- ###display_variant5_isNotSingle### --> <p> </td>
           ###ITEM_SINGLE_POST_HTML###
@@ -357,7 +360,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
             <td colspan="3" align="CENTER">
             <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"></td>
           </tr>
-          
+
         </table>
 			</form>
 			</td></tr>
@@ -370,7 +373,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n?hste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 	</tr>
 </table>
-###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Befllung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte ber den Link Kontakt/Bestellung per Email. Viel Spa&szlig; beim Einkaufen! ###GW1E###
+###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Bef&uuml;llung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte &uuml;ber den Link Kontakt/Bestellung per Email. Viel Spa&szlig; beim Einkaufen! ###GW1E###
 
 <br>
 <table width="163">
@@ -416,15 +419,15 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
                                         <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--><BR>###GW2B######PRODUCT_SUBTITLE######GW2E###<BR>
                                         ###PRODUCT_NOTE###<BR>
                                         <!-- ###display_variant2### -->
-                                        <SELECT name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT>
+                                        <select name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</select>
                                         <!-- ###display_variant2### -->
                                         <!-- ###display_variant1### -->
-                                        <SELECT name="###FIELD_COLOR_NAME###" rows="1">###PRODUCT_COLOR###</SELECT>
+                                        <select name="###FIELD_COLOR_NAME###" rows="1">###PRODUCT_COLOR###</select>
                                         <!-- ###display_variant1### -->
                                 </TD>
                                 <TD style="border-top: 1px dotted #3F4F73;">
                                         ###GW1B###<strong>###PRICE_TAX### &euro;###GW1E###<BR>
-                                        ###GW2B### Anzahl: ###GW2E###<BR><INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+                                        ###GW2B### Anzahl: ###GW2E###<BR><input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
                                 </TD>
                                 <TD style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="order" src="typo3/ext/tt_products/res/icons/fe/minibasket1.gif" value="in den Warenkorb" onClick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></TD>
 				<TD style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="remove" src="typo3/ext/tt_products/res/icons/fe/delmemo.png" value="von der Merkliste streichen" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[delmemo]=###PRODUCT_ID###';"></TD>
@@ -485,7 +488,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 Subpart for the search-form
 -->
 <form method="post" action="###FORM_URL###">
-<INPUT size="30" maxlength="100" type="text" name="sword" value="###SWORD###">
+<input size="30" maxlength="100" type="text" name="sword" value="###SWORD###">
 <input type="Submit" name="order" value="Suchen">
 </form>
 <!-- ###ITEM_SEARCH### end -->
@@ -565,7 +568,7 @@ In addition there's a number of fields used for delivery and payment information
 		  <!-- ###display_variant2### --></td>
 <td></td>
 <td valign=top>###GW1B### ###PRICE_TAX### (Steuer: ###PRICE_ONLY_TAX###) EUR ###GW1E###</td>
-<td valign=top> <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </td>
+<td valign=top> <input size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </td>
 <td valign=top align=right>###GW1B### <b>###TAX_INCL_EXCL### ###PRICE_TOTAL_TAX###</b> <br>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)###GW1E###</td>
 </tr>
 <!-- ###ITEM_SINGLE### end -->
@@ -648,7 +651,7 @@ Ihre g&uuml;ltige VAT Reg. No. Hier eingeben: <input type="text" name="recs[pers
 This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
 -->
 <!-- ###MESSAGE_PAYMENT_10### -->
-<br><B>Sie haben die erste Bezahlmethode ausgew&auml;hlt.</b><br>
+<br><B>Sie haben die erste Bezahlmethode ausgew�hlt.</b><br>
 <!-- ###MESSAGE_PAYMENT_10### -->
 <!-- ###MESSAGE_PAYMENT_30### -->
 <br><B>Nachnahme EU-Land.</b><br>
@@ -658,7 +661,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 <!-- ###MESSAGE_PAYMENT_40### -->
 <!-- ###MESSAGE_PAYMENT_50### -->
 <br>
-<B>Bezahlung bei Abholung im Gesch&auml;ft.</b><br>
+<B>Bezahlung bei Abholung im Gesch�ft.</b><br>
 <!-- ###MESSAGE_PAYMENT_50### -->
 <!-- ###MESSAGE_PAYMENT### -->
 
@@ -686,7 +689,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 <table width="100%"><tr>
 <td>
 <!-- ###MESSAGE_MINPRICE_ERROR### -->
-Es mssen Produkte im Gesamtwert von mindestens 250 Euro eingekauft werden.
+Es m&uuml;ssen Produkte im Gesamtwert von mindestens 250 Euro eingekauft werden.
 ###PRICE_GOODSTOTAL_TAX### sind zu wenig.
 <!-- ###MESSAGE_MINPRICE_ERROR### -->
 <!-- ###MESSAGE_MINPRICE### -->
@@ -732,7 +735,7 @@ Exact same features as BASKET_TEMPLATE
         <!-- ###BILLING_ADDRESS### start -->
         ###GW1B### Geben Sie Ihre Postanschrift in diesem Formular an. Der angegebene
         Name und die Adresse werde auf der Rechnung der Bestellung erscheinen.
-        Sie k�nnen auch alternativ eine abweichende Lieferadresse in den unteren
+        Sie k&ouml;nnen auch alternativ eine abweichende Lieferadresse in den unteren
         Feldern angeben. ###GW1E### <br>
 <br>
 <table>
@@ -813,10 +816,28 @@ If this part is not empty then this will be used instead of BILLING_ADDRESS if t
 </td>
 </tr>
 <tr>
-<td>###GW1B###<strong>Kreditkarte:</strong>###GW1E###</td>
-<td>###PERSON_CARDS_CC_TYPE###</td>
-<td><input name="recs[creditcard][cc_number]" value="###PERSON_CARDS_CC_NUMBER###" />
+<td>###GW1B###<strong>Kontonummer:</strong>###GW1E###</td>
+<td><input name="recs[account][ac_number]" value="###PERSON_ACCOUNTS_AC_NUMBER###" size="12" maxlength="12"/>
+<td>###GW1B###<strong>Bankleitzahl:</strong>###GW1E###</td>
+<td><input name="recs[account][bic]" value="###PERSON_ACCOUNTS_BIC###" size="11" maxlength="11"/>
 </td>
+</tr>
+<tr>
+  <td >###GW1B###<strong>Konto Inhaber</strong>###GW1E###</td>
+  <td colspan="3"><input name="recs[account][owner_name]" value="###PERSON_ACCOUNTS_OWNER_NAME###" size="20"/>
+  </td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Kreditkarte:</strong>###GW1E###</td>
+<td>###PERSON_CARDS_CC_TYPE###   zuletzt: ###PERSON_CARDS_CC_TYPE_SELECTED###</td>
+<td><input name="recs[creditcard][cc_number_1]" value="###PERSON_CARDS_CC_NUMBER_1###" size="4" maxlength="4"/>-<input name="recs[creditcard][cc_number_2]" value="###PERSON_CARDS_CC_NUMBER_2###" size="4" maxlength="4" />-<input name="recs[creditcard][cc_number_3]" value="###PERSON_CARDS_CC_NUMBER_3###" size="4" maxlength="4" />-<input name="recs[creditcard][cc_number_4]" value="###PERSON_CARDS_CC_NUMBER_4###" size="4" maxlength="4" /> Sicherheitszahl <input name="recs[creditcard][cvv2]" value="###PERSON_CARDS_CVV2###" size="4" maxlength="4" />
+</td>
+<td>Gltigkeit bis: <input name="recs[creditcard][endtime_mm]" value="###PERSON_CARDS_ENDTIME_MM###" size="2" maxlength="2"/> / <input name="recs[creditcard][endtime_yy]" value="###PERSON_CARDS_ENDTIME_YY###" size="2" maxlength="2"/></td>
+</tr>
+<tr>
+  <td >###GW1B###<strong>Inhaber</strong>###GW1E###</td>
+  <td colspan="3"><input name="recs[creditcard][owner_name]" value="###PERSON_CARDS_OWNER_NAME###" size="20"/>
+  </td>
 </tr>
 <tr>
 <td colspan=6><img src="clear.gif" width="1" height="10"></td>
@@ -832,6 +853,7 @@ Wenn Ihre Bestellung zu einer anderen Anschrift geliefert werden soll, so geben 
 ###GW1E###
 <br>
 <br>
+
 <table>
 <tr>
 <td>###GW1B###<strong>Anrede:</strong>###GW1E###</td>
@@ -905,7 +927,7 @@ Hier k&ouml;nnen Sie Ihrer Bestellung einen Kommentar hinzufgen:
 
 </td>
 
-      <td colspan=3 valign="BOTTOM">###GW1B### Sie best�tigen hiermit, dass Sie
+      <td colspan=3 valign="BOTTOM">###GW1B### Sie best&auml;tigen hiermit, dass Sie
         die AGBs des Testshop - Online Vertrieb gelesen haben und diese akzeptieren.
         ###GW1E### </td>
 </tr>
@@ -1179,7 +1201,7 @@ Exact same features as BASKET_TEMPLATE
 <BR><BR><BR><BR><HR><BR><BR><BR>
 <h3>BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE</h3>
 <em>
-Wie BASKET_ORDERCONFIRMATION_TEMPLATE, aber wird nicht in der Datenbank gespeichert. Hier kann Code fr externe Systeme eingefgt werden, der nicht mit angezeigt werden darf, wenn die Seite im Trackingmodus nochmal dargestellt wird.
+Wie BASKET_ORDERCONFIRMATION_TEMPLATE, aber wird nicht in der Datenbank gespeichert. Hier kann Code f&uuml;r externe Systeme eingef&uuml;gt werden, der nicht mit angezeigt werden darf, wenn die Seite im Trackingmodus nochmal dargestellt wird.
 </em><br>
 <br>
 <br>
@@ -1469,7 +1491,7 @@ Message for payment method 10, Paypal
     <td colspan=6> <p>###GW1B### <br>
     <font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
         <br>
-        Mit freundlichen Grssen: <br>
+        Mit freundlichen Gr�ssen: <br>
         <br>
         <strong>ttproducts.de</strong><br>
         Testshop<br>
@@ -1517,7 +1539,7 @@ If the minimum price in basket has not been reached this subpart is displayed on
 If the basket is empty this subpart is displayed
 -->
 <br>
-###GW1B###<B>Es mssen mindestens Waren fr 250 Euro gekauft werden.</B>###GW1E###
+###GW1B###<B>Es m&uuml;ssen mindestens Waren f&uuml;r 250 Euro gekauft werden.</B>###GW1E###
 <!-- ###BASKET_TEMPLATE_MINPRICE_ERROR### end -->
 
 
@@ -1534,7 +1556,7 @@ If payment is initiated but the required information fields are not filled in co
 If payment is initiated but the required information fields are not filled in correctly, this happens
 -->
 ###GW1B###Fehler bei der Eingabe###GW1E###<br>
-###GW1B###<B>Sie haben nicht alle erforderlichen Felder mit Ihren Adressinformationen ausgefllt. ###ERROR_DETAILS### Bitte gehen Sie zur&uuml;ck zum Aktualisieren!</B>###GW1E###
+###GW1B###<B>Sie haben nicht alle erforderlichen Felder mit Ihren Adressinformationen ausgef&uuml;llt. ###ERROR_DETAILS### Bitte gehen Sie zur&uuml;ck zum Aktualisieren!</B>###GW1E###
 <form method="post" action="###FORM_URL###">
 <input type="Submit" name="products_info" value="Adressdaten eingeben" onclick="document.forms[0].action='###FORM_URL_INFO###';">
 </form>
@@ -1764,7 +1786,7 @@ bananaGUARD.de Bestellstatus (####ORDER_UID###)
 ###PERSON_SALUTATION###
 
 BESTELLINFORMATION (####ORDER_UID###):
-Der Status Ihrer Bestellung wurde ge?dert:
+Der Status Ihrer Bestellung wurde ge&auml;ndert:
 
 Zeit: ###ORDER_STATUS_TIME###
 Status: ###ORDER_STATUS_INFO###
@@ -1782,7 +1804,7 @@ http://###DOMAIN###/index.php?id=###PID_TRACKING###&tracking=###ORDER_TRACKING_N
 
 <font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
 
-Mit freundlichen Grssen,
+Mit freundlichen Gr�ssen,
 ttproducts.de
 Testshop - Online Vertrieb
 Testshopstr. 4
@@ -1850,7 +1872,7 @@ VAT-Id: ###PERSON_TT_PRODUCTS_VAT###
 att. ###DELIVERY_NAME###
 Telefon: ###DELIVERY_TELEPHONE###
 Email: ###DELIVERY_EMAIL###
-4) GEW&UUML;SCHTER LIEFERTERMIN:
+4) GEW&Uuml;NSCHTER LIEFERTERMIN:
 ###DELIVERY_DESIRED_DATE###
 5) BEMERKUNG:
 ###DELIVERY_NOTE###
@@ -1887,12 +1909,12 @@ Email: info@ttproducts.de
 
 Ihre Zugangsdaten bei meintypo3shop.com
 
-Wir freuen uns, Sie bei uns als neuen DEMO-Kunden begr&uuml;&szlig;n zu drfen.
+Wir freuen uns, Sie bei uns als neuen DEMO-Kunden begr&uuml;&szlig;n zu d&uuml;rfen.
 
 Ihr Benutzername lautet: ###USERNAME###
 Ihr Passwort lautet: ###PASSWORD###
 
-In zuknftigen Bestellungen k&ouml;nnen Sie sich mit Ihrem Benutzernamen und
+In zuk&uuml;nftigen Bestellungen k&ouml;nnen Sie sich mit Ihrem Benutzernamen und
 Ihrem Passwort anmelden, und auf Rechnung bestellen.
 Bitte bewahren Sie diese E-Mail gut auf.
 
@@ -2160,9 +2182,9 @@ Mein Typo3 Shop
     <td colspan=2>&nbsp;</td>
 </tr>
 <tr>
-    <td valign="TOP">###GW1B### Wir wnschen viel Spa&szlig; mit dem bananaGUARD. <br>
+    <td valign="TOP">###GW1B### Wir w&uuml;nschen viel Spa&szlig; mit dem bananaGUARD. <br>
       NICHT VERGESSEN: WEITERSAGEN. <br>
-      Mit freundlichen Grssen: <br> <br> <strong>bananaGUARD.de<br>
+      Mit freundlichen Gr&uuml;ssen: <br> <br> <strong>bananaGUARD.de<br>
       </strong>Testshop - Online Vertrieb<br>
       Testshopstr. 4<br>
       71364 Teststadt<br>
@@ -2187,7 +2209,7 @@ Mein Typo3 Shop
 <!-- ###DELIVERY_TEMPLATE### end -->
 
 
-<!-- ###ITEM_CATEGORY_SELECT_TEMPLATE### begin
+<!-- ###ITEM_CATEGORY_select_TEMPLATE### begin
 	This subpart is used to display the regular list of categories.
 -->
 	<!-- ###CATEGORY_SINGLE### begin-->
@@ -2209,7 +2231,7 @@ Mein Typo3 Shop
 
 	<div id="ArticleId">Das ersetzen</div>
 
-<!-- ###ITEM_CATEGORY_SELECT_TEMPLATE### end -->
+<!-- ###ITEM_CATEGORY_select_TEMPLATE### end -->
 
 
 <!-- ###ITEM_CATLIST_TEMPLATE### begin
@@ -2226,7 +2248,7 @@ Mein Typo3 Shop
 <!-- ###ITEM_CATLIST_TEMPLATE### end -->
 
 
-<!-- ###ITEM_ADDRESS_SELECT_TEMPLATE### begin
+<!-- ###ITEM_ADDRESS_select_TEMPLATE### begin
 	This subpart is used to display the regular list of categories.
 -->
 	<form method="post" action="###FORM_URL###" name="ShopAddressSearchForm">
@@ -2239,5 +2261,5 @@ Mein Typo3 Shop
 	<!-- ###CATEGORY_SINGLE### end-->
 	</form>
 
-<!-- ###ITEM_ADDRESS_SELECT_TEMPLATE### end -->
+<!-- ###ITEM_ADDRESS_select_TEMPLATE### end -->
 

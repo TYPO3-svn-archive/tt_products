@@ -35,25 +35,26 @@
  * @package TYPO3
  * @subpackage tt_products
  *
- *  
  */
+
 
 global $TYPO3_CONF_VARS;
 
 
 class tx_ttproducts_price {
 	var $pibase;
-	var $conf;					// original configuration
-	var $config;				// modified configuration
-	var $cnf; 					// configuration object
+	var $conf;			// original configuration
+	var $config;			// modified configuration
+	var $cnf; 			// configuration object
 	var $basket;
 	var $paymentshipping;		// payment and shipping object to make the price dependant on it
-	var $taxIncluded;			// if tax is already included in the price
+	var $taxIncluded;		// if tax is already included in the price
+	var $discount; 			// discount percentage
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$conf, &$cnf, &$basket, &$paymentshipping)	{
+	function init(&$pibase, &$conf, &$cnf, &$basket, &$paymentshipping, $discount)	{
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$conf;
@@ -64,6 +65,7 @@ class tx_ttproducts_price {
 		$this->config = &$this->cnf->config;
  		$this->basket = &$basket;
  		$this->paymentshipping = &$paymentshipping;
+		$this->discount = $discount;
 	} // init
 
 
@@ -87,9 +89,11 @@ class tx_ttproducts_price {
 		return $rc;
 	}
 
+
 	function getTaxIncluded ()	{
 		return $this->taxIncluded; 
 	}
+
 
 	function getPriceTax($price, $bTax, $taxIncluded, $taxFactor)	{
 		if ($bTax)	{
@@ -108,16 +112,23 @@ class tx_ttproducts_price {
 		return $rc;
 	}
 
-
 	/**
 	 * return the price with tax mode considered
 	 */
-	function getModePrice($taxMode,$price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
+	function getModePrice($taxMode, $price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
 		$rc = $this->getPrice($price,$tax,$taxpercentage,$taxIncluded,$bEnableTaxZero);
 		if ($taxMode == '2')	{
 			$rc = round ($rc, 2);
 		}
 		return $rc;
+	}
+
+	/** reduces price by discount for FE user **/
+	function getDiscountPrice($price, $discount)	{
+		if (floatval($discount) != 0)	{
+			$price = $price - ($price * ($discount / 100));
+		}
+		return $price;
 	}
 
 	/**
@@ -127,7 +138,7 @@ class tx_ttproducts_price {
 	 */
 	function getPrice($price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
 		global $TSFE;
-		
+
 		$rc = 0;
 		$bTax = ($tax==1);
 
@@ -135,17 +146,20 @@ class tx_ttproducts_price {
 //			$bTax = false;
 //		}
 		$price = $this->toNumber(true, $price);
-		if ($TSFE->fe_user->user['tt_products_discount'] != 0) {
-			$price = $price - ($price * ($TSFE->fe_user->user['tt_products_discount'] / 100));
-		}
 
 		if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
 			$taxpercentage = doubleval($this->conf['TAXpercentage']);
 		}
 
+//		Buch 'Der TYPO3 Webshop'
+// 		if (doubleval($taxpercentage) == -1)  {
+// 			$taxpercentage = 0;
+// 		}
+
 		$taxFactor = 1 + $taxpercentage / 100;
 		// $taxIncluded = ($taxIncluded ? $taxIncluded : $this->conf['TAXincluded']);
-		$taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage(); 		// if set then this has a tax which will override the tax of the products
+
+		$taxFromShipping = $this->paymentshipping->getReplaceTaxPercentage(); 		// if set then this has a tax which will override the tax of the products
 
 		if (isset($taxFromShipping) && is_double($taxFromShipping))	{
 //			$bUseTaxFromShopping = true;
@@ -162,7 +176,6 @@ class tx_ttproducts_price {
 		$rc = $this->getPriceTax($price, $bTax, $taxIncluded, $taxFactor);
 		return $rc;
 	} // getPrice
-
 
 
 	// function using getPrice and considering a reduced price for resellers
@@ -185,16 +198,12 @@ class tx_ttproducts_price {
 	/**
 	 * Generate a graphical price tag or print the price as text
 	 */
-	function printPrice($priceText,$taxInclExcl='')
-	{
+	function printPrice($priceText,$taxInclExcl='')	{
 		if (($this->conf['usePriceTag']) && (isset($this->conf['priceTagObj.'])))	{
 			$ptconf = $this->conf['priceTagObj.'];
 			$markContentArray = array();
 			$markContentArray['###PRICE###'] = $priceText;
-			// $taxInclExcl = ($tax ? 'tax_included' : 'tax_zero');
 			$markContentArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
-			
-			// $taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage(); 		// if set then this has a tax which will override the tax of the products
 			
 			$this->pibase->cObj->substituteMarkerInObject($ptconf, $markContentArray);
 			return $this->pibase->cObj->cObjGetSingle($this->conf['priceTagObj'], $ptconf);
@@ -212,7 +221,6 @@ class tx_ttproducts_price {
 		return number_format($double,intval($this->conf['priceDec']),$this->conf['priceDecPoint'],$this->conf['priceThousandPoint']);
 	} // priceFormat
 
-	
 }
 
 

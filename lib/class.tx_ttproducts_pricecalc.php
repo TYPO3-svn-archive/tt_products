@@ -40,6 +40,7 @@
 
 global $TYPO3_CONF_VARS;
 
+
 class tx_ttproducts_pricecalc {
 	var $pibase; // reference to object of pibase
 	var $basket;
@@ -50,14 +51,14 @@ class tx_ttproducts_pricecalc {
 	 *
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
 	 * @return	  void
- 	 */
+	 */
 
 	function init(&$pibase, &$basket, &$tt_products)	{
 		global $TSFE;
 
- 		$this->pibase = &$pibase;
- 		$this->basket = &$basket; 
- 		$this->tt_products = &$tt_products;
+		$this->pibase = &$pibase;
+		$this->basket = &$basket; 
+		$this->tt_products = &$tt_products;
 	}
 
 
@@ -106,37 +107,39 @@ class tx_ttproducts_pricecalc {
 			reset($conf['discountprice.']);
 
 			$type = '';
-			$field = '';
+			$field = 'price';
 			foreach ($conf['discountprice.'] as $k1=>$priceCalcTemp) {
-				foreach ($priceCalcTemp as $k2=>$v2) {
-					//=>	catch the values of discountprice	
-					if (!is_array($priceCalcTemp)) {
-						switch ($k2) {
-							case 'uid':
-								$uid = $v2;
-								break;
-							case 'type':
-								$type = $v2;
-								break;
-							case 'field':
-								$field = $v2;
-								break;
-							case 'additive':
-								$additive = $v2;
-								break;
-							case 'where':
-								// TODO: $where = $v2;
-								break;
+				if (is_array($priceCalcTemp)) {
+					foreach ($priceCalcTemp as $k2=>$v2) {
+						//=>	catch the values of discountprice	
+						if (!is_array($v2))	{
+							switch ($k2) {
+								case 'uid':
+									$uid = $v2;	
+									break;
+								case 'type':
+									$type = $v2;
+									break;
+								case 'field':
+									$field = $v2;
+									break;
+								case 'additive':
+									$additive = $v2;
+									break;
+								case 'where':
+									// TODO: $where = $v2;
+									break;
+							}
+							continue;
 						}
-						continue;
 					}
+					ksort($priceCalcTemp['prod.'], SORT_NUMERIC);
 				}
 
 				// array of all normal prices out of the discount price array
 				$dumCount = 0;
 				$pricefor1 = doubleval($priceCalcTemp['prod.']['1']);
 				$pricefor1Index = 100*$pricefor1;
-
 				// loop over all items in the basket indexed by a sorting text
 				foreach ($this->basket->itemArray as $sort=>$actItemArray) {
 					// $actItemArray = all items array
@@ -147,7 +150,7 @@ class tx_ttproducts_pricecalc {
 						// count all items which will apply to the discount price
 						$count2 = $actItem['count'];
 						//=> actItem uid = catched uid
-						if (($count2 > 0) && ($row['price'] == $pricefor1) && (!$uid || $row['uid'] == $uid)) {
+						if (($count2 > 0) && isset($row[$field]) && ($row[$field] == $pricefor1) && (!$uid || $row['uid'] == $uid)) {
 							$countedItems [$pricefor1Index][] = array ('sort' => $sort, 'uid' => $uid);
 							// amount of items
 							$dumCount += $count2;
@@ -165,7 +168,8 @@ class tx_ttproducts_pricecalc {
 								// store the discount price in all calculated items from before
 								foreach ($countedItems[$pricefor1Index] as $k4 => $v4) {
 									foreach ($this->basket->itemArray [$v4['sort']] as $k5=>$actItem) {
-										//=> discountprice always or if uid is set then only for items with the same price2 and uid
+
+										//=> discountprice always or if uid is set then only for items with the same price2 and uid 
 										if (!$uid || $uid == $actItem ['rec']['uid'] && $actItem['rec']['price2'] == $price2 )	{
 										 	$this->basket->itemArray [$v4['sort']][$k5] ['calcprice'] = $price2;
 										}
@@ -183,7 +187,6 @@ class tx_ttproducts_pricecalc {
 			}
 
 			if ($additive == 1) {
-
 				reset($conf['discountprice.']);
 
 				foreach ($conf['discountprice.'] as $k1=>$priceCalcTemp) {
@@ -191,22 +194,29 @@ class tx_ttproducts_pricecalc {
 						continue;
 					}
 					$pricefor1 = doubleval($priceCalcTemp['prod.']['1']);
-					if ($countedItems [100*$pricefor1] == NULL) {
+					$pricefor1Index = 100*$pricefor1;
+
+					if ($countedItems [$pricefor1Index] == NULL) {
 						continue;
 					}
 
 					krsort($priceCalcTemp['prod.']);
 					reset($priceCalcTemp['prod.']);
+
 					while (list ($k2, $price2) = each ($priceCalcTemp['prod.'])) {
 						if ($countTotal >= (float) $k2) { // search the price from the total count
 							if ((float) $k2 > 1) {
-								// store the discount price in all calculated items from before
-								foreach ($countedItems[$pricefor1Index] as $k3=>$v3) {
-									foreach ($this->basket->itemArray [$v3['sort']] as $k1=>$actItem) { 
-									 	$this->basket->itemArray [$v3['sort']][$k1] ['calcprice'] = $price2;
+
+								if (is_array($countedItems[$pricefor1Index]))	{
+									// store the discount price in all calculated items from before
+									foreach ($countedItems[$pricefor1Index] as $k3=>$v3) {
+										foreach ($this->basket->itemArray [$v3['sort']] as $k4=>$actItem) {
+											$this->basket->itemArray [$v3['sort']][$k4] ['calcprice'] = $price2;
+										}
 									}
+	
+									$priceReduction[$pricefor1Index] = 1; // remember the reduction in order not to calculate another price with $priceCalc later
 								}
-								$priceReduction[$pricefor1Index] = 1; // remember the reduction in order not to calculate another price with $priceCalc later
 							}
 							else  {	// $priceTotal [$k1] contains the product count
 								$priceReduction[$pricefor1Index] = 0;
@@ -247,7 +257,7 @@ class tx_ttproducts_pricecalc {
 					foreach ($actItemArray as $k2=>$actItem) {
 						// count all items which will apply to the discount price
 						$count2 = $actItem['count'];
-						if (((float) $count2 > 0) && ($actItem['rec']['price'] == $pricefor1)) {
+						if (((float) $count2 > 0) && ($actItem['rec'][$field] == $pricefor1)) {
 							$countedItems [$pricefor1Index][] = array ('sort' => $sort);
 							$dumCount += $count2;
 						}
@@ -282,7 +292,6 @@ class tx_ttproducts_pricecalc {
 				}
 			}
 		}
-
 	} // GetCalculatedData
 }
 

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -39,7 +39,6 @@
  */
 
 global $TYPO3_CONF_VARS;
-
 
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
 require_once(t3lib_extMgm::extPath('paymentlib').'lib/class.tx_paymentlib_providerfactory.php');
@@ -84,7 +83,7 @@ class tx_ttproducts_paymentlib {
 	 */
 	function getGatewayMode (&$confScript) 	{
 		$gatewayModeArray = array('form' => TX_PAYMENTLIB_GATEWAYMODE_FORM, 'webservice' => TX_PAYMENTLIB_GATEWAYMODE_WEBSERVICE);
-		
+
 		$gatewayMode = $gatewayModeArray[$confScript['gatewaymode']];
 		if (!$gatewayMode)	{
 			$gatewayMode = TX_PAYMENTLIB_GATEWAYMODE_FORM;
@@ -94,7 +93,6 @@ class tx_ttproducts_paymentlib {
 
 
 	function getTransactionId ($providerObject)	{
-
 		$orderUid = $this->order->getBlankUid();
 		$libObj = $providerObject->getLibObj();
 		if (is_object($libObj))	{
@@ -115,6 +113,7 @@ class tx_ttproducts_paymentlib {
 
 		if ($handleLib == 'paymentlib')	{
 			$providerFactoryObj = &tx_paymentlib_providerfactory::getInstance();
+
 			$paymentMethod = $confScript['paymentMethod'];
 			$providerProxyObject = $providerFactoryObj->getProviderObjectByPaymentMethod($paymentMethod);
 			if (is_object($providerProxyObject))	{
@@ -154,7 +153,8 @@ class tx_ttproducts_paymentlib {
 					$content = '<span style="color:red;">'.htmlspecialchars($providerObject->transaction_message($transactionResultsArr)).'</span><br />';
 					$content .= '<br />';
 				} else {
-					$transactionDetailsArr = &$this->getTransactionDetails($transactionId, $confScript, $totalArr, $addrArr, $paymentBasketArray);
+					$transactionDetailsArr = &$this->getTransactionDetails($confScript, $totalArr, $addrArr, $paymentBasketArray);
+
 						// Set payment details and get the form data:
 					$ok = $providerObject->transaction_setDetails ($transactionDetailsArr);
 					if (!$ok) {
@@ -186,12 +186,10 @@ class tx_ttproducts_paymentlib {
 							$markerArray['###PAYMENTLIB_INFO###'] = $lConf['extInfo'];
 							$markerArray['###PAYMENTLIB_IMAGE###'] = $lConf['extImage'];
 
-							if (version_compare($this->pibase->version, '2.5.2', '>=') &&
-							version_compare($this->pibase->version, '2.6.0', '<'))	{
+							if (version_compare($this->pibase->version, '2.5.2', '=='))	{
 								$content=$this->basketView->getView($localTemplateCode,'PAYMENT', $this->info, false, false, '###PAYMENTLIB_FORM_TEMPLATE###',$markerArray);
 							} else if (version_compare($this->pibase->version, '2.6.0', '==')) {
 								$content=$this->basketView->getView($localTemplateCode,'PAYMENT', $this->info, false, false, true, '###PAYMENTLIB_FORM_TEMPLATE###',$markerArray);
-
 							} else {
 								$tmp = t3lib_div::debug_trail();
 								t3lib_div::debug($tmp);
@@ -233,7 +231,7 @@ class tx_ttproducts_paymentlib {
 	/**
 	 * Checks if required fields for credit cards and bank accounts are filled in correctly
 	 */
-	function checkRequired($transactionId, &$confScript)	{
+	function checkRequired(&$confScript)	{
 		$rc = '';
 
 		$providerFactoryObj = tx_paymentlib_providerfactory::getInstance();
@@ -241,7 +239,7 @@ class tx_ttproducts_paymentlib {
 		$providerObject = $providerFactoryObj->getProviderObjectByPaymentMethod($paymentMethod);
 		if (is_object($providerObject))	{
 			$providerKey = $providerObject->getProviderKey();
-			$transactionDetailsArr = &$this->GetTransactionDetails($transactionId, $confScript);
+			$transactionDetailsArr = &$this->GetTransactionDetails($confScript);
 			echo "<br><br>ausgabe details: ";
 			print_r ($transactionDetailsArr);
 			echo "<br><br>";
@@ -277,13 +275,13 @@ class tx_ttproducts_paymentlib {
 	 * Gets all the data needed for the transaction or the verification check
 	 */
 
-	function &getTransactionDetails($transactionId, &$confScript, &$totalArr, &$addrArr, &$paymentBasketArray)	{
+	function &getTransactionDetails(&$confScript, &$totalArr, &$addrArr, &$paymentBasketArray)	{
 		global $TSFE;
 
 		$param = '&FE_SESSION_KEY='.rawurlencode(
 			$TSFE->fe_user->id.'-'.
 				md5(
-				$TSFE->fe_user->id.'/'.
+				$TSFE->fe_user->idcheckRequired.'/'.
 				$GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
 				)
 			);
@@ -297,6 +295,15 @@ class tx_ttproducts_paymentlib {
 		$totalPrice = $this->basket->calculatedArray['priceTax']['total'];
 		$totalPriceFormatted = $this->price->priceFormat($totalPrice);
 		$orderUid = $this->order->getBlankUid();	// Gets an order number, creates a new order if no order is associated with the current session
+		
+// 		$transactionDetailsArr = array (
+// 			'transaction' => array (
+// 				'amount' => $totalPrice,
+// 				'currency' => $confScript['Currency'],
+// 				'orderuid' => $orderUid,
+// 				'returi' => t3lib_div::getIndpEnv ('TYPO3_REQUEST_URL').$param
+// 			),
+// 		);
 
 		$successPid = ($this->conf['paymentActivity'] == 'payment' ? ($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDfinalize']) : $TSFE->id);
 		$conf = array('returnLast' => 'url');
@@ -315,10 +322,7 @@ class tx_ttproducts_paymentlib {
 			),
 			'total' => $totalArr,
 			'address' => $addrArr,
-			'basket' => $paymentBasketArray,
-			'options' => array (
-				'reference' => $transactionId,
-			)
+			'basket' => $paymentBasketArray
 		);
 
 		$gatewayMode = $this->getGatewayMode ($confScript);
@@ -421,13 +425,6 @@ class tx_ttproducts_paymentlib {
 
 			if (count($countryRow))	{
 				$addrArr[$key]['country'] = $countryRow['cn_iso_2'];
-
-				$table = 'static_languages';
-				$langres = $TYPO3_DB->exec_SELECTquery('*', $table, 'lg_iso_2='. $TYPO3_DB->fullQuoteStr(trim($countryRow['cn_iso_2']),$table));
-				if ($langres)	{
-					$staticLang = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($langres);
-					$addrArr[$key]['lc'] = $staticLang['lg_iso_2'];
-				}
 			}
 		}
 
@@ -453,8 +450,8 @@ class tx_ttproducts_paymentlib {
 					'on1' => $row['www'],
 					'os2' => $row['note2'],
 					'quantity' => $count,
-/*					'singlepricenotax' => $this->fFloat($actItem['priceNoTax']),
-					'singleprice' =>  $this->fFloat($actItem['priceTax']),*/
+// 					'singlepricenotax' => $this->fFloat($actItem['priceNoTax']),
+// 					'singleprice' =>  $this->fFloat($actItem['priceTax']),
 					'amount' => $this->fFloat($actItem['priceNoTax']),
 					'shipping' => $this->fFloat($count * $totalArr['shippingtax'] / $totalCount),
 					'handling' => $this->fFloat($this->price->getPrice($row['handling'],0,$tax)),

@@ -44,6 +44,7 @@ global $TYPO3_CONF_VARS;
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_feuser.php');
 
 
+
 class tx_ttproducts_email_div {
 
 	/**
@@ -62,7 +63,7 @@ class tx_ttproducts_email_div {
 
 			$Typo3_htmlmail->subject = $subject;
 			$Typo3_htmlmail->from_email = $fromEMail;
-			$Typo3_htmlmail->from_name = str_replace(',' , ' ', $fromName);
+			$Typo3_htmlmail->from_name = str_replace (',' , ' ', $fromName);
 			$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
 			$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
 			$Typo3_htmlmail->organisation = '';
@@ -73,12 +74,12 @@ class tx_ttproducts_email_div {
 			if ($html)  {
 				$Typo3_htmlmail->theParts['html']['content'] = $html; // Fetches the content of the page
 				$Typo3_htmlmail->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
-				
+
 				$Typo3_htmlmail->extractMediaLinks();
 				$Typo3_htmlmail->extractHyperLinks();
 				$Typo3_htmlmail->fetchHTMLMedia();
 				$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
-				$Typo3_htmlmail->substHREFsInHTML();
+				$Typo3_htmlmail->substHREFsInHTML();  
 				$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
 				if ($message)	{
 					$Typo3_htmlmail->addPlain($message);
@@ -122,7 +123,7 @@ class tx_ttproducts_email_div {
 				$markerArray['###DELIVERY_NAME###'] = $orderData['delivery']['name'];
 				tx_ttproducts_feuser::getItemMarkerArray ($orderData['billing'], $markerArray, false, 'person');
 				tx_ttproducts_feuser::getItemMarkerArray ($orderData['delivery'], $markerArray, false, 'delivery');
-
+				
 				$markerArray['###ORDER_TRACKING_NO###']=$tracking;
 				$orderNumber = $order->getNumber($orderRow['uid']);
 				$markerArray['###ORDER_UID###'] = $orderNumber;
@@ -134,13 +135,12 @@ class tx_ttproducts_email_div {
 			}
 		}
 	}
-	
-		
+
 
 	/**
 	 * Send notification email for gift certificates
 	 */
-	function sendGiftEmail(&$pibase,&$conf,&$address, $recipient, $comment, $giftRow, $templateCode, $templateMarker)	{
+	function sendGiftEmail(&$pibase,&$conf,&$address, $recipient, $comment, $giftRow, $templateCode, $templateMarker, $bHtmlMail=false)	{
 		global $TSFE, $TYPO3_CONF_VARS;
 
 		$sendername = ($giftRow['personname'] ? $giftRow['personname'] : $conf['orderEmail_fromName']);
@@ -151,7 +151,7 @@ class tx_ttproducts_email_div {
 		if (count($recipients)) {	// If any recipients, then compile and send the mail.
 			$emailContent=trim($pibase->cObj->getSubpart($templateCode,'###'.$templateMarker.'###'));
 			if ($emailContent)  {		// If there is plain text content - which is required!!
-				$parts = split(chr(10),$emailContent,2);		// First line is subject
+				$parts = split(chr(10),$emailContent,2);	// First line is subject
 				$subject=trim($parts[0]);
 				$plain_message=trim($parts[1]);
 
@@ -160,27 +160,28 @@ class tx_ttproducts_email_div {
 				$markerArray['###CERTIFICATES_UNIQUE_CODE###'] = $giftRow['uid'].'-'.$giftRow['crdate'];
 				$markerArray['###PERSON_NAME###'] = $giftRow['personname'];
 				$markerArray['###DELIVERY_NAME###'] = $giftRow['deliveryname'];
-				$markerArray['###ORDER_STATUS_COMMENT###'] = $giftRow['note'].'\n'.$comment;
+				$markerArray['###ORDER_STATUS_COMMENT###'] = $giftRow['note'].($bHtmlMail?'\n':chr(13)).$comment;
 				$emailContent = $pibase->cObj->substituteMarkerArrayCached($plain_message, $markerArray);
 
 				if ($this->conf['orderEmail_htmlmail'])	{
 					include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 					$cls  = t3lib_div::makeInstanceClassName('t3lib_htmlmail');
 				}
-				if (class_exists($cls)) {	// If htmlmail lib is included, then generate a nice HTML-email
+				$recipients = implode($recipients,',');
+				if (class_exists($cls) && $bHtmlMail) {	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$pibase->cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
 					$HTMLmailContent=$pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$emailContent);
 					$HTMLmailContent=$pibase->cObj->substituteMarkerArray($HTMLmailContent, $pibase->globalMarkerArray);
 
-					tx_ttproducts_email_div::send_mail(implode($recipients,','),  $subject, $emailContent, $HTMLmailContent, $senderemail, $sendername, $conf['GiftAttachment']);
+					tx_ttproducts_email_div::send_mail($recipients,  $subject, $emailContent, $HTMLmailContent, $senderemail, $sendername, $conf['GiftAttachment']);
 				} else {		// ... else just plain text...
+
 					tx_ttproducts_email_div::send_mail($recipients, $subject, $emailContent, $tmp='',$senderemail, $sendername, $conf['GiftAttachment']);
 					tx_ttproducts_email_div::send_mail($conf['orderEmail_to'], $subject, $emailContent, $tmp='', $address->infoArray['billing']['email'], $address->infoArray['billing']['name'], $conf['GiftAttachment']);
 				}
 			}
 		}
 	}
-
 }
 
 

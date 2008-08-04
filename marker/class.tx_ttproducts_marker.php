@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2007 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -64,8 +64,9 @@ class tx_ttproducts_marker {
  		$this->conf = &$this->cnf->conf;
  		$this->config = &$this->cnf->config;
  		$this->basket = &$basket;
- 		$this->markerArray = array('CATEGORY', 'PRODUCT', 'ARTICLE', 'DAM');
+ 		$this->markerArray = array('CATEGORY', 'PRODUCT', 'ARTICLE');
 	}
+
 
 	/**
 	 * Adds link markers to a wrapped subpart array
@@ -122,11 +123,10 @@ class tx_ttproducts_marker {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addURLMarkers')) {
-					$hookObj->addURLMarkers($pidNext,$markerArray,$addQueryString);
+					$hookObj->addURLMarkers($pidNext,$markerArray,$addQueryString,$excludeList);
 				}
 			}
 		}
-
 		return $markerArray;
 	} // addURLMarkers
 
@@ -149,7 +149,7 @@ class tx_ttproducts_marker {
 		$markerArray['###DOMAIN###'] = $this->conf['domain'];
 		$markerArray['###PATH_FE_REL###'] = PATH_FE_ttproducts_rel;
 		$pidMarkerArray = array('agb','basket','info','finalize','payment', 'thanks','itemDisplay','listDisplay','search','storeRoot',
-								'memo','tracking','billing','delivery');
+			'memo','tracking','billing','delivery');
 		foreach ($pidMarkerArray as $k => $function)	{
 			$markerArray['###PID_'.strtoupper($function).'###'] = $this->conf['PID'.$function]; 
 		}
@@ -162,7 +162,7 @@ class tx_ttproducts_marker {
 				$markerArray['###'.$key.'###'] = $value;
 			}
 		}
-
+		
 			// Call all addURLMarkers hooks at the end of this method
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'] as $classRef) {
@@ -209,6 +209,7 @@ class tx_ttproducts_marker {
 
 
 	function getSearchParams(&$queryString) {
+		
 		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
 
 		if (!$temp)	{
@@ -220,43 +221,52 @@ class tx_ttproducts_marker {
 		}
 	}
 
+
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function getLinkParams($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true) {
+	function getLinkParams($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true,$piVarCat='cat') {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
-		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
+		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 		$queryString=array();
 //		$fe_user = (is_array($TSFE->fe_user->user) ? 1 : 0);
 		if ($bUseBackPid)	{
 			if ($bUsePrefix)	{
 				$queryString[$this->pibase->prefixId.'[backPID]'] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
-	//			if ($fe_user)	{
-	//				$queryString[$this->pibase->prefixId.'[fegroup]'] = 1;
-	//			}
 			} else {
 				$queryString['backPID'] = $TSFE->id;
-	//			if ($fe_user)	{
-	//				$queryString['fegroup'] = 1;
-	//			}
 			}
 		}
 
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
-		$this->addQueryStringParam($queryString, 'cat', $bUsePrefix);
+		$this->addQueryStringParam($queryString, $piVarCat, $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 
+		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
+		if (!$temp)	{
+			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';		
+		}
+		if ($temp) {
+			$queryString['sword'] = $temp;
+		}
+
 		if (is_array($addQueryString))	{
+
 			foreach ($addQueryString as $param => $value){
-				$queryString[$param] = $value;
+				if ($bUsePrefix)	{
+					$queryString[$this->pibase->prefixId.'['.$param.']'] = $value;
+				} else {
+					$queryString[$param] = $value;
+				}
 			}
 		}
 		reset($queryString);
 		while(list($key,$val)=each($queryString))	{
-			if (!$val || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
+
+			if ($val=='' || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
 				unset($queryString[$key]);
 			}
 		}
@@ -292,13 +302,12 @@ class tx_ttproducts_marker {
 		// preg_match_all('/\###([ \w]+)\###/', $templateCode, $treffer);
 		preg_match_all('/###([\w:]+)###/', $templateCode, $treffer);
 		$tagArray = $treffer[1];
-		
+		$bFieldaddedArray = array();
 		if (is_array($tagArray))	{
 			$tagArray = array_flip($tagArray);
 			$retTagArray = $tagArray;
 			foreach ($tagArray as $tag => $k1)	{
 				$prefixFound = strstr($tag, $prefix);
-				$bFieldadded = FALSE;
 				if ($prefixFound)	{
 					$field = substr ($prefixFound, $prefixLen);
 					$field = strtolower($field);
@@ -307,7 +316,7 @@ class tx_ttproducts_marker {
 					}
 					if (is_array ($tableFieldArray[$field]))	{
 						$retArray[] = $field;
-						$bFieldadded = true;
+						$bFieldaddedArray[$field] = TRUE;
 					}
 					$parentFound = strpos($tag, 'PARENT');
 					if	($parentFound !== FALSE)	{
@@ -327,29 +336,24 @@ class tx_ttproducts_marker {
 						}
 					}
 				}
-				if (!$bFieldadded && is_array($addCheckArray))	{
-					foreach ($addCheckArray as $marker => $field)	{
-						$temp = strstr($tag, $marker);
-						if ($temp)	{
-							$retArray[] = $field;
-							break;
-						}
-					}
-				}
 			}
 			$tagArray = $retTagArray;
 		}
-
 		sort($parentArray);
-		
+
+		if (is_array($addCheckArray))	{
+			foreach ($addCheckArray as $marker => $field)	{
+				if (!$bFieldaddedArray[$field])	{
+					$retArray[] = $field;
+				}
+			}
+		}
 
 		if (is_array($retArray))	{
 			$retArray = array_unique($retArray);
 		}
-
 		return $retArray;
 	}
-
 
 }
 

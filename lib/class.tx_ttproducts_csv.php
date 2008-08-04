@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Klaus Zierer <zierer@pz-systeme.de>
+*  (c) 2005-2007 Klaus Zierer <zierer@pz-systeme.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -43,7 +43,6 @@
 global $TYPO3_CONF_VARS;
 
 
-
 class tx_ttproducts_csv {
 	var $pibase; // reference to object of pibase
 	var $cnf;
@@ -52,11 +51,13 @@ class tx_ttproducts_csv {
 	var $itemArray; // reference to the bakset item array
 	var $price;	 					// object for price functions
 	var $order;
+	var $account;
+	var $accountUid;
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$itemArray, &$calculatedArray, &$price, &$order)	{
+	function init(&$pibase, &$cnf, &$itemArray, &$calculatedArray, &$price, &$order, &$account, $accountUid)	{
 		global $TYPO3_DB;
  		$this->pibase = &$pibase;
  		$this->cnf = &$cnf;
@@ -65,10 +66,13 @@ class tx_ttproducts_csv {
  		$this->itemArray = &$itemArray;
  		$this->price = &$price;
  		$this->order = &$order;
+ 		$this->account = &$account;
+ 		$this->accountUid = $accountUid;
 	} // init
 
 
 	function create(&$basket, &$address, $csvorderuid, &$csvfilepath, &$error_message) {
+
 		$csvfilepath = trim($csvfilepath);
 		if ($csvfilepath{strlen($csvfilepath)-1} != '/') {
 			$csvfilepath .= '/';
@@ -100,9 +104,15 @@ class tx_ttproducts_csv {
 				$this->price->priceFormat($this->calculatedArray['priceTax']['shipping']) . '";"' .
 				$this->price->priceFormat($this->calculatedArray['priceNoTax']['shipping']) . '"';
 
+			$accountRow = array();
+			if ($this->accountUid)	{
+				$accountRow = $this->account->get($this->accountUid, true);
+			}
+
 			$csvlinepayment = '"' . $basket->basketExtra['payment.']['title'] . '";"' .
 				$this->price->priceFormat($this->calculatedArray['priceTax']['payment']) . '";"' .
-				$this->price->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '"';
+				$this->price->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '";"' . 
+				implode('";"', $accountRow).'"';
 
 			$csvlinedeliverynote = '"'.$address->infoArray['delivery']['note'].'"';
 			$csvlinedeliverydesireddate = '"'.$address->infoArray['delivery']['desired_date'].'"';
@@ -119,12 +129,10 @@ class tx_ttproducts_csv {
 			foreach($csvfields as $csvfield)	{
 				$csvdescr .= ';"'.$csvfield.'"';
 			}
-
 			if ($this->conf['CSVinOneLine'])	{
 				$csvdescr .= ';"deliverynote";"desired date";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
 				$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
-			}			
-
+			}
 			$csvdescr .= chr(13);
 			fwrite($csvfile, $csvdescr);
 
@@ -141,14 +149,17 @@ class tx_ttproducts_csv {
 						// product belongs to another basket	
 						continue;
 					}
-					$variants = explode(';', $actItem['rec']['extVars']);
+					$extArray = $actItem['rec']['ext'];
+					$ext1 = current($extArray);
+					$ext11 = current($ext1);
+					$variants = explode(';', $firstExt['vars']);
 					$csvdata = '"'.intval($actItem['rec']['uid']).'";"'.
-								intval($actItem['count']).'";"'.
-								$variants[0].'";"'.
-								$variants[1].'";"'.
-								$variants[2].'";"'.
-								$variants[3].'"';
-								$variants[4].'"';
+						intval($actItem['count']).'";"'.
+						$variants[0].'";"'.
+						$variants[1].'";"'.
+						$variants[2].'";"'.
+						$variants[3].'"';
+						$variants[4].'"';
 					reset($csvfields);
 					foreach($csvfields as $csvfield) {
 						$csvdata .= ';"'.$actItem['rec'][$csvfield].'"';

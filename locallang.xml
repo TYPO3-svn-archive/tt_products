@@ -151,34 +151,41 @@
 			<label index="plugins_description" type="integer">41048644</label>
 		</languageKey>
 		<languageKey index="it" type="array">
-			<label index="plugins_description" type="integer">41048644</label>
+			<label index="plugins_description" type="integer">123648003</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="plugins_title" type="integer">203647107</label>
-			<label index="plugins_description" type="integer">41048644</label>
+			<label index="plugins_description" type="integer">123648003</label>
 		</languageKey>
 		<languageKey index="es" type="array">
 		</languageKey>
 		<languageKey index="nl" type="array">
-			<label index="plugins_description" type="integer">41048644</label>
+			<label index="plugins_description" type="integer">123648003</label>
+			<label index="plugins_title" type="integer">203647107</label>
+			<label index="m_default" type="integer">203553129</label>
+			<label index="m_ext" type="integer">222197987</label>
+			<label index="m_variants" type="integer">127328485</label>
 		</languageKey>
 		<languageKey index="cz" type="array">
 			<label index="plugins_description" type="integer">41048644</label>
 		</languageKey>
 		<languageKey index="pl" type="array">
-			<label index="plugins_description" type="integer">41048644</label>
+			<label index="plugins_description" type="integer">123648003</label>
 		</languageKey>
 		<languageKey index="si" type="array">
 			<label index="plugins_description" type="integer">41048644</label>
 		</languageKey>
 		<languageKey index="fi" type="array">
-			<label index="plugins_description">Lisää tuotelista sivulle. Tämä on osa sisäisestä kauppasovelluksesta ja edellyttää että tietokannassa on tuotetietoja.</label>
+			<label index="plugins_description" type="integer">123648003</label>
+			<label index="m_default" type="integer">203553129</label>
+			<label index="m_ext" type="integer">222197987</label>
+			<label index="m_variants" type="integer">127328485</label>
 		</languageKey>
 		<languageKey index="tr" type="array">
 			<label index="plugins_description" type="integer">41048644</label>
 		</languageKey>
 		<languageKey index="se" type="array">
-			<label index="plugins_description" type="integer">41048644</label>
+			<label index="plugins_description" type="integer">123648003</label>
 		</languageKey>
 		<languageKey index="pt" type="array">
 			<label index="plugins_description" type="integer">41048644</label>
@@ -259,24 +266,38 @@
 		<languageKey index="no" type="array">
 		</languageKey>
 		<languageKey index="it" type="array">
+			<label index="plugins_description">Add a shopping system plugin to the page. This makes it possible to sell products in multiple languages.</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
+			<label index="plugins_title">Shop System</label>
+			<label index="plugins_description">Add a shopping system plugin to the page. This makes it possible to sell products in multiple languages.</label>
 		</languageKey>
 		<languageKey index="es" type="array">
 		</languageKey>
 		<languageKey index="nl" type="array">
+			<label index="plugins_title">Shop System</label>
+			<label index="plugins_description">Add a shopping system plugin to the page. This makes it possible to sell products in multiple languages.</label>
+			<label index="m_default">default</label>
+			<label index="m_ext">extended</label>
+			<label index="m_variants">variants</label>
 		</languageKey>
 		<languageKey index="cz" type="array">
 		</languageKey>
 		<languageKey index="pl" type="array">
+			<label index="plugins_description">Add a shopping system plugin to the page. This makes it possible to sell products in multiple languages.</label>
 		</languageKey>
 		<languageKey index="si" type="array">
 		</languageKey>
 		<languageKey index="fi" type="array">
+			<label index="plugins_description">Add a shopping system plugin to the page. This makes it possible to sell products in multiple languages.</label>
+			<label index="m_default">default</label>
+			<label index="m_ext">extended</label>
+			<label index="m_variants">variants</label>
 		</languageKey>
 		<languageKey index="tr" type="array">
 		</languageKey>
 		<languageKey index="se" type="array">
+			<label index="plugins_description">Add a shopping system plugin to the page. This makes it possible to sell products in multiple languages.</label>
 		</languageKey>
 		<languageKey index="pt" type="array">
 		</languageKey>

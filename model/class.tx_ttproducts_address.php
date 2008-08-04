@@ -29,7 +29,7 @@
  *
  * functions for the frontend users
  *
- * $Id$
+ * $Id $
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
@@ -38,7 +38,6 @@
  *
  *
  */
-
 
 global $TYPO3_CONF_VARS;
 
@@ -59,7 +58,7 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 	 */
 	function init(&$pibase, &$cnf, $tablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
-		
+
 		$this->pibase = $pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$this->cnf->conf;
@@ -73,13 +72,12 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 
 		$defaultFieldArray = array('uid'=>'uid', 'pid'=>'pid', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'deleted' => 'deleted');
 		$this->table->setDefaultFieldArray($defaultFieldArray);
-		$this->table->setTCAFieldArray($tablename);
 		$this->table->setNewFieldArray();
 
 		$requiredListFields = 'uid,pid,title';
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
-
+		$this->table->setTCAFieldArray($tablename);
 		$this->fields['name'] = ($this->tabledesc['name'] ? $this->tabledesc['name'] : 'name');
 	} // init
 
@@ -132,7 +130,6 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 				$relationArray [$uid]['parent_category'] = '';
 			}
 		}
-		
 		return $relationArray;
 	}
 

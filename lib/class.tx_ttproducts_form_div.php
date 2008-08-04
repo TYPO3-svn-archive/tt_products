@@ -39,33 +39,52 @@
  *
  */
 
-
 global $TYPO3_CONF_VARS;
 
 
 class tx_ttproducts_form_div {
 
-
-	function createSelect (&$pibase, &$valueArray, $name, $indexSelected, $allowedArray) {
-		global $TYPO3_DB;
+	function createSelect (&$pibase, &$valueArray, $name, $indexSelected, $allowedArray = array()) {
+		global $TYPO3_DB, $TSFE;
 
 		$text = '';
 		foreach ($valueArray as $key => $parts) {
 			$tmp = tx_fhlibrary_language::sL($parts[0]);
 			$text = $pibase->pi_getLL($tmp);
+			if ($text == '')	{
+				$text = htmlentities($parts[0],ENT_QUOTES,$TSFE->renderCharset);
+			}
 			if (!count($allowedArray) || in_array($parts[1], $allowedArray))	{
 				$selectedText = '';
 				if (intval($parts[1]) == intval($indexSelected))	{
 					$selectedText = ' selected';
 				}
-				$totaltext .= '<OPTION value="'.$parts[1].'"'.$selectedText.'>'.$text.'</OPTION>';
+				$totaltext .= '<OPTION value="'.htmlentities($parts[1],ENT_QUOTES,$TSFE->renderCharset).'"'.$selectedText.'>'.htmlentities($text,ENT_QUOTES,$TSFE->renderCharset).'</OPTION>';
 			}
 		}
-		$text = '<SELECT name="'.$name.'">' . $totaltext.'</SELECT>';
-
+		$text = '<SELECT name="'.$name.'">' . $totaltext .'</SELECT>';
 		return $text;
 	}
 
+	// fetches the valueArray needed for the functions of this class form a valueArray setup
+	function fetchValueArray($confArray)	{
+		$rcArray = array();
+		if (is_array($confArray))	{
+			foreach ($confArray as $k => $vArray)	{
+				$rcArray [] = array(0 => $vArray['label'], 1 => $vArray['value']);
+			}
+		}
+		return $rcArray;
+	}
+
+	function getKeyValueArray($valueArray)	{
+		$rc = array();
+
+		foreach ($valueArray as $k => $row)	{
+			$rc[$row[1]] = $row[0];
+		}
+		return $rc;
+	}
 }
 
 

@@ -11,100 +11,108 @@
 				<config>
 					<type>select</type>
 					<items>
-					    <numindex index="1">
+						<numindex index="1">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.1</numindex>
-							<numindex index="1">LIST</numindex>					    
-					    </numindex>
-					    <numindex index="2">
+							<numindex index="1">LIST</numindex>
+						</numindex>
+						<numindex index="2">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.2</numindex>
-							<numindex index="1">LISTGIFTS</numindex>					    
-					    </numindex>
-					    <numindex index="3">
+							<numindex index="1">LISTGIFTS</numindex>
+						</numindex>
+						<numindex index="3">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.3</numindex>
-							<numindex index="1">LISTHIGHLIGHTS</numindex>					    
-					    </numindex>
-					    <numindex index="4">
+							<numindex index="1">LISTHIGHLIGHTS</numindex>
+						</numindex>
+						<numindex index="4">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.4</numindex>
-							<numindex index="1">LISTOFFERS</numindex>					    
-					    </numindex>
-					    <numindex index="5">
+							<numindex index="1">LISTOFFERS</numindex>
+						</numindex>
+						<numindex index="5">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.5</numindex>
-							<numindex index="1">LISTNEWITEMS</numindex>					    
-					    </numindex>
-					    <numindex index="6">
+							<numindex index="1">LISTNEWITEMS</numindex>
+						</numindex>
+						<numindex index="6">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.6</numindex>
-							<numindex index="1">SINGLE</numindex>					    
-					    </numindex>
-					    <numindex index="7">
+							<numindex index="1">SINGLE</numindex>
+						</numindex>
+						<numindex index="7">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.7</numindex>
-							<numindex index="1">SEARCH</numindex>					    
-					    </numindex>
-					    <numindex index="8">
+							<numindex index="1">SEARCH</numindex>
+						</numindex>
+						<numindex index="8">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.8</numindex>
-							<numindex index="1">CURRENCY</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="9">
+							<numindex index="1">CURRENCY</numindex>
+						</numindex>
+						<numindex index="9">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.9</numindex>
-							<numindex index="1">BASKET</numindex>					    
-					    </numindex>		
-					    <numindex index="10">
+							<numindex index="1">BASKET</numindex>
+						</numindex>		
+						<numindex index="10">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.10</numindex>
-							<numindex index="1">OVERVIEW</numindex>					    
-					    </numindex>		
-					    <numindex index="11">
-							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.12</numindex>
-							<numindex index="1">PAYMENT</numindex>				    
-					    </numindex>	
-					    <numindex index="12">
+							<numindex index="1">OVERVIEW</numindex>
+						</numindex>
+						<numindex index="11">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.11</numindex>
-							<numindex index="1">INFO</numindex>					    
-					    </numindex>
-					    <numindex index="13">
+							<numindex index="1">INFO</numindex>
+						</numindex>
+						<numindex index="12">
+							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.12</numindex>
+							<numindex index="1">PAYMENT</numindex>
+						</numindex>	
+						<numindex index="13">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.13</numindex>
-							<numindex index="1">FINALIZE</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="14">
+							<numindex index="1">FINALIZE</numindex>
+						</numindex>
+						<numindex index="14">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.14</numindex>
-							<numindex index="1">TRACKING</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="15">
+							<numindex index="1">TRACKING</numindex>
+						</numindex>
+						<numindex index="15">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.15</numindex>
-							<numindex index="1">BILL</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="16">
+							<numindex index="1">BILL</numindex>
+						</numindex>
+						<numindex index="16">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.16</numindex>
-							<numindex index="1">DELIVERY</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="17">
+							<numindex index="1">DELIVERY</numindex>
+						</numindex>
+						<numindex index="17">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.17</numindex>
-							<numindex index="1">ORDERS</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="18">
+							<numindex index="1">ORDERS</numindex>
+						</numindex>
+						<numindex index="18">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.18</numindex>
-							<numindex index="1">MEMO</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="19">
+							<numindex index="1">MEMO</numindex>
+						</numindex>
+						<numindex index="19">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.19</numindex>
-							<numindex index="1">HELP</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="20">
+							<numindex index="1">HELP</numindex>
+						</numindex>
+						<numindex index="20">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.20</numindex>
-							<numindex index="1">LISTCAT</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="21">
+							<numindex index="1">LISTCAT</numindex>
+						</numindex>
+						<numindex index="21">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.22</numindex>
 							<numindex index="1">SELECTCAT</numindex>					    
-					    </numindex>						    				   					    			    
-					    <numindex index="22">
+						</numindex>
+						<numindex index="22">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.21</numindex>
-							<numindex index="1">LISTARTICLES</numindex>					    
-					    </numindex>
-					    <numindex index="23">
-						    <numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.25</numindex>
-						    <numindex index="1">SELECTAD</numindex>					    
-					    </numindex>
+							<numindex index="1">LISTARTICLES</numindex>
+						</numindex>
+						<numindex index="23">
+							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.23</numindex>
+							<numindex index="1">LISTDAM</numindex>
+						</numindex>
+						<numindex index="24">
+							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.24</numindex>
+							<numindex index="1">LISTDAMCAT</numindex>
+						</numindex>
+						<numindex index="25">
+							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.25</numindex>
+							<numindex index="1">SELECTAD</numindex>
+						</numindex>
 					</items>
-					<size>23</size>
+					<size>25</size>
 					<minitems>1</minitems>
 					<maxitems>5</maxitems>
 				</config>

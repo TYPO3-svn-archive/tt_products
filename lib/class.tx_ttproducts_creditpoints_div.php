@@ -38,7 +38,6 @@
  *
  */
 
-
 global $TYPO3_CONF_VARS;
 
 
@@ -50,38 +49,40 @@ class tx_ttproducts_creditpoints_div {
 	function getCreditPoints($amount)	{
 		$type = '';
 		$creditpoints = 0;
-		foreach ($this->conf['creditpoints.'] as $k1=>$priceCalcTemp) {
-			if (is_array($priceCalcTemp)) {
-				foreach ($priceCalcTemp as $k2=>$v2) {
-					if (!is_array($v2)) {
-						switch ($k2) {
-							case 'type':
-								$type = $v2;
-								break;
+		if (is_array($this->conf['creditpoints.']))	{
+
+			foreach ($this->conf['creditpoints.'] as $k1=>$priceCalcTemp) {
+				if (is_array($priceCalcTemp)) {
+
+					foreach ($priceCalcTemp as $k2=>$v2) {
+						if (!is_array($v2)) {
+							switch ($k2) {
+								case 'type':
+									$type = $v2;
+									break;
+							}
 						}
 					}
-				}
 
-				$dumCount = 0;
-				$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
+					$dumCount = 0;
+					$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
+					if ($type != 'price') {
+						break;
+					}
+					krsort($priceCalcTemp['prod.']);
+					reset($priceCalcTemp['prod.']);
 
-				if ($type != 'price') {
-					break;
-				}
-				krsort($priceCalcTemp['prod.']);
-				reset($priceCalcTemp['prod.']);
-	
-				foreach ($priceCalcTemp['prod.'] as $k2=>$points) {
-					if ($amount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
-						$creditpoints = $points;
-						break; // finish
+					foreach ($priceCalcTemp['prod.'] as $k2=>$points) {
+						if ($amount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
+							$creditpoints = $points;
+							break; // finish
+						}
 					}
 				}
 			}
 		}
 		return $creditpoints;
 	} // getCreditPoints
-
 
 
 	/**
@@ -93,7 +94,7 @@ class tx_ttproducts_creditpoints_div {
 		if ($username) {
 			$uid_voucher = '';
 			// get the "old" creditpoints for the user
-			$res1 = $TYPO3_DB->exec_SELECTquery('uid, tt_products_creditpoints', 'fe_users', 'username='.$TYPO3_DB->fullQuoteStr($username,'tt_products_creditpoints'));
+			$res1 = $TYPO3_DB->exec_SELECTquery('uid, tt_products_creditpoints', 'fe_users', 'username='.$TYPO3_DB->fullQuoteStr($username, 'tt_products_creditpoints'));
 			if ($row = $TYPO3_DB->sql_fetch_assoc($res1)) {
 				$ttproductscreditpoints = $row['tt_products_creditpoints'];
 				$uid_voucher = $row['uid'];
@@ -101,12 +102,10 @@ class tx_ttproducts_creditpoints_div {
 			if ($uid_voucher) {
 				$fieldsArrayFeUserCredit = array();
 				$fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + $creditpoints;
-		
 				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.intval($uid_voucher), $fieldsArrayFeUserCredit);
 			}
 		}
 	}
-
 }
 
 

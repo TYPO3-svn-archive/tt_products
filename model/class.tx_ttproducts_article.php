@@ -38,33 +38,30 @@
  *
  */
 
-
 global $TYPO3_CONF_VARS;
 
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 
 class tx_ttproducts_article extends tx_ttproducts_article_base {
-	var $dataArray; // array of read in categories
 	var $fields = array();
 	var $tt_products; // element of class tx_table_db to get the parent product
 	var $bIsProduct=false;
 	var $marker = 'ARTICLE';
 	var $type = 'article';
+	var $piVar = 'article';
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, &$paymentshipping, $LLkey, $tablename, $useArticles)  {
+	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, &$paymentshipping, $LLkey, $tablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;	
 
-		$this->cnf = &$cnf;
+		parent::init($pibase, $cnf, 'tt_products_articles', $tt_content, $paymentshipping, 0);
+
 		$tablename = ($tablename ? $tablename : 'tt_products_articles');
-		$this->tableconf = $this->cnf->getTableConf('tt_products_articles');
-		
 		$this->tt_products = &$tt_products;
 		$this->tt_products->setArticleTable($this);
-
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
@@ -78,10 +75,9 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 
-		parent::init($pibase, $cnf, $tablename, $tt_content, $paymentshipping);
-
-		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
-		$this->variant->init($this->pibase, $cnf, $this, $useArticles);
+		if ($this->tableconf['language.'] && is_array($this->tableconf['language.']['marker.']))	{
+			$this->table->initMarkerFile($this->tableconf['language.']['marker.']['file']);
+		}
 	} // init
 
 
@@ -97,10 +93,13 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 			// Fetching the articles
 			$res = $this->table->exec_SELECTquery('*', $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
+			$variantFieldArray = $this->variant->getFieldArray();
+			$this->table->substituteMarkerArray($row, $variantFieldArray);
 			$rc = $this->dataArray[$uid] = $row;
 		}
 		return $rc;
 	}
+
 
 	function &getWhereArray ($where) {
 		global $TYPO3_DB;
@@ -108,9 +107,11 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		$enableWhere = $this->table->enableFields();
 		$where = ($where ? $where.' '.$enableWhere : '1=1 '.$enableWhere);
 		$res = $this->table->exec_SELECTquery('*',$where);
-		
+		$variantFieldArray = $this->variant->getFieldArray();
+
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 			$uid = intval($row[uid]);
+			$this->table->substituteMarkerArray($row, $variantFieldArray);
 			$this->dataArray[$uid] = $row;	// remember for later queries
 			$rowArray[] = $row;
 		}
@@ -135,22 +136,6 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		return $rc;
 	}
 
-
-	function mergeProductRow(&$row, &$productRow)	{
-		$fieldArray = array();
-		$fieldArray['text'] = array('title', 'subtitle', 'itemnumber', 'image');
-		$fieldArray['number'] = array('price', 'price2', 'directcost', 'weight');
-		
-		foreach ($fieldArray as $type => $fieldTypeArray)	{
-			foreach ($fieldTypeArray as $k => $field)	{
-				if ($type == 'number' && !floatval($row[$field]))	{
-					$row[$field] = $productRow[$field];
-				} else if ($type == 'text' && !$row[$field])	{
-					$row[$field] = $productRow[$field];
-				}
-			}
-		}
-	}
 
 }
 

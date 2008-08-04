@@ -48,13 +48,12 @@ class tx_ttproducts_country  {
 	var $dataArray; // array of read in contents
 	var $table;		 // object of the type tx_table_db
 
-	
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
 	function init(&$pibase, &$cnf, $LLkey, $tablename)	{
 		global $TYPO3_DB;
-		
+
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$tablename = ($tablename ? $tablename : 'pages');
@@ -62,7 +61,7 @@ class tx_ttproducts_country  {
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid'));		
 		$this->table->setTCAFieldArray('static_countries');
-		
+
 		$requiredFields = 'uid,pid';
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
@@ -80,15 +79,14 @@ class tx_ttproducts_country  {
 				$addRequiredFields[] = $field;
 			}
 			$this->table->addRequiredFieldArray ($addRequiredFields);
-		}		
-		
+		}
 	} // init
 
 
 
 	function get ($country_code, $where, $fields='') {
 		global $TYPO3_DB, $TCA;
-		
+
 		if (!$fields)	{
 			$rc = $this->dataArray[$country_code];
 		}
@@ -104,7 +102,8 @@ class tx_ttproducts_country  {
 
 			$whereString .= ' '.$this->table->enableFields();
 			$fields = ($fields ? $fields : '*');
-			// Fetching the products
+			// Fetching the countries
+
 			$res = $this->table->exec_SELECTquery($fields, $whereString);
 			if ($country_code)	{
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
@@ -133,13 +132,13 @@ class tx_ttproducts_country  {
 	 */
 	function getItemMarkerArray (&$row, &$markerArray, &$fieldsArray)	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
+		global $TSFE;
 		$markerTable = implode('',t3lib_div::trimExplode('_',$this->table->name));
 		
 		foreach ($fieldsArray as $k => $field)	{
-			$markerArray['###'.strtoupper($markerTable.'_'.$field).'###'] = $row [$field];
+			$markerArray['###'.strtoupper($markerTable.'_'.$field).'###'] = htmlentities($row [$field],ENT_QUOTES,$TSFE->renderCharset);
 		}
 	}
-
 
 }
 

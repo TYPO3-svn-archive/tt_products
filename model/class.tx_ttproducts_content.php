@@ -80,13 +80,15 @@ class tx_ttproducts_content {
 
 
 	function getFromPid ($pid) {
-		global $TYPO3_DB;
+		global $TYPO3_DB, $TSFE;
 		$rcArray = $this->dataPageArray[$pid];
 		if (!is_array($rcArray)) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', '*');
+			$sql->prepareFields($this->table, 'orderBy', 'sorting');
 			$sql->prepareWhereFields ($this->table, 'pid', '=', intval($pid));
-			$this->table->enableFields();		
+			$sql->prepareWhereFields ($this->table, 'sys_language_uid', '=', intval($TSFE->config['config']['sys_language_uid']));
+			$this->table->enableFields();			
 			// Fetching the category
 			$res = $sql->exec_SELECTquery();
 			while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {

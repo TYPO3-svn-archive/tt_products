@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *  
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is 
@@ -35,7 +35,7 @@
  * @package TYPO3
  * @subpackage tt_products
  *
- *  
+ *
  */
 
 
@@ -48,24 +48,33 @@ class tx_ttproducts_variant {
 	var $itemTable;
 	var $useArticles;
 	var $bSelectableArray;
-	var $fieldArray = array(0 => 'color','size','description','gradings');	// array of fields which are variants with comma separated values
-	
+	var $fieldArray = array();	// array of fields which are variants with comma separated values
+	var $additionalKey;
 
 	/**
 	 * setting the local variables
 	 */
-	function init(&$pibase, &$cnf, &$itemTable, $useArticles)  {
+	function init(&$pibase, &$cnf, &$itemTable, $tablename, $useArticles)  {
 		$this->pibase = &$pibase;
-		$tmpArray = $cnf->getTableDesc($itemTable->table->name);
-		$this->conf = (is_array($tmpArray) ? $tmpArray['variant.'] : '');
+		$tmpArray = $cnf->getTableDesc($tablename);
+		$this->conf = (is_array($tmpArray) && is_array($tmpArray['variant.']) ? $tmpArray['variant.'] : array());
 		$this->itemTable = &$itemTable;
 		$this->useArticles = $useArticles;
 		$this->bSelectableArray = array();
-		foreach ($this->fieldArray as $k => $field)	{
-			if ($cnf->conf['select'.ucfirst($field)])
-				$this->bSelectableArray[$k] = true;			
+		$fieldArray = $this->conf;
+		$additionalKey = '';
+		foreach ($fieldArray as $k => $field)	{
+			if ($field == 'additional')	{
+				$additionalKey = $k;
+			} else if ($cnf->conf['select'.ucfirst($field)])	{
+				$this->bSelectableArray[$k] = true;
+			}
 		}
-
+		if (isset($additionalKey))	{
+			unset($fieldArray[$additionalKey]);
+		}
+		$this->fieldArray = $fieldArray;
+		$this->additionalKey = $additionalKey;
 	} // init
 
 
@@ -82,14 +91,16 @@ class tx_ttproducts_variant {
 		$variantArray = explode(';', $variant);
 
 		if (is_array($this->conf) && ($this->useArticles == 1 || count ($this->bSelectableArray)))	{
+			$count = 0;
 			foreach ($this->conf as $key => $field)	{
-				if ($key != 5)	{
-					if ($variantArray[$key-1])	{
-						$row[$field] = $variantArray[$key-1];
+				if ($field != 'additional')	{	// no additional here
+					if ($variantArray[$count])	{
+						$row[$field] = $variantArray[$count];
 					} else {
 						$tmpArray = t3lib_div::trimExplode(';', $row[$field]);
 						$row[$field] = $tmpArray[0];
 					}
+					$count++;
 				}
 			}
 		}
@@ -100,48 +111,53 @@ class tx_ttproducts_variant {
 	 * Returns the variant extVar string from the variant values in the row
 	 *
 	 * @param	array		the row
-	 * @param	string	  variants separated by ';'
-	 * @return  void
+	 * @return  string	  variants separated by ';'
 	 * @access private
 	 * @see modifyRowFromVariant
 	 */
 	 function getVariantFromRow (&$row) {
-
 		// take only the first color, size and gradings, if there are more entries from the item table		
 		$variantArray = array();
 
 		if (is_array($this->conf) && ($this->useArticles == 1 || count ($this->bSelectableArray)))	{
 			foreach ($this->conf as $key => $field)	{
-				if ($key != 5)	{
+				if ($field != 'additional')	{	// no additional here
 					$tmpArr = t3lib_div::trimExplode(';', $row[$field]);
 					$variantArray[] = $tmpArr[0];
 				}
 			}
 		}
+
 		$rc = implode (';', $variantArray);
 		return $rc; 
+	 }
+
+
+	function getTableUid ($table, $uid)	{
+		$rc = '|'.$table.'|'.$uid;
+		return $rc;
 	}
 
 
 	function getVariantSubpartArray (&$subpartArray, &$row, &$tempContent, $useSelects, &$conf)  {
-		
 		if ($useSelects) {
 			$areaArray = array();
 			if (is_array($this->conf))	{
 				foreach ($this->conf as $key => $field)	{
-					if ($key != 5)	{
+					if ($field != 'additional')	{	// no additional here
 						if (trim($row[$field]) != '')  {
 							$areaArray[] = 'display_variant'.$key;
 						}
 					}
 				}
 			}
+					
 			if ($this->itemTable->hasAdditional($row,'isSingle')) {
 				$areaArray[] = 'display_variant5_isSingle';
 			} else {
 				$areaArray[] = 'display_variant5_isNotSingle';
 			}
-
+			
 			foreach ($areaArray as $k => $area) {
 				$subpartArray['###'.$area.'###'] = $this->pibase->cObj->getSubpart($tempContent,'###'.$area.'###');
 			}
@@ -157,7 +173,7 @@ class tx_ttproducts_variant {
 
 		if (is_array($this->conf))	{
 			foreach ($this->conf as $key => $field)	{
-				if ($key != 5)	{
+				if ($field != 'additional')	{	// no additional here
 					if (trim($row[$field]) == '' || !$conf['select'.ucfirst($field)])	{
 						$remSubpartArray[] = 'display_variant'.$key;
 					} else {
@@ -187,78 +203,37 @@ class tx_ttproducts_variant {
 
 	function fetchArticle($productRow, $articleRows) {
 		$fieldArray = array();
-		foreach ($this->fieldArray as $k => $field)	{
-			if ($productRow[$field])	{
-				$fieldArray[$field] = $productRow[$field];
+		foreach ($this->conf as $k => $field)	{
+			if ($productRow[$field] && $field != 'additional')	{
+				$fieldArray[$field] = t3lib_div::trimExplode(';', $productRow[$field]);
 			}
 		}
 		$articleRow = array();
-		foreach ($articleRows as $k => $row)	{
-			$bFits = true;
-			foreach ($fieldArray as $field => $value)	{
-				if ($row[$field] && $row[$field] != $value)	{
-					$bFits = false;
+		if (count($fieldArray))	{
+			foreach ($articleRows as $k => $row)	{
+				$bFits = true;
+				foreach ($fieldArray as $field => $valueArray)	{
+					if ($row[$field] && !in_array($row[$field], $valueArray) && $field != 'additional')	{
+						$bFits = false;
+						break;
+					}
 				}
-			}
-			if ($bFits)	{
-				$articleRow = $row;
-				break;
+				if ($bFits)	{
+					$articleRow = $row;
+					break;
+				}
 			}
 		}
 		return $articleRow;
 	}
 
 
-	/**
-	 * Template marker substitution
-	 * Fills in the markerArray with data for a product
-	 *
-	 * @param	array		reference to an item array with all the data of the item
-	 * @param	string		title of the category
-	 * @param	integer		number of images to be shown
-	 * @param	object		the image cObj to be used
-	 * @param	array		information about the parent HTML form
-	 * @return	array
-	 * @access private
-	 */
-	function &getItemMarkerArray (&$item, &$markerArray, &$basketExt, &$tagArray, $code='', $id)	{
-			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
-
-		$row = &$item['rec'];
-		$variants = $this->getVariantFromRow ($row);
-		$basketQuantityName = 'ttp_basket['.$row['uid'].'][quantity]';
-		$quantity = $basketExt[$row['uid']][$variants];
-		$markerArray['###FIELD_NAME###']=$basketQuantityName;
-		$quantity = $basketExt[$row['uid']][$variants];
-		$markerArray['###FIELD_QTY###']= $quantity ? $quantity : '';
-		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
-
-		$markerArray['###FIELD_SIZE_NAME###'] = 'ttp_basket['.$row['uid'].'][size]';
-		$markerArray['###FIELD_SIZE_VALUE###'] = $row['size'];
-		$markerArray['###FIELD_SIZE_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
-		$markerArray['###FIELD_COLOR_NAME###'] = 'ttp_basket['.$row['uid'].'][color]';
-		$markerArray['###FIELD_COLOR_VALUE###'] = $row['color'];
-		$markerArray['###FIELD_DESCRIPTION_NAME###'] = 'ttp_basket['.$row['uid'].'][description]';
-		$markerArray['###FIELD_DESCRIPTION_VALUE###'] = $row['description'];
-		$markerArray['###FIELD_GRADINGS_NAME###'] = 'ttp_basket['.$row['uid'].'][gradings]';
-		$markerArray['###FIELD_GRADINGS_VALUE###'] = $row['gradings'];
-		$markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
-
-		$prodAdditionalText['single'] = '';	
-		if ($this->conf['selectAdditional']) {
-			$isSingleProduct = $this->hasAdditional($row,'isSingle');
-			if ($isSingleProduct)	{
-				$message = $this->pibase->pi_getLL('additional_single');
-				$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($quantity ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="1">';
-				$prodAdditionalText['single'] .= '<input type="hidden" name="'.$basketQuantityName.'[1]" value="'.($quantity ? '1' : '0') .'">';
-			}
- 		}
-		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
-	} // getItemMarkerArray
-
-
 	function &getFieldArray()	{	
 		return $this->fieldArray;
+	}
+
+	function getAdditionalKey()	{	
+		return $this->additionalKey;
 	}
 }
 

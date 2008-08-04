@@ -4,6 +4,7 @@
 ## @version $Id$
 ##
 
+
 plugin.tt_products {
     # cat=plugin.products/file; type=file[html,htm,tmpl,txt]; label= Template File: This is a simple textfile where each part of the shopping basket is defined with HTML-code. To see an example with explanations, take a look at EXT:tt_products/pi1/products_template.tmpl which is the default.
   file.templateFile = EXT:tt_products/template/example_template_bill_de.tmpl
@@ -42,7 +43,6 @@ plugin.tt_products {
   clickEnlarge_basket = 1
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Category images: As above, but for the category images
   clickEnlarge_listcat = 0
-
 
     # cat=plugin.products//; type=boolean; label= Color selectable, List display: Make the color selectable in the list
   selectColor = 1
@@ -139,7 +139,8 @@ plugin.tt_products {
     # cat=plugin.products/dims; type=int+; label= Max image width, popup window: The maximum width in pixels of an image when displayed in the popup window.
   maxW_popup = 400
 
-
+    # cat=plugin.products//; type=int+; label=list of allowed pids: Use the root page id of your store items and also set recursive
+  pid_list = 
     # cat=plugin.products//; type=int+; label=PID for info page: This is the PID of the infoPage of the store.
   PIDinfo = 
     # cat=plugin.products//; type=int+; label=PID for finalize page
@@ -189,9 +190,9 @@ plugin.tt_products {
   alwaysUpdateOrderAmount = 1
 
     # cat=plugin.products//; type=int+; label=default article ID: ID of the default article that will be shown in a single page when nothing else is configured
-   defaultArticleID = 1
+   defaultArticleID =
     # cat=plugin.products//; type=int+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
-  defaultProductID = 1
+  defaultProductID =
     # cat=plugin.products//; type=int+; label=default category ID: ID of the default category that will be shown in the list view when no tx_ttproducts_pi1[cat] parameter is given
   defaultCategoryID = 
     # cat=plugin.products//; type=int+; label=default DAM category ID: ID of the default DAM category that will be shown in the list view when no tx_ttproducts_pi1[damcat] parameter is given

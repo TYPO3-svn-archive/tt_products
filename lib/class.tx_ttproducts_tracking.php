@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -149,8 +149,9 @@ class tx_ttproducts_tracking {
 						$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
 						while ($giftRow = $TYPO3_DB->sql_fetch_assoc($giftRes)) {
 							$recipient = $giftRow['deliveryemail'].','.$giftRow['personemail'];
-							tx_ttproducts_email_div::sendGiftEmail($this->pibase, $this->conf, $this->basket, $recipient, $orderRecord['status_comment'], $giftRow, $templateCode, $templateMarker, $giftRow['personname'], $giftRow['personemail']);
+							tx_ttproducts_email_div::sendGiftEmail($this->pibase, $this->conf, $this->basket, $recipient, $orderRecord['status_comment'], $giftRow, $templateCode, $templateMarker, $this->conf['orderEmail_htmlmail']);
 						}
+						$TYPO3_DB->sql_free_result($giftRes);
 						$status_log[] = $status_log_element;
 						$update=1;
 					}
@@ -198,7 +199,6 @@ class tx_ttproducts_tracking {
 			$markerArray=Array();
 			$subpartArray=Array();
 			$subpartArray['###STATUS_CODE_60###']= '';
-
 			$content = $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
 		}
 
@@ -214,14 +214,12 @@ class tx_ttproducts_tracking {
 				$markerArray['###ORDER_STATUS###']=$v['status'];
 				$markerArray['###ORDER_STATUS_INFO###']=$v['info'];
 				$markerArray['###ORDER_STATUS_COMMENT###']=nl2br($v['comment']);
-
 				$STATUS_ITEM_c.=$this->pibase->cObj->substituteMarkerArrayCached($STATUS_ITEM, $markerArray);
 			}
 		}
 
 		$subpartArray=array();
 		$subpartArray['###STATUS_ITEM###']=$STATUS_ITEM_c;
-
 		$markerArray=Array();
 
 			// Display admin-interface if access.
@@ -248,6 +246,7 @@ class tx_ttproducts_tracking {
 			while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 				$markerArray['###OTHER_ORDERS_OPTIONS###'].='<option value="'.$row['tracking_code'].'">'.htmlspecialchars($this->order->getNumber($row['uid']).': '.$row['name'].' ('.$this->pibase->price->priceFormat($row['amount']).' '.$this->conf['currencySymbol'].') /' .$row['status']).'</option>';
 			}
+			$TYPO3_DB->sql_free_result($res);
 		}
 
 			// Final things
@@ -258,11 +257,18 @@ class tx_ttproducts_tracking {
 		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
 		$markerArray['###TRACKING_NUMBER###'] =  $trackingCode;
 		$markerArray['###UPDATE_CODE###'] = $updateCode;
-		
+
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tracking'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tracking'] as $classRef) {
+				$hookObj= &t3lib_div::getUserObj($classRef);
+				if (method_exists($hookObj, 'getTrackingInformation')) {
+					$hookObj->getTrackingInformation ($this, $orderRow, $templateCode, $trackingCode, $updateCode, $orderRecord, $admin, $content,$markerArray,$subpartArray);
+				}
+			}
+		}
 		$content= $this->pibase->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		return $content;
 	} // getTrackingInformation
-
 }
 
 

@@ -1,0 +1,944 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<TITLE>meer wijn  Shop-Template</TITLE>
+</head>
+
+<body>
+<H1>meer wijn  Shop-Template</H1>
+<BR><BR><BR><BR><HR><BR><BR><BR>
+
+<h3>ORDERS_LIST_TEMPLATE</h3>
+<em>This subpart is used to display the list of orders. </em><br>
+<br>
+<br>
+
+<!-- ###ORDERS_LIST_TEMPLATE### begin This subpart is used to display the list of orders. PAGE orders-->
+
+<!-- ###ORDERS_LIST_TEMPLATE### end -->
+
+
+<BR><HR><BR>
+
+
+<!-- ###ITEM_LIST_TEMPLATE### begin This subpart is used to display the regular list of products. It's also used by search-results.-->
+        <FORM method="post" action="###FORM_URL###" name="ShopForm">
+	<div style="width:714px;">
+	<table  border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <th width="325" scope="col">wijn</th>
+	    <th width="207" scope="col">wijnhuis</th>
+	    <th width="100" scope="col">soort</th>
+	    <th width="100" scope="col">eenheid</th>
+	    <th width="100" scope="col"><nobr>prijs van<nobr></th>
+	    <th width="160" scope="col"><nobr>prijs voor<nobr></th>
+	    <th width="150" scope="col">aantal</th>
+	  </tr>
+   <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+     <!-- ###ITEM_LIST### begin -->
+       <!-- ###ITEM_SINGLE### begin-->
+        ###ITEM_SINGLE_PRE_HTML### 
+	    <td width="325" scope="row"><!--###LINK_ITEM###-->###PRODUCT_TITLE###<!--###LINK_ITEM###--></td>
+	    <td width="207"><nobr>###CATEGORY_TITLE###</nobr></td>
+	    <td width="100">###PRODUCT_COLOR###</td>
+	    <td width="100"><nobr>###PRODUCT_SIZE###</nobr></td>
+	    <td width="100" class="prijsvan">&euro; ###OLD_PRICE_NO_TAX###</td>
+	    <td width="60">&euro; ###PRICE_NO_TAX###</td>
+	    <td width="50"><input size="4" class="number" id="aantal1" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><img src="img/content/shop/table/+.gif" width="12" height="11" class="quantity" onClick="javascript:document.forms['ShopForm']['###FIELD_NAME###'].value++;"><br><img src="img/content/shop/table/_.gif" width="12" height="11" class="quantity" onClick="javascript:if(document.forms['ShopForm']['###FIELD_NAME###'].value*1)document.forms['ShopForm']['###FIELD_NAME###'].value--;"><br><img src="clear.gif" width="50" height="0"><input type="hidden" name="###FIELD_COLOR_NAME###" value="###PRODUCT_COLOR###"><input type="hidden" name="###FIELD_SIZE_NAME###" value="###PRODUCT_SIZE###"></td>
+        ###ITEM_SINGLE_POST_HTML### 
+       <!-- ###ITEM_SINGLE### end -->
+     <!-- ###ITEM_LIST### end -->
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+	</table>
+         </div> 
+	 <div class="shopTable-content-color">
+	  <div id="shop-buttonbar" align="right"><input name="order" type="submit" class="buttonAdd" value="voeg toe"></div>
+	</div>        
+	
+  </FORM>
+<!-- ###ITEM_LIST_TEMPLATE### end -->
+
+
+
+
+
+<!-- ###ITEM_SINGLE_DISPLAY### begin
+
+This subpart is used to display single products.
+
+-->
+		<TABLE border="0" cellspacing="0" cellpadding="1" width="100%">
+			<tr>
+				<td align="left"><!--###LINK_PREV_SINGLE### begin-->###GW2B###&lt;&lt; previous article###GW2E###<!--###LINK_PREV_SINGLE### end--></td>
+				<td align="right"><!--###LINK_NEXT_SINGLE### begin-->###GW2B###next article &gt;&gt;###GW2E###<!--###LINK_NEXT_SINGLE### end--></td>
+			</tr>
+		</TABLE>
+
+		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<FORM method="post" action="###FORM_URL###" name="###FORM_NAME###">
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=300 height=1></td>
+			</tr>
+			<tr>
+				<td colspan=3><img src="clear.gif" width=1 height=6></td>
+			</tr>
+			<tr> 
+				<td colspan=3 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
+  ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### --></b>###GW1E###<!-- ###LINK_ITEM###--></td>
+			</tr>
+			<TR>
+				<TD valign=top>###PRODUCT_IMAGE###</TD>
+				<td></td>
+				<TD valign=top>
+					###GW1B###
+						<B>category:</B> ###CATEGORY_TITLE### <br>
+						<B>product:</B> ###PRODUCT_ITEMNUMBER###<br>
+						<B>price:</B> <font color=red><strong>###PRICE_TAX### ¤</strong></font>###GW2B### &nbsp; (excl. tax ###PRICE_NO_TAX###)###GW2E###<br>
+
+						<B>info:</B><br>
+						###PRODUCT_NOTE###<br>
+					###GW1E###	<br>
+						<nobr>###GW2B### quantity: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; 						<input type="Submit" name="order" value="put in basket"
+onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
+						</nobr>
+				</TD>
+			</TR>
+</form>
+		</TABLE>
+<br>
+<br>
+
+	###GW2B###
+	<!--###LINK_ITEM###-->
+	<b><- TILBAGE TIL LISTEN</b>
+	<!--###LINK_ITEM###-->
+	###GW2E###
+
+
+<!-- ###ITEM_SINGLE_DISPLAY### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###ITEM_SEARCH###
+
+Subpart for the search-form
+
+-->
+<FORM method="post" action="###FORM_URL###">
+	<INPUT size="30" maxlength="100" type="text" name="sword" value="###SWORD###">
+	<input type="Submit" name="order" value="search">
+</form>
+<!-- ###ITEM_SEARCH### -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###ITEM_SEARCH_EMPTY### begin
+
+Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.
+
+-->
+###GW1B###<B>Søgningen var tom.</B>###GW1E###
+<!-- ###ITEM_SEARCH_EMPTY### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###BASKET_TEMPLATE### begin
+
+Subpart used to display the content of the shopping basket.
+The product list part has the exact same features as the regular LIST_ITEM_TEMPLATE subpart.
+In addition there's a number of fields used for delivery and payment information.
+
+-->
+
+<FORM method="post" action="###FORM_URL###" name="ShopForm">
+<div style="width:714px;">
+<table  border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <th width="145" scope="col">wijn</th>
+    <th width="120" scope="col">wijnhuis</th>
+    <th width="60" scope="col">soort</th>
+    <th width="100" scope="col">eenheid</th>
+    <th width="80" scope="col"><nobr>prijs van<nobr> </th>
+    <th width="80" scope="col"><nobr>prijs voor<nobr> </th>
+    <th width="80" scope="col">aantal</th>
+    <th width="69" class="recycle-bin" scope="col">&nbsp;</th>
+  </tr>
+  
+  
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+    <!-- ###ITEM_CATEGORY### begin -->
+	  <tr class="even">
+	    <td colspan=7>###CATEGORY_TITLE###</td>
+	  </tr>
+   <!-- ###ITEM_CATEGORY### end --> 
+      <!-- ###ITEM_LIST### begin -->
+	<!-- ###ITEM_SINGLE### begin-->
+	  <tr class="uneven">
+	    <td scope="row"><!--###LINK_ITEM###-->###PRODUCT_TITLE###<!--###LINK_ITEM###--></td>
+	    <td>###CATEGORY_TITLE###</td>
+	    <td>###PRODUCT_COLOR###</td>
+	    <td><nobr>###PRODUCT_SIZE###</nobr></td>
+	    <td class="prijsvan">&euro; ###OLD_PRICE_NO_TAX###</td>
+	    <td>&euro; ###PRICE_NO_TAX###</td>
+	    <td><input size="4" class="number" id="aantal1" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###">
+	    <img src="img/content/shop/table/+.gif" width="12" height="11" class="quantity" onClick="javascript:document.forms['ShopForm']['###FIELD_NAME_BASKET###'].value++;"><br><img src="img/content/shop/table/_.gif" width="12" height="11" class="quantity" onClick="javascript:if(document.forms['ShopForm']['###FIELD_NAME_BASKET###'].value*1)document.forms['ShopForm']['###FIELD_NAME_BASKET###'].value--;"></td>
+	    <td class="recycle-bin"><input type="image" src="fileadmin/html/img/bullets/recycle-bin.gif" name="products_update" value="Put in basket" onClick="document.forms['ShopForm']['###FIELD_NAME_BASKET###'].value=0;">
+	    <input type="hidden" name="mode_update" value="1"></td>
+	  </tr>
+       <!-- ###ITEM_SINGLE### end -->
+     <!-- ###ITEM_LIST### end -->
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+  <tr>
+    <td scope="row" colspan="7">&nbsp;</td>
+    <td class="recycle-bin">&nbsp;</td>
+  </tr>
+  <tr>
+    <td scope="row" class="uwvoordeel" colspan="6">Uw voordeel bedraagt </td>
+    <td class="uwvoordeel">&euro; ###PRICE_DISCOUNT###</td>
+    <td class="recycle-bin">&nbsp;</td>
+  </tr>
+    <tr>
+    <td scope="row" class="subtotaal" colspan="6">Subtotaal<br>(excl.BTW en bezorgkosten)</td>
+    <td class="prijssubtotal">&euro; ###PRICE_GOODSTOTAL_NO_TAX###</td>
+    <td class="recycle-bin">&nbsp;</td>
+  </tr>
+</table>
+</div>
+	
+<div class="shopTable-content-color">
+	<input type="hidden" name="mode_update" value="1">
+	<div id="shop-buttonbar"><input name="products_update" type="Submit" class="buttonShopLeft" value="< winkel verder"><input name="products_info" type="Submit" class="buttonShopRight" value="bestellen >" onClick="document.forms[0].action='###FORM_URL_INFO###';"></div>
+</div>
+</FORM>
+<!-- ###BASKET_TEMPLATE### end -->
+
+
+
+
+
+
+
+<!-- ###BASKET_INFO_TEMPLATE### begin
+
+Subpart used if the GLOBAL var "products_info" was set. This is normally used to let people enter address information separately from the real basket
+Exact same features as BASKET_TEMPLATE
+
+-->
+
+
+<FORM method="post" action="###FORM_URL###" name="ShopForm">
+<div style="width:714px;">
+<table  border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <th width="145" scope="col">wijn</th>
+    <th width="120" scope="col">wijnhuis</th>
+    <th width="60" scope="col">soort</th>
+    <th width="80" scope="col">eenheid</th>
+    <th width="80" scope="col"><nobr>prijs van<nobr> </th>
+    <th width="80" scope="col"><nobr>prijs voor<nobr> </th>
+    <th width="80" scope="col">aantal</th>
+    <th width="69" class="recycle-bin" scope="col">&nbsp;</th>
+  </tr>
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+    <!-- ###ITEM_CATEGORY### begin -->
+      <!-- ###ITEM_LIST### begin -->
+	<!-- ###ITEM_SINGLE### begin-->
+	  <tr class="uneven">
+	    <td scope="row"><!--###LINK_ITEM###-->###PRODUCT_TITLE###<!--###LINK_ITEM###--></td>
+	    <td>###CATEGORY_TITLE###</td>
+	    <td>###PRODUCT_COLOR###</td>
+	    <td><nobr>###PRODUCT_SIZE###</nobr></td>
+	    <td class="prijsvan">&euro; ###OLD_PRICE_NO_TAX###</td>
+	    <td>&euro; ###PRICE_NO_TAX###</td>
+	    <td><input size="4" class="number" id="aantal1" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+	    <img src="img/content/shop/table/+.gif" width="12" height="11" class="quantity" onClick="javascript:document.forms['ShopForm']['###FIELD_NAME###'].value++;"><br><img src="img/content/shop/table/_.gif" width="12" height="11" class="quantity" onClick="javascript:if(document.forms['ShopForm']['###FIELD_NAME###'].value*1)document.forms['ShopForm']['###FIELD_NAME###'].value--;"></td>
+	    <td class="recycle-bin"><input type="image" src="fileadmin/html/img/bullets/recycle-bin.gif" name="products_update" value="Put in basket" onClick="document.forms['ShopForm']['###FIELD_NAME###'].value=0;">
+	    <input type="hidden" name="mode_update" value="1"></td>
+	  </tr>
+       <!-- ###ITEM_SINGLE### end -->
+     <!-- ###ITEM_LIST### end -->
+   <!-- ###ITEM_CATEGORY### end -->
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+  <tr>
+    <td scope="row" colspan="7">&nbsp;</td>
+    <td class="recycle-bin">&nbsp;</td>
+  </tr>
+  <tr>
+    <td scope="row" class="uwvoordeel" colspan="6">Uw voordeel bedraagt </td>
+    <td class="uwvoordeel">&euro; ###PRICE_DISCOUNT###</td>
+    <td class="recycle-bin">&nbsp;</td>
+  </tr>
+    <tr>
+    <td scope="row" class="subtotaal" colspan="6">Subtotaal<br>(excl.BTW en bezorgkosten)</td>
+    <td class="prijssubtotal">&euro; ###PRICE_GOODSTOTAL_NO_TAX###</td>
+    <td class="recycle-bin">&nbsp;</td>
+  </tr>
+</table>
+</div>
+	
+<input type="hidden" name="mode_update" value="1">
+</FORM>
+<BR>
+<!-- ###BASKET_INFO_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+<!-- ###BASKET_PAYMENT_TEMPLATE### begin
+
+Subpart used if the GLOBAL var "products_payment" was set. This displays the final information about the order before the payment is initiated.
+Exact same features as BASKET_TEMPLATE
+
+-->
+<FORM method="post" action="###FORM_URL###" name="ShopForm">
+<div style="width:714px;">
+ <table  border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <th colspan="3" class="bold">Uw gegevens <a href="index.php?id=gegevens" id="change"> gegevens wijzigen </a></th>
+   </tr>
+   <tr class="uneven">
+     <th width="32%" class="subkop">Persoonlijke gegevens</th>
+     <th width="26%" class="subkop">Factuuradres</th>
+     <th width="42%" class="subkop">Bezorgadres</th>
+   </tr>
+   <tr class="uneven">
+     <td>
+       ###PERSON_NAME### (###PERSON_TX_FEUSEREXTRAFIELDS_INITIALS_NAME###)<br>
+       ###PERSON_DATE_OF_BIRTH###<br>
+       ###PERSON_TELEPHONE###<br>
+       ###PERSON_TX_FEUSEREXTRAFIELDS_GSM_TEL###<br>
+       ###PERSON_EMAIL###<br>
+     </td>
+     <td width="26%">
+       ###PERSON_COMPANY###<br>
+       ###PERSON_ADDRESS### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBER### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBERADD###<br>
+       ###PERSON_TX_FEUSEREXTRAFIELDS_POBOX###<br>
+       ###PERSON_ZIP### ###PERSON_CITY###<br>
+       ###PERSON_TX_FEUSEREXTRAFIELDS_COUNTRY###
+     </td>
+     <td width="42%">
+       ###DELIVERY_TX_FEUSEREXTRAFIELDS_COMPANY_DELIV###<br>
+       ###DELIVERY_TX_FEUSEREXTRAFIELDS_ADDRESS_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_HOUSENUMBER_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_HOUSENUMBERADD_DELIV###<br>
+       ###DELIVERY_TX_FEUSEREXTRAFIELDS_ZIP_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_CITY_DELIV###<br>
+       ###DELIVERY_TX_FEUSEREXTRAFIELDS_COUNTRY_DELIV###
+     </td>
+   </tr>
+ </table>
+ <table border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <th colspan="7" scope="col" class="bold">Uw bestelling <a href="index.php?id=bestellen" id="change"> bestelling wijzigen </a></th>
+   </tr>
+<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+<!-- ###ITEM_LIST### begin -->
+ <!-- ###ITEM_SINGLE### begin-->
+   <tr class="uneven">
+     <td width="183" scope="row"><a href="#"><!--###LINK_ITEM###-->###PRODUCT_TITLE###<!--###LINK_ITEM###--></td>
+     <td width="97"><nobr>###CATEGORY_TITLE###</nobr></td>
+     <td width="73">###PRODUCT_COLOR###</td>
+     <td width="69"><nobr>###PRODUCT_SIZE###</nobr></td>
+     <td width="59">###FIELD_QTY### ###PRODUCT_UNIT###</td>
+     <td width="58" class="prijsvan">&euro; ###OLD_PRICE_NO_TAX###</td>
+     <td width="68" align="right">&euro; ###PRICE_NO_TAX###</td>
+   </tr>   
+ <!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+   <tr>
+     <td scope="row" colspan="7">&nbsp;</td>
+   </tr>
+   <tr class="uneven">
+     <td scope="row" colspan="4">&nbsp;</td>
+     <td colspan="2">Totaal</td>
+     <td align="right">&euro; ###PRICE_GOODSTOTAL_NO_TAX###</td>
+   </tr>
+   <tr>
+     <td scope="row" colspan="4">&nbsp;</td>
+     <td colspan="2">Bezorgkosten (###SHIPPING_TITLE###)</td>
+     <td align="right">&euro; ###PRICE_SHIPPING_NO_TAX###</td>
+   </tr>
+   <tr class="uneven">
+     <td scope="row" colspan="4">&nbsp;</td>
+     <td colspan="2">BTW</td>
+     <td align="right">&euro; ###PRICE_VAT###</td>
+   </tr>
+   <tr class="even">
+     <td colspan="1" scope="row">Kurkensaldo <span class="kurkensaldo">###AMOUNT_CREDITPOINTS###</span></td>
+     <!-- ###SUB_CREDITPOINTS_AMOUNT_EMPTY### begin -->
+     <td colspan='6'>&nbsp;</td>
+   </tr>     
+     <!-- ###SUB_CREDITPOINTS_AMOUNT_EMPTY### end -->
+     <!-- ###SUB_CREDITPOINTS_AMOUNT### begin -->
+     <td scope="row"><input size="5" class="number" id="aantal1" maxlength="5" type="text" name="###CHANGE_AMOUNT_CREDITPOINTS###" value="###AMOUNT_CREDITPOINTS_QTY###"> <img src="img/content/shop/table/+.gif" width="12" height="11" class="quantity" onClick="javascript:document.forms['ShopForm']['###CHANGE_AMOUNT_CREDITPOINTS###'].value++;"><br><img src="img/content/shop/table/_.gif" width="12" height="11" class="quantity" onClick="javascript:document.forms['ShopForm']['###CHANGE_AMOUNT_CREDITPOINTS###'].value--;"></td>
+     <td colspan="2" scope="row"><nobr><input name="products_payment" type="submit" class="buttonsmall" value="kurken inruilen" onClick="if (!document.forms['ShopForm']['###CHANGE_AMOUNT_CREDITPOINTS###'].value!=''){document.forms['ShopForm']['###CHANGE_AMOUNT_CREDITPOINTS###'].value=0;};"> <span class="bold"><a href="#" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('info', '', 'img/bullets/info-icon-hover.gif', 1)"><img src="img/bullets/info-icon.gif" alt="meer informatie" name="info2" width="14" height="14" border="0" class="info" id="info2"></a></span></nobr></td>
+     <!-- ###SUB_CREDITPOINTS_AMOUNT### end -->
+     <!-- ###SUB_CREDITPOINTS_DISCOUNT_EMPTY### begin -->
+     <td colspan='3'>&nbsp;</td>
+   </tr>
+     <!-- ###SUB_CREDITPOINTS_DISCOUNT_EMPTY### end -->
+   <!-- ###SUB_CREDITPOINTS_DISCOUNT### begin -->
+     <td colspan='2' scope='row'>Uw kurken korting:</td>
+     <td align="right">- &euro; ###CREDIT_DISCOUNT###</td>
+   </tr>
+   <!-- ###SUB_CREDITPOINTS_DISCOUNT### end -->
+   
+   <tr class="uneven" valign="middle">
+   <!-- ###SUB_VOUCHERCODE_EMPTY### begin -->
+   <!-- ###SUB_VOUCHERCODE_START### begin -->
+     <td colspan="2" class="uwvoordeel" scope="row">Voucher: <input name="###INSERT_VOUCHERCODE###" type="text" class="field" value="###VALUE_VOUCHERCODE###"></td>
+     <td colspan="2" class="uwvoordeel" scope="row"><input name="products_payment" type="submit" class="buttonsmall" value="korting berekenen" onClick="if (!document.forms['ShopForm']['###INSERT_VOUCHERCODE###'].value!=''){document.forms['ShopForm']['###INSERT_VOUCHERCODE###'].value='';};"> <span class="bold"><a href="#" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('info', '', 'img/bullets/info-icon-hover.gif', 1)"><img src="img/bullets/info-icon.gif" alt="meer informatie" name="info3" width="14" height="14" border="0" class="info" id="info3"></a></span></td>
+   <!-- ###SUB_VOUCHERCODE_START### end -->
+   <!-- ###SUB_VOUCHERCODE_NODISCOUNT### begin -->
+     <td colspan='3'>&nbsp;</td>
+   <!-- ###SUB_VOUCHERCODE_NODISCOUNT### end -->
+   <!-- ###SUB_VOUCHERCODE_DISCOUNT### begin -->
+     <td colspan='2' scope='row'>Uw voucher korting:</td>
+     <td align="right">- &euro; ###VOUCHER_DISCOUNT###</td>
+   <!-- ###SUB_VOUCHERCODE_DISCOUNT### end -->
+   <!-- ###SUB_VOUCHERCODE_DISCOUNTWRONG### begin -->
+     <td colspan='3' scope='row'>Uw ingevulde vouchercode is fout. Probeer opnieuw.</td>
+   <!-- ###SUB_VOUCHERCODE_DISCOUNTWRONG### end -->
+   <!-- ###SUB_VOUCHERCODE_DISCOUNTOWNID### begin -->
+     <td colspan='3' scope='row'>Uw heeft uw eigen vouchercode ingevuld. Dit is niet geoorloofd.</td>
+   <!-- ###SUB_VOUCHERCODE_DISCOUNTOWNID### end -->
+   <!-- ###SUB_VOUCHERCODE_EMPTY### end -->
+   <!-- ###SUB_VOUCHERCODE### begin -->
+     <td colspan="5" class="uwvoordeel" scope="row">U hebt reeds voucher korting genoten</td>
+     <td class="uwvoordeel">&nbsp;</td>
+     <td class="uwvoordeel">&nbsp;</td>
+   <!-- ###SUB_VOUCHERCODE### end -->
+   </tr>
+
+   <tr>
+     <td scope="row" class="subtotaal" colspan="6">Totaal (incl.BTW en bezorgkosten)</td>
+     <td class="prijssubtotal">&euro; ###PRICE_TOTAL_TAX###</td>
+   </tr>
+ </table>   
+ <table  border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <th colspan="2" class="bold">Betaal <a href="#" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('info', '', 'img/bullets/info-icon-hover.gif', 1)"><img src="img/bullets/info-icon.gif" alt="meer informatie" name="info1" width="14" height="14" border="0" class="info" id="info1"></a></th>
+     <th colspan="2" class="bold"><div class="toelichting">Velden met * zijn verplicht</div></th>
+   </tr>
+   <tr class='uneven'>
+     <td width='25%'>Kies een betaalwijze *</td>
+     <td width='31%'>###PAYMENT_SELECTOR###</td>
+     <td width='17%'>excl.&euro; ###PRICE_PAYMENT_NO_TAX###</td>
+     <td width='27%'>incl. &euro; ###PRICE_PAYMENT_TAX###</td>
+   </tr>
+   <tr>
+     <td>(Post)bankrekening * </td>
+     <td><input name='payment_number' type='text' class='field'></td>
+     <td>&nbsp;</td>
+     <td>&nbsp;</td>
+   </tr>
+   <tr class='uneven'>
+     <td>Naam rekeninghouder *</td>
+     <td><input name='payment_name' type='text' class='field'></td>
+     <td>&nbsp;</td>
+     <td>&nbsp;</td>
+   </tr>
+   <tr>
+     <td>Plaats * </td>
+     <td><input name='payment_city' type='text' class='field'></td>
+     <td>&nbsp;</td>
+     <td>&nbsp;</td>
+   </tr>
+ </table>
+</div>
+
+<div class="shopTable-content-color">
+   <input type="hidden" name="products_payment" value="1">
+   <div id="shop-buttonbar"><input name="products_finalize" type="Submit" class="buttonShopRight" value="bevestigen" onClick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">
+   </div>
+</div>
+</form>
+
+
+<!-- ###BASKET_PAYMENT_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###BASKET_ORDERTHANKS_TEMPLATE#### begin
+Subpart used if the order is finalized and this is thus to thank the person.
+-->
+
+<div style="width:714px;">
+ <table  border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <th colspan="3" class="bold">Beste ###PERSON_NAME###
+<p class="bodytext">Hartelijk dank voor uw bestelling<br>
+Met vriendelijke groet<br>
+Meer Wijn<br>
+Wijngaard 7<br>
+Den Haag<br>
+Tel.: +49 (0)7195 583372<br>
+Email: info@meerwijn.nl</p>
+     </th>
+   </tr>
+ </table>
+</div>
+<!-- ###BASKET_ORDERTHANKS_TEMPLATE### end -->
+
+
+<!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE#### begin
+
+Subpart used if the order is finalized and this is thus the confirmation shown and used to send an email message
+
+-->
+
+<div style="width:714px;">
+ <table  border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <th colspan="3" class="bold">Uw gegevens</th>
+   </tr>
+   <tr class="uneven">
+     <th width="32%" class="subkop">Persoonlijke gegevens</th>
+     <th width="26%" class="subkop">Factuuradres</th>
+     <th width="42%" class="subkop">Bezorgadres</th>
+   </tr>
+   <tr class="uneven">
+     <td>
+       ###PERSON_NAME### (###PERSON_TX_FEUSEREXTRAFIELDS_INITIALS_NAME###)<br>
+       ###PERSON_DATE_OF_BIRTH###<br>
+       ###PERSON_TELEPHONE###<br>
+       ###PERSON_TX_FEUSEREXTRAFIELDS_GSM_TEL###<br>
+       ###PERSON_EMAIL###<br>
+     </td>
+     <td width="26%">
+       ###PERSON_COMPANY###<br>
+       ###PERSON_ADDRESS### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBER### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBERADD###<br>
+       ###PERSON_TX_FEUSEREXTRAFIELDS_POBOX###<br>
+       ###PERSON_ZIP### ###PERSON_CITY###<br>
+       ###PERSON_TX_FEUSEREXTRAFIELDS_COUNTRY###
+     </td>
+     <td width="42%">
+       ###DELIVERY_TX_FEUSEREXTRAFIELDS_COMPANY_DELIV###<br>
+       ###DELIVERY_TX_FEUSEREXTRAFIELDS_ADDRESS_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_HOUSENUMBER_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_HOUSENUMBERADD_DELIV###<br>
+       ###DELIVERY_TX_FEUSEREXTRAFIELDS_ZIP_DELIV### ###DELIVERY_TX_FEUSEREXTRAFIELDS_CITY_DELIV###<br>
+       ###DELIVERY_TX_FEUSEREXTRAFIELDS_COUNTRY_DELIV###
+     </td>
+   </tr>
+ </table>
+ 
+ <table border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <th colspan="7" scope="col" class="bold">Uw bestelling</th>
+   </tr>
+<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+<!-- ###ITEM_LIST### begin -->
+ <!-- ###ITEM_SINGLE### begin-->
+   <tr class="uneven">
+     <td width="183" scope="row"><a href="#"><!--###LINK_ITEM###-->###PRODUCT_TITLE###<!--###LINK_ITEM###--></td>
+     <td width="97"><nobr>###CATEGORY_TITLE###</nobr></td>
+     <td width="73">###PRODUCT_COLOR###</td>
+     <td width="69"><nobr>###PRODUCT_SIZE###</nobr></td>
+     <td width="59">###FIELD_QTY### ###PRODUCT_UNIT###</td>
+     <td width="58" class="prijsvan">&euro; ###OLD_PRICE_NO_TAX###</td>
+     <td width="68" align="right">&euro; ###PRICE_NO_TAX###</td>
+   </tr>   
+ <!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+   <tr>
+     <td scope="row" colspan="7">&nbsp;</td>
+   </tr>
+   <tr class="uneven">
+     <td scope="row" colspan="4">&nbsp;</td>
+     <td colspan="2">Totaal</td>
+     <td align="right">&euro; ###PRICE_GOODSTOTAL_NO_TAX###</td>
+   </tr>
+   <tr>
+     <td scope="row" colspan="4">&nbsp;</td>
+     <td colspan="2">Bezorgkosten (###SHIPPING_TITLE###)</td>
+     <td align="right">&euro; ###PRICE_SHIPPING_NO_TAX###</td>
+   </tr>
+   <tr class="uneven">
+     <td scope="row" colspan="4">&nbsp;</td>
+     <td colspan="2">BTW</td>
+     <td align="right">&euro; ###PRICE_VAT###</td>
+   </tr>
+   <!-- ###SUB_CREDITPOINTS_DISCOUNT### begin -->
+   <tr class="even">
+     <td scope="row" colspan="4">&nbsp;</td>
+     <td colspan='2'>Uw kurken korting:</td>
+     <td align="right">- &euro; ###CREDIT_DISCOUNT###</td>
+   </tr>
+   <!-- ###SUB_CREDITPOINTS_DISCOUNT### end -->
+   <!-- ###SUB_VOUCHERCODE_EMPTY### begin -->
+   <!-- ###SUB_VOUCHERCODE_DISCOUNT### begin -->
+   <tr class="even">
+     <td scope="row" colspan="4">&nbsp;</td>
+     <td colspan='2'>Uw voucher korting:</td>
+     <td align="right">- &euro; ###VOUCHER_DISCOUNT###</td>
+   </tr>
+   <!-- ###SUB_VOUCHERCODE_DISCOUNT### end -->
+   <!-- ###SUB_VOUCHERCODE_EMPTY### end -->
+   <tr>
+     <td scope="row" class="subtotaal" colspan="6">Totaal (incl.BTW en bezorgkosten)</td>
+     <td class="prijssubtotal">&euro; ###PRICE_TOTAL_TAX###</td>
+   </tr>
+ </table>   
+ <table  border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <th colspan="2" class="bold">Betaal <a href="#" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('info', '', 'img/bullets/info-icon-hover.gif', 1)"><img src="img/bullets/info-icon.gif" alt="meer informatie" name="info1" width="14" height="14" border="0" class="info" id="info1"></a></th>
+     <th colspan="2" class="bold"><div class="toelichting">Velden met * zijn verplicht</div></th>
+   </tr>
+   <tr class="uneven">
+     <td width="25%">Betaalwijze</td>
+     <td width="31%">###PAYMENT_TITLE###</td>
+     <td width="17%">excl.&euro; ###PRICE_PAYMENT_NO_TAX###</td>
+     <td width="27%">incl. &euro; ###PRICE_PAYMENT_TAX###</td>
+   </tr>
+   <tr>
+     <td>(Post)bankrekening</td>
+     <td>35.55.555.55</td>
+     <td>&nbsp;</td>
+     <td>&nbsp;</td>
+   </tr>
+   <tr class="uneven">
+     <td>Naam rekeninghouder</td>
+     <td>Bert Hiddink</td>
+     <td>&nbsp;</td>
+     <td>&nbsp;</td>
+   </tr>
+   <tr>
+     <td>Plaats</td>
+     <td>Sinderen</td>
+     <td>&nbsp;</td>
+     <td>&nbsp;</td>
+   </tr>
+ </table>
+</div>
+<!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### end -->
+
+
+
+
+
+
+
+<!-- ###BASKET_TEMPLATE_EMPTY### begin
+If the basket is empty this subpart is displayed
+-->
+<br>
+###GW1B###<p>De winkelwagen bevat geen artikelen...</p>###GW1E###
+<!-- ###BASKET_TEMPLATE_EMPTY### end -->
+
+
+
+
+
+
+
+
+<!-- ###BASKET_REQUIRED_INFO_MISSING### begin
+If payment is initiated but the required information fields are not filled in correctly,  this happens
+-->
+<p>###GW1B###Fout bij invoeren van gegevens###GW1E###<br>
+###GW1B###<B>U heeft niet alle adresgegevens opgegeven of bent niet ingelogd...Probeer het opnieuw!</B>###GW1E###</p>
+<!--<FORM method="post" action="###FORM_URL###">
+<input type="Submit" name="products_info" value="Adresgegevens invoeren" onclick="document.forms[0].action='###FORM_URL_INFO###';">
+</FORM>-->
+<!-- ###BASKET_REQUIRED_INFO_MISSING### end -->
+
+
+
+
+
+
+
+
+
+<!-- ###TRACKING_DISPLAY_INFO### begin
+Displays the view of the order status by tracking codes.
+-->
+<p>Uw order met No. <b>###ORDER_UID###</b> besteld op <!-- ###STATUS_ITEM### begin--> <b>###ORDER_STATUS_TIME###</b><!-- ###STATUS_ITEM### end -->.</p>
+
+###ORDER_HTML_OUTPUT###
+<!-- ###TRACKING_DISPLAY_INFO### end -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###TRACKING_ENTER_NUMBER### begin
+Displays form for entering the tracking number.
+-->
+###GW1B###<B>Bestellstatus-code invoeren:</B>###GW1E###<br>
+<FORM method="post" action="###FORM_URL###">
+<input type="text" name="tracking"><br>
+<input type="Submit" name="submit" value="status bekijken">
+</FORM>
+
+<!-- ###ADMIN_CONTROL### begin -->
+<table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
+<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
+###GW1B### <strong>Shop beheerder:</strong><br>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+<FORM method="post" action="###FORM_URL###">
+###GW1B###Code:###GW1B###<br>
+<input type="password" size=40 name="update_code" value="">
+<input type="Submit" name="submit" value="code invoeren">
+</FORM>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+</td></tr></table>
+</td></tr>
+</table><br>
+<!-- ###ADMIN_CONTROL### end -->
+
+<!-- ###TRACKING_ENTER_NUMBER### end -->
+
+<!-- ###TRACKING_WRONG_NUMBER### begin
+Displays error message if no tracking code.
+-->
+###GW1B###<B>De bestelstatus-code bestaat niet! Probeer het opnieuw!</B>###GW1E###<br>
+
+<FORM method="post" action="###FORM_URL###">
+<input type="text" name="tracking"><br>
+<input type="Submit" name="submit" value="bestelstatus opvragen">
+</FORM>
+
+<!-- ###TRACKING_WRONG_NUMBER### end -->
+
+
+
+<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### begin
+Subpart used as template for the notify emails
+First line is used as subject for the mail.
+-->
+
+meerwijn.nl bestelstatus (####ORDER_UID###)
+
+BESTELINFORMATION (####ORDER_UID###):
+De status van uw bestelling wordt gewijzigd:
+
+Tijd: ###ORDER_STATUS_TIME###
+Status: ###ORDER_STATUS_INFO###
+
+Opmerking:
+###ORDER_STATUS_COMMENT###
+
+
+BESTELSTATUS:
+Bewaar deze informatie goed voor later:
+###ORDER_TRACKING_NO###
+
+Klik hier om uw gegevens op te vragen:
+http://meerwijn.nl/meerwijn/index.php?id=215&tracking=###ORDER_TRACKING_NO###
+
+Met vriendelijke groet.
+meerwijn.nl
+Meer Wijn
+Wijngaard 7
+Den Haag
+Tel.: +49 (0)7195 583372
+Email: info@meerwijn.nl<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###EMAIL_PLAINTEXT_TEMPLATE### begin
+Subpart used as template for the order-emails
+First line is used as subject for the mail.
+-->
+
+Bestelling ####ORDER_UID###
+
+Bestelingsbevestigin:
+Uw bestelling is verwerkt en heeft de volgende code: ###ORDER_UID###.
+Verwijs bij elk contact hierover naar dit nummer.
+
+BESTELSTATUS:
+U kunt de status van uw bestelling hier opvragen:
+http://meerwijn.nl/meerwijn/index.php?id=215&tracking=###ORDER_TRACKING_NO###
+
+Uw bestelling:
+
+1) ARTIKEL:
+<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
+###PRODUCT_TITLE###
+Aantal: ###FIELD_QTY###
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+
+2) FACTUURADRES:
+###PERSON_NAME### (###PERSON_TX_FEUSEREXTRAFIELDS_INITIALS_NAME###)
+###PERSON_ADDRESS###
+Telefoon: ###PERSON_TELEPHONE###
+Email: ###PERSON_EMAIL###
+
+3) AFLEVERADRES:
+###PERSON_COMPANY###
+###PERSON_ADDRESS### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBER### ###PERSON_TX_FEUSEREXTRAFIELDS_HOUSENUMBERADD###
+###PERSON_TX_FEUSEREXTRAFIELDS_POBOX###
+###PERSON_ZIP### ###PERSON_CITY###
+###PERSON_TX_FEUSEREXTRAFIELDS_COUNTRY###
+
+att. ###DELIVERY_NAME###
+Telefoon: ###DELIVERY_TELEPHONE###
+Email: ###DELIVERY_EMAIL###
+
+4) OPMERKINGEN:
+###DELIVERY_NO
+TE_DISPLAY###
+
+5) VERZEND- EN VERPAKKINGSKOSTEN:
+Prijs: ###PRICE_SHIPPING_TAX### EUR
+
+6) BETALINGSMETHODE:
+###PAYMENT_TITLE###
+Prijs: ###PRICE_PAYMENT_TAX### EUR
+Totaal: EUR ###PRICE_TOTAL_TAX### (excl. BTW. EUR ###PRICE_TOTAL_NO_TAX###)
+        --------------------------------------------------------
+        
+Hartelijk dank voor uw bestelling
+Met vriendelijke groet
+Meer Wijn
+Wijngaard 7
+Den Haag
+Tel.: +49 (0)7195 583372
+Email: info@meerwijn.nl
+
+<!-- ###EMAIL_PLAINTEXT_TEMPLATE### end -->
+
+
+</body>
+</html>
+
+
+
+<!-- ###EMAIL_HTML_SHELL### begin -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+
+<STYLE TYPE="text/css">
+<!--
+
+		select  {  font-family: Verdana, Arial, Helvetica; font-size: 10px }
+		textarea  {  font-family: Verdana, Arial, Helvetica; font-size: 10px}
+		input   {  font-family: Verdana, Arial, Helvetica; font-size: 10px }
+
+-->
+</STYLE>
+<title>meer wijn: betaling </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="generator" content="Typo 3.1 CMS">
+
+<script language="javascript">
+<!--
+	browserName = navigator.appName;
+	browserVer = parseInt(navigator.appVersion);
+	var msie4 = (browserName == "Microsoft Internet Explorer" && browserVer >= 4);
+	if ((browserName == "Netscape" && browserVer >= 3) || msie4) {version = "n3";} else {version = "n2";}
+
+	function openPic(url,winName,winParams)	{
+		var theWindow = window.open(url,winName,winParams);
+		if (theWindow)	{theWindow.focus();}
+	}
+	function blurLink(theObject)	{
+		if (msie4)	{
+			theObject.blur();
+		}
+	}
+
+
+// End Hiding Script -->
+</script>
+
+</head>
+<BODY bgColor="#FBF9F7" link="black" vlink="black" alink="black" leftmargin="10" topmargin="10" marginwidth="10" marginheight="10">
+
+###HTML_BODY###
+
+</body></html>
+
+<!-- ###EMAIL_HTML_SHELL### end -->
+
+
+ 
+<!-- ###BASKET_OVERVIEW_TEMPLATE### begin -->
+
+<ul class="top">
+<li class="shopchart"><!--###LINK_BASKET###-->winkelwagen<br>€ ###PRICE_GOODSTOTAL_NO_TAX###<!--###LINK_BASKET###--></li>
+</ul>
+
+<!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
+
+ 
+
+ 
+
+<!-- ###BASKET_OVERVIEW_EMPTY### begin -->
+
+<ul class="top">
+<li class="shopchart"><!--###LINK_BASKET###-->winkelwagen is leeg<!--###LINK_BASKET###--></li>
+</ul>
+
+<!-- ###BASKET_OVERVIEW_EMPTY### end -->
+

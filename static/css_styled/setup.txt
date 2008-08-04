@@ -13,7 +13,7 @@ plugin.tt_products = USER
 plugin.tt_products {
   userFunc = tx_ttproducts_pi1->main
   templateFile = {$plugin.tt_products.file.templateFile}
-  templateStyle = old-style
+  templateStyle = css-styled
   pid_list = {$plugin.tt_products.pid_list}
   code.field = select_key
   defaultCode = HELP
@@ -102,14 +102,14 @@ plugin.tt_products {
   clickItemsIntoSubmenu = {$plugin.tt_products.clickItemsIntoSubmenu}
   basketMaxQuantity = {$plugin.tt_products.basketMaxQuantity}
   quantityIsFloat = {$plugin.tt_products.quantityIsFloat}
-  
+
   CSS.tt_products.LIST.row.even = {$plugin.tt_products.CSSRowEven}
   CSS.tt_products.LIST.row.uneven = {$plugin.tt_products.CSSRowUneven}
-  CSS.tt_products.LIST.itemSingleWrap = <td>|</td>
-  CSS.tt_products.LIST.itemRowWrap = <tr class="###UNEVEN###">|</tr>
+  CSS.tt_products.LIST.itemSingleWrap = <div class="###UNEVEN###">|</div>
+  CSS.tt_products.LIST.itemRowWrap = 
   CSSListDefault = {$plugin.tt_products.CSSListDefault}
   CSSListCurrent = {$plugin.tt_products.CSSListCurrent}
-  
+
   NoSingleViewOnList = {$plugin.tt_products.NoSingleViewOnList}
 
   PIDagb = {$plugin.tt_products.PIDagb}
@@ -219,7 +219,7 @@ plugin.tt_products {
       niceText = 1
     }
   }
- 
+
   max_note_length = {$plugin.tt_products.max_note_length}
 
   bulkilyWarning = {$plugin.tt_products.bulkilyWarning}
@@ -264,6 +264,7 @@ plugin.tt_products {
 
   table.tt_products = tt_products
   table.tt_products {
+    address = address
     itemnumber = itemnumber
     variant {
       1 = color
@@ -279,14 +280,14 @@ plugin.tt_products {
       11 = quality
     }
   }
-
+ 
   conf.tt_products.ALL {
     orderBy = title
     requiredFields = uid,pid,category,price,price2,tax,inStock
   	language.type = table
   	language.table = tt_products_language
     controlFields {
-	newItemDays = starttime
+	newItemDays = crdate, starttime
     }
   }
 
@@ -315,7 +316,7 @@ plugin.tt_products {
   table.tt_products_cat = tt_products_cat
   conf.tt_products_cat.ALL {
     language.type = noTranslation
-    orderBy = crdate, sorting
+    orderBy = sorting
   }
 
   conf.pages.ALL {
@@ -356,7 +357,7 @@ plugin.tt_products {
   _CSS_DEFAULT_STYLE (
       .tx-ttproducts-pi1-wrap1 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }
       .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }   
-  )   
+  )
 }
 
 ## This enables the record item to display product items

@@ -38,7 +38,6 @@
  *
  */
 
-
 global $TYPO3_CONF_VARS;
 
 class tx_ttproducts_feuser {
@@ -46,11 +45,13 @@ class tx_ttproducts_feuser {
 	var $cnf;
 	var $conf;
 	var $config;
-
 	var $dataArray; // array of read in frontend users
 	var $table;		 // object of the type tx_table_db
 	var $fields = array();
 	var $tableconf;
+	var $bCondition = FALSE;
+	var $bConditionRecord = FALSE;
+
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -65,7 +66,7 @@ class tx_ttproducts_feuser {
 
 		$tablename = ($tablename ? $tablename : 'fe_users');
 		$this->tableconf = $this->cnf->getTableConf('fe_users');
-		
+
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray($tablename);
 		$this->fields['payment'] = ($this->tableconf['payment'] ? $this->tableconf['payment'] : '');
@@ -112,7 +113,71 @@ class tx_ttproducts_feuser {
 	} // isUserInGroup
 
 
-	function getWrappedSubpartArray(&$subpartArray, &$wrappedSubpartArray)	{
+	function setCondition($row, $funcTablename)	{
+		global $TSFE;
+
+		$bCondition = FALSE;
+
+		if (isset($this->conf['conf.'][$funcTablename.'.']['ALL.']['fe_users.']['date_of_birth.']['period.']['y']))	{
+			$year = $this->conf['conf.'][$funcTablename.'.']['ALL.']['fe_users.']['date_of_birth.']['period.']['y'];
+			$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
+
+			if ($infoObj->infoArray['billing']['date_of_birth'])	{
+				$timeTemp = $infoObj->infoArray['billing']['date_of_birth'];
+				$bAge = TRUE;
+			} else if ($TSFE->fe_user->user)	{
+				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
+					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
+		
+					// prepare for handling dates before 1970
+					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
+					$timeTemp = $adodbTime->adodb_date('d-m-Y', $TSFE->fe_user->user['date_of_birth']);
+				} else {
+					$timeTemp = date('d-m-Y', ($TSFE->fe_user->user['date_of_birth']));
+				}
+				$bAge = TRUE;
+			} else {
+				$bAge = FALSE;
+			}
+
+			if ($bAge)	{
+				$feDateArray = t3lib_div::trimExplode('-', $timeTemp);
+				$date = getdate();
+				$offset = 0;
+				if ($date['mon'] < $feDateArray[1])	{
+					$offset = 1;
+				}
+				if ($date['year'] - $feDateArray[2] - $offset >= $year)	{
+					$bCondition = TRUE;
+				}
+			}
+		} else {
+			$bCondition = TRUE;
+		}
+
+		$whereConf = $this->conf['conf.'][$funcTablename.'.']['ALL.']['fe_users.']['where'];
+		$whereArray = t3lib_div::trimExplode('IN', $whereConf);
+		$pos1 = strpos ($whereArray[1], '(');
+		$pos2 = strpos ($whereArray[1], ')');
+		$inString = substr ($whereArray[1], $pos1+1, $pos2-$pos1-1);
+
+		$valueArray = t3lib_div::trimExplode(',', $inString);
+		foreach ($valueArray as $value)	{
+			if ($row[$whereArray[0]] == $value)	{
+				$this->bConditionRecord = TRUE;
+			}
+		}
+
+		if ($bCondition)	{
+			$this->bCondition = TRUE;
+		}
+	}
+
+	function getCondition()	{
+		return $this->bCondition;
+	}
+
+	function getWrappedSubpartArray(&$subpartArray, &$wrappedSubpartArray, $funcTablename)	{
 		global $TSFE;
 
 		if ($TSFE->fe_user->user)	{
@@ -122,7 +187,15 @@ class tx_ttproducts_feuser {
 			$wrappedSubpartArray['###FE_GROUP_0_TEMPLATE###'] = array('','');
 			$subpartArray['###FE_GROUP_1_TEMPLATE###'] = '';
 		}
-		return;		
+
+		if ($this->getCondition() || !$this->bConditionRecord)	{
+			$wrappedSubpartArray['###FE_CONDITION1_TRUE_TEMPLATE###'] = array('','');
+			$subpartArray['###FE_CONDITION1_FALSE_TEMPLATE###'] = '';
+		} else {
+			$wrappedSubpartArray['###FE_CONDITION1_FALSE_TEMPLATE###'] = array('','');
+			$subpartArray['###FE_CONDITION1_TRUE_TEMPLATE###'] = '';
+		}
+		return;
 	}
 
 
@@ -143,22 +216,19 @@ class tx_ttproducts_feuser {
 		global $TYPO3_CONF_VARS;
 
 		if ($bSelect)	{
-
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 			$typeSalutationText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'info][salutation]', $row['salutation'], array());
 
 		} else if (is_numeric($row['salutation'])) {
 			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];
 			$tmp = tx_fhlibrary_language::sL($salutation[0]);
-			$typeSalutationText = $this->pibase->pi_getLL($tmp);
+			$typeSalutationText = htmlspecialchars($this->pibase->pi_getLL($tmp));
 		} else {
 			$typeSalutationText = '';
 		}
 
 		$markerArray['###'.strtoupper($type).'_SALUTATION###'] = $typeSalutationText;
-		
 	} // getMarkerArray
-
 }
 
 

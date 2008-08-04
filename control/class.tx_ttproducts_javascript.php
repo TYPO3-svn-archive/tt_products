@@ -31,16 +31,14 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <contact@fholzinger.com>
+ * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-
 global $TYPO3_CONF_VARS;
-
 
 class tx_ttproducts_javascript {
 	var $pibase; // reference to object of pibase
@@ -91,14 +89,14 @@ class tx_ttproducts_javascript {
 
 	}
 
+
 	/* 
 	 * Escapes strings to be included in javascript
 	 */
 	function jsspecialchars($s) {
-	   return preg_replace('/([^ !#$%@()*+,-.\x30-\x5b\x5d-\x7e])/e',
+	   return preg_replace('/([\x09-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e])/e',
 	       "'\\x'.(ord('\\1')<16? '0': '').dechex(ord('\\1'))",$s);
 	}
-
 
 		/**
 		 * Sets JavaScript code in the additionalJavaScript array
@@ -109,8 +107,9 @@ class tx_ttproducts_javascript {
 		 * @return	  	void
 		 * @see
 		 */
-	function set($fieldname, $params='', $count=0) {
+	function set($fieldname, $params='', $count=0, $catid='cat', $parentFieldArray=array(), $piVarArray=array(), $fieldArray=array(), $method='clickShow') {
 		global $TSFE;
+		
 		$bDirectHTML = false;
 		$code = '';
 		$bError = false;
@@ -125,7 +124,7 @@ class tx_ttproducts_javascript {
 		switch ($fieldname) {
 			case 'email' :
 				$code .=
-				'function test (eing) {
+				'function test(eing) {
 					var reg = /@/;
 					var rc = true;
 					if (!reg.exec(eing)) {
@@ -136,12 +135,10 @@ class tx_ttproducts_javascript {
 	
 				function checkEmail(element) {
 					if (test(element.value)){
-						return (true)
+						return (true);
 					}
-	/* Added els5: comma after the invalid address */
-	//				alert("'.$emailArr[0].'\'"+element.value+"'.$emailArr[1].'")
-					alert("'.$emailArr[0].'\'"+element.value+"\''.$emailArr[1].'")
-					return (false)
+					alert("'.$emailArr[0].'\'"+element.value+"\''.$emailArr[1].'");
+					return (false);
 				}
 	
 				function checkParams(formObj) {
@@ -162,95 +159,197 @@ class tx_ttproducts_javascript {
 				';
 				break;
 			case 'selectcat':
-				if ($this->pibase->pageAsCategory == 2)	{
-					$catIndex = 'pid';
-				} else {
-					$catIndex = 'cat';
-				}
-				if (is_object($this->xajax))	{
+				if (is_array($params))	{
+					$funcs = count ($params);
+					$ajaxConf = $this->cnf->getAJAXConf();
+					if (is_array($ajaxConf))	{
+						// TODO: make it possible that AJAX gets all the necessary configuration
+						$code .= 'var conf = new Array();
+		';
+						foreach ($ajaxConf as $k => $actConf)	{
+							$pVar = t3lib_div::_GP($k); 
+							if (isset($pVar) && is_array($actConf[$pVar.'.']))	{
+								foreach ($actConf[$pVar.'.'] as $k2 => $v2)	{
+									$code .= 'conf['.$k2.'] = '.$v2.'; ';
+								}
+							}
+						}
+						$code .= '
+		';
+					}
 					$code .= 'var c = new Array(); // categories
 		var boxCount = '.$count.'; // number of select boxes
-';
-					if (is_array($params))	{
-						foreach ($params as $k => $row)	{
-							$code .= 'c['.$k.'] = new Array(3);';
-							$code .= 'c['.$k.'][0] = "'.$this->jsspecialchars($row['title']).'"; ' ;
-							$code .= 'c['.$k.'][1] = "'.$row['pid'].'"; ' ;
+		var pi = new Array(); // names of select boxes;
+		var inAction = false; // is the script still running?
+		var maxFunc = '.$funcs.';
+		';
+					foreach ($piVarArray as $fnr => $pivar)	{
+						$code .= 'pi['.$fnr.'] = "'.$pivar.'";';
+					}
+					$code .= '
+		';
+					foreach ($params as $fnr => $catArray)	{
+						$code .= 'c['.$fnr.'] = new Array('.count($catArray).');';
+						foreach ($catArray as $k => $row)	{
+							$code .= 'c['.$fnr.']['.$k.'] = new Array(3);';
+							$code .= 'c['.$fnr.']['.$k.'][0] = "'.$this->jsspecialchars($row['title']).'"; ' ;
+							$parentField = $parentFieldArray[$fnr];
+							$code .= 'c['.$fnr.']['.$k.'][1] = "'.intval($row[$parentField]).'"; ' ;
 							$child_category = $row['child_category'];
 							if (is_array($child_category))	{
-								$code .= 'c['.$k.'][2] = new Array('.count($child_category).');';
+								$code .= 'c['.$fnr.']['.$k.'][2] = new Array('.count($child_category).');';
 								$count = 0;
 								foreach ($child_category as $k1 => $childCat)	{
-									$newCode = 'c['.$k.'][2]['.$count.'] = "'.$childCat.'"; ';
+									$newCode = 'c['.$fnr.']['.$k.'][2]['.$count.'] = "'.$childCat.'"; ';
 									$code .= $newCode;
 									$count++;
 								}
 							} else {
-								$code .= 'c['.$k.'][2] = "0"; ' ;
+								$code .= 'c['.$fnr.']['.$k.'][2] = "0"; ' ;
 							}
-						$code .= '
-	';
+							$code .= '
+		';
 						}
 					}
-					$code .=
+				}
+				$code .=
 		'
-		function fillSelect (select,id,showSubCategories) {
+		' .
+	'function fillSelect (select,id,showSubCategories) {
 		var sb;
-		var index = select.selectedIndex;
-		var category = select.options[index].value;
+		var sbt;
+		var index;
+		var selOption;
 		var subcategories;
 		var bShowArticle = 0;
 		var len;
 		var idel;
-        var b;
-	
-	    if (id > 0) {
-	        for (var l=boxCount; l>=id+1; l--)	{
-	        	idel = "'.$catIndex.'" + l;
-	        	sb = document.getElementById(idel);
-			    sb.length = 0;
-		        sb.selectedIndex = 0;
-	        }
-			idel = "'.$catIndex.'" + id;
-			sb = document.getElementById(idel);
-		    sb.length = 0;
+		var category;
 
-		    subcategories = c[category][2]; 
-		    if ((typeof(subcategories) == "object") && (showSubCategories == 1)) {
-		        sb.options[0] = new Option("", "A");
+		if (inAction == true)	{
+			return false;
+		}
+		inAction = true;
+		index = select.selectedIndex;
+		selOption = select.options[index];
+		category = selOption.value;
+
+		if (id > 0) {
+			var func;
+			var bRootFunctions = (maxFunc > 1) && (id == 2);
+			
+			sb = document.getElementById("'.$catid.'"+1);
+			func = sb.selectedIndex - 1;
+			len = sb.options.length; // test+++	
+			if (maxFunc == 1 || func < 0 || func > maxFunc)	{
+				func = 0;
+				bRootFunctions = false;
+			}
+			// sb.options[len] = new Option("1. +++ func = "+func+"len = "+len+" id = "+id+" index = "+index+" category = "+category+" bRootFunctions = "+bRootFunctions, "B");
+			for (var l = boxCount; l >= id+1; l--)	{
+				idel = "'.$catid.'" + l;
+				sbt = document.getElementById(idel);
+				sbt.options.length = 0;
+				sbt.selectedIndex = 0;
+			}
+			idel = "'.$catid.'" + id;
+			sbt = document.getElementById(idel);
+			sbt.options.length = 0;
+			if (sb.selectedIndex == 0) {
+				// nothing
+			} else if (bRootFunctions) {
+				// lens = c[func].length;
+				subcategories = new Array ();
+				var count = 0;
+				for (k in c[func]) {
+					if (c[func][k][1] == 0)	{
+						subcategories[count] = k;
+						count++;
+					}
+				}
+			} else if (category > 0) { 
+				subcategories = c[func][category][2]; 
+			} 
+			if ((typeof(subcategories) == "object") && (showSubCategories == 1)) {
+				var newOption = new Option("", 0);
+				sbt.options[0] = newOption; // sbt.options.add(newOption);
 		        len = subcategories.length;';
-		        	$code .= '
-		        for (var k = 0;k < len; k++) {
-			        sb.options[k+1] = new Option(c[c[category][2][k]][0], c[category][2][k]);
-		        }
-		    } else {
-		    	bShowArticle = 1;
-		    }
-	    } else {
-	    	bShowArticle = 1;
-	    }
+	        	$code .= '
+				// sb.options[len] = new Option("2. +++ func = "+func+"len = "+len+" id = "+id+" category = "+category+" subcategories = "+subcategories, "B");
+				for (k = 0; k < len; k++)	{
+					var cat = subcategories[k];
+					var text = c[func][cat][0];
+					newOption = new Option(text, cat);
+					sbt.options[k+1] = newOption; // sbt.options.add(newOption);
+				}
+				sbt.name = pi[func];
+			} else {
+				bShowArticle = 1;
+			}
+		} else {
+			bShowArticle = 1;
+		}
 	    if (bShowArticle)	{
 	        /* sb.options[0] = new Option(len, "keine Unterkategorie");*/
-	        var data = new Array();
-			sb = document.getElementById("'.$catIndex.'"+2);
-	        sb.options[0] = new Option("", "B");
+			var data = new Array();
+
 	        data["'.$this->pibase->prefixId.'"] = new Array();
-	        data["'.$this->pibase->prefixId.'"]["'.$catIndex.'"] = category;
-	        tt_products_showArticle(data);
+	        data["'.$this->pibase->prefixId.'"]["'.$catid.'"] = category;
+	        ';
+		        if ($method == 'clickShow')	{
+		        	$code .= $this->pibase->extKey.'_showArticle(data);';
+		        }
+				$code .= '
 	    } else {
-			sb = document.getElementById("'.$catIndex.'"+2);
-	        sb.options[0] = new Option("", "C");
-	        sb.selectedIndex = 0;
-	        select.selectedIndex = index;
-	        // sb.options[0] = new Option("keinen Artikel anzeigen \'"+bShowArticle+"\'", "C");
+			/* nothing */
 	    }
-	    /* sb.options[0] = new Option("Test", "keine Unterkategorie");
-		sb.selectedIndex = 0; */
 		';
-					$code .= '
-		}
+				$code .= '
+		inAction = false;
+		return true;
+	}
 		';
+				$code .= '
+		function doFetchData() {
+			var data = new Array();
+			var func;
+
+			sb = document.getElementById("'.$catid.'"+1);
+			func = sb.selectedIndex - 1;
+			for (var k = 2; k <= boxCount; k++) {
+				sb = document.getElementById("'.$catid.'"+k);
+				index = sb.selectedIndex;
+				if (index > 0)	{
+					value = sb.options[index].value;
+					if (value)	{
+						data["'.$this->pibase->prefixId.'"] = new Array();
+						data["'.$this->pibase->prefixId.'"][pi[func]] = value;
+					}
 				}
+			}
+			var sub = document.getElementsByName("'.$this->pibase->prefixId.'[submit]")[0];
+			for (k in sub.form.elements)	{
+				var el = sub.form.elements[k]; 
+				var elname; 
+				if (el)	{ 
+					elname = String(el.name); 
+				} 
+				if (elname && elname.indexOf("function") == -1 && elname.indexOf("'.$this->pibase->prefixId.'") == 0)	{
+					var start = elname.indexOf("["); 
+					var end = elname.indexOf("]"); 
+					var element = elname.substring(start+1,end); 
+					data["'.$this->pibase->prefixId.'"][element] = el.value; 
+				}
+			}
+
+			';
+		        if ($method == 'submitShow')	{
+		        	$code .= $this->pibase->extKey.'_showList(data);';
+		        }
+				$code .= '
+			return true;
+		}
+		';	
 				break;
 
 			case 'direct':

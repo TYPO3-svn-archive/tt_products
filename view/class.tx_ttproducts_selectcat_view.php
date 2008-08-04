@@ -39,8 +39,8 @@
  *
  */
 
-
 global $TYPO3_CONF_VARS;
+
 
 class tx_ttproducts_selectcat_view {
 	var $pibase; // reference to object of pibase
@@ -98,7 +98,7 @@ class tx_ttproducts_selectcat_view {
 			if (!$rootCat)	{
 				$rootCat = $excludeCat;
 			}
-		} else {
+		} else {			
 				// read in all categories
 			$this->categoryTable->get(0, $this->page->pid_list);	// read all categories
 			ksort ($this->categoryTable->dataArray);
@@ -184,17 +184,16 @@ class tx_ttproducts_selectcat_view {
 			$css = ($actCategory == $currentCat ? 'class="act"' : $css);
 			$preOut = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
 			$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);
-			$linkOut = htmlspecialchars($categoryArray[$actCategory]['title']);
+			$linkOut = htmlentities($categoryArray[$actCategory]['title'],ENT_QUOTES,$TSFE->renderCharset);
 			$out .= str_replace('###LIST_LINK###', $linkOut, $t['linkCategoryFrameWork']);
 			$postOut = '</'.$htmlTagElement.'>';
 			$out .= str_replace($htmlPartsMarkers[1], $postOut, $htmlParts[1]);
 		}
-
+		
 		$out .= '</'.$htmlTagMain.'>';
 		$markerArray = array();
 		$subpartArray = array();
 		$wrappedSubpartArray = array();
-
 		$markerArray = $this->marker->addURLMarkers($this->conf['PIDsearch'],$markerArray);
 		$this->marker->getWrappedSubpartArray($wrappedSubpartArray);
 		$subpartArray['###CATEGORY_SINGLE###'] = $out;
@@ -222,7 +221,6 @@ class tx_ttproducts_selectcat_view {
 			}
 			// $subpartArray['###CATEGORY_SINGLE_BUTTON'] = '<input type="button" value="Laden" onclick="fillSelect(0, '.$boxNumber.','.$bShowSubcategories.');">';
 		}
-
 		$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 		$content = $out;
 		return $content;

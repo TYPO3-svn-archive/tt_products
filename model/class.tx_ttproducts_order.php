@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2008 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -40,7 +40,6 @@
 
 global $TYPO3_CONF_VARS;
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
 
 class tx_ttproducts_order {
 	var $pibase; // reference to object of pibase
@@ -51,7 +50,6 @@ class tx_ttproducts_order {
 	var $tt_products_articles; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
 	var $useArticles;
-	var $alwaysInStock;
 
 
 	function init(&$pibase, &$cnf, &$tt_products, &$tt_products_articles, &$tt_products_cat, &$basket, $useArticles) {
@@ -64,12 +62,6 @@ class tx_ttproducts_order {
 		$this->tt_products_articles = &$tt_products_articles;
 		$this->tt_products_cat = &$tt_products_cat;
 		$this->useArticles = $useArticles;
-
-		if (intval($this->conf['alwaysInStock'])) {
-			$this->alwaysInStock = 1;
-		} else {
-			$this->alwaysInStock = 0;
-		}
 	}
 
 
@@ -93,12 +85,12 @@ class tx_ttproducts_order {
 		if ($TSFE->sys_page->getPage_noCheck ($pid))	{
 			$advanceUid = 0;
 			if ($this->conf['advanceOrderNumberWithInteger'] || $this->conf['alwaysAdvanceOrderNumber'])	{
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', '', '', 'uid DESC', '1');
-				list($prevUid) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+				$res = $TYPO3_DB->exec_SELECTquery('uid', 'sys_products_orders', '', '', 'uid DESC', '1');
+				list($prevUid) = $TYPO3_DB->sql_fetch_row($res);
 
 				if ($this->conf['advanceOrderNumberWithInteger']) {
 					$rndParts = explode(',',$this->conf['advanceOrderNumberWithInteger']);
-					$advanceUid = $prevUid+t3lib_div::intInRange(rand(intval($rndParts[0]),intval($rndParts[1])),1);
+					$advanceUid = $prevUid + t3lib_div::intInRange(rand(intval($rndParts[0]),intval($rndParts[1])),1);
 				} else {
 					$advanceUid = $prevUid + 1;
 				}
@@ -163,7 +155,7 @@ class tx_ttproducts_order {
 	 */
 	function getNumber($orderUid)	{
 		$orderNumberPrefix = substr($this->conf['orderNumberPrefix'],0,15);
-		if ($orderNumberPrefix[0]=='%')
+		if ($orderNumberPrefix[0] == '%')
 			$orderNumberPrefix = date(substr($orderNumberPrefix, 1));
 		return $orderNumberPrefix.$orderUid;
 	} // getNumber
@@ -173,10 +165,15 @@ class tx_ttproducts_order {
 	 * Saves the order record and returns the result
 	 *
 	 */
-	function putRecord($orderUid, &$deliveryInfo, $feusers_uid, $cardUid,
+	function putRecord($orderUid, &$deliveryInfo, $feusers_uid, $cardUid, $accountUid,
 		$email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML, &$address)	{
 		global $TYPO3_DB;
 		global $TSFE;
+
+		if ($this->conf['debug'])	{
+			$debugOutput = $TYPO3_DB->debugOutput;
+			$TYPO3_DB->debugOutput = 1;
+		}
 
 			// Fix delivery address
 		$address->mapPersonIntoDelivery();	// This maps the billing address into the blank fields of the delivery address
@@ -208,6 +205,7 @@ class tx_ttproducts_order {
 		$fieldsArray['note'] = $deliveryInfo['note'];
 		$fieldsArray['client_ip'] = t3lib_div::getIndpEnv('REMOTE_ADDR');
 		$fieldsArray['cc_uid'] = $cardUid;
+		$fieldsArray['ac_uid'] = $accountUid;
 
 /*
 		//<-- MKL 2004.09.21
@@ -221,16 +219,31 @@ class tx_ttproducts_order {
 /* Added Els: update fe_user with amount of creditpoints and subtract creditpoints used in order*/
 		$fieldsArrayFeUsers = array();
 		$uid_voucher = ''; // define it here
+		$cpArray = $TSFE->fe_user->getKey('ses','cp');
 
 		if ($this->conf['creditpoints.']) {
-			$creditpoints = tx_ttproducts_creditpoints_div::getCreditPoints($fieldsArray['amount']);
 /* Added Els: update fe_user with amount of creditpoints (= exisitng amount - used_creditpoints - spended_creditpoints + saved_creditpoints */
 //			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->basket->recs['tt_products']['creditpoints'];
-			$fieldsArrayFeUsers['tt_products_creditpoints'] = 
-				floatval($TSFE->fe_user->user['tt_products_creditpoints'] - 
-					$this->basket->recs['tt_products']['creditpoints'] -
-					t3lib_div::_GP('creditpoints_spended') + 
+			$fieldsArrayFeUsers['tt_products_creditpoints'] =
+				floatval($TSFE->fe_user->user['tt_products_creditpoints'] -
+					$this->basket->recs['tt_products']['creditpoints'] +
 					t3lib_div::_GP('creditpoints_saved'));
+		}
+
+		if ($address->infoArray['billing']['date_of_birth'])	{
+
+			$dateArray = t3lib_div::trimExplode ('-', $address->infoArray['billing']['date_of_birth']);
+			if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
+				require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
+	
+				// prepare for handling dates before 1970
+				$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
+				$dateBirth = $adodbTime->adodb_mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+			} else {
+				$dateBirth = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+			}
+
+			$fieldsArrayFeUsers['date_of_birth'] = $dateBirth;
 		}
 
 /* Added Els: update fe_user with vouchercode */
@@ -240,18 +253,21 @@ class tx_ttproducts_order {
 			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				$uid_voucher = $row['uid'];
 			}
-			if (($uid_voucher != '') && ($address->infoArray['delivery']['feusers_uid'] != $uid_voucher) ) {
+			if (($uid_voucher != '') && ($address->infoArray['delivery']['feusers_uid'] > 0) && ($address->infoArray['delivery']['feusers_uid'] != $uid_voucher) ) {
 				$fieldsArrayFeUsers['tt_products_vouchercode'] = $this->basket->recs['tt_products']['vouchercode'];
 			}
 		}
 
 		if ($address->infoArray['delivery']['feusers_uid']) {
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.intval($address->infoArray['delivery']['feusers_uid']), $fieldsArrayFeUsers);
 	/* Added Els: update user from vouchercode with 5 credits */
-			tx_ttproducts_creditpoints_div::addCreditPoints($this->basket->recs['tt_products']['vouchercode'], 5);
+			tx_ttproducts_creditpoints_div::addCreditPoints($this->basket->recs['tt_products']['vouchercode'], $this->conf['voucher.']['price']);
 		}
 
-				// Default status_log entry
+		if ($TSFE->fe_user->user['uid'] && count($fieldsArrayFeUsers))	{
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.intval($TSFE->fe_user->user['uid']), $fieldsArrayFeUsers);
+		}
+
+			// Default status_log entry
 		$status_log=array();
 		$status_log[] = array(
 			'time' => time(),
@@ -265,12 +281,12 @@ class tx_ttproducts_order {
 
 			// Order Data serialized
 		$fieldsArray['orderData'] = serialize(array(
-				'html_output' 			=>	$orderConfirmationHTML,
-				'delivery' 				=>	$address->infoArray['delivery'],
-				'billing' 				=>	$address->infoArray['billing'],
-				'itemArray'				=>	$itemArray,
-				'calculatedArray'		=>	$this->basket->calculatedArray,
-				'version'				=>  $this->pibase->version
+			'html_output'		=>	$orderConfirmationHTML,
+			'delivery'		=>	$address->infoArray['delivery'],
+			'billing'		=>	$address->infoArray['billing'],
+			'itemArray'		=>	$itemArray,
+			'calculatedArray'	=>	$this->basket->calculatedArray,
+			'version'		=> 	$this->pibase->version
 		));
 
 			// Setting tstamp, deleted and tracking code
@@ -281,10 +297,14 @@ class tx_ttproducts_order {
 		$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
 		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
 		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
-		$fieldsArray['creditpoints_gifts'] = t3lib_div::_GP('creditpoints_gifts');
+		$fieldsArray['creditpoints_gifts'] = $cpArray['gift']['amount'];
 
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);
+
+		if ($this->conf['debug'])	{
+			$TYPO3_DB->debugOutput = $debugOutput;
+		}
 	} //putRecord
 
 
@@ -332,8 +352,6 @@ class tx_ttproducts_order {
 			}
 		}
 	}
-
-
 }
 
 

@@ -29,7 +29,7 @@
  *
  * functions for the product
  *
- * $Id$
+ * $Id:$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
@@ -45,13 +45,13 @@ require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 
 class tx_ttproducts_product extends tx_ttproducts_article_base {
-	var $dataArray = array(); // array of read in products
 	var $relatedArray = array(); // array of related products
 	var $table;		   // object of the type tx_table_db
 	var $tt_products_articles; // element of class tx_table_db to get the article
 	var $bIsProduct=true;	// if this is the base for a product
 	var $marker = 'PRODUCT';
 	var $type = 'product';
+	var $piVar = 'product';
 	var $tableconf;
 	var $articleArray = array();
 
@@ -62,27 +62,28 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	function init(&$pibase, &$cnf, &$tt_content, &$paymentshipping, $LLkey, $tablename, $useArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		parent::init($pibase, $cnf, 'tt_products', $tt_content, $paymentshipping);
+		parent::init($pibase, $cnf, 'tt_products', $tt_content, $paymentshipping, $useArticles);
 
 		$this->table = t3lib_div::makeInstance('tx_table_db');
-
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $this->cnf->conf['orderBy'];
-		
+
 		if (!$tableConfig['orderBy'])	{
-			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];
+			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];	
 		}
 
 		$this->table->setConfig($tableConfig);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$tablename = ($tablename ? $tablename : 'tt_products');
-		$this->table->setTCAFieldArray($tablename, 'products');
-		
-		$requiredFields = 'uid,pid,category,price,price2,directcost,tax,inStock';
+		$requiredFields = 'uid,pid,category,price,price2,directcost,tax';
+		$instockField = $this->cnf->getTableDesc['inStock'];
+		if (!$this->conf['alwaysInStock'])	{
+			$requiredFields .= ','.$instockField; 
+		}
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
-		}	
+		}
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 		if (is_array($this->tableconf['language.']) &&
@@ -93,7 +94,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$addRequiredFields = $this->tableconf['language.']['field.'];
 			$this->table->addRequiredFieldArray ($addRequiredFields);
 		}
-	
+
+		$this->table->setTCAFieldArray($tablename, 'products');
+
 		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
 			$this->table->setLangName($this->tableconf['language.']['table']);
@@ -103,10 +106,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		if ($this->tableconf['language.'] && $this->tableconf['language.']['type'] == 'csv')	{
 			$this->table->initLanguageFile($this->tableconf['language.']['file']);
 		}
-		
-		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
-		$this->variant->init($this->pibase, $cnf, $this, $useArticles);
 
+		if ($this->tableconf['language.'] && is_array($this->tableconf['language.']['marker.']))	{
+			$this->table->initMarkerFile($this->tableconf['language.']['marker.']['file']);
+		}
 	} // init
 
 
@@ -127,7 +130,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	function &getArticleRow ($row) {
 		global $TYPO3_DB;
-		
 		$articleRows = $this->getArticleRows(intval($row['uid']));
 		$articleRow = $this->variant->fetchArticle($row, $articleRows);
 		return $articleRow;
@@ -136,7 +138,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	function get ($uid,$where_clause='') {
 		global $TYPO3_DB;
-		
+
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
 			$where = '1=1 '.$this->table->enableFields().' AND uid = '.intval($uid);
@@ -146,7 +148,12 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			// Fetching the products
 			$res = $this->table->exec_SELECTquery('*', $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
-			$rc = $this->dataArray[$uid] = $row;
+			if (is_array($row))	{
+				$variantFieldArray = $this->variant->getFieldArray();
+				$this->table->substituteMarkerArray($row, $variantFieldArray);
+				$this->dataArray[$uid] = $row;
+			}
+			$rc = $row;
 		}
 		return $rc;
 	}
@@ -182,27 +189,29 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	function &reduceInStockItems(&$itemArray, $useArticles)	{
 		global $TYPO3_DB, $TCA;
 		$instockTableArray = array();
-
-		if ($this->table->name == 'tt_products' || is_array(($TCA[$this->table->name]['columns']['inStock'])) )	{		
+		$instockField = $this->cnf->getTableDesc['inStock'];
+		$instockField = ($instockField ? $instockField : 'inStock');
+		if ($this->table->name == 'tt_products' || is_array(($TCA[$this->table->name]['columns']['inStock'])) )	{
 			// Reduce inStock
 			if ($useArticles == 1) {
 				// loop over all items in the basket indexed by a sorting text
 				foreach ($itemArray as $sort=>$actItemArray) {
 					foreach ($actItemArray as $k1=>$actItem) {
 						$row = $this->getArticleRow ($actItem['rec']);
-						$this->tt_products_articles->reduceInStock($row['uid'], $actItem['count']);
-						$instockTableArray['tt_products_articles'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row['inStock'] - $actItem['count']);
-					}
-				} 
-			} else {
-				// loop over all items in the basket indexed by a sorting text
-				foreach ($itemArray as $sort=>$actItemArray) {
-					foreach ($actItemArray as $k1=>$actItem) {
-						$row = $actItem['rec'];
-						if (!$this->hasAdditional($row,'alwaysInStock')) {
-							$this->reduceInStock($row['uid'], $actItem['count']);
-							$instockTableArray['tt_products'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row['inStock'] - $actItem['count']);
+						if ($row)	{
+							$this->tt_products_articles->reduceInStock($row['uid'], $actItem['count']);
+							$instockTableArray['tt_products_articles'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row[$instockField] - $actItem['count']);
 						}
+					}
+				}
+			} 
+			// loop over all items in the basket indexed by a sorting text
+			foreach ($itemArray as $sort=>$actItemArray) {
+				foreach ($actItemArray as $k1=>$actItem) {
+					$row = $actItem['rec'];
+					if (!$this->hasAdditional($row,'alwaysInStock')) {
+						$this->reduceInStock($row['uid'], $actItem['count']);
+						$instockTableArray['tt_products'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row[$instockField] - $actItem['count']);
 					}
 				}
 			}
@@ -224,15 +233,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	/**
-	 * Generates a search where clause.
-	 */
-	function searchWhere(&$searchFieldList, $sw)	{
-		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->getAliasName());
-		return $where;
-	} // searchWhere
-
-
-	/**
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
 	 *
@@ -244,10 +244,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='', $id='1')	{
+	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', &$tagArray, $forminfoArray=array(), $code='', $id='1', $prefix='', $linkWrap='', $bSelect=true, $bHtml=true)	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
-		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id);
+		parent::getItemMarkerArray($item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id, '', $linkWrap, $bSelect, $bHtml);
 
 			// Subst. fields
 		$markerArray['###'.$this->marker.'_UNIT###'] = $row['unit'];
@@ -260,7 +260,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 //		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
 
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
-		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $this->conf['bulkilyWarning'] : '';
+		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? htmlentities($this->conf['bulkilyWarning']) : '';
 
 		if ($row['special_preparation'])	{
 			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = $this->conf['specialPreparation'];
@@ -271,9 +271,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		if ($this->conf['itemMarkerArrayFunc'])	{
 			$markerArray = $this->pibase->userProcess('itemMarkerArrayFunc',$markerArray);
 		}
-
+		
 		if ($code=='SINGLE')	{
-
 			if ($row['note_uid']) {
 					// pages
 				$page = tx_ttproducts_page::createPageTable(
@@ -299,11 +298,14 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 						$cType = $contentEl['CType'];
 						$countArray[$cType] = intval($countArray[$cType]) + 1;
 						$markerKey = $pageMarkerKey.'_'.$countArray[$cType].'_'.strtoupper($cType);
+
 						foreach ($tagArray as $index => $v)	{
-							if (strstr($index, $pageMarkerKey) !== FALSE)	{
-								$fieldPos = strrpos($index, '_');
-								$fieldName = substr($index, $fieldPos+1);
-								$markerArray['###'.$index.'###'] = $pageRow[$fieldName];
+							$pageFoundPos = strpos($index, $pageMarkerKey);
+							if ($pageFoundPos == 0 && $pageFoundPos !== FALSE)	{
+								$fieldName = str_replace($pageMarkerKey.'_','',$index);
+								if (isset($pageRow[$fieldName]))	{
+									$markerArray['###'.$index.'###'] = $pageRow[$fieldName];
+								}
 							}
 							if (strstr($index, $markerKey) === FALSE)	{
 								continue;
@@ -325,6 +327,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 					}
 				}
 			}
+
 			foreach ($tagArray as $key => $val)	{
 				if (strstr($key,'PRODUCT_NOTE_UID')!==FALSE)	{
 					if (!isset($markerArray['###'.$key.'###']))	{
@@ -356,13 +359,13 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$cat = implode(',',t3lib_div::intExplode(',', $cat));
 			$where = ' AND ( category IN ('.$cat.') )';
 		}
-
 		return $where;
 	}
 
 
 	function addselectConfCat($cat, &$selectConf)	{
 		global $TYPO3_CONF_VARS;
+
 		$tableNameArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
@@ -374,7 +377,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				}
 			}
 		}
-		
 		return implode(',', $tableNameArray);	
 	}
 

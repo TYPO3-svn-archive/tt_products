@@ -37,6 +37,7 @@
  *
  *
  */
+
 global $TYPO3_CONF_VARS;
 
 class tx_ttproducts_javascript_marker {
@@ -71,12 +72,17 @@ class tx_ttproducts_javascript_marker {
 	 * @return	array
 	 * @access private
 	 */
-	function getMarkerArray (&$markerArray)	{
+	function getMarkerArray (&$markerArray, &$itemMarkerArray)	{
+		$jsItemMarkerArray = array();
+		foreach ($itemMarkerArray as $marker => $value)	{
+			$jsItemMarkerArray[$marker] = $this->javaScript->jsspecialchars($value);
+		}
+
 		if (is_array($this->conf['javaScript.']))	{
-			$paramsArray = array();
 			foreach ($this->conf['javaScript.'] as $key => $confJS)	{
 				$marker = rtrim($key,'.');
-				$paramsArray[$marker] = $confJS['value'];
+				$jsText = $this->pibase->cObj->substituteMarkerArray($confJS['value'], $jsItemMarkerArray);
+				$paramsArray = array($marker => $jsText);
 				$this->javaScript->set('direct', $paramsArray);
 				$marker = '###'.$this->marker.'_'.strtoupper($marker).'###';
 				$markerArray[$marker] = '';

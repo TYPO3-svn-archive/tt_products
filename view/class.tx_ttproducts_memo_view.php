@@ -38,6 +38,7 @@
  *
  */
 
+
 global $TYPO3_CONF_VARS;
 
 
@@ -51,6 +52,8 @@ class tx_ttproducts_memo_view {
 	var $tt_content; // element of class tx_table_db
 	var $tt_products; // element of class tx_table_db
 	var $tt_products_cat; // element of class tx_table_db
+	var $tx_dam; // element of class tx_table_db
+	var $tx_dam_cat; // element of class tx_table_db
 	var $fe_users; // element of class tx_table_db
 	var $pid; // pid where to go
 	var $LLkey; // language key
@@ -68,6 +71,8 @@ class tx_ttproducts_memo_view {
 			&$tt_products,
 			&$tt_products_cat,
 			&$tt_products_articles,
+			&$tx_dam,
+			&$tx_dam_cat,
 			&$fe_users,
 			$pid,
 			$LLkey,
@@ -96,6 +101,8 @@ class tx_ttproducts_memo_view {
 		$this->tt_products = &$tt_products;
 		$this->tt_products_cat = &$tt_products_cat;
 		$this->tt_products_articles = &$tt_products_articles;
+		$this->tx_dam = $tx_dam; 
+		$this->tx_dam_cat = $tx_dam_cat; 
 		$this->fe_users = &$fe_users;
 		$this->pid = $pid;
 		$this->LLkey = $LLkey;
@@ -131,9 +138,9 @@ class tx_ttproducts_memo_view {
 				}
 	
 				$fieldsArray = array();
-				$fieldsArray['tt_products_memoItems'] = implode(',', $this->memoItems);
+				$fieldsArray['tt_products_memoItems']=implode(',', $this->memoItems);
 				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
-			}			
+			}
 		}
 	}
 
@@ -144,14 +151,14 @@ class tx_ttproducts_memo_view {
 	function &printView(&$templateCode, &$error_code)
 	{
 		global $TSFE, $TYPO3_CONF_VARS;;
-		
+
 		$content = '';
 
 		$fe_user_uid = $TSFE->fe_user->user['uid'];
 		if ($fe_user_uid)	{		
 			if ($this->memoItems)	{
 				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
-	
+
 				// List all products:
 				$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
 				$listView->init (
@@ -163,13 +170,16 @@ class tx_ttproducts_memo_view {
 					$this->tt_products,
 					$this->tt_products_articles,
 					$this->tt_products_cat,
+					$this->tx_dam,
+					$this->tx_dam_cat,
 					$this->fe_users,
 					$this->pid,
 					$this->LLkey,
-					$this->useArticles
+					$this->useArticles,
+					array()
 				);
-	
-				$templateArea = '###MEMO_TEMPLATE###';
+
+				$templateArea = 'MEMO_TEMPLATE';
 				$content = $listView->printView(
 					$templateCode,
 					'MEMO',
@@ -177,19 +187,20 @@ class tx_ttproducts_memo_view {
 					false,
 					$error_code,
 					$templateArea,
-					$this->pibase->pageAsCategory
+					$this->pibase->pageAsCategory,
+					array()
 				);
 			} else {
 				include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
-	
+
 				$marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 				$marker->init(
 					$this->pibase,
 					$this->cnf,
 					$this->basket
 				);
-				
-				$content = $this->pibase->cObj->getSubpart($templateCode,$marker->spMarker('###MEMO_EMPTY###'));				
+
+				$content = $this->pibase->cObj->getSubpart($templateCode,$marker->spMarker('###MEMO_EMPTY###'));
 			}
 		} else {
 			include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
@@ -200,7 +211,7 @@ class tx_ttproducts_memo_view {
 				$this->cnf,
 				$this->basket
 			);
-			
+
 			$content = $this->pibase->cObj->getSubpart($templateCode,$marker->spMarker('###MEMO_NOT_LOGGED_IN###'));
 		}
 
