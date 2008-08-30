@@ -68,15 +68,12 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $this->cnf->conf['orderBy'];
-		
 		if (!$tableConfig['orderBy'])	{
 			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];
 		}
 
 		$this->table->setConfig($tableConfig);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
-		$tablename = ($tablename ? $tablename : 'tt_products');
-		$this->table->setTCAFieldArray($tablename, 'products');
 		
 		$requiredFields = 'uid,pid,category,price,price2,directcost,tax,inStock';
 		if ($this->tableconf['requiredFields'])	{
@@ -88,12 +85,12 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		if (is_array($this->tableconf['language.']) &&
 			$this->tableconf['language.']['type'] == 'field' &&
 			is_array($this->tableconf['language.']['field.'])
-			)	{
+		)	{
 			$addRequiredFields = array();
 			$addRequiredFields = $this->tableconf['language.']['field.'];
 			$this->table->addRequiredFieldArray ($addRequiredFields);
 		}
-	
+
 		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
 			$this->table->setLangName($this->tableconf['language.']['table']);
@@ -103,7 +100,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		if ($this->tableconf['language.'] && $this->tableconf['language.']['type'] == 'csv')	{
 			$this->table->initLanguageFile($this->tableconf['language.']['file']);
 		}
-		
+
+		$tablename = ($tablename ? $tablename : 'tt_products');
+		$this->table->setTCAFieldArray($tablename, 'products');
+
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $cnf, $this, $useArticles);
 
@@ -127,7 +127,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	function &getArticleRow ($row) {
 		global $TYPO3_DB;
-		
+
 		$articleRows = $this->getArticleRows(intval($row['uid']));
 		$articleRow = $this->variant->fetchArticle($row, $articleRows);
 		return $articleRow;
@@ -136,7 +136,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	function get ($uid,$where_clause='') {
 		global $TYPO3_DB;
-		
+
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
 			$where = '1=1 '.$this->table->enableFields().' AND uid = '.intval($uid);

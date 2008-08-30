@@ -1,6 +1,13 @@
+2008-08-30 Franz Holzinger <franz@fholzinger.com>
+	* fix bug with double calculated fe user discount percentage
+	* fix bug with change in TYPO3 4.2.0: t3lib_div::trimExplode does not reset the array any more
+	* fix bug with special image markers: If more than a colon had been used for the same image then the last setup has been used for all of them.
+	* hide template products which are not supported yet
+	* fix bug with begin_at parameter mismatch if you click on an item on related products
+
 2008-06-06 Franz Holzinger <franz@fholzinger.com>
 	* fix bug to consider the required address fields
-	' fix bug with markers for tx_feuserextrafields
+	* fix bug with markers for tx_feuserextrafields
 
 2008-05-01 Franz Holzinger <franz@fholzinger.com>
 	* improve clickIntoBasket in single view

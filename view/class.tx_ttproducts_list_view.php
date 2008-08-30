@@ -143,7 +143,8 @@ class tx_ttproducts_list_view {
 		$additionalPages,
 		&$error_code,
 		$templateArea = '###ITEM_LIST_TEMPLATE###',
-		$pageAsCategory
+		$pageAsCategory,
+		$calllevel = 0
 	) {
 		global $TSFE, $TCA, $TYPO3_DB;
 		global $TYPO3_CONF_VARS;
@@ -308,8 +309,10 @@ class tx_ttproducts_list_view {
 			break;
 		}
 
-		$begin_at = $this->pibase->piVars['begin_at'];
-		$begin_at = ($begin_at ? $begin_at : t3lib_div::_GP('begin_at'));
+		if ($calllevel == 0)	{
+			$begin_at = $this->pibase->piVars['begin_at'];
+			$begin_at = ($begin_at ? $begin_at : t3lib_div::_GP('begin_at'));
+		}
 		$begin_at=t3lib_div::intInRange($begin_at,0,100000);
 		if ($theCode == 'SINGLE')	{
 			$begin_at = ''; // no page browser in single view for related products
@@ -620,14 +623,14 @@ class tx_ttproducts_list_view {
 					$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 					$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
 					if ($typoVersion < 3008000)	{
-						$pageLink = 'index.php?id='.$pid.'&'.$this->pibase->prefixId.'['.strtolower($itemTable->marker).']='.intval($row['uid']).'&'.$this->pibase->prefixId.'[backPID]='.$TSFE->id;						
+						$pageLink = htmlspecialchars('index.php?id='.$pid.'&'.$this->pibase->prefixId.'['.strtolower($itemTable->marker).']='.intval($row['uid']).'&'.$this->pibase->prefixId.'[backPID]='.$TSFE->id);
 					} else {
 						$addQueryString[$itemTable->type] = intval($row['uid']);
 						$addQueryString['cat'] = $cat;
 						$queryString = $this->marker->getLinkParams('begin_at', $addQueryString);	
 						// $pageLink = $this->pibase->pi_getPageLink($pid,'',$queryString);
 						// 1-$TSFE->no_cache
-						$pageLink = $this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid);
+						$pageLink = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid));
 					}
 					$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $pageLink .'"'.$css_current.'>','</a>');
 					$datasheetFile = $row['datasheet'] ;
@@ -690,7 +693,7 @@ class tx_ttproducts_list_view {
 					}
 					$markerArray['###ITEM_SINGLE_POST_HTML###'] = $temp;
 					$pid = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
-					$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array(), true))); //$this->getLinkUrl($this->conf['PIDmemo']);
+					$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array(), true)));
 
 					// cuts note in list view
 					if (strlen($markerArray['###'.$itemTable->marker.'_NOTE###']) > $this->conf['max_note_length']) {
@@ -713,7 +716,6 @@ class tx_ttproducts_list_view {
 						if ($t['itemFrameWork'])	{
 							// complete the last table row
 							$itemsOut .= $this->finishHTMLRow($iColCount, $tableRowOpen);
-							// $itemListOut .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$itemsOut,0);
 							$markerArray = array_merge ($productMarkerArray, $categoryMarkerArray, $markerArray);
 							$subpartArray = array();
 							$subpartArray['###ITEM_SINGLE###'] = $itemsOut;
@@ -749,8 +751,6 @@ class tx_ttproducts_list_view {
 				$out = '';  // TODO: keine Produkte gefunden
 			}
 
-//			if ($t['itemFrameWork'])
-//				$out=$this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$out,0);
 			if ($itemListOut || $categoryOut || $productListOut)	{
 				$catItemsListOut = &$itemListOut;
 				if ($itemTable->type == 'article' && $productListOut && $t['productAndItemsFrameWork'])	{
@@ -773,20 +773,17 @@ class tx_ttproducts_list_view {
 			if ($cat)	{
 				$addQueryString['cat'] = $cat;
 			}
-
 			$backPID = $this->pibase->piVars['backPID'];
 			$pid = ( $backPID ? $backPID : $TSFE->id);
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true)) .'">','</a>',array('useCacheHash' => true));
-
+			$linkUrl = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true));
+			$linkUrl = htmlspecialchars($linkUrl);
+			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>',array('useCacheHash' => true));
 			if ($sword) 	{
 				$addQueryString['sword'] = $sword; 
 			}
 
 			if ($more)	{
 				$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
-				// $addQueryString=array();
-				// $addQueryString[$this->pibase->prefixId.'[begin_at]']= $next;
-				// $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 				$addQueryString['begin_at'] = $next;
 				$this->marker->getSearchParams($addQueryString);
 				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,1,0);
@@ -797,13 +794,10 @@ class tx_ttproducts_list_view {
 			$bUseCache = count($this->basket->itemArray)>0;
 			if ($begin_at)	{
 				$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
-				// $addQueryString=array();
-				// $addQueryString[$this->pibase->prefixId.'[begin_at]']= $prev;
-				// $tempUrl = $this->pibase->pi_linkToPage($splitMark,$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 				$addQueryString['begin_at'] = $prev;
 				$this->marker->getSearchParams($addQueryString);
 				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,$bUseCache,0);
-				$wrappedSubpartArray['###LINK_PREV###']=explode ($splitMark, $tempUrl); // array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
+				$wrappedSubpartArray['###LINK_PREV###']=explode ($splitMark, $tempUrl);
 			} else {
 				$subpartArray['###LINK_PREV###']='';
 			}
@@ -816,12 +810,9 @@ class tx_ttproducts_list_view {
 						//	you may use this if you want to link to the current page also
 						//
 					} else {
-						// $addQueryString=array();
-						// $addQueryString[$this->pibase->prefixId.'[begin_at]']= (string)($i * $this->config['limit']);
-						// $tempUrl = $this->pibase->pi_linkToPage((string)($i+1).' ',$TSFE->id,'',$this->marker->getLinkParams('', $addQueryString));
 						$addQueryString['begin_at'] = (string)($i * $this->config['limit']);
 						$tempUrl = $this->pibase->pi_linkTP_keepPIvars((string)($i+1).' ',$addQueryString,$bUseCache,0);
-						$markerArray['###BROWSE_LINKS###'] .= $tempUrl; // ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
+						$markerArray['###BROWSE_LINKS###'] .= $tempUrl;
 					}
 				}
 			} else {

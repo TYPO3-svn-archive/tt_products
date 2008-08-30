@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2007 Kasper Skårhøj <kasperYYYY@typo3.com>
+*  (c) 1999-2008 Kasper Skårhøj <kasperYYYY@typo3.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -112,9 +112,9 @@ class tx_ttproducts_single_view {
 			$rowArray[$this->type] = $this->pibase->cObj->data;  
 		} else {
 			$where = ' AND pid IN ('.$this->page->pid_list.')';
-			$rowArray[$this->type] = $itemTableArray[$this->type]->get($this->uid, $where);
 			$itemTableConf[$this->type] = $this->cnf->getTableConf($itemTableArray[$this->type]->table->name, 'SINGLE');
 			$itemTableLangFields[$this->type] = $this->cnf->getTranslationFields($itemTableConf[$this->type]);
+			$rowArray[$this->type] = $itemTableArray[$this->type]->get($this->uid, $where);
 
 			// TODO: $itemImageFields[$this->type] = $this->cnf->getImageFields($itemTableConf[$this->type]);
 
@@ -236,13 +236,14 @@ class tx_ttproducts_single_view {
 				$pid = $TSFE->id;
 			}
 
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true), array('useCacheHash' => true)) .'">','</a>');
+			$linkUrl = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true), array('useCacheHash' => true));
+			$linkUrl = htmlspecialchars($linkUrl);
+			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>');
 			if( $datasheetFile == '' )  {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<!--','-->');
 			}  else  {
 				$wrappedSubpartArray['###LINK_DATASHEET###']= array('<a href="uploads/tx_ttproducts/datasheet/'.$datasheetFile.'">','</a>');
 			}
-
 			$variant = $itemTableArray[$this->type]->variant->getVariantFromRow ($row);
 			$item = $this->basket->getItem($row, $variant);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
@@ -327,7 +328,6 @@ class tx_ttproducts_single_view {
 				'SINGLE',
 				1
 			);
-
 			$markerArray = array();
 			$itemTableArray[$this->type]->getItemMarkerArray (
 				$item,
@@ -468,7 +468,8 @@ class tx_ttproducts_single_view {
 						$listPids,
 						$error_code,
 						$templateArea,
-						$this->pibase->pageAsCategory
+						$this->pibase->pageAsCategory,
+						1
 					);
 					$markerArray['###PRODUCT_RELATED_UID###'] = $tmpContent;
 				} else {

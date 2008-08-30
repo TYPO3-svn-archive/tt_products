@@ -120,6 +120,14 @@ class tx_ttproducts_price {
 		return $rc;
 	}
 
+	/** reduces price by discount for FE user **/
+	function getDiscountPrice($price, $discount)	{
+		if (floatval($discount) != 0)	{
+			$price = $price - ($price * ($discount / 100));
+		}
+		return $price;
+	}
+
 	/**
 	 * Returns the $price with either tax or not tax, based on if $tax is true or false. 
 	 * This function reads the TypoScript configuration to see whether prices in the database 
@@ -127,7 +135,7 @@ class tx_ttproducts_price {
 	 */
 	function getPrice($price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
 		global $TSFE;
-		
+
 		$rc = 0;
 		$bTax = ($tax==1);
 
@@ -135,9 +143,6 @@ class tx_ttproducts_price {
 //			$bTax = false;
 //		}
 		$price = $this->toNumber(true, $price);
-		if ($TSFE->fe_user->user['tt_products_discount'] != 0) {
-			$price = $price - ($price * ($TSFE->fe_user->user['tt_products_discount'] / 100));
-		}
 
 		if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
 			$taxpercentage = doubleval($this->conf['TAXpercentage']);

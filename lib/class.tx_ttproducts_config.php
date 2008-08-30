@@ -64,7 +64,6 @@ class tx_ttproducts_config {
 			)	{
 			$tableDesc = $this->conf['table.'][$tablename.'.']; 
 		}
-		
 		return $tableDesc;
 	}
 
@@ -87,7 +86,6 @@ class tx_ttproducts_config {
 				$tableConf['orderBy'] = '';
 			}
 		}
-		
 		return $tableConf;
 	}
 
@@ -103,7 +101,6 @@ class tx_ttproducts_config {
 				$rc = true;
 			}
 		}
-		
 		return $rc;
 	}
 
@@ -138,8 +135,7 @@ class tx_ttproducts_config {
 					}
 				}	
 			}
-		}		
-
+		}
 		return $retArray;
 	}
 
@@ -154,7 +150,6 @@ class tx_ttproducts_config {
 
 		return $rc;
 	}
-
 }
 
 

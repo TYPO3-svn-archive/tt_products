@@ -73,12 +73,12 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 
 		$defaultFieldArray = array('uid'=>'uid', 'pid'=>'pid', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'deleted' => 'deleted');
 		$this->table->setDefaultFieldArray($defaultFieldArray);
-		$this->table->setTCAFieldArray($tablename);
 		$this->table->setNewFieldArray();
 
 		$requiredListFields = 'uid,pid,title';
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
+		$this->table->setTCAFieldArray($tablename);
 
 		$this->fields['name'] = ($this->tabledesc['name'] ? $this->tabledesc['name'] : 'name');
 	} // init

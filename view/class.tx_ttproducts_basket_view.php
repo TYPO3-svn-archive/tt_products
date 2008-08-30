@@ -254,7 +254,6 @@ class tx_ttproducts_basket_view {
 				}
 
 				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row, $TSFE->rootLine[1]);
-				$splitMark = md5(microtime());
 				$addQueryString=array();
 				$addQueryString[$this->pibase->prefixId.'['.$this->viewTable->type.']'] = intval($row['uid']);
 				$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($row['extVars']);
@@ -303,9 +302,8 @@ class tx_ttproducts_basket_view {
 
 		$splitMark = md5(microtime());
 		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$tempUrl = $this->pibase->pi_linkToPage($splitMark,$pid,'',$this->marker->getLinkParams());
-		$wrappedSubpartArray['###LINK_BASKET###'] = explode ($splitMark, $tempUrl);
 		//$wrappedSubpartArray['###LINK_BASKET###']= array('<a href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</a>');
+		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
 
 		//$markerArray['###PRICE_SHIPPING_PERCENT###'] = $perc;
 		$markerArray['###PRICE_SHIPPING_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['shipping']);
@@ -339,7 +337,7 @@ class tx_ttproducts_basket_view {
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
-				if (method_exists($hookObj, 'getBasketView')) {
+				if (method_exists($hookObj, 'getItemMarkerArrays')) {
 					$hookObj->getItemMarkerArrays ($this, $templateCode, $code, $markerArray,$subpartArray,$wrappedSubpartArray, $code, $mainMarkerArray, $count);
 				}
 			}

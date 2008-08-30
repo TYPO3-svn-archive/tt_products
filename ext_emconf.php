@@ -50,7 +50,9 @@ $EM_CONF[$_EXTKEY] = array(
 			'c3bi_cookie_at_login' => '',
 		),
 		'suggests' => array(
+			'ajaxgroupsearch' => '',
 			'mbi_products_categories' => '',
+			'patch1822' => '',
 			'sr_feuser_register' => '',
 			'static_info_tables' => '2.0.1-',
 			'tt_address' => '',

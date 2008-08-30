@@ -546,7 +546,10 @@ class tx_ttproducts_control {
 
 						if ($this->conf['PIDthanks'] > 0) {
 							$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
-							$contentTmp = $basketView->getView($empty, 'BASKET', $info, false, false, '###'.$tmpl.'###', $mainMarkerArray);
+							$contentTmpThanks = $basketView->getView($empty, 'BASKET', $info, false, false, '###'.$tmpl.'###', $mainMarkerArray);
+							if ($contentTmpThanks != '')	{
+								$contentTmp = $contentTmpThanks;
+							}
 						}
 						$content .= $contentTmp;
 						$content .= $basketView->getView($empty, 'BASKET', $info, false, false, '###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');

@@ -153,7 +153,6 @@ class tx_ttproducts_paymentshipping {
 			$this->basket->basketExtra['payment'] = $k;
 			$this->basket->basketExtra['payment.'] = $this->conf['payment.'][$k.'.'];
 		}
-
 	} // setBasketExtras
 
 
@@ -222,7 +221,7 @@ class tx_ttproducts_paymentshipping {
 		$confArr = $this->cleanConfArr($this->conf[$pskey.'.']);
 		$out='';
 		$submitCode = 'this.form.action=\''.$basketUrl.'\';this.form.submit();';
-		$template = $this->conf[$pskey.'.']['template'] ? ereg_replace('\' *\. *\$pskey *\. *\'',$pskey, $this->conf[$pskey.'.']['template']) : '<nobr>###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###</nobr><BR>';
+		$template = $this->conf[$pskey.'.']['template'] ? ereg_replace('\' *\. *\$pskey *\. *\'',$pskey, $this->conf[$pskey.'.']['template']) : '###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>';
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
 		$t = array();
 		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];

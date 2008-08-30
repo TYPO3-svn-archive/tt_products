@@ -62,7 +62,6 @@ class tx_ttproducts_image {
 		$this->tt_content = &$tt_content;
 		$this->parenttable = &$parenttable;
 		$this->marker = $marker;
-		
 		if ($this->conf['noImageAvailable'] == '{$plugin.tt_products.file.noImageAvailable}')	{
 			$this->conf['noImageAvailable'] = '';
 		}
@@ -88,6 +87,7 @@ class tx_ttproducts_image {
 		}
 		$tmp = implode('_', $keyArray);
 		$tmpArray = t3lib_div::trimExplode('.',$tmp);
+		reset($tmpArray);
 		$key = current($tmpArray);
 		if (!is_array($imageMarkerArray))	{
 			$key .= $c;
@@ -274,7 +274,6 @@ class tx_ttproducts_image {
 		}
 
 		if (is_array($tempImageConf))	{
-
 			foreach ($tagArray as $key => $value)	{
 				$keyArray = t3lib_div::trimExplode (':', $key);
 				$specialConfType = strtolower($keyArray[1]);
@@ -291,12 +290,14 @@ class tx_ttproducts_image {
 				}
 			}
 		}
+
 		$dirname = ($dirname ? $dirname : 'uploads/pics');
 		$markerArray['###'.$this->marker.'_IMAGE_PATH###'] = $dirname.'/';
 		reset ($imgs);
 		while(list($c,$val) = each($imgs))	{
 			$confMarkerArray = array();
 			$imageConf = $this->conf[$imageRenderObj.'.'];
+
 			if ($c==$imageNum)	break;
 			$bUseImage = false;
 			$meta = false;
@@ -337,7 +338,6 @@ class tx_ttproducts_image {
 				$filetagkey = $this->getMarkerkey($imageMarkerArray, $key, $c + 1, 'FILE');
 			}
 			$markerArray['###'.$filetagkey.'###'] = $val;
-		//	$markerArray['###'.$this->marker.'_IMAGE_FILE'.($c+1).'###'] = $val;
 
 			if (is_array($specialConf[$tagkey]))	{
 				foreach ($specialConf[$tagkey] as $specialConfType => $specialImageConf)	{
@@ -380,12 +380,10 @@ class tx_ttproducts_image {
 				$keyArray = t3lib_div::trimExplode(':', $k1);
 				$count = $countArray[$keyArray[0]];
 				$key = $this->marker.'_IMAGE' . intval($count); 
-				if (isset($count) && is_array($specialConf[$key]))	{
-					foreach ($specialConf[$key] as $special => $sconf)	{
-						$combkey = $key.':'.strtoupper($special);
-						if (isset($tagArray[$combkey]))	{
-							$markerArray['###'.$combkey.'###'] = $val;
-						}
+				if (isset($count) && is_array($specialConf[$key]) && isset($specialConf[$key][$keyArray[1]]) && is_array($specialConf[$key][$keyArray[1]]))	{
+					$combkey = $key.':'.strtoupper($keyArray[1]);
+					if (isset($tagArray[$combkey]))	{
+						$markerArray['###'.$combkey.'###'] = $val;
 					}
 				}
 			}
@@ -440,9 +438,7 @@ class tx_ttproducts_image {
 				$markerArray[$keyMarker] = '';
 			}
 		}
-
 	}
-
 }
 
 

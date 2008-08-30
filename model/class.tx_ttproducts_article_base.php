@@ -71,7 +71,7 @@ class tx_ttproducts_article_base {
 	 */
 	function init(&$pibase, &$cnf, $tablename, &$tt_content, &$paymentshipping)  {
 		global $TYPO3_DB,$TSFE,$TCA;
-		
+
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
@@ -79,14 +79,14 @@ class tx_ttproducts_article_base {
 		$this->tt_content = &$tt_content;
 		$this->tableconf = $this->cnf->getTableConf($tablename);
 		$this->tabledesc = $this->cnf->getTableDesc($tablename);
- 		$this->paymentshipping = &$paymentshipping;
- 
+		$this->paymentshipping = &$paymentshipping;
+
 		$this->variantArray = array();
 		$this->variantArray[1] = array('color', ($this->bIsProduct && $this->conf['selectColor']));
 		$this->variantArray[2] = array('size', ($this->bIsProduct && $this->conf['selectSize']));
 		$this->variantArray[3] = array('description', ($this->bIsProduct && $this->conf['selectDescription']));
 		$this->variantArray[4] = array('gradings', ($this->bIsProduct && $this->conf['selectGradings']));
-		
+
 			// image
 		$this->image = t3lib_div::makeInstance('tx_ttproducts_image');
 		$this->image->init($this->pibase, $cnf, $tt_content, $this->table, $this->marker);

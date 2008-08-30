@@ -169,7 +169,6 @@ class tx_ttproducts_basket {
 			$pid_list,
 			99
 		);
-
 		$this->useArticles = $this->conf['useArticles'];
 
 		if ($this->useArticles == 2)	{
@@ -346,11 +345,12 @@ class tx_ttproducts_basket {
 
 			$this->basketExt = $basketExtNew;
 			if ($bStoreBasket)	{
-				if (is_array($this->basketExt) && count($this->basketExt))
+				if (is_array($this->basketExt) && count($this->basketExt))	{
 					$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
-				else
+				} else {
 					$TSFE->fe_user->setKey('ses','basketExt',array());
-				$TSFE->fe_user->storeSessionData(); // The basket shall not get lost when coming back from external scripts
+					$TSFE->fe_user->storeSessionData(); // The basket shall not get lost when coming back from external scripts
+				}
 			}
 		}
 		$this->paymentshipping->setBasketExtras($formerBasket);
@@ -425,9 +425,9 @@ class tx_ttproducts_basket {
 
 		$where = 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->viewTable->table->enableFields();
 		$res = $this->viewTable->table->exec_SELECTquery('*',$where);
-
 		$productsArray = array();
 		$this->page->setPageArray();
+
 		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 			$pid = $row['pid'];
 			// only the basket items for the pages belonging to this shop shall be used here
@@ -489,7 +489,6 @@ class tx_ttproducts_basket {
 		foreach ($this->itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
 				$row = &$actItem['rec'];
-
 				// has the price been calculated before take it if it gets cheaper now
 				if (($actItem['calcprice'] > 0) && ($actItem['calcprice'] < $actItem['priceTax'])) {
 					$this->itemArray[$sort][$k1]['priceTax'] = $this->price->getModePrice($this->conf['TAXmode'], $actItem['calcprice'],true,$row['tax'],$this->conf['TAXincluded']);
@@ -600,6 +599,9 @@ class tx_ttproducts_basket {
 
 
 	function &getItem (&$row, $variant) {
+		global $TSFE;
+
+		$discount = $TSFE->fe_user->user['tt_products_discount'];
 		if (!isset($this->basketExt[$row['uid']][$variant]))	{
 			$variantArray = t3lib_div::trimExplode(';', $variant);
 			foreach ($variantArray as $k => $v)	{
@@ -612,8 +614,11 @@ class tx_ttproducts_basket {
 		if (!$this->conf['quantityIsFloat'])	{
 			$count = intval($count);
 		}
+		$oldPrice = $row['price'];
+		$row['price'] = $this->price->getDiscountPrice($oldPrice, $discount);
 		$priceTax = $this->price->getResellerPrice($row,1);
 		$priceNoTax = $this->price->getResellerPrice($row,0);
+		$row['price'] = $oldPrice;
 		$item = array (
 			'calcprice' => 0,
 			'count' => $count,
