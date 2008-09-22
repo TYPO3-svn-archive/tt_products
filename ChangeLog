@@ -1,3 +1,11 @@
+2008-09-22 Franz Holzinger <franz@fholzinger.com>
+	* only copy the billing fields into the delivery fields if they have been checked and are ok
+	* new field EAN code with a maximum of 48 characters
+	* new configuration in EM: where.category. This can be used to reduce the selectable categories.
+	* do not use the search filter for related articles
+	* fix bug with search: click on item did not lead to the single view
+	* fix bug with not used table translations
+
 2008-08-30 Franz Holzinger <franz@fholzinger.com>
 	* fix bug with double calculated fe user discount percentage
 	* fix bug with change in TYPO3 4.2.0: t3lib_div::trimExplode does not reset the array any more

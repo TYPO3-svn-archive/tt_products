@@ -105,7 +105,6 @@ class tx_ttproducts_activity_finalize {
 		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
 		$apostrophe = $this->conf['orderEmail_apostrophe'];
 
-		// Move the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
 		// Is no user is logged in --> create one
 		if ($this->conf['createUsers'] && $address->infoArray['billing']['email'] != '' && (trim($TSFE->fe_user->user['username']) == '')) {
 			$pid = ($this->conf['PIDuserFolder'] ? $this->conf['PIDuserFolder'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
@@ -164,7 +163,7 @@ class tx_ttproducts_activity_finalize {
 				$res = $TYPO3_DB->exec_SELECTquery(
 					'uid',
 					'fe_users',
-					'username='.$TYPO3_DB->fullQuoteStr($username,'fe_users') . 
+					'username='.$TYPO3_DB->fullQuoteStr($username,'fe_users') .
 						' AND pid='. $pid.' AND deleted=0');
 				while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 			 		 $address->infoArray['billing']['feusers_uid'] = intval($row['uid']);

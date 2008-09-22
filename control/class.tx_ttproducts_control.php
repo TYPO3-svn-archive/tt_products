@@ -195,18 +195,12 @@ class tx_ttproducts_control {
 		$activityArray = array();
 		$bBasketEmpty = false;
 		$basketView = '';
-//								if (!is_object($info))	{
-//									include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_info.php');
-//									$info = &t3lib_div::getUserObj('tx_ttproducts_info');
-//									$info->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
-//									$info->mapPersonIntoDelivery();
-//								}
-
 		$info = &t3lib_div::getUserObj('tx_ttproducts_info');
 		$info->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping);
-		$info->mapPersonIntoDelivery();
-		$account = ''; // will come in tt_products 2.5.3
-
+		if ($info->checkRequired('billing')=='')	{
+			$info->mapPersonIntoDelivery();
+		}
+		$account = '';
 		$order = '';
 
 			// use '_x' for coordinates from Internet Explorer if button images are used
@@ -260,7 +254,6 @@ class tx_ttproducts_control {
 			// only the code activities if there is no code BASKET or INFO set
 			$this->activityArray = $codeActivityArray;
 		}
-//		if (count($this->basket->basketExt) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
 		if (count($this->basket->itemArray) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
 
 				// prepare action

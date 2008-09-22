@@ -91,6 +91,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$this->table->addRequiredFieldArray ($addRequiredFields);
 		}
 
+		$tablename = ($tablename ? $tablename : 'tt_products');
+		$this->table->setTCAFieldArray($tablename, 'products');
+
 		if ($cnf->bUseLanguageTable($this->tableconf))	{
 			$this->table->setLanguage ($LLkey);
 			$this->table->setLangName($this->tableconf['language.']['table']);
@@ -101,12 +104,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$this->table->initLanguageFile($this->tableconf['language.']['file']);
 		}
 
-		$tablename = ($tablename ? $tablename : 'tt_products');
-		$this->table->setTCAFieldArray($tablename, 'products');
-
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $cnf, $this, $useArticles);
-
 	} // init
 
 
@@ -374,7 +373,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				}
 			}
 		}
-		
+
 		return implode(',', $tableNameArray);	
 	}
 
@@ -402,9 +401,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	function getProductField(&$row, $field)	{
 		return $row[$field];
 	}
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_product.php']) {

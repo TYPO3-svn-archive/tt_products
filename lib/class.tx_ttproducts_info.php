@@ -208,7 +208,7 @@ class tx_ttproducts_info {
 	/**
 	 * Checks if required fields are filled in
 	 */
-	function checkRequired()	{
+	function checkRequired($type='')	{
 		$flag = '';
 		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
 
@@ -218,8 +218,15 @@ class tx_ttproducts_info {
 		if ($requiredInfoFields)	{
 			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
 			reset($infoFields);
+			// Check if the required billing fields ar filled.
+			$bBillingTo = true;
+			while(list(,$fName)=each($infoFields))    {
+				$bBillingTo &= !empty($this->infoArray['billing'][$fName]);
+			}
+
+			reset($infoFields);
 			while(list(,$fName)=each($infoFields))	{
-				if (trim($this->infoArray['billing'][$fName])=='' || trim($this->infoArray['delivery'][$fName])=='')	{
+				if (trim($this->infoArray['billing'][$fName])=='' || ($type != 'billing') && trim($this->infoArray['delivery'][$fName])=='' && $bBillingTo)	{
 					$flag=$fName;
 					break;
 				}
@@ -227,7 +234,6 @@ class tx_ttproducts_info {
 		}
 		return $flag;
 	} // checkRequired
-
 
 
 	/**

@@ -6,13 +6,17 @@ if (t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) {
 	$addressTable = '';
 }
 
+if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']) && isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']['category']))	{
+	$whereCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']['category'];
+}
+
 // ******************************************************************
 // This is the standard TypoScript products table, tt_products
 // ******************************************************************
 $TCA['tt_products'] = Array (
 	'ctrl' => $TCA['tt_products']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,related_uid,itemnumber,price,price2,note,note2,note_uid,category,address,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime,shipping,shipping2,handling'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,related_uid,itemnumber,ean,price,price2,note,note2,note_uid,category,address,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime,shipping,shipping2,handling'
 	),
 	'columns' => Array (
 		'hidden' => Array (
@@ -103,6 +107,16 @@ $TCA['tt_products'] = Array (
 				'size' => '20',
 				'eval' => 'trim',
 				'max' => '40'
+			)
+		),
+		'ean' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.ean',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '48',
+				'eval' => 'trim',
+				'max' => '48'
 			)
 		),
 		'price' => Array (
@@ -197,7 +211,8 @@ $TCA['tt_products'] = Array (
 				'items' => Array (
 					Array('', 0)
 				),
-				'foreign_table' => 'tt_products_cat'
+				'foreign_table' => 'tt_products_cat',
+				'foreign_table_where' => $whereCategory
 			)
 		),
 		'address' => Array (
@@ -463,7 +478,7 @@ $TCA['tt_products'] = Array (
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
-		'3' => Array('showitem' => 'inStock'),
+		'3' => Array('showitem' => 'inStock,ean'),
 		'4' => Array('showitem' => 'price2, directcost, tax, offer, highlight'),
 		'5' => Array('showitem' => 'subtitle, www'),
 		'6' => Array('showitem' => 'bulkily, special_preparation, unit, unit_factor'),

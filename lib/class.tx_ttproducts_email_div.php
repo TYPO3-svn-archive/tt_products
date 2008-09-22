@@ -58,7 +58,12 @@ class tx_ttproducts_email_div {
 		if (class_exists($cls)) {
 			$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
 			$Typo3_htmlmail->start();
+			$Typo3_htmlmail->mailer = 'TYPO3 HTMLMail';
 			// $Typo3_htmlmail->useBase64(); +++ TODO
+			$message = html_entity_decode($message);
+			if ($Typo3_htmlmail->linebreak == chr(10))	{
+				$message = str_replace(chr(13).chr(10),$Typo3_htmlmail->linebreak,$message);
+			}
 
 			$Typo3_htmlmail->subject = $subject;
 			$Typo3_htmlmail->from_email = $fromEMail;
@@ -134,8 +139,7 @@ class tx_ttproducts_email_div {
 			}
 		}
 	}
-	
-		
+
 
 	/**
 	 * Send notification email for gift certificates
@@ -180,9 +184,7 @@ class tx_ttproducts_email_div {
 			}
 		}
 	}
-
 }
-
 
 
 ?>

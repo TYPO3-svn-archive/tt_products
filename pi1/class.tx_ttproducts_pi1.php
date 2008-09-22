@@ -872,17 +872,17 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$updateCode = '';
 
 		include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
-		
+
 		$marker = t3lib_div::makeInstance('tx_ttproducts_marker');
 		$marker->init($this, $this->conf, $this->config, $this->basket);
 
 		$trackingCode = t3lib_div::_GP('tracking');
 		$admin = $this->shopAdmin($updateCode);
-			
+
 		$msgSubpart = '';
 		if ($trackingCode || $admin)	{		// Tracking number must be set
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-			
+
 				// order
 			$order = &t3lib_div::getUserObj('tx_ttproducts_order');
 			$order->init(
@@ -926,7 +926,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				 			$this->price,
 							'bill'
 						);
-				 		
 						$content = $bill->getInformation($orderRow, $this->templateCode,$trackingCode);
 						break;
 					case 'DELIVERY':
@@ -964,7 +963,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$content = $this->cObj->substituteSubpart($content,'###ADMIN_CONTROL###','');
 			}
 		}
-		
+
 		$markerArray=array();
 		$markerArray['###FORM_URL###'] = $this->pi_getPageLink($TSFE->id,'',$marker->getLinkParams('',array(),true)) ; // $this->getLinkUrl();	// Add FORM_URL to globalMarkerArray, linking to self.
 		$content= $this->cObj->substituteMarkerArray($content, $markerArray);
@@ -1007,7 +1006,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$bStoreBasket = false;
 			}
 		}
-		
 		return ($retCodes);
 	}
 
@@ -1037,7 +1035,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
-		if (($theCode=='SINGLE') || (strstr($theCode,'LIST') && $theCode != 'LISTARTICLES' && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'])) {
+		if (($theCode=='SINGLE') || ((($theCode=='SEARCH') || strstr($theCode,'LIST')) && $theCode != 'LISTARTICLES' && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'])) {
 			if (!$this->tt_product_single) {
 				$this->tt_product_single['product'] = $this->conf['defaultProductID'];
 			}
@@ -1092,7 +1090,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$this->conf['useArticles']
 			);
 			if ($theCode == 'LISTARTICLES' && $this->conf['useArticles'])	{
-				$templateArea = 'ARTICLE_LIST_TEMPLATE';	
+				$templateArea = 'ARTICLE_LIST_TEMPLATE';
 			} else {
 				$templateArea = 'ITEM_LIST_TEMPLATE';
 			}

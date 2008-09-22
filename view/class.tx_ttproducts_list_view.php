@@ -151,13 +151,17 @@ class tx_ttproducts_list_view {
 
 		$content = '';
 		$out = '';
-		$sword = $this->pibase->piVars['sword'];
-		if (!$sword)	{
-			$sword = t3lib_div::_GP('sword');
-			$sword = ($sword ? $sword : t3lib_div::_GP('swords'));
+		$sword = '';
+		$htmlSwords = '';
+		if ($calllevel == 0)	{
+			$sword = $this->pibase->piVars['sword'];
+			if (!$sword)	{
+				$sword = t3lib_div::_GP('sword');
+				$sword = ($sword ? $sword : t3lib_div::_GP('swords'));
+			}
+			$sword = rawurldecode($sword);
+			$htmlSwords = htmlspecialchars($sword);
 		}
-		$sword = rawurldecode($sword);
-		$htmlSwords = htmlspecialchars($sword);
 		$more = 0;		// If set during this loop, the next-item is drawn
 		$where = '';
 		$formName = 'ShopListForm';
@@ -266,7 +270,7 @@ class tx_ttproducts_list_view {
 					// Substitute a few markers
 				$out = $t['search'];
 				$htmlSwords = htmlspecialchars($sword);
-				$tmpPid = ( $this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $this->pibase->pid);
+				$tmpPid = ($this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : ($this->pibase->pid ? $this->pibase->pid : $TSFE->id));
 				$markerArray = $this->marker->addURLMarkers($tmpPid,array(),array(),'sword');
 				$markerArray['###FORM_NAME###'] = $formName;
 				$markerArray['###SWORD###'] = $htmlSwords;
@@ -466,7 +470,6 @@ class tx_ttproducts_list_view {
 				$catTables = $viewCatTable->table->getAdditionalTables();
 				$selectConf['from'] = ($catTables ? $catTables.', '.$selectConf['from']:$selectConf['from']);
 			}
-
 			$selectFields = implode(',', $fieldsArray);
 			$selectConf['selectFields'] = 'DISTINCT '.$itemTable->table->transformSelect($selectFields);
 			$join = '';

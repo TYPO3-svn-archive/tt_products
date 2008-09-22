@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Shop System',
-	'description' => 'Shop in multiple languages, photo gallery using DAM, product variants, payment gateways, bill, creditpoint, voucher system and gift certificates. Documented in book "Der TYPO3-Webshop" at opensourcepress.de. Requires table 0.1.13, fh_library 0.0.20 and div 0.0.13+!',
+	'description' => 'Shop in multiple languages, photo gallery using DAM, product variants, payment gateways, bill, creditpoint, voucher system and gift certificates. Documented in book "Der TYPO3-Webshop" at opensourcepress.de. Requires table 0.1.18+, fh_library 0.0.20 and div 0.0.13+!',
 	'category' => 'plugin',
 	'shy' => 0,
 	'version' => '2.5.8',
@@ -36,7 +36,7 @@ $EM_CONF[$_EXTKEY] = array(
 		'depends' => array(
 			'div' => '0.0.13-',
 			'cms' => '',
-			'table' => '0.1.13-',
+			'table' => '0.1.18-',
 			'fh_library' => '0.0.19-',
 			'php' => '4.2.3-0.0.0',
 			'typo3' => '3.8.0-4.2.99',
