@@ -1,0 +1,259 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<title>Untitled</title>
+</head>
+
+<body>
+
+
+
+
+<!-- ###ITEM_LIST_TEMPLATE### -->
+
+		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+			<tr>
+				<td><!--###LINK_PREV###-->###GLOBAL_WRAP_2_BEGIN###<div align="left"><b>FORRIGE SIDE</b></div>###GLOBAL_WRAP_2_END###<!--###LINK_PREV###--></td>
+				<td></td>
+				<td></td>
+				<td><!--###LINK_NEXT###-->###GLOBAL_WRAP_2_BEGIN###<div align="right"><b>NÆSTE SIDE</b></div>###GLOBAL_WRAP_2_END###<!--###LINK_NEXT###--></td>
+			</tr>
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=300 height=1></td>
+				<td><img src="clear.gif" width=100 height=1></td>
+			</tr>
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+		<!-- ###ITEM_CATEGORY### begin -->		
+			<tr>
+				<td colspan=4><br>###CATEGORY_TITLE###	
+				<br>
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<tr>
+				<td colspan=3 bgcolor="###GLOBAL_COLOR_2###">###GLOBAL_WRAP_2_BEGIN###<b>Produkt:</b>###GLOBAL_WRAP_2_END###</td>
+				<td bgcolor="###GLOBAL_COLOR_2###">###GLOBAL_WRAP_2_BEGIN###<b>Angiv antal:</b>###GLOBAL_WRAP_2_END###</td>
+			</tr>
+			<!-- ###ITEM_SINGLE### begin-->
+			<FORM method="post" action="###FORM_URL###">
+				<tr>
+					<td colspan=4><img src="clear.gif" width=1 height=6></td>
+				</tr>
+				<tr>
+					<td colspan=4 bgcolor="###GLOBAL_COLOR_1###"><!-- ###LINK_ITEM###-->###GLOBAL_WRAP_1_BEGIN###<b>###PRODUCT_TITLE###</b>###GLOBAL_WRAP_1_END###<!-- ###LINK_ITEM###--></td>
+				</tr>
+				<TR>
+					<TD valign=top>###PRODUCT_IMAGE###</TD>
+					<td></td>
+					<TD valign=top>###GLOBAL_WRAP_2_BEGIN######PRODUCT_NOTE######GLOBAL_WRAP_2_END###<br>
+						###GLOBAL_WRAP_1_BEGIN###<B>Web-pris: ###PRICE_TAX###</B>###GLOBAL_WRAP_1_END###
+						###GLOBAL_WRAP_2_BEGIN### &nbsp; (###PRICE_NO_TAX###)###GLOBAL_WRAP_2_END###
+					</TD>
+					<TD valign=top><INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_VALUE###"><BR><input type="Submit" name="order" value="Læg i kurv">
+					</TD>
+				</TR>
+			</FORM>
+			<!-- ###ITEM_SINGLE### end -->
+		<!-- ###ITEM_LIST### end -->
+
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+</TABLE>
+<BR><BR>
+<!-- ###ITEM_LIST_TEMPLATE### -->
+
+
+
+
+
+<!-- ###ITEM_SINGLE_DISPLAY### -->
+		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<FORM method="post" action="###FORM_URL###">
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=300 height=1></td>
+			</tr>
+			<tr>
+				<td colspan=3><img src="clear.gif" width=1 height=6></td>
+			</tr>
+			<tr>
+				<td colspan=3 bgcolor="###GLOBAL_COLOR_1###"><!-- ###LINK_ITEM###-->###GLOBAL_WRAP_1_BEGIN###<b>###PRODUCT_TITLE###</b>###GLOBAL_WRAP_1_END###<!-- ###LINK_ITEM###--></td>
+			</tr>
+			<TR>
+				<TD valign=top>###PRODUCT_IMAGE###</TD>
+				<td></td>
+				<TD valign=top>
+					###GLOBAL_WRAP_1_BEGIN###
+						<B>Kategori:</B> ###CATEGORY_TITLE### <br>
+						<B>Varenummer:</B> ###PRODUCT_ITEMNUMBER###<br>
+						<B>Web-Pris:</B> ###PRICE_TAX### ###GLOBAL_WRAP_2_BEGIN### &nbsp; (###PRICE_NO_TAX###)###GLOBAL_WRAP_2_END###<br>
+						
+						<B>Info:</B><br>
+						###PRODUCT_NOTE###<br>
+					###GLOBAL_WRAP_1_END###	<br>
+						<nobr><INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_VALUE###"> &nbsp; <input type="Submit" name="order" value="Læg i kurv"></nobr>
+				</TD>
+			</TR>
+</form>
+		</TABLE>
+<br>
+<br>
+
+	###GLOBAL_WRAP_2_BEGIN###	
+	<!--###LINK_ITEM###-->
+	<b><- TILBAGE TIL LISTEN</b>
+	<!--###LINK_ITEM###-->
+	###GLOBAL_WRAP_2_END###						
+
+		
+<!-- ###ITEM_SINGLE_DISPLAY### -->
+
+
+
+
+
+
+
+<!-- ###ITEM_SINGLE_DISPLAY_RECORDINSERT### -->
+		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+<FORM method="post" action="###FORM_URL###">
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=300 height=1></td>
+			</tr>
+			<tr>
+				<td colspan=3><img src="clear.gif" width=1 height=6></td>
+			</tr>
+			<tr>
+				<td colspan=3 bgcolor="###GLOBAL_COLOR_1###"><!-- ###LINK_ITEM###-->###GLOBAL_WRAP_1_BEGIN###<b>###PRODUCT_TITLE###</b>###GLOBAL_WRAP_1_END###<!-- ###LINK_ITEM###--></td>
+			</tr>
+			<TR>
+				<TD valign=top>###PRODUCT_IMAGE###</TD>
+				<td></td>
+				<TD valign=top>
+					###GLOBAL_WRAP_1_BEGIN###
+						<B>Kategori:</B> ###CATEGORY_TITLE### <br>
+						<B>Varenummer:</B> ###PRODUCT_ITEMNUMBER###<br>
+						<B>Web-Pris:</B> ###PRICE_TAX### ###GLOBAL_WRAP_2_BEGIN### &nbsp; (###PRICE_NO_TAX###)###GLOBAL_WRAP_2_END###<br>
+						
+						<B>Info:</B><br>
+						###PRODUCT_NOTE###<br>
+					###GLOBAL_WRAP_1_END###	<br>
+						<nobr><INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_VALUE###"> &nbsp; <input type="Submit" name="order" value="Add to basket"></nobr>
+				</TD>
+			</TR>
+</form>
+		</TABLE>
+<br>
+		
+<!-- ###ITEM_SINGLE_DISPLAY_RECORDINSERT### -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###ITEM_SEARCH### -->
+<FORM method="post" action="###FORM_URL###">
+	<INPUT size="30" maxlength="100" type="text" name="swords" value="###SWORDS###">
+	<input type="Submit" name="order" value="Søg">
+</form>
+<!-- ###ITEM_SEARCH### -->
+
+
+
+
+<!-- ###ITEM_SEARCH_EMPTY### -->
+###GLOBAL_WRAP_1_BEGIN###<B>Søgningen var tom.</B>###GLOBAL_WRAP_1_END###
+<!-- ###ITEM_SEARCH_EMPTY### -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###BASKET_TEMPLATE### -->
+			<FORM method="post" action="###FORM_URL###">
+		<TABLE border="0" cellspacing="0" cellpadding="1" width=1>
+			<tr>
+				<td><img src="clear.gif" width=100 height=1></td>
+				<td><img src="clear.gif" width=5 height=1></td>
+				<td><img src="clear.gif" width=200 height=1></td>
+				<td colspan=3><img src="clear.gif" width=200 height=1></td>
+			</tr>
+			<tr>
+				<td colspan=3 bgcolor="###GLOBAL_COLOR_2###">###GLOBAL_WRAP_2_BEGIN###<b>Produkt:</b>###GLOBAL_WRAP_2_END###</td>
+				<td bgcolor="###GLOBAL_COLOR_2###">###GLOBAL_WRAP_2_BEGIN###<b>Pris:</b>###GLOBAL_WRAP_2_END###</td>
+				<td bgcolor="###GLOBAL_COLOR_2###">###GLOBAL_WRAP_2_BEGIN###<b>Antal:</b>###GLOBAL_WRAP_2_END###</td>
+				<td bgcolor="###GLOBAL_COLOR_2###">###GLOBAL_WRAP_2_BEGIN###<b>Total:</b>###GLOBAL_WRAP_2_END###</td>
+			</tr>
+
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+		<!-- ###ITEM_CATEGORY### begin -->		
+			<tr>
+				<td colspan=6><br>###CATEGORY_TITLE###<br>
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<!-- ###ITEM_SINGLE### begin-->
+				<tr>
+					<td colspan=6><img src="clear.gif" width=1 height=6></td>
+				</tr>
+				<TR>
+					<TD valign=top>###PRODUCT_IMAGE###</TD>
+					<td></td>
+					<TD valign=top>
+						<!-- ###LINK_ITEM###-->###GLOBAL_WRAP_1_BEGIN###<b>###PRODUCT_TITLE###</b>###GLOBAL_WRAP_1_END###<!-- ###LINK_ITEM###-->
+						
+					</TD>
+					<td valign=top>###GLOBAL_WRAP_1_BEGIN### ###PRICE_TAX### ###GLOBAL_WRAP_1_END###</td>
+					<TD valign=top>&nbsp;<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_VALUE###">&nbsp;</TD>
+					<td valign=top>###GLOBAL_WRAP_1_BEGIN### <b>###PRICE_TOTAL_TAX###</b> ###GLOBAL_WRAP_1_END###</td>
+				</TR>
+			<!-- ###ITEM_SINGLE### end -->
+		<!-- ###ITEM_LIST### end -->
+
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+		<TR>
+			<td valign=top colspan=5></td>
+			<td valign=top>###GLOBAL_WRAP_1_BEGIN### <b>###PRICE_TOTAL_TAX###</b> ###GLOBAL_WRAP_1_END###</td>
+		</TR>
+	</TABLE>
+	
+	<input type="Submit" name="order" value="Opdater kurv">
+		</FORM>
+<BR><BR>
+<!-- ###BASKET_TEMPLATE### -->
+
+
+
+
+
+
+
+<!-- ###BASKET_TEMPLATE_EMPTY### -->
+###GLOBAL_WRAP_1_BEGIN###<B>Kurven er tom.</B>###GLOBAL_WRAP_1_END###
+<!-- ###BASKET_TEMPLATE_EMPTY### -->
+
+
+
+
+</body>
+</html>
