@@ -1,3 +1,9 @@
+##
+## @package TYPO3
+## @subpackage tt_products
+## @version $Id$
+##
+
 ## Includes the productsLib:
 includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
 
@@ -24,7 +30,7 @@ plugin.tt_products {
       bodyTag = <body bgColor=black leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
       wrap = <A href="javascript:close();"> | </A>
       width = {$plugin.tt_products.maxW_popup}
-      height = 
+      height =
 
       JSwindow = 1
       JSwindow.newWindow = 1
@@ -35,7 +41,7 @@ plugin.tt_products {
   listImage.file.maxW = {$plugin.tt_products.maxW_list}
   listImage.file.maxH = {$plugin.tt_products.maxH_list}
   listImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_list}
-  
+
   basketImage < .image
   basketImage.file.maxW = {$plugin.tt_products.maxW_basket}
   basketImage.file.maxH = {$plugin.tt_products.maxH_basket}
@@ -76,12 +82,12 @@ plugin.tt_products {
   clickIntoSubmenu = {$plugin.tt_products.clickIntoSubmenu}
   basketMaxQuantity = {$plugin.tt_products.basketMaxQuantity}
   quantityIsFloat = {$plugin.tt_products.quantityIsFloat}
-  
+
   CSSRowEven = {$plugin.tt_products.CSSRowEven}
   CSSRowUneven = {$plugin.tt_products.CSSRowUneven}
   CSSListDefault = {$plugin.tt_products.CSSListDefault}
   CSSListCurrent = {$plugin.tt_products.CSSListCurrent}
-  
+
   NoSingleViewOnList = {$plugin.tt_products.NoSingleViewOnList}
 
   PIDagb = {$plugin.tt_products.PIDagb}
@@ -101,7 +107,7 @@ plugin.tt_products {
   PID_sys_products_orders = {$plugin.tt_products.PID_sys_products_orders}
   PIDGiftsTable = {$plugin.tt_products.PIDGiftsTable}
   paymentActivity = {$plugin.tt_products.paymentActivity}
-  
+
   advanceOrderNumberWithInteger = {$plugin.tt_products.advanceOrderNumberWithInteger}
   alwaysAdvanceOrderNumber = {$plugin.tt_products.alwaysAdvanceOrderNumber}
   alwaysUpdateOrderAmount = {$plugin.tt_products.alwaysUpdateOrderAmount}
@@ -110,7 +116,7 @@ plugin.tt_products {
   defaultCategoryID = {$plugin.tt_products.defaultCategoryID}
   recursive = {$plugin.tt_products.recursive}
   domain = {$plugin.tt_products.domain}
-  
+
   parseFunc < styles.content.parseFunc
   categoryHeader = TEXT
   categoryHeader.current = 1
@@ -139,14 +145,14 @@ plugin.tt_products {
   orderEmail_apostrophe = {$plugin.tt_products.orderEmail_apostrophe}
   email_notify_default = {$plugin.tt_products.email_notify_default}
   statusCodes {
-# 1: Incoming orders    
+# 1: Incoming orders
     1 = Order submitted by user
 # 2-49: Useable by the shop admin
     2 = Order is received and accepted by store
     10 = Shop is awaiting goods from third-party
     11 = Shop is awaiting customer payment
     12 = Shop is awaiting material from customer
-    13 = Order has been paid    
+    13 = Order has been paid
     20 = Goods shipped to customer
     21 = Gift certificates shipped to customer
     30 = Other message from store
@@ -164,7 +170,7 @@ plugin.tt_products {
   update_code = {$plugin.tt_products.update_code}
   statusDate_stdWrap.strftime= %d-%m-%Y %H:%M
   orderDate_stdWrap.strftime = %d-%m-%Y
-  
+
   usePriceTag = {$plugin.tt_products.usePriceTag}
   useStaticInfoCountry = {$plugin.tt_products.useStaticInfoCountry}
 
@@ -184,7 +190,7 @@ plugin.tt_products {
       niceText = 1
     }
   }
- 
+
   max_note_length = {$plugin.tt_products.max_note_length}
 
   bulkilyWarning = {$plugin.tt_products.bulkilyWarning}
@@ -196,7 +202,7 @@ plugin.tt_products {
   PIDuserFolder = {$plugin.tt_products.PIDuserFolder}
   pidsRelatedProducts = {$plugin.tt_products.pidsRelatedProducts}
   pidsAddresses = {$plugin.tt_products.pidsAddresses}
-  outputFolder = {$plugin.tt_products.outputFolder} 
+  outputFolder = {$plugin.tt_products.outputFolder}
   memberOfGroup = {$plugin.tt_products.memberOfGroup}
 
   stdSearchFieldExt = {$plugin.tt_products.stdSearchFieldExt}
@@ -217,9 +223,9 @@ plugin.tt_products {
 
   newItemDays = {$plugin.tt_products.newItemDays}
 
-  substitutePagetitle = {$plugin.tt_products.substitutePagetitle}  
-  
-  whereGift = {$plugin.tt_products.whereGift}  
+  substitutePagetitle = {$plugin.tt_products.substitutePagetitle}
+
+  whereGift = {$plugin.tt_products.whereGift}
 
   creditpoints {
     pricefactor = 0.5
@@ -229,7 +235,7 @@ plugin.tt_products {
     10.prod.101 = 0.04
     10.prod.501 = 0.06
   }
-  
+
   form.SEARCH.name = ShopSearchForm
 
   # table settings
@@ -274,7 +280,7 @@ plugin.tt_products {
   }
 
   conf.tt_products_articles.ALL {
-    requiredFields = uid,pid,uid_product,price,price2,inStock  
+    requiredFields = uid,pid,uid_product,price,price2,inStock
   }
 
   table.tt_products_cat = tt_products_cat
@@ -283,11 +289,11 @@ plugin.tt_products {
     orderBy = sorting
     separator = /
   }
-  
+
   _CSS_DEFAULT_STYLE (
       .tx-ttproducts-pi1-wrap1 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }
-      .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }   
-  )   
+      .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }
+  )
 }
 
 ## EXAMPLE payment config:
@@ -301,12 +307,12 @@ plugin.tt_products.payment {
 
   40.title = Money transfer
   40.image.file = typo3/sysext/cms/tslib/media/logos/money.gif
-  40.price = 
+  40.price =
   40.percentOfGoodstotal = 1.45
 
   50.title = Credit in-store
-  50.image.file = 
-  50.price = 
+  50.image.file =
+  50.price =
 }
 
 ## EXAMPLE shipping config:
@@ -352,5 +358,4 @@ tt_products.displayCurrentRecord = 1
 
   # Example of how to set default values from TS in the incoming array, $this->piVars of the plugin:
 #plugin.tt_products._DEFAULT_PI_VARS.test = test
-
 
