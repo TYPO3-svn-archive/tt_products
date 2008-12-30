@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -84,7 +84,7 @@ class tx_ttproducts_paymentlib {
 	 */
 	function getGatewayMode (&$confScript) 	{
 		$gatewayModeArray = array('form' => TX_PAYMENTLIB_GATEWAYMODE_FORM, 'webservice' => TX_PAYMENTLIB_GATEWAYMODE_WEBSERVICE);
-		
+
 		$gatewayMode = $gatewayModeArray[$confScript['gatewaymode']];
 		if (!$gatewayMode)	{
 			$gatewayMode = TX_PAYMENTLIB_GATEWAYMODE_FORM;
@@ -160,8 +160,8 @@ class tx_ttproducts_paymentlib {
 					if (!$ok) {
 						return 'ERROR: Setting details of transaction failed.';
 					}
-					$providerObject->transaction_setOkPage ($transactionDetailsArr['successlink']);
-					$providerObject->transaction_setErrorPage ($transactionDetailsArr['faillink']);
+					$providerObject->transaction_setOkPage($transactionDetailsArr['transaction']['successlink']);
+					$providerObject->transaction_setErrorPage($transactionDetailsArr['transaction']['faillink']);
 
 					if ($gatewayMode == TX_PAYMENTLIB_GATEWAYMODE_FORM)	{
 
@@ -396,7 +396,7 @@ class tx_ttproducts_paymentlib {
 
 		foreach($tmpAddrArr as $key => $basketAddrArr)	{
 			$addrArr[$key] = array();
-	
+
 			// Correct firstname- and lastname-field if they have no value
 			if ($basketAddrArr['first_name'] == '' && $basketAddrArr['last_name'] == '')	{
 				$tmpNameArr = explode(" ", $basketAddrArr['name'], 2);
@@ -431,7 +431,7 @@ class tx_ttproducts_paymentlib {
 			}
 		}
 
-		// Fill the basket array 
+		// Fill the basket array
 		$basketArr = array();
 
 		$totalCount = 0;
@@ -466,7 +466,6 @@ class tx_ttproducts_paymentlib {
 				$basketArr[$sort][] = $basketRow;
 			}
 		}
-
 	}
 
 
@@ -482,7 +481,6 @@ class tx_ttproducts_paymentlib {
 //*******************************************************************************//
 //* Changed by Udo Gerhards: If the $providerObject has a basket fill it, end   *//
 //*******************************************************************************//
-
 
 }
 

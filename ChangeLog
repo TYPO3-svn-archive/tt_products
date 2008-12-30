@@ -1,3 +1,9 @@
+2008-12-30 Franz Holzinger <franz@ttproducts.de>
+	* fix bug with too late initialized global basket object for payment/shipping
+	* better support for SEARCH plugin in combination with list and single view
+	* new feature 6820: data sheet target is configurable
+	* fix bugs 7712, 3670, 6142, 5874, 5210, 3684, 5935, 6178
+
 2008-09-22 Franz Holzinger <franz@fholzinger.com>
 	* only copy the billing fields into the delivery fields if they have been checked and are ok
 	* new field EAN code with a maximum of 48 characters
@@ -271,7 +277,7 @@
 	* make category subtitle visible in backend
 	* LISTARTICLES for a listing of articles
 	* make usage of the Payment Library extension
-	* category list with select boxes displays content using JavaScript and AJAX 
+	* category list with select boxes displays content using JavaScript and AJAX
 	* Payment Gayteways with use of paymentlib - handleLib payment settings
 	* editLockedLoginInfo to still change some fields of the frontend user for the order
 
@@ -600,7 +606,7 @@
 
 2005-07-26  Franz Holzinger  <franz@fholzinger.com>
 	* a lot of changes due to make it more compliant to coding guidelines and use ' instead of " where possible
-	* voucher system etc. from Bert Hiddink and Els Verberne 
+	* voucher system etc. from Bert Hiddink and Els Verberne
 
 2005-07-01  Franz Holzinger  <franz@fholzinger.com>
 

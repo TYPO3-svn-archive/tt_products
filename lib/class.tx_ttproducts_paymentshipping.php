@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2005-2008 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -33,7 +33,7 @@
  *
  * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author  René Fritz <r.fritz@colorcube.de>
- * @author  Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @author  Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3
  * @subpackage tt_products
@@ -77,11 +77,9 @@ class tx_ttproducts_paymentshipping {
 			$cnf,
 			$basket
 		);
-
 			// price
 		$this->price = t3lib_div::makeInstance('tx_ttproducts_price');
 	}
-
 
 	/**
 	 * Setting shipping, payment methods
@@ -105,7 +103,7 @@ class tx_ttproducts_paymentshipping {
 		}
 
 		// overwrite payment from shipping
-		if (is_array($this->basket->basketExtra['shipping.']) && 
+		if (is_array($this->basket->basketExtra['shipping.']) &&
 			is_array($this->basket->basketExtra['shipping.']['replacePayment.']))	{
 			if (!$this->conf['payment.'])	{
 				$this->conf['payment.'] = array();
@@ -131,7 +129,7 @@ class tx_ttproducts_paymentshipping {
 						if (is_array($TSFE->fe_user->user))	{
 							$paymentField = $this->fe_users->getFieldName('payment');
 							$paymentMethod = $TSFE->fe_user->user[$paymentField];
-							$this->conf['payment.'][$key.'.']['title'] = $paymentMethod; 
+							$this->conf['payment.'][$key.'.']['title'] = $paymentMethod;
 						} else {
 							unset($this->conf['payment.'][$key.'.']);
 						}
@@ -184,7 +182,7 @@ class tx_ttproducts_paymentshipping {
 	function getItemMarkerArray (&$item, &$markerArray, $value, $activeArray)	{
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item;
-		
+
 		$markerArray['###VALUE###'] = $value;
 		$markerArray['###CHECKED###'] = ($value==implode('-',$activeArray) ? ' checked':'');
 		$markerArray['###TITLE###'] = $row['title'];
@@ -267,7 +265,7 @@ class tx_ttproducts_paymentshipping {
 							$item['title'] = $this->pibase->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
 							$value = $key . '-'.$row['uid'];
 							if ($value == implode('-',$activeArray))	{
-								$actTitle = $item['title']; 
+								$actTitle = $item['title'];
 							}
 						} else {
 							$value = $key;
@@ -284,7 +282,7 @@ class tx_ttproducts_paymentshipping {
 							$item['title'] = $this->pibase->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
 							$value = $key . '-'.$row['uid'];
 							if ($value == implode('-',$activeArray))	{
-								$actTitle = $item['title']; 
+								$actTitle = $item['title'];
 							}
 						} else {
 							$value = $key;
@@ -349,7 +347,7 @@ class tx_ttproducts_paymentshipping {
 			if ($confArr['WherePIDMinPrice.']) {
 					// compare PIDList with values set in priceTaxWherePIDMinPrice in the SETUP
 					// if they match, get the min. price
-					// if more than one entry for priceTaxWherePIDMinPrice exists, the highest is value will be taken into account
+					// if more than one entry for priceTaxWherePIDMinPrice exists, the highest value will be taken into account
 				foreach ($confArr['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
 					if (is_array($this->basket->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
 						$minPrice=$minPriceValue;
@@ -434,8 +432,6 @@ class tx_ttproducts_paymentshipping {
 		}
 	}
 
-
-
 	function getSpecialPrices ($pskey, $taxpercentage, &$priceShippingTax, &$priceShippingNoTax)	{
 		global $TSFE;
 
@@ -458,7 +454,6 @@ class tx_ttproducts_paymentshipping {
 			}
 		}
 	}
-
 
 	function getPaymentShippingData(
 			$countTotal,
@@ -496,10 +491,8 @@ class tx_ttproducts_paymentshipping {
 			$pricePaymentTax += $this->price->getPrice($payment,true,$taxpercentage,$taxIncluded,true);
 			$pricePaymentNoTax += $this->price->getPrice($payment,false,$taxpercentage,$taxIncluded,true);
 		}
-
 		$this->getSpecialPrices ('payment', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
 	} // getPaymentShippingData
-
 
 	/**
 	 * Include handle script
@@ -510,7 +503,6 @@ class tx_ttproducts_paymentshipping {
 		return $content;
 	} // includeHandleScript
 
-
 	/**
 	 * get the replaceTAXpercentage from the shipping if available
 	 */
@@ -520,7 +512,6 @@ class tx_ttproducts_paymentshipping {
 		}
 		return $rc;
 	}
-
 
 	/**
 	 * get the where condition for a shipping entry

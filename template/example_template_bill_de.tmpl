@@ -84,6 +84,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
             <!--###LINK_ITEM###-->
             <br>
             ###PRODUCT_IMAGE1### <br>
+            ###PRODUCT_NOTE###
 		  <!-- ###display_variant2### -->
 		  ###GW2B### Size: ###GW2E### <SELECT id="###PRODUCT_SIZE_ID###" style="font-size: 10px"
 		  name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
@@ -106,7 +107,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
             <td colspan="3" align="CENTER">
             <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"></td>
           </tr>
-          
+
         </table>
 			</form>
 			</td></tr>
@@ -186,7 +187,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		  ###GW2B### Size: ###GW2E### ###ARTICLE_SIZE###<br>
 		  <!-- ###display_variant2### -->
 			###ITEM_SINGLE_POST_HTML###
-          <!-- ###ITEM_SINGLE### end -->          
+          <!-- ###ITEM_SINGLE### end -->
         </table>
 			</td></tr>
 		<!-- ###ITEM_LIST### end -->
@@ -257,7 +258,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		    name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</SELECT><br>
 		    <!-- ###display_variant2### -->
 			<nobr>###GW2B### Preis:###GW2E### ###GW1B###<strong>###PRICE_TAX### &euro;###GW1E###<BR>
-				<nobr>###GW2B### Menge: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">  
+				<nobr>###GW2B### Menge: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
 				<input type="Submit" name="order" value="in den Warenkorb" onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 				</nobr>
 				<br>
@@ -357,7 +358,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
             <td colspan="3" align="CENTER">
             <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"></td>
           </tr>
-          
+
         </table>
 			</form>
 			</td></tr>
@@ -635,7 +636,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 Lieferung ab Werk. Lieferkosten berechnen wir Ihnen g&uuml;nstigst nach
 Aufwand analog unserer <a
 href="http://www.bananaguard.de/index.php?id=9737">Transportkosten&uuml;bersicht
-</a>.<br /> 
+</a>.<br />
 Ihre g&uuml;ltige VAT Reg. No. Hier eingeben: <input type="text" name="recs[personinfo][tt_products_vat]" size="30" value="###PERSON_TT_PRODUCTS_VAT###"><br />
 <!-- ###MESSAGE_SHIPPING_20### -->
 <!-- ###MESSAGE_SHIPPING_20_20### -->
@@ -732,7 +733,7 @@ Exact same features as BASKET_TEMPLATE
         <!-- ###BILLING_ADDRESS### start -->
         ###GW1B### Geben Sie Ihre Postanschrift in diesem Formular an. Der angegebene
         Name und die Adresse werde auf der Rechnung der Bestellung erscheinen.
-        Sie k�nnen auch alternativ eine abweichende Lieferadresse in den unteren
+        Sie k&ouml;nnen auch alternativ eine abweichende Lieferadresse in den unteren
         Feldern angeben. ###GW1E### <br>
 <br>
 <table>
@@ -905,7 +906,7 @@ Hier k&ouml;nnen Sie Ihrer Bestellung einen Kommentar hinzufgen:
 
 </td>
 
-      <td colspan=3 valign="BOTTOM">###GW1B### Sie best�tigen hiermit, dass Sie
+      <td colspan=3 valign="BOTTOM">###GW1B### Sie best&auml;tigen hiermit, dass Sie
         die AGBs des Testshop - Online Vertrieb gelesen haben und diese akzeptieren.
         ###GW1E### </td>
 </tr>
@@ -1892,7 +1893,7 @@ Wir freuen uns, Sie bei uns als neuen DEMO-Kunden begr&uuml;&szlig;n zu drfen.
 Ihr Benutzername lautet: ###USERNAME###
 Ihr Passwort lautet: ###PASSWORD###
 
-In zuknftigen Bestellungen k&ouml;nnen Sie sich mit Ihrem Benutzernamen und
+In zuk&uuml;nftigen Bestellungen k&ouml;nnen Sie sich mit Ihrem Benutzernamen und
 Ihrem Passwort anmelden, und auf Rechnung bestellen.
 Bitte bewahren Sie diese E-Mail gut auf.
 
@@ -1985,7 +1986,7 @@ Mein Typo3 Shop
         </tr>
         <tr>
           <td><strong><font size="5">###PERSON_NAME### </font></strong></td>
-        </tr>        
+        </tr>
         <tr>
           <td><strong><font size="5">###PERSON_ADDRESS_DISPLAY### </font></strong></td>
         </tr>
@@ -2030,7 +2031,7 @@ Mein Typo3 Shop
       ###GW1E###</td>
   </tr>
   <tr>
-    <td valign=top>###GW1B### Verpackung und Versand###GW1E###</td>
+    <td valign=top>###GW1B### Verpackung und Versand:  ###SHIPPING_TITLE### ###GW1E###</td>
     <td valign=top align=right>###GW1B### <b>EUR ###PRICE_SHIPPING_TAX### (###PRICE_SHIPPING_NO_TAX###)</b><br>
       ###GW1E###</td>
   </tr>
@@ -2219,6 +2220,7 @@ Mein Typo3 Shop
 		###ITEM_SINGLE_PRE_HTML###
 		<!--###LINK_CATEGORY### begin-->
 			###LIST_LINK###
+			###CATEGORY_IMAGE###
 		<!--###LINK_CATEGORY### end-->
 		###ITEM_SINGLE_POST_HTML###
 	<!-- ###CATEGORY_SINGLE### end-->

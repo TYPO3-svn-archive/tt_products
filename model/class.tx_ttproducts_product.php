@@ -74,12 +74,12 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 		$this->table->setConfig($tableConfig);
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
-		
+
 		$requiredFields = 'uid,pid,category,price,price2,directcost,tax,inStock';
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
-		}	
+		}
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
 		if (is_array($this->tableconf['language.']) &&
@@ -120,7 +120,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$rowArray = $this->tt_products_articles->getWhereArray('uid_product=\''.intval($uid).'\'');
 			$this->articleArray[$uid] = $rowArray;
 		}
-		return $rowArray;	
+		return $rowArray;
 	}
 
 
@@ -169,20 +169,20 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	// returns the Path of all categories above, separated by '/'
 	function getPath ($uid) {
 		$rc = '';
-		
+
 		return $rc;
 	}
 
 
 	/**
 	 * Reduces the instock value of the orderRecord with the sold items and returns the result
-	 * 
+	 *
 	 */
 	function &reduceInStockItems(&$itemArray, $useArticles)	{
 		global $TYPO3_DB, $TCA;
 		$instockTableArray = array();
 
-		if ($this->table->name == 'tt_products' || is_array(($TCA[$this->table->name]['columns']['inStock'])) )	{		
+		if ($this->table->name == 'tt_products' || is_array(($TCA[$this->table->name]['columns']['inStock'])) )	{
 			// Reduce inStock
 			if ($useArticles == 1) {
 				// loop over all items in the basket indexed by a sorting text
@@ -192,7 +192,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 						$this->tt_products_articles->reduceInStock($row['uid'], $actItem['count']);
 						$instockTableArray['tt_products_articles'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row['inStock'] - $actItem['count']);
 					}
-				} 
+				}
 			} else {
 				// loop over all items in the basket indexed by a sorting text
 				foreach ($itemArray as $sort=>$actItemArray) {
@@ -212,13 +212,13 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	/**
 	 * Returns true if the item has the $check value checked
-	 * 
+	 *
 	 */
 	function hasAdditional(&$row, $check)  {
 		$hasAdditional = false;
 		$additional = t3lib_div::xml2array($row['additional']);
 		$hasAdditional = $this->pibase->pi_getFFvalue($additional, $check);
-		return $hasAdditional; 
+		return $hasAdditional;
 	}
 
 
@@ -280,7 +280,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 					$this->cnf,
 					$this->tt_content,
 					$this->pibase->LLkey,
-					$this->conf['table.']['pages'], 
+					$this->conf['table.']['pages'],
 					$this->conf['conf.']['pages.'],
 					$this->pibase->page,
 					$tmp='',
@@ -316,7 +316,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 									$markerArray['###'.$index.'###'] =
 										$this->pibase->pi_RTEcssText($contentEl[$fieldName]);
 								} else if (is_array($this->conf['parseFunc.']))	{
-									$markerArray['###'.$index.'###'] = 
+									$markerArray['###'.$index.'###'] =
 										$this->pibase->cObj->parseFunc($contentEl[$fieldName],$this->conf['parseFunc.']);
 								}
 							}
@@ -374,7 +374,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			}
 		}
 
-		return implode(',', $tableNameArray);	
+		return implode(',', $tableNameArray);
 	}
 
 

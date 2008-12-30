@@ -2,7 +2,7 @@
 pageAsCategory = 0
   # cat=basic/enable; type=boolean; label=Use Flexforms: Enable the use of Flexforms in the backend. Extension fh_library version 0.0.12+ must be installed. Default is 1.
 useFlexforms = 1
-  # cat=basic/enable; type=boolean; label=Use patch 1822: Install this patch from bugs.typo3.org to have an advanced page module
-usePatch1822 = 
+  # cat=basic/enable; type=boolean; label=Use patch 1822: Install this patch from bugs.typo3.org or the extension patch1822 to have an advanced page module
+usePatch1822 =
   # cat=basic/enable; type=string; label=category where: Foreign table where for the selection of categories. See TSConfig for more info.
 where.category =

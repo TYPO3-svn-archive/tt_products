@@ -50,7 +50,7 @@ class tx_ttproducts_info {
 	var $config;
 
 	var $infoArray; // elements: 'billing' and 'delivery' addresses
-					// contains former basket $personInfo and $deliveryInfo 
+					// contains former basket $personInfo and $deliveryInfo
 
 	var $feuserextrafields;			// exension with additional fe_users fields
 	var $fe_users;					// object of the type tx_table_db
@@ -114,7 +114,7 @@ class tx_ttproducts_info {
 
 			if (is_object($this->staticInfo))	{
 				include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_country.php');
-	
+
 					// Country
 				$this->country = t3lib_div::makeInstance('tx_ttproducts_country');
 				$this->country->init(
@@ -153,7 +153,7 @@ class tx_ttproducts_info {
 				$address = $TSFE->fe_user->user['address'];
 			}
 			$this->infoArray['billing']['address'] = $address;
-			$fields = 'name, first_name, last_name, username, email, telephone, salutation, fax, zip, city, company';
+			$fields = 'name, first_name, last_name, username, email, telephone, salutation, fax, zip, city, state, company';
 			$fields .= ',tt_products_creditpoints, tt_products_vouchercode, tt_products_vat';
 			if ($this->feuserextrafields) {
 				$fields .= ',tx_feuserextrafields_initials_name, tx_feuserextrafields_prefix_name, tx_feuserextrafields_gsm_tel,'.
@@ -194,7 +194,7 @@ class tx_ttproducts_info {
 					'tx_feuserextrafields_country_deliv';
 			}
 			$infoFields = explode(',','feusers_uid,telephone,salutation,name,first_name,last_name,email,' .
-				'date_of_birth,company,address,city,zip,country,country_code,tt_products_vat'.
+				'date_of_birth,company,address,city,zip,state,country,country_code,tt_products_vat'.
 				$infoExtraFields
 			); // Fields
 			reset ($infoFields);
@@ -241,7 +241,7 @@ class tx_ttproducts_info {
 	 */
 	function checkAllowed()	{
 		$flag = '';
-		
+
 		$where = $this->getWhereAllowed();
 		if ($where)	{
 			$row = $this->country->get($this->infoArray['delivery']['country_code'], $where);
@@ -255,15 +255,15 @@ class tx_ttproducts_info {
 
 
 	/**
-	 * gets the WHERE clause for the allowed static_countries 
+	 * gets the WHERE clause for the allowed static_countries
 	 */
 	function getWhereAllowed()	{
 		$where = '';
-		
+
 		if (is_object($this->staticInfo))	{
 			$where = $this->paymentshipping->getWhere('static_countries');
 		}
-		
+
 		return $where;
 	} // checkAllowed
 
@@ -287,7 +287,7 @@ class tx_ttproducts_info {
 			// Personal and delivery info:
 		$list = 'name,first_name,last_name,username,title,address,telephone,fax,email,company,city,zip,state,country,tt_products_vat';
 		if ($this->feuserextrafields) {
-			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,zip,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
+			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
 		}
 		$infoFields = t3lib_div::trimExplode(',',$list); // Fields...
 		reset ($infoFields);
@@ -305,7 +305,7 @@ class tx_ttproducts_info {
 				include_once(PATH_BE_fh_library.'lib/class.tx_fhlibrary_system.php');
 				$eInfo = tx_fhlibrary_system::getExtensionInfo($path, 'static_info_tables');
 				$sitVersion = $eInfo['version'];
-				
+
 				if (version_compare($sitVersion, '2.0.1', '>='))	{
 					$markerArray['###PERSON_COUNTRY_CODE###'] =
 						$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[personinfo][country_code]', '', $this->infoArray['billing']['country_code'], '', 0, '', '', $whereCountries);

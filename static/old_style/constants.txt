@@ -86,7 +86,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=int+; label= Max items displayed: The maximum number of items displayed on one page.
   limit = 50
     # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item on a list view.
-  limitImage = 1
+  limitImage = 3
     # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item on a single view.
   limitImageSingle = 10
     # cat=plugin.products//; type=boolean; label= Images from the page content used: The image of the page contents can be used instead of the images of the products table.
@@ -229,7 +229,7 @@ plugin.tt_products {
   specialPreparation = Special preparation possible! <A HREF="?id=999&tt_products=###PRODUCT_ID###">Order here</A>.
 
     # cat=plugin.products//; type=int+; label=Max note length: Max. number of characters of the note text in the list view
-  max_note_length = 100
+  max_note_length = 10000
 
     # cat=plugin.products//; type=boolean; label=Create Users: Create an user account for each new customer
   createUsers = 0

@@ -142,7 +142,7 @@ class tx_ttproducts_control {
 			$codeActivities['products_basket'] = false;
 		}
 
-		
+
 		if (is_array($activities)) {
 			foreach ($activityArray as $k => $activity) {
 				if ($activities[$activity]) {
@@ -179,13 +179,13 @@ class tx_ttproducts_control {
 
 	/**
 	 * Do all the things to be done for this activity
-	 * former functions products_basket and basketView::printView 
+	 * former functions products_basket and basketView::printView
 	 * Takes care of basket, address info, confirmation and gate to payment
 	 * Also the 'products_...' script parameters are used here.
 	 *
 	 * @param		array		  CODEs for display mode
 	 * @return	  void
-	 */	
+	 */
 	function doProcessing (&$codes, &$error_message) {
 		global $TSFE;
 		global $TYPO3_DB;
@@ -211,20 +211,20 @@ class tx_ttproducts_control {
 			$activityArray['products_clear_basket'] = true;
 		}
 
-		if (t3lib_div::_GP('products_overview') || t3lib_div::_GP('products_overview_x'))    { 
-			$activityArray['products_overview'] = true; 
+		if (t3lib_div::_GP('products_overview') || t3lib_div::_GP('products_overview_x'))    {
+			$activityArray['products_overview'] = true;
 		}
-		if (t3lib_div::_GP('products_info') || t3lib_div::_GP('products_info_x'))    { 
+		if (t3lib_div::_GP('products_info') || t3lib_div::_GP('products_info_x'))    {
 			$activityArray['products_info'] = true;
 		}
-		if (t3lib_div::_GP('products_payment') || t3lib_div::_GP('products_payment_x'))    { 
+		if (t3lib_div::_GP('products_payment') || t3lib_div::_GP('products_payment_x'))    {
 			$activityArray['products_payment'] = true;
 		}
 		if (t3lib_div::_GP('products_customized_payment') || t3lib_div::_GP('products_customized_payment_x'))    {
 			$activityArray['products_customized_payment'] = true;
 		}
-		if (t3lib_div::_GP('products_finalize') || t3lib_div::_GP('products_finalize_x'))    { 
-			$activityArray['products_finalize'] = true; 
+		if (t3lib_div::_GP('products_finalize') || t3lib_div::_GP('products_finalize_x'))    {
+			$activityArray['products_finalize'] = true;
 		}
 
 		$codeActivityArray=array();
@@ -352,7 +352,7 @@ class tx_ttproducts_control {
 									if (!is_object($basketView))	{
 										include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
 										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
-										$basketView->init ($this->basket, $this->templateCode);
+										$basketView->init($this->basket, $this->templateCode);
 									}
 
 									$content.=$basketView->getView($empty, 'PAYMENT', $info, $this->activityArray['products_info'], false, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
@@ -360,7 +360,7 @@ class tx_ttproducts_control {
 									if (trim($this->conf['paymentActivity'])=='payment')	{
 										if (!is_object($order))	{
 											include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-							
+
 												// order
 											$order = &t3lib_div::getUserObj('tx_ttproducts_order');
 											$order->init(
@@ -408,7 +408,7 @@ class tx_ttproducts_control {
 								if (trim($this->conf['paymentActivity'])=='customized')	{
 									if (!is_object($order))	{
 										include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-						
+
 											// order
 										$order = &t3lib_div::getUserObj('tx_ttproducts_order');
 										$order->init(
@@ -460,7 +460,7 @@ class tx_ttproducts_control {
 								} else {
 									$bFinalize = true;
 								}
-								// ############## florian Strauß  ############# 
+								// ############## florian Strauß  #############
 							break;
 							default:
 								// nothing yet
@@ -486,7 +486,7 @@ class tx_ttproducts_control {
 						break; // foreach
 					}
 				} // foreach ($this->activityArray as $activity=>$value)
-				
+
 					// finalization at the end so that after every activity this can be called
 				if ($bFinalize)	{
 					$checkRequired = $info->checkRequired();
@@ -533,7 +533,7 @@ class tx_ttproducts_control {
 
 						$activityFinalize->doProcessing($this->templateCode,
 							$basketView, $this->viewTable, $this->price,
-							$orderUid, $orderConfirmationHTML, $error_message, $info); 
+							$orderUid, $orderConfirmationHTML, $error_message, $info);
 								// Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
 						$contentTmp = $orderConfirmationHTML;
 
@@ -572,9 +572,7 @@ class tx_ttproducts_control {
 		$markerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject;	// adding extra preprocessing CObject
 		$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
 		return $content;
-	} // 
-
-	
+	} //
 }
 
 

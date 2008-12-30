@@ -79,7 +79,7 @@ class tx_ttproducts_basket {
 	var $calculatedArray;			// all calculated totals from the basket e.g. priceTax and weight
 
 	var $viewTable;				// link to tt_products or tt_products_articles
-	var $useArticles; 
+	var $useArticles;
 
 
 	/**
@@ -118,7 +118,7 @@ class tx_ttproducts_basket {
 				$count = $this->conf['basketMaxQuantity'];
 			}
 		} else {
-			$count=t3lib_div::intInRange($quantity,0,$this->conf['basketMaxQuantity'],0);		
+			$count=t3lib_div::intInRange($quantity,0,$this->conf['basketMaxQuantity'],0);
 		}
 
 		return $count;
@@ -134,7 +134,7 @@ class tx_ttproducts_basket {
  	 */
 
 	function init( &$pibase, &$cnf, $formerBasket, $updateMode, &$pid_list,
-				&$tt_content, &$tt_products, &$tt_products_articles, 
+				&$tt_content, &$tt_products, &$tt_products_articles,
 				&$tt_products_cat, &$fe_users, &$price,
 				&$paymentshipping, $bStoreBasket
 		)	{
@@ -152,9 +152,10 @@ class tx_ttproducts_basket {
 		$this->fe_users = &$fe_users;
 		$this->recs = $formerBasket;	// Sets it internally
 		$this->basket=array();
+		$this->basketExtra=array();
 		$this->price = &$price;
 		$this->pricecalc = t3lib_div::makeInstance('tx_ttproducts_pricecalc');
-		$this->pricecalc->init($pibase, $this, $tt_products);		
+		$this->pricecalc->init($pibase, $this, $tt_products);
 		$this->paymentshipping = &$paymentshipping;
 
 			// pages
@@ -163,7 +164,7 @@ class tx_ttproducts_basket {
 			$this->cnf,
 			$this->tt_content,
 			$this->pibase->LLkey,
-			$this->conf['table.']['pages'], 
+			$this->conf['table.']['pages'],
 			$this->conf['conf.']['pages.'],
 			$this->page,
 			$pid_list,
@@ -172,7 +173,7 @@ class tx_ttproducts_basket {
 		$this->useArticles = $this->conf['useArticles'];
 
 		if ($this->useArticles == 2)	{
-			$this->viewTable = &$this->tt_products_articles; 
+			$this->viewTable = &$this->tt_products_articles;
 		} else {
 			$this->viewTable = &$this->tt_products;
 		}
@@ -252,7 +253,7 @@ class tx_ttproducts_basket {
 
 				$variant = $this->viewTable->variant->getVariantFromRow($basketItem);
 				if (t3lib_div::testInt($uid))	{
-					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked  
+					// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked
 					if (is_array($basketItem['quantity']))	{
 						$basketItem['quantity'] = current($basketItem['quantity']);
 					}
@@ -452,7 +453,7 @@ class tx_ttproducts_basket {
 						$this->viewTable->mergeProductRow($row, $productRow);
 					}
 					$productsArray[] = $row;
-					
+
 				}
 			}
 		}

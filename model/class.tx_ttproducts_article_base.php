@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,10 +31,9 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.d>
  * @package TYPO3
  * @subpackage tt_products
- *
  *
  */
 
@@ -94,15 +93,13 @@ class tx_ttproducts_article_base {
 		$this->fields['itemnumber'] = ($this->tabledesc['itemnumber'] ? $this->tabledesc['itemnumber'] : 'itemnumber');
 	} // init
 
-
 	function &getTableObj ()	{
 		return $this->table;
 	}
 
-
 	/**
 	 * Reduces the instock value of the orderRecord with the amount and returns the result
-	 * 
+	 *
 	 */
 	function reduceInStock($uid, $count)	{
 		global $TYPO3_DB;
@@ -115,15 +112,13 @@ class tx_ttproducts_article_base {
 		$res = $TYPO3_DB->exec_UPDATEquery($this->table->name,'uid=\''.$uid.'\'', $fieldsArray,$instockField);
 	}
 
-
 	/**
 	 * Reduces the instock value of the orderRecords with the sold items and returns the result
-	 * 
+	 *
 	 */
 	function reduceInStockItems(&$itemArray, $useArticles)	{
 
 	}
-
 
 	function &getItemSubpartArrays (&$item, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $code='', $id='1')	{
 		global $TCA;
@@ -150,8 +145,6 @@ class tx_ttproducts_article_base {
 		}
 	}
 
-
-
 	/**
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
@@ -170,9 +163,9 @@ class tx_ttproducts_article_base {
 
 		if (!$this->marker)
 			return array();
-		$row = &$item['rec'];
+		$row = $item['rec'];
 
-			// Get image	
+			// Get image
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code);
 
 		if (isset($row['delivery']))	{
@@ -187,18 +180,18 @@ class tx_ttproducts_article_base {
 		$markerArray['###'.$this->marker.'_SUBTITLE###'] = $row['subtitle'];
 		if ($code == 'EMAIL' && !$this->conf['orderEmail_htmlmail'])	{ // no formatting for emails
 			$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'];
-			$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'];			
+			$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'];
 		} else {
 			$markerArray['###'.$this->marker.'_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
 			$markerArray['###'.$this->marker.'_NOTE2###'] = ($this->conf['nl2brNote'] ? nl2br($row['note2']) : $row['note2']);
-	
+
 				// Extension CSS styled content
 			if (t3lib_extMgm::isLoaded('css_styled_content')) {
-				$markerArray['###'.$this->marker.'_NOTE###'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE###']);
-				$markerArray['###'.$this->marker.'_NOTE2###'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE2###']);
+				$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE###']);
+				$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE2###']);
 			} else if (is_array($this->conf['parseFunc.']))	{
-				$markerArray['###'.$this->marker.'_NOTE###'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE###'],$this->conf['parseFunc.']);
-				$markerArray['###'.$this->marker.'_NOTE2###'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE2###'],$this->conf['parseFunc.']);
+				$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE###'],$this->conf['parseFunc.']);
+				$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE2###'],$this->conf['parseFunc.']);
 			}
 		}
 		$markerArray['###'.$this->marker.'_ITEMNUMBER###'] = $row[$this->fields['itemnumber']];
@@ -240,7 +233,7 @@ class tx_ttproducts_article_base {
 				$markerArray['###'.$this->marker.'_INSTOCK###'] = $this->conf['notInStockMessage'];
 			}
 		}
-		
+
 		foreach ($this->variantArray as $variant => $variantRec)	{
 			$text = '';
 			$variantRow = $row[$variantRec[0]];
@@ -255,6 +248,22 @@ class tx_ttproducts_article_base {
 			$markerArray['###'.$this->marker.'_'.strtoupper($variantRec[0]).'###'] = $text;
 		}
 		$markerArray['###'.$this->marker.'_WEIGHT###'] = doubleval($row['weight']);
+		$cObjectMarkerArray = array();
+		$tableconf = $this->cnf->getTableConf($this->table->name, $code);
+
+		if (is_array($tableconf['field.']))	{
+
+			foreach ($row as $field => $value)	{
+				$tmpMarkerKey = '###'.$this->marker.'_'.strtoupper($field).'###';
+				if (is_array($tableconf['field.'][$field.'.']) && !isset($cObjectMarkerArray[$tmpMarkerKey]))	{
+
+					$tableconf['field.'][$field.'.']['value'] = $value;
+					$fieldContent = $this->pibase->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field.'.'],$this->pibase->extKey);
+					$cObjectMarkerArray[$tmpMarkerKey] = $this->pibase->cObj->substituteMarkerArray($fieldContent,$markerArray);
+				}
+			}
+		}
+		$markerArray = array_merge($markerArray, $cObjectMarkerArray);
 
 			// Call all getItemMarkerArray hooks at the end of this method
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
@@ -267,39 +276,33 @@ class tx_ttproducts_article_base {
 		}
 	}
 
-
 	function addWhereCat($cat, $pid_list)	{
-		$where = '';	
+		$where = '';
 
 		return $where;
 	}
 
-
 	function addselectConfCat($cat, &$selectConf)	{
 	}
-
 
 	function getPageUidsCat($cat)	{
 		$uids = '';
 
 		return $uids;
 	}
-	
 
 	function getProductField(&$row, $field)	{
 		return '';
 	}
 
-
 	/**
 	 * Returns true if the item has the $check value checked
-	 * 
+	 *
 	 */
 	function hasAdditional(&$row, $check)  {
 		$hasAdditional = false;
-		return $hasAdditional; 
+		return $hasAdditional;
 	}
-
 
 	function getNeededUrlParams($theCode)	{
 		$rc = '';
@@ -309,9 +312,7 @@ class tx_ttproducts_article_base {
 		}
 		return $rc;
 	}
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_article_base.php']) {

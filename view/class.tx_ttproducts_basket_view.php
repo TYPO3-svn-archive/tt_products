@@ -170,7 +170,7 @@ class tx_ttproducts_basket_view {
 				$row = &$actItem['rec'];
 				$pid = intval($row['pid']);
 				if (!isset($this->page->pageArray[$pid]))	{
-					// product belongs to another basket	
+					// product belongs to another basket
 					continue;
 				}
 				$count++;
@@ -219,7 +219,7 @@ class tx_ttproducts_basket_view {
 				// $catTitle= $actItem['rec']['category'] ? $this->tt_products_cat->get($actItem['rec']['category']) : '';
 				$catTitle=$catRow['title'];
 				$tmp = array();
-				$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $tmp, $code, $count, false);				
+				$this->viewTable->getItemMarkerArray ($actItem, $markerArray, $catTitle, $this->basket->basketExt, 1,'basketImage', $viewTagArray, $tmp, $code, $count, false);
 				$this->pibase->cObj->setCurrentVal($catTitle);
 				$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 				$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($actItem['totalTax']);
@@ -258,7 +258,7 @@ class tx_ttproducts_basket_view {
 				$addQueryString[$this->pibase->prefixId.'['.$this->viewTable->type.']'] = intval($row['uid']);
 				$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($row['extVars']);
 				// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
-				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true), array('useCacheHash' => true)).'"'.$css_current.'>','</a>'); 
+				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true), array('useCacheHash' => true)).'"'.$css_current.'>','</a>');
 
 				// Substitute
 				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
@@ -302,21 +302,14 @@ class tx_ttproducts_basket_view {
 
 		$splitMark = md5(microtime());
 		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		//$wrappedSubpartArray['###LINK_BASKET###']= array('<a href="'.$this->getLinkUrl($this->conf['PIDbasket']).'">','</a>');
 		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
 
-		//$markerArray['###PRICE_SHIPPING_PERCENT###'] = $perc;
 		$markerArray['###PRICE_SHIPPING_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['shipping']);
 		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['shipping']);
 		$markerArray['###PRICE_SHIPPING_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['shipping']-$this->basket->calculatedArray['priceNoTax']['shipping']);
 
 		$markerArray['###SHIPPING_SELECTOR###'] = $this->paymentshipping->generateRadioSelect('shipping', $this->basket->calculatedArray);
 		$markerArray['###SHIPPING_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basket->basketExtra['shipping.']['image.']);
-		
-//		$shippingMarkerArray = array();
-//		$itemTable->getItemMarkerArray ($this->basket->basketExtra['shipping.'], $markerArray, $fieldsArray);
-//		$this->paymentshipping->getItemMarkerArray ($this->basket->basketExtra['shipping.'], $shippingMarkerArray, '', array());
-//		$shippingTitle = $this->pibase->cObj->substituteMarkerArrayCached($this->basket->basketExtra['shipping.']['title'], $shippingMarkerArray);
 
 		$shippingTitle = $this->basket->basketExtra['shipping.']['title'];
 		$markerArray['###SHIPPING_TITLE###'] = $shippingTitle;
@@ -327,7 +320,7 @@ class tx_ttproducts_basket_view {
 		$markerArray['###PRICE_PAYMENT_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['payment']);
 		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['payment']);
 		$markerArray['###PRICE_PAYMENT_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['payment']-$this->basket->calculatedArray['priceNoTax']['payment'] );
-		
+
 /* Added els4: payment layout (used in basket_payment_template, winkelwagen.tmpl) */
 		$markerArray['###PAYMENT_SELECTOR###'] = $this->paymentshipping->generateRadioSelect('payment', $this->basket->calculatedArray);
 		$markerArray['###PAYMENT_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basket->basketExtra['payment.']['image.']);
@@ -343,11 +336,6 @@ class tx_ttproducts_basket_view {
 			}
 		}
 
-///* Added els4: output for payment (used in basket_payment_template, winkelwagen.tmpl)*/
-//		$markerArray['###PAYMENT_NUMBER###'] = t3lib_div::_GP('payment_number');
-//		$markerArray['###PAYMENT_NAME###'] = t3lib_div::_GP('payment_name');
-//		$markerArray['###PAYMENT_CITY###'] = t3lib_div::_GP('payment_city');
-
 		// for receipt from DIBS script
 		$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
 
@@ -358,16 +346,9 @@ class tx_ttproducts_basket_view {
 			$markerArray['###CUR_SYM###'] = '';
 		}
 
-/* Added Els: below 3 lines after creditpoint calculation! */
-		// This is the total for everything
-//		$this->getCalculatedSums();
-//		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['total']);
-//		$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['total']);
-/* Added Els: marker PRICE_DISCOUNT += uw voordeel (PRICE_GOODSTOTAL_NO_TAX-oldPriceNoTax) and PRICE_VAT = BTW (= ['priceTax']['goodstotal'] - ['priceNoTax']['goodstotal']*/
 		$markerArray['###PRICE_DISCOUNT###'] = $this->price->priceFormat($this->basket->calculatedArray['oldPriceNoTax']-$this->basket->calculatedArray['priceNoTax']['goodstotal']);
 		$markerArray['###PRICE_VAT###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['goodstotal']-$this->basket->calculatedArray['priceNoTax']['goodstotal']);
 
-/* Added els4: discount based on total units (without articles in kurkenshop), necessary in winkelwagen.tmpl */
 		$markerArray['###PRICE_TOTUNITS_DISCOUNT###'] = $this->price->priceFormat($sum_pricediscount_total_totunits);
 
 		include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
@@ -414,7 +395,7 @@ class tx_ttproducts_basket_view {
 //		} else { Franz: This is wrong here!
 //			$markerArray['###PRICE_SHIPPING_NO_TAX###'] = '0.00';
 //		}
-		
+
 
 /* Added Els: voucher marker inclusive conditions */
 /* Added Els5: small changes in voucher marker inclusive conditions */
@@ -588,8 +569,6 @@ class tx_ttproducts_basket_view {
 			'<a href="'. $this->pibase->pi_getPageLink($pidagb,'',$this->marker->getLinkParams('', $addQueryString, true)) .'" target="'.$this->conf['AGBtarget'].'">',
 			'</a>'
 		);
-
-		// $wrappedSubpartArray['###LINK_AGB###']=array('<a href="'.$TSFE->absRefPrefix.'index.php?'.implode($agb_url,'&').'" target="'.$this->conf['agbtarget'].'">','</a>');
 
 			// Final substitution:
 		if (!$TSFE->loginUser)	{		// Remove section for FE_USERs only, if there are no fe_user

@@ -1,7 +1,7 @@
 <?php
 if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
-$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
+$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 $_EXTCONF = unserialize($_EXTCONF);    // unserializing the configuration so we can use it here:
 
 if (!defined ('TT_PRODUCTS_EXTkey')) {
@@ -90,7 +90,7 @@ if ($_EXTCONF['usePatch1822'] &&
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
-			'fList' => 'title,itemnumber,price,image',
+			'fList' => 'title,subtitle,itemnumber,price,image',
 			'icon' => TRUE
 		),
 		'ext' => array (
@@ -103,6 +103,19 @@ if ($_EXTCONF['usePatch1822'] &&
 			'fList' => 'title,color;size;gradings,description',
 			'icon' => TRUE
 		)
+	);
+
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products_language'] = array (
+		'default' => array(
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
+			'fList' => 'sys_language_uid,prod_uid,title,subtitle,datasheet,www',
+			'icon' => TRUE
+		),
+		'ext' => array (
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_ext',
+			'fList' => 'sys_language_uid,prod_uid,note,note2',
+			'icon' => TRUE
+		),
 	);
 
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articles'] = array (
@@ -122,6 +135,19 @@ if ($_EXTCONF['usePatch1822'] &&
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
 			'fList' => 'title,image',
+			'icon' => TRUE
+		)
+	);
+
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat_language'] = array (
+		'default' => array(
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
+			'fList' => 'sys_language_uid,title,subtitle,cat_uid',
+			'icon' => TRUE
+		),
+		'ext' => array(
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_ext',
+			'fList' => 'sys_language_uid,title,note',
 			'icon' => TRUE
 		)
 	);
