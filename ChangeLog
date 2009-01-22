@@ -1,5 +1,6 @@
 2009-01-22 Franz Holzinger <franz@ttproducts.de>
 	* fix bug: basket did not work
+	* fix bug to keep the correct backPID in single view
 
 2008-12-30 Franz Holzinger <franz@ttproducts.de>
 	* fix bug with too late initialized global basket object for payment/shipping
