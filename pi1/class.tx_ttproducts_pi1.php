@@ -283,12 +283,11 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	function doProcessing($content='', $bRunAjax = false)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS; // needed for include_once and PHP 5.1 which otherwise would not allow XCLASS for HtmlMail, DAM aso.
-		$bStoreBasket = false;
+		$bStoreBasket = TRUE;
 
 		if (!count($this->codeArray) && !$bRunAjax)	{
 			$this->codeArray = array('HELP');
 		}
-		$this->codeArray = $this->pi_checkCodes($this->codeArray, $bStoreBasket);
 		$this->init ($content, $this->config);
 
 		if ((t3lib_extMgm::isLoaded('xajax')) && !$bRunAjax)	{
@@ -301,6 +300,9 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$updateMode = 1;
 		} else {
 			$updateMode = 0;
+		}
+		if (count ($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW')	{
+			$bStoreBasket = FALSE;
 		}
 
 		if (!$this->errorMessage) {
@@ -949,29 +951,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			}
 		}
 		return $admin;
-	}
-
-
-	/**
-	 * checks the codes if the basket info will be needed
-	 *
-	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
-	 * @return	  void
- 	 */
-	function pi_checkCodes($codes,&$bStoreBasket)	{
-		$bStoreBasket = true;
-
-		$retCodes = $codes;
-		// if the code field has been filled in from TS Setup
-		// This has to be done because no articles shall be put into the basket in this case.
-		if (count($codes) == 1)	{
-			$changeBasketArray = array ('BASKET', 'LIST', 'LISTOFFERS', 'LISTHIGHLIGHTS', 'LISTNEWITEMS', 'LISTGIFTS', 'LISTCAT', 'LISTARTICLES', 'MEMO', 'SINGLE', 'SEARCH');
-			$tmpCodeArray = array_flip($changeBasketArray);
-			if (!isset($tmpCodeArray[current($retCodes)]))	{
-				$bStoreBasket = false;
-			}
-		}
-		return ($retCodes);
 	}
 
 

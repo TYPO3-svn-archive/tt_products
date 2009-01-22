@@ -372,8 +372,10 @@ class tx_ttproducts_single_view {
 				);
 			}
 			$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'];
+			if ($backPID)	{
+				$addQueryString['backPID'] = $backPID;
+			}
 			$markerArray = $this->marker->addURLMarkers($pid, $markerArray, $addQueryString); // Applied it here also...
-
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
 			$prevOrderby = '';

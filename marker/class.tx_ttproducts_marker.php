@@ -235,13 +235,13 @@ class tx_ttproducts_marker {
 	function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true) {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
+
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 		$queryString=array();
-//		$fe_user = (is_array($TSFE->fe_user->user) ? 1 : 0);
 		if ($bUseBackPid)	{
-			if ($bUsePrefix)	{
+			if ($bUsePrefix && !$addQueryString[$this->pibase->prefixId.'[backPID]'])	{
 				$queryString[$this->pibase->prefixId.'[backPID]'] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
-			} else {
+			} else if (!$addQueryString['backPID'])	{
 				$queryString['backPID'] = $TSFE->id;
 			}
 		}

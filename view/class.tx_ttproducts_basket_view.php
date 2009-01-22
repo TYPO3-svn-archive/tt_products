@@ -271,6 +271,7 @@ class tx_ttproducts_basket_view {
 				);
 				$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
 				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
+
 				$itemsOut .= $tempContent;
 			}
 			if ($itemsOut)	{
@@ -526,7 +527,6 @@ class tx_ttproducts_basket_view {
 		if ($this->basket->recs['tt_products']['creditpoints'] == '') {
 			$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = 0;
 			$subpartArray['###SUB_CREDITPOINTS_DISCOUNT###'] = '';
-/* Added Els8: put credit_discount 0 for plain text email */
 			$markerArray['###CREDIT_DISCOUNT###'] = '0.00';
 		} else {
 			// quantity chosen can not be larger than the maximum amount, above calculated
@@ -537,7 +537,6 @@ class tx_ttproducts_basket_view {
 			$markerArray['###CREDIT_DISCOUNT###'] = $this->basket->calculatedArray['priceTax']['creditpoints'];
 		}
 
-/* Added els5: CREDITPOINTS_SPENDED: creditpoint needed, check if user has this amount of creditpoints on his account (winkelwagen.tmpl), only if user has logged in */
 		$markerArray['###CREDITPOINTS_SPENDED###'] = $sum_pricecredits_total_totunits_no_tax;
 		if ($sum_pricecredits_total_totunits_no_tax <= $markerArray['###AMOUNT_CREDITPOINTS###']) {
 			$subpartArray['###SUB_CREDITPOINTS_SPENDED_EMPTY###'] = '';
@@ -555,13 +554,10 @@ class tx_ttproducts_basket_view {
 
 		$creditpoints = tx_ttproducts_creditpoints_div::getCreditPoints($sum_pricecreditpoints_total_totunits);
 		$markerArray['###CREDITPOINTS_SAVED###'] = number_format($creditpoints * $sum_pricecreditpoints_total_totunits,'0');
-/* Added Els4: total price = subtotal - bezorgkosten + voucher + gift + giftcertificate (winkelwagen.tmpl) */
-/* Added Els7: error in calcualtion */
 		$markerArray['###PRICE_TOTAL_MEERWIJN###'] = $this->price->priceFormat($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] + $markerArray['###PRICE_SHIPPING_NO_TAX###'] - $markerArray['###VOUCHER_DISCOUNT###'] - $markerArray['###CREDIT_DISCOUNT###']);
 
 		$agb_url=array();
 		$pidagb = intval($this->conf['PIDagb']);
-		// $addQueryString['id'] = $pidagb;
 		if ($TSFE->type)	{
 			$addQueryString['type'] = $TSFE->type;
 		}

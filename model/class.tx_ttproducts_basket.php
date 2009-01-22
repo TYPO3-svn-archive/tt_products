@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -33,7 +33,7 @@
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	René Fritz <r.fritz@colorcube.de>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
  * @author	Els Verberne <verberne@bendoo.nl>
  * @package TYPO3
@@ -90,7 +90,7 @@ class tx_ttproducts_basket {
 	 * @param		string		variant of the product
 	 * @return	  void
 	 */
-	function removeGift($giftnumber, $uid, $variant) {
+	function removeGift ($giftnumber, $uid, $variant) {
 		if($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant] >= 0) {
 			unset($this->basketExt['gift'][$giftnumber]['item'][$uid][$variant]);
 			if (!count($this->basketExt['gift'][$giftnumber]['item'][$uid])) {
@@ -133,7 +133,7 @@ class tx_ttproducts_basket {
 	 * @return	  void
  	 */
 
-	function init( &$pibase, &$cnf, $formerBasket, $updateMode, &$pid_list,
+	function init (&$pibase, &$cnf, $formerBasket, $updateMode, &$pid_list,
 				&$tt_content, &$tt_products, &$tt_products_articles,
 				&$tt_products_cat, &$fe_users, &$price,
 				&$paymentshipping, $bStoreBasket
@@ -180,12 +180,12 @@ class tx_ttproducts_basket {
 
 		$this->itemArray = array();
 		$tmpBasketExt = $TSFE->fe_user->getKey('ses','basketExt');
-
 		if (is_array($tmpBasketExt)) {
 			$this->basketExt = $tmpBasketExt;
 		} else {
 			$this->basketExt = array();
 		}
+
 		$basketExtRaw = t3lib_div::_GP('ttp_basket');
 		$this->giftnumber = count ($this->basketExt['gift']) + 1;
 		$newGiftData = t3lib_div::_GP('ttp_gift');
@@ -343,10 +343,10 @@ class tx_ttproducts_basket {
 					}
 				}
 			}
-
 			$this->basketExt = $basketExtNew;
 			if ($bStoreBasket)	{
 				if (is_array($this->basketExt) && count($this->basketExt))	{
+
 					$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
 				} else {
 					$TSFE->fe_user->setKey('ses','basketExt',array());
