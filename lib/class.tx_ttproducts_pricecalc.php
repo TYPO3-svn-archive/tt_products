@@ -1,22 +1,22 @@
 <?php
 /***************************************************************
 *  Copyright notice
-*  
+*
 *  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is 
+*  This script is part of the Typo3 project. The Typo3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
 *  (at your option) any later version.
-* 
+*
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license 
+*  A copy is found in the textfile GPL.txt and important notices to the license
 *  from the author is found in LICENSE.txt distributed with these scripts.
 *
-* 
+*
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -35,7 +35,7 @@
  * @package TYPO3
  * @subpackage tt_products
  *
- *  
+ *
  */
 
 global $TYPO3_CONF_VARS;
@@ -56,7 +56,7 @@ class tx_ttproducts_pricecalc {
 		global $TSFE;
 
  		$this->pibase = &$pibase;
- 		$this->basket = &$basket; 
+ 		$this->basket = &$basket;
  		$this->tt_products = &$tt_products;
 	}
 
@@ -109,7 +109,7 @@ class tx_ttproducts_pricecalc {
 			$field = '';
 			foreach ($conf['discountprice.'] as $k1=>$priceCalcTemp) {
 				foreach ($priceCalcTemp as $k2=>$v2) {
-					//=>	catch the values of discountprice	
+					//=>	catch the values of discountprice
 					if (!is_array($priceCalcTemp)) {
 						switch ($k2) {
 							case 'uid':
@@ -202,7 +202,7 @@ class tx_ttproducts_pricecalc {
 							if ((float) $k2 > 1) {
 								// store the discount price in all calculated items from before
 								foreach ($countedItems[$pricefor1Index] as $k3=>$v3) {
-									foreach ($this->basket->itemArray [$v3['sort']] as $k1=>$actItem) { 
+									foreach ($this->basket->itemArray [$v3['sort']] as $k1=>$actItem) {
 									 	$this->basket->itemArray [$v3['sort']][$k1] ['calcprice'] = $price2;
 									}
 								}
@@ -223,6 +223,7 @@ class tx_ttproducts_pricecalc {
 
 		if ($conf['pricecalc.']) {
 			$countTotal = 0;
+			$field = 'price';
 
 			ksort($conf['pricecalc.']);
 			reset($conf['pricecalc.']);
@@ -253,7 +254,7 @@ class tx_ttproducts_pricecalc {
 						}
 					}
 				}
-				
+
 					// nothing found?
 				if ($dumCount == 0) {
 					continue;
