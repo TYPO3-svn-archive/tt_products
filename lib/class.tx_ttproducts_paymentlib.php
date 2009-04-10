@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -113,14 +113,14 @@ class tx_ttproducts_paymentlib {
 
 		if ($handleLib == 'paymentlib')	{
 			$providerFactoryObj = &tx_paymentlib_providerfactory::getInstance();
-
 			$paymentMethod = $confScript['paymentMethod'];
+
 			$providerProxyObject = $providerFactoryObj->getProviderObjectByPaymentMethod($paymentMethod);
 			if (is_object($providerProxyObject))	{
 				$providerObject = $providerProxyObject->getRealInstance();
 				$providerKey = $providerObject->getProviderKey();
 				$gatewayMode = $this->getGatewayMode($confScript);
-				$ok =  $providerObject->transaction_init (TX_PAYMENTLIB_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER, $paymentMethod, $gatewayMode, TT_PRODUCTS_EXTkey);
+				$ok =  $providerObject->transaction_init(TX_PAYMENTLIB_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER, $paymentMethod, $gatewayMode, TT_PRODUCTS_EXTkey);
 ///######### Florian Strauß -  Hier Aufruf ändern  TX_PAYMENTLIB_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER
 
 				if (!$ok) return 'ERROR: Could not initialize transaction.';
@@ -129,8 +129,7 @@ class tx_ttproducts_paymentlib {
 //* Changed by Udo Gerhards: If the $providerObject has a basket fill it, begin *//
 //*******************************************************************************//
 				if (method_exists($providerObject,'usesBasket') && $providerObject->usesBasket() && t3lib_extMgm::isLoaded('static_info_tables'))	{
-					include_once(PATH_BE_fh_library.'lib/class.tx_fhlibrary_system.php');
-					$eInfo = tx_fhlibrary_system::getExtensionInfo('static_info_tables');
+					$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 					$sitVersion = $eInfo['version'];
 					if (version_compare($sitVersion, '2.0.5', '>='))	{
 						$this->getPaymentBasket($totalArr, $addrArr, $paymentBasketArray);
@@ -153,15 +152,15 @@ class tx_ttproducts_paymentlib {
 					$content = '<span style="color:red;">'.htmlspecialchars($providerObject->transaction_message($transactionResultsArr)).'</span><br />';
 					$content .= '<br />';
 				} else {
-					$transactionDetailsArr = &$this->getTransactionDetails($confScript, $totalArr, $addrArr, $paymentBasketArray);
+					$transactionDetailsArr = &$this->getTransactionDetails($transactionId, $confScript, $totalArr, $addrArr, $paymentBasketArray);
 
 						// Set payment details and get the form data:
 					$ok = $providerObject->transaction_setDetails ($transactionDetailsArr);
 					if (!$ok) {
 						return 'ERROR: Setting details of transaction failed.';
 					}
-					$providerObject->transaction_setOkPage ($transactionDetailsArr['successlink']);
-					$providerObject->transaction_setErrorPage ($transactionDetailsArr['faillink']);
+					$providerObject->transaction_setOkPage ($transactionDetailsArr['transaction']['successlink']);
+					$providerObject->transaction_setErrorPage ($transactionDetailsArr['transaction']['faillink']);
 
 					if ($gatewayMode == TX_PAYMENTLIB_GATEWAYMODE_FORM)	{
 
@@ -185,10 +184,11 @@ class tx_ttproducts_paymentlib {
 							$markerArray['###PAYMENTLIB_TITLE###'] = $lConf['extTitle'];
 							$markerArray['###PAYMENTLIB_INFO###'] = $lConf['extInfo'];
 							$markerArray['###PAYMENTLIB_IMAGE###'] = $lConf['extImage'];
-
-							if (version_compare($this->pibase->version, '2.5.2', '=='))	{
+							list($high,$medium) = sscanf($this->pibase->version,"%d.%d");
+							$version = $high.'.'.$medium;
+							if (version_compare($version, '2.5', '=='))	{
 								$content=$this->basketView->getView($localTemplateCode,'PAYMENT', $this->info, false, false, '###PAYMENTLIB_FORM_TEMPLATE###',$markerArray);
-							} else if (version_compare($this->pibase->version, '2.6.0', '==')) {
+							} else if (version_compare($version, '2.6', '==')) {
 								$content=$this->basketView->getView($localTemplateCode,'PAYMENT', $this->info, false, false, true, '###PAYMENTLIB_FORM_TEMPLATE###',$markerArray);
 							} else {
 								$tmp = t3lib_div::debug_trail();
@@ -216,7 +216,6 @@ class tx_ttproducts_paymentlib {
 						} else {
 							$bFinalize = true;
 						}
-
 						$contentArray=array();
 
 						/// ####### Florian Strauß -
@@ -266,7 +265,7 @@ class tx_ttproducts_paymentlib {
 		$addQueryString = array();
 		$excludeList = '';
 		$target = '';
-		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->marker->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase, $pid,$this->marker->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
 		return $url;
 	}
 
@@ -275,14 +274,14 @@ class tx_ttproducts_paymentlib {
 	 * Gets all the data needed for the transaction or the verification check
 	 */
 
-	function &getTransactionDetails(&$confScript, &$totalArr, &$addrArr, &$paymentBasketArray)	{
+	function &getTransactionDetails($transactionId, &$confScript, &$totalArr, &$addrArr, &$paymentBasketArray)	{
 		global $TSFE;
 
 		$param = '&FE_SESSION_KEY='.rawurlencode(
 			$TSFE->fe_user->id.'-'.
 				md5(
-				$TSFE->fe_user->idcheckRequired.'/'.
-				$GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
+					$TSFE->fe_user->idcheckRequired.'/'.
+					$GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
 				)
 			);
 		$paramFaillink = '&products_'.$this->conf['paymentActivity'].'=0'.$param;
@@ -295,15 +294,6 @@ class tx_ttproducts_paymentlib {
 		$totalPrice = $this->basket->calculatedArray['priceTax']['total'];
 		$totalPriceFormatted = $this->price->priceFormat($totalPrice);
 		$orderUid = $this->order->getBlankUid();	// Gets an order number, creates a new order if no order is associated with the current session
-		
-// 		$transactionDetailsArr = array (
-// 			'transaction' => array (
-// 				'amount' => $totalPrice,
-// 				'currency' => $confScript['Currency'],
-// 				'orderuid' => $orderUid,
-// 				'returi' => t3lib_div::getIndpEnv ('TYPO3_REQUEST_URL').$param
-// 			),
-// 		);
 
 		$successPid = ($this->conf['paymentActivity'] == 'payment' ? ($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDfinalize']) : $TSFE->id);
 		$conf = array('returnLast' => 'url');
@@ -322,7 +312,10 @@ class tx_ttproducts_paymentlib {
 			),
 			'total' => $totalArr,
 			'address' => $addrArr,
-			'basket' => $paymentBasketArray
+			'basket' => $paymentBasketArray,
+			'options' => array (
+				'reference' => $transactionId,
+			)
 		);
 
 		$gatewayMode = $this->getGatewayMode ($confScript);
@@ -400,7 +393,7 @@ class tx_ttproducts_paymentlib {
 
 		foreach($tmpAddrArr as $key => $basketAddrArr)	{
 			$addrArr[$key] = array();
-	
+
 			// Correct firstname- and lastname-field if they have no value
 			if ($basketAddrArr['first_name'] == '' && $basketAddrArr['last_name'] == '')	{
 				$tmpNameArr = explode(" ", $basketAddrArr['name'], 2);
@@ -428,7 +421,7 @@ class tx_ttproducts_paymentlib {
 			}
 		}
 
-		// Fill the basket array 
+		// Fill the basket array
 		$basketArr = array();
 
 		$totalCount = 0;
@@ -463,23 +456,21 @@ class tx_ttproducts_paymentlib {
 				$basketArr[$sort][] = $basketRow;
 			}
 		}
-
 	}
 
 
 	function fFloat($value ='0.00')	{
-			if (is_float($value))
-			 	$float = $value;
-			 else
-			 	$float = floatval($value);
+		if (is_float($value))
+			$float = $value;
+			else
+			$float = floatval($value);
 
-			 return round($float,2);
-		}
+			return round($float,2);
+	}
 
 //*******************************************************************************//
 //* Changed by Udo Gerhards: If the $providerObject has a basket fill it, end   *//
 //*******************************************************************************//
-
 
 }
 

@@ -126,6 +126,7 @@ class tx_ttproducts_paymentshipping {
 
 			// payment
 		if ($this->conf['payment.']) {
+
 			if ($excludePayment)	{
 				$exclArr = t3lib_div::intExplode(',',$excludePayment);
 				reset($exclArr);
@@ -275,6 +276,7 @@ class tx_ttproducts_paymentshipping {
 		$active = $this->basket->basketExtra[$pskey];
 		$activeArray = is_array($active) ? $active : array($active);
 		$confArr = $this->cleanConfArr($this->conf[$pskey.'.']);
+
 		$out='';
 		if ($this->conf['PIDbasket'])	{
 			$basketPid = $this->conf['PIDbasket'];
@@ -290,9 +292,9 @@ class tx_ttproducts_paymentshipping {
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
 		$t = array();
 		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];
+
 		if (is_array($confArr))	{
 			while(list($key,$item) = each($confArr))	{
-
 				if (($item['show'] || !isset($item['show'])) &&
 					(doubleval($item['showLimit']) >= doubleval($this->basket->calculatedArray['count']) || !isset($item['showLimit']) ||
 					intval($item['showLimit']) == 0)) {
@@ -386,10 +388,8 @@ class tx_ttproducts_paymentshipping {
 		if (!$type) {
 			$out = $this->pibase->cObj->wrap($out,$wrap);
 		}
-
 		return $out;
 	} // generateRadioSelect
-
 
 
 	function cleanConfArr($confArr,$checkShow=0)	{
@@ -406,7 +406,6 @@ class tx_ttproducts_paymentshipping {
 		reset($outArr);
 		return $outArr;
 	} // cleanConfArr
-
 
 
 	function getConfiguredPrice(&$tax, &$confArr, &$countTotal, &$priceTotalTax, &$priceTax, &$priceNoTax) {
@@ -532,7 +531,7 @@ class tx_ttproducts_paymentshipping {
 	}
 
 
-	function getPaymentShippingData(
+	function getPaymentShippingData (
 			$countTotal,
 			&$priceTotalTax,
 			&$priceShippingTax,
@@ -581,7 +580,7 @@ class tx_ttproducts_paymentshipping {
 	/**
 	 * Include handle script
 	 */
-	function includeHandleScript($handleScript, &$confScript, $activity, &$bFinalize)	{
+	function includeHandleScript ($handleScript, &$confScript, $activity, &$bFinalize)	{
 		$content = '';
 		include($handleScript);
 		return $content;
@@ -591,7 +590,7 @@ class tx_ttproducts_paymentshipping {
 	/**
 	 * get the replaceTAXpercentage from the shipping if available
 	 */
-	function getReplaceTaxPercentage()	{
+	function getReplaceTaxPercentage ()	{
 		if (is_array($this->basket->basketExtra['shipping.']) && isset($this->basket->basketExtra['shipping.']['replaceTAXpercentage']))	{
 			$rc = doubleval($this->basket->basketExtra['shipping.']['replaceTAXpercentage']);
 		}
@@ -613,15 +612,12 @@ class tx_ttproducts_paymentshipping {
 	 * get the where condition for a shipping entry
 	 * E.g.:  30.where.static_countries = cn_short_local = 'Deutschland'
 	 */
-	function getWhere($tablename)	{
-
+	function getWhere ($tablename)	{
 		if (is_array($this->basket->basketExtra['shipping.']) && isset($this->basket->basketExtra['shipping.']['where.']))	{
-
 			switch ($tablename) {
 				case 'static_countries':
 					if (t3lib_extMgm::isLoaded('static_info_tables')) {
-						include_once(PATH_BE_fh_library.'lib/class.tx_fhlibrary_system.php');
-						$eInfo = tx_fhlibrary_system::getExtensionInfo('static_info_tables');
+						$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 						$sitVersion = $eInfo['version'];
 					}
 					if (version_compare($sitVersion, '2.0.1', '>='))	{
@@ -634,7 +630,7 @@ class tx_ttproducts_paymentshipping {
 	}
 
 
-	function getAddRequiredInfoFields()	{
+	function getAddRequiredInfoFields ()	{
 		$rc = '';
 		$tmp = $this->basket->basketExtra['payment.']['addRequiredInfoFields']; 
 		if ($tmp != '')	{
