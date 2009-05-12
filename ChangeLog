@@ -1,4 +1,4 @@
-2009----- Franz Holzinger <franz@ttproducts.de>
+2009-05-12 Franz Holzinger <franz@ttproducts.de>
 	* fix bug: link from single view back to list must not have the product parameter
 	* fix bug 10108 : Replace t3lib_div::GPvar with t3lib_div::_GP
 	* fix bug in pricalc with missing field=price if discountprice is used
@@ -6,6 +6,13 @@
 	* fix the parameters in the link from the basket item to the single view
 	* check for debug == 1, because if it is not in constants then it is wrongly not empty
 	* change the extension parameter from tx_ttproducts_pi1 to tt_products because TYPO3 is not able to handle different plugin variables when they are mixed.
+	* support for new fe_users field cnum
+	* new feature to support the search form without any list view of found products
+	* get independant from fh_library, only div2007 is needed
+	* add "IN (###CURRENT_PID###,###STORAGE_PID###)" to the related records to enable different sources than the current sysfolder
+	* support also different tables for addresses from the tt_address
+	* fix bug: do not delete the basket contents if no quantity is found
+	* new markers ###WEIGHT_UNIT_PRICE_TAX### and ###UNIT_PRICE_NO_TAX### for unit prices based on weight or the unit_factor
 
 2009-01-22 Franz Holzinger <franz@ttproducts.de>
 	* fix bug: basket did not work
