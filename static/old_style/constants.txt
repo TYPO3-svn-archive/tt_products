@@ -82,6 +82,8 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=boolean; label= single view, List display: Usually you get the link to the single item view on the display page of the LIST code. If you however want to create your own pages for single view with SINGLE code you must set this to 1.
   NoSingleViewOnList =
+    # cat=plugin.products//; type=boolean; label= list display on search: Usually the list view is shown if you have entered a search string.
+  listViewOnSearch = 1
 
     # cat=plugin.products//; type=int+; label= Max items displayed: The maximum number of items displayed on one page.
   limit = 50
@@ -277,6 +279,12 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=string; label=gift selection: SQL where clause to form the gift products from the tt_products table
   whereGift =
+
+    # cat=plugin.products//; type=boolean; label=debug: Turn this on and no basket will be deleted. Only for testing purposes. Must not be set in online shops.
+  debug =
+
+    # cat=plugin.products//; type=boolean; label=debug Ajax: Turn this on and xAjax debugs will be diplayed. Only for testing purposes. Must not be set in online shops.
+  ajaxDebug =
 
 }
 

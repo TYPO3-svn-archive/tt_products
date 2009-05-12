@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -93,19 +93,20 @@ class tx_ttproducts_marker {
 			// Add's URL-markers to the $markerArray and returns it
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
 		$pidFormUrl = ($pidNext ? $pidNext : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,TRUE,TRUE),$target,$conf);
+		$bUseBackPid = ($pidNext != $TSFE->id);
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
 		$markerArray['###FORM_URL###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,TRUE),$target,$conf);
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
 		$markerArray['###FORM_URL_INFO###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDpayment'] ? $this->conf['PIDpayment'] : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,TRUE),$target,$conf);
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
 		$markerArray['###FORM_URL_PAYMENT###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,TRUE),$target,$conf);
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
 		$markerArray['###FORM_URL_FINALIZE###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,TRUE),$target,$conf);
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
 		$markerArray['###FORM_URL_THANKS###'] = htmlspecialchars($url);
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 
@@ -122,7 +123,7 @@ class tx_ttproducts_marker {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addURLMarkers')) {
-					$hookObj->addURLMarkers($pidNext,$markerArray,$addQueryString);
+					$hookObj->addURLMarkers($pidNext,$markerArray,$addQueryString,$excludeList);
 				}
 			}
 		}
@@ -207,7 +208,7 @@ class tx_ttproducts_marker {
 	 */
 	function addQueryStringParam (&$queryString, $param, $bUsePrefix=false) {
 		$temp = $this->pibase->piVars[$param];
-		$temp = ($temp ? $temp : (t3lib_div::GPvar($param) ? t3lib_div::GPvar($param) : 0));
+		$temp = ($temp ? $temp : (t3lib_div::_GP($param) ? t3lib_div::_GP($param) : 0));
 		if ($temp)	{
 			if ($bUsePrefix)	{
 				$queryString[$this->pibase->prefixId.'['.$param.']'] = $temp;
@@ -232,7 +233,7 @@ class tx_ttproducts_marker {
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true) {
+	function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=FALSE,$bUseBackPid=TRUE) {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
@@ -263,7 +264,9 @@ class tx_ttproducts_marker {
 		reset($queryString);
 		while(list($key,$val)=each($queryString))	{
 
-			if ($val=='' || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
+			preg_match('/'.$this->pibase->prefixId.'\[(.*)\]/',$key, $matches);
+			$shortkey = $matches[1];
+			if ($val=='' || ($excludeList && (t3lib_div::inList($excludeList,$key) || t3lib_div::inList($excludeList,$shortkey))))	{
 				unset($queryString[$key]);
 			}
 		}
@@ -277,6 +280,7 @@ class tx_ttproducts_marker {
 				}
 			}
 		}
+
 		return $queryString;
 	}
 

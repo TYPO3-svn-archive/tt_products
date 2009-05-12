@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -221,6 +221,13 @@ class tx_ttproducts_article_base {
 		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
 		$markerArray['###DIRECTCOST_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['directcost'],1,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
 		$markerArray['###DIRECTCOST_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['directcost'],0,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
+
+		$price_wno_tax = $row['weight'] > 0 ? ($item['priceNoTax'] / $row['weight']) : 0;
+		$markerArray['###WEIGHT_UNIT_PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($price_wno_tax,FALSE,$row['tax'],FALSE)));
+		$markerArray['###WEIGHT_UNIT_PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($price_wno_tax,TRUE,$row['tax'],FALSE)));
+
+		$markerArray['###UNIT_PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($row['unit_factor'] > 0 ? ($item['priceTax']  / $row['unit_factor']) : 0));
+		$markerArray['###UNIT_PRICE_NO_TAX######'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($row['unit_factor'] > 0 ? ($item['priceNoTax'] / $row['unit_factor']) : 0));
 
 		$instockField = $this->cnf->getTableDesc['inStock'];
 		$instockField = ($instockField ? $instockField : 'inStock');

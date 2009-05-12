@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -47,9 +47,9 @@
  *
  */
 
-require_once(PATH_BE_fh_library.'/sysext/cms/tslib/class.fhlibrary_pibase.php');
+require_once(PATH_tslib.'class.tslib_pibase.php');
+require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
 require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
-
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 
@@ -73,8 +73,8 @@ require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_product.php');
 require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_single_view.php');
 
 
-class tx_ttproducts_pi1 extends fhlibrary_pibase {
-	var $prefixId = 'tx_ttproducts_pi1';	// Same as class name
+class tx_ttproducts_pi1 extends tslib_pibase {
+	var $prefixId = 'tt_products';
 	var $scriptRelPath = 'pi1/class.tx_ttproducts_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
 	var $version;			// version number
@@ -146,18 +146,19 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$backPID = $this->piVars['backPID'];
 		$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
 
-		$eInfo = $this->getExtensionInfo(TT_PRODUCTS_EXTkey);
+		$eInfo = tx_div2007_alpha::getExtensionInfo_fh001(TT_PRODUCTS_EXTkey);
 		$this->version = $eInfo['version'];
 		$this->pi_initPIflexForm();
 		$config['code'] =
-			$this->pi_getSetupOrFFvalue(
-	 			$this->conf['code'],
-	 			$this->conf['code.'],
-				$this->conf['defaultCode'],
+			tx_div2007_alpha::getSetupOrFFvalue_fh001(
+				$this,
+	 			$conf['code'],
+	 			$conf['code.'],
+				$conf['defaultCode'],
 				$this->cObj->data['pi_flexform'],
 				'display_mode',
-				$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
-				);
+				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
+			);
 
 		$this->codeArray=t3lib_div::trimExplode(',', $config['code'],1);
 
@@ -391,8 +392,14 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					} else {
 						$templateArea = 'ITEM_CATEGORY_SELECT_TEMPLATE';
 						if ($theCode == 'SELECTAD')	{
-							if ($this->conf['table.']['tt_address.']['name'] != 'tt_address' ||
-							t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) {
+							if (is_array($this->conf['table.']))	{
+								$tablename = $this->conf['table.']['address'];
+							}
+							if (
+								$tablename == 'tx_party_addresses' && t3lib_extMgm::isLoaded(PARTY_EXTkey) ||
+								$tablename == 'tx_partner_main' && t3lib_extMgm::isLoaded(PARTNER_EXTkey) ||
+								$tablename == 'tt_address' && t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)
+							) {
 								include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
 								$categoryTable = t3lib_div::makeInstance('tx_ttproducts_address');
 								$categoryTable->init(
@@ -404,7 +411,8 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 							} else {
 								$message = $this->pibase->pi_getLL('extension_missing');
 								$messageArr =  explode('|', $message);
-								$this->errorMessage=$messageArr[0]. TT_ADDRESS_EXTkey .$messageArr[1];
+								$extTableArray = array('tt_address' => TT_ADDRESS_EXTkey, 'tx_partner_main' => PARTNER_EXTkey, 'tx_party' => PARTNER_EXTkey);
+								$this->errorMessage=$messageArr[0] . $extTableArray[$tablename] . $messageArr[1];
 							}
 						} else {
 							if ($this->pageAsCategory)	{
@@ -583,12 +591,12 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		} else {
 			$dblangfile = 'locallang_db.xml';
 		}
-		tx_fhlibrary_language::pi_loadLL($this,'EXT:tt_products/'.$dblangfile);
-		tx_fhlibrary_language::pi_loadLL($this,'EXT:tt_products/pi1/locallang.xml');
+		tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/'.$dblangfile);
+		tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/pi1/locallang.xml');
 
 			// get all extending TCAs
-		if (is_array($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']))	{
-			$this->pi_loadTcaAdditions($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']))	{
+			tx_div2007_alpha::loadTcaAdditions_fh001($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
 		}
 
 			// basket
@@ -832,7 +840,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	 * @see enableFields()
 	 */
 
-	function products_tracking($theCode)	{ // t3lib_div::_GP('tracking')
+	function products_tracking ($theCode)	{ // t3lib_div::_GP('tracking')
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
@@ -986,7 +994,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
-		if ((($theCode=='SEARCH') || (strstr($theCode,'LIST'))) && ($theCode != 'LISTARTICLES') && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'] && !$this->getSingleFromList())	{
+		if ((($theCode=='SEARCH') && $this->conf['listViewOnSearch'] == '1' || (strstr($theCode,'LIST'))) && ($theCode != 'LISTARTICLES') && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'] && !$this->getSingleFromList())	{
 			$this->setSingleFromList(TRUE);
 			$bSingleFromList = TRUE;
 		}

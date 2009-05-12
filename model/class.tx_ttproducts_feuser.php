@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2006 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -55,7 +55,7 @@ class tx_ttproducts_feuser {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, $tablename)  {
+	function init (&$pibase, &$cnf, $tablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = &$pibase;
@@ -65,7 +65,7 @@ class tx_ttproducts_feuser {
 
 		$tablename = ($tablename ? $tablename : 'fe_users');
 		$this->tableconf = $this->cnf->getTableConf('fe_users');
-		
+
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setTCAFieldArray($tablename);
 		$this->fields['payment'] = ($this->tableconf['payment'] ? $this->tableconf['payment'] : '');
@@ -103,7 +103,7 @@ class tx_ttproducts_feuser {
 	}
 
 
-	function isUserInGroup($feuser, $group)	{
+	function isUserInGroup ($feuser, $group)	{
 		$groups = explode(',', $feuser['usergroup']);
 		foreach ($groups as $singlegroup)
 			if ($singlegroup == $group)
@@ -112,7 +112,7 @@ class tx_ttproducts_feuser {
 	} // isUserInGroup
 
 
-	function getWrappedSubpartArray(&$subpartArray, &$wrappedSubpartArray)	{
+	function getWrappedSubpartArray (&$subpartArray, &$wrappedSubpartArray)	{
 		global $TSFE;
 
 		if ($TSFE->fe_user->user)	{
@@ -122,7 +122,7 @@ class tx_ttproducts_feuser {
 			$wrappedSubpartArray['###FE_GROUP_0_TEMPLATE###'] = array('','');
 			$subpartArray['###FE_GROUP_1_TEMPLATE###'] = '';
 		}
-		return;		
+		return;
 	}
 
 
@@ -149,16 +149,14 @@ class tx_ttproducts_feuser {
 
 		} else if (is_numeric($row['salutation'])) {
 			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];
-			$tmp = tx_fhlibrary_language::sL($salutation[0]);
-			$typeSalutationText = $this->pibase->pi_getLL($tmp);
+			$tmp = tx_div2007_alpha::sL_fh001($salutation[0]);
+			$typeSalutationText = htmlspecialchars(tx_div2007_alpha::getLL($this->pibase, $tmp));
 		} else {
 			$typeSalutationText = '';
 		}
 
 		$markerArray['###'.strtoupper($type).'_SALUTATION###'] = $typeSalutationText;
-		
 	} // getMarkerArray
-
 }
 
 

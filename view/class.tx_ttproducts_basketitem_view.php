@@ -45,7 +45,7 @@ class tx_ttproducts_basketitem_view {
 	var $basketExt; 	// basket
 	var $basketVar = 'ttp_basket';
 
-	
+
 	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
 	 * $basket is the TYPO3 default shopping basket array from ses-data
@@ -98,12 +98,12 @@ class tx_ttproducts_basketitem_view {
 				$markerArray['###FIELD_'.$fieldMarker.'_VALUE###'] = $row[$field];
 				$markerArray['###FIELD_'.$fieldMarker.'_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
 			}
-			if (isset($row['extVars']))	{	
+			if (isset($row['extVars']))	{
 				$markerArray['###PRODUCT_'.strtoupper($field).'###'] = $row[$field];
 			}
 		}
 		// $markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
-		$prodAdditionalText['single'] = '';	
+		$prodAdditionalText['single'] = '';
 		if (isset($keyAdditional)) {
 			$isSingleProduct = $viewTable->hasAdditional($row,'isSingle');
 			if ($isSingleProduct)	{
@@ -115,9 +115,7 @@ class tx_ttproducts_basketitem_view {
 		$markerArray['###PRODUCT_ADDITIONAL_SINGLE###'] = $prodAdditionalText['single'];
 
 	} // getItemMarkerArray
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_basketitem_view.php'])	{

@@ -74,7 +74,7 @@ class tx_ttproducts_csv {
 			$csvfilepath .= '/';
 		}
 		$csvfilepath .= $this->order->getNumber($csvorderuid).'.csv';
-		
+
 		$csvfile = fopen($csvfilepath, 'w');
 		if ($csvfile !== FALSE)
 		{
@@ -83,7 +83,7 @@ class tx_ttproducts_csv {
 			$csvlineperson = '';
 			$csvlinedelivery = '';
 /* Added Els: 'feusers_uid,' */
-			$infoFields = explode(',','feusers_uid,name,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country,agb');
+			$infoFields = explode(',','feusers_uid,name,cnum,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country,agb');
 			while(list(,$fName)=each($infoFields)) {
 				if ($csvlinehead != '') {
 					$csvlinehead .= ';';
@@ -123,7 +123,7 @@ class tx_ttproducts_csv {
 			if ($this->conf['CSVinOneLine'])	{
 				$csvdescr .= ';"deliverynote";"desired date";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
 				$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
-			}			
+			}
 
 			$csvdescr .= chr(13);
 			fwrite($csvfile, $csvdescr);
@@ -138,7 +138,7 @@ class tx_ttproducts_csv {
 					$row = &$actItem['rec'];
 					$pid = intval($row['pid']);
 					if (!isset($basket->page->pageArray[$pid]))	{
-						// product belongs to another basket	
+						// product belongs to another basket
 						continue;
 					}
 					$variants = explode(';', $actItem['rec']['extVars']);

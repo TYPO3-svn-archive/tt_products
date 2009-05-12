@@ -12,11 +12,11 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Shop System',
-	'description' => 'Shop in multiple languages, photos using DAM, product variants, bill, voucher and gift certificates. Documented in book "Der TYPO3-Webshop" at opensourcepress.de. Requires table 0.1.21+, fh_library 0.0.20 and div 0.0.13+!',
+	'description' => '"Der TYPO3-Webshop" at opensourcepress.de. Shop in multiple languages, photos using DAM, product variants, bill, voucher and gift certificates. Latest updates at ttproducts.de.',
 	'category' => 'plugin',
 	'shy' => 0,
 	'version' => '2.5.11',
-	'dependencies' => 'div,cms,table,fh_library',
+	'dependencies' => 'cms,table,div2007',
 	'conflicts' => 'zk_products,mkl_products,ast_rteproducts,onet_ttproducts_rte,shopsort,c3bi_cookie_at_login',
 	'priority' => '',
 	'loadOrder' => '',
@@ -34,12 +34,11 @@ $EM_CONF[$_EXTKEY] = array(
 	'CGLcompliance_note' => '',
 	'constraints' => array(
 		'depends' => array(
-			'div' => '0.0.13-',
 			'cms' => '',
 			'table' => '0.1.21-',
-			'fh_library' => '0.0.19-',
+			'div2007' => '0.1.24-',
 			'php' => '4.2.3-0.0.0',
-			'typo3' => '3.8.0-4.2.99',
+			'typo3' => '3.8.0-4.3.99',
 		),
 		'conflicts' => array(
 			'zk_products' => '',

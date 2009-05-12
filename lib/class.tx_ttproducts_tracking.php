@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -61,7 +61,7 @@ class tx_ttproducts_tracking {
 	 * @return	  void
 	 */
 
-	function init(&$pibase, &$cnf, &$basket, &$order, &$price) {
+	function init (&$pibase, &$cnf, &$basket, &$order, &$price) {
 		global $TSFE;
 
 		$this->pibase = &$pibase;
@@ -69,10 +69,8 @@ class tx_ttproducts_tracking {
 		$this->conf = &$this->cnf->conf;
 		$this->basket = &$basket;
 		$this->order = &$order;
-		$this->price = &$price;	 
+		$this->price = &$price;
 	}
-
-
 
 	/*
 		Tracking information display and maintenance.
@@ -106,7 +104,7 @@ class tx_ttproducts_tracking {
 		All status values can be altered only if you're logged in as a BE-user and if you know the correct code (setup as .update_code in TypoScript config)
 	*/
 
-	function getTrackingInformation($orderRow, $templateCode, $trackingCode, $updateCode, &$orderRecord, $admin) {
+	function getTrackingInformation ($orderRow, $templateCode, $trackingCode, $updateCode, &$orderRecord, $admin) {
 		global $TSFE, $TYPO3_DB;
 
 		if ($orderRow['uid'])	{
@@ -125,7 +123,7 @@ class tx_ttproducts_tracking {
 				$status_log = unserialize($orderRow['status_log']);
 				reset($orderRecord['status']);
 				$update=0;
-				reset ($orderRecord['status']);
+				reset($orderRecord['status']);
 				while(list(,$val)=each($orderRecord['status'])) {
 					$status_log_element = array(
 						'time' => time(),
@@ -218,7 +216,6 @@ class tx_ttproducts_tracking {
 				$STATUS_ITEM_c.=$this->pibase->cObj->substituteMarkerArrayCached($STATUS_ITEM, $markerArray);
 			}
 		}
-
 		$subpartArray=array();
 		$subpartArray['###STATUS_ITEM###']=$STATUS_ITEM_c;
 
@@ -252,19 +249,18 @@ class tx_ttproducts_tracking {
 
 			// Final things
 		$markerArray['###ORDER_HTML_OUTPUT###'] = $orderData['html_output'];		// The save order-information in HTML-format
+
 		$markerArray['###FIELD_EMAIL_NOTIFY###'] = $orderRow['email_notify'] ? ' checked' : '';
 		$markerArray['###FIELD_EMAIL###'] = $orderRow['email'];
 		$markerArray['###ORDER_UID###'] = $this->order->getNumber($orderRow['uid']);
 		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
-		$markerArray['###TRACKING_NUMBER###'] =  $trackingCode;
+		$markerArray['###TRACKING_NUMBER###'] = $trackingCode;
 		$markerArray['###UPDATE_CODE###'] = $updateCode;
-		
-		$content= $this->pibase->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
+
+		$content = $this->pibase->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		return $content;
 	} // getTrackingInformation
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_tracking.php']) {

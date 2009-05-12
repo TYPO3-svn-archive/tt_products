@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2008 Kasper Skårhøj <kasperYYYY@typo3.com>
+*  (c) 1999-2009 Kasper Skårhøj <kasperYYYY@typo3.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -71,7 +71,7 @@ class tx_ttproducts_single_view {
 	var $LLkey; // language key
 	var $useArticles;
 
-	function init(&$pibase, &$cnf, &$basket, &$page,
+	function init (&$pibase, &$cnf, &$basket, &$page,
 			&$tt_content, &$tt_products, &$tt_products_articles,
 			&$tt_products_cat, &$fe_users, $uidArray, $extVars,
 			$pid, $LLkey, $useArticles) {
@@ -100,7 +100,7 @@ class tx_ttproducts_single_view {
 
 
 	// returns the single view
-	function &printView(&$templateCode, &$error_code, $pageAsCategory, $templateSuffix = '') {
+	function &printView (&$templateCode, &$error_code, $pageAsCategory, $templateSuffix = '') {
 		global $TSFE, $TCA, $TYPO3_DB;
 		global $TYPO3_CONF_VARS;
 
@@ -234,24 +234,27 @@ class tx_ttproducts_single_view {
 				$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $row);
 			} else {
 				$pid = $TSFE->id;
-				$bNeedSingleParams = TRUE;
+				if ($this->conf['NoSingleViewOnList'])	{
+					$bNeedSingleParams = TRUE;
+				}
 			}
-
 			$addQueryString = array();
+
 			if ($bNeedSingleParams)	{
-				// if the page remains the same then the product parameter will still be needed
+				// if the page remains the same then the product parameter will still be needed if there is no list view
 				$addQueryString[$this->type] = $row['uid'];
 			}
-
-			$linkUrl = $this->pibase->pi_getPageLink($backPID,'',$this->marker->getLinkParams('',$addQueryString,true), array('useCacheHash' => true));
+			$this->marker->getSearchParams($addQueryString);
+			$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
+			$linkUrl = $this->pibase->pi_getPageLink($backPID,'',$this->marker->getLinkParams('',$addQueryString,TRUE), array('useCacheHash' => TRUE));
 			$linkUrl = htmlspecialchars($linkUrl);
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>');
-
-			$variant = $itemTableArray[$this->type]->variant->getVariantFromRow ($row);
+			// link back to the list view or basket view
+			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="' . $linkUrl . '">','</a>');
+			$variant = $itemTableArray[$this->type]->variant->getVariantFromRow($row);
 			$item = $this->basket->getItem($row, $variant);
 			$forminfoArray = array ('###FORM_NAME###' => 'item_'.$this->uid);
 			$pidMemo = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
-			$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pidMemo,'',$this->marker->getLinkParams('', array(), true)));
+			$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pidMemo,'',$this->marker->getLinkParams('', array(), TRUE)));
 
 			$markerArray = array();
 			// get categories
@@ -359,7 +362,7 @@ class tx_ttproducts_single_view {
 					array(),
 					'SINGLE',
 					1,
-					true
+     TRUE
 				);
 			} else {
 				$itemTableArray['product']->variant->getItemMarkerArray (
@@ -375,6 +378,12 @@ class tx_ttproducts_single_view {
 			if ($backPID)	{
 				$addQueryString['backPID'] = $backPID;
 			}
+			if ($pid == $TSFE->id)	{
+				// if the page remains the same then the product parameter will still be needed if there is no list view
+				$addQueryString[$this->type] = $row['uid'];
+			}
+
+			$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
 			$markerArray = $this->marker->addURLMarkers($pid, $markerArray, $addQueryString); // Applied it here also...
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
@@ -408,8 +417,8 @@ class tx_ttproducts_single_view {
 				$addQueryString=array();
 				$addQueryString[$this->type] = $rowprev['uid'];
 				$addQueryString['backPID'] = $backPID;
-				// $wrappedSubpartArray['###LINK_PREV_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rowprev['uid'].'">','</a>');
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,true),array('useCacheHash' => true)) .'">','</a>');
+				$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,TRUE),array('useCacheHash' => TRUE)) .'">','</a>');
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
@@ -422,8 +431,8 @@ class tx_ttproducts_single_view {
 				$addQueryString=array();
 				$addQueryString[$this->type] = $rownext['uid'];
 				$addQueryString['backPID'] = $backPID;
-				// $wrappedSubpartArray['###LINK_NEXT_SINGLE###']=array('<a href="'.$url.'&tt_products='.$rownext['uid'].'">','</a>');
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,true),array('useCacheHash' => true)) .'">','</a>');
+				$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,TRUE),array('useCacheHash' => TRUE)) .'">','</a>');
 			} else {
 				$subpartArray['###LINK_NEXT_SINGLE###'] = '';
 			}
@@ -494,6 +503,7 @@ class tx_ttproducts_single_view {
 					$addQueryString=array();
 					$addQueryString[$this->type]= intval($row['uid']);
 					$addQueryString['variants']= htmlspecialchars($this->variants);
+					$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
 					$markerArray = $this->marker->addURLMarkers($backPID,$markerArray, $addQueryString); // Applied it here also...
 					$markerArray['###FIELD_NAME###']='ttp_gift[item]['.$row['uid'].']['.$this->variants.']'; // here again, because this is here in ITEM_LIST view
 					$markerArray['###FIELD_QTY###'] = $this->basket->basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -130,8 +130,7 @@ class tx_ttproducts_paymentlib {
 //* Changed by Udo Gerhards: If the $providerObject has a basket fill it, begin *//
 //*******************************************************************************//
 				if (method_exists($providerObject,'usesBasket') && $providerObject->usesBasket() && t3lib_extMgm::isLoaded('static_info_tables'))	{
-					include_once(PATH_BE_fh_library.'lib/class.tx_fhlibrary_system.php');
-					$eInfo = tx_fhlibrary_system::getExtensionInfo('static_info_tables');
+					$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 					$sitVersion = $eInfo['version'];
 					if (version_compare($sitVersion, '2.0.5', '>='))	{
 						$this->getPaymentBasket($totalArr, $addrArr, $paymentBasketArray);

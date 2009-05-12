@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -51,8 +51,8 @@ class tx_ttproducts_form_div {
 
 		$text = '';
 		foreach ($valueArray as $key => $parts) {
-			$tmp = tx_fhlibrary_language::sL($parts[0]);
-			$text = $pibase->pi_getLL($tmp);
+			$tmp = tx_div2007_alpha::sL_fh001($parts[0]);
+			$text = tx_div2007_alpha::getLL($pibase, $tmp);
 			if (!count($allowedArray) || in_array($parts[1], $allowedArray))	{
 				$selectedText = '';
 				if (intval($parts[1]) == intval($indexSelected))	{

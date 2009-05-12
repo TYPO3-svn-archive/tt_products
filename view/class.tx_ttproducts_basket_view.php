@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -33,7 +33,7 @@
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	René Fritz <r.fritz@colorcube.de>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
  * @author	Els Verberne <verberne@bendoo.nl>
  * @package TYPO3
@@ -76,7 +76,7 @@ class tx_ttproducts_basket_view {
 	 * @return	  void
 	 */
 
-	function init(&$basket, &$templateCode )	{
+	function init (&$basket, &$templateCode )	{
 		$this->pibase = &$basket->pibase;
 		$this->cnf = &$basket->cnf;
 		$this->conf = &$this->cnf->conf;
@@ -97,13 +97,10 @@ class tx_ttproducts_basket_view {
 		$this->marker->init($this->pibase, $this->cnf, $this->basket);
 	} // init
 
-
-
-
 	/**
 	 * This generates the shopping basket layout and also calculates the totals. Very important function.
 	 */
-	function getView(&$templateCode, $code, &$info, $bSelectSalutation, $bSelectVariants, $subpartMarker='###BASKET_TEMPLATE###', $mainMarkerArray=array())	{
+	function getView (&$templateCode, $code, &$info, $bSelectSalutation, $bSelectVariants, $subpartMarker='###BASKET_TEMPLATE###', $mainMarkerArray=array())	{
 			/*
 				Very central function in the library.
 				By default it extracts the subpart, ###BASKET_TEMPLATE###, from the $templateCode (if given, else the default $this->templateCode)
@@ -248,18 +245,24 @@ class tx_ttproducts_basket_view {
 				$sum_pricecredits_total_totunits_no_tax += $markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'];
 				$sum_price_total_totunits_no_tax += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
 
-/* Added els4: calculating of price_creditpoints necessary in winkelwagen.tmpl, only if article contains special_prep then one can gains creditpoints */
 				if ($actItem['rec']['special_preparation'] != '0.00') {
 					$sum_pricecreditpoints_total_totunits += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
 				}
 
 				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row, $TSFE->rootLine[1]);
 				$addQueryString=array();
-				$addQueryString[$this->pibase->prefixId.'['.$this->viewTable->type.']'] = intval($row['uid']);
-				$addQueryString[$this->pibase->prefixId.'[variants]'] = htmlspecialchars($row['extVars']);
-				// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
-				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true), array('useCacheHash' => true)).'"'.$css_current.'>','</a>');
+				$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
+				if ($typoVersion < 3008000)	{
+					$pageLink = htmlspecialchars('index.php?id='.$pid.'&'.$this->pibase->prefixId.'['.strtolower($this->viewTable->type).']='.intval($row['uid']).'&'.$this->pibase->prefixId.'[variants]='.$row['extVars']);
+				} else {
+					$addQueryString[$this->viewTable->type] = intval($row['uid']);
+					$addQueryString['variants'] = htmlspecialchars($row['extVars']);
+					$queryString = $this->marker->getLinkParams('', $addQueryString, FALSE);
+					$pageLink = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid));
+				}
+
+				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $pageLink .'"'.$css_current.'>','</a>');
 				// Substitute
 				$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
 				$this->viewTable->variant->getVariantSubpartArray (
@@ -502,7 +505,6 @@ class tx_ttproducts_basket_view {
 				}
 			}
 		}
-
 		$markerArray['###AMOUNT_CREDITPOINTS###'] = $TSFE->fe_user->user['tt_products_creditpoints']+$creditpoints_gift;
 
 		// maximum1 amount of creditpoint to change is amount on account minus amount already spended in the credit-shop
@@ -599,9 +601,7 @@ class tx_ttproducts_basket_view {
 		$out=$this->pibase->cObj->substituteSubpart($bFrameWork, '###ITEM_CATEGORY_AND_ITEMS###', $out);
 		return $out;
 	} // getView
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_basket_view.php'])	{

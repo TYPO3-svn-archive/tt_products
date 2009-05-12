@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -90,7 +90,6 @@ class tx_ttproducts_control {
 	} // init
 
 
-
 	/**
 	 * returns the activities in the order in which they have to be processed
 	 *
@@ -100,7 +99,7 @@ class tx_ttproducts_control {
 	function transformActivities($activities)	{
 		$retActivities = array();
 		$codeActivities = array();
-		$codeActivityArray =  Array (
+		$codeActivityArray = Array (
 			'1' =>
 				'products_overview',
 				'products_basket',
@@ -115,7 +114,6 @@ class tx_ttproducts_control {
 			'products_redeem_gift',
 			'products_clear_basket'
 		);
-
 
 		if (is_array($activities)) {
 			foreach ($codeActivityArray as $k => $activity) {
@@ -141,7 +139,6 @@ class tx_ttproducts_control {
 		if ($codeActivities['products_basket'] && count($codeActivities)>1) {
 			$codeActivities['products_basket'] = false;
 		}
-
 
 		if (is_array($activities)) {
 			foreach ($activityArray as $k => $activity) {
@@ -282,8 +279,8 @@ class tx_ttproducts_control {
 						switch($activity)	{
 							case 'products_clear_basket':
 								// Empties the shopping basket!
-								$this->basket->clearBasket();
-								$bBasketEmpty = true;
+								$this->basket->clearBasket(TRUE);
+								$bBasketEmpty = TRUE;
 							break;
 							case 'products_basket':
 								if (count($this->activityArray) == 1) {

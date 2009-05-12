@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -54,13 +54,13 @@ class tx_ttproducts_category_base {
 	var $marker = 'CATEGORY';
 	var $piVar = ''; // must be overridden
 	var $mm_table = ''; // only set if a mm table is used
-	var $parentField; // reference field name for parent 
+	var $parentField; // reference field name for parent
 
 
 	/**
 	 * initialization with table object and language table
 	 */
-	function init(&$pibase, &$cnf, &$tt_content)	{
+	function init (&$pibase, &$cnf, &$tt_content)	{
 		global $TYPO3_DB,$TSFE;
 
 		$this->pibase = &$pibase;
@@ -73,24 +73,21 @@ class tx_ttproducts_category_base {
 		$this->image->init($this->pibase, $cnf, $tt_content, $this->table, $this->marker);
 	} // init
 
-
 	function &getTableObj ()	{
 		return $this->table;
 	}
-
 
 	function get ($uid=0,$pid=0) {
 		$rc = array();
 		return $rc;
 	}
 
-
 	function getParent ($uid=0) {
 		$rc = array();
 		return $rc;
 	}
 
-	function getRootCat()	{
+	function getRootCat ()	{
 		$rc = 0;
 		return $rc;
 	}
@@ -110,8 +107,7 @@ class tx_ttproducts_category_base {
 		return $rc;
 	}
 
-
-	function &getRootArray($rootCat, &$categoryArray)	{
+	function &getRootArray ($rootCat, &$categoryArray)	{
 		$rootArray = array();
 		$rootCatArray = t3lib_div::trimExplode(',', $rootCat);
 
@@ -125,19 +121,15 @@ class tx_ttproducts_category_base {
 		return $rootArray;
 	}
 
-
-
 	function &getRootpathArray ($rootCat,$currentCat) {
 		$rootpathArray = array();
-		return $rootpathArray; 
+		return $rootpathArray;
 	}
-
 
 	function &getRelationArray ($excludeCat=0,$currentCat=0) {
 		$relationArray = array();
 		return $relationArray;
 	}
-
 
 	function getCategoryArray ($uid)	{
 		global $TYPO3_CONF_VARS;
@@ -167,22 +159,18 @@ class tx_ttproducts_category_base {
 				$catArray[] = $row['cat'];
 			}
 		}
-		
 		return $catArray;
 	}
-
 
 	function setMarkerArrayCatTitle (&$markerArray, $catTitle, $prefix)	{
 		$this->pibase->cObj->setCurrentVal($catTitle);
 		$markerArray['###'.$prefix.$this->marker.'_TITLE###']=$this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 	}
 
-
-	function getMarkerArrayCatTitle(&$markerArray,$prefix='')	{
+	function getMarkerArrayCatTitle (&$markerArray,$prefix='')	{
 		$rc = $markerArray['###'.$prefix.$this->marker.'_TITLE###'];
 		return ($rc);
 	}
-
 
 	/**
 	 * Template marker substitution
@@ -206,7 +194,7 @@ class tx_ttproducts_category_base {
 			$count = 0;
 			$currentCategory = $this->getRowCategory($row);
 			$parentCategory = '';
-	
+
 			foreach ($parentArray as $key => $parent)	{
 				do	{
 					$parentRow = $this->getParent($currentCategory);
@@ -218,14 +206,14 @@ class tx_ttproducts_category_base {
 					}
 				} while ($count < $parent && count($currentRow));
 				$currentCategory = $parentCategory;
-	
+
 				if (count($currentRow))	{
 					$this->getMarkerArray (
-						$markerArray, 
+						$markerArray,
 						$this->page,
-						$parentCategory, 
-						$parentPid, 
-						$this->config['limitImage'], 
+						$parentCategory,
+						$parentPid,
+						$this->config['limitImage'],
 						'listcatImage',
 						$viewCatTagArray,
 						array(),
@@ -239,21 +227,23 @@ class tx_ttproducts_category_base {
 		}
 	}
 
-
-	function getItemMarkerArray (&$row, &$markerArray, $code, $prefix='')	{ 
+	function getItemMarkerArray (&$row, &$markerArray, $code, $prefix='')	{
 		$marker = $prefix.$this->marker;
 		$markerArray['###'.$marker.'_ID###'] = $row['uid'];
 		$markerArray['###'.$marker.'_UID###'] = $row['uid'];
 		$markerArray['###'.$marker.'_SUBTITLE###'] = $row['subtitle'];
-		if ($code == 'EMAIL' && !$this->conf['orderEmail_htmlmail'])	{ // no formatting for emails
-			$markerArray['###'.$marker.'_NOTE###'] = $row['note'];
-		} else {
-			$markerArray['###'.$marker.'_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
-		}
 
-		// cuts note in list view
-		if (strlen($markerArray['###'.$marker.'_NOTE###']) > $this->conf['max_note_length']) {
-			$markerArray['###'.$prefix.$marker.'_NOTE###'] = substr(strip_tags($markerArray['###'.$marker.'_NOTE###']), 0, $this->conf['max_note_length']) . '...';
+		if (isset($row['note']))	{
+			if ($code == 'EMAIL' && !$this->conf['orderEmail_htmlmail'])	{ // no formatting for emails
+				$markerArray['###'.$marker.'_NOTE###'] = $row['note'];
+			} else {
+				$markerArray['###'.$marker.'_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
+			}
+
+			// cuts note in list view
+			if (strlen($markerArray['###'.$marker.'_NOTE###']) > $this->conf['max_note_length']) {
+				$markerArray['###'.$prefix.$marker.'_NOTE###'] = substr(strip_tags($markerArray['###'.$marker.'_NOTE###']), 0, $this->conf['max_note_length']) . '...';
+			}
 		}
 	}
 }

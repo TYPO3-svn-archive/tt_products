@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -60,23 +60,21 @@ class tx_ttproducts_activity_finalize {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$basket, &$tt_products, &$tt_products_cat, &$order)  {
+	function init (&$pibase, &$cnf, &$basket, &$tt_products, &$tt_products_cat, &$order)  {
 		global $TYPO3_DB,$TSFE,$TCA;
-		
+
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
-		$this->basket = &$basket;	
+		$this->basket = &$basket;
 		$this->tt_products = &$tt_products;
 		$this->tt_products_cat = &$tt_products_cat;
 		$this->order = &$order;
 
 		$this->useArticles = $this->conf['useArticles'];
-
 	} // init
-
 
 	/**
 	 * Finalize an order
@@ -86,10 +84,10 @@ class tx_ttproducts_activity_finalize {
 	 * The basket is also emptied, but address info is preserved for any new orders.
 	 * $orderUid is the order-uid to finalize
 	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
-	 * 
+	 *
 	 * returns the email address of the customer to whom the order notification has been sent
 	 */
-	function doProcessing($templateCode, &$basketView, &$viewTable, &$price, $orderUid, &$orderConfirmationHTML, &$error_message, &$address)	{
+	function doProcessing ($templateCode, &$basketView, &$viewTable, &$price, $orderUid, &$orderConfirmationHTML, &$error_message, &$address)	{
 		global $TSFE;
 		global $TYPO3_DB;
 		global $TYPO3_CONF_VARS;
@@ -110,7 +108,7 @@ class tx_ttproducts_activity_finalize {
 			$pid = ($this->conf['PIDuserFolder'] ? $this->conf['PIDuserFolder'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
 			$pid = intval($pid);
 			$username = strtolower(trim($address->infoArray['billing']['email']));
-			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $pid.' AND deleted=0');
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username='.$TYPO3_DB->fullQuoteStr($username, 'fe_users').' AND pid='. $pid.' AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 
 			if (!$num_rows)	{
@@ -138,9 +136,12 @@ class tx_ttproducts_activity_finalize {
 					$insertFields['first_name'] = $address->infoArray['billing']['first_name'];
 					$insertFields['last_name'] = $address->infoArray['billing']['last_name'];
 				}
-
+				if ($address->infoArray['billing']['cnum'])	{
+					$insertFields['cnum'] = $address->infoArray['billing']['cnum'];
+				}
 				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country' : 'country');
-				$insertFields[$countryKey] =  $address->infoArray['billing']['country'];
+				$insertFields[$countryKey] = $address->infoArray['billing']['country'];
+
 				$res = $TYPO3_DB->exec_INSERTquery('fe_users', $insertFields);
 				// send new user mail
 				if (count($address->infoArray['billing']['email'])) {
@@ -209,9 +210,9 @@ class tx_ttproducts_activity_finalize {
 		// $orderRecord = $this->getRecord($orderUid);  needed?
 
 		if (!$this->conf['alwaysInStock']) {
-			$instockTableArray = 
+			$instockTableArray =
 				$viewTable->reduceInStockItems(
-					$this->basket->itemArray, 
+					$this->basket->itemArray,
 					$this->useArticles
 				);
 			// loop over all items in the basket indexed by a sort string
@@ -231,7 +232,7 @@ class tx_ttproducts_activity_finalize {
 				$price,
 				$this->order
 			);
-			
+
 			$csvfilepath = PATH_site.$this->conf['CSVdestination'];
 			$csvorderuid = $this->basket->recs['tt_products']['orderUid'];
 			$csv->create($this->basket, $address, $csvorderuid, $csvfilepath, $error_message);
@@ -260,7 +261,7 @@ class tx_ttproducts_activity_finalize {
 						$plainMessageArray[$key] = $subjectArray[$key];
 					}
 					$plainMessageArray[$key] = $this->pibase->cObj->substituteMarkerArrayCached($plainMessageArray[$key],$markerArray);
-					if (empty($subjectArray[$key])) {	
+					if (empty($subjectArray[$key])) {
 						$subjectArray[$key] = $this->conf['orderEmail_subject'];
 					}
 				}
@@ -275,8 +276,8 @@ class tx_ttproducts_activity_finalize {
 			if ($emailContentArray['customer'])	{		// If there is plain text content - which is required!!
 				if ($this->conf['orderEmail_htmlmail'])	{
 					include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
-					$cls = t3lib_div::makeInstanceClassName('t3lib_htmlmail');				
-				}	
+					$cls = t3lib_div::makeInstanceClassName('t3lib_htmlmail');
+				}
 				if (class_exists($cls))	{	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$this->pibase->cObj->getSubpart($templateCode,'###EMAIL_HTML_SHELL###');
 					$HTMLmailContent=$this->pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$orderConfirmationHTML);
@@ -335,8 +336,8 @@ class tx_ttproducts_activity_finalize {
 							$uidItemnrTitle = t3lib_div::trimExplode(',', $instockTmp);
 							if ($count <= $this->conf['warningInStockLimit'])	{
 								$messageArr =  explode('|', $message = $this->pibase->pi_getLL('instock_warning'));
-								$subject = $messageArr[0].$tableDesc. '"'.$uidItemnrTitle[2].'"'.$messageArr[1].$uidItemnrTitle[1].$messageArr[2];
-	
+								$subject = $messageArr[0] . $tableDesc . '"' . $uidItemnrTitle[2] . '"' . $messageArr[1] . $uidItemnrTitle[1] . $messageArr[2];
+
 								foreach ($recipientsArray['shop'] as $key => $recipient) {
 									// $headers variable removed everywhere!
 									tx_ttproducts_email_div::send_mail(

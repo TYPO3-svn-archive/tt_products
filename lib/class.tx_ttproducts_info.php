@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -92,8 +92,7 @@ class tx_ttproducts_info {
 
 		if (t3lib_extMgm::isLoaded('static_info_tables')) {
 			$path = t3lib_extMgm::extPath('static_info_tables');
-			include_once(PATH_BE_fh_library.'lib/class.tx_fhlibrary_system.php');
-			$eInfo = tx_fhlibrary_system::getExtensionInfo('static_info_tables');
+			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 
 			if (is_array($eInfo))	{
 				$sitVersion = $eInfo['version'];
@@ -153,7 +152,7 @@ class tx_ttproducts_info {
 				$address = $TSFE->fe_user->user['address'];
 			}
 			$this->infoArray['billing']['address'] = $address;
-			$fields = 'name, first_name, last_name, username, email, telephone, salutation, fax, zip, city, state, company';
+			$fields = 'name, cnum, first_name, last_name, username, email, telephone, salutation, fax, zip, city, state, company';
 			$fields .= ',tt_products_creditpoints, tt_products_vouchercode, tt_products_vat';
 			if ($this->feuserextrafields) {
 				$fields .= ',tx_feuserextrafields_initials_name, tx_feuserextrafields_prefix_name, tx_feuserextrafields_gsm_tel,'.
@@ -193,7 +192,7 @@ class tx_ttproducts_info {
 					'tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,' .
 					'tx_feuserextrafields_country_deliv';
 			}
-			$infoFields = explode(',','feusers_uid,telephone,salutation,name,first_name,last_name,email,' .
+			$infoFields = explode(',','feusers_uid,telephone,salutation,name,cnum,first_name,last_name,email,' .
 				'date_of_birth,company,address,city,zip,state,country,country_code,tt_products_vat'.
 				$infoExtraFields
 			); // Fields
@@ -290,7 +289,7 @@ class tx_ttproducts_info {
 			$list .= ',tx_feuserextrafields_initials_name,tx_feuserextrafields_prefix_name,tx_feuserextrafields_gsm_tel,name,date_of_birth,tx_feuserextrafields_company_deliv,tx_feuserextrafields_address_deliv,tx_feuserextrafields_housenumber,tx_feuserextrafields_housenumber_deliv,tx_feuserextrafields_housenumberadd,tx_feuserextrafields_housenumberadd_deliv,tx_feuserextrafields_pobox,tx_feuserextrafields_pobox_deliv,tx_feuserextrafields_zip_deliv,tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,tx_feuserextrafields_country_deliv';
 		}
 		$infoFields = t3lib_div::trimExplode(',',$list); // Fields...
-		reset ($infoFields);
+		reset($infoFields);
 		while(list(,$fName)=each($infoFields))	{
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $this->infoArray['billing'][$fName];
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $this->infoArray['delivery'][$fName];
@@ -301,9 +300,7 @@ class tx_ttproducts_info {
 			$whereCountries = $this->getWhereAllowed();
 
 			if (t3lib_extMgm::isLoaded('static_info_tables')) {
-				$path = t3lib_extMgm::extPath('static_info_tables');
-				include_once(PATH_BE_fh_library.'lib/class.tx_fhlibrary_system.php');
-				$eInfo = tx_fhlibrary_system::getExtensionInfo($path, 'static_info_tables');
+				$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 				$sitVersion = $eInfo['version'];
 
 				if (version_compare($sitVersion, '2.0.1', '>='))	{
@@ -331,7 +328,6 @@ class tx_ttproducts_info {
 				$markerArray['###DELIVERY_COUNTRY###'] =
 					$this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
 			}
-
 		}
 
 			// Markers for use if you want to output line-broken address information
@@ -355,7 +351,6 @@ class tx_ttproducts_info {
 		$markerArray['###USERNAME###'] = $this->infoArray['billing']['email'];
 		$markerArray['###PASSWORD###'] = $this->password;
 	} // getMarkerArray
-
 }
 
 

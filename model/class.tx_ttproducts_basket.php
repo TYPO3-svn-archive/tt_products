@@ -257,6 +257,9 @@ class tx_ttproducts_basket {
 					if (is_array($basketItem['quantity']))	{
 						$basketItem['quantity'] = current($basketItem['quantity']);
 					}
+					if (!isset($basketItem['quantity']))	{
+						continue;
+					}
 					$quantity = 0;
 					$quantity = $this->price->toNumber($this->conf['quantityIsFloat'],$basketItem['quantity']);
 					if ($this->conf['quantityIsFloat'])	{
@@ -301,9 +304,11 @@ class tx_ttproducts_basket {
 								reset($this->basketExt[$uid]);
 								while(list($variant,)=each($this->basketExt[$uid])) {
 									 // useArticles if you have different prices and therefore articles for color, size, additional and gradings
+
 									if (md5($variant)==$md5) {
 										$count=$this->getMaxCount ($quantity, $uid);
 										$this->basketExt[$uid][$variant] = $count;
+
 										if (is_array($this->basketExt['gift'])) {
 											$count = count($this->basketExt['gift']);
 											$giftCount = 0;
@@ -376,10 +381,10 @@ class tx_ttproducts_basket {
 	/**
 	 * Empties the shopping basket!
 	 */
-	function clearBasket()	{
+	function clearBasket($bForce=FALSE)	{
 		global $TSFE;
 
-		if (!$this->conf['debug'])	{
+		if ($this->conf['debug'] != '1' || $bForce)	{
 			// TODO: delete only records from relevant pages
 				// Empties the shopping basket!
 			$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
@@ -577,7 +582,6 @@ class tx_ttproducts_basket {
 				$this->calculatedArray[$keyTax]['goodstotal'] = $priceTaxArray;
 				// $this->calculatedArray['priceTax']['total'] += $priceTax;
 			}
-
 			krsort($this->calculatedArray['priceNoTax']['goodssametaxtotal']);
 			$maxTax = key($this->calculatedArray['priceNoTax']['goodssametaxtotal']);
 			$this->calculatedArray['maxtax']['goodstotal'] = $maxTax;

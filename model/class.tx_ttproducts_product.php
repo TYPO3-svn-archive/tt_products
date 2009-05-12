@@ -226,7 +226,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * Generates a search where clause.
 	 */
 	function searchWhere(&$searchFieldList, $sw)	{
-		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->getAliasName());
+		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->getAlias());
 		return $where;
 	} // searchWhere
 
