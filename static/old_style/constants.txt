@@ -198,11 +198,11 @@ plugin.tt_products {
     # cat=plugin.products//; type=string; label=Prefix to the order numbers: Dont use spaces or special chars. Max 10 chars.
   orderNumberPrefix = %
     # cat=plugin.products//; type=string; label=from email addresss: From email address for the confirmation email to customer
-  orderEmail_from = shop@myTYPO3Shop.com
+  orderEmail_from = email@webshop-typo3.com
     # cat=plugin.products//; type=string; label=from email name: From name for the confirmation email to customer.
   orderEmail_fromName = My TYPO3 Shop
     # cat=plugin.products//; type=string; label=to email addresses: Comma separated list of recipients of the order email. Shop and administrator/supervisor email addresses go here!
-  orderEmail_to = shop@myTYPO3Shop.com
+  orderEmail_to = email@webshop-typo3.com
     # cat=plugin.products//; type=boolean; label=send email to delivery: If you want to send the email notification to the delivery email and not to the billing email
   orderEmail_toDelivery =
     # cat=plugin.products//; type=string; label=subject of email: The topic of your email. Or the first line in EMAIL_PLAINTEXT_TEMPLATE is used!

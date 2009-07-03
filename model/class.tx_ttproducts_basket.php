@@ -102,7 +102,6 @@ class tx_ttproducts_basket {
 		}
 	}
 
-
 	function getMaxCount ($quantity, $uid = 0)	{
 		$count = 0;
 
@@ -120,10 +119,8 @@ class tx_ttproducts_basket {
 		} else {
 			$count=t3lib_div::intInRange($quantity,0,$this->conf['basketMaxQuantity'],0);
 		}
-
 		return $count;
 	}
-
 
 	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
@@ -362,12 +359,10 @@ class tx_ttproducts_basket {
 		$this->paymentshipping->setBasketExtras($formerBasket);
 	} // init
 
-
-
 	/**
 	 * Returns a clear 'recs[tt_products]' array - so clears the basket.
 	 */
-	function getClearBasketRecord()	{
+	function getClearBasketRecord ()	{
 			// Returns a basket-record cleared of tt_product items
 		unset($this->recs['tt_products']);
 		unset($this->recs['personinfo']);
@@ -376,12 +371,10 @@ class tx_ttproducts_basket {
 		return ($this->recs);
 	} // getClearBasketRecord
 
-
-
 	/**
 	 * Empties the shopping basket!
 	 */
-	function clearBasket($bForce=FALSE)	{
+	function clearBasket ($bForce=FALSE)	{
 		global $TSFE;
 
 		if ($this->conf['debug'] != '1' || $bForce)	{
@@ -397,8 +390,6 @@ class tx_ttproducts_basket {
 		$TSFE->fe_user->setKey('ses','cc',array());
 	} // clearBasket
 
-
-
 	/**
 	 * This calculates the totals. Very important function.
 	This function also calculates the internal arrays
@@ -409,7 +400,7 @@ class tx_ttproducts_basket {
 	... which holds the total amount, the final list of products and the price of payment and shipping!!
 
 	 */
-	function getCalculatedBasket()	{
+	function getCalculatedBasket ()	{
 		global $TYPO3_DB;
 
 		if ($this->itemArray[0]) {// the item array contains all the data for the elements found in the basket
@@ -419,11 +410,11 @@ class tx_ttproducts_basket {
 		}
 
 		$uidArr = array();
-		reset($this->basketExt);
-
-		while(list($uidTmp,)=each($this->basketExt))
-			if ($uidTmp != 'gift' && !in_array($uidTmp, $uidArr))
+		foreach($this->basketExt as $uidTmp => $dum)	{
+			if ($uidTmp != 'gift' && !in_array($uidTmp, $uidArr))	{
 				$uidArr[] = intval($uidTmp);
+			}
+		}
 
 		if (count($uidArr) == 0) {
 			return;
@@ -438,8 +429,7 @@ class tx_ttproducts_basket {
 			$pid = $row['pid'];
 			// only the basket items for the pages belonging to this shop shall be used here
 			if (isset($this->page->pageArray[$pid]))	{
-				reset($this->basketExt[$row['uid']]);
-				while(list($bextVars,)=each($this->basketExt[$row['uid']])) {
+				foreach($this->basketExt[$row['uid']] as $bextVars => $dum) {
 					$this->viewTable->variant->modifyRowFromVariant ($row, $bextVars);
 					$row['extVars'] = $bextVars;
 					if ($this->useArticles == 1 && $this->viewTable->table->name == 'tt_products') {
@@ -601,8 +591,6 @@ class tx_ttproducts_basket {
 		);
 	} // getCalculatedBasket
 
-
-
 	function &getItem (&$row, $variant) {
 		global $TSFE;
 
@@ -636,7 +624,6 @@ class tx_ttproducts_basket {
 		return $item;
 	}
 
-
 	// This calculates the total for everything in the basket
 	function getCalculatedSums () {
 		$this->calculatedArray['priceNoTax']['total']  = $this->calculatedArray['priceNoTax']['goodstotal'];
@@ -650,7 +637,6 @@ class tx_ttproducts_basket {
 		$this->calculatedArray['priceTax']['total'] -= $this->calculatedArray['priceTax']['voucher'];
 	}
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_basket.php'])	{

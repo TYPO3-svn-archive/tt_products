@@ -97,6 +97,30 @@ class tx_ttproducts_basket_view {
 		$this->marker->init($this->pibase, $this->cnf, $this->basket);
 	} // init
 
+	function getMarkerArray ()	{
+		$markerArray = array();
+
+			// This is the total for the goods in the basket.
+		$markerArray['###PRICE_GOODSTOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['goodstotal']);
+		$markerArray['###PRICE_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['goodstotal']);
+		$markerArray['###PRICE_GOODSTOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['goodstotal']-$this->basket->calculatedArray['priceNoTax']['goodstotal']);
+
+		$markerArray['###PRICE2_GOODSTOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['price2Tax']['goodstotal']);
+		$markerArray['###PRICE2_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['price2NoTax']['goodstotal']);
+		$markerArray['###PRICE2_GOODSTOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['price2Tax']['goodstotal']-$this->basket->calculatedArray['price2NoTax']['goodstotal']);
+
+		// This is for the Basketoverview
+		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->basket->calculatedArray['count'];
+		$fileresource = $this->pibase->cObj->fileResource($this->conf['basketPic']);
+		$markerArray['###IMAGE_BASKET###'] = $fileresource;
+
+		$splitMark = md5(microtime());
+		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
+		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
+
+		return $markerArray;
+	}
+
 	/**
 	 * This generates the shopping basket layout and also calculates the totals. Very important function.
 	 */
@@ -289,24 +313,8 @@ class tx_ttproducts_basket_view {
 
 			// Initializing the markerArray for the rest of the template
 		$markerArray=$mainMarkerArray;
-
-			// This is the total for the goods in the basket.
-		$markerArray['###PRICE_GOODSTOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['goodstotal']);
-		$markerArray['###PRICE_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['goodstotal']);
-		$markerArray['###PRICE_GOODSTOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['goodstotal']-$this->basket->calculatedArray['priceNoTax']['goodstotal']);
-
-		$markerArray['###PRICE2_GOODSTOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['price2Tax']['goodstotal']);
-		$markerArray['###PRICE2_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['price2NoTax']['goodstotal']);
-		$markerArray['###PRICE2_GOODSTOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['price2Tax']['goodstotal']-$this->basket->calculatedArray['price2NoTax']['goodstotal']);
-
-		// This is for the Basketoverview
-		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->basket->calculatedArray['count'];
-		$fileresource = $this->pibase->cObj->fileResource($this->conf['basketPic']);
-		$markerArray['###IMAGE_BASKET###'] = $fileresource;
-
-		$splitMark = md5(microtime());
-		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
+		$basketMarkerArray = $this->getMarkerArray();
+		$markerArray = array_merge($markerArray,$basketMarkerArray);
 
 		$markerArray['###PRICE_SHIPPING_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['shipping']);
 		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['shipping']);

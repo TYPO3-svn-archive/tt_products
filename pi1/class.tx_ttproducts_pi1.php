@@ -130,7 +130,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	/*
 	 * Escapes strings to be included in javascript
 	 */
-	function jsspecialchars($s) {
+	function jsspecialchars ($s) {
 	   return preg_replace('/([\x1b-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e])/e',
 	       "'\\x'.(ord('\\1')<16? '0': '').dechex(ord('\\1'))",$s);
 	}
@@ -139,7 +139,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
-	function main($content,$conf)	{
+	function main ($content,$conf)	{
 		global $TSFE, $TYPO3_CONF_VARS;
 
 		$this->conf = &$conf;
@@ -219,21 +219,21 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 
 
 // some temporary speed testing functions
-	function callTimeBasket() {
+	function callTimeBasket () {
 		$this->codeArray[] = 'BASKET';
 		$content = $this->doProcessing($content, false);
 		$content .= strftime('%D - %H:%M:%S',time());
 	    return $content;
 	}
 
-	function callTimeSingle() {
+	function callTimeSingle () {
 		$this->codeArray[] = 'SINGLE';
 		$content = $this->doProcessing($content, false);
 		$content .= strftime('%D - %H:%M:%S',time());
 	    return $content;
 	}
 
-	function callTimeCombined1() {
+	function callTimeCombined1 () {
 		$this->codeArray[] = 'BASKET';
 		$this->codeArray[] = 'SINGLE';
 		$content = $this->doProcessing($content, false);
@@ -241,7 +241,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	    return $content;
 	}
 
-	function callTimeCombined2() {
+	function callTimeCombined2 () {
 		$this->codeArray[] = 'SINGLE';
 		$this->codeArray[] = 'BASKET';
 		$content = $this->doProcessing($content, false);
@@ -249,7 +249,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	    return $content;
 	}
 
-	function set_no_cache() {
+	function set_no_cache () {
 		global $TSFE;
 
 		if ($this->bNoCachePossible)	{
@@ -257,7 +257,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		}
 	}
 
-	function &getTemplateCode($theCode) {
+	function &getTemplateCode ($theCode) {
 		$templateCode = '';
 		$templateFile = $this->cnf->getTemplateFile($theCode);
 		if ($templateFile) {
@@ -281,7 +281,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		return $templateCode;
 	}
 
-	function doProcessing($content='', $bRunAjax = false)	{
+	function doProcessing ($content='', $bRunAjax = false)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS; // needed for include_once and PHP 5.1 which otherwise would not allow XCLASS for HtmlMail, DAM aso.
 		$bStoreBasket = TRUE;
@@ -632,6 +632,9 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			}
 		}
 		$config['priceNoReseller'] = $this->conf['priceNoReseller'] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
+		if ($this->conf['pid_list'] == '{$plugin.tt_products.pid_list}')	{
+			$this->conf['pid_list'] = '';
+		}
 		$tmp = $this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.']);
 		$pid_list = ($this->cObj->data['pages'] ? $this->cObj->data['pages'] : ($this->conf['pid_list.'] ? trim($this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.'])) : ''));
 		$pid_list = $config['pid_list'] = ($pid_list ? $pid_list : $this->conf['pid_list']);
@@ -711,7 +714,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	/**
 	 * Getting the table definitions
 	 */
-	function initTables()	{
+	function initTables ()	{
 		$this->tt_content = t3lib_div::makeInstance('tx_ttproducts_content');
 		$this->tt_content->init();
 
@@ -767,7 +770,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	} // initTables
 
 
-	function tt_products_changeValue($arg)        {
+	function tt_products_changeValue ($arg)        {
 		 // do some stuff based on $arg like query data from a database and
 		 // put it into a variable like $ajax_content
 
@@ -782,7 +785,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	}
 
 
-	function tt_products_processFormData($arg)        {
+	function tt_products_processFormData ($arg)        {
 	     $xajax_content = '<br /><br /><strong>submitted values</strong><br /><br />
 	                      '.t3lib_div::view_array($arg);  // here will output the Array, it looks like the $_POST/$_GET, which would be generated.
 
@@ -796,7 +799,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 
 
 		// XAJAX functions cannot be in classes
-	function tt_products_ShowArticle($data)	{
+	function tt_products_ShowArticle ($data)	{
         // We put our incomming data to the regular piVars
         $this->piVars = array_merge($this->piVars, $data[$this->prefixId]);
 
@@ -950,7 +953,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	/**
 	 * Returns 1 if user is a shop admin
 	 */
-	function shopAdmin(&$updateCode)	{
+	function shopAdmin (&$updateCode)	{
 		$admin=0;
 		if ($GLOBALS['TSFE']->beUserLogin)	{
 			$updateCode = t3lib_div::_GP('update_code');
@@ -965,7 +968,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	/**
 	 * Get External CObjects
 	 */
-	function getExternalCObject($mConfKey)	{
+	function getExternalCObject ($mConfKey)	{
 		if ($this->conf[$mConfKey] && $this->conf[$mConfKey.'.'])	{
 			$this->cObj->regObj = &$this;
 			return $this->cObj->cObjGetSingle($this->conf[$mConfKey],$this->conf[$mConfKey.'.'],'/'.$mConfKey.'/').'';
@@ -973,7 +976,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	}
 
 
-	function load_noLinkExtCobj()	{
+	function load_noLinkExtCobj ()	{
 		if ($this->conf['externalProcessing_final'] || is_array($this->conf['externalProcessing_final.']))	{	// If there is given another cObject for the final order confirmation template!
 			$this->externalCObject = $this->getExternalCObject('externalProcessing_final');
 		}
@@ -990,7 +993,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	/**
 	 * Displaying single products/ the products list / searching
 	 */
-	function products_display($theCode, &$errorMessage, &$error_code)	{
+	function products_display ($theCode, &$errorMessage, &$error_code)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 

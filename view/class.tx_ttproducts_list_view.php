@@ -151,6 +151,10 @@ class tx_ttproducts_list_view {
 		global $TSFE, $TCA, $TYPO3_DB;
 		global $TYPO3_CONF_VARS;
 
+		if (count($error_code))	{
+			return '';
+		}
+		$bUseCache = TRUE;
 		$content = '';
 		$out = '';
 		$sword = '';
@@ -294,6 +298,7 @@ class tx_ttproducts_list_view {
 				if ($htmlSwords)	{
 					$where .= $this->tt_products->searchWhere($this->searchFieldList, trim($htmlSwords));
 				}
+				$bUseCache = FALSE;
 			break;
 			case 'LISTGIFTS':
 				$formName = 'GiftForm';
@@ -316,6 +321,7 @@ class tx_ttproducts_list_view {
 			break;
 			case 'MEMO':
 				$formName = 'ListMemoForm';
+				$bUseCache = FALSE;
 			break;
 			default:
 				// nothing here
@@ -534,11 +540,18 @@ class tx_ttproducts_list_view {
 			$itemListSubpart = ($itemTable->type == 'article' && $t['productAndItemsFrameWork'] ? '###ITEM_PRODUCT_AND_ITEMS###' : '###ITEM_LIST###');
 			$prodRow = array();
 			$formCount = 1;
+			$bFormPerItem = FALSE;
+			$itemLower = strtolower($t['item']);
+
+			if (strstr($itemLower, '<form') !== FALSE)	{
+				$bFormPerItem = TRUE;
+			}
 
 			if (count ($itemArray))	{
 				foreach ($itemArray as $k2 => $row) {
 					$iColCount++;
 					$iCount++;
+					$oldFormCount = $formCount;
 
 						// print category title
 					if	(
@@ -639,7 +652,7 @@ class tx_ttproducts_list_view {
 							$addQueryString['sword'] = $sword;
 						}
 						$this->marker->getSearchParams($addQueryString);
-						$queryString = $this->marker->getLinkParams('begin_at', $addQueryString);
+						$queryString = $this->marker->getLinkParams('begin_at', $addQueryString, FALSE, $pid != $TSFE->id);
 						$pageLink = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid));
 					}
 					$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $pageLink .'"'.$css_current.'>','</a>');
@@ -668,7 +681,11 @@ class tx_ttproducts_list_view {
 					$subpartArray = array();
 					$urlMarkerArray = $this->marker->addURLMarkers($TSFE->id,$markerArray,$addQueryString,$itemTable->type);
 					$markerArray = array_merge ($markerArray, $urlMarkerArray);
-					$markerArray['###FORM_NAME###'] = $formName.$formCount;
+					$markerArray['###FORM_NAME###'] = $formName . ($bFormPerItem ? $formCount : '');
+					if ($bFormPerItem && $oldFormCount == $formCount)	{
+						$formCount++;
+					}
+
 					$markerArray['###ITEM_NAME###'] = 'item_'.$iCount;
 					if (!$this->conf['displayBasketColumns'])	{
 						$markerArray['###FORM_NAME###'] = $markerArray['###ITEM_NAME###'];
@@ -782,24 +799,25 @@ class tx_ttproducts_list_view {
 				$addQueryString['cat'] = $cat;
 			}
 			$backPID = $this->pibase->piVars['backPID'];
-			$pid = ( $backPID ? $backPID : $TSFE->id);
+			$pid = ($backPID ? $backPID : $TSFE->id);
 			$linkUrl = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',array(),true));
 			$linkUrl = htmlspecialchars($linkUrl);
 			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>',array('useCacheHash' => true));
 			if ($sword) 	{
 				$addQueryString['sword'] = $sword;
 			}
+			$bUseCache = $bUseCache && (count($this->basket->itemArray)==0);
 
 			if ($more)	{
 				$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
 				$addQueryString['begin_at'] = $next;
 				$this->marker->getSearchParams($addQueryString);
-				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,1,0);
+				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,$bUseCache,0);
 				$wrappedSubpartArray['###LINK_NEXT###'] = explode ($splitMark, $tempUrl);
 			} else {
 				$subpartArray['###LINK_NEXT###']='';
 			}
-			$bUseCache = count($this->basket->itemArray)>0;
+
 			if ($begin_at)	{
 				$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
 				$addQueryString['begin_at'] = $prev;

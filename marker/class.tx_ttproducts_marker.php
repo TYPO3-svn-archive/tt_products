@@ -261,8 +261,8 @@ class tx_ttproducts_marker {
 				}
 			}
 		}
-		reset($queryString);
-		while(list($key,$val)=each($queryString))	{
+
+		foreach($queryString as $key => $val)	{
 
 			preg_match('/'.$this->pibase->prefixId.'\[(.*)\]/',$key, $matches);
 			$shortkey = $matches[1];

@@ -1,3 +1,13 @@
+2009-07-03 Franz Holzinger <franz@ttproducts.de>
+	* fix bug: the links must not use the cache in list view if there are items in the basket
+	* fix bug: text encodings of the country items have been wrong in the basket view for shipping
+	* fix bug #11228: WherePIDMinPrice did not work
+	* fix name of form tag to have no number added if there is only one form for tt_products
+	* replace the main basket markers also if the basket is empty
+	* use 12 characters for automatically generated password
+	* new feature useMd5Password to save it as a md5 encrypted password
+	* fix template: url parameter is tt_products and not the former tx_ttproducts_pi1
+
 2009-05-12 Franz Holzinger <franz@ttproducts.de>
 	* fix bug: link from single view back to list must not have the product parameter
 	* fix bug 10108 : Replace t3lib_div::GPvar with t3lib_div::_GP

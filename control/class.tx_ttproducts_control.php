@@ -557,6 +557,7 @@ class tx_ttproducts_control {
 			$bBasketEmpty = true;
 		}
 
+		$basketMarkerArray = array();
 		if ($bBasketEmpty)	{
 			if ($this->activityArray['products_overview']) {
 				$this->pibase->load_noLinkExtCobj();	//
@@ -564,8 +565,14 @@ class tx_ttproducts_control {
 			} else if ($this->activityArray['products_basket'] || $this->activityArray['products_info'] || $this->activityArray['products_payment']) {
 				$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_TEMPLATE_EMPTY###'));
 			}
+			if (!is_object($basketView))	{
+				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
+				$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
+				$basketView->init($this->basket, $this->templateCode, $this->error_code);
+			}
+			$basketMarkerArray = $basketView->getMarkerArray();
 		}
-		$markerArray = array();
+		$markerArray = $basketMarkerArray;
 		$markerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject;	// adding extra preprocessing CObject
 		$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
 		return $content;

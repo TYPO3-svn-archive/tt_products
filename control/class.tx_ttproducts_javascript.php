@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <contact@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -62,7 +62,7 @@ class tx_ttproducts_javascript {
 		$this->page = &$page;
 		$this->xajax = &$xajax;
 		$this->bXajaxAdded = false;
-		$this->bCopyrightShown = false; 
+		$this->bCopyrightShown = false;
 		$this->copyright = '
 /***************************************************************
 *
@@ -72,7 +72,7 @@ class tx_ttproducts_javascript {
 *
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 t3lib/ library provided by
@@ -91,7 +91,7 @@ class tx_ttproducts_javascript {
 
 	}
 
-	/* 
+	/*
 	 * Escapes strings to be included in javascript
 	 */
 	function jsspecialchars($s) {
@@ -133,7 +133,7 @@ class tx_ttproducts_javascript {
 				 	}
 				 	return rc;
 				}
-	
+
 				function checkEmail(element) {
 					if (test(element.value)){
 						return (true)
@@ -143,7 +143,7 @@ class tx_ttproducts_javascript {
 					alert("'.$emailArr[0].'\'"+element.value+"\''.$emailArr[1].'")
 					return (false)
 				}
-	
+
 				function checkParams(formObj) {
 					var rc = true;
 					for (var i = 0; i < formObj.length; i++) {
@@ -203,7 +203,7 @@ class tx_ttproducts_javascript {
 		var len;
 		var idel;
         var b;
-	
+
 	    if (id > 0) {
 	        for (var l=boxCount; l>=id+1; l--)	{
 	        	idel = "'.$catIndex.'" + l;
@@ -215,7 +215,7 @@ class tx_ttproducts_javascript {
 			sb = document.getElementById(idel);
 		    sb.length = 0;
 
-		    subcategories = c[category][2]; 
+		    subcategories = c[category][2];
 		    if ((typeof(subcategories) == "object") && (showSubCategories == 1)) {
 		        sb.options[0] = new Option("", "A");
 		        len = subcategories.length;';
@@ -263,7 +263,7 @@ class tx_ttproducts_javascript {
 			case 'xajax':
 				// XAJAX part
 				if (!$this->bXajaxAdded && is_object($this->xajax))	{
-					$code = $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax')); 
+					$code = $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax'));
 					$this->bXajaxAdded = true;
 				}
 				$bDirectHTML = true;

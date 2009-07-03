@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -58,7 +58,7 @@ class tx_ttproducts_paymentshipping {
 	var $marker; // marker functions
 	var $price;	// price functions
 
-	function init(&$pibase, &$cnf, &$basket, &$fe_users)	{
+	function init (&$pibase, &$cnf, &$basket, &$fe_users)	{
 		global $TSFE;
 
 		$this->pibase = &$pibase;
@@ -84,7 +84,7 @@ class tx_ttproducts_paymentshipping {
 	/**
 	 * Setting shipping, payment methods
 	 */
-	function setBasketExtras(&$basketRec) {
+	function setBasketExtras (&$basketRec) {
 		global $TSFE;
 
 			// shipping
@@ -153,12 +153,10 @@ class tx_ttproducts_paymentshipping {
 		}
 	} // setBasketExtras
 
-
-
 	/**
 	 * Check if payment/shipping option is available
 	 */
-	function checkExtraAvailable($name,$key)	{
+	function checkExtraAvailable ($name,$key)	{
 		$result = false;
 
 		if (is_array($this->conf[$name.'.'][$key.'.']) && (!isset($this->conf[$name.'.'][$key.'.']['show']) || $this->conf[$name.'.'][$key.'.']['show']))	{
@@ -167,8 +165,6 @@ class tx_ttproducts_paymentshipping {
 
 		return $result;
 	} // checkExtraAvailable
-
-
 
 	/**
 	 * Template marker substitution
@@ -189,11 +185,10 @@ class tx_ttproducts_paymentshipping {
 		$markerArray['###IMAGE###'] = $this->pibase->cObj->IMAGE($row['image.']);
 	}
 
-
 	/**
 	 * Generates a radio or selector box for payment shipping
 	 */
-	function generateRadioSelect($pskey, &$calculatedArray)	{
+	function generateRadioSelect ($pskey, &$calculatedArray)	{
 			/*
 			 The conf-array for the payment/shipping configuration has numeric keys for the elements
 			 But there are also these properties:
@@ -223,7 +218,7 @@ class tx_ttproducts_paymentshipping {
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
 		$t = array();
 		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];
-		while(list($key,$item) = each($confArr))	{
+		foreach($confArr as $key => $item)	{
 			if (($item['show'] || !isset($item['show'])) &&
 				(doubleval($item['showLimit']) >= doubleval($this->basket->calculatedArray['count']) || !isset($item['showLimit']) ||
 				intval($item['showLimit']) == 0)) {
@@ -250,7 +245,15 @@ class tx_ttproducts_paymentshipping {
 							$viewTagArray,
 							$parentArray
 						);
-						$addItems = $itemTable->get ('', $item['where.'][$tableName], implode(',',$fieldsArray));
+						$addItems = $itemTable->get('', $item['where.'][$tableName], implode(',',$fieldsArray));
+
+						if (isset($addItems) && is_array($addItems))	{
+							foreach ($addItems as $k1 => $row)	{
+								foreach ($row as $field => $v)	{
+									$addItems[$k1][$field] = $TSFE->csConv($v, $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['static_info_tables']['charset']);
+								}
+							}
+						}
 					}
 				}
 
@@ -279,15 +282,17 @@ class tx_ttproducts_paymentshipping {
 						if (is_array($row))	{
 							$markerArray = array();
 							$itemTable->getItemMarkerArray ($row, $markerArray, $fieldsArray);
-							$item['title'] = $this->pibase->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
+							$title = $this->pibase->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
+							$title = htmlentities($title,ENT_QUOTES,$TSFE->renderCharset);
 							$value = $key . '-'.$row['uid'];
 							if ($value == implode('-',$activeArray))	{
-								$actTitle = $item['title'];
+								$actTitle = $title;
 							}
 						} else {
 							$value = $key;
+							$title = $item['title'];
 						}
-						$out .= '<option value="'.$value.'"'.($value == implode('-',$activeArray) ? ' selected':'').'>'.htmlspecialchars($item['title']).'</option>'.chr(10);
+						$out .= '<option value="' . $value . '"' . ($value == implode('-',$activeArray) ? ' selected':'') . '>' . $title . '</option>' . chr(10);
 					}
 				}
 			}
@@ -320,9 +325,7 @@ class tx_ttproducts_paymentshipping {
 		return $out;
 	} // generateRadioSelect
 
-
-
-	function cleanConfArr($confArr,$checkShow=0)	{
+	function cleanConfArr ($confArr,$checkShow=0)	{
 		$outArr=array();
 		if (is_array($confArr)) {
 			reset($confArr);
@@ -337,9 +340,7 @@ class tx_ttproducts_paymentshipping {
 		return $outArr;
 	} // cleanConfArr
 
-
-
-	function getConfiguredPrice(&$tax, &$confArr, &$countTotal, &$priceTotalTax, &$priceTax, &$priceNoTax) {
+	function getConfiguredPrice (&$tax, &$confArr, &$countTotal, &$priceTotalTax, &$priceTax, &$priceNoTax) {
 		if (is_array($confArr))	{
 			$minPrice=0;
 			$priceNew=0;
@@ -348,9 +349,16 @@ class tx_ttproducts_paymentshipping {
 					// compare PIDList with values set in priceTaxWherePIDMinPrice in the SETUP
 					// if they match, get the min. price
 					// if more than one entry for priceTaxWherePIDMinPrice exists, the highest value will be taken into account
+
 				foreach ($confArr['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
-					if (is_array($this->basket->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
-						$minPrice=$minPriceValue;
+					foreach ($this->basket->itemArray as $sort=>$actItemArray) {
+						foreach ($actItemArray as $k1=>$actItem) {
+							$tmpRow = &$actItem['rec'];
+							$pid = intval($tmpRow['pid']);
+							if ($pid == $minPricePID) {
+								$minPrice = $minPriceValue;
+							}
+						}
 					}
 				}
 			}
@@ -396,8 +404,6 @@ class tx_ttproducts_paymentshipping {
 			$priceNoTax += $this->price->getPrice($priceNew,0,$tax,$taxIncluded,true);
 		}
 	}
-
-
 
 	function getPrices ($pskey, $countTotal, $priceTotalTax, &$priceShippingTax, &$priceShippingNoTax, &$taxpercentage)	{
 
@@ -455,7 +461,7 @@ class tx_ttproducts_paymentshipping {
 		}
 	}
 
-	function getPaymentShippingData(
+	function getPaymentShippingData (
 			$countTotal,
 			&$priceTotalTax,
 			&$priceShippingTax,
@@ -497,7 +503,7 @@ class tx_ttproducts_paymentshipping {
 	/**
 	 * Include handle script
 	 */
-	function includeHandleScript($handleScript, &$confScript, $order, $activity, &$bFinalize)	{
+	function includeHandleScript ($handleScript, &$confScript, $order, $activity, &$bFinalize)	{
 		$content = '';
 		include($handleScript);
 		return $content;
@@ -506,7 +512,7 @@ class tx_ttproducts_paymentshipping {
 	/**
 	 * get the replaceTAXpercentage from the shipping if available
 	 */
-	function getReplaceTAXpercentage()	{
+	function getReplaceTAXpercentage ()	{
 		if (is_array($this->basket->basketExtra['shipping.']) && isset($this->basket->basketExtra['shipping.']['replaceTAXpercentage']))	{
 			$rc = doubleval($this->basket->basketExtra['shipping.']['replaceTAXpercentage']);
 		}
@@ -517,7 +523,7 @@ class tx_ttproducts_paymentshipping {
 	 * get the where condition for a shipping entry
 	 * E.g.:  30.where.static_countries = cn_short_local = 'Deutschland'
 	 */
-	function getWhere($tablename)	{
+	function getWhere ($tablename)	{
 		if (is_array($this->basket->basketExtra['shipping.']) && isset($this->basket->basketExtra['shipping.']['where.']))	{
 			$rc = $this->basket->basketExtra['shipping.']['where.'][$tablename];
 		}

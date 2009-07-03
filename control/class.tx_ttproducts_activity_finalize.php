@@ -112,13 +112,16 @@ class tx_ttproducts_activity_finalize {
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 
 			if (!$num_rows)	{
-				$address->password = substr(md5(rand()), 0, 6);
+				$password = $address->password = substr(md5(rand()), 0, 12);
+				if ($this->conf['useMd5Password'])	{
+					$password = md5($password);
+				}
 				$insertFields = array(	// TODO: check with TCA
 					'pid' => intval($pid),
 					'tstamp' => time(),
 					'crdate' => time(),
 					'username' => $username,
-					'password' => $address->password,
+					'password' => $password,
 					'usergroup' => $this->conf['memberOfGroup'],
 					'uid' => $address->infoArray['billing']['feusers_uid'],
 					'company' => $address->infoArray['billing']['company'],
