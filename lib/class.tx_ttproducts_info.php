@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -48,7 +48,7 @@ class tx_ttproducts_info {
 	var $conf;
 	var $config;
 	var $infoArray; // elements: 'billing' and 'delivery' addresses
-			// contains former basket $personInfo and $deliveryInfo 
+			// contains former basket $personInfo and $deliveryInfo
 
 	var $feuserextrafields;			// exension with additional fe_users fields
 	var $fe_users;				// object of the type tx_table_db
@@ -58,11 +58,13 @@ class tx_ttproducts_info {
 	var $paymentshipping; // paymentshipping object
 	var $feuserfields;
 	var $creditpointfields;
+	var $bDeliveryAddress = FALSE;	// normally the delivery is copied from the bill data. But also another table can be used for it.
+
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, $formerBasket, &$fe_users, &$paymentshipping, $bProductsPayment=FALSE)  {
+	function init (&$pibase, &$cnf, $formerBasket, &$fe_users, &$paymentshipping, $bProductsPayment=FALSE)  {
 		global $TYPO3_DB,$TSFE,$TCA,$TYPO3_CONF_VARS;;
 
 		$this->pibase = &$pibase;
@@ -74,6 +76,10 @@ class tx_ttproducts_info {
 		$this->infoArray = array();
 		$this->infoArray['billing'] = $formerBasket['personinfo'];
 		$this->infoArray['delivery'] = $formerBasket['delivery'];
+		$shippingType = $this->paymentshipping->get('shipping', 'type');
+		if ($shippingType == 'pick_store')	{
+			$this->bDeliveryAddress = TRUE;
+		}
 
 		$allowedTags = '<br><a><b><td><tr><div>';
 		foreach ($this->infoArray as $type => $infoRowArray)	{
@@ -86,7 +92,7 @@ class tx_ttproducts_info {
 			}
 		}
 
-		$this->feuserfields = 'name,first_name,last_name,username,email,telephone,salutation,title,address,fax,email,company,city,zip,state,country,tt_products_vat,date_of_birth';
+		$this->feuserfields = 'name,cnum,first_name,last_name,username,email,telephone,salutation,title,address,fax,email,company,city,zip,state,country,tt_products_vat,date_of_birth';
 		$this->creditpointfields = 'tt_products_creditpoints,tt_products_vouchercode';
 		// if feuserextrafields is loaded use also these extra fields
 		if (t3lib_extMgm::isLoaded('feuserextrafields')) {
@@ -100,8 +106,7 @@ class tx_ttproducts_info {
 
 		if (t3lib_extMgm::isLoaded('static_info_tables')) {
 			$path = t3lib_extMgm::extPath('static_info_tables');
-			include_once(PATH_BE_fh_library.'lib/class.tx_fhlibrary_system.php');
-			$eInfo = tx_fhlibrary_system::getExtensionInfo('static_info_tables');
+			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 
 			if (is_array($eInfo))	{
 				$sitVersion = $eInfo['version'];
@@ -137,7 +142,7 @@ class tx_ttproducts_info {
 
 		if ($this->conf['useStaticInfoCountry'] && $this->infoArray['billing']['country_code'] && is_object($this->staticInfo))	{
 			$this->infoArray['billing']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['billing']['country_code'],'','');
-			if ($this->infoArray['delivery']['name'])	{
+			if ($this->infoArray['delivery']['name'] && !$this->bDeliveryAddress)	{
 				$this->infoArray['delivery']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
 			}
 		}
@@ -148,7 +153,10 @@ class tx_ttproducts_info {
 			$this->infoArray['billing']['feusers_uid'] = $TSFE->fe_user->user['uid'];
 
 			if ($this->conf['useStaticInfoCountry'] && !$this->infoArray['billing']['country_code'])	{
-				$this->infoArray['billing']['country_code'] = $this->infoArray['delivery']['country_code'] = $TSFE->fe_user->user['static_info_country'];
+				$this->infoArray['billing']['country_code'] = $TSFE->fe_user->user['static_info_country'];
+				if (!$this->bDeliveryAddress)	{
+					$this->infoArray['delivery']['country_code'] = $TSFE->fe_user->user['static_info_country'];
+				}
 			}
 			if ($this->conf['loginUserInfoAddress']) {
 				$address = implode(chr(10),
@@ -175,7 +183,7 @@ class tx_ttproducts_info {
 
 				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
 					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
-		
+
 					// prepare for handling dates before 1970
 					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
 					$this->infoArray['billing']['date_of_birth'] = $adodbTime->adodb_date('d-m-Y', $TSFE->fe_user->user['date_of_birth']);
@@ -184,21 +192,19 @@ class tx_ttproducts_info {
 				}
 			}
 		}
-
 		if ($bProductsPayment && !$_REQUEST['recs']['personinfo']['agb'])	{
 			$this->infoArray['billing']['agb'] = FALSE;
 		}
 	} // init
 
-
 	/**
 	 * Fills in all empty fields in the delivery info array
 	 */
-	function mapPersonIntoDelivery()	{
+	function mapPersonIntoDelivery ()	{
 		global $TCA;
 
 			// all of the delivery address will be overwritten when no address and no email address have been filled in
-		if (!trim($this->infoArray['delivery']['address']) && !trim($this->infoArray['delivery']['email'])) {
+		if (!trim($this->infoArray['delivery']['address']) && !trim($this->infoArray['delivery']['email']) && !$this->bDeliveryAddress) {
 			$fieldArray = t3lib_div::trimExplode(',',$this->feuserfields);
 			foreach($fieldArray as $fName)	{
 				$this->infoArray['delivery'][$fName] = $this->infoArray['billing'][$fName];
@@ -206,11 +212,10 @@ class tx_ttproducts_info {
 		}
 	} // mapPersonIntoDelivery
 
-
 	/**
 	 * Checks if required fields are filled in
 	 */
-	function checkRequired()	{
+	function checkRequired ($type='')	{
 		$rc = '';
 		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
 		$addRequiredInfoFields = $this->paymentshipping->getAddRequiredInfoFields();
@@ -219,9 +224,13 @@ class tx_ttproducts_info {
 
 		if ($requiredInfoFields)	{
 			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
-			reset ($infoFields);
-			while(list(,$fName)=each($infoFields))	{
-				if (trim($this->infoArray['billing'][$fName])=='' || trim($this->infoArray['delivery'][$fName])=='')	{
+			// Check if the required billing fields ar filled.
+			$bBillingTo = true;
+			foreach($infoFields as $fName)    {
+				$bBillingTo &= !empty($this->infoArray['billing'][$fName]);
+			}
+			foreach($infoFields as $fName)	{
+				if (trim($this->infoArray['billing'][$fName])=='' || ($type != 'billing') && !$this->bDeliveryAddress && trim($this->infoArray['delivery'][$fName])=='' && $bBillingTo)	{
 					$rc=$fName;
 					break;
 				}
@@ -230,16 +239,16 @@ class tx_ttproducts_info {
 		return $rc;
 	} // checkRequired
 
-
 	/**
 	 * Checks if the filled in fields are allowed
 	 */
-	function checkAllowed()	{
+	function checkAllowed ()	{
 		$rc = '';
-		
+
 		$where = $this->getWhereAllowed();
 		if ($where && $this->conf['useStaticInfoCountry'])	{
-			$row = $this->country->get($this->infoArray['delivery']['country_code'], $where);
+			$type = ($this->bDeliveryAddress ? 'billing' : 'delivery');
+			$row = $this->country->get($this->infoArray[$type]['country_code'], $where);
 			if (!$row)	{
 				$rc = 'country';
 			}
@@ -247,11 +256,10 @@ class tx_ttproducts_info {
 		return $rc;
 	} // checkAllowed
 
-
 	/**
-	 * gets the WHERE clause for the allowed static_countries 
+	 * gets the WHERE clause for the allowed static_countries
 	 */
-	function getWhereAllowed()	{
+	function getWhereAllowed ()	{
 		$where = '';
 
 		if (is_object($this->staticInfo))	{
@@ -259,7 +267,6 @@ class tx_ttproducts_info {
 		}
 		return $where;
 	} // checkAllowed
-
 
 	/**
 	 * Template marker substitution
@@ -281,8 +288,8 @@ class tx_ttproducts_info {
 		reset ($infoFields);
 		while(list(,$fName)=each($infoFields))	{
 			if ($fName != 'salutation')	{
-				$markerArray['###PERSON_'.strtoupper($fName).'###'] = $this->infoArray['billing'][$fName];
-				$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $this->infoArray['delivery'][$fName];
+				$markerArray['###PERSON_' . strtoupper($fName) . '###'] = $this->infoArray['billing'][$fName];
+				$markerArray['###DELIVERY_' . strtoupper($fName) . '###'] = $this->infoArray['delivery'][$fName];
 			}
 		}
 
@@ -293,8 +300,7 @@ class tx_ttproducts_info {
 			$countryCodeArray['billing'] = ($this->infoArray['billing']['country_code'] ? $this->infoArray['billing']['country_code'] : $TSFE->fe_user->user['static_info_country']);
 			$countryCodeArray['delivery'] = ($this->infoArray['delivery']['country_code'] ? $this->infoArray['delivery']['country_code'] : $TSFE->fe_user->user['static_info_country']);
 			if (t3lib_extMgm::isLoaded('static_info_tables')) {
-				include_once(PATH_BE_fh_library.'lib/class.tx_fhlibrary_system.php');
-				$eInfo = tx_fhlibrary_system::getExtensionInfo('static_info_tables');
+				$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 				$sitVersion = $eInfo['version'];
 
 				if (version_compare($sitVersion, '2.0.1', '>='))	{
@@ -310,10 +316,10 @@ class tx_ttproducts_info {
 					$markerArray['###DELIVERY_COUNTRY_FIRST###'] = $markerArray['###PERSON_COUNTRY_FIRST###'];
 					$markerArray['###DELIVERY_COUNTRY###'] =
 						$this->staticInfo->getStaticInfoName('COUNTRIES', $countryCodeArray['delivery'],'','');
-					$bReady = TRUE;		
+					$bReady = TRUE;
 				}
 			}
-			
+
 			if (!$bReady)	{
 				$markerArray['###PERSON_COUNTRY_CODE###'] =
 					$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[personinfo][country_code]', '', $countryCodeArray['billing'],'');
@@ -339,13 +345,50 @@ class tx_ttproducts_info {
 
 			// Desired delivery date.
 		$markerArray['###DELIVERY_DESIRED_DATE###'] = $this->infoArray['delivery']['desired_date'];
+		$markerArray['###DELIVERY_STORE_SELECT###'] = '';
+		if ($this->bDeliveryAddress)	{
+			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
+			$addressObj = t3lib_div::makeInstance('tx_ttproducts_address');
+			$addressObj->init(
+				$this->pibase,
+				$this->cnf,
+				$this->conf['table.']['address']
+			);
+			$tableconf = $this->cnf->getTableConf('address', 'INFO');
+			$orderBy = $tableconf['orderBy'];
+			$addressArray = $addressObj->get(0,0,FALSE,$orderBy);
+			if (isset($this->conf['UIDstore']))	{
+				$uidStoreArray = t3lib_div::trimExplode(',',$this->conf['UIDstore']);
+				if (is_array($uidStoreArray))	{
+					$actUidStore = $this->infoArray['delivery']['store'];
+					$valueArray = array();
+					foreach ($addressArray as $uid => $row)	{
+
+						if (in_array($uid, $uidStoreArray))	{
+							$valueArray[$uid] = implode(',',array($row['zip'],$row['city'],$row['name'],$row['address']));
+						}
+					}
+					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
+
+					$markerArray['###DELIVERY_STORE_SELECT###'] =
+						tx_ttproducts_form_div::createSelect($this->pibase, $valueArray, 'recs[delivery][store]', $actUidStore, array());
+
+					if ($actUidStore)	{
+						$row = $addressArray[$actUidStore];
+						foreach ($row as $field => $value)	{
+							$markerArray['###DELIVERY_' . strtoupper($field) . '###'] = $value;
+						}
+					}
+				}
+			}
+		}
 
 			// Fe users:
 		$markerArray['###FE_USER_TT_PRODUCTS_DISCOUNT###'] = $TSFE->fe_user->user['tt_products_discount'];
 		$markerArray['###FE_USER_USERNAME###'] = $TSFE->fe_user->user['username'];
 		$markerArray['###FE_USER_UID###'] = $TSFE->fe_user->user['uid'];
 		$bAgb = ($this->infoArray['billing']['agb'] && (!isset($this->pibase->piVars['agb']) || $this->pibase->piVars['agb']>0));
-		$markerArray['###PERSON_AGB###'] = 'value="1" '. ($bAgb ? 'checked="checked"' : '');
+		$markerArray['###PERSON_AGB###'] = 'value="1" ' . ($bAgb ? 'checked="checked"' : '');
 		$markerArray['###USERNAME###'] = $this->infoArray['billing']['email'];
 		$markerArray['###PASSWORD###'] = $this->password;
 	} // getMarkerArray

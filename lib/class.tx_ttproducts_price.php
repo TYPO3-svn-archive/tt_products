@@ -1,22 +1,22 @@
 <?php
 /***************************************************************
 *  Copyright notice
-*  
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is 
+*  This script is part of the Typo3 project. The Typo3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
 *  (at your option) any later version.
-* 
+*
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license 
+*  A copy is found in the textfile GPL.txt and important notices to the license
 *  from the author is found in LICENSE.txt distributed with these scripts.
 *
-* 
+*
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -51,6 +51,7 @@ class tx_ttproducts_price {
 	var $taxIncluded;		// if tax is already included in the price
 	var $discount; 			// discount percentage
 
+
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
@@ -68,7 +69,6 @@ class tx_ttproducts_price {
 		$this->discount = $discount;
 	} // init
 
-
 	/**
 	 * Changes the string value to integer or float and considers the German float ',' separator
 	 *
@@ -76,7 +76,7 @@ class tx_ttproducts_price {
 	 * @param		string	quantity
 	 * @return	    float or integer string value
  	 */
-	function toNumber($bToFloat, $text)	{
+	function toNumber ($bToFloat, $text)	{
 		$rc = '';
 		if ($bToFloat)	{
 			$text = (string) $text;
@@ -85,17 +85,14 @@ class tx_ttproducts_price {
 		} else {
 			$rc = (int) $text;
 		}
-		
 		return $rc;
 	}
 
-
 	function getTaxIncluded ()	{
-		return $this->taxIncluded; 
+		return $this->taxIncluded;
 	}
 
-
-	function getPriceTax($price, $bTax, $taxIncluded, $taxFactor)	{
+	function getPriceTax ($price, $bTax, $taxIncluded, $taxFactor)	{
 		if ($bTax)	{
 			if ($taxIncluded)	{	// If the configuration says that prices in the database is with tax included
 				$rc = $price;
@@ -115,7 +112,7 @@ class tx_ttproducts_price {
 	/**
 	 * return the price with tax mode considered
 	 */
-	function getModePrice($taxMode, $price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
+	function getModePrice ($taxMode, $price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
 		$rc = $this->getPrice($price,$tax,$taxpercentage,$taxIncluded,$bEnableTaxZero);
 		if ($taxMode == '2')	{
 			$rc = round ($rc, 2);
@@ -124,7 +121,7 @@ class tx_ttproducts_price {
 	}
 
 	/** reduces price by discount for FE user **/
-	function getDiscountPrice($price, $discount)	{
+	function getDiscountPrice ($price, $discount)	{
 		if (floatval($discount) != 0)	{
 			$price = $price - ($price * ($discount / 100));
 		}
@@ -132,19 +129,16 @@ class tx_ttproducts_price {
 	}
 
 	/**
-	 * Returns the $price with either tax or not tax, based on if $tax is true or false. 
-	 * This function reads the TypoScript configuration to see whether prices in the database 
+	 * Returns the $price with either tax or not tax, based on if $tax is true or false.
+	 * This function reads the TypoScript configuration to see whether prices in the database
 	 * are entered with or without tax. That's why this function is needed.
 	 */
-	function getPrice($price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
+	function getPrice ($price,$tax=true,&$taxpercentage,$taxIncluded=false,$bEnableTaxZero=false)	{
 		global $TSFE;
 
 		$rc = 0;
 		$bTax = ($tax==1);
 
-//		if (!$this->checkVatInclude())	{
-//			$bTax = false;
-//		}
 		$price = $this->toNumber(true, $price);
 
 		if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
@@ -157,12 +151,9 @@ class tx_ttproducts_price {
 // 		}
 
 		$taxFactor = 1 + $taxpercentage / 100;
-		// $taxIncluded = ($taxIncluded ? $taxIncluded : $this->conf['TAXincluded']);
-
 		$taxFromShipping = $this->paymentshipping->getReplaceTaxPercentage(); 		// if set then this has a tax which will override the tax of the products
 
 		if (isset($taxFromShipping) && is_double($taxFromShipping))	{
-//			$bUseTaxFromShopping = true;
 			$newtaxFactor = 1 + $taxFromShipping / 100;
 			$corrTaxFactor = 1;
 			// we need the net price in order to apply another tax
@@ -177,9 +168,8 @@ class tx_ttproducts_price {
 		return $rc;
 	} // getPrice
 
-
 	// function using getPrice and considering a reduced price for resellers
-	function getResellerPrice($row,$tax=1)	{
+	function getResellerPrice ($row,$tax=1)	{
 		$returnPrice = 0;
 			// get reseller group number
 		$priceNo = intval($this->config['priceNoReseller']);
@@ -194,35 +184,33 @@ class tx_ttproducts_price {
 		return $returnPrice;
 	} // getResellerPrice
 
-
 	/**
 	 * Generate a graphical price tag or print the price as text
 	 */
-	function printPrice($priceText,$taxInclExcl='')	{
+	function printPrice ($priceText,$taxInclExcl='')	{
 		if (($this->conf['usePriceTag']) && (isset($this->conf['priceTagObj.'])))	{
 			$ptconf = $this->conf['priceTagObj.'];
 			$markContentArray = array();
 			$markContentArray['###PRICE###'] = $priceText;
 			$markContentArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
-			
+
 			$this->pibase->cObj->substituteMarkerInObject($ptconf, $markContentArray);
 			return $this->pibase->cObj->cObjGetSingle($this->conf['priceTagObj'], $ptconf);
-		}
-		else	{
+		} else {
 			return $priceText;
 		}
 	}
 
-
 	/**
 	 * Formatting a price
 	 */
-	function priceFormat($double)	{
-		return number_format($double,intval($this->conf['priceDec']),$this->conf['priceDecPoint'],$this->conf['priceThousandPoint']);
+	function priceFormat ($double)	{
+		$double = round($double, 10);
+		$rc = number_format($double,intval($this->conf['priceDec']),$this->conf['priceDecPoint'],$this->conf['priceThousandPoint']);
+
+		return $rc;
 	} // priceFormat
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_price.php'])	{

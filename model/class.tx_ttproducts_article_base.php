@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -73,7 +73,7 @@ class tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, $tablename, &$tt_content, &$paymentshipping, $useArticles)  {
+	function init (&$pibase, &$cnf, $tablename, &$tt_content, &$paymentshipping, $useArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = &$pibase;
@@ -84,7 +84,7 @@ class tx_ttproducts_article_base {
 		$this->conftablename = $tablename;
 		$this->tableconf = $this->cnf->getTableConf($tablename);
 		$this->tabledesc = $this->cnf->getTableDesc($tablename);
- 		$this->paymentshipping = &$paymentshipping; 
+		$this->paymentshipping = &$paymentshipping;
 		$this->variant = t3lib_div::makeInstance('tx_ttproducts_variant');
 		$this->variant->init($this->pibase, $cnf, $this, $tablename, $useArticles);
 
@@ -109,14 +109,14 @@ class tx_ttproducts_article_base {
 
 	/**
 	 * Reduces the instock value of the orderRecord with the amount and returns the result
-	 * 
+	 *
 	 */
-	function reduceInStock($uid, $count)	{
+	function reduceInStock ($uid, $count)	{
 		global $TYPO3_DB;
 
 		$instockField = $this->cnf->getTableDesc['inStock'];
 		$instockField = ($instockField ? $instockField : 'inStock');
-		
+
 		if (is_array($this->table->tableFieldArray[$instockField]))	{
 			$uid = intval($uid);
 			$fieldsArray = array();
@@ -125,13 +125,11 @@ class tx_ttproducts_article_base {
 		}
 	}
 
-
 	/**
 	 * Reduces the instock value of the orderRecords with the sold items and returns the result
-	 * 
+	 *
 	 */
-	function reduceInStockItems(&$itemArray, $useArticles)	{
-
+	function reduceInStockItems (&$itemArray, $useArticles)	{
 	}
 
 
@@ -180,8 +178,8 @@ class tx_ttproducts_article_base {
 			return array();
 		$row = &$item['rec'];
 
-			// Get image	
-		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, '', $linkWrap);
+			// Get image
+		$this->image->getItemMarkerArray($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, '', $linkWrap);
 
 		if (isset($row['delivery']))	{
 			$this->image->getSingleImageMarkerArray ($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.']);
@@ -195,18 +193,18 @@ class tx_ttproducts_article_base {
 		$markerArray['###'.$this->marker.'_SUBTITLE###'] = ($bHtml ? htmlentities($row['subtitle'],ENT_QUOTES,$TSFE->renderCharset) : $row['subtitle']);
 		if ($code == 'EMAIL' && !$this->conf['orderEmail_htmlmail'])	{ // no formatting for emails
 			$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'];
-			$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'];			
+			$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'];
 		} else {
-			$markerArray['###'.$this->marker.'_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
-			$markerArray['###'.$this->marker.'_NOTE2###'] = ($this->conf['nl2brNote'] ? nl2br($row['note2']) : $row['note2']);
+			$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
+			$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'] = ($this->conf['nl2brNote'] ? nl2br($row['note2']) : $row['note2']);
 
 				// Extension CSS styled content
 			if (t3lib_extMgm::isLoaded('css_styled_content')) {
-				$markerArray['###'.$this->marker.'_NOTE###'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE###']);
-				$markerArray['###'.$this->marker.'_NOTE2###'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE2###']);
+				$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE###']);
+				$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'] = $this->pibase->pi_RTEcssText($markerArray['###'.$this->marker.'_NOTE2###']);
 			} else if (is_array($this->conf['parseFunc.']))	{
-				$markerArray['###'.$this->marker.'_NOTE###'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE###'],$this->conf['parseFunc.']);
-				$markerArray['###'.$this->marker.'_NOTE2###'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE2###'],$this->conf['parseFunc.']);
+				$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE###'],$this->conf['parseFunc.']);
+				$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE2###'],$this->conf['parseFunc.']);
 			}
 		}
 		$markerArray['###'.$this->marker.'_ITEMNUMBER###'] = htmlentities($row[$this->fields['itemnumber']],ENT_QUOTES,$TSFE->renderCharset);
@@ -275,12 +273,26 @@ class tx_ttproducts_article_base {
 
 		$markerArray['###'.$this->marker.'_WEIGHT###'] = doubleval($row['weight']);
 
+		$cObjectMarkerArray = array();
+		$tableconf = $this->cnf->getTableConf($this->table->name, $code);
+		if (is_array($tableconf['field.']))	{
+			foreach ($row as $field => $value)	{
+				$tmpMarkerKey = '###'.$this->marker.'_'.strtoupper($field).'###';
+				if (is_array($tableconf['field.'][$field.'.']) && !isset($cObjectMarkerArray[$tmpMarkerKey]))	{
+					$tableconf['field.'][$field.'.']['value'] = $value;
+					$fieldContent = $this->pibase->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field.'.'],$this->pibase->extKey);
+					$cObjectMarkerArray[$tmpMarkerKey] = $this->pibase->cObj->substituteMarkerArray($fieldContent,$markerArray);
+				}
+			}
+		}
+		$markerArray = array_merge($markerArray, $cObjectMarkerArray);
+
 			// Call all getItemMarkerArray hooks at the end of this method
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getItemMarkerArray')) {
-					$hookObj->getItemMarkerArray ($this, $markerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $code, $id, $linkWrap);
+					$hookObj->getItemMarkerArray($this, $markerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $code, $id, $linkWrap);
 				}
 			}
 		}
@@ -288,43 +300,43 @@ class tx_ttproducts_article_base {
 
 
 	function getFlexQuery ($type,$val=1)	{
-		$spacectrl = '[[:space:][:cntrl:]]*';		
-		
+		$spacectrl = '[[:space:][:cntrl:]]*';
+
 		 $rc = '<field index="'.$type.'">'.$spacectrl.'<value index="vDEF">'.($val ? '1': '0').'</value>'.$spacectrl.'</field>'.$spacectrl;
 		 return $rc;
 	}
 
 
-	function addWhereCat($cat, $pid_list)	{
-		$where = '';	
+	function addWhereCat ($cat, $pid_list)	{
+		$where = '';
 
 		return $where;
 	}
 
 
-	function addselectConfCat($cat, &$selectConf)	{
+	function addselectConfCat ($cat, &$selectConf)	{
 	}
 
 
-	function getPageUidsCat($cat)	{
+	function getPageUidsCat ($cat)	{
 		$uids = '';
 
 		return $uids;
 	}
-	
 
-	function getProductField(&$row, $field)	{
+
+	function getProductField (&$row, $field)	{
 		return '';
 	}
 
 
 	/**
 	 * Returns true if the item has the $check value checked
-	 * 
+	 *
 	 */
-	function hasAdditional(&$row, $check)  {
+	function hasAdditional (&$row, $check)  {
 		$hasAdditional = false;
-		return $hasAdditional; 
+		return $hasAdditional;
 	}
 
 
@@ -334,6 +346,7 @@ class tx_ttproducts_article_base {
 		$this->tableconf = $this->cnf->getTableConf($this->conftablenam, $theCode);
 		$rc = array();
 		$where = ($where ? $where : '1=1 ').$this->table->enableFields();
+
 		// Fetching the products
 		$res = $this->table->exec_SELECTquery('*', $where);
 		$translateFields = $this->cnf->getTranslationFields($this->tableconf);
@@ -342,7 +355,7 @@ class tx_ttproducts_article_base {
 			foreach ($translateFields as $field => $transfield)	{
 				$row[$field] = $row[$transfield];
 			}
-			$rc[$row['uid']] = $this->dataArray[$row['uid']] = $row; 
+			$rc[$row['uid']] = $this->dataArray[$row['uid']] = $row;
 		}
 		return $rc;
 	}
@@ -351,13 +364,13 @@ class tx_ttproducts_article_base {
 	/**
 	 * Generates a search where clause.
 	 */
-	function searchWhere(&$searchFieldList, $sw)	{
-		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->getAliasName());
+	function searchWhere (&$searchFieldList, $sw)	{
+		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->getAlias());
 		return $where;
 	} // searchWhere
 
 
-	function getNeededUrlParams($theCode)	{
+	function getNeededUrlParams ($theCode)	{
 		$rc = '';
 		$this->tableconf = $this->cnf->getTableConf($this->conftablename, $theCode);
 		if (is_array($this->tableconf) && $this->tableconf['urlparams'])	{
@@ -367,7 +380,7 @@ class tx_ttproducts_article_base {
 	}
 
 
-	function mergeAttributeFields(&$targetRow, &$sourceRow, $bKeepNotEmpty = TRUE)	{
+	function mergeAttributeFields (&$targetRow, &$sourceRow, $bKeepNotEmpty = TRUE)	{
 		$fieldArray = array();
 		$fieldArray['text'] = array('title', 'subtitle', 'itemnumber', 'image', 'weight');
 		$fieldArray['number'] = array('price', 'price2', 'directcost');
@@ -398,9 +411,7 @@ class tx_ttproducts_article_base {
 			}
 		}
 	}
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_article_base.php']) {

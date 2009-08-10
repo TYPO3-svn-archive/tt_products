@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -54,13 +54,13 @@ class tx_ttproducts_category_base {
 	var $marker = 'CATEGORY';
 	var $piVar = ''; // must be overridden
 	var $mm_table = ''; // only set if a mm table is used
-	var $parentField; // reference field name for parent 
+	var $parentField; // reference field name for parent
 
 
 	/**
 	 * initialization with table object and language table
 	 */
-	function init(&$pibase, &$cnf, &$tt_content, $conftablename)	{
+	function init (&$pibase, &$cnf, &$tt_content, $conftablename)	{
 		global $TYPO3_DB,$TSFE;
 
 		$this->pibase = &$pibase;
@@ -86,45 +86,40 @@ class tx_ttproducts_category_base {
 		return $rc;
 	}
 
-	function getFromTitle	($title)	{
+	function getFromTitle ($title)	{
 		$rc = array();
-		return $rc;		
+		return $rc;
 	}
-
 
 	function getParent ($uid=0) {
 		$rc = array();
 		return $rc;
 	}
 
-	function getRootCat()	{
+	function getRootCat ()	{
 		$rc = 0;
 		return $rc;
 	}
 
 	function getRowCategory ($row) {
 		$rc = '';
-	return $rc;
+		return $rc;
 	}
-
 
 	function getRowPid ($row) {
 		$rc = '';
 		return $rc;
 	}
 
-
 	function getParamDefault ()	{
 		$rc = '';
 		return $rc;
 	}
 
-	
 	function getChildUidArray ($uid)	{
 		$rcArray = array();
 		return $rcArray;
 	}
-
 
 	function getCategoryArray ($uid)	{
 		global $TYPO3_CONF_VARS;
@@ -140,7 +135,7 @@ class tx_ttproducts_category_base {
 			$tmpArray = array();
 				// Call all addWhere hooks for categories at the end of this method
 			if ($hookVar && is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
-				foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
+				foreach($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
 					$hookObj= &t3lib_div::getUserObj($classRef);
 					if (method_exists($hookObj, 'init')) {
 						$hookObj->init($this->parentField);
@@ -157,7 +152,6 @@ class tx_ttproducts_category_base {
 		return $catArray;
 	}
 
-
 	function getLineArray ($start, $endArray)	{
 		global $TYPO3_CONF_VARS;
 
@@ -171,7 +165,7 @@ class tx_ttproducts_category_base {
 		$tmpArray = array();
 			// Call all addWhere hooks for categories at the end of this method
 		if ($hookVar && is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
+			foreach ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'init')) {
 					$hookObj->init($this->parentField);
@@ -181,12 +175,9 @@ class tx_ttproducts_category_base {
 				}
 			}
 		}
-		
 		return $catArray;
 	}
 
-
-	
 	function getChildCategoryArray ($cat)	{
 		global $TYPO3_CONF_VARS;
 
@@ -215,19 +206,11 @@ class tx_ttproducts_category_base {
 				$catArray[] = $row['cat'];
 			}
 		}
-		
+
 		return $catArray;
 	}
 
-	
-//
-//	function &getRootpathArray (&$relationArray, $rootCat,$currentCat) {
-//		$rootpathArray = array();
-//		return $rootpathArray; 
-//	}
-
-
-	function &getRootArray($rootCat, &$categoryArray)	{
+	function &getRootArray ($rootCat, &$categoryArray)	{
 		$rootArray = array();
 		$rootCatArray = t3lib_div::trimExplode(',', $rootCat);
 
@@ -237,10 +220,8 @@ class tx_ttproducts_category_base {
 				$rootArray[] = $uid;
 			}
 		}
-
 		return $rootArray;
 	}
-
 
 	function &getRootpathArray (&$relationArray,$rootCat,$currentCat) {
 		$rootpathArray = array();
@@ -261,26 +242,22 @@ class tx_ttproducts_category_base {
 		return $rootpathArray;
 	}
 
-
 	function &getRelationArray ($excludeCat=0,$currentCat=0,$rootUids='') {
 		$relationArray = array();
 		return $relationArray;
 	}
-
 
 	function setMarkerArrayCatTitle (&$markerArray, $catTitle, $prefix)	{
 		global $TSFE;
 
 		$this->pibase->cObj->setCurrentVal($catTitle);
 		$title = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
-		$markerArray['###'.$prefix.$this->marker.'_TITLE###'] = htmlentities($title,ENT_QUOTES,$TSFE->renderCharset); 
+		$markerArray['###'.$prefix.$this->marker.'_TITLE###'] = htmlentities($title,ENT_QUOTES,$TSFE->renderCharset);
 	}
 
-
-	function getMarkerArrayCatTitle(&$markerArray,$prefix='')	{
+	function getMarkerArrayCatTitle (&$markerArray,$prefix='')	{
 		return ($markerArray['###'.$prefix.$this->marker.'_TITLE###']);
 	}
-
 
 	/**
 	 * Template marker substitution
@@ -295,7 +272,6 @@ class tx_ttproducts_category_base {
 	 * @access private
 	 */
 	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
-
 	}
 
 	function getParentMarkerArray (&$parentArray, &$row, &$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
@@ -304,7 +280,7 @@ class tx_ttproducts_category_base {
 			$count = 0;
 			$currentCategory = $this->getRowCategory($row);
 			$parentCategory = '';
-	
+
 			foreach ($parentArray as $key => $parent)	{
 				do	{
 					$parentRow = $this->getParent($currentCategory);
@@ -316,17 +292,17 @@ class tx_ttproducts_category_base {
 					}
 				} while ($count < $parent && count($currentRow));
 				$currentCategory = $parentCategory;
-	
+
 				if (count($currentRow))	{
 					$this->getMarkerArray (
-						$markerArray, 
+						$markerArray,
 						$this->page,
-						$parentCategory, 
-						$parentPid, 
-						$this->config['limitImage'], 
-						'listcatImage', 
-						$viewCatTagArray, 
-						array(), 
+						$parentCategory,
+						$parentPid,
+						$this->config['limitImage'],
+						'listcatImage',
+						$viewCatTagArray,
+						array(),
 						$pageAsCategory,
 						'SINGLE',
 						1,
@@ -337,8 +313,6 @@ class tx_ttproducts_category_base {
 		}
 	}
 
-
-  
 	function getItemMarkerArray (&$row, &$markerArray, $code, $prefix='')	{
 		global $TSFE;
 
@@ -348,15 +322,17 @@ class tx_ttproducts_category_base {
 		$markerArray['###'.$marker.'_ID###'] = $row['uid'];
 		$markerArray['###'.$marker.'_UID###'] = $row['uid'];
 		$markerArray['###'.$marker.'_SUBTITLE###'] = htmlentities($row['subtitle'],ENT_QUOTES,$TSFE->renderCharset);
-		if ($code == 'EMAIL' && !$this->conf['orderEmail_htmlmail'])	{ // no formatting for emails
-			$markerArray['###'.$marker.'_NOTE###'] = $row['note'];
-		} else {
-			$markerArray['###'.$marker.'_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
-		}
+		if (isset($row['note']))	{
+			if ($code == 'EMAIL' && !$this->conf['orderEmail_htmlmail'])	{ // no formatting for emails
+				$markerArray['###'.$marker.'_NOTE###'] = $row['note'];
+			} else {
+				$markerArray['###'.$marker.'_NOTE###'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
+			}
 
-		// cuts note in list view
-		if (strlen($markerArray['###'.$marker.'_NOTE###']) > $this->conf['max_note_length']) {
-			$markerArray['###'.$prefix.$marker.'_NOTE###'] = substr(strip_tags($markerArray['###'.$marker.'_NOTE###']), 0, $this->conf['max_note_length']) . '...';
+			// cuts note in list view
+			if (strlen($markerArray['###'.$marker.'_NOTE###']) > $this->conf['max_note_length']) {
+				$markerArray['###'.$prefix.$marker.'_NOTE###'] = substr(strip_tags($markerArray['###'.$marker.'_NOTE###']), 0, $this->conf['max_note_length']) . '...';
+			}
 		}
 	}
 }

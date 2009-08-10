@@ -62,11 +62,11 @@ class tx_ttproducts_image {
 		$this->tt_content = &$tt_content;
 		$this->parenttable = &$parenttable;
 		$this->marker = $marker;
-		
+
 		if ($this->conf['noImageAvailable'] == '{$plugin.tt_products.file.noImageAvailable}')	{
 			$this->conf['noImageAvailable'] = '';
 		}
-		
+
 		// DAM support
 		if (t3lib_extMgm::isLoaded('dam')) {
 			include_once(t3lib_extMgm::extPath('dam').'lib/class.tx_dam.php');
@@ -147,7 +147,7 @@ class tx_ttproducts_image {
 		$tmpImgCode = $this->pibase->cObj->IMAGE($imageConf);
 		$markerArray['###'.$markerKey.'###'] = $tmpImgCode;
 	}
-	
+
 
 	/**
 	 * Template marker substitution
@@ -179,7 +179,7 @@ class tx_ttproducts_image {
 		}
 		$imgs = array();
 
-		if (is_array($tableConf['fetchImage.']) && 
+		if (is_array($tableConf['fetchImage.']) &&
 			$tableConf['fetchImage.']['type'] == 'foreigntable'  &&
 			$tableConf['fetchImage.']['table'] == 'tt_content') {
 			$pageContent = $this->tt_content->getFromPid($pid);
@@ -205,7 +205,7 @@ class tx_ttproducts_image {
 					$conftable = $tempConf['table'];
 					$localfield = $tempConf['uid_local'];
 					$foreignfield = $tempConf['uid_foreign'];
-					$fieldconfParent['generateImage'] = $tempConf['field.']; 
+					$fieldconfParent['generateImage'] = $tempConf['field.'];
 					$where_clause = $conftable.'.'.$foreignfield .'='. $imageRow[$localfield];
 					$where_clause .= $this->pibase->cObj->enableFields($conftable);
 					$res = $TYPO3_DB->exec_SELECTquery('*',$conftable,$where_clause,'',$foreignfield,1);
@@ -264,13 +264,13 @@ class tx_ttproducts_image {
 				if (count($imgs))
 					$bImages = true;
 			}
-		} 
+		}
 
 		if (!$bImages)	{
 			$imgs = ($imageRow['image'] ? explode(',',$imageRow['image']) : array());
 			$tmp = count($imgs);
 			if (!$tmp && $imageRow['file_mime_type'] == 'image')	{
-				$imgs = array($imageRow['file_name']); 
+				$imgs = array($imageRow['file_name']);
 			}
 		}
 
@@ -289,7 +289,7 @@ class tx_ttproducts_image {
 				$tagKey = $keyArray[0];
 
 				if ($specialConfType &&
-					(!is_array($specialConf[$tagKey]) || !isset($specialConf[$tagKey][$specialConfType]) ) && 
+					(!is_array($specialConf[$tagKey]) || !isset($specialConf[$tagKey][$specialConfType]) ) &&
 					is_array($tempImageConf[$specialConfType.'.'])) {
 
 					// add the special configuration
@@ -306,14 +306,14 @@ class tx_ttproducts_image {
 		} else if($imageRow['file_mime_type'] == 'image' && isset($imageRow['file_path']))	{
 			$dirname = $imageRow['file_path'];
 		} else {
-			 $dirname = 'uploads/pics/';
+			$dirname = 'uploads/pics/';
 		}
 		$markerArray['###'.$this->marker.'_IMAGE_PATH###'] = $dirname.'/';
 
 		$imageConfStart = $this->conf[$imageRenderObj.'.'];
 		if ($linkWrap && $imageConfStart['imageLinkWrap'])	{
-			$imageConfStart['imageLinkWrap'] = 0; 
-			unset($imageConfStart['imageLinkWrap.']); 
+			$imageConfStart['imageLinkWrap'] = 0;
+			unset($imageConfStart['imageLinkWrap.']);
 			$imageConfStart['wrap'] = $linkWrap;
 		}
 		if ($linkWrap === false)	{
@@ -372,7 +372,7 @@ class tx_ttproducts_image {
 					$this->replaceMarkerArray($confMarkerArray, $theImageConf, $this->pibase->cObj->alternativeData);
 					$tmpImgCode = $this->pibase->cObj->IMAGE($theImageConf);
 					$key1 = $key.':'.$specialConfType;
-					$theImgCode[$key1] .= $tmpImgCode; 
+					$theImgCode[$key1] .= $tmpImgCode;
 				}
 			}
 		}
@@ -396,7 +396,7 @@ class tx_ttproducts_image {
 				$bIsSpecial = false;
 			}
 			$key = $this->marker.'_IMAGE' . intval($c);
-			
+
 			if (isset($tagArray[$key]))	{
 				$markerArray['###'.$key.'###'] = $val;
 			}
@@ -407,7 +407,7 @@ class tx_ttproducts_image {
 			if ($bIsSpecial)	{
 				$keyArray = t3lib_div::trimExplode(':', $k1);
 				$count = $countArray[$keyArray[0]];
-				$key = $this->marker.'_IMAGE' . intval($count); 
+				$key = $this->marker.'_IMAGE' . intval($count);
 				if (isset($count) && is_array($specialConf[$key]) && isset($specialConf[$key][$keyArray[1]]) && is_array($specialConf[$key][$keyArray[1]]))	{
 					$combkey = $key.':'.strtoupper($keyArray[1]);
 					if (isset($tagArray[$combkey]))	{
@@ -430,7 +430,7 @@ class tx_ttproducts_image {
 		}
 
 		$bImageMarker = false;
-		if (is_array($tableConf) && 
+		if (is_array($tableConf) &&
 			is_array($tableConf['imageMarker.']) &&
 			$tableConf['imageMarker.']['type'] == 'imagename' )	{
 			$bImageMarker = true;

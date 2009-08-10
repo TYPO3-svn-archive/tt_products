@@ -18,6 +18,7 @@ CREATE TABLE tt_products (
 	prod_uid int(11) DEFAULT '0' NOT NULL,
 	related_uid varchar(255) DEFAULT '0' NOT NULL,
 	itemnumber varchar(40) DEFAULT '' NOT NULL,
+	ean varchar(48) DEFAULT '' NOT NULL,
 	price decimal(19,2) DEFAULT '0.00' NOT NULL,
 	price2 decimal(19,2) DEFAULT '0.00' NOT NULL,
 	note text NOT NULL,
@@ -32,7 +33,7 @@ CREATE TABLE tt_products (
 	address int(11) unsigned DEFAULT '0' NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
 	tax decimal(19,2) DEFAULT '0.00' NOT NULL,
-	weight decimal(19,2) DEFAULT '0.00' NOT NULL,
+	weight decimal(19,6) DEFAULT '0.000000' NOT NULL,
 	bulkily int(11) DEFAULT '0' NOT NULL,
 	offer int(11) DEFAULT '0' NOT NULL,
 	highlight int(11) DEFAULT '0' NOT NULL,
@@ -60,7 +61,6 @@ CREATE TABLE tt_products (
 	KEY parent (pid)
 );
 
-
 #
 # Table structure for table 'tt_products_related_products_products_mm'
 #
@@ -72,7 +72,6 @@ CREATE TABLE tt_products_related_products_products_mm (
 	KEY uid_local (uid_local),
 	KEY uid_foreign (uid_foreign),
 );
-
 
 #
 # Table structure for table 'tt_products_products_note_pages_mm'
@@ -86,7 +85,6 @@ CREATE TABLE tt_products_products_note_pages_mm (
 	KEY uid_foreign (uid_foreign),
 );
 
-
 #
 # Table structure for table 'tt_products_cat'
 #
@@ -99,6 +97,9 @@ CREATE TABLE tt_products_cat (
 	sorting int(10) DEFAULT '0' NOT NULL,
 	deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
 	hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
+	starttime int(11) unsigned DEFAULT '0' NOT NULL,
+	endtime int(11) unsigned DEFAULT '0' NOT NULL,
+	fe_group int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	subtitle mediumtext NOT NULL,
 	note text NOT NULL,
@@ -107,7 +108,6 @@ CREATE TABLE tt_products_cat (
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
-
 
 #
 # Table structure for table 'tt_products_language'
@@ -129,12 +129,12 @@ CREATE TABLE tt_products_language (
 	endtime int(11) DEFAULT '0' NOT NULL,
 	fe_group int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
-	subtitle tinytext NOT NULL,
+	subtitle mediumtext NOT NULL,
 	prod_uid int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
 	note2 text NOT NULL,
-	unit varchar(20) DEFAULT '' NOT NULL,  
-	datasheet tinyblob NOT NULL,  
+	unit varchar(20) DEFAULT '' NOT NULL,
+	datasheet tinyblob NOT NULL,
 	www varchar(80) DEFAULT '' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
@@ -167,7 +167,6 @@ CREATE TABLE tt_products_cat_language (
 	KEY parent (pid)
 );
 
-
 #
 # Table structure for table 'tt_products_articles'
 #
@@ -194,7 +193,7 @@ CREATE TABLE tt_products_articles (
 	note text NOT NULL,
 	image tinyblob NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
-	weight decimal(19,2) DEFAULT '0.00' NOT NULL,
+	weight decimal(19,6) DEFAULT '0.000000' NOT NULL,
 	color varchar(60) DEFAULT '' NOT NULL,
 	color2 varchar(60) DEFAULT '' NOT NULL,
 	color3 varchar(60) DEFAULT '' NOT NULL,
@@ -210,7 +209,6 @@ CREATE TABLE tt_products_articles (
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
-
 
 #
 # Table structure for table 'tt_products_articles_language'
@@ -233,12 +231,11 @@ CREATE TABLE tt_products_articles_language (
 	fe_group int(11) DEFAULT '0' NOT NULL,
 	title varchar(80) DEFAULT '' NOT NULL,
 	subtitle varchar(80) DEFAULT '' NOT NULL,
-	uid_article int(11) DEFAULT '0' NOT NULL,
+	article_uid int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
-
 
 #
 # Table structure for table 'tt_products_gifts'
@@ -249,7 +246,7 @@ CREATE TABLE tt_products_gifts (
 	tstamp int(11) DEFAULT '0' NOT NULL,
 	crdate int(11) DEFAULT '0' NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,
-	
+
 	ordernumber int(11) DEFAULT '0' NOT NULL,
 	personname varchar(80) DEFAULT '' NOT NULL,
 	personemail varchar(80) DEFAULT '' NOT NULL,
@@ -263,7 +260,6 @@ CREATE TABLE tt_products_gifts (
 );
 
 
-
 #
 # Table structure for table 'tt_products_gifts_articles_mm'
 #
@@ -275,7 +271,6 @@ CREATE TABLE tt_products_gifts_articles_mm (
 	KEY uid_local (uid_local),
 	KEY uid_foreign (uid_foreign),
 );
-
 
 #
 # Table structure for table 'tt_products_emails'
@@ -300,7 +295,6 @@ CREATE TABLE tt_products_emails (
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
-
 
 #
 # Table structure for table 'sys_products_accounts'
@@ -335,26 +329,24 @@ CREATE TABLE sys_products_cards (
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 	endtime int(11) DEFAULT '0' NOT NULL,
 #	order_uid int(11) unsigned DEFAULT '0' NOT NULL,
-#  session_id varchar(30) DEFAULT '' NOT NULL,  
+#  session_id varchar(30) DEFAULT '' NOT NULL,
 #  amount_num int(10) DEFAULT '0' NOT NULL,
-#  response_code char(3) DEFAULT '' NOT NULL,   
+#  response_code char(3) DEFAULT '' NOT NULL,
 	owner_name varchar(255) DEFAULT '' NOT NULL,
 	cc_number varchar(255) DEFAULT '' NOT NULL,
 #  cc_number_hash1 varchar(255) DEFAULT '' NOT NULL,
-#  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,  
+#  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,
 	cc_type varchar(20) DEFAULT '' NOT NULL,
 	cvv2 int(11) unsigned DEFAULT '0' NOT NULL,
-#  address_ok char(1) DEFAULT '' NOT NULL, 
-#  test char(1) DEFAULT '' NOT NULL,   
+#  address_ok char(1) DEFAULT '' NOT NULL,
+#  test char(1) DEFAULT '' NOT NULL,
 #  auth_code varchar(16) DEFAULT '' NOT NULL,
 #  bin int(6) unsigned DEFAULT '0' NOT NULL,
-#  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,  
-#  sequence int(6) unsigned DEFAULT '0' NOT NULL,                   
+#  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,
+#  sequence int(6) unsigned DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
-
-
 
 #
 # Table structure for table 'sys_products_orders'
@@ -370,8 +362,8 @@ CREATE TABLE sys_products_orders (
 	first_name varchar(50) DEFAULT '' NOT NULL,
 	last_name varchar(50) DEFAULT '' NOT NULL,
 	salutation int(11) DEFAULT '0' NOT NULL,
-# company varchar(80) DEFAULT '' NOT NULL,  
-# vat_id varchar(20) DEFAULT '' NOT NULL,  
+# company varchar(80) DEFAULT '' NOT NULL,
+# vat_id varchar(20) DEFAULT '' NOT NULL,
 	address tinytext NOT NULL,
 	zip varchar(20) DEFAULT '' NOT NULL,
 	city varchar(50) DEFAULT '' NOT NULL,
@@ -406,7 +398,6 @@ CREATE TABLE sys_products_orders (
 	KEY status (status)
 );
 
-
 #
 # Table structure for table 'sys_products_orders_mm_tt_products'
 #
@@ -420,7 +411,6 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 	KEY sys_products_orders_uid (sys_products_orders_uid)
 );
 
-
 #
 # Table structure for table 'fe_users'
 #
@@ -432,7 +422,6 @@ CREATE TABLE fe_users (
 	tt_products_vat varchar(15) DEFAULT '' NOT NULL
 );
 
-
 #
 # Table structure for table 'pages_language_overlay'
 #
@@ -440,7 +429,6 @@ CREATE TABLE fe_users (
 CREATE TABLE pages_language_overlay (
 	sorting int(11) DEFAULT '0' NOT NULL,
 );
-
 
 #
 # Extension of table 'tt_content'

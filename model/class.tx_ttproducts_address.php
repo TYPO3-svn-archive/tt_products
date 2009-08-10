@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2007 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,8 +31,8 @@
  *
  * $Id $
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -56,7 +56,7 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 	/**
 	 * Getting all tt_address values into internal array
 	 */
-	function init(&$pibase, &$cnf, $tablename)  {
+	function init (&$pibase, &$cnf, $tablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = $pibase;
@@ -65,10 +65,10 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 		$this->config = &$this->cnf->config;
 
 		$tablename = ($tablename ? $tablename : 'tt_address');
-		$this->conftablename = 'tt_address';
+		$this->conftablename = 'address';
 		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->tableconf = $this->cnf->getTableConf('tt_address');
-		$this->tabledesc = $this->cnf->getTableDesc('tt_address');
+		$this->tableconf = $this->cnf->getTableConf('address');
+		$this->tabledesc = $this->cnf->getTableDesc('address');
 
 		$defaultFieldArray = array('uid'=>'uid', 'pid'=>'pid', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'deleted' => 'deleted');
 		$this->table->setDefaultFieldArray($defaultFieldArray);
@@ -81,11 +81,10 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 		$this->fields['name'] = ($this->tabledesc['name'] ? $this->tabledesc['name'] : 'name');
 	} // init
 
-
 	/**
 	 * Getting all addresses into internal array
 	 */
- 	function get ($uid=0,$pid=0,$bStore=true) {
+ 	function get ($uid=0,$pid=0,$bStore=true,$orderBy='') {
 		global $TYPO3_DB;
 
 		$where = '';
@@ -101,21 +100,26 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 				$where = $whereUid;
 			}
 		}
-		$orderBy = $this->tableconf['orderBy'];
+		$whereEnable = $this->pibase->cObj->enableFields($this->table->getName());
+		$where = ($where != '' ? $where . $whereEnable : '1=1 ' . $whereEnable);
+		if (!$orderBy)	{
+			$orderBy = $this->tableconf['orderBy'];
+		}
 		$res = $this->table->exec_SELECTquery('*',$where,'',$orderBy);
 
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}
+		if (!$uid)	{
+			$rc = $this->dataArray;
+		}
 		return $rc;
 	}
 
-
-	function getRootCat()	{
+	function getRootCat ()	{
 		$rc = $this->cnf->config['rootAddressID'];
 		return $rc;
 	}
-
 
 	function &getRelationArray ($excludeCat=0,$currentCat=0,$rootUids='',$pid=0) {
 		$relationArray = array();
@@ -132,7 +136,6 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 		}
 		return $relationArray;
 	}
-
 }
 
 

@@ -92,7 +92,7 @@ class tx_ttproducts_memo_view {
 			$this->cnf,
 			$this->tt_content,
 			$this->pibase->LLkey,
-			$this->conf['table.']['pages'], 
+			$this->conf['table.']['pages'],
 			$this->conf['conf.']['pages.'],
 			$this->page,
 			$pid_list,
@@ -101,8 +101,8 @@ class tx_ttproducts_memo_view {
 		$this->tt_products = &$tt_products;
 		$this->tt_products_cat = &$tt_products_cat;
 		$this->tt_products_articles = &$tt_products_articles;
-		$this->tx_dam = $tx_dam; 
-		$this->tx_dam_cat = $tx_dam_cat; 
+		$this->tx_dam = $tx_dam;
+		$this->tx_dam_cat = $tx_dam_cat;
 		$this->fe_users = &$fe_users;
 		$this->pid = $pid;
 		$this->LLkey = $LLkey;
@@ -115,28 +115,28 @@ class tx_ttproducts_memo_view {
 			if ($TSFE->fe_user->user['tt_products_memoItems'] != '')	{
 				$this->memoItems = explode(',', $TSFE->fe_user->user['tt_products_memoItems']);
 			}
-	
+
 			if ($this->pibase->piVars['addmemo'])	{
 				$addMemo = explode(',', $this->pibase->piVars['addmemo']);
-	
+
 				foreach ($addMemo as $addMemoSingle)
 					if (!in_array($addMemoSingle, $this->memoItems))
 						$this->memoItems[] = intval($addMemoSingle);
-	
+
 				$fieldsArray = array();
 				$fieldsArray['tt_products_memoItems'] = implode(',', $this->memoItems);
 				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
 			}
-	
+
 			if ($this->pibase->piVars['delmemo'])	{
 				$delMemo = explode(',', $this->pibase->piVars['delmemo']);
-	
+
 				foreach ($delMemo as $delMemoSingle)	{
 					$val = intval($delMemoSingle);
 					if (in_array($val, $this->memoItems))
 						unset($this->memoItems[array_search($val, $this->memoItems)]);
 				}
-	
+
 				$fieldsArray = array();
 				$fieldsArray['tt_products_memoItems']=implode(',', $this->memoItems);
 				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
@@ -155,7 +155,7 @@ class tx_ttproducts_memo_view {
 		$content = '';
 
 		$fe_user_uid = $TSFE->fe_user->user['uid'];
-		if ($fe_user_uid)	{		
+		if ($fe_user_uid)	{
 			if ($this->memoItems)	{
 				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
 

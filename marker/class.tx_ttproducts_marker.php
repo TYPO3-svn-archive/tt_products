@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -48,6 +48,7 @@ class tx_ttproducts_marker {
 	var $config;
 	var $basket;
 	var $markerArray;
+	var $cObj;
 
 
 	/**
@@ -57,9 +58,9 @@ class tx_ttproducts_marker {
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
 	 * @return	  void
  	 */
-
-	function init(&$pibase, &$cnf, &$basket)	{
+	function init (&$pibase, &$cnf, &$basket)	{
  		$this->pibase = &$pibase;
+		$this->cObj = &$pibase->cObj;
  		$this->cnf = &$cnf;
  		$this->conf = &$this->cnf->conf;
  		$this->config = &$this->cnf->config;
@@ -67,15 +68,13 @@ class tx_ttproducts_marker {
  		$this->markerArray = array('CATEGORY', 'PRODUCT', 'ARTICLE');
 	}
 
-
 	/**
 	 * Adds link markers to a wrapped subpart array
 	 */
-	function getWrappedSubpartArray(&$wrappedSubpartArray,$addQueryString=array(),$css_current='')	{
+	function getWrappedSubpartArray (&$wrappedSubpartArray,$addQueryString=array(),$css_current='')	{
 		global $TSFE;
 
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-
 		$pageLink = $this->pibase->pi_getPageLink($pidBasket,'',$this->getLinkParams('',$addQueryString,true)) ;
 		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'. $pageLink .'"'.$css_current.'>','</a>');
 	}
@@ -83,30 +82,31 @@ class tx_ttproducts_marker {
 	/**
 	 * Adds URL markers to a markerArray
 	 */
-	function addURLMarkers($pidNext,$markerArray,$addQueryString=array(),$excludeList='')	{
+	function addURLMarkers ($pidNext,$markerArray,$addQueryString=array(),$excludeList='',$bUseBackPid=TRUE)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 		$conf = array('useCacheHash' => true);
 		$target = '';
 
 		// disable caching as soon as someone enters products into the basket, enters user data etc.
-		// $addQueryString['no_cache'] = 1; 
+		// $addQueryString['no_cache'] = 1;
 			// Add's URL-markers to the $markerArray and returns it
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
 		$pidFormUrl = ($pidNext ? $pidNext : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
+		$bUseBackPid = ($bUseBackPid && $pidNext != $TSFE->id);
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
 		$markerArray['###FORM_URL###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
 		$markerArray['###FORM_URL_INFO###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDpayment'] ? $this->conf['PIDpayment'] : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
-		$markerArray['###FORM_URL_PAYMENT###'] = htmlspecialchars($url);  
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
+		$markerArray['###FORM_URL_PAYMENT###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
-		$markerArray['###FORM_URL_FINALIZE###'] = htmlspecialchars($url);  
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
+		$markerArray['###FORM_URL_FINALIZE###'] = htmlspecialchars($url);
 		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $pidBasket);
-		$url = $this->pibase->pi_getTypoLink_URL($pid,$this->getLinkParams($excludeList,$addQueryString,true),$target,$conf);
+		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
 		$markerArray['###FORM_URL_THANKS###'] = htmlspecialchars($url);
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 
@@ -123,13 +123,12 @@ class tx_ttproducts_marker {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addURLMarkers')) {
-					$hookObj->addURLMarkers($pidNext,$markerArray,$addQueryString,$excludeList);
+					$hookObj->addURLMarkers($pidNext,$markerArray,$addQueryString,$excludeList,$bUseBackPid);
 				}
 			}
 		}
 		return $markerArray;
 	} // addURLMarkers
-
 
 	/**
 	 * getting the global markers
@@ -142,7 +141,7 @@ class tx_ttproducts_marker {
 		$splitMark = md5(microtime());
 		list($markerArray['###GW1B###'],$markerArray['###GW1E###']) = explode($splitMark,$this->pibase->cObj->stdWrap($splitMark,$this->conf['wrap1.']));
 		list($markerArray['###GW2B###'],$markerArray['###GW2E###']) = explode($splitMark,$this->pibase->cObj->stdWrap($splitMark,$this->conf['wrap2.']));
-		list($markerArray['###GW3B###'],$markerArray['###GW3E###']) = explode($splitMark,$this->pibase->cObj->stdWrap($splitMark,$this->conf['wrap3.'])); 
+		list($markerArray['###GW3B###'],$markerArray['###GW3E###']) = explode($splitMark,$this->pibase->cObj->stdWrap($splitMark,$this->conf['wrap3.']));
 		$markerArray['###GC1###'] = $this->pibase->cObj->stdWrap($this->conf['color1'],$this->conf['color1.']);
 		$markerArray['###GC2###'] = $this->pibase->cObj->stdWrap($this->conf['color2'],$this->conf['color2.']);
 		$markerArray['###GC3###'] = $this->pibase->cObj->stdWrap($this->conf['color3'],$this->conf['color3.']);
@@ -151,18 +150,35 @@ class tx_ttproducts_marker {
 		$pidMarkerArray = array('agb','basket','info','finalize','payment', 'thanks','itemDisplay','listDisplay','search','storeRoot',
 			'memo','tracking','billing','delivery');
 		foreach ($pidMarkerArray as $k => $function)	{
-			$markerArray['###PID_'.strtoupper($function).'###'] = $this->conf['PID'.$function]; 
+			$markerArray['###PID_'.strtoupper($function).'###'] = $this->conf['PID'.$function];
 		}
 
 		$markerArray['###SHOPADMIN_EMAIL###'] = $this->conf['orderEmail_from'];
-		
+
 		if (is_array($this->conf['marks.']))	{
 				// Substitute Marker Array from TypoScript Setup
 			foreach ($this->conf['marks.'] as $key => $value)	{
-				$markerArray['###'.$key.'###'] = $value;
+
+				if (is_array($value))	{
+					switch($key)	{
+						case 'image.':
+							foreach ($value as $k2 => $v2)	{
+								$fileresource = $this->cObj->fileResource($v2);
+								$markerArray['###IMAGE'.strtoupper($k2).'###'] = $fileresource;
+							}
+						break;
+					}
+				} else {
+					if(isset($this->conf['marks.'][$key.'.']) && is_array($this->conf['marks.'][$key.'.']))	{
+						$out = $this->cObj->cObjGetSingle($this->conf['marks.'][$key],$this->conf['marks.'][$key.'.']);
+					} else {
+						$out = $value;
+					}
+					$markerArray['###'.strtoupper($key).'###'] = $out;
+				}
 			}
 		}
-		
+
 			// Call all addURLMarkers hooks at the end of this method
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'] as $classRef) {
@@ -172,14 +188,13 @@ class tx_ttproducts_marker {
 				}
 			}
 		}
-		return $markerArray;	
+		return $markerArray;
 	} // getGlobalMarkers
-
 
 	/**
 	 * Returning template subpart marker
 	 */
-	function spMarker($subpartMarker)	{
+	function spMarker ($subpartMarker)	{
 		$sPBody = substr($subpartMarker,3,-3);
 		$altSPM = '';
 		if (isset($this->conf['altMainMarkers.']))	{
@@ -189,15 +204,13 @@ class tx_ttproducts_marker {
 		return $altSPM ? $altSPM : $subpartMarker;
 	} // spMarker
 
-
-
-
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function addQueryStringParam(&$queryString, $param, $bUsePrefix=false) {
+	function addQueryStringParam (&$queryString, $param, $bUsePrefix=false) {
+
 		$temp = $this->pibase->piVars[$param];
-		$temp = ($temp ? $temp : (t3lib_div::GPvar($param) ? t3lib_div::GPvar($param) : 0)); 
+		$temp = ($temp ? $temp : (t3lib_div::_GP($param) && ($param!='pid') ? t3lib_div::_GP($param) : 0));
 		if ($temp)	{
 			if ($bUsePrefix)	{
 				$queryString[$this->pibase->prefixId.'['.$param.']'] = $temp;
@@ -207,13 +220,12 @@ class tx_ttproducts_marker {
 		}
 	}
 
+	function getSearchParams (&$queryString) {
 
-	function getSearchParams(&$queryString) {
-		
 		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
 
 		if (!$temp)	{
-			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';		
+			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
 		}
 
 		if ($temp) {
@@ -221,37 +233,26 @@ class tx_ttproducts_marker {
 		}
 	}
 
-
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function getLinkParams($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true,$piVarCat='cat') {
+	function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=FALSE,$bUseBackPid=TRUE,$piVarCat='cat') {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 		$queryString=array();
-//		$fe_user = (is_array($TSFE->fe_user->user) ? 1 : 0);
 		if ($bUseBackPid)	{
-			if ($bUsePrefix)	{
-				$queryString[$this->pibase->prefixId.'[backPID]'] = $TSFE->id; // $queryString['backPID']= $TSFE->id;
-			} else {
+			if ($bUsePrefix && !$addQueryString[$this->pibase->prefixId.'[backPID]'])	{
+				$queryString[$this->pibase->prefixId.'[backPID]'] = $TSFE->id;
+			} else if (!$addQueryString['backPID'])	{
 				$queryString['backPID'] = $TSFE->id;
 			}
 		}
-
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
 		$this->addQueryStringParam($queryString, $piVarCat, $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
-
-		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
-		if (!$temp)	{
-			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';		
-		}
-		if ($temp) {
-			$queryString['sword'] = $temp;
-		}
 
 		if (is_array($addQueryString))	{
 
@@ -265,8 +266,10 @@ class tx_ttproducts_marker {
 		}
 		reset($queryString);
 		while(list($key,$val)=each($queryString))	{
+			preg_match('/'.$this->pibase->prefixId.'\[(.*)\]/',$key, $matches);
+			$shortkey = $matches[1];
 
-			if ($val=='' || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
+			if ($val=='' || ($excludeList && (t3lib_div::inList($excludeList,$key) || t3lib_div::inList($excludeList,$shortkey))))	{
 				unset($queryString[$key]);
 			}
 		}
@@ -280,10 +283,8 @@ class tx_ttproducts_marker {
 				}
 			}
 		}
-
 		return $queryString;
 	}
-
 
 	/**
 	 * finds all the markers for a product
@@ -354,7 +355,6 @@ class tx_ttproducts_marker {
 		}
 		return $retArray;
 	}
-
 }
 
 

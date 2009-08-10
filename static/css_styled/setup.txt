@@ -33,7 +33,7 @@ plugin.tt_products {
       bodyTag = <body bgColor="black" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
       wrap = <a href="javascript:close();"> | </a>
       width = {$plugin.tt_products.maxW_popup}
-      height = 
+      height =
 
       JSwindow = 1
       JSwindow.newWindow = 1
@@ -54,7 +54,7 @@ plugin.tt_products {
   listImageRoot.file.maxW = {$plugin.tt_products.maxW_listRoot}
   listImageRoot.file.maxH = {$plugin.tt_products.maxH_listRoot}
   listImageRoot.imageLinkWrap = {$plugin.tt_products.clickEnlarge_listRoot}
-  
+
   basketImage < .image
   basketImage.file.maxW = {$plugin.tt_products.maxW_basket}
   basketImage.file.maxH = {$plugin.tt_products.maxH_basket}
@@ -106,12 +106,12 @@ plugin.tt_products {
   CSS.tt_products.LIST.row.even = {$plugin.tt_products.CSSRowEven}
   CSS.tt_products.LIST.row.uneven = {$plugin.tt_products.CSSRowUneven}
   CSS.tt_products.LIST.itemSingleWrap = <div class="###UNEVEN###">|</div>
-  CSS.tt_products.LIST.itemRowWrap = 
+  CSS.tt_products.LIST.itemRowWrap =
   CSSListDefault = {$plugin.tt_products.CSSListDefault}
   CSSListCurrent = {$plugin.tt_products.CSSListCurrent}
 
   NoSingleViewOnList = {$plugin.tt_products.NoSingleViewOnList}
-
+  listViewOnSearch = {$plugin.tt_products.listViewOnSearch}
   PIDagb = {$plugin.tt_products.PIDagb}
   PIDinfo = {$plugin.tt_products.PIDinfo}
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
@@ -129,7 +129,7 @@ plugin.tt_products {
   PID_sys_products_orders = {$plugin.tt_products.PID_sys_products_orders}
   PIDGiftsTable = {$plugin.tt_products.PIDGiftsTable}
   paymentActivity = {$plugin.tt_products.paymentActivity}
-  
+
   advanceOrderNumberWithInteger = {$plugin.tt_products.advanceOrderNumberWithInteger}
   alwaysAdvanceOrderNumber = {$plugin.tt_products.alwaysAdvanceOrderNumber}
   alwaysUpdateOrderAmount = {$plugin.tt_products.alwaysUpdateOrderAmount}
@@ -138,13 +138,13 @@ plugin.tt_products {
   defaultProductID = {$plugin.tt_products.defaultProductID}
   defaultCategoryID = {$plugin.tt_products.defaultCategoryID}
   defaultDAMCategoryID = {$plugin.tt_products.defaultDAMCategoryID}
-  
+
   rootCategoryID = {$plugin.tt_products.rootCategoryID}
   rootDAMCategoryID = {$plugin.tt_products.rootDAMCategoryID}
   rootPageID = {$plugin.tt_products.rootPageID}
   recursive = {$plugin.tt_products.recursive}
   domain = {$plugin.tt_products.domain}
-  
+
   parseFunc < styles.content.parseFunc
   categoryHeader = TEXT
   categoryHeader.current = 1
@@ -174,7 +174,7 @@ plugin.tt_products {
   orderEmail_apostrophe = {$plugin.tt_products.orderEmail_apostrophe}
   email_notify_default = {$plugin.tt_products.email_notify_default}
   statusCodes {
-# 1: Incoming orders    
+# 1: Incoming orders
     1 = Order submitted by user
 # 2-49: Useable by the shop admin
     2 = Order is received and accepted by store
@@ -199,7 +199,7 @@ plugin.tt_products {
   update_code = {$plugin.tt_products.update_code}
   statusDate_stdWrap.strftime= %d-%m-%Y %H:%M
   orderDate_stdWrap.strftime = %d-%m-%Y
-  
+
   usePriceTag = {$plugin.tt_products.usePriceTag}
   useStaticInfoCountry = {$plugin.tt_products.useStaticInfoCountry}
 
@@ -231,7 +231,7 @@ plugin.tt_products {
   PIDuserFolder = {$plugin.tt_products.PIDuserFolder}
   pidsRelatedProducts = {$plugin.tt_products.pidsRelatedProducts}
   pidsAddresses = {$plugin.tt_products.pidsAddresses}
-  outputFolder = {$plugin.tt_products.outputFolder} 
+  outputFolder = {$plugin.tt_products.outputFolder}
   memberOfGroup = {$plugin.tt_products.memberOfGroup}
 
   stdSearchFieldExt = {$plugin.tt_products.stdSearchFieldExt}
@@ -249,8 +249,8 @@ plugin.tt_products {
   inStockPieces = {$plugin.tt_products.inStockPieces}
   warningInStockLimit = {$plugin.tt_products.warningInStockLimit}
   newItemDays = {$plugin.tt_products.newItemDays}
-  substitutePagetitle = {$plugin.tt_products.substitutePagetitle}  
-  
+  substitutePagetitle = {$plugin.tt_products.substitutePagetitle}
+
   whereGift = {$plugin.tt_products.whereGift}
 
   form.SEARCH.name = ShopSearchForm
@@ -258,7 +258,8 @@ plugin.tt_products {
   # table settings
   # attention: Do not change the tt_products fields if you don't know what you do
 
-  table.tt_address {
+  table.address = tt_address
+  table.address {
     name = name
   }
 
@@ -280,15 +281,23 @@ plugin.tt_products {
       11 = quality
     }
   }
- 
+
   conf.tt_products.ALL {
     orderBy = title
-    requiredFields = uid,pid,category,price,price2,tax,inStock
+    requiredFields = uid,pid,category,price,price2,tax,inStock,datasheet
   	language.type = table
   	language.table = tt_products_language
     controlFields {
-	newItemDays = crdate, starttime
+		newItemDays = crdate, starttime
     }
+  }
+
+  conf.tt_products.LIST {
+	field {
+		note = TEXT
+		note.postUserFunc = tx_pmkhtmlcrop->htmlCrop
+		note.postUserFunc.htmlCrop = 9 | ... More
+	}
   }
 
   table.tt_products_articles = tt_products_articles
@@ -320,7 +329,7 @@ plugin.tt_products {
   }
 
   conf.pages.ALL {
-    requiredFields = uid,pid,title,shortcut
+    requiredFields = uid,pid,title
   	language.type = table
   	language.table = pages_language_overlay
   }
@@ -356,8 +365,12 @@ plugin.tt_products {
 
   _CSS_DEFAULT_STYLE (
       .tx-ttproducts-pi1-wrap1 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }
-      .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }   
+      .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }
   )
+
+  marks {
+   BASKET_MINI_HEADER = Warenkorb
+  }
 }
 
 ## This enables the record item to display product items

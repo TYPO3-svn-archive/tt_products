@@ -1,7 +1,7 @@
 <?php
 if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
-$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
+$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 $_EXTCONF = unserialize($_EXTCONF);    // unserializing the configuration so we can use it here:
 
 if (!defined ('TT_PRODUCTS_EXTkey')) {
@@ -34,18 +34,16 @@ if (t3lib_extMgm::isLoaded(TABLE_EXTkey)) {
 	}
 }
 
-if (!defined ('FH_LIBRARY_EXTkey')) {
-	define('FH_LIBRARY_EXTkey','fh_library');
-}
-
 if (!defined ('TT_ADDRESS_EXTkey')) {
 	define('TT_ADDRESS_EXTkey','tt_address');
 }
 
-if (t3lib_extMgm::isLoaded(FH_LIBRARY_EXTkey)) {
-	if (!defined ('PATH_BE_fh_library')) {
-		define('PATH_BE_fh_library', t3lib_extMgm::extPath(FH_LIBRARY_EXTkey));
-	}
+if (!defined ('PARTNER_EXTkey')) {
+	define('PARTNER_EXTkey','partner');
+}
+
+if (!defined ('PARTY_EXTkey')) {
+	define('PARTY_EXTkey','party');
 }
 
 if (!defined ('DIV2007_EXTkey')) {
@@ -66,23 +64,21 @@ if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
 $bPhp5 = version_compare(phpversion(), '5.0.0', '>=');
 
 t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products=1');
-
 t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products_cat=1');
-
 t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products_articles=1');
 
-if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'])) {
-	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] = $_EXTCONF['pageAsCategory'];
+
+if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]))	{
+	$tmpArray = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey];
+} else {
+	unset($tmpArray);
 }
 
-$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = $_EXTCONF['useFlexforms'];
-
-if (!t3lib_extMgm::isLoaded(FH_LIBRARY_EXTkey)) {
-	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = 0;
-}
-
-if (!defined($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'])) {
-	$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['alternativeProducts'] = '';
+if (isset($_EXTCONF) && is_array($_EXTCONF))	{
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey] = $_EXTCONF;
+	if (isset($tmpArray) && is_array($tmpArray))	{
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey] = array_merge($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey], $tmpArray);
+	}
 }
 
 
@@ -106,7 +102,20 @@ if ($_EXTCONF['usePatch1822'] &&
 		)
 	);
 
-$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articles'] = array (
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products_language'] = array (
+		'default' => array(
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
+			'fList' => 'sys_language_uid,prod_uid,title,subtitle,datasheet,www',
+			'icon' => TRUE
+		),
+		'ext' => array (
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_ext',
+			'fList' => 'sys_language_uid,prod_uid,note,note2',
+			'icon' => TRUE
+		),
+	);
+
+	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articles'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
 			'fList' =>  'title,itemnumber,price,inStock',
@@ -119,13 +128,43 @@ $TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articl
 		)
 	);
 
-$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] = array (
+	$TYPO3_CONF_VARS['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
 			'fList' =>  'title,image',
 			'icon' => TRUE
 		)
 	);
+
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products_cat_language'] = array (
+		'default' => array(
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
+			'fList' => 'sys_language_uid,title,subtitle,cat_uid',
+			'icon' => TRUE
+		),
+		'ext' => array(
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_ext',
+			'fList' => 'sys_language_uid,title,note',
+			'icon' => TRUE
+		)
+	);
+
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['sys_products_orders'] = array (
+		'default' => array(
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
+			'fList' => 'name,first_name,last_name,zip,city,country,email,amount',
+			'icon' => TRUE
+		),
+		'ext' => array(
+			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_ext',
+			'fList' => 'name,feusers_uid,address,telephone,status,note',
+			'icon' => TRUE
+		)
+	);
+}
+
+if (isset($_EXTCONF['where.']) && is_array($_EXTCONF['where.']))	{
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.'] = $_EXTCONF['where.'];
 }
 
 if ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] && $bPhp5)	{
@@ -139,5 +178,7 @@ t3lib_extMgm::addTypoScript($_EXTKEY,'editorcfg','tt_content.CSS_editor.ch.tt_pr
 t3lib_extMgm::addPItoST43($_EXTKEY,'pi1/class.tx_ttproducts_pi1.php','_pi1','list_type',1 );
 
 $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/mydashboard/class.tx_mydashboard_widgetmgm.php']['addWidget']['tt_products_latest'] = 'EXT:tt_products/widgets/class.tx_ttproducts_latest.php:tx_ttproducts_latest';
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tce']['formevals']['tx_double6'] = 'EXT:'.DIV2007_EXTkey.'/hooks/class.tx_div2007_hooks_eval.php';
 
 ?>

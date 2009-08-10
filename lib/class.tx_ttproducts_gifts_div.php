@@ -29,7 +29,7 @@
  *
  * view functions
  *
- * $Id:$
+ * $Id$
  *
  * @author  Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3

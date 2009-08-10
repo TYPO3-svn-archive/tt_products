@@ -49,7 +49,7 @@ class tx_ttproducts_config {
 	/**
 	 * Getting the configurations
 	 */
-	function init(&$conf, &$config) {
+	function init (&$conf, &$config) {
 		$this->conf = &$conf;
 		$this->config = &$config;
 	} // init
@@ -61,9 +61,9 @@ class tx_ttproducts_config {
 		if (is_array($this->conf['table.']) &&
 			is_array($this->conf['table.'][$tablename.'.'])
 			)	{
-			$tableDesc = $this->conf['table.'][$tablename.'.']; 
+			$tableDesc = $this->conf['table.'][$tablename.'.'];
 		}
-		
+
 		return $tableDesc;
 	}
 
@@ -86,21 +86,21 @@ class tx_ttproducts_config {
 				$specialConf['orderBy'] = '';
 			}
 		}
-		
+
 		return $specialConf;
 	}
 
 
 	function &getTableConf ($tablename, $theCode='')	{
 
-		$tableConf = $this->getSpecialConf('conf', $tablename, $theCode);  
+		$tableConf = $this->getSpecialConf('conf', $tablename, $theCode);
 		return $tableConf;
 	}
 
 
 	function &getCSSConf ($tablename, $theCode='')	{
 
-		$cssConf = $this->getSpecialConf('CSS', $tablename, $theCode);  
+		$cssConf = $this->getSpecialConf('CSS', $tablename, $theCode);
 
 		return $cssConf;
 	}
@@ -119,14 +119,14 @@ class tx_ttproducts_config {
 		global $TSFE;
 
 		$rc = false;
-		$sys_language_uid = $TSFE->config['config']['sys_language_uid']; 
+		$sys_language_uid = $TSFE->config['config']['sys_language_uid'];
 		if (is_numeric($sys_language_uid))	{
 
 			if ((is_array($tableConf['language.']) && $tableConf['language.']['type'] == 'table' && $sys_language_uid > 0))	{
 				$rc = true;
 			}
 		}
-		
+
 		return $rc;
 	}
 
@@ -143,7 +143,7 @@ class tx_ttproducts_config {
 		}
 		return $fieldArray;
 	}
-	
+
 
 	function getImageFields($tableConf)	{
 		$retArray = array();
@@ -154,12 +154,12 @@ class tx_ttproducts_config {
 				$genPartArray = $tableConf[$generate.'.'];
 				if ($genPartArray['type'] == 'tablefields')	{
 					$fieldArray = $genPartArray['field.'];
-					if (is_array($fieldArray))	{ 
+					if (is_array($fieldArray))	{
 						foreach ($fieldArray as $field => $count)	{
 							$retArray[] = $field;
 						}
 					}
-				}	
+				}
 			}
 		}
 		return $retArray;
@@ -189,7 +189,7 @@ class tx_ttproducts_config {
 
 	function mergeAJAX($ajaxconf)	{
 		global $TYPO3_DB;
-		
+
 //		if (is_array($ajaxconf) && isset($this->conf['ajax.']) && is_array($this->conf['ajax.']['conf.']))	{
 //			foreach ($ajaxconf as $k => $v){
 //				$newVal = $this->conf['ajax.']['conf.'][$k];

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <contact@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -46,6 +46,7 @@ class tx_ttproducts_catlist_view {
 	var $pibase; // reference to object of pibase
 	var $cnf;
 	var $conf;
+	var $config;
 	var $basket;
 	var $page;
 	var $tt_content; // element of class tx_table_db
@@ -54,10 +55,11 @@ class tx_ttproducts_catlist_view {
 	var $marker; // marker functions
 
 
-	function init(&$pibase, &$cnf, &$basket, &$pid_list, &$tt_content, &$tt_products_cat, $pid) {
+	function init (&$pibase, &$cnf, &$basket, &$pid_list, &$tt_content, &$tt_products_cat, $pid) {
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$this->cnf->conf;
+		$this->config = &$this->cnf->config;
 		$this->basket = &$basket;
 		$this->tt_content = &$tt_content;
 		$this->tt_products_cat = &$tt_products_cat;
@@ -68,7 +70,7 @@ class tx_ttproducts_catlist_view {
 				$this->cnf,
 				$this->tt_content,
 				$this->pibase->LLkey,
-				$this->conf['table.']['pages'], 
+				$this->conf['table.']['pages'],
 				$this->conf['conf.']['pages.'],
 				$this->page,
 				$pid_list,
@@ -81,10 +83,9 @@ class tx_ttproducts_catlist_view {
 		}
 	}
 
-
-	function &getParentsArray($cat, &$categoryArray)	{
+	function &getParentsArray ($cat, &$categoryArray)	{
 		$parentsArray = array();
-		
+
 		if ($cat)	{
 			$uid = $cat;
 			$parentsArray[$uid] = true;
@@ -96,7 +97,6 @@ class tx_ttproducts_catlist_view {
 
 		return $parentsArray;
 	}
-
 
 	// sets the 'depth' field
 	function setDepths (&$categoryRootArray, &$categoryArray)	{
@@ -114,10 +114,10 @@ class tx_ttproducts_catlist_view {
 			// determine the highest parent
 			while ($actCategory && !$categoryArray[$actCategory]['depth'] && $count < 200) {
 				$count++;
-				$lastCategory = $actCategory; 
+				$lastCategory = $actCategory;
 				$actCategory = (int) $categoryArray[$actCategory]['parent_category'];
 			}
-			
+
 			$depth = $count + $categoryArray[$lastCategory]['depth'];
 			// now write the calculated count into the fields
 			$actCategory = $category;
@@ -125,13 +125,12 @@ class tx_ttproducts_catlist_view {
 				$categoryArray[$actCategory]['depth'] = $depth--;
 				$actCategory = (int) $categoryArray[$actCategory]['parent_category'];
 			}
-			
+
 		}
 	}
 
-
 	// returns the products list view
-	function &printView(&$templateCode, $theCode, &$error_code, $templateArea = 'ITEM_CATLIST_TEMPLATE', $pageAsCategory, $htmlTagMain, $templateSuffix = '') {
+	function &printView (&$templateCode, $theCode, &$error_code, $templateArea = 'ITEM_CATLIST_TEMPLATE', $pageAsCategory, $htmlTagMain, $templateSuffix = '') {
 		global $TSFE, $TCA, $TYPO3_CONF_VARS;
 
 		$content='';
@@ -210,7 +209,7 @@ class tx_ttproducts_catlist_view {
 		$out = str_replace($htmlPartsMarkers[0], $out, $htmlParts[0]);
 
 		if ($htmlTagMain == 'ul')	{
-			while ($depth > 0 && $count < 300)	{
+			while($depth > 0 && $count < 300)	{
 				$count++;
 				$css = 'class="w'.$count.'"';
 				if($countArray[$depth] < count ($catArray[$depth]))	{
@@ -221,7 +220,7 @@ class tx_ttproducts_catlist_view {
 					$css = ($actCategory == $currentCat ? 'class="act"' : $css);
 					$preOut = '<'.$htmlTagElement.($css ? ' '.$css : '').' value="'.$actCategory.'">';
 					$out .= str_replace($htmlPartsMarkers[0], $preOut, $htmlParts[0]);
-	
+
 					if ($pageAsCategory > 0)	{
 						$pid = $categoryArray[$actCategory]['pid'];
 					} else {
@@ -288,14 +287,14 @@ class tx_ttproducts_catlist_view {
 				$linkOut = $linkOutArray[0].$row['title'].$linkOutArray[1];
 				$markerArray = array();
 				$categoryTable->getMarkerArray (
-					$markerArray, 
+					$markerArray,
 					$this->page,
-					$actCategory, 
+					$actCategory,
 					$row['pid'],
-					$this->config['limitImage'], 
-					'listImage', 
-					$viewCatTagArray, 
-					array(), 
+					$this->config['limitImage'],
+					'listcatImage',
+					$viewCatTagArray,
+					array(),
 					$pageAsCategory,
 					'LISTCAT',
 					$iCount,
@@ -303,16 +302,13 @@ class tx_ttproducts_catlist_view {
 				);
 				$catTitle = $categoryTable->getMarkerArrayCatTitle($markerArray);
 				$markerArray['###LIST_LINK###'] = $linkOut;
-				
+
 				if ($t['linkCategoryFrameWork'])	{
 					$categoryOut = $this->pibase->cObj->substituteMarkerArray($t['linkCategoryFrameWork'], $markerArray);
 					$out .= $linkOutArray[0].$categoryOut.$linkOutArray[1];
 				}
 			}
 		}
-//		if ($htmlTagMain != 'null')	{
-//			$out .= '</'.$htmlTagMain.'>';
-//		}
 
 		$markerArray = array();
 		$subpartArray = array();

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Klaus Zierer <zierer@pz-systeme.de>
+*  (c) 2005-2009 Klaus Zierer <zierer@pz-systeme.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author	Klaus Zierer <zierer@pz-systeme.de>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -78,17 +78,16 @@ class tx_ttproducts_csv {
 			$csvfilepath .= '/';
 		}
 		$csvfilepath .= $this->order->getNumber($csvorderuid).'.csv';
-		
+
 		$csvfile = fopen($csvfilepath, 'w');
-		if ($csvfile !== FALSE)
-		{
+		if ($csvfile !== FALSE)	{
 			// Generate invoice and delivery address
 			$csvlinehead = '';
 			$csvlineperson = '';
 			$csvlinedelivery = '';
-/* Added Els: 'feusers_uid,' */
-			$infoFields = explode(',','feusers_uid,name,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country,agb');
-			while(list(,$fName)=each($infoFields)) {
+			$infoFields = explode(',','feusers_uid,cnum,name,first_name,last_name,address,telephone,fax,email,company,city,zip,state,country,agb');
+
+			foreach($infoFields as $fName) {
 				if ($csvlinehead != '') {
 					$csvlinehead .= ';';
 					$csvlineperson .= ';';
@@ -111,7 +110,7 @@ class tx_ttproducts_csv {
 
 			$csvlinepayment = '"' . $basket->basketExtra['payment.']['title'] . '";"' .
 				$this->price->priceFormat($this->calculatedArray['priceTax']['payment']) . '";"' .
-				$this->price->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '";"' . 
+				$this->price->priceFormat($this->calculatedArray['priceNoTax']['payment']) . '";"' .
 				implode('";"', $accountRow).'"';
 
 			$csvlinedeliverynote = '"'.$address->infoArray['delivery']['note'].'"';
@@ -120,7 +119,7 @@ class tx_ttproducts_csv {
 			// Build field list
 			$csvfields = explode(',', $this->conf['CSVfields']);
 			$csvfieldcount = count($csvfields);
-			for ($a=0;$a<$csvfieldcount;$a++)
+			for ($a=0; $a<$csvfieldcount; $a++)
 				$csvfields[$a] = trim($csvfields[$a]);
 
 			// Write description header
@@ -146,7 +145,7 @@ class tx_ttproducts_csv {
 					$row = &$actItem['rec'];
 					$pid = intval($row['pid']);
 					if (!isset($basket->page->pageArray[$pid]))	{
-						// product belongs to another basket	
+						// product belongs to another basket
 						continue;
 					}
 					$extArray = $actItem['rec']['ext'];

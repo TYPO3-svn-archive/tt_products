@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -60,7 +60,7 @@ class tx_ttproducts_javascript {
 		$this->page = &$page;
 		$this->xajax = &$xajax;
 		$this->bXajaxAdded = false;
-		$this->bCopyrightShown = false; 
+		$this->bCopyrightShown = false;
 		$this->copyright = '
 /***************************************************************
 *
@@ -70,7 +70,7 @@ class tx_ttproducts_javascript {
 *
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 t3lib/ library provided by
@@ -90,7 +90,7 @@ class tx_ttproducts_javascript {
 	}
 
 
-	/* 
+	/*
 	 * Escapes strings to be included in javascript
 	 */
 	function jsspecialchars($s) {
@@ -109,7 +109,7 @@ class tx_ttproducts_javascript {
 		 */
 	function set($fieldname, $params='', $count=0, $catid='cat', $parentFieldArray=array(), $piVarArray=array(), $fieldArray=array(), $method='clickShow') {
 		global $TSFE;
-		
+
 		$bDirectHTML = false;
 		$code = '';
 		$bError = false;
@@ -132,7 +132,7 @@ class tx_ttproducts_javascript {
 				 	}
 				 	return rc;
 				}
-	
+
 				function checkEmail(element) {
 					if (test(element.value)){
 						return (true);
@@ -140,7 +140,7 @@ class tx_ttproducts_javascript {
 					alert("'.$emailArr[0].'\'"+element.value+"\''.$emailArr[1].'");
 					return (false);
 				}
-	
+
 				function checkParams(formObj) {
 					var rc = true;
 					for (var i = 0; i < formObj.length; i++) {
@@ -167,7 +167,7 @@ class tx_ttproducts_javascript {
 						$code .= 'var conf = new Array();
 		';
 						foreach ($ajaxConf as $k => $actConf)	{
-							$pVar = t3lib_div::_GP($k); 
+							$pVar = t3lib_div::_GP($k);
 							if (isset($pVar) && is_array($actConf[$pVar.'.']))	{
 								foreach ($actConf[$pVar.'.'] as $k2 => $v2)	{
 									$code .= 'conf['.$k2.'] = '.$v2.'; ';
@@ -237,10 +237,10 @@ class tx_ttproducts_javascript {
 		if (id > 0) {
 			var func;
 			var bRootFunctions = (maxFunc > 1) && (id == 2);
-			
+
 			sb = document.getElementById("'.$catid.'"+1);
 			func = sb.selectedIndex - 1;
-			len = sb.options.length; // test+++	
+			len = sb.options.length; // test+++
 			if (maxFunc == 1 || func < 0 || func > maxFunc)	{
 				func = 0;
 				bRootFunctions = false;
@@ -267,9 +267,9 @@ class tx_ttproducts_javascript {
 						count++;
 					}
 				}
-			} else if (category > 0) { 
-				subcategories = c[func][category][2]; 
-			} 
+			} else if (category > 0) {
+				subcategories = c[func][category][2];
+			}
 			if ((typeof(subcategories) == "object") && (showSubCategories == 1)) {
 				var newOption = new Option("", 0);
 				sbt.options[0] = newOption; // sbt.options.add(newOption);
@@ -329,16 +329,16 @@ class tx_ttproducts_javascript {
 			}
 			var sub = document.getElementsByName("'.$this->pibase->prefixId.'[submit]")[0];
 			for (k in sub.form.elements)	{
-				var el = sub.form.elements[k]; 
-				var elname; 
-				if (el)	{ 
-					elname = String(el.name); 
-				} 
+				var el = sub.form.elements[k];
+				var elname;
+				if (el)	{
+					elname = String(el.name);
+				}
 				if (elname && elname.indexOf("function") == -1 && elname.indexOf("'.$this->pibase->prefixId.'") == 0)	{
-					var start = elname.indexOf("["); 
-					var end = elname.indexOf("]"); 
-					var element = elname.substring(start+1,end); 
-					data["'.$this->pibase->prefixId.'"][element] = el.value; 
+					var start = elname.indexOf("[");
+					var end = elname.indexOf("]");
+					var element = elname.substring(start+1,end);
+					data["'.$this->pibase->prefixId.'"][element] = el.value;
 				}
 			}
 
@@ -349,7 +349,7 @@ class tx_ttproducts_javascript {
 				$code .= '
 			return true;
 		}
-		';	
+		';
 				break;
 
 			case 'direct':
@@ -362,7 +362,7 @@ class tx_ttproducts_javascript {
 			case 'xajax':
 				// XAJAX part
 				if (!$this->bXajaxAdded && is_object($this->xajax))	{
-					$code = $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax')); 
+					$code = $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax'));
 					$this->bXajaxAdded = true;
 				}
 				$bDirectHTML = true;

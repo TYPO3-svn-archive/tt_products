@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,13 +31,14 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_bank_de.php');
 
 global $TYPO3_CONF_VARS;
 
@@ -50,7 +51,8 @@ class tx_ttproducts_account {
 	var $tablename = 'sys_products_accounts';
 	var	$asterisk = '********';
 
-	function init(&$pibase, &$cnf, $formerBasket, $bIsAllowed='') {
+
+	function init (&$pibase, &$cnf, $formerBasket, $bIsAllowed='') {
 
 		$this->pibase = &$pibase;
 		$this->conf = &$cnf->conf;
@@ -59,7 +61,7 @@ class tx_ttproducts_account {
 		if (isset($bIsAllowed))	{
 			$this->bIsAllowed = $bIsAllowed;
 		}
-		
+
 		$bNumberRecentlyModified = true;
 
 		if (!$this->acArray['ac_number'])	{
@@ -68,7 +70,7 @@ class tx_ttproducts_account {
 
 		if ($bNumberRecentlyModified)	{
 			global $TSFE;
-			
+
 			$acArray = $TSFE->fe_user->getKey('ses','ac');
 			if (!$acArray)	{
 				$acArray = array();
@@ -77,9 +79,7 @@ class tx_ttproducts_account {
 			$TSFE->fe_user->setKey('ses','ac',$acArray);
 			$this->acArray['ac_number'] = $this->asterisk;
 		}
-		
 	}
-
 
 	// **************************
 	// ORDER related functions
@@ -91,7 +91,7 @@ class tx_ttproducts_account {
 	 * This creates a new credit card record on the page with pid PID_sys_products_orders. That page must exist!
 	 * Should be called only internally by eg. $order->getBlankUid, that first checks if a blank record is already created.
 	 */
-	function create($uid, $acArray)	{
+	function create ($uid, $acArray)	{
 		global $TSFE, $TYPO3_DB;
 
 		$newId = 0;
@@ -122,14 +122,12 @@ class tx_ttproducts_account {
 		return $newId;
 	} // create
 
-
-	function getUid()	{
+	function getUid ()	{
 		global $TSFE;
 
 		$acArray = $TSFE->fe_user->getKey('ses','ac');
 		return $acArray['ac_uid'];
 	}
-
 
 	function get ($uid, $bFieldArrayAll=false) {
 		global $TYPO3_DB;
@@ -155,7 +153,6 @@ class tx_ttproducts_account {
 		}
 		return $rcArray;
 	}
-
 
 	/**
 	 * Template marker substitution
@@ -187,28 +184,35 @@ class tx_ttproducts_account {
 
 		$markerArray['###PERSON_ACCOUNTS_OWNER_NAME###'] = $acOwnerName;
 		$markerArray['###PERSON_ACCOUNTS_AC_NUMBER###'] = $acNumber;
-		$markerArray['###PERSON_ACCOUNTS_BIC###'] = $acBic; 
+		$markerArray['###PERSON_ACCOUNTS_BIC###'] = $acBic;
 	} // getMarkerArray
-
-
 
 	/**
 	 * Checks if required fields for bank accounts are filled in
 	 */
-	function checkRequired()	{
+	function checkRequired ()	{
 		$rc = '';
+		$bankObj = &t3lib_div::getUserObj('&tx_ttproducts_bank_de');
+		$bankObj->init();
 
 		foreach ($this->fieldArray as $k => $field)	{
 			if (!$this->acArray[$field])	{
 				$rc = $field;
 				break;
 			}
+			if ($field == 'bic' && is_object($bankObj) /* && t3lib_extMgm::isLoaded('static_info_tables_banks_de')*/)	{
+				$where_clause = 'sort_code=' . intval(implode('',t3lib_div::trimExplode(' ',$this->acArray[$field]))) . ' AND level=1';
+				$bankRow = $bankObj->get('',0,FALSE,$where_clause);
+
+				if (!$bankRow)	{
+					$rc = $field;
+					break;
+				}
+			}
 		}
 		return $rc;
-	} // checkRequired
-
+	}
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_account.php'])	{

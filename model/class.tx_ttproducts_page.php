@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -47,8 +47,8 @@ require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
 
 
 class tx_ttproducts_page extends tx_ttproducts_category_base {
-	var $pid_list;		// list of page ids
-	var $pageArray = array();		// pid_list as array
+	var $pid_list;			// list of page ids
+	var $pageArray = array();	// pid_list as array
 	var $noteArray = array(); 	// array of pages with notes
 	var $cnf;
 	var $piVar = 'pid';
@@ -57,19 +57,14 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$pageconf)	{
+	function init (&$pibase, &$cnf, &$tt_content, $LLkey, $tablename, &$pageconf)	{
 		global $TYPO3_DB;
-		
+
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$tablename = ($tablename ? $tablename : 'pages');
 		$this->tableconf = $this->cnf->getTableConf('pages');
 		$this->table = t3lib_div::makeInstance('tx_table_db');
-//
-//
-//		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'sorting'=> 'sorting',
-// 			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime'));		
-		
 		$requiredFields = 'uid,pid,title,shortcut';
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
@@ -95,7 +90,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 				$addRequiredFields[] = $field;
 			}
 			$this->table->addRequiredFieldArray ($addRequiredFields);
-		}		
+		}
 
 		$this->table->setTCAFieldArray($tablename, 'pages');
 
@@ -109,39 +104,20 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		if ($this->tableconf['language.'] && $this->tableconf['language.']['type'] == 'csv')	{
 			$this->table->initLanguageFile($this->tableconf['language.']['file']);
 		}
-		
+
 		parent::init($pibase, $cnf, $tt_content, 'pages');
-		
+
 	} // init
-
-
-//	function get ($uid,$pid=0) {
-//		global $TYPO3_DB, $TSFE;
-//		$bMultple = (strstr($uid, ',') ? true : false);
-//		
-//		$rc = $this->dataArray[$uid];
-//		if (!$rc && !$bMultple && isset($uid)) {
-//			$sql = t3lib_div::makeInstance('tx_table_db_access');
-//			$sql->prepareFields($this->table, 'select', implode(',', $this->table->requiredFieldArray));
-//			$sql->prepareWhereFields ($this->table, 'uid', '=', intval($uid));
-//			$this->table->enableFields();
-//			// Fetching the category
-//		 	$res = $sql->exec_SELECTquery();
-//		 	$row = $TYPO3_DB->sql_fetch_assoc($res);
-//		 	$rc = $this->dataArray[$row['uid']] = $row;
-//		}
-//		return $rc;
-//	}
 
 
 	function get ($uid,$pid=0) {
 		global $TYPO3_DB;
-		
-		$bMultple = (strstr($uid, ',') ? true : false);
-		
+
+		$bMultple = (strstr($uid, ',') ? TRUE : FALSE);
 		$rc = $this->dataArray[$uid];
+
 		if (!$rc && !$bMultple && isset($uid)) {
-			$where = '1=1 '.$this->table->enableFields().' AND uid = '.intval($uid);
+			$where = '1=1 ' . $this->table->enableFields() . ' AND uid = ' . intval($uid);
 			// Fetching the products
 			$res = $this->table->exec_SELECTquery('*', $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
@@ -150,7 +126,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		return $rc;
 	}
 
-	function getRootCat()	{
+	function getRootCat ()	{
 		$rc = $this->cnf->config['rootPageID'];
 		return $rc;
 	}
@@ -191,33 +167,14 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		return $rc;
 	}
 
- 
 	function getParamDefault ()	{
 		$pid = $this->pibase->piVars[$this->piVar];
 		$pid = ($pid ? $pid : $this->conf['defaultPageID']);
 		if ($pid)	{
 			$pid = implode(',',t3lib_div::intExplode(',', $pid));
 		}
-		return $pid;	
+		return $pid;
 	}
-
-
-//	function &getRootpathArray (&$relationArray, $rootCat, $currentCat) {
-//		$rootpathArray = array();
-//		$uid = $currentCat;
-////		if (isset($uid))	{
-////			$count = 0;
-////			do	{
-////				$count++;
-////				$row = $this->get ($uid);
-////				$rootpathArray[] = $row;
-////				$lastUid = $uid;
-////				$uid = $row['pid'];
-////			} while ($lastUid != $rootCat && $count < 100);
-////		}
-//		return $rootpathArray;
-//	}
-
 
 	function &getRelationArray ($excludeCat=0,$currentCat=0,$rootUids='') {
 		$relationArray = array();
@@ -227,18 +184,18 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		} else {
 			$pid_list = $this->pid_list;
 		}
-		
+
 		$pageArray = t3lib_div::trimExplode (',', $pid_list);
 		$excludeArray = t3lib_div::trimExplode (',', $excludeCat);
 		foreach ($excludeArray as $k => $cat)	{
 			$excludeKey = array_search($cat, $pageArray);
-			unset($pageArray[$excludeKey]);	
+			unset($pageArray[$excludeKey]);
 		}
 		$tablename = $this->table->name;
 		if ($this->table->LLkey && is_array($this->tableconf['language.']) && $this->tableconf['language.']['type'] == 'table')	{
 			$tablename = $this->tableconf['language.']['table'];
 		}
-		
+
 		foreach ($pageArray as $k => $uid)	{
 			$row = $this->get ($uid);
 			if ($row)	{
@@ -249,7 +206,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 				}
 				$relationArray [$uid]['title'] = $row['title'];
 				if ($tablename == $this->table->name)	{ // default language and using language overlay table
-					$relationArray [$uid]['pid'] = $row['uid'];				
+					$relationArray [$uid]['pid'] = $row['uid'];
 				} else {
 					$relationArray [$uid]['pid'] = $row['pid'];
 				}
@@ -269,7 +226,6 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 				}
 			}
 		}
-		
 		return $relationArray;
 	}
 
@@ -278,7 +234,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * Getting the page table
 	 * On the basket page there will be a separate page table
 	 */
-	function &createPageTable(&$pibase, &$cnf, &$tt_content, $LLkey, $tablename,  &$pageconf, &$pageObject, &$pid_list, $recursive)	{
+	function &createPageTable (&$pibase, &$cnf, &$tt_content, $LLkey, $tablename,  &$pageconf, &$pageObject, &$pid_list, $recursive)	{
 		if (!is_object($pageObject)) {
 			$pageObject = t3lib_div::makeInstance('tx_ttproducts_page');
 			$pageObject->init(
@@ -298,25 +254,12 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		return $pageObject;
 	}
 
-
-//	/**
-//	 * Generates an array, ->pageArray of the pagerecords from ->pid_list
-//	 */
-//	function generatePageArray()	{
-//			// Get pages (for category titles)
-//		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('title,uid,pid', 'pages', 'uid IN ('.$this->pid_list.')');
-//		$this->pageArray = array();
-//		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
-//			$this->pageArray[$row['uid']] = $row;
-//		}
-//	} // generatePageArray
-//
-
-
 	/**
 	 * Returning the pid out from the row using the where clause
 	 */
-	function getPID($conf, $confExt, $row, $rootRow=array()) {
+	function getPID ($conf, $confExt, $row, $rootRow=array()) {
+		global $TSFE;
+
 		$rc = 0;
 		if ($confExt) {
 			foreach ($confExt as $k1 => $param) {
@@ -342,8 +285,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 							$rc = $param['pid'];
 							break;
 						case 'pid':
-							$pageTmp = $this->get($row['pid']);
-							$rc = intval ($pageTmp['pid']);
+							$rc = intval($row['pid']);
 							break;
 					}
 					break;  //ready with the foreach loop
@@ -353,8 +295,6 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			if ($conf) {
 				$rc = $conf;
 			} else {
-				global $TSFE;
-				
 				$rc = ($rootRow['uid'] ? $rootRow['uid'] : $TSFE->id);
 				$rc = intval($rc);
 			}
@@ -366,7 +306,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	/**
 	 * Sets the pid_list internal var
 	 */
-	function setPidlist($pid_list)	{
+	function setPidlist ($pid_list)	{
 		$this->pid_list = $pid_list;
 	}
 
@@ -374,7 +314,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	/**
 	 * Sets the pid_list internal var
 	 */
-	function setPageArray()	{
+	function setPageArray ()	{
 		$this->pageArray = t3lib_div::trimExplode (',', $this->pid_list);
 		$this->pageArray = array_flip($this->pageArray);
 	}
@@ -383,9 +323,9 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	/**
 	 * Extends the internal pid_list by the levels given by $recursive
 	 */
-	function applyRecursive($recursive, &$pids)	{
+	function applyRecursive ($recursive, &$pids)	{
 		global $TSFE;
-		
+
 		if ($pids)	{
 			$pid_list = &$pids;
 		} else {
@@ -426,10 +366,10 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		global $TSFE;
 		$row = $this->get($pid);
 
-			// Get image	
+			// Get image
 		$this->image->getItemMarkerArray ($row, $markerArray, $pid, $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id, $prefix, $linkWrap);
-		
-		$pageCatTitle = htmlentities($row['title'],ENT_QUOTES,$TSFE->renderCharset);
+
+		$pageCatTitle = $row['title'];
 		$this->setMarkerArrayCatTitle ($markerArray, $pageCatTitle, $prefix);
 		$markerArray['###'.$prefix.$this->marker.'_SUBTITLE###'] = htmlentities($row['subtitle']);
 

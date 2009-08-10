@@ -56,7 +56,7 @@ class tx_ttproducts_feuser {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, $tablename)  {
+	function init (&$pibase, &$cnf, $tablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = &$pibase;
@@ -79,7 +79,6 @@ class tx_ttproducts_feuser {
 		$this->table->setRequiredFieldArray($requiredListArray);
 	} // init
 
-
 	function get ($uid) {
 		global $TYPO3_DB;
 
@@ -93,7 +92,6 @@ class tx_ttproducts_feuser {
 		return $rc;
 	}
 
-
 	function getFieldName ($field)	{
 		$rc = $field;
 		if (is_array($this->fields) && $this->fields[$field])	{
@@ -103,8 +101,7 @@ class tx_ttproducts_feuser {
 		return $rc;
 	}
 
-
-	function isUserInGroup($feuser, $group)	{
+	function isUserInGroup ($feuser, $group)	{
 		$groups = explode(',', $feuser['usergroup']);
 		foreach ($groups as $singlegroup)
 			if ($singlegroup == $group)
@@ -112,8 +109,7 @@ class tx_ttproducts_feuser {
 		return false;
 	} // isUserInGroup
 
-
-	function setCondition($row, $funcTablename)	{
+	function setCondition ($row, $funcTablename)	{
 		global $TSFE;
 
 		$bCondition = FALSE;
@@ -128,7 +124,7 @@ class tx_ttproducts_feuser {
 			} else if ($TSFE->fe_user->user)	{
 				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
 					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
-		
+
 					// prepare for handling dates before 1970
 					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
 					$timeTemp = $adodbTime->adodb_date('d-m-Y', $TSFE->fe_user->user['date_of_birth']);
@@ -173,11 +169,11 @@ class tx_ttproducts_feuser {
 		}
 	}
 
-	function getCondition()	{
+	function getCondition ()	{
 		return $this->bCondition;
 	}
 
-	function getWrappedSubpartArray(&$subpartArray, &$wrappedSubpartArray, $funcTablename)	{
+	function getWrappedSubpartArray (&$subpartArray, &$wrappedSubpartArray, $funcTablename)	{
 		global $TSFE;
 
 		if ($TSFE->fe_user->user)	{
@@ -197,7 +193,6 @@ class tx_ttproducts_feuser {
 		}
 		return;
 	}
-
 
 	/**
 	 * Template marker substitution
@@ -221,8 +216,8 @@ class tx_ttproducts_feuser {
 
 		} else if (is_numeric($row['salutation'])) {
 			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];
-			$tmp = tx_fhlibrary_language::sL($salutation[0]);
-			$typeSalutationText = htmlspecialchars($this->pibase->pi_getLL($tmp));
+			$tmp = tx_div2007_alpha::sL_fh001($salutation[0]);
+			$typeSalutationText = htmlspecialchars(tx_div2007_alpha::getLL($this->pibase, $tmp));
 		} else {
 			$typeSalutationText = '';
 		}

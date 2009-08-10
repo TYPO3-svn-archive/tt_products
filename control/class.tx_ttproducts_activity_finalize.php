@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -62,7 +62,7 @@ class tx_ttproducts_activity_finalize {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$basket, $tt_products,  &$tt_products_cat, &$fe_users, &$order)  {
+	function init (&$pibase, &$cnf, &$basket, $tt_products,  &$tt_products_cat, &$fe_users, &$order)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = &$pibase;
@@ -93,10 +93,10 @@ class tx_ttproducts_activity_finalize {
 	 * The basket is also emptied, but address info is preserved for any new orders.
 	 * $orderUid is the order-uid to finalize
 	 * $mainMarkerArray is optional and may be pre-prepared fields for substitutiong in the template.
-	 * 
+	 *
 	 * returns the email address of the customer to whom the order notification has been sent
 	 */
-	function doProcessing($templateCode, &$basketView, &$viewTable, &$price, $orderUid, &$orderConfirmationHTML, &$error_message, &$address)	{
+	function doProcessing ($templateCode, &$basketView, &$viewTable, &$price, $orderUid, &$orderConfirmationHTML, &$error_message, &$address)	{
 		global $TSFE;
 		global $TYPO3_DB;
 		global $TYPO3_CONF_VARS;
@@ -119,26 +119,29 @@ class tx_ttproducts_activity_finalize {
 			$pid = ($this->conf['PIDuserFolder'] ? $this->conf['PIDuserFolder'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
 			$pid = intval($pid);
 			$username = strtolower(trim($address->infoArray['billing']['email']));
-			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $pid.' AND deleted=0');
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username='.$TYPO3_DB->fullQuoteStr($username, 'fe_users').' AND pid='. $pid.' AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 
 			if (!$num_rows)	{
-				$address->password = substr(md5(rand()), 0, 6);
-				$tableFieldArray = $this->fe_users->table->tableFieldArray; 
+				$password = $address->password = substr(md5(rand()), 0, 12);
+				if ($this->conf['useMd5Password'])	{
+					$password = md5($password);
+				}
+				$tableFieldArray = $this->fe_users->table->tableFieldArray;
 				$insertFields = array(	// TODO: check with TCA
 					'pid' => intval($pid),
 					'tstamp' => time(),
 					'crdate' => time(),
 					'username' => $username,
-					'password' => $address->password,
+					'password' => $password,
 					'usergroup' => $this->conf['memberOfGroup'],
 					'uid' => $address->infoArray['billing']['feusers_uid'],
 				);
 
 				foreach ($tableFieldArray as $fieldname => $value)	{
-					$fieldvalue = $address->infoArray['billing'][$fieldname]; 
+					$fieldvalue = $address->infoArray['billing'][$fieldname];
 					if (isset($fieldvalue))	{
-						$insertFields[$fieldname] = $fieldvalue; 
+						$insertFields[$fieldname] = $fieldvalue;
 					}
 				}
 
@@ -171,7 +174,7 @@ class tx_ttproducts_activity_finalize {
 				$res = $TYPO3_DB->exec_SELECTquery(
 					'uid',
 					'fe_users',
-					'username='.$TYPO3_DB->fullQuoteStr($username,'fe_users') . 
+					'username='.$TYPO3_DB->fullQuoteStr($username,'fe_users') .
 						' AND pid='. $pid.' AND deleted=0');
 				while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 					$address->infoArray['billing']['feusers_uid'] = intval($row['uid']);
@@ -286,7 +289,7 @@ class tx_ttproducts_activity_finalize {
 						$plainMessageArray[$key] = $subjectArray[$key];
 					}
 					$plainMessageArray[$key] = $this->pibase->cObj->substituteMarkerArrayCached($plainMessageArray[$key],$markerArray);
-					if (empty($subjectArray[$key])) {	
+					if (empty($subjectArray[$key])) {
 						$subjectArray[$key] = $this->conf['orderEmail_subject'];
 					}
 				}
@@ -296,7 +299,7 @@ class tx_ttproducts_activity_finalize {
 				$plainMessageArray['shop'] = $plainMessageArray['customer'];
 				$subjectArray['shop'] = $subjectArray['customer'];
 			}
-	
+
 			$HTMLmailContent = '';
 			if ($plainMessageArray['customer'] || $this->conf['orderEmail_htmlmail'])	{	// If there is plain text content - which is required!!
 				if ($this->conf['orderEmail_htmlmail'])	{
@@ -313,8 +316,7 @@ class tx_ttproducts_activity_finalize {
 						$parser = t3lib_div::makeInstance('t3lib_parsehtml');
 						$htmlMailParts = $parser->splitTags('img',$HTMLmailContent);
 
-						reset($htmlMailParts);
-						while(list($kkk,$vvv)=each($htmlMailParts))	{
+						foreach($htmlMailParts as $kkk => $vvv)	{
 							if ($kkk%2)	{
 								list($attrib) = $parser->get_tag_attributes($vvv);
 								if (t3lib_div::isFirstPartOfStr($attrib['src'],$this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix']))	{
@@ -399,9 +401,7 @@ class tx_ttproducts_activity_finalize {
 			}
 		}
 	} // doProcessing
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_activity_finalize.php']) {

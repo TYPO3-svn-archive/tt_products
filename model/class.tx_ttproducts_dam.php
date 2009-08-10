@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -72,9 +72,9 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		global $TYPO3_DB,$TSFE,$TCA,$TYPO3_CONF_VARS;
 
 		parent::init($pibase, $cnf, 'tx_dam', $tt_content, $paymentshipping, 0);
-		
+
 		$this->tt_products = &$tt_products;
-		
+
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$this->table->setTCAFieldArray($tablename);
@@ -96,7 +96,6 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		$this->tableconf = $this->cnf->getTableConf($tablename);
 		$this->tabledesc = $this->cnf->getTableDesc($tablename);
  		$this->paymentshipping = &$paymentshipping;
-
 	} // init
 
 

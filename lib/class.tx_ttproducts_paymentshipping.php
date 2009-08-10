@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -34,7 +34,7 @@
 *  (c) 1999-2007 Kasper Skårhøj (kasperYYYY@typo3.com)
  * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author  René Fritz <r.fritz@colorcube.de>
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @author  Klaus Zierer <zierer@pz-systeme.de>
  * @package TYPO3
  * @subpackage tt_products
@@ -60,7 +60,7 @@ class tx_ttproducts_paymentshipping {
 	var $price;	// price functions
 	var $typeArray = array('shipping','payment');
 
-	function init(&$pibase, &$cnf, &$basket, &$fe_users)	{
+	function init (&$pibase, &$cnf, &$basket, &$fe_users)	{
 		global $TSFE;
 
 		$this->pibase = &$pibase;
@@ -84,11 +84,10 @@ class tx_ttproducts_paymentshipping {
 		$this->price->init($this->pibase, $tmp='', $this->cnf, $this->basket, $this, 0);
 	}
 
-
 	/**
 	 * Setting shipping, payment methods
 	 */
-	function setBasketExtras(&$basketRec) {
+	function setBasketExtras (&$basketRec) {
 		global $TSFE;
 
 			// shipping
@@ -107,7 +106,7 @@ class tx_ttproducts_paymentshipping {
 		}
 
 		// overwrite payment from shipping
-		if (is_array($this->basket->basketExtra['shipping.']) && 
+		if (is_array($this->basket->basketExtra['shipping.']) &&
 			is_array($this->basket->basketExtra['shipping.']['replacePayment.']))	{
 			if (!$this->conf['payment.'])	{
 				$this->conf['payment.'] = array();
@@ -116,7 +115,7 @@ class tx_ttproducts_paymentshipping {
 			foreach ($this->basket->basketExtra['shipping.']['replacePayment.'] as $k1 => $replaceArray)	{
 				foreach ($replaceArray as $k2 => $value2)	{
 					if (is_array($value2))	{
-						$this->conf['payment.'][$k1][$k2] = array_merge($this->conf['payment.'][$k1][$k2], $value2); 
+						$this->conf['payment.'][$k1][$k2] = array_merge($this->conf['payment.'][$k1][$k2], $value2);
 					} else {
 						$this->conf['payment.'][$k1][$k2] = $value2;
 					}
@@ -143,7 +142,7 @@ class tx_ttproducts_paymentshipping {
 						if (is_array($TSFE->fe_user->user))	{
 							$paymentField = $this->fe_users->getFieldName('payment');
 							$paymentMethod = $TSFE->fe_user->user[$paymentField];
-							$this->conf['payment.'][$key.'.']['title'] = $paymentMethod; 
+							$this->conf['payment.'][$key.'.']['title'] = $paymentMethod;
 						} else {
 							unset($this->conf['payment.'][$key.'.']);
 						}
@@ -154,7 +153,7 @@ class tx_ttproducts_paymentshipping {
 					}
 				}
 			}
-	
+
 			ksort($this->conf['payment.']);
 			reset($this->conf['payment.']);
 			$k=intval($basketRec['tt_products']['payment']);
@@ -165,25 +164,19 @@ class tx_ttproducts_paymentshipping {
 			$this->basket->basketExtra['payment'] = $k;
 			$this->basket->basketExtra['payment.'] = $this->conf['payment.'][$k.'.'];
 		}
-
 	} // setBasketExtras
-
-
 
 	/**
 	 * Check if payment/shipping option is available
 	 */
-	function checkExtraAvailable($name,$key)	{
+	function checkExtraAvailable ($name,$key)	{
 		$result = false;
 
 		if (is_array($this->conf[$name.'.'][$key.'.']) && (!isset($this->conf[$name.'.'][$key.'.']['show']) || $this->conf[$name.'.'][$key.'.']['show']))	{
 			$result = true;
 		}
-
 		return $result;
 	} // checkExtraAvailable
-
-
 
 	/**
 	 * Template marker substitution
@@ -206,7 +199,10 @@ class tx_ttproducts_paymentshipping {
 			}
 			$shipKey .= $value;
 			$tmpSubpartArray['shipping'] = $this->pibase->cObj->getSubpart($framework,'###MESSAGE_SHIPPING_'.$shipKey.'###');
-			$msgShipping .= $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpartArray['shipping'],$markerArray);
+			if ($tmpSubpartArray['shipping'] != '')	{
+				$msgShipping .= $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpartArray['shipping'],$markerArray);
+			}
+			$subpartArray['###MESSAGE_SHIPPING_NE_' . $shipKey.'###'] = '';
 		}
 		$subpartArray['###MESSAGE_SHIPPING###'] = $msgShipping;
 
@@ -221,8 +217,8 @@ class tx_ttproducts_paymentshipping {
 					$tmpMarker = '###MESSAGE_'.$marker.'_'.$key.'###';
 					if ($key == $this->basket->basketExtra[$type])	{
 						$tmpSubpart = $this->pibase->cObj->getSubpart($framework,$tmpMarker);
-						$subpartArray[$tmpMarker] = $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray); 
-						// 
+						$subpartArray[$tmpMarker] = $this->pibase->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
+						//
 					} else {
 						$subpartArray[$tmpMarker] = '';
 					}
@@ -230,7 +226,6 @@ class tx_ttproducts_paymentshipping {
 			}
 		}
 	}
-
 
 	/**
 	 * Template marker substitution
@@ -251,11 +246,10 @@ class tx_ttproducts_paymentshipping {
 		$markerArray['###IMAGE###'] = $this->pibase->cObj->IMAGE($row['image.']);
 	}
 
-
 	/**
 	 * Generates a radio or selector box for payment shipping
 	 */
-	function generateRadioSelect($pskey, &$calculatedArray)	{
+	function generateRadioSelect ($pskey, &$calculatedArray)	{
 			/*
 			 The conf-array for the payment/shipping configuration has numeric keys for the elements
 			 But there are also these properties:
@@ -294,7 +288,7 @@ class tx_ttproducts_paymentshipping {
 		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];
 
 		if (is_array($confArr))	{
-			while(list($key,$item) = each($confArr))	{
+			foreach($confArr as $key => $item)	{
 				if (($item['show'] || !isset($item['show'])) &&
 					(doubleval($item['showLimit']) >= doubleval($this->basket->calculatedArray['count']) || !isset($item['showLimit']) ||
 					intval($item['showLimit']) == 0)) {
@@ -321,7 +315,15 @@ class tx_ttproducts_paymentshipping {
 								$viewTagArray,
 								$parentArray
 							);
-							$addItems = $itemTable->get ('', $item['where.'][$tableName], implode(',',$fieldsArray));
+							$addItems = $itemTable->get('', $item['where.'][$tableName], implode(',',$fieldsArray));
+
+							if (isset($addItems) && is_array($addItems))	{
+								foreach ($addItems as $k1 => $row)	{
+									foreach ($row as $field => $v)	{
+										$addItems[$k1][$field] = $TSFE->csConv($v, $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['static_info_tables']['charset']);
+									}
+								}
+							}
 						}
 					}
 
@@ -350,15 +352,16 @@ class tx_ttproducts_paymentshipping {
 							if (is_array($row))	{
 								$markerArray = array();
 								$itemTable->getItemMarkerArray ($row, $markerArray, $fieldsArray);
-								$item['title'] = $this->pibase->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
+								$title = $this->pibase->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
 								$value = $key . '-'.$row['uid'];
 								if ($value == implode('-',$activeArray))	{
-									$actTitle = $item['title']; 
+									$actTitle = $title;
 								}
 							} else {
 								$value = $key;
+								$title = $item['title'];
 							}
-							$out .= '<option value="'.$value.'"'.($value == implode('-',$activeArray) ? ' selected':'').'>'.htmlspecialchars($item['title']).'</option>'.chr(10);
+							$out .= '<option value="' . $value . '"' . ($value == implode('-',$activeArray) ? ' selected':'') . '>'  . $title .'</option>' . chr(10);
 						}
 					}
 				}
@@ -391,8 +394,7 @@ class tx_ttproducts_paymentshipping {
 		return $out;
 	} // generateRadioSelect
 
-
-	function cleanConfArr($confArr,$checkShow=0)	{
+	function cleanConfArr ($confArr,$checkShow=0)	{
 		$outArr=array();
 		if (is_array($confArr)) {
 			reset($confArr);
@@ -407,8 +409,7 @@ class tx_ttproducts_paymentshipping {
 		return $outArr;
 	} // cleanConfArr
 
-
-	function getConfiguredPrice(&$tax, &$confArr, &$countTotal, &$priceTotalTax, &$priceTax, &$priceNoTax) {
+	function getConfiguredPrice (&$tax, &$confArr, &$countTotal, &$priceTotalTax, &$priceTax, &$priceNoTax) {
 
 		if (is_array($confArr))	{
 			$minPrice=0;
@@ -416,16 +417,27 @@ class tx_ttproducts_paymentshipping {
 			if ($confArr['WherePIDMinPrice.']) {
 					// compare PIDList with values set in priceTaxWherePIDMinPrice in the SETUP
 					// if they match, get the min. price
-					// if more than one entry for priceTaxWherePIDMinPrice exists, the highest is value will be taken into account
+					// if more than one entry for priceTaxWherePIDMinPrice exists, the highest value will be taken into account
+
 				foreach ($confArr['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
-					if (is_array($this->basket->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
-						$minPrice=$minPriceValue;
+					foreach ($this->basket->itemArray as $sort=>$actItemArray) {
+						foreach ($actItemArray as $k1=>$actItem) {
+							$tmpRow = &$actItem['rec'];
+							$pid = intval($tmpRow['pid']);
+							if ($pid == $minPricePID) {
+								$minPrice = $minPriceValue;
+							}
+						}
 					}
 				}
 			}
 
+/*				foreach ($confArr['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
+					if (is_array($this->basket->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
+						$minPrice=$minPriceValue;
+					}
+				}*/
 			krsort($confArr);
-			reset($confArr);
 
 			if ($confArr['type'] == 'count') {
 				foreach ($confArr as $k1 => $price1)	{
@@ -469,7 +481,6 @@ class tx_ttproducts_paymentshipping {
 		}
 	}
 
-
 	function getPrices ($pskey, $countTotal, $priceTotalTax, &$priceShippingTax, &$priceShippingNoTax, &$taxpercentage)	{
 
 		$taxIncluded = $this->conf['TAXincluded'];
@@ -504,8 +515,6 @@ class tx_ttproducts_paymentshipping {
 		}
 	}
 
-
-
 	function getSpecialPrices ($pskey, $taxpercentage, &$priceShippingTax, &$priceShippingNoTax)	{
 		global $TSFE;
 
@@ -518,7 +527,7 @@ class tx_ttproducts_paymentshipping {
 			$priceShippingNoTax = $priceShippingNoTax + $this->price->getPrice($priceShipping,false,$taxpercentage,$taxIncluded,true);
 		}
 
-		$calculationScript = $this->basket->basketExtra[$pskey.'.']['calculationScript']; 
+		$calculationScript = $this->basket->basketExtra[$pskey.'.']['calculationScript'];
 		if ($calculationScript) {
 			$calcScript = $TSFE->tmpl->getFileName($calculationScript);
 			if ($calcScript)	{
@@ -529,7 +538,6 @@ class tx_ttproducts_paymentshipping {
 			}
 		}
 	}
-
 
 	function getPaymentShippingData (
 			$countTotal,
@@ -573,9 +581,7 @@ class tx_ttproducts_paymentshipping {
 		}
 		$this->getSpecialPrices ('payment', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
 		$this->getPrices ('payment', $countTotal, $priceTotalTax, $pricePaymentTax, $pricePaymentNoTax, $taxpercentage);
-
 	} // getPaymentShippingData
-
 
 	/**
 	 * Include handle script
@@ -585,7 +591,6 @@ class tx_ttproducts_paymentshipping {
 		include($handleScript);
 		return $content;
 	} // includeHandleScript
-
 
 	/**
 	 * get the replaceTAXpercentage from the shipping if available
@@ -597,16 +602,13 @@ class tx_ttproducts_paymentshipping {
 		return $rc;
 	}
 
-
 	/**
 	 * get the delivery costs
 	 */
 	function getDeliveryCosts()	{
 		$rc = $this->basket->calculatedArray['priceTax']['shipping'] + $this->basket->calculatedArray['priceTax']['payment'];
-
 		return $rc;
 	}
-
 
 	/**
 	 * get the where condition for a shipping entry
@@ -629,16 +631,23 @@ class tx_ttproducts_paymentshipping {
 		return $rc;
 	}
 
-
 	function getAddRequiredInfoFields ()	{
 		$rc = '';
-		$tmp = $this->basket->basketExtra['payment.']['addRequiredInfoFields']; 
+		$tmp = $this->basket->basketExtra['payment.']['addRequiredInfoFields'];
 		if ($tmp != '')	{
 			$rc = trim($tmp);
 		}
 		return $rc;
 	}
 
+	function get ($pskey, $setup)	{
+		$rc = '';
+		$tmp = $this->basket->basketExtra[$pskey.'.'][$setup];
+		if ($tmp != '')	{
+			$rc = trim($tmp);
+		}
+		return $rc;
+	}
 
 	function useCreditcard ()	{
 		$rc = false;
@@ -649,7 +658,6 @@ class tx_ttproducts_paymentshipping {
 		return $rc;
 	}
 
-
 	function useAccount ()	{
 		$rc = false;
 		$payConf = &$this->basket->basketExtra['payment.'];
@@ -658,7 +666,6 @@ class tx_ttproducts_paymentshipping {
 		}
 		return $rc;
 	}
-
 
 	function useGatewayRequest ()	{
 		$rc = false;

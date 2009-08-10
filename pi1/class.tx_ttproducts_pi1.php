@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -35,11 +35,11 @@
 *
 * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
 * @author	René Fritz <r.fritz@colorcube.de>
-* @author	Franz Holzinger <kontakt@fholzinger.com>
+* @author	Franz Holzinger <franz@ttproducts.de>
 * @author	Klaus Zierer <zierer@pz-systeme.de>
 * @author	Milosz Klosowicz <typo3@miklobit.com>
 * @author	Els Verberne <verberne@bendoo.nl>
-* @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+* @maintainer	Franz Holzinger <franz@ttproducts.de>
 * @package TYPO3
 * @subpackage tt_products
 * @see file tt_products/static/old_style/constants.txt
@@ -48,12 +48,12 @@
 *
 */
 
-require_once(PATH_BE_fh_library.'/sysext/cms/tslib/class.fhlibrary_pibase.php');
 require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
+require_once(PATH_tslib.'class.tslib_pibase.php');
 
+require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-
 
 require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_control.php');
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article.php');
@@ -74,10 +74,8 @@ require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_product.php');
 require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_single_view.php');
 
 
-//define('XAJAX_DEFAULT_ENCODING',  'iso-8859-1');
-
-class tx_ttproducts_pi1 extends fhlibrary_pibase {
-	var $prefixId = 'tx_ttproducts_pi1';	// Same as class name
+class tx_ttproducts_pi1 extends tslib_pibase {
+	var $prefixId = 'tt_products';
 	var $scriptRelPath = 'pi1/class.tx_ttproducts_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
 	var $version;			// version number
@@ -112,6 +110,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $page;	 				// object of the type tx_ttproducts_page
 	var $paymentshipping; 				// object of the type tx_ttproducts_paymentshipping
 	var $fe_users;					// object of the type tx_table_db
+	var $bank_de;
 	var $tx_dam;					// object of the type tx_table_db
 	var $tx_dam_cat;				// object of the type tx_table_db
 	var $price;	 				// object for price functions
@@ -128,17 +127,16 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	var $ajaxconf;					// configuration from xajax
 	var $javascript;				// JavaScript object
 	var $codeArray;					// Codes
-	var $tableArray;					// contains the table name as key and the part of the file name for the corresponding data and view 
+	var $tableArray;					// contains the table name as key and the part of the file name for the corresponding data and view
 	var $templateSuffix; 			// suffix for template subpart area markers
 	var $bNoCachePossible = TRUE;	// if the cache may be turned off
 	var $pageAsCategory;			// > 0 if pages are used as categories
 
 
-
 	/**
 	* Main method. Call this from TypoScript by a USER cObject.
 	*/
-	function main($content,$conf)	{
+	function main ($content,$conf)	{
 		global $TSFE, $TYPO3_CONF_VARS;
 
 		$this->conf = &$conf;
@@ -153,17 +151,18 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 		$backPID = $this->piVars['backPID'];
 		$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
-		$eInfo = $this->getExtensionInfo(TT_PRODUCTS_EXTkey);
+		$eInfo = tx_div2007_alpha::getExtensionInfo_fh001(TT_PRODUCTS_EXTkey);
 		$this->version = $eInfo['version'];
 		$this->pi_initPIflexForm();
-		$config['code'] = 
-			$this->pi_getSetupOrFFvalue(
-				$this->conf['code'], 
-				$this->conf['code.'], 
-				$this->conf['defaultCode'], 
+		$config['code'] =
+			tx_div2007_alpha::getSetupOrFFvalue_fh001(
+				$this,
+	 			$conf['code'],
+	 			$conf['code.'],
+				$conf['defaultCode'],
 				$this->cObj->data['pi_flexform'],
 				'display_mode',
-				$TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
+				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
 			);
 
 		$this->codeArray = t3lib_div::trimExplode(',', $config['code'],1);
@@ -176,7 +175,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			// $this->xajax->decodeUTF8InputOn();
 				// Encoding of the response to iso-8859-1.
 			$this->xajax->setCharEncoding('iso-8859-1');
-				// Encoding of the response to utf-8. 
+				// Encoding of the response to utf-8.
 			// $this->xajax->setCharEncoding('utf-8');
 				// Do you want messages in the status bar?
 			// $this->xajax->statusMessagesOn();
@@ -226,8 +225,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		return $content;
 	}
 
-
-	function set_no_cache() {
+	function set_no_cache () {
 		global $TSFE;
 
 		if ($this->bNoCachePossible)	{
@@ -235,8 +233,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		}
 	}
 
-
-	function &getTemplateCode($theCode) {
+	function &getTemplateCode ($theCode) {
 		$templateCode = '';
 		$templateFile = $this->cnf->getTemplateFile($theCode);
 		if ($templateFile) {
@@ -260,8 +257,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		return $templateCode;
 	}
 
-
-	function doProcessing($content='', $bRunAjax = false)	{
+	function doProcessing ($content='', $bRunAjax = false)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS; // needed for include_once and PHP 5.1 which otherwise would not allow XCLASS for HtmlMail, DAM aso.
 		$bStoreBasket = true;
@@ -269,7 +265,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		if (!count($this->codeArray) && !$bRunAjax)	{
 			$this->codeArray = array('HELP');
 		}
-		$this->init ($content);
+		$this->init($content);
 
 		if ((t3lib_extMgm::isLoaded('xajax')))	{
 			if ($bRunAjax)	{
@@ -287,18 +283,22 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$updateMode = 0;
 		}
 
+		if (count ($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW')	{
+			$bStoreBasket = FALSE;
+		}
+
 		if (!$this->errorMessage) {
 			$this->basket->init(
 				$this,
 				$this->cnf,
 				$TSFE->fe_user->getKey('ses','recs'),
-				$updateMode, 
+				$updateMode,
 				$this->pid_list,
 				$this->tt_content,
 				$this->tt_products,
 				$this->tt_products_articles,
 				$this->tt_products_cat,
-				$this->tx_dam, 
+				$this->tx_dam,
 				$this->tx_dam_cat,
 				$this->fe_users,
 				$this->price,
@@ -313,7 +313,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		if (!$this->errorMessage) {
 			$this->basket->getCalculatedBasket(); // get the basket->itemArray
 			$this->basket->getCalculatedSums ();
-
 			$this->templateCode=$this->getTemplateCode('BASKET');
 
 			$this->control->init (
@@ -329,7 +328,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$this->paymentshipping,
 				$error_code
 			);
-		
+
 			$content .= $this->control->doProcessing($this->codeArray, $this->errorMessage);
 		}
 
@@ -382,20 +381,28 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					} else {
 						$templateArea = 'ITEM_CATEGORY_SELECT_TEMPLATE';
 						if ($theCode == 'SELECTAD')	{
-							if ($this->conf['table.']['tt_address.']['name'] != 'tt_address' || 
-							t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) {
+
+							if (is_array($this->conf['table.']))	{
+								$tablename = $this->conf['table.']['address'];
+							}
+							if (
+								$tablename == 'tx_party_addresses' && t3lib_extMgm::isLoaded(PARTY_EXTkey) ||
+								$tablename == 'tx_partner_main' && t3lib_extMgm::isLoaded(PARTNER_EXTkey) ||
+								$tablename == 'tt_address' && t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)
+							) {
 								include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
 								$categoryTable = t3lib_div::makeInstance('tx_ttproducts_address');
 								$categoryTable->init(
 									$this,
 									$this->cnf,
-									$this->conf['table.']['tt_address']
+									$this->conf['table.']['address']
 								);
 								$templateArea = 'ITEM_ADDRESS_SELECT_TEMPLATE';
 							} else {
 								$message = $this->pibase->pi_getLL('extension_missing');
 								$messageArr =  explode('|', $message);
-								$this->errorMessage=$messageArr[0]. TT_ADDRESS_EXTkey .$messageArr[1];
+								$extTableArray = array('tt_address' => TT_ADDRESS_EXTkey, 'tx_partner_main' => PARTNER_EXTkey, 'tx_party' => PARTNER_EXTkey);
+								$this->errorMessage=$messageArr[0] . $extTableArray[$tablename] . $messageArr[1];
 							}
 						} else {
 							if ($this->pageAsCategory)	{
@@ -415,7 +422,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 					}
 				break;
 				case 'SINGLE':
-					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList'] && 
+					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList'] &&
 						!$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']) {
 						$this->set_no_cache();
 					}
@@ -496,7 +503,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			}
 
 			if ($error_code[0]) {
-				$messageArr = array(); 
+				$messageArr = array();
 				$i = 0;
 				foreach ($error_code as $key => $indice) {
 					if ($key == 0) {
@@ -511,11 +518,18 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			}
 
 			if ($contentTmp == 'error') {
-					$fileName = 'EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl';
-					$helpTemplate = $this->cObj->fileResource($fileName);
-					$content .= $this->pi_displayHelpPage($helpTemplate, $theCode);
-					unset($this->errorMessage);
-					break; // while
+				$fileName = 'EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl';
+				$helpTemplate = $this->cObj->fileResource($fileName);
+				$content .= tx_div2007_alpha::displayHelpPage_fh002(
+					$this,
+					$this->cObj,
+					$helpTemplate,
+					TT_PRODUCTS_EXTkey,
+					$this->errorMessage,
+					$theCode
+				);
+				unset($this->errorMessage);
+				break; // while
 			} else {
 				$idNumber = 'tx-ttproducts-pi1-'.strtolower($theCode);
 				if ($this->templateSuffix)	{
@@ -532,7 +546,6 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		return $rc;
 	}
 
-
 	/**
 	* does the initialization stuff
 	*
@@ -548,7 +561,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$config = &$this->config;
 		$this->pi_setPiVarDefaults();
 
-		// corrections for not initialized deprecated 'AlwaysInStock' 
+		// corrections for not initialized deprecated 'AlwaysInStock'
 		if ($this->conf['alwaysInStock'] == '{$plugin.tt_products.alwaysInStock}')	{
 			$this->conf['alwaysInStock'] = '';
 		}
@@ -567,12 +580,12 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		} else {
 			$dblangfile = 'locallang_db.xml';
 		}
-		tx_fhlibrary_language::pi_loadLL($this,'EXT:tt_products/'.$dblangfile);
-		tx_fhlibrary_language::pi_loadLL($this,'EXT:tt_products/pi1/locallang.xml');
+		tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/'.$dblangfile);
+		tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/pi1/locallang.xml');
 
 			// get all extending TCAs
-		if (is_array($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']))	{
-			$this->pi_loadTcaAdditions($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']))	{
+			tx_div2007_alpha::loadTcaAdditions_fh001($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
 		}
 
 		// *************************************
@@ -605,12 +618,9 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 		$config['priceNoReseller'] = $this->conf['priceNoReseller'] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
 
-// ($this->piVars['pid_list'] ? $this->piVars['pid_list'] :
-
 		if ($this->conf['pid_list'] == '{$plugin.tt_products.pid_list}')	{
 			$this->conf['pid_list'] = '';
 		}
-
 		$tmp = $this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.']);
 		$pid_list =  ($this->cObj->data['pages'] ? $this->cObj->data['pages'] : ($this->conf['pid_list.'] ? trim($tmp) : ''));
 		$pid_list = $config['pid_list'] = ($pid_list ? $pid_list : $this->conf['pid_list']);
@@ -624,34 +634,34 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->tt_product_single['product'] = $row['uid'];
 		} else {
 			$tmp = ($this->piVars['product'] ? $this->piVars['product'] : t3lib_div::_GP('tt_products'));
-			if ($tmp)	{
+			if (isset($tmp) && is_array($tmp) && isset($tmp['product']))	{	// upwards compatible to tt_products parameter
+				$tmp = $tmp['product'];
+			}
+			if (t3lib_div::testInt($tmp))	{
 				$this->tt_product_single['product'] = $tmp;
 			}
 			$tmp = ($this->piVars['article'] ? $this->piVars['article'] : '');
-			if ($tmp)	{
+			if (t3lib_div::testInt($tmp))	{
 				$this->tt_product_single['article'] = $tmp;
-			}			
+			}
 			$tmp = ($this->piVars['dam'] ? $this->piVars['dam'] : '');
-			if ($tmp)	{
+			if (t3lib_div::testInt($tmp))	{
 				$this->tt_product_single['dam'] = $tmp;
 			}
 		}
-			// mkl - multicurrency support
-	//		if (t3lib_extMgm::isLoaded('mkl_currxrate')) {
-	//			include_once(t3lib_extMgm::extPath('mkl_currxrate').'pi1/class.tx_mklcurrxrate_pi1.php');
-	//			$this->baseCurrency = $TSFE->tmpl->setup['plugin.']['tx_mklcurrxrate_pi1.']['currencyCode'];
-	//			$this->currency = t3lib_div::GPvar('C') ? 	t3lib_div::GPvar('C') : $this->baseCurrency;
-	//
-	//			// mkl - Initialise exchange rate library and get
-	//
-	//			$this->exchangeRate = t3lib_div::makeInstance('tx_mklcurrxrate_pi1');
-	//			$this->exchangeRate->init();
-	//			$result = $this->exchangeRate->getExchangeRate($this->baseCurrency, $this->currency) ;
-	//			$this->xrate = floatval ( $result['rate'] );
-	//		}
 
-
+			// basket
+		$this->basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$this->initTables();
+
+		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
+		$this->marker->init(
+			$this,
+			$this->cnf,
+			$this->basket
+		);
+
+		$this->globalMarkerArray = $this->marker->getGlobalMarkers();
 
 			// pages
 		$this->page = tx_ttproducts_page::createPageTable(
@@ -659,7 +669,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->cnf,
 			$this->tt_content,
 			$this->LLkey,
-			$this->conf['table.']['pages'], 
+			$this->conf['table.']['pages'],
 			$this->conf['conf.']['pages.'],
 			$this->page,
 			$this->pid_list,
@@ -675,21 +685,9 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			$this->xajax
 		);
 
-			// basket
-		$this->basket = t3lib_div::makeInstance('tx_ttproducts_basket');
-
-		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init(
-			$this,
-			$this->cnf,
-			$this->basket
-		);
-
-		$this->globalMarkerArray = $this->marker->getGlobalMarkers();
-
 			// basket view
 		$this->control = t3lib_div::makeInstance('tx_ttproducts_control');
-				
+
 			// price
 		$this->price = t3lib_div::makeInstance('tx_ttproducts_price');
 		$this->price->init(
@@ -707,11 +705,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$this->externalCObject = $this->getExternalCObject('externalProcessing');
 	} // init
 
-
 	/**
 	* Getting the table definitions
 	*/
-	function initTables()	{		
+	function initTables ()	{
 		$this->tt_content = t3lib_div::makeInstance('tx_ttproducts_content');
 		$this->tt_content->init();
 
@@ -790,24 +787,16 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 				$this->tt_content,
 				$this->paymentshipping,
 				$this->LLkey,
-				$this->conf['table.']['tx_dam'],
-				'tx_dam'
+				$this->conf['table.']['tx_dam']
 			);
 		}
-
 	} // initTables
 
-
-
 		// XAJAX functions cannot be in classes
-	function showArticle($data)	{
+	function showArticle ($data)	{
 		$rc = '';
-	// We put our incomming data to the regular piVars 
+	// We put our incomming data to the regular piVars
 		$this->piVars = array_merge($this->piVars, $data[$this->prefixId]);
-//        error_log('$this->piVars:');
-//        foreach ($this->piVars as $k => $v)	{
-//        	error_log($k.'='.$v);
-//        }
 		$this->excludeCode = '';
 		$this->ajaxconf = $data['conf'];
 
@@ -830,13 +819,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 
 		$idClass = ($idClass ? $idClass : 'ArticleId');
 		$content = $this->doProcessing('',true);
-	// $content = '<br /><strong>Content from AJAX server</strong><br />';
 		$objResponse->addAssign($idClass,'innerHTML', $content);
 		$rc = $objResponse->getXML();
-	//return the XML response generated by the tx_xajax_response object
 		return $rc;
 	}
-
 
 	/**
 	* Order tracking
@@ -846,8 +832,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 	* @return	void
 	* @see enableFields()
 	*/
-
-	function products_tracking($theCode)	{ // t3lib_div::_GP('tracking')
+	function products_tracking ($theCode)	{ // t3lib_div::_GP('tracking')
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
@@ -862,7 +847,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		$msgSubpart = '';
 		if ($trackingCode || $admin)	{		// Tracking number must be set
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-			
+
 				// order
 			$order = &t3lib_div::getUserObj('tx_ttproducts_order');
 			$order->init(
@@ -952,11 +937,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		return $content;
 	}  // products_tracking
 
-
 	/**
 	* Returns 1 if user is a shop admin
 	*/
-	function shopAdmin(&$updateCode)	{
+	function shopAdmin (&$updateCode)	{
 		$admin=0;
 		if ($GLOBALS['TSFE']->beUserLogin)	{
 			$updateCode = t3lib_div::_GP('update_code');
@@ -967,38 +951,49 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		return $admin;
 	}
 
-
 	/**
 	* Get External CObjects
 	*/
-	function getExternalCObject($mConfKey)	{
+	function getExternalCObject ($mConfKey)	{
 		if ($this->conf[$mConfKey] && $this->conf[$mConfKey.'.'])	{
 			$this->cObj->regObj = &$this;
 			return $this->cObj->cObjGetSingle($this->conf[$mConfKey],$this->conf[$mConfKey.'.'],'/'.$mConfKey.'/').'';
 		}
 	}
 
-
-	function load_noLinkExtCobj()	{
+	function load_noLinkExtCobj ()	{
 		if ($this->conf['externalProcessing_final'] || is_array($this->conf['externalProcessing_final.']))	{	// If there is given another cObject for the final order confirmation template!
 			$this->externalCObject = $this->getExternalCObject('externalProcessing_final');
 		}
 	} // load_noLinkExtCobj
 
+	function setSingleFromList ($bValue)	{
+		$this->bSingleFromList = $bValue;
+	}
+
+	function getSingleFromList ()	{
+		return $this->bSingleFromList;
+	}
 
 	/**
 	* Displaying single products/ the products list / searching
 	*/
-	function products_display($theCode, &$errorMessage, &$error_code)	{
+	function products_display ($theCode, &$errorMessage, &$error_code)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
-		if (($theCode=='SINGLE') || (strstr($theCode,'LIST') && $theCode != 'LISTARTICLES' && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'])) {
+		if (($theCode=='SINGLE') || ((($theCode=='SEARCH') && $this->conf['listViewOnSearch'] == '1' || strstr($theCode,'LIST')) && $theCode != 'LISTARTICLES' && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList']) && !$this->getSingleFromList()) {
+			$this->setSingleFromList(TRUE);
+			$bSingleFromList = TRUE;
+		}
+
+		if (($theCode == 'SINGLE') || $bSingleFromList) {
+
 			$extVars = $this->piVars['variants'];
 			$extVars = ($extVars ? $extVars : t3lib_div::_GP('ttp_extvars'));
 
 			if (!count($this->tt_product_single))	{
-				if ($this->conf['defaultProductID'])	{	
+				if ($this->conf['defaultProductID'])	{
 					$this->tt_product_single['product'] = $this->conf['defaultProductID'];
 				} else if ($this->conf['defaultArticleID'])	{
 					$this->tt_product_single['article'] = $this->conf['defaultArticleID'];
@@ -1006,6 +1001,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			}
 
 			if (!is_object($this->singleView)) {
+
 				// List single product:
 				$this->singleView = t3lib_div::makeInstance('tx_ttproducts_single_view');
 				$this->singleView->init (
@@ -1061,10 +1057,10 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 			} else {
 				$templateArea = 'ITEM_LIST_TEMPLATE';
 			}
-
 			$allowedItems = '';
 			$bAllPages = false;
 			$templateArea = $templateArea.$this->templateSuffix;
+
 			$content = $listView->printView(
 				$this->templateCode,
 				$theCode,
@@ -1080,7 +1076,7 @@ class tx_ttproducts_pi1 extends fhlibrary_pibase {
 		return $content;
 	}	// products_display
 }
-	
+
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1.php'])	{
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1.php']);
 }

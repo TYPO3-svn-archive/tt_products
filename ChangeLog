@@ -1,3 +1,80 @@
+2009-08-10 Franz Holzinger <franz@fholzinger.com>
+	* hide template products which are not supported yet
+	* fix bug with double call of htmlentities for output of pages used as categories
+	* allow six digits after the comma for the weight in kg
+	* use the div2007 hook function tx_double6 for doubles with 6 digits after the comma
+	* make the DAM plugins visible
+	* fix bug with begin_at parameter mismatch if you click on an item on related products
+	* new feature to support the search form without any list view of found products
+	* enable to set the uids of stores UIDstore and use them for the delivery
+	* fix bug with wrong pid in PIDitemDisplay where type=pid
+	* fix bug: HELP did not work
+	* round the price to 10 digits after the comma before output on the FE
+	* get ready for paymentlib 0.4.0
+
+2009-07-03 Franz Holzinger <franz@ttproducts.de>
+	* fix bug: the links must not use the cache in list view if there are items in the basket
+	* fix bug: text encodings of the country items have been wrong in the basket view for shipping
+	* fix bug #11228: WherePIDMinPrice did not work
+	* fix name of form tag to have no number added if there is only one form for tt_products
+	* replace the main basket markers also if the basket is empty
+	* use 12 characters for automatically generated password
+	* new feature useMd5Password to save it as a md5 encrypted password
+	* fix template: url parameter is tt_products and not the former tx_ttproducts_pi1
+
+2009-05-12 Franz Holzinger <franz@ttproducts.de>
+	* fix bug: link from single view back to list must not have the product parameter
+	* fix bug 10108 : Replace t3lib_div::GPvar with t3lib_div::_GP
+	* fix bug in pricalc with missing field=price if discountprice is used
+	* keep the sword parameter in the link from the search list view to the single view and the back to list link
+	* fix the parameters in the link from the basket item to the single view
+	* check for debug == 1, because if it is not in constants then it is wrongly not empty
+	* change the extension parameter from tx_ttproducts_pi1 to tt_products because TYPO3 is not able to handle different plugin variables when they are mixed.
+	* support for new fe_users field cnum
+	* new feature to support the search form without any list view of found products
+	* get independant from fh_library, only div2007 is needed
+	* add "IN (###CURRENT_PID###,###STORAGE_PID###)" to the related records to enable different sources than the current sysfolder
+	* support also different tables for addresses from the tt_address
+	* fix bug: do not delete the basket contents if no quantity is found
+	* new markers ###WEIGHT_UNIT_PRICE_TAX### and ###UNIT_PRICE_NO_TAX### for unit prices based on weight or the unit_factor
+
+2009-01-22 Franz Holzinger <franz@ttproducts.de>
+	* fix bug: basket did not work
+	* fix bug to keep the correct backPID in single view
+
+2008-12-30 Franz Holzinger <franz@ttproducts.de>
+	* fix bug with too late initialized global basket object for payment/shipping
+	* better support for SEARCH plugin in combination with list and single view
+	* new feature 6820: data sheet target is configurable
+	* fix bugs 7712, 3670, 6142, 5874, 5210, 3684, 5935, 6178
+
+2008-09-22 Franz Holzinger <franz@fholzinger.com>
+	* only copy the billing fields into the delivery fields if they have been checked and are ok
+	* new field EAN code with a maximum of 48 characters
+	* new configuration in EM: where.category. This can be used to reduce the selectable categories.
+	* do not use the search filter for related articles
+	* fix bug with search: click on item did not lead to the single view
+	* fix bug with not used table translations
+
+2008-08-30 Franz Holzinger <franz@fholzinger.com>
+	* fix bug with double calculated fe user discount percentage
+	* fix bug with change in TYPO3 4.2.0: t3lib_div::trimExplode does not reset the array any more
+	* fix bug with special image markers: If more than a colon had been used for the same image then the last setup has been used for all of them.
+	* hide template products which are not supported yet
+	* fix bug with begin_at parameter mismatch if you click on an item on related products
+
+2008-06-06 Franz Holzinger <franz@fholzinger.com>
+	* fix bug to consider the required address fields
+	* fix bug with markers for tx_feuserextrafields
+
+2008-05-01 Franz Holzinger <franz@fholzinger.com>
+	* improve clickIntoBasket in single view
+	* add enable fields to the where clause of articles
+	* fix bug 7842: when in render mode 'checkbox' the checkbox has not been displayed as selected
+	* change in template: ###PERSON_AGB### instead of value="###PERSON_AGB###" The marker will be replaced by checked="checked" or empty.
+	* do not overwrite product variants fields from corresponding article
+	* support the mydashboard extension with list for latest products, latest orders and stock informations
+
 2008-04-08 Franz Holzinger <franz@fholzinger.com>
 	* fix bug with double calculated fe user discount percentage
 	* fix bug with change in TYPO3 4.2.0: t3lib_div::trimExplode does not reset the array any more
@@ -261,7 +338,7 @@
 	* make category subtitle visible in backend
 	* LISTARTICLES for a listing of articles
 	* make usage of the Payment Library extension
-	* category list with select boxes displays content using JavaScript and AJAX 
+	* category list with select boxes displays content using JavaScript and AJAX
 	* Payment Gayteways with use of paymentlib - handleLib payment settings
 	* editLockedLoginInfo to still change some fields of the frontend user for the order
 
@@ -590,7 +667,7 @@
 
 2005-07-26  Franz Holzinger  <franz@fholzinger.com>
 	* a lot of changes due to make it more compliant to coding guidelines and use ' instead of " where possible
-	* voucher system etc. from Bert Hiddink and Els Verberne 
+	* voucher system etc. from Bert Hiddink and Els Verberne
 
 2005-07-01  Franz Holzinger  <franz@fholzinger.com>
 

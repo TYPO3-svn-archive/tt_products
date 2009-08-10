@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -29,10 +29,10 @@
  *
  * hook functions for the TYPO3 cms
  *
- * $Id:$
+ * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
+ * @author	Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com> 
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -59,11 +59,11 @@ class tx_ttproducts_cms {
 	 * @return	  string
 	 */
 	function pmDrawItem(&$params, &$pObj)	{
-		if (defined ('PATH_BE_div') && $pObj->pageRecord['doktype'] == 1 && $params['row']['pi_flexform'])	{
-			include_once (PATH_BE_div.'class.tx_div_ff.php');
+		if (defined ('PATH_BE_div2007') && $pObj->pageRecord['doktype'] == 1 && $params['row']['pi_flexform'])	{
+			include_once (PATH_BE_div2007.'class.tx_div2007_ff.php');
 
-			tx_div_ff::load($params['row']['pi_flexform'],TT_PRODUCTS_EXTkey);
-			$codes = 'CODE: '.tx_div_ff::get(TT_PRODUCTS_EXTkey, 'display_mode');
+			tx_div2007_ff::load($params['row']['pi_flexform'],TT_PRODUCTS_EXTkey);
+			$codes = 'CODE: '.tx_div2007_ff::get(TT_PRODUCTS_EXTkey, 'display_mode');
 		}
 		return $codes;
 	}

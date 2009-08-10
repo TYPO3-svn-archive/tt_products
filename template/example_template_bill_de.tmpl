@@ -36,7 +36,8 @@ If the basket is empty this subpart is displayed
 <br>
 <h1>Shop System f&uuml;r TYPO3</h1>
 <p> Willkommen bei der Verwendung des tt_products Shop Systems f&uuml;r TYPO3. Bevor Sie damit starten, sollten Sie das Tutorial
-auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop System</a> oder als Anfänger auch das Buch "<a href="https://www.opensourcepress.de/index.php?26&amp;backPID=15&amp;tt_products=153">Der TYPO3-Webshop</a>" durchgearbeitet haben. Es gibt dort auch ein Forum, um Fragen zu stellen.
+auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop System</a> oder als Anf&auml;nger auch das Buch "<a href="https://www.opensourcepress.de/index.php?26&amp;backPID=15&amp;tt_products=153">Der TYPO3-Webshop</a>" durchgearbeitet haben. Es gibt dort auch ein Forum, um Fragen zu stellen.
+Weiterentwicklungen zum Shop k&ouml;nnen Sie unter <a href="http://ttproducts.de">tt_products.de</a> erwerben.
 </p>
 <br>
 <h1>bananaGUARD Shop-Template</h1>
@@ -92,11 +93,11 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
             <!-- ###display_variant5_isSingle### -->
             Einzelprodukt, das nur einmal gew&auml;hlt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
             <!-- ###display_variant5_isSingle### -->
-	<nobr>###GW1B### Preis:###GW1E### <strong><p id="###PRICE_TAX_ID###">###PRICE_TAX### &euro;</p><BR>
+	<nobr>###GW1B### Preis:###GW1E### <strong><p id="###PRICE_TAX_ID###">###PRICE_TAX### &euro;</p><br>
             <!-- ###display_variant5_isNotSingle### -->
             ###PRODUCT_DELIVERY###
             ###GW1B### St&uuml;ckzahl: ###GW1E### <input size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-            <input type="image" name="addtomemo" src="###PATH_FE_REL###/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_UID###';" title="Add to memo">
+            <input type="image" name="addtomemo" src="###PATH_FE_REL###res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tt_products[addmemo]=###PRODUCT_UID###';" title="Add to memo">
             <!-- ###display_variant5_isNotSingle### --> <p> </td>
           ###ITEM_SINGLE_POST_HTML###
           <!-- ###ITEM_SINGLE### end -->
@@ -107,7 +108,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
             <td colspan="3" align="CENTER">
             <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"></td>
           </tr>
-          
+
         </table>
 			</form>
 			</td></tr>
@@ -120,7 +121,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 	</tr>
 </table>
-###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Bef&uuml;llung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte ber den Link Kontakt/Bestellung per Email. Viel Spa� beim Einkaufen! ###GW1E###
+###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Bef&uuml;llung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte &uuml;ber den Link Kontakt/Bestellung per Email. Viel Spa&szlig; beim Einkaufen! ###GW1E###
 
 <br>
 <table width="163">
@@ -187,7 +188,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		  ###GW2B### Size: ###GW2E### ###ARTICLE_SIZE###<br>
 		  <!-- ###display_variant2### -->
 			###ITEM_SINGLE_POST_HTML###
-          <!-- ###ITEM_SINGLE### end -->          
+          <!-- ###ITEM_SINGLE### end -->
         </table>
 			</td></tr>
 		<!-- ###ITEM_LIST### end -->
@@ -240,7 +241,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		<td colspan=3><img src="clear.gif" width="1" height="6"></td>
 	</tr>
 	<tr>
-		<td colspan=3 bgcolor="###GC1###"><!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--></td>
+		<td colspan=3 bgcolor="###GC1###"><!--###LINK_ITEM###-->###GW1B###<b>###CATEGORY_TITLE###: </b><b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--></td>
 	</tr>
 	<tr>
 		<td valign=top><!-- ###PRODUCT_HAS_IMAGE1### begin -->
@@ -260,9 +261,9 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		    ###GW2B### Size: ###GW2E### <select style="font-size: 10px"
 		    name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</select><br>
 		    <!-- ###display_variant2### -->
-			<nobr>###GW2B### Preis:###GW2E### ###GW1B###<strong>###PRICE_TAX### &euro;###GW1E###<BR>
+			<nobr>###GW2B### Preis:###GW2E### ###GW1B###<strong>###PRICE_TAX### &euro;###GW1E###<br>
 
-				<nobr>###GW2B### Menge: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">  
+				<nobr>###GW2B### Menge: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
 				<input type="Submit" name="order" value="in den Warenkorb" onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 				</nobr>
 				<br>
@@ -349,7 +350,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
             <!-- ###display_variant5_isSingle### -->
             <!-- ###display_variant5_isNotSingle### -->
             ###GW1B### St&uuml;ckzahl: ###GW1E### <input size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-            <input type="image" name="addtomemo" src="###PATH_FE_REL###/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_ID###';" title="Add to memo">
+            <input type="image" name="addtomemo" src="###PATH_FE_REL###/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tt_products[addmemo]=###PRODUCT_ID###';" title="Add to memo">
             <!-- ###display_variant5_isNotSingle### --> <p> </td>
           ###ITEM_SINGLE_POST_HTML###
           <!-- ###ITEM_SINGLE### end -->
@@ -370,7 +371,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
 		<td></td>
 		<td></td>
-		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n?hste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
 	</tr>
 </table>
 ###GW1B###In Ihrem Browser sollten Cookies zugelassen sein.<br>Sollte die Bef&uuml;llung des Warenkorbs nach mehreren Versuchen nicht funktionieren, bestellen Sie bitte &uuml;ber den Link Kontakt/Bestellung per Email. Viel Spa&szlig; beim Einkaufen! ###GW1E###
@@ -390,7 +391,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 <!-- ###MEMO_TEMPLATE### begin
         This subpart is used to display the regular list of products. It's also used by search-results.
 -->
-<TABLE border="0" cellspacing="0" cellpadding="1" width="545">
+<table border="0" cellspacing="0" cellpadding="1" width="545">
         <tr>
                 <td colspan="5" align="center">
                         <b>
@@ -416,8 +417,8 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
                         <TR>
                                 <TD align="center" height="80" style="border-top: 1px dotted #3F4F73;"><!--###LINK_ITEM###-->###PRODUCT_IMAGE###<!--###LINK_ITEM###--></TD>
                                 <TD style="border-top: 1px dotted #3F4F73;">
-                                        <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--><BR>###GW2B######PRODUCT_SUBTITLE######GW2E###<BR>
-                                        ###PRODUCT_NOTE###<BR>
+                                        <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--><br>###GW2B######PRODUCT_SUBTITLE######GW2E###<br>
+                                        ###PRODUCT_NOTE###<br>
                                         <!-- ###display_variant2### -->
                                         <select name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</select>
                                         <!-- ###display_variant2### -->
@@ -426,11 +427,11 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
                                         <!-- ###display_variant1### -->
                                 </TD>
                                 <TD style="border-top: 1px dotted #3F4F73;">
-                                        ###GW1B###<strong>###PRICE_TAX### &euro;###GW1E###<BR>
-                                        ###GW2B### Anzahl: ###GW2E###<BR><input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+                                        ###GW1B###<strong>###PRICE_TAX### &euro;###GW1E###<br>
+                                        ###GW2B### Anzahl: ###GW2E###<br><input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
                                 </TD>
                                 <TD style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="order" src="typo3/ext/tt_products/res/icons/fe/minibasket1.gif" value="in den Warenkorb" onClick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></TD>
-				<TD style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="remove" src="typo3/ext/tt_products/res/icons/fe/delmemo.png" value="von der Merkliste streichen" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[delmemo]=###PRODUCT_ID###';"></TD>
+				<TD style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="remove" src="typo3/ext/tt_products/res/icons/fe/delmemo.png" value="von der Merkliste streichen" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tt_products[delmemo]=###PRODUCT_ID###';"></TD>
                         </TR>
                         </FORM>
                         <!-- ###ITEM_SINGLE### end -->
@@ -445,14 +446,14 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
                         </b>
                 </td>
         </tr>
-</TABLE>
-<BR>
+</table>
+<br>
 <!-- ###MEMO_TEMPLATE### end -->
 
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>MEMO_NOT_LOGGED_IN</h3>
 <em>Subpart displayed when trying to view the memo without being logged in as frontend user.</em><br>
 <br>
@@ -465,7 +466,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>MEMO_EMPTY</h3>
 <em>Subpart displayed when trying to view the memo but the logged in frontend user hasn't stored any memo yet.</em><br>
 <br>
@@ -561,12 +562,11 @@ In addition there's a number of fields used for delivery and payment information
 
 <td valign=top>
 <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###-->
-
 </td>
 <td>	  <!-- ###display_variant2### -->
 		  ###PRODUCT_SIZE###
 		  <!-- ###display_variant2### --></td>
-<td></td>
+<td>Bild: ###PRODUCT_IMAGE### </td>
 <td valign=top>###GW1B### ###PRICE_TAX### (Steuer: ###PRICE_ONLY_TAX###) EUR ###GW1E###</td>
 <td valign=top> <input size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </td>
 <td valign=top align=right>###GW1B### <b>###TAX_INCL_EXCL### ###PRICE_TOTAL_TAX###</b> <br>(exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)###GW1E###</td>
@@ -638,11 +638,11 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 Lieferung ab Werk. Lieferkosten berechnen wir Ihnen g&uuml;nstigst nach
 Aufwand analog unserer <a
 href="http://www.bananaguard.de/index.php?id=9737">Transportkosten&uuml;bersicht
-</a>.<br /> 
+</a>.<br />
 Ihre g&uuml;ltige VAT Reg. No. Hier eingeben: <input type="text" name="recs[personinfo][tt_products_vat]" size="30" value="###PERSON_TT_PRODUCTS_VAT###"><br />
 <!-- ###MESSAGE_SHIPPING_20### -->
 <!-- ###MESSAGE_SHIPPING_20_20### -->
-<br><B>Versand erfolgt nach �terreich</b><br>
+<br><B>Versand erfolgt nach &Ouml;sterreich</b><br>
 <!-- ###MESSAGE_SHIPPING_20_20### -->
 <!-- ###MESSAGE_SHIPPING### -->
 
@@ -651,7 +651,7 @@ Ihre g&uuml;ltige VAT Reg. No. Hier eingeben: <input type="text" name="recs[pers
 This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
 -->
 <!-- ###MESSAGE_PAYMENT_10### -->
-<br><B>Sie haben die erste Bezahlmethode ausgew�hlt.</b><br>
+<br><B>Sie haben die erste Bezahlmethode ausgew&auml;hlt.</b><br>
 <!-- ###MESSAGE_PAYMENT_10### -->
 <!-- ###MESSAGE_PAYMENT_30### -->
 <br><B>Nachnahme EU-Land.</b><br>
@@ -661,7 +661,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 <!-- ###MESSAGE_PAYMENT_40### -->
 <!-- ###MESSAGE_PAYMENT_50### -->
 <br>
-<B>Bezahlung bei Abholung im Gesch�ft.</b><br>
+<B>Bezahlung bei Abholung im Gesch&auml;ft.</b><br>
 <!-- ###MESSAGE_PAYMENT_50### -->
 <!-- ###MESSAGE_PAYMENT### -->
 
@@ -832,7 +832,7 @@ If this part is not empty then this will be used instead of BILLING_ADDRESS if t
 <td>###PERSON_CARDS_CC_TYPE###   zuletzt: ###PERSON_CARDS_CC_TYPE_SELECTED###</td>
 <td><input name="recs[creditcard][cc_number_1]" value="###PERSON_CARDS_CC_NUMBER_1###" size="4" maxlength="4"/>-<input name="recs[creditcard][cc_number_2]" value="###PERSON_CARDS_CC_NUMBER_2###" size="4" maxlength="4" />-<input name="recs[creditcard][cc_number_3]" value="###PERSON_CARDS_CC_NUMBER_3###" size="4" maxlength="4" />-<input name="recs[creditcard][cc_number_4]" value="###PERSON_CARDS_CC_NUMBER_4###" size="4" maxlength="4" /> Sicherheitszahl <input name="recs[creditcard][cvv2]" value="###PERSON_CARDS_CVV2###" size="4" maxlength="4" />
 </td>
-<td>Gltigkeit bis: <input name="recs[creditcard][endtime_mm]" value="###PERSON_CARDS_ENDTIME_MM###" size="2" maxlength="2"/> / <input name="recs[creditcard][endtime_yy]" value="###PERSON_CARDS_ENDTIME_YY###" size="2" maxlength="2"/></td>
+<td>G&uuml;ltigkeit bis: <input name="recs[creditcard][endtime_mm]" value="###PERSON_CARDS_ENDTIME_MM###" size="2" maxlength="2"/> / <input name="recs[creditcard][endtime_yy]" value="###PERSON_CARDS_ENDTIME_YY###" size="2" maxlength="2"/></td>
 </tr>
 <tr>
   <td >###GW1B###<strong>Inhaber</strong>###GW1E###</td>
@@ -985,6 +985,7 @@ Subpart used if the GPvar "products_payment" was set. This displays the final in
 Exact same features as BASKET_TEMPLATE
 -->
 ###EXTERNAL_COBJECT###
+
 <table border="0" cellspacing="0" cellpadding="1" width=1>
   <tr>
     <td><img src="clear.gif" width="100" height="1"></td>
@@ -1124,7 +1125,7 @@ Exact same features as BASKET_TEMPLATE
   <tr>
     <td colspan=3> <table>
         <tr>
-          <td>###GW1B###gewnschtes Lieferdatum:###GW1E###</td>
+          <td>###GW1B###gew&uuml;nschtes Lieferdatum:###GW1E###</td>
           <td>###GW1B###<strong>###DELIVERY_DESIRED_DATE###</strong>###GW1E###</td>
         </tr>
       </table></td>
@@ -1184,6 +1185,7 @@ Exact same features as BASKET_TEMPLATE
   </tr>
 </table>
 <br>
+###MESSAGE_PAYMENT_SCRIPT###
 <form method="post" action="###FORM_URL###" name="###FORM_NAME###" id="paymentForm">
 <table width="100%"><tr>
 <td><input type="Submit" name="products_update" value="zur&uuml;ck zum Warenkorb">
@@ -1198,7 +1200,7 @@ Exact same features as BASKET_TEMPLATE
 
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR>
+<br><br><br><br><HR><br><br><br>
 <h3>BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE</h3>
 <em>
 Wie BASKET_ORDERCONFIRMATION_TEMPLATE, aber wird nicht in der Datenbank gespeichert. Hier kann Code f&uuml;r externe Systeme eingef&uuml;gt werden, der nicht mit angezeigt werden darf, wenn die Seite im Trackingmodus nochmal dargestellt wird.
@@ -1439,7 +1441,7 @@ Message for payment method 10, Paypal
 <td colspan=3>
 <table>
 <tr>
-<td>###GW1B###gewnschtes Lieferdatum:###GW1E###</td>
+<td>###GW1B###gew&uuml;nschtes Lieferdatum:###GW1E###</td>
 <td>###GW1B###<strong>###DELIVERY_DESIRED_DATE###</strong>###GW1E###</td>
 </tr>
 <tr>
@@ -1491,7 +1493,7 @@ Message for payment method 10, Paypal
     <td colspan=6> <p>###GW1B### <br>
     <font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
         <br>
-        Mit freundlichen Gr�ssen: <br>
+        Mit freundlichen Gr&uuml;&szlig;en: <br>
         <br>
         <strong>ttproducts.de</strong><br>
         Testshop<br>
@@ -1653,7 +1655,7 @@ Zu einer anderen Bestellung wechseln:
 
 
 <strong>Email-Benachrichtigung:</strong><br>
-Wenn Sie sich ber den Status Ihrer Bestellung informieren lassen wollen (###FIELD_EMAIL###) sobald sich der Status ge&auml;ndert hat, dann &uuml;berprfen Sie bitte folgendes:<br>
+Wenn Sie sich &uuml;ber den Status Ihrer Bestellung informieren lassen wollen (###FIELD_EMAIL###) sobald sich der Status ge&auml;ndert hat, dann &uuml;berpr&uuml;fen Sie bitte Folgendes:<br>
 <form method="post" action="###FORM_URL###" name="statusInform">
 
 <input type="hidden" name="orderRecord[email_notify]" value="0">
@@ -1804,7 +1806,7 @@ http://###DOMAIN###/index.php?id=###PID_TRACKING###&tracking=###ORDER_TRACKING_N
 
 <font color=red><strong>Es handelt sich hierbei nur um einen Test.</strong></font>
 
-Mit freundlichen Gr�ssen,
+Mit freundlichen Gr&uuml;&szlig;en,
 ttproducts.de
 Testshop - Online Vertrieb
 Testshopstr. 4
@@ -1920,7 +1922,7 @@ Bitte bewahren Sie diese E-Mail gut auf.
 
 Dies ist nur ein Test!
 
-Mit freundlichen Gr&uuml;&szlig;n,
+Mit freundlichen Gr&uuml;&szlig;en,
 Mein Typo3 Shop
 
 <!-- ###EMAIL_NEWUSER_TEMPLATE### end -->
@@ -1970,7 +1972,7 @@ Mein Typo3 Shop
 </script>
 
 </head>
-<BODY bgColor="#FBF9F7" link="black" vlink="black" alink="black" leftmargin="10" topmargin="10" marginwidth="10" marginheight="10">
+<body bgColor="#FBF9F7" link="black" vlink="black" alink="black" leftmargin="10" topmargin="10" marginwidth="10" marginheight="10">
 
 ###HTML_BODY###
 
@@ -2007,7 +2009,7 @@ Mein Typo3 Shop
         </tr>
         <tr>
           <td><strong><font size="5">###PERSON_NAME### </font></strong></td>
-        </tr>        
+        </tr>
         <tr>
           <td><strong><font size="5">###PERSON_ADDRESS_DISPLAY### </font></strong></td>
         </tr>
@@ -2184,7 +2186,7 @@ Mein Typo3 Shop
 <tr>
     <td valign="TOP">###GW1B### Wir w&uuml;nschen viel Spa&szlig; mit dem bananaGUARD. <br>
       NICHT VERGESSEN: WEITERSAGEN. <br>
-      Mit freundlichen Gr&uuml;ssen: <br> <br> <strong>bananaGUARD.de<br>
+      Mit freundlichen Gr&uuml;&szlig;en: <br> <br> <strong>bananaGUARD.de<br>
       </strong>Testshop - Online Vertrieb<br>
       Testshopstr. 4<br>
       71364 Teststadt<br>
@@ -2241,6 +2243,7 @@ Mein Typo3 Shop
 		###ITEM_SINGLE_PRE_HTML###
 		<!--###LINK_CATEGORY### begin-->
 			###LIST_LINK###
+			###CATEGORY_IMAGE###
 		<!--###LINK_CATEGORY### end-->
 		###ITEM_SINGLE_POST_HTML###
 	<!-- ###CATEGORY_SINGLE### end-->
