@@ -310,6 +310,8 @@ plugin.tt_products {
   marks {
    BASKET_MINI_HEADER = Warenkorb
   }
+
+  shopAdmin = BE
 }
 
 ## EXAMPLE payment config:

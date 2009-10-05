@@ -390,7 +390,7 @@ class tx_ttproducts_list_view {
 			$productsCount = $row[0];
 
 				// range check to current productsCount
-			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount)?($productsCount > $this->config['limit'] ? $productsCount-$this->config['limit'] : $productsCount):$begin_at,0);
+			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount) ? ($productsCount >= $this->config['limit'] ? $productsCount - $this->config['limit'] : $productsCount) : $begin_at,0);
 
 				// Get products count
 			$selectConf['orderBy'] = $this->conf['orderBy'];
@@ -547,7 +547,7 @@ class tx_ttproducts_list_view {
 				$bFormPerItem = TRUE;
 			}
 
-			if (count ($itemArray))	{
+			if (count($itemArray))	{
 				foreach ($itemArray as $k2 => $row) {
 					$iColCount++;
 					$iCount++;
@@ -795,6 +795,9 @@ class tx_ttproducts_list_view {
 			$splitMark = md5(microtime());
 
 			$addQueryString=array();
+			$addQueryString['addmemo'] = '';
+			$addQueryString['delmemo'] = '';
+
 			if ($cat)	{
 				$addQueryString['cat'] = $cat;
 			}

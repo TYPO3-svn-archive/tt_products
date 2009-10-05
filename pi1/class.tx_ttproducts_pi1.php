@@ -302,7 +302,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		} else {
 			$updateMode = 0;
 		}
-		if (count ($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW')	{
+		if (isset($this->conf['basket.']) && $this->conf['basket.']['store']=='0' || count($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW')	{
 			$bStoreBasket = FALSE;
 		}
 
@@ -448,10 +448,8 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
 				case 'OVERVIEW':
-					if (count($this->basket->itemArray)) {
-						$this->set_no_cache();
-					}
-					break;
+					$this->set_no_cache();
+				break;
 				case 'BASKET':
 				case 'FINALIZE':
 				case 'INFO':
@@ -535,7 +533,14 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			if ($contentTmp == 'error') {
 					$fileName = 'EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl';
 					$helpTemplate = $this->cObj->fileResource($fileName);
-					$content .= $this->pi_displayHelpPage($helpTemplate, $theCode);
+					$content .= tx_div2007_alpha::displayHelpPage_fh002(
+						$this,
+						$this->cObj,
+						$helpTemplate,
+						TT_PRODUCTS_EXTkey,
+						$this->errorMessage,
+						$theCode
+					);
 					unset($this->errorMessage);
 					break; // while
 			} else {
@@ -955,7 +960,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	 */
 	function shopAdmin (&$updateCode)	{
 		$admin=0;
-		if ($GLOBALS['TSFE']->beUserLogin)	{
+		if ($GLOBALS['TSFE']->beUserLogin || $this->conf['shopAdmin'] != 'BE')	{
 			$updateCode = t3lib_div::_GP('update_code');
 			if ($updateCode == $this->conf['update_code'])	{
 				$admin = 1;		// Means that the administrator of the website is authenticated.

@@ -72,10 +72,10 @@ class tx_ttproducts_order {
 		}
 	}
 
+
 	// **************************
 	// ORDER related functions
 	// **************************
-
 	/**
 	 * Create a new order record
 	 *
@@ -119,6 +119,7 @@ class tx_ttproducts_order {
 		return $newId;
 	} // create
 
+
 	/**
 	 * Returns a blank order uid. If there was no order id already, a new one is created.
 	 *
@@ -130,17 +131,32 @@ class tx_ttproducts_order {
 		global $TSFE;
 
 	// an new orderUid has been created always because also payment systems can be used which do not accept a duplicate order id
-		$orderUid = intval($this->basket->recs['tt_products']['orderUid']);
+		$orderUid = intval($this->basket->order['orderUid']);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', 'uid='.intval($orderUid).' AND deleted AND NOT status');	// Checks if record exists, is marked deleted (all blank orders are deleted by default) and is not finished.
 		if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res) || $this->conf['alwaysAdvanceOrderNumber'])	{
 			$orderUid = $this->create();
-			$this->basket->recs['tt_products']['orderUid'] = $orderUid;
-			$this->basket->recs['tt_products']['orderDate'] = time();
-			$this->basket->recs['tt_products']['orderTrackingNo'] = $this->getNumber($orderUid).'-'.strtolower(substr(md5(uniqid(time())),0,6));
-			$TSFE->fe_user->setKey('ses','recs',$this->basket->recs);
+			$this->basket->order['orderUid'] = $orderUid;
+			$this->basket->order['orderDate'] = time();
+			$this->basket->order['orderTrackingNo'] = $this->getNumber($orderUid).'-'.strtolower(substr(md5(uniqid(time())),0,6));
+			$TSFE->fe_user->setKey('ses','order',$this->basket->order);
 		}
 		return $orderUid;
 	} // getBlankUid
+
+
+	function getUid ()	{
+		$rc = $this->basket->order['orderUid'];
+		return $rc;
+	}
+
+
+	function clearUid ()	{
+		global $TSFE;
+
+		$this->basket->order['orderUid'] = '';
+		$TSFE->fe_user->setKey('ses','order',array());
+	}
+
 
 	/**
 	 * Returns the order record if $orderUid.
@@ -151,6 +167,7 @@ class tx_ttproducts_order {
 		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders', ($tracking ? 'tracking_code='.$TYPO3_DB->fullQuoteStr($tracking, 'sys_products_orders') : 'uid='.intval($orderUid)).' AND NOT deleted');
 		return $TYPO3_DB->sql_fetch_assoc($res);
 	} //getRecord
+
 
 	/**
 	 * This returns the order-number (opposed to the order_uid) for display in the shop, confirmation notes and so on.
@@ -163,12 +180,23 @@ class tx_ttproducts_order {
 		return $orderNumberPrefix.$orderUid;
 	} // getNumber
 
+
 	/**
 	 * Saves the order record and returns the result
 	 *
 	 */
-	function putRecord ($orderUid, &$deliveryInfo, $feusers_uid, $cardUid,
-		$email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML, &$address)	{
+	function putRecord (
+		$orderUid,
+		&$deliveryInfo,
+		$feusers_uid,
+		$cardUid,
+		$email_notify,
+		$payment,
+		$shipping,
+		$amount,
+		&$orderConfirmationHTML,
+		&$address
+	)	{
 		global $TYPO3_DB;
 		global $TSFE;
 
@@ -178,9 +206,9 @@ class tx_ttproducts_order {
 			// Saving order data
 		$fieldsArray=array();
 		$fieldsArray['feusers_uid'] = $feusers_uid;
-		$fieldsArray['name'] = $deliveryInfo['name'];
 		$fieldsArray['first_name'] = $deliveryInfo['first_name'];
 		$fieldsArray['last_name'] = $deliveryInfo['last_name'];
+		$fieldsArray['name'] = ($deliveryInfo['name'] ? $deliveryInfo['name'] : $deliveryInfo['last_name'].' '.$deliveryInfo['first_name']);
 		$fieldsArray['salutation'] = $deliveryInfo['salutation'];
 		$fieldsArray['address'] = $deliveryInfo['address'];
 		$fieldsArray['zip'] = $deliveryInfo['zip'];
@@ -254,7 +282,7 @@ class tx_ttproducts_order {
 			// Setting tstamp, deleted and tracking code
 		$fieldsArray['tstamp'] = time();
 		$fieldsArray['deleted'] = 0;
-		$fieldsArray['tracking_code'] = $this->basket->recs['tt_products']['orderTrackingNo'];
+		$fieldsArray['tracking_code'] = $this->basket->order['orderTrackingNo'];
 		$fieldsArray['agb'] = $address->infoArray['billing']['agb'];
 		$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
 		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
@@ -264,6 +292,7 @@ class tx_ttproducts_order {
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid=' . intval($orderUid), $fieldsArray);
 	} //putRecord
+
 
 	/**
 	 * Creates M-M relations for the products with tt_products and maybe also the tt_products_articles table.

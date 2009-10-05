@@ -53,16 +53,17 @@ class tx_ttproducts_basketitem_view {
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
 	 * @return	  void
  	 */
-
-	function init(&$pibase, &$tt_products_cat, &$basketExt)	{
+	function init (&$pibase, &$tt_products_cat, &$basketExt)	{
 		$this->pibase = &$pibase;
  		$this->tt_products_cat = &$tt_products_cat;
  		$this->basketExt = &$basketExt;
 	} // init
 
+
 	function &getItemSubpartArrays (&$viewTable, &$item, &$subparArray, &$wrappedSubparArray, &$tagArray, $code='', $id='1')	{
 		$viewTable->getItemSubpartArrays ($item, $subparArray, $wrappedSubparArray, $tagArray, $code, $id);
 	}
+
 
 	/**
 	 * Template marker substitution

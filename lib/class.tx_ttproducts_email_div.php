@@ -78,7 +78,7 @@ class tx_ttproducts_email_div {
 			if ($html)  {
 				$Typo3_htmlmail->theParts['html']['content'] = $html; // Fetches the content of the page
 				$Typo3_htmlmail->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
-				
+
 				$Typo3_htmlmail->extractMediaLinks();
 				$Typo3_htmlmail->extractHyperLinks();
 				$Typo3_htmlmail->fetchHTMLMedia();
@@ -92,6 +92,11 @@ class tx_ttproducts_email_div {
 				$Typo3_htmlmail->addPlain($message);
 			}
 			$Typo3_htmlmail->setHeaders();
+			if ($attachment != '')	{
+				foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
+					$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
+				}
+			}
 			$Typo3_htmlmail->setContent();
 			$Typo3_htmlmail->setRecipient(explode(',', $toEMail));
 			$Typo3_htmlmail->sendTheMail();

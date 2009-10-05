@@ -376,9 +376,9 @@ class tx_ttproducts_basket_view {
 			$this->conf['useArticles']
 		);
 			// Order:	NOTE: Data exist only if the order->getBlankUid() has been called. Therefore this field in the template should be used only when an order has been established
-		$markerArray['###ORDER_UID###'] = $order->getNumber($this->basket->recs['tt_products']['orderUid']);
-		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($this->basket->recs['tt_products']['orderDate'],$this->conf['orderDate_stdWrap.']);
-		$markerArray['###ORDER_TRACKING_NO###'] = $this->basket->recs['tt_products']['orderTrackingNo'];
+		$markerArray['###ORDER_UID###'] = $order->getNumber($this->basket->order['orderUid']);
+		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($this->basket->order['orderDate'],$this->conf['orderDate_stdWrap.']);
+		$markerArray['###ORDER_TRACKING_NO###'] = $this->basket->order['orderTrackingNo'];
 
 			// URL
 		$markerArray =  $this->marker->addURLMarkers(0, $markerArray);
@@ -572,7 +572,7 @@ class tx_ttproducts_basket_view {
 			$addQueryString['type'] = $TSFE->type;
 		}
 		$wrappedSubpartArray['###LINK_AGB###'] = array(
-			'<a href="'. $this->pibase->pi_getPageLink($pidagb,'',$this->marker->getLinkParams('', $addQueryString, true)) .'" target="'.$this->conf['AGBtarget'].'">',
+			'<a href="' . $this->pibase->pi_getPageLink($pidagb,'',$this->marker->getLinkParams('', $addQueryString, true)) . '" target="' . $this->conf['AGBtarget'] . '">',
 			'</a>'
 		);
 

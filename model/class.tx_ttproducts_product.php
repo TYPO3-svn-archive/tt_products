@@ -59,7 +59,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$tt_content, &$paymentshipping, $LLkey, $tablename, $useArticles)  {
+	function init (&$pibase, &$cnf, &$tt_content, &$paymentshipping, $LLkey, $tablename, $useArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($pibase, $cnf, 'tt_products', $tt_content, $paymentshipping);
@@ -109,12 +109,12 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	} // init
 
 
-	function setArticleTable(&$tt_products_articles)	{
+	function setArticleTable (&$tt_products_articles)	{
 		$this->tt_products_articles = &$tt_products_articles;
 	}
 
 
-	function &getArticleRows($uid)	{
+	function &getArticleRows ($uid)	{
 		$rowArray = $this->articleArray[$uid];
 		if (!$rowArray && $uid) {
 			$rowArray = $this->tt_products_articles->getWhereArray('uid_product=\''.intval($uid).'\'');
@@ -178,7 +178,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * Reduces the instock value of the orderRecord with the sold items and returns the result
 	 *
 	 */
-	function &reduceInStockItems(&$itemArray, $useArticles)	{
+	function &reduceInStockItems (&$itemArray, $useArticles)	{
 		global $TYPO3_DB, $TCA;
 		$instockTableArray = array();
 
@@ -209,27 +209,16 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		return $instockTableArray;
 	}
 
-
 	/**
 	 * Returns true if the item has the $check value checked
 	 *
 	 */
-	function hasAdditional(&$row, $check)  {
+	function hasAdditional (&$row, $check)  {
 		$hasAdditional = false;
 		$additional = t3lib_div::xml2array($row['additional']);
 		$hasAdditional = $this->pibase->pi_getFFvalue($additional, $check);
 		return $hasAdditional;
 	}
-
-
-	/**
-	 * Generates a search where clause.
-	 */
-	function searchWhere(&$searchFieldList, $sw)	{
-		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->getAlias());
-		return $where;
-	} // searchWhere
-
 
 	/**
 	 * Template marker substitution
@@ -334,8 +323,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		}
 	} // getItemMarkerArray
 
-
-	function addWhereCat($cat, $pid_list)	{
+	function addWhereCat ($cat, $pid_list)	{
 		global $TYPO3_CONF_VARS;
 		$bOpenBracket = FALSE;
 
@@ -360,7 +348,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	}
 
 
-	function addselectConfCat($cat, &$selectConf)	{
+	function addselectConfCat ($cat, &$selectConf)	{
 		global $TYPO3_CONF_VARS;
 		$tableNameArray = array();
 
@@ -378,7 +366,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	}
 
 
-	function getPageUidsCat($cat)	{
+	function getPageUidsCat ($cat)	{
 		global $TYPO3_CONF_VARS;
 
 		$uidArray = array();
@@ -398,7 +386,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	}
 
 
-	function getProductField(&$row, $field)	{
+	function getProductField (&$row, $field)	{
 		return $row[$field];
 	}
 }

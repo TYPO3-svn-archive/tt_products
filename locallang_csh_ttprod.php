@@ -7,8 +7,7 @@ $LOCAL_LANG = Array (
 	'default' => Array (
 		'.description' => 'Shop items.',
 		'.details' => 'This table holds the products available in the default shopping system.',
-		'_.seeAlso' => 'tt_products_cat
-tt_content:list_type',
+		'_.seeAlso' => 'tt_products_cat mbi_products_categories',
 		'hidden.description' => '[FILL IN] tt_products->hidden',
 		'www.description' => '[FILL IN] tt_products->www',
 		'title.description' => '[FILL IN] tt_products->title',
@@ -51,7 +50,7 @@ tt_content:list_type',
 	),
 	'fi' => Array (
 		'.description' => 'Ostoskoriohjelman sisältämät tuotteet',
-		'.details' => 'Tämä taulukko sisältää sisäisessä ostoskoriohjelmassa olevat tuotteet.',		
+		'.details' => 'Tämä taulukko sisältää sisäisessä ostoskoriohjelmassa olevat tuotteet.',
 	),
 	'tr' => Array (
 	),

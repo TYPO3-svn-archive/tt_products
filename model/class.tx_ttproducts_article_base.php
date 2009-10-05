@@ -247,7 +247,7 @@ class tx_ttproducts_article_base {
 			$prodTmp = explode(';', $variantRow);
 			if ($variantRow && $variantRec[1])	{
 				foreach ($prodTmp as $prodVal)	{
-					$text .= '<OPTION value="'.$prodVal.'">'.$prodVal.'</OPTION>';
+					$text .= '<option value="'.$prodVal.'">'.$prodVal.'</option>';
 				}
 			} else {
 				$text = $prodTmp[0];
@@ -319,6 +319,14 @@ class tx_ttproducts_article_base {
 		}
 		return $rc;
 	}
+
+	/**
+	 * Generates a search where clause.
+	 */
+	function searchWhere(&$searchFieldList, $sw)	{
+		$where=$this->pibase->cObj->searchWhere($sw, $searchFieldList, $this->table->getAlias());
+		return $where;
+	} // searchWhere
 }
 
 

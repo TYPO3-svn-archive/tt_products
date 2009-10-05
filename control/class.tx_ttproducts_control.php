@@ -67,7 +67,7 @@ class tx_ttproducts_control {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, &$cnf, &$templateCode, &$basket, &$tt_products, &$tt_products_articles, &$tt_products_cat, &$fe_users, &$price, &$paymentshipping)  {
+	function init (&$pibase, &$cnf, &$templateCode, &$basket, &$tt_products, &$tt_products_articles, &$tt_products_cat, &$fe_users, &$price, &$paymentshipping)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = &$pibase;
@@ -96,7 +96,7 @@ class tx_ttproducts_control {
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
 	 * @return	  void
  	 */
-	function transformActivities($activities)	{
+	function transformActivities ($activities)	{
 		$retActivities = array();
 		$codeActivities = array();
 		$codeActivityArray = Array (
@@ -153,7 +153,7 @@ class tx_ttproducts_control {
 	}
 
 
-	function processPayment(&$content, &$bFinalize, &$order, &$basketView, &$info, &$card, &$account)	{
+	function processPayment (&$content, &$bFinalize, &$order, &$basketView, &$info, &$card, &$account)	{
 		global $TSFE;
 
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);

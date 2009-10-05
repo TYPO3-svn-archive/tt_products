@@ -43,6 +43,7 @@ global $TYPO3_CONF_VARS;
 
 require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_base.php');
 
+
 class tx_ttproducts_activity_finalize {
 
 	var $pibase; // reference to object of pibase
@@ -75,6 +76,7 @@ class tx_ttproducts_activity_finalize {
 
 		$this->useArticles = $this->conf['useArticles'];
 	} // init
+
 
 	/**
 	 * Finalize an order
@@ -190,8 +192,8 @@ class tx_ttproducts_activity_finalize {
 			$address->infoArray['billing']['feusers_uid'],
 			$cardUid,
 			$this->conf['email_notify_default'],		// Email notification is set here. Default email address is delivery email contact
-			$this->basket->basketExtra['payment'].': '.$this->basket->basketExtra['payment.']['title'],
-			$this->basket->basketExtra['shipping'].': '.$this->basket->basketExtra['shipping.']['title'],
+			$this->basket->basketExtra['payment'] . ': ' . $this->basket->basketExtra['payment.']['title'],
+			$this->basket->basketExtra['shipping'][0] . ': ' . $this->basket->basketExtra['shipping.']['title'],
 			$this->basket->calculatedArray['priceTax']['total'],
 			$orderConfirmationHTML,
 			$address
@@ -237,7 +239,7 @@ class tx_ttproducts_activity_finalize {
 			);
 
 			$csvfilepath = PATH_site.$this->conf['CSVdestination'];
-			$csvorderuid = $this->basket->recs['tt_products']['orderUid'];
+			$csvorderuid = $this->basket->order['orderUid'];
 			$csv->create($this->basket, $address, $csvorderuid, $csvfilepath, $error_message);
 			$addcsv = $csvfilepath;
 		}
@@ -255,7 +257,8 @@ class tx_ttproducts_activity_finalize {
 			$markerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 			$empty = '';
 			foreach ($emailTemplateArray as $key => $emailTemplate) {
-				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, false, true, '###'.$emailTemplate.'###'));
+				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, FALSE, TRUE, '###'.$emailTemplate.'###'));
+
 				if ($emailContentArray[$key])	{		// If there is plain text content - which is required!!
 					$parts = preg_split('/[\n\r]+/',$emailContentArray[$key],2);		// First line is subject
 					$subjectArray[$key]=trim($parts[0]);
@@ -264,6 +267,7 @@ class tx_ttproducts_activity_finalize {
 						$plainMessageArray[$key] = $subjectArray[$key];
 					}
 					$plainMessageArray[$key] = $this->pibase->cObj->substituteMarkerArrayCached($plainMessageArray[$key],$markerArray);
+
 					if (empty($subjectArray[$key])) {
 						$subjectArray[$key] = $this->conf['orderEmail_subject'];
 					}
@@ -306,8 +310,9 @@ class tx_ttproducts_activity_finalize {
 				} else {		// ... else just plain text...
 					// nothing to initialize
 				}
+				$tmpFile =  PATH_site.$TYPO3_LOADED_EXT['tt_products']['siteRelPath'].$script;
+				$agbAttachment = ($this->conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($this->conf['AGBattachment'], TRUE) : '');
 
-				$agbAttachment = ($this->conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($this->conf['AGBattachment']) : '');
 				foreach ($recipientsArray['customer'] as $key => $recipient) {
 					tx_ttproducts_email_div::send_mail(
 						$recipient,
@@ -377,6 +382,8 @@ class tx_ttproducts_activity_finalize {
 				}
 			}
 		}
+
+		$this->order->clearUid();
 	} // doProcessing
 }
 

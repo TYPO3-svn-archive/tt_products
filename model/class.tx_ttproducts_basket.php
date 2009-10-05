@@ -73,6 +73,7 @@ class tx_ttproducts_basket {
 	var $recs = Array(); 			// in initBasket this is set to the recs-array of fe_user.
 
 	var $basketExt=array();			// "Basket Extension" - holds extended attributes
+	var $order = array(); 		// order data
 	var $giftnumber;			// current counter of the gifts
 
 	var $itemArray;				// the items in the basket; database row, how many (quantity, count) and the price; this has replaced the former $calculatedBasket
@@ -102,6 +103,7 @@ class tx_ttproducts_basket {
 		}
 	}
 
+
 	function getMaxCount ($quantity, $uid = 0)	{
 		$count = 0;
 
@@ -121,6 +123,7 @@ class tx_ttproducts_basket {
 		}
 		return $count;
 	}
+
 
 	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
@@ -177,6 +180,8 @@ class tx_ttproducts_basket {
 
 		$this->itemArray = array();
 		$tmpBasketExt = $TSFE->fe_user->getKey('ses','basketExt');
+		$this->order = $TSFE->fe_user->getKey('ses','order');
+
 		if (is_array($tmpBasketExt)) {
 			$this->basketExt = $tmpBasketExt;
 		} else {
@@ -359,6 +364,7 @@ class tx_ttproducts_basket {
 		$this->paymentshipping->setBasketExtras($formerBasket);
 	} // init
 
+
 	/**
 	 * Returns a clear 'recs[tt_products]' array - so clears the basket.
 	 */
@@ -370,6 +376,7 @@ class tx_ttproducts_basket {
 		unset($this->recs['creditcard']);
 		return ($this->recs);
 	} // getClearBasketRecord
+
 
 	/**
 	 * Empties the shopping basket!
@@ -389,6 +396,7 @@ class tx_ttproducts_basket {
 		$TSFE->fe_user->setKey('ses','ac',array());
 		$TSFE->fe_user->setKey('ses','cc',array());
 	} // clearBasket
+
 
 	/**
 	 * This calculates the totals. Very important function.
