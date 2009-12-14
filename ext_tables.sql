@@ -408,7 +408,7 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 	tt_products_uid int(11) unsigned DEFAULT '0' NOT NULL,
 	tt_products_articles_uid int(11) unsigned DEFAULT '0' NOT NULL,
 	KEY tt_products_uid (tt_products_uid),
-	KEY tt_products_uid (tt_products_articles_uid),
+	KEY tt_products_articles_uid (tt_products_articles_uid),
 	KEY sys_products_orders_uid (sys_products_orders_uid)
 );
 
