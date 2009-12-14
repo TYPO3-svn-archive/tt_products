@@ -50,60 +50,68 @@ class tx_ttproducts_bank_de {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init()  {
+	function init ()  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$tablename = 'static_banks_de';
-		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 'starttime'=>'starttime', 'endtime'=>'endtime'));
+		if (t3lib_extMgm::isLoaded('static_info_tables_banks_de')) {
 
-		$this->table->setName($tablename);
-		$this->table->setTCAFieldArray($tablename, 'bank');
+			$tablename = 'static_banks_de';
+
+			$this->table = t3lib_div::makeInstance('tx_table_db');
+			$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 'starttime'=>'starttime', 'endtime'=>'endtime'));
+
+			$this->table->setName($tablename);
+			$this->table->setTCAFieldArray($tablename, 'bank');
+		}
 	} // init
 
 
 
 	/**
-	 * Getting all tt_products_cat categories into internal array
+	 * Getting all bank data into internal array
 	 */
 	function get ($uid=0,$pid=0,$bStore=true,$where) {
 		global $TYPO3_DB;
 
-		if (is_array($this->dataArray[$uid]))	{
-			if (($pid && $this->dataArray[$uid]['pid'] == $pid) || ($pid == 0))	{
-				$rc = $this->dataArray[$uid];
-			} else {
-				$rc = array();
-			}
-		}
-
-		if (!$rc) {
-			$where = '1=1 '.$this->table->enableFields().($where!='' ? ' AND '.$where : '');
-			$where .= ($uid ? ' AND uid='.intval($uid) : '');
-			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
-			$res = $this->table->exec_SELECTquery('*',$where);
-
-			if ($uid)	{
-				$row = $TYPO3_DB->sql_fetch_assoc($res);
-				$rc =  $row;
-				if ($bStore)	{
-					$this->dataArray[$uid] = $rc;
+		if (is_object($this->table))	{
+			if (is_array($this->dataArray[$uid]))	{
+				if (($pid && $this->dataArray[$uid]['pid'] == $pid) || ($pid == 0))	{
+					$rc = $this->dataArray[$uid];
+				} else {
+					$rc = array();
 				}
-			} else {
+			}
 
-				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-					$rc = $row;
+			if (!$rc) {
+				$where = '1=1 '.$this->table->enableFields().($where!='' ? ' AND '.$where : '');
+				$where .= ($uid ? ' AND uid='.intval($uid) : '');
+				$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
+				$res = $this->table->exec_SELECTquery('*',$where);
+
+				if ($uid)	{
+					$row = $TYPO3_DB->sql_fetch_assoc($res);
+					$rc =  $row;
 					if ($bStore)	{
-						$this->dataArray[$row['uid']] = $rc;
-					} else {
-						break;
+						$this->dataArray[$uid] = $rc;
+					}
+				} else {
+
+					while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+						$rc = $row;
+						if ($bStore)	{
+							$this->dataArray[$row['uid']] = $rc;
+						} else {
+							break;
+						}
 					}
 				}
 			}
-		}
-		if (!$rc) {
-			$rc = array();
-			$this->dataArray = array();
+			if (!$rc) {
+				$rc = array();
+				$this->dataArray = array();
+			}
+		} else {
+			$rc = array('uid' => $uid);
 		}
 
 		return $rc;

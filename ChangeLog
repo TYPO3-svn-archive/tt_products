@@ -1,3 +1,14 @@
+2009-12-14 Franz Holzinger <franz@fholzinger.com>
+	* fix bug with accounts=1 when no static_info_tables_banks_de is installed
+	* fix bug to allow account data replacement in the order confirmation
+	* fix bug with missing creditpoints amount calculation in the the basket method getCalculatedSums
+	* support of new POST parameters for the activity. This is for future changes and support of the ###HIDDENFIELDS### marker.
+	* support product markers in message for special preparation
+	* change: do not clear the cache of the page if you are in the single view of a product which has not been put into the basket
+	* Fix deadlock situation when the address data is has not been overwritten again after a login and could not be changed any more. All address data will be removed after a login using a hook in the felogin extension.
+	* Update creditpoints only when really needed
+	* Fix bug with wrong link parameter generation in ###LINK_BASKET### in basket views
+
 2009-08-10 Franz Holzinger <franz@fholzinger.com>
 	* hide template products which are not supported yet
 	* fix bug with double call of htmlentities for output of pages used as categories

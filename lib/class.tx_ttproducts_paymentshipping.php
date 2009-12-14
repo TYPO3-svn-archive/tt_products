@@ -241,7 +241,7 @@ class tx_ttproducts_paymentshipping {
 		$row = &$item;
 
 		$markerArray['###VALUE###'] = $value;
-		$markerArray['###CHECKED###'] = ($value==implode('-',$activeArray) ? ' checked':'');
+		$markerArray['###CHECKED###'] = ($value==implode('-',$activeArray) ? ' checked="checked"':'');
 		$markerArray['###TITLE###'] = $row['title'];
 		$markerArray['###IMAGE###'] = $this->pibase->cObj->IMAGE($row['image.']);
 	}

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -64,10 +64,6 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		$this->table->setTCAFieldArray($tablename);
 		$this->parentField = $parentField;
 
-//		if ($TSFE->config['config']['sys_language_uid'] &&
-//				(!$this->catconf['language.'] ||
-//				!$this->catconf['language.']['type'])) {
-
 		if ($cnf->bUseLanguageTable($this->tableconf) && ($conftablename = 'tt_products_cat'))	{
 			$this->table->setLanguage ($LLkey);
 			$langTable = 'tt_products_cat_language'; // TODO: DAM alternative language
@@ -112,13 +108,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		}
 
 		if (!$rc) {
-			// $sql = t3lib_div::makeInstance('tx_table_db_access');
-			// $sql->prepareFields($this->table, 'select', '*');
-			// $sql->prepareFields($this->table, 'where', 'uid = '.$uid);
-			// $sql->prepareWhereFields ($this->table, 'uid', '=', $uid);
-
 			// Fetching the category
-			// $res = $sql->exec_SELECTquery();
 			$where = '1=1 '.$this->table->enableFields();
 			$where .= ($uid ? ' AND uid='.intval($uid) : '');
 			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
@@ -135,7 +125,6 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 					$this->dataArray[$uid] = $rc;
 				}
 			} else {
-
 				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 					if (is_array($this->table->langArray) && $this->table->langArray[$row['title']])	{
 						$row['title'] = $this->table->langArray[$row['title']];
@@ -386,7 +375,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		$row = ($category ? $this->get($category) : array ('title' => '', 'pid' => $pid));
 
 			// Get image
-		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id, $prefix, $linkWrap);
+		$this->image->getItemMarkerArray($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $code, $id, $prefix, $linkWrap);
 		$pageCatTitle = '';
 		if ($pageAsCategory == 1) {
 			$pageTmp = $page->get($pid);
@@ -397,10 +386,9 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		if (($row['title']))	{
 			$catTitle .= ($this->tableconf['separator'].$row['title']);
 		}
-		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
-		parent::getItemMarkerArray ($row, $markerArray, $code, $prefix);
+		$this->setMarkerArrayCatTitle($markerArray, $catTitle, $prefix);
+		parent::getItemMarkerArray($row, $markerArray, $code, $prefix);
 	}
-
 }
 
 

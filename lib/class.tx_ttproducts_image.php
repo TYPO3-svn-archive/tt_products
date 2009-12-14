@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -319,16 +319,23 @@ class tx_ttproducts_image {
 		if ($linkWrap === false)	{
 			$imageConfStart['imageLinkWrap'] = 0;
 		}
-		reset($imgs);
 
-		while(list($c,$val)=each($imgs))	{
+		foreach($imgs as $c => $val)	{
 			$confMarkerArray = array();
 			$imageConf = $imageConfStart;
 			if ($c==$imageNum)	break;
 			$bUseImage = false;
 			$meta = false;
 			if ($val)	{
-				$imageConf['file'] = $dirname.$val;
+
+### GERNOT start
+				$dataArray = array(
+					'marker' => 'row:image',
+					'imagename' => $dirname.$val
+				);
+				array_walk_recursive($imageConf, array($this, 'replace_field_image'), $dataArray);
+				$imageConf['file'] = ($imageConf['file'] != '' ? $imageConf['file'] : $dataArray['imagename']);
+### GERNOT end
 				$bUseImage = true;
 			}
 			if (t3lib_extMgm::isLoaded('dam') && $bUseImage && $bImages) {
@@ -367,6 +374,13 @@ class tx_ttproducts_image {
 
 			if (is_array($specialConf[$tagkey]))	{
 				foreach ($specialConf[$tagkey] as $specialConfType => $specialImageConf)	{
+	### GERNOT start
+					$dataArray = array(
+						'marker' => 'row:image',
+						'imagename' => $dirname.$val
+					);
+					array_walk_recursive($specialImageConf, array($this, 'replace_field_image'), $dataArray);
+	### GERNOT end
 					$theImageConf = array_merge($imageConf, $specialImageConf);
 					$this->pibase->cObj->alternativeData = ($meta ? $meta : $imageRow); // has to be redone here
 					$this->replaceMarkerArray($confMarkerArray, $theImageConf, $this->pibase->cObj->alternativeData);
@@ -463,7 +477,17 @@ class tx_ttproducts_image {
 			}
 		}
 	}
+
+
+	### GERNOT start
+	function replace_field_image(&$item, $key, $userdata) {
+		if ($item == $userdata['marker']) {
+			$item = $userdata['imagename'];
+		}
+	}
+	### GERNOT end
 }
+
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_image.php']) {

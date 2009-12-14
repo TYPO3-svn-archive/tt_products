@@ -69,7 +69,7 @@ class tx_ttproducts_gifts_div {
 	/**
 	 * Adds gift markers to a markerArray
 	 */
-	function addGiftMarkers(&$basket, &$markerArray, $giftnumber, $code='LISTGIFTS', $id='1')	
+	function addGiftMarkers(&$basket, &$markerArray, $giftnumber, $code='LISTGIFTS', $id='1')
 {
 
 		$markerArray['###GIFTNO###'] = $giftnumber;
@@ -78,7 +78,7 @@ class tx_ttproducts_gifts_div {
 		$markerArray['###GIFT_DELIVERY_NAME###'] = $basket->basketExt['gift'][$giftnumber]['deliveryname'];
 		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $basket->basketExt['gift'][$giftnumber]['deliveryemail'];
 		$markerArray['###GIFT_NOTE###'] = $basket->basketExt['gift'][$giftnumber]['note'];
-		//	 
+		//
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		// here again, because this is here in ITEM_LIST view
 		//	  $markerArray['###FIELD_QTY###'] =  '';
@@ -96,7 +96,7 @@ class tx_ttproducts_gifts_div {
 
 	/**
 	 * Saves the orderRecord and returns the result
-	 * 
+	 *
 	 */
 	function saveOrderRecord(&$tt_products,$orderUid, $pid, &$giftBasket) {
 		global $TYPO3_DB;

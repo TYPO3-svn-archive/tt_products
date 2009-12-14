@@ -68,6 +68,7 @@ class tx_ttproducts_marker {
  		$this->markerArray = array('CATEGORY', 'PRODUCT', 'ARTICLE');
 	}
 
+
 	/**
 	 * Adds link markers to a wrapped subpart array
 	 */
@@ -78,6 +79,7 @@ class tx_ttproducts_marker {
 		$pageLink = $this->pibase->pi_getPageLink($pidBasket,'',$this->getLinkParams('',$addQueryString,true)) ;
 		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'. $pageLink .'"'.$css_current.'>','</a>');
 	}
+
 
 	/**
 	 * Adds URL markers to a markerArray
@@ -129,6 +131,7 @@ class tx_ttproducts_marker {
 		}
 		return $markerArray;
 	} // addURLMarkers
+
 
 	/**
 	 * getting the global markers
@@ -191,6 +194,7 @@ class tx_ttproducts_marker {
 		return $markerArray;
 	} // getGlobalMarkers
 
+
 	/**
 	 * Returning template subpart marker
 	 */
@@ -203,6 +207,7 @@ class tx_ttproducts_marker {
 		}
 		return $altSPM ? $altSPM : $subpartMarker;
 	} // spMarker
+
 
 	/**
 	 * Returns a url for use in forms and links
@@ -220,18 +225,23 @@ class tx_ttproducts_marker {
 		}
 	}
 
+
 	function getSearchParams (&$queryString) {
 
-		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
-
-		if (!$temp)	{
-			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
+		$sword = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
+		if (!$sword)	{
+			$sword = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
 		}
 
-		if ($temp) {
-			$queryString['sword'] = $temp;
+		if (!$sword)	{
+			$sword = $this->pibase->piVars['sword'];
+		}
+
+		if ($sword) {
+			$queryString['sword'] = $sword;
 		}
 	}
+
 
 	/**
 	 * Returns a url for use in forms and links
@@ -285,6 +295,7 @@ class tx_ttproducts_marker {
 		}
 		return $queryString;
 	}
+
 
 	/**
 	 * finds all the markers for a product

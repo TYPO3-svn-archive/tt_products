@@ -112,6 +112,7 @@ class tx_ttproducts_list_view {
 		$this->searchFieldList = trim($this->conf['stdSearchFieldExt']) ? implode(',', array_unique(t3lib_div::trimExplode(',',$this->searchFieldList.','.trim($this->conf['stdSearchFieldExt']),1))) : 'title,note,'.$this->tt_products->fields['itemnumber'];
 	}
 
+
 	function finishHTMLRow (&$cssConf, $iColCount, $tableRowOpen, $displayColumns)  {
 		$itemsOut = '';
 		if ($tableRowOpen)	{
@@ -131,6 +132,7 @@ class tx_ttproducts_list_view {
 		return $itemsOut;
 	} // comp
 
+
 	function &advanceCategory (&$categoryAndItemsFrameWork, &$itemListOut, &$categoryOut, $itemListSubpart, &$formCount)	{
 		$subpartArray = array();
 		$subpartArray['###ITEM_CATEGORY###'] = $categoryOut;
@@ -141,6 +143,7 @@ class tx_ttproducts_list_view {
 		$itemListOut = '';			// Clear the item-code var
 		return $rc;
 	}
+
 
 	function &advanceProduct (&$productAndItemsFrameWork, &$productFrameWork, &$itemListOut, &$productMarkerArray, &$categoryMarkerArray)	{
 		$markerArray = array_merge($productMarkerArray, $categoryMarkerArray);
@@ -154,6 +157,7 @@ class tx_ttproducts_list_view {
 
 		return $rc;
 	}
+
 
 	// returns the products list view
 	function &printView (
@@ -192,7 +196,7 @@ class tx_ttproducts_list_view {
 			$sword = (isset($sword) ? $sword : t3lib_div::_GP('swords'));
 
 			if (!isset($sword))	{
-				$sword = $pibaseObj->piVars['sword'];
+				$sword = $this->pibase->piVars['sword'];
 			}
 			$sword = rawurldecode($sword);
 			$htmlSwords = htmlspecialchars($sword);
@@ -332,12 +336,16 @@ class tx_ttproducts_list_view {
 					// Substitute a few markers
 				$out = $t['search'];
 				$tmpPid = ($this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $TSFE->id);
-				$markerArray = $this->marker->addURLMarkers($tmpPid,array(),array(),'sword');
+				$addQueryString=array();
+				$this->marker->getSearchParams($addQueryString);
+
+				$markerArray = $this->marker->addURLMarkers($tmpPid,array(),$addQueryString,'sword');
 				$markerArray['###FORM_NAME###'] = $formName;
 				$markerArray['###SWORD###'] = $htmlSwords;
 				$markerArray['###SWORD_NAME###'] = 'sword';
 				$markerArray['###SWORDS###'] = $htmlSwords; // for backwards compatibility
 				$out = $this->pibase->cObj->substituteMarkerArrayCached($out, $markerArray);
+
 				if ($formName)	{
 						// Add to content
 					$content .= $out;
@@ -409,7 +417,12 @@ class tx_ttproducts_list_view {
 				$error_code[2] = $this->conf['templateFile'];
 				return $content;
 			}
-			$markerArray = array();  // $this->marker->addURLMarkers($TSFE->id,array());
+			$addQueryString = $this->uidArray;
+			$excludeList = ($theCode == 'SEARCH' ? 'sword' : '');
+			$this->marker->getSearchParams($addQueryString);
+			$markerArray = $this->marker->addURLMarkers($TSFE->id,$markerArray,$addQueryString,$excludeList);
+
+			// $markerArray = array();  // $this->marker->addURLMarkers($TSFE->id,array());
 			$wrappedSubpartArray = array();
 			$this->marker->getWrappedSubpartArray($wrappedSubpartArray);
 			$subPartArray = array();
@@ -451,7 +464,7 @@ class tx_ttproducts_list_view {
 			$productsCount = $row[0];
 
 				// range check to current productsCount
-			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount)?($productsCount > $this->config['limit'] ? $productsCount-$this->config['limit'] : $productsCount):$begin_at,0);
+			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount) ? ($productsCount >= $this->config['limit'] ? $productsCount - $this->config['limit'] : $productsCount) : $begin_at,0);
 
 			$displayColumnsConf = '';
 			if ($productsConf['displayColumns.'])	{
@@ -601,6 +614,11 @@ class tx_ttproducts_list_view {
 			if ($theCode == 'LISTGIFTS') {
 				$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $this->giftnumber);
 			}
+			$addQueryString = array();
+			$addQueryString = $this->uidArray;
+			$this->marker->getSearchParams($addQueryString);
+
+			$this->marker->addURLMarkers($TSFE->id,$markerArray,$addQueryString,'',FALSE);
 			$markerArray['###FORM_NAME###'] = $formName; // needed if form starts e.g. between ###ITEM_LIST_TEMPLATE### and ###ITEM_CATEGORY_AND_ITEMS###
 
 			$markerFramework = 'listFrameWork';
@@ -878,6 +896,7 @@ class tx_ttproducts_list_view {
 						$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($this->basket, $markerArray, $this->basket->giftnumber);
 					}
 					$subpartArray = array();
+
 					$urlMarkerArray = $this->marker->addURLMarkers($TSFE->id,$markerArray,$addQueryString,$itemTable->type);
 					$markerArray = array_merge($markerArray, $urlMarkerArray);
 					$markerArray['###FORM_NAME###'] = $formName . ($bFormPerItem ? $formCount : '');
@@ -1019,6 +1038,9 @@ class tx_ttproducts_list_view {
 			$splitMark=md5(microtime());
 
 			$addQueryString=array();
+			$addQueryString['addmemo'] = '';
+			$addQueryString['delmemo'] = '';
+
 			if ($cat)	{
 				$addQueryString['cat'] = $cat;
 			}

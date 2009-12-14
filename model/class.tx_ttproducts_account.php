@@ -81,10 +81,10 @@ class tx_ttproducts_account {
 		}
 	}
 
+
 	// **************************
 	// ORDER related functions
 	// **************************
-
 	/**
 	 * Create a new credit card record
 	 *
@@ -122,12 +122,14 @@ class tx_ttproducts_account {
 		return $newId;
 	} // create
 
+
 	function getUid ()	{
 		global $TSFE;
 
 		$acArray = $TSFE->fe_user->getKey('ses','ac');
 		return $acArray['ac_uid'];
 	}
+
 
 	function get ($uid, $bFieldArrayAll=false) {
 		global $TYPO3_DB;
@@ -153,6 +155,7 @@ class tx_ttproducts_account {
 		}
 		return $rcArray;
 	}
+
 
 	/**
 	 * Template marker substitution
@@ -186,6 +189,7 @@ class tx_ttproducts_account {
 		$markerArray['###PERSON_ACCOUNTS_AC_NUMBER###'] = $acNumber;
 		$markerArray['###PERSON_ACCOUNTS_BIC###'] = $acBic;
 	} // getMarkerArray
+
 
 	/**
 	 * Checks if required fields for bank accounts are filled in

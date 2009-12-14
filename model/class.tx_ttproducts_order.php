@@ -125,17 +125,31 @@ class tx_ttproducts_order {
 		global $TSFE;
 
 	// an new orderUid has been created always because also payment systems can be used which do not accept a duplicate order id
-		$orderUid = intval($this->basket->recs['tt_products']['orderUid']);
+		$orderUid = intval($this->basket->order['orderUid']);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', 'uid='.intval($orderUid).' AND deleted AND NOT status');	// Checks if record exists, is marked deleted (all blank orders are deleted by default) and is not finished.
 		if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res) || $this->conf['alwaysAdvanceOrderNumber'])	{
 			$orderUid = $this->create();
-			$this->basket->recs['tt_products']['orderUid'] = $orderUid;
-			$this->basket->recs['tt_products']['orderDate'] = time();
-			$this->basket->recs['tt_products']['orderTrackingNo'] = $this->getNumber($orderUid).'-'.strtolower(substr(md5(uniqid(time())),0,6));
-			$TSFE->fe_user->setKey('ses','recs',$this->basket->recs);
+			$this->basket->order['orderUid'] = $orderUid;
+			$this->basket->order['orderDate'] = time();
+			$this->basket->order['orderTrackingNo'] = $this->getNumber($orderUid).'-'.strtolower(substr(md5(uniqid(time())),0,6));
+			$TSFE->fe_user->setKey('ses','order',$this->basket->order);
 		}
 		return $orderUid;
 	} // getBlankUid
+
+
+	function getUid ()	{
+		$rc = $this->basket->order['orderUid'];
+		return $rc;
+	}
+
+
+	function clearUid ()	{
+		global $TSFE;
+
+		$this->basket->order['orderUid'] = '';
+		$TSFE->fe_user->setKey('ses','order',array());
+	}
 
 
 	/**
@@ -157,7 +171,7 @@ class tx_ttproducts_order {
 		$orderNumberPrefix = substr($this->conf['orderNumberPrefix'],0,15);
 		if ($orderNumberPrefix[0] == '%')
 			$orderNumberPrefix = date(substr($orderNumberPrefix, 1));
-		return $orderNumberPrefix.$orderUid;
+		return $orderNumberPrefix . $orderUid;
 	} // getNumber
 
 
@@ -181,9 +195,9 @@ class tx_ttproducts_order {
 			// Saving order data
 		$fieldsArray=array();
 		$fieldsArray['feusers_uid'] = $feusers_uid;
-		$fieldsArray['name'] = $deliveryInfo['name'];
 		$fieldsArray['first_name'] = $deliveryInfo['first_name'];
 		$fieldsArray['last_name'] = $deliveryInfo['last_name'];
+		$fieldsArray['name'] = ($deliveryInfo['name'] ? $deliveryInfo['name'] : $deliveryInfo['last_name'].' '.$deliveryInfo['first_name']);
 		$fieldsArray['salutation'] = $deliveryInfo['salutation'];
 		$fieldsArray['address'] = $deliveryInfo['address'];
 		$fieldsArray['zip'] = $deliveryInfo['zip'];
@@ -276,12 +290,16 @@ class tx_ttproducts_order {
 			// Setting tstamp, deleted and tracking code
 		$fieldsArray['tstamp'] = time();
 		$fieldsArray['deleted'] = 0;
-		$fieldsArray['tracking_code'] = $this->basket->recs['tt_products']['orderTrackingNo'];
-		$fieldsArray['agb'] = $address->infoArray['billing']['agb'];
-		$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
-		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
-		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
-		$fieldsArray['creditpoints_gifts'] = $cpArray['gift']['amount'];
+		$fieldsArray['tracking_code'] = $this->basket->order['orderTrackingNo'];
+		$fieldsArray['agb'] = intval($address->infoArray['billing']['agb']);
+
+		if ($this->conf['creditpoints.'] && $this->basket->recs['tt_products']['creditpoints'] != '')	{
+
+			$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
+			$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
+			$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
+			$fieldsArray['creditpoints_gifts'] = $cpArray['gift']['amount'];
+		}
 
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderUid), $fieldsArray);

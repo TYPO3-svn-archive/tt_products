@@ -250,6 +250,9 @@ $TCA['sys_products_orders'] = Array (
 		'default_sortby' => 'ORDER BY name',
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
+		'enablecolumns' => Array (
+			'disabled' => 'hidden',
+		),
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
 		'mainpalette' => 1,

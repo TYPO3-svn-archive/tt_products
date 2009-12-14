@@ -285,7 +285,7 @@ class tx_ttproducts_info {
 		global $TYPO3_CONF_VARS;
 
 		$infoFields = t3lib_div::trimExplode(',',$this->feuserfields); // Fields...
-		reset ($infoFields);
+		reset($infoFields);
 		while(list(,$fName)=each($infoFields))	{
 			if ($fName != 'salutation')	{
 				$markerArray['###PERSON_' . strtoupper($fName) . '###'] = $this->infoArray['billing'][$fName];

@@ -138,7 +138,7 @@ class tx_ttproducts_paymentlib {
 //*******************************************************************************//
 //* Changed by Udo Gerhards: If the $providerObject has a basket fill it, begin *//
 //*******************************************************************************//
-				if ((method_exists($providerObject,'usesBasket') && $providerObject->usesBasket() || $confScript['useBasket'] == '1') && t3lib_extMgm::isLoaded('static_info_tables'))	{
+				if (t3lib_extMgm::isLoaded('static_info_tables'))	{
 					$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 					$sitVersion = $eInfo['version'];
 					if (version_compare($sitVersion, '2.0.5', '>='))	{
@@ -258,7 +258,7 @@ class tx_ttproducts_paymentlib {
 			echo "<br><br>ausgabe details: ";
 			print_r ($transactionDetailsArr);
 			echo "<br><br>";
-			$set = $providerObject->transaction_setDetails ($transactionDetailsArr);
+			$set = $providerObject->transaction_setDetails($transactionDetailsArr);
 
 			$ok = $providerObject->transaction_validate ();
 
@@ -311,10 +311,10 @@ class tx_ttproducts_paymentlib {
 
 		$successPid = ($this->conf['paymentActivity'] == 'payment' ? ($this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $this->conf['PIDfinalize']) : $TSFE->id);
 		$conf = array('returnLast' => 'url');
-		$urlDir = t3lib_div::getIndpEnv ('TYPO3_REQUEST_DIR');
+		$urlDir = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR');
 		$returi = $urlDir.$this->getUrl($conf, $TSFE->id).$paramReturi;
-		$faillink = $urlDir.$this->getUrl($conf, $this->conf['PIDpayment']).$paramFaillink;
-		$successlink = $urlDir.$this->getUrl($conf, $successPid).$param;
+		$faillink = $urlDir . $this->getUrl($conf, $this->conf['PIDpayment']) . $paramFaillink;
+		$successlink = $urlDir . $this->getUrl($conf, $successPid) . $param;
 
 		$transactionDetailsArr = array (
 			'transaction' => array (
@@ -326,7 +326,7 @@ class tx_ttproducts_paymentlib {
 				'successlink' => $successlink
 			),
 			'total' => $totalArr,
-			'tracking' => $this->basket->recs['tt_products']['orderTrackingNo'],
+			'tracking' => $this->basket->order['orderTrackingNo'],
 			'address' => $addrArr,
 			'basket' => $paymentBasketArray,
 		);
@@ -375,14 +375,16 @@ class tx_ttproducts_paymentlib {
 
 		// Setting up total values
 		$totalArr = array();
-		$totalArr['amountnotax'] = $this->fFloat($calculatedArray['priceNoTax']['total']);
-		$totalArr['amounttax'] = $this->fFloat($calculatedArray['priceTax']['total']);
+		$totalArr['goodsnotax'] = $this->fFloat($calculatedArray['priceNoTax']['goodstotal']);
+		$totalArr['goodstax'] = $this->fFloat($calculatedArray['priceTax']['goodstotal']);
 		$totalArr['paymentnotax'] = $this->fFloat($calculatedArray['priceNoTax']['payment']);
 		$totalArr['paymenttax'] = $this->fFloat($calculatedArray['priceTax']['payment']);
 		$totalArr['shippingnotax'] = $this->fFloat($calculatedArray['priceNoTax']['shipping']);
 		$totalArr['shippingtax'] = $this->fFloat($calculatedArray['priceTax']['shipping']);
 		$totalArr['handlingnotax'] = $this->fFloat($calculatedArray['priceNoTax']['handling']);
 		$totalArr['handlingtax'] = $this->fFloat($calculatedArray['priceTax']['handling']);
+		$totalArr['amountnotax'] = $this->fFloat($calculatedArray['priceNoTax']['total']);
+		$totalArr['amounttax'] = $this->fFloat($calculatedArray['priceTax']['total']);
 		$totalArr['taxrate'] = $calculatedArray['maxtax']['goodstotal'];
 
 		$totalArr['totaltax'] = $this->fFloat($totalArr['amounttax'] - $totalArr['amountnotax']);

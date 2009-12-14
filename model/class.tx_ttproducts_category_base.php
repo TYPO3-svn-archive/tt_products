@@ -77,49 +77,59 @@ class tx_ttproducts_category_base {
 		}
 	} // init
 
+
 	function &getTableObj ()	{
 		return $this->table;
 	}
+
 
 	function get ($uid=0,$pid=0) {
 		$rc = array();
 		return $rc;
 	}
 
+
 	function getFromTitle ($title)	{
 		$rc = array();
 		return $rc;
 	}
+
 
 	function getParent ($uid=0) {
 		$rc = array();
 		return $rc;
 	}
 
+
 	function getRootCat ()	{
 		$rc = 0;
 		return $rc;
 	}
+
 
 	function getRowCategory ($row) {
 		$rc = '';
 		return $rc;
 	}
 
+
 	function getRowPid ($row) {
 		$rc = '';
 		return $rc;
 	}
+
 
 	function getParamDefault ()	{
 		$rc = '';
 		return $rc;
 	}
 
+
 	function getChildUidArray ($uid)	{
 		$rcArray = array();
 		return $rcArray;
 	}
+
 
 	function getCategoryArray ($uid)	{
 		global $TYPO3_CONF_VARS;
@@ -152,6 +162,7 @@ class tx_ttproducts_category_base {
 		return $catArray;
 	}
 
+
 	function getLineArray ($start, $endArray)	{
 		global $TYPO3_CONF_VARS;
 
@@ -177,6 +188,7 @@ class tx_ttproducts_category_base {
 		}
 		return $catArray;
 	}
+
 
 	function getChildCategoryArray ($cat)	{
 		global $TYPO3_CONF_VARS;
@@ -206,9 +218,9 @@ class tx_ttproducts_category_base {
 				$catArray[] = $row['cat'];
 			}
 		}
-
 		return $catArray;
 	}
+
 
 	function &getRootArray ($rootCat, &$categoryArray)	{
 		$rootArray = array();
@@ -222,6 +234,7 @@ class tx_ttproducts_category_base {
 		}
 		return $rootArray;
 	}
+
 
 	function &getRootpathArray (&$relationArray,$rootCat,$currentCat) {
 		$rootpathArray = array();
@@ -242,10 +255,12 @@ class tx_ttproducts_category_base {
 		return $rootpathArray;
 	}
 
+
 	function &getRelationArray ($excludeCat=0,$currentCat=0,$rootUids='') {
 		$relationArray = array();
 		return $relationArray;
 	}
+
 
 	function setMarkerArrayCatTitle (&$markerArray, $catTitle, $prefix)	{
 		global $TSFE;
@@ -255,9 +270,11 @@ class tx_ttproducts_category_base {
 		$markerArray['###'.$prefix.$this->marker.'_TITLE###'] = htmlentities($title,ENT_QUOTES,$TSFE->renderCharset);
 	}
 
+
 	function getMarkerArrayCatTitle (&$markerArray,$prefix='')	{
 		return ($markerArray['###'.$prefix.$this->marker.'_TITLE###']);
 	}
+
 
 	/**
 	 * Template marker substitution
@@ -273,6 +290,7 @@ class tx_ttproducts_category_base {
 	 */
 	function getMarkerArray (&$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
 	}
+
 
 	function getParentMarkerArray (&$parentArray, &$row, &$markerArray, &$page, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
 		if (is_array($parentArray)) {
@@ -312,6 +330,7 @@ class tx_ttproducts_category_base {
 			}
 		}
 	}
+
 
 	function getItemMarkerArray (&$row, &$markerArray, $code, $prefix='')	{
 		global $TSFE;

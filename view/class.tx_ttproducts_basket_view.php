@@ -45,6 +45,8 @@
 
 global $TYPO3_CONF_VARS;
 
+
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_activity.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
 
 class tx_ttproducts_basket_view {
@@ -75,7 +77,6 @@ class tx_ttproducts_basket_view {
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
 	 * @return	  void
 	 */
-
 	function init (&$basket, &$templateCode, &$error_code )	{
 		$this->pibase = &$basket->pibase;
 		$this->cnf = &$basket->cnf;
@@ -99,6 +100,7 @@ class tx_ttproducts_basket_view {
 		$this->marker->init($this->pibase, $this->cnf, $this->basket);
 	} // init
 
+
 	function getMarkerArray ()	{
 		$markerArray = array();
 
@@ -110,6 +112,11 @@ class tx_ttproducts_basket_view {
 		$markerArray['###PRICE2_GOODSTOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['price2Tax']['goodstotal']);
 		$markerArray['###PRICE2_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['price2NoTax']['goodstotal']);
 		$markerArray['###PRICE2_GOODSTOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['price2Tax']['goodstotal']-$this->basket->calculatedArray['price2NoTax']['goodstotal']);
+
+		$markerArray['###PRICE_DISCOUNT_GOODSTOTAL_TAX###']    = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPriceTax']['goodstotal']-$this->basket->calculatedArray['priceTax']['goodstotal']);
+		$markerArray['###PRICE_DISCOUNT_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPriceNoTax']['goodstotal']-$this->basket->calculatedArray['priceNoTax']['goodstotal']);
+		$markerArray['###PRICE2_DISCOUNT_GOODSTOTAL_TAX###']    = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPrice2Tax']['goodstotal']-$this->basket->calculatedArray['price2Tax']['goodstotal']);
+		$markerArray['###PRICE2_DISCOUNT_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPrice2NoTax']['goodstotal']-$this->basket->calculatedArray['price2NoTax']['goodstotal']);
 
 			// This is the total for everything
 //			$this->basket->getCalculatedSums();
@@ -129,12 +136,9 @@ class tx_ttproducts_basket_view {
 		$markerArray['###NUMBER_GOODSTOTAL###'] = $this->basket->calculatedArray['count'];
 		$fileresource = $this->pibase->cObj->fileResource($this->conf['basketPic']);
 		$markerArray['###IMAGE_BASKET###'] = $fileresource;
-
-		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
-
 		return $markerArray;
 	}
+
 
 	/**
 	 * This generates the shopping basket layout and also calculates the totals. Very important function.
@@ -233,9 +237,8 @@ class tx_ttproducts_basket_view {
 					$catParentArray
 				);
 			}
-
 			// loop over all items in the basket indexed by sorting text
-			foreach ($this->basket->itemArray as $sort=>$actItemArray) {
+			foreach ($this->basket->itemArray as $sort => $actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
 					$row = $actItem['rec'];
 
@@ -401,14 +404,47 @@ class tx_ttproducts_basket_view {
 			if (is_object ($this->tx_dam))	{
 				$this->tx_dam_cat->marker = $damCatMarker; // restore original value
 			}
-
 			$subpartArray = array();
 			$wrappedSubpartArray = array();
 
 				// Initializing the markerArray for the rest of the template
-			$markerArray=$mainMarkerArray;
+			$markerArray = $mainMarkerArray;
 			$basketMarkerArray = $this->getMarkerArray();
 			$markerArray = array_merge($markerArray,$basketMarkerArray);
+			$pid = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
+		//	$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
+
+			$tmpLinkParam = $this->marker->getLinkParams(
+				'',
+				array(),
+				TRUE,
+				TRUE
+			);
+			$wrappedSubpartArray['###LINK_BASKET###'] = array(
+				'<a href="' . htmlspecialchars(
+					$this->pibase->pi_getPageLink(
+						$pid,
+						'',
+						$tmpLinkParam
+					)
+				) . '">',
+				'</a>'
+			);
+			$activityArray = tx_ttproducts_model_activity::getActivityArray();
+			$hiddenFields = '';
+			if (is_array($activityArray))	{
+				$activity = '';
+				if ($activityArray['products_payment'])	{
+					$activity = 'payment';
+				} else if ($activityArray['products_info']) {
+					$activity = 'info';
+				}
+				if ($activity)	{
+					$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
+					$hiddenFields .= '<input type="hidden" name="' . TT_PRODUCTS_EXTkey . '[activity]" value="' . $activity . '" ' . ($bUseXHTML ? '/' : '') . '>';
+				}
+			}
+			$markerArray['###HIDDENFIELDS###'] = $hiddenFields;
 
 			// shipping
 			//$markerArray['###PRICE_SHIPPING_PERCENT###'] = $perc;
@@ -468,9 +504,9 @@ class tx_ttproducts_basket_view {
 				$this->conf['useArticles']
 			);
 				// Order:	NOTE: Data exist only if the order->getBlankUid() has been called. Therefore this field in the template should be used only when an order has been established
-			$markerArray['###ORDER_UID###'] = $order->getNumber($this->basket->recs['tt_products']['orderUid']);
-			$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($this->basket->recs['tt_products']['orderDate'],$this->conf['orderDate_stdWrap.']);
-			$markerArray['###ORDER_TRACKING_NO###'] = $this->basket->recs['tt_products']['orderTrackingNo'];
+			$markerArray['###ORDER_UID###'] = $order->getNumber($this->basket->order['orderUid']);
+			$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($this->basket->order['orderDate'],$this->conf['orderDate_stdWrap.']);
+			$markerArray['###ORDER_TRACKING_NO###'] = $this->basket->order['orderTrackingNo'];
 
 				// URL
 			$markerArray =  $this->marker->addURLMarkers(0, $markerArray);
@@ -478,9 +514,6 @@ class tx_ttproducts_basket_view {
 			$taxFromShipping = $this->paymentshipping->getReplaceTaxPercentage();
 			$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
 			$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
-
-			// creditpoint system start
-			// $creditpointsGifts = t3lib_div::_GP('creditpoints_gifts');
 
 			if ($TSFE->fe_user->user['tt_products_vouchercode'] == '') {
 				$subpartArray['###SUB_VOUCHERCODE###'] = '';
@@ -607,7 +640,7 @@ class tx_ttproducts_basket_view {
 				if ($this->basket->recs['tt_products']['creditpoints'] > number_format( min ($max1_creditpoints,$max2_creditpoints),0))	{
 					$this->basket->recs['tt_products']['creditpoints'] = number_format( min ($max1_creditpoints,$max2_creditpoints),0);
 				}
-				$this->basket->calculatedArray['priceTax']['creditpoints'] = $this->price->priceFormat($this->basket->recs['tt_products']['creditpoints']*$pricefactor);
+				// $this->basket->calculatedArray['priceTax']['creditpoints'] = $this->price->priceFormat($this->basket->recs['tt_products']['creditpoints']*$pricefactor);
 
 				$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = $this->basket->recs['tt_products']['creditpoints'];
 				$subpartArray['###SUB_CREDITPOINTS_DISCOUNT_EMPTY###'] = '';

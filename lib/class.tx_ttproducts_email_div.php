@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -73,8 +73,9 @@ class tx_ttproducts_email_div {
 			$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
 			$Typo3_htmlmail->organisation = '';
 
-			if ($attachment != '')
+			if ($attachment != '' && file_exists($attachment))	{
 				$Typo3_htmlmail->addAttachment($attachment);
+			}
 
 			if ($html)  {
 				$Typo3_htmlmail->theParts['html']['content'] = $html; // Fetches the content of the page
@@ -84,7 +85,7 @@ class tx_ttproducts_email_div {
 				$Typo3_htmlmail->extractHyperLinks();
 				$Typo3_htmlmail->fetchHTMLMedia();
 				$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
-				$Typo3_htmlmail->substHREFsInHTML();  
+				$Typo3_htmlmail->substHREFsInHTML();
 				$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
 				if ($message)	{
 					$Typo3_htmlmail->addPlain($message);
@@ -93,6 +94,11 @@ class tx_ttproducts_email_div {
 				$Typo3_htmlmail->addPlain($message);
 			}
 			$Typo3_htmlmail->setHeaders();
+			if ($attachment != '' && file_exists($attachment))	{
+				foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
+					$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
+				}
+			}
 			$Typo3_htmlmail->setContent();
 			$Typo3_htmlmail->setRecipient(explode(',', $toEMail));
 			$Typo3_htmlmail->sendTheMail();
@@ -128,7 +134,7 @@ class tx_ttproducts_email_div {
 				$markerArray['###DELIVERY_NAME###'] = $orderData['delivery']['name'];
 				tx_ttproducts_feuser::getItemMarkerArray ($orderData['billing'], $markerArray, false, 'person');
 				tx_ttproducts_feuser::getItemMarkerArray ($orderData['delivery'], $markerArray, false, 'delivery');
-				
+
 				$markerArray['###ORDER_TRACKING_NO###']=$tracking;
 				$orderNumber = $order->getNumber($orderRow['uid']);
 				$markerArray['###ORDER_UID###'] = $orderNumber;
@@ -180,7 +186,6 @@ class tx_ttproducts_email_div {
 
 					tx_ttproducts_email_div::send_mail($recipients,  $subject, $emailContent, $HTMLmailContent, $senderemail, $sendername, $conf['GiftAttachment']);
 				} else {		// ... else just plain text...
-
 					tx_ttproducts_email_div::send_mail($recipients, $subject, $emailContent, $tmp='',$senderemail, $sendername, $conf['GiftAttachment']);
 					tx_ttproducts_email_div::send_mail($conf['orderEmail_to'], $subject, $emailContent, $tmp='', $address->infoArray['billing']['email'], $address->infoArray['billing']['name'], $conf['GiftAttachment']);
 				}

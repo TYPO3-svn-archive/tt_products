@@ -263,12 +263,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? htmlentities($this->conf['bulkilyWarning']) : '';
 
-		if ($row['special_preparation'])	{
-			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = $this->conf['specialPreparation'];
-		} else	{
-			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = '';
-		}
-
 		if ($this->conf['itemMarkerArrayFunc'])	{
 			$markerArray = $this->pibase->userProcess('itemMarkerArrayFunc',$markerArray);
 		}
@@ -337,6 +331,13 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				}
 			}
 		}
+
+		if ($row['special_preparation'])	{
+			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = $this->pibase->cObj->substituteMarkerArray($this->conf['specialPreparation'], $markerArray);
+		} else	{
+			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = '';
+		}
+
 	} // getItemMarkerArray
 
 

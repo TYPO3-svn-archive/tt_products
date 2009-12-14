@@ -79,7 +79,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'title' => Array (
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.title',
 			'config' => Array (
 				'type' => 'input',
@@ -691,6 +691,7 @@ $TCA['tt_products_language'] = Array (
 			),
 		),
 		'title' => Array (
+			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
 			'config' => Array (
 				'type' => 'input',
@@ -795,6 +796,7 @@ $TCA['tt_products_cat'] = Array (
 			)
 		),
 		'title' => Array (
+			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
 			'config' => Array (
 				'type' => 'input',
@@ -1025,7 +1027,7 @@ $TCA['tt_products_articles'] = Array (
 			)
 		),
 		'title' => Array (
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
 			'config' => Array (
 				'type' => 'input',
@@ -1320,6 +1322,7 @@ $TCA['tt_products_articles_language'] = Array (
 			),
 		),
 		'title' => Array (
+			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
 			'config' => Array (
 				'type' => 'input',
@@ -1469,6 +1472,7 @@ $TCA['sys_products_accounts'] = Array (
 			)
 		),
 		'owner_name' => Array (
+			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.name',
 			'config' => Array (
 				'type' => 'input',
@@ -1583,12 +1587,20 @@ $TCA['sys_products_cards'] = Array (
 $TCA['sys_products_orders'] = Array (
 	'ctrl' => $TCA['sys_products_orders']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'name,first_name,last_name,salutation,address,zip,country,telephone,email,fax,payment,shipping,amount,email_notify,tracking_code,status,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,cc_uid,ac_uid'
+		'showRecordFieldList' => 'hidden,name,first_name,last_name,salutation,address,zip,country,telephone,email,fax,payment,shipping,amount,email_notify,tracking_code,status,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,cc_uid,ac_uid'
 	),
-	'feInterface' => $TCA['tt_products_articles']['feInterface'],
+	'feInterface' => $TCA['sys_products_orders']['feInterface'],
 	'columns' => Array (
-		'name' => Array (
+		'hidden' => Array (
 			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.hidden',
+			'config' => Array (
+				'type' => 'check',
+				'default' => '0'
+			)
+		),
+		'name' => Array (
+			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.name',
 			'config' => Array (
 				'type' => 'input',
@@ -1878,7 +1890,7 @@ $TCA['sys_products_orders'] = Array (
 		),
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,fax,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,cc_uid,ac_uid')
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,fax,agb,feusers_uid,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,cc_uid,ac_uid')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),

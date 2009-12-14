@@ -96,7 +96,7 @@ class tx_ttproducts_activity_finalize {
 	 *
 	 * returns the email address of the customer to whom the order notification has been sent
 	 */
-	function doProcessing ($templateCode, &$basketView, &$viewTable, &$price, $orderUid, &$orderConfirmationHTML, &$error_message, &$address)	{
+	function doProcessing ($templateCode, &$basketView, &$viewTable, &$price, $orderUid, &$orderConfirmationHTML, &$error_message, &$address, &$mainMarkerArray)	{
 		global $TSFE;
 		global $TYPO3_DB;
 		global $TYPO3_CONF_VARS;
@@ -109,7 +109,8 @@ class tx_ttproducts_activity_finalize {
 
 		$recipientsArray['shop'] = $this->tt_products_cat->getEmail($this->basket->itemArray);
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
-		$markerArray = array('###CUSTOMER_RECIPIENTS_EMAIL###' => implode(',', $recipientsArray['customer']));
+		$markerArray = array_merge($mainMarkerArray,$this->pibase->globalMarkerArray);
+		$markerArray['###CUSTOMER_RECIPIENTS_EMAIL###'] = implode(',', $recipientsArray['customer']);
 		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
 		$apostrophe = $this->conf['orderEmail_apostrophe'];
 
@@ -212,7 +213,7 @@ class tx_ttproducts_activity_finalize {
 			$accountUid,
 			$this->conf['email_notify_default'],	// Email notification is set here. Default email address is delivery email contact
 			$this->basket->basketExtra['payment'].': '.$this->basket->basketExtra['payment.']['title'],
-			$this->basket->basketExtra['shipping'].': '.$this->basket->basketExtra['shipping.']['title'],
+			$this->basket->basketExtra['shipping'][0].': '.$this->basket->basketExtra['shipping.']['title'],
 			$this->basket->calculatedArray['priceTax']['total'],
 			$orderConfirmationHTML,
 			$address
@@ -259,7 +260,7 @@ class tx_ttproducts_activity_finalize {
 				$accountUid
 			);
 			$csvfilepath = PATH_site. $this->conf['CSVdestination'];
-			$csvorderuid = $this->basket->recs['tt_products']['orderUid'];
+			$csvorderuid = $this->basket->order['orderUid'];
 			$csv->create($this->basket, $address, $csvorderuid, $csvfilepath, $error_message);
 			if (!$this->conf['CSVnotInEmail'])	{
 				$addcsv = $csvfilepath;
@@ -275,11 +276,10 @@ class tx_ttproducts_activity_finalize {
 			$emailContentArray = array();
 			$subjectArray = array();
 			$plainMessageArray = array();
-			$markerArray = array();
 			$markerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 			$empty = '';
 			foreach ($emailTemplateArray as $key => $emailTemplate) {
-				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, false, true, $this->conf['orderEmail_htmlmail'], '###'.$emailTemplate.'###'));
+				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, false, true, $this->conf['orderEmail_htmlmail'], '###'.$emailTemplate.'###', $mainMarkerArray));
 
 				if ($emailContentArray[$key])	{	// If there is plain text content - which is required!!
 					$parts = preg_split('/[\n\r]+/',$emailContentArray[$key],2);		// First line is subject
@@ -299,7 +299,6 @@ class tx_ttproducts_activity_finalize {
 				$plainMessageArray['shop'] = $plainMessageArray['customer'];
 				$subjectArray['shop'] = $subjectArray['customer'];
 			}
-
 			$HTMLmailContent = '';
 			if ($plainMessageArray['customer'] || $this->conf['orderEmail_htmlmail'])	{	// If there is plain text content - which is required!!
 				if ($this->conf['orderEmail_htmlmail'])	{
@@ -380,7 +379,6 @@ class tx_ttproducts_activity_finalize {
 				}
 			}
 		}
-
 		// 3 different hook methods - There must be one for your needs, too.
 
 			// This cObject may be used to call a function which clears settings in an external order system.
@@ -392,14 +390,15 @@ class tx_ttproducts_activity_finalize {
 		}
 
 			// Call all finalizeOrder hooks
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
+		if (is_array($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
+			foreach($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'finalizeOrder')) {
 					$hookObj->finalizeOrder($this, $address, $templateCode, $basketView, $viewTable, $price, $orderUid, $orderConfirmationHTML, $error_message);
 				}
 			}
 		}
+		$this->order->clearUid();
 	} // doProcessing
 }
 

@@ -259,9 +259,7 @@ class tx_ttproducts_catlist_view {
 			}
 		} else if ($htmlTagMain == 'select') {  // if ($htmlTagMain == 'ul')
 			// nothing: use the SELECTCAT code
-		} else {
-			// ($htmlTagMain == 'null')  -- where no special HTML tags will be created
-
+		} else {	// ($htmlTagMain == 'null')  -- where no special HTML tags will be created
 			$viewCatTagArray = array();
 			$catfieldsArray = $this->marker->getMarkerFields(
 				$t['linkCategoryFrameWork'],

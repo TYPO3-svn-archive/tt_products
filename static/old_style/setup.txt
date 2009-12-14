@@ -374,6 +374,7 @@ plugin.tt_products {
   marks {
    BASKET_MINI_HEADER = Warenkorb
   }
+  shopAdmin = BE
 }
 
 ## This enables the record item to display product items

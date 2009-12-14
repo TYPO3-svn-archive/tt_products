@@ -47,7 +47,6 @@ global $TYPO3_CONF_VARS;
 
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_javascript_marker.php');
-
 require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_datafield_view.php');
 
 
@@ -76,6 +75,7 @@ class tx_ttproducts_single_view {
 	var $LLkey; // language key
 	var $useArticles;
 	var $uidArray=array();
+
 
 	function init (
 		&$pibase,
@@ -124,6 +124,7 @@ class tx_ttproducts_single_view {
 		$this->javaScriptMarker = t3lib_div::makeInstance('tx_ttproducts_javascript_marker');
 		$this->javaScriptMarker->init($pibase, $cnf, $this->pibase->javascript);
 	}
+
 
 	// returns the single view
 	function &printView (&$templateCode, &$error_code, $pageAsCategory, $templateSuffix = '') {
@@ -183,6 +184,7 @@ class tx_ttproducts_single_view {
 				// Get the subpart code
 			$itemFrameTemplate ='';
 			$giftNumberArray = tx_ttproducts_gifts_div::getGiftNumbers ($this->basket, $rowArray['product']['uid'], $this->variants);
+
 			if ($this->config['displayCurrentRecord'])	{
 				$itemFrameTemplate = '###ITEM_SINGLE_DISPLAY_RECORDINSERT###';
 			} else if (count($giftNumberArray)) {
@@ -198,7 +200,6 @@ class tx_ttproducts_single_view {
 					$itemFrameTemplate = '###DAM_SINGLE_DISPLAY###';
 				}
 			}
-
 			// Add the template suffix
 			$itemFrameTemplate = substr($itemFrameTemplate, 0, -3).$templateSuffix.'###';
 			$itemFrameWork = $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker($itemFrameTemplate));

@@ -190,11 +190,12 @@ class tx_ttproducts_article_base {
 		$markerArray['###'.$this->marker.'_ID###'] = $row['uid'];
 		$markerArray['###'.$this->marker.'_UID###'] = $row['uid'];
 		$markerArray['###'.$this->marker.'_TITLE###'] = ($bHtml ? htmlentities($row['title'],ENT_QUOTES,$TSFE->renderCharset) : $row['title']);
-		$markerArray['###'.$this->marker.'_SUBTITLE###'] = ($bHtml ? htmlentities($row['subtitle'],ENT_QUOTES,$TSFE->renderCharset) : $row['subtitle']);
 		if ($code == 'EMAIL' && !$this->conf['orderEmail_htmlmail'])	{ // no formatting for emails
 			$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'];
 			$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'];
+			$subtitle = $row['subtitle'];
 		} else {
+			$subtitle = ($this->conf['nl2brNote'] ? nl2br($row['subtitle']) : $row['subtitle']);
 			$markerArray['###'.$this->marker.'_NOTE###'] = $row['note'] = ($this->conf['nl2brNote'] ? nl2br($row['note']) : $row['note']);
 			$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'] = ($this->conf['nl2brNote'] ? nl2br($row['note2']) : $row['note2']);
 
@@ -207,6 +208,7 @@ class tx_ttproducts_article_base {
 				$markerArray['###'.$this->marker.'_NOTE2###'] = $row['note2'] = $this->pibase->cObj->parseFunc($markerArray['###'.$this->marker.'_NOTE2###'],$this->conf['parseFunc.']);
 			}
 		}
+		$markerArray['###'.$this->marker.'_SUBTITLE###'] = ($bHtml ? htmlentities($subtitle,ENT_QUOTES,$TSFE->renderCharset) : $subtitle);
 		$markerArray['###'.$this->marker.'_ITEMNUMBER###'] = htmlentities($row[$this->fields['itemnumber']],ENT_QUOTES,$TSFE->renderCharset);
 		$markerArray['###'.$this->marker.'_TAX###'] = (!empty($row['tax'])) ? $row['tax'] : $this->conf['TAXpercentage'];
 
@@ -223,11 +225,14 @@ class tx_ttproducts_article_base {
 		$oldPrice = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
 		$oldPriceNoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price'],0,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
 		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
-			$oldPrice = $oldPriceNoTax = '';
+			$markerArray['###OLD_PRICE_TAX###'] = '';
+			$markerArray['###OLD_PRICE_NO_TAX###'] = '';
+		} else {
+			$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
+			$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
 		}
-		$markerArray['###OLD_PRICE_TAX###'] = $oldPrice;
+
 		$markerArray['###PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax'], $taxInclExcl));
-		$markerArray['###OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
 		$markerArray['###PRICE_ONLY_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
 
 		$markerArray['###UNIT_PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceUnitNoTax'], $taxInclExcl));
@@ -239,6 +244,12 @@ class tx_ttproducts_article_base {
 
 		$markerArray['###DIRECTCOST_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['directcost'],1,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
 		$markerArray['###DIRECTCOST_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['directcost'],0,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
+
+		$markerArray['###USER_DISCOUNT_PERCENT###'] = $TSFE->fe_user->user['tt_products_discount'];
+		$markerArray['###USER_DISCOUNT_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax']-$oldPriceNoTax));
+		$markerArray['###USER_DISCOUNT_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$oldPriceTax));
+		$markerArray['###USER_DISCOUNT2_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($price2-$oldPriceNoTax));
+		$markerArray['###USER_DISCOUNT2_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($price2NoTax-$oldPriceTax));
 
 		$instockField = $this->cnf->getTableDesc['inStock'];
 		$instockField = ($instockField ? $instockField : 'inStock');
@@ -262,7 +273,7 @@ class tx_ttproducts_article_base {
 				foreach ($prodTmpRow as $k => $prodVal)	{
 					$val = trim($prodTranslatedRow[$k]);
 					$basketVal = trim($prodVal);
-					$text .= '<OPTION value="'.htmlentities($basketVal,ENT_QUOTES,$TSFE->renderCharset).'">'.htmlentities($val,ENT_QUOTES,$TSFE->renderCharset).'</OPTION>';
+					$text .= '<option value="'.htmlentities($basketVal,ENT_QUOTES,$TSFE->renderCharset).'">'.htmlentities($val,ENT_QUOTES,$TSFE->renderCharset).'</option>';
 				}
 			} else {
 				$text = $prodTmpRow[0];

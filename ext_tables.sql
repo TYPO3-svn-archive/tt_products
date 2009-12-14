@@ -357,6 +357,7 @@ CREATE TABLE sys_products_orders (
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 	deleted tinyint(4) unsigned DEFAULT '0' NOT NULL,
+	hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	feusers_uid int(11) DEFAULT '0' NOT NULL,
 	name varchar(80) DEFAULT '' NOT NULL,
 	first_name varchar(50) DEFAULT '' NOT NULL,

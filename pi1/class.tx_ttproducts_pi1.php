@@ -225,6 +225,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		return $content;
 	}
 
+
 	function set_no_cache () {
 		global $TSFE;
 
@@ -232,6 +233,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			$TSFE->set_no_cache();
 		}
 	}
+
 
 	function &getTemplateCode ($theCode) {
 		$templateCode = '';
@@ -260,7 +262,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	function doProcessing ($content='', $bRunAjax = false)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS; // needed for include_once and PHP 5.1 which otherwise would not allow XCLASS for HtmlMail, DAM aso.
-		$bStoreBasket = true;
+		$bStoreBasket = TRUE;
 
 		if (!count($this->codeArray) && !$bRunAjax)	{
 			$this->codeArray = array('HELP');
@@ -283,7 +285,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			$updateMode = 0;
 		}
 
-		if (count ($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW')	{
+		if (isset($this->conf['basket.']) && $this->conf['basket.']['store']=='0' || count($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW')	{
 			$bStoreBasket = FALSE;
 		}
 
@@ -422,17 +424,11 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 					}
 				break;
 				case 'SINGLE':
-					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList'] &&
-						!$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']) {
-						$this->set_no_cache();
-					}
 					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
 				case 'OVERVIEW':
-					if (count($this->basket->itemArray)) {
-						$this->set_no_cache();
-					}
-					break;
+					$this->set_no_cache();
+				break;
 				case 'BASKET':
 				case 'FINALIZE':
 				case 'INFO':
@@ -545,6 +541,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		$rc = ($bRunAjax || !intval($this->conf['wrapInBaseClass']) ? $content : $this->pi_wrapInBaseClass($content));
 		return $rc;
 	}
+
 
 	/**
 	* does the initialization stuff
@@ -698,12 +695,12 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			$this->paymentshipping,
 			$TSFE->fe_user->user['tt_products_discount']
 		);
-
 		$this->tableArray = array ('static_countries' => 'country');
 
 			// This cObject may be used to call a function which manipulates the shopping basket based on settings in an external order system. The output is included in the top of the order (HTML) on the basket-page.
 		$this->externalCObject = $this->getExternalCObject('externalProcessing');
 	} // init
+
 
 	/**
 	* Getting the table definitions
@@ -792,6 +789,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		}
 	} // initTables
 
+
 		// XAJAX functions cannot be in classes
 	function showArticle ($data)	{
 		$rc = '';
@@ -816,13 +814,13 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 				}
 			}
 		}
-
 		$idClass = ($idClass ? $idClass : 'ArticleId');
 		$content = $this->doProcessing('',true);
 		$objResponse->addAssign($idClass,'innerHTML', $content);
 		$rc = $objResponse->getXML();
 		return $rc;
 	}
+
 
 	/**
 	* Order tracking
@@ -937,12 +935,13 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		return $content;
 	}  // products_tracking
 
+
 	/**
 	* Returns 1 if user is a shop admin
 	*/
 	function shopAdmin (&$updateCode)	{
 		$admin=0;
-		if ($GLOBALS['TSFE']->beUserLogin)	{
+		if ($GLOBALS['TSFE']->beUserLogin || $this->conf['shopAdmin'] != 'BE')	{
 			$updateCode = t3lib_div::_GP('update_code');
 			if ($updateCode == $this->conf['update_code'])	{
 				$admin = 1;		// Means that the administrator of the website is authenticated.
@@ -950,6 +949,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		}
 		return $admin;
 	}
+
 
 	/**
 	* Get External CObjects
@@ -961,19 +961,23 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		}
 	}
 
+
 	function load_noLinkExtCobj ()	{
 		if ($this->conf['externalProcessing_final'] || is_array($this->conf['externalProcessing_final.']))	{	// If there is given another cObject for the final order confirmation template!
 			$this->externalCObject = $this->getExternalCObject('externalProcessing_final');
 		}
 	} // load_noLinkExtCobj
 
+
 	function setSingleFromList ($bValue)	{
 		$this->bSingleFromList = $bValue;
 	}
 
+
 	function getSingleFromList ()	{
 		return $this->bSingleFromList;
 	}
+
 
 	/**
 	* Displaying single products/ the products list / searching
@@ -998,6 +1002,12 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 				} else if ($this->conf['defaultArticleID'])	{
 					$this->tt_product_single['article'] = $this->conf['defaultArticleID'];
 				}
+			}
+
+			if ($this->tt_product_single['product'] && $this->basket->isInBasket($this->tt_product_single['product']) ||
+				!$this->conf['NoSingleViewOnList'] && !$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']
+			) {
+				$this->set_no_cache();
 			}
 
 			if (!is_object($this->singleView)) {
