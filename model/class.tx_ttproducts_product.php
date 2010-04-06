@@ -209,6 +209,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		return $instockTableArray;
 	}
 
+
 	/**
 	 * Returns true if the item has the $check value checked
 	 *
@@ -219,6 +220,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$hasAdditional = $this->pibase->pi_getFFvalue($additional, $check);
 		return $hasAdditional;
 	}
+
 
 	/**
 	 * Template marker substitution
@@ -249,12 +251,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $this->conf['bulkilyWarning'] : '';
-
-		if ($row['special_preparation'])	{
-			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = $this->conf['specialPreparation'];
-		} else	{
-			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = '';
-		}
 
 		if ($this->conf['itemMarkerArrayFunc'])	{
 			$markerArray = $this->pibase->userProcess('itemMarkerArrayFunc',$markerArray);
@@ -321,7 +317,14 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				}
 			}
 		}
+
+		if ($row['special_preparation'])	{
+			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = $this->pibase->cObj->substituteMarkerArray($this->conf['specialPreparation'], $markerArray);
+		} else	{
+			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = '';
+		}
 	} // getItemMarkerArray
+
 
 	function addWhereCat ($cat, $pid_list)	{
 		global $TYPO3_CONF_VARS;
@@ -343,7 +346,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$cat = implode(',',t3lib_div::intExplode(',', $cat));
 			$where = ' AND ( category IN ('.$cat.') )';
 		}
-
 		return $where;
 	}
 
@@ -361,7 +363,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				}
 			}
 		}
-
 		return implode(',', $tableNameArray);
 	}
 
@@ -380,7 +381,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				}
 			}
 		}
-
 		$uidArray = array_unique($uidArray);
 		return (implode(',',$uidArray));
 	}

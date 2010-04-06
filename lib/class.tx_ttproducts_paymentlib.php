@@ -132,20 +132,13 @@ class tx_ttproducts_paymentlib {
 
 				if (!$ok) return 'ERROR: Could not initialize transaction.';
 
-//*******************************************************************************//
-//* Changed by Udo Gerhards: If the $providerObject has a basket fill it, begin *//
-//*******************************************************************************//
-				if (method_exists($providerObject,'usesBasket') && $providerObject->usesBasket() && t3lib_extMgm::isLoaded('static_info_tables'))	{
+				if (t3lib_extMgm::isLoaded('static_info_tables'))	{
 					$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 					$sitVersion = $eInfo['version'];
 					if (version_compare($sitVersion, '2.0.5', '>='))	{
 						$this->getPaymentBasket($totalArr, $addrArr, $paymentBasketArray);
 					}
 				}
-
-//*******************************************************************************//
-//* Changed by Udo Gerhards: If the $providerObject has a basket fill it, end   *//
-//*******************************************************************************//
 				$transactionId = $this->getTransactionId ($providerObject);
 				if (!$transactionId)	{
 					return 'ERROR: transaction ID could not be generated';

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -72,8 +72,9 @@ class tx_ttproducts_email_div {
 			$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
 			$Typo3_htmlmail->organisation = '';
 
-			if ($attachment != '')
+			if ($attachment != '' && file_exists($attachment))	{
 				$Typo3_htmlmail->addAttachment($attachment);
+			}
 
 			if ($html)  {
 				$Typo3_htmlmail->theParts['html']['content'] = $html; // Fetches the content of the page
@@ -92,7 +93,7 @@ class tx_ttproducts_email_div {
 				$Typo3_htmlmail->addPlain($message);
 			}
 			$Typo3_htmlmail->setHeaders();
-			if ($attachment != '')	{
+			if ($attachment != '' && file_exists($attachment))	{
 				foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
 					$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
 				}
@@ -137,7 +138,7 @@ class tx_ttproducts_email_div {
 				$orderNumber = $order->getNumber($orderRow['uid']);
 				$markerArray['###ORDER_UID###'] = $orderNumber;
 				$emailContent = $pibase->cObj->substituteMarkerArrayCached($emailContent, $markerArray);
-				$parts = split(chr(10),$emailContent,2);
+				$parts = explode(chr(10),$emailContent,2);
 				$subject = trim($parts[0]);
 				$plain_message = trim($parts[1]);
 				tx_ttproducts_email_div::send_mail(implode($recipients,','), $subject, $plain_message, $tmp='', $senderemail, $sendername);
@@ -160,7 +161,7 @@ class tx_ttproducts_email_div {
 		if (count($recipients)) {	// If any recipients, then compile and send the mail.
 			$emailContent=trim($pibase->cObj->getSubpart($templateCode,'###'.$templateMarker.'###'));
 			if ($emailContent)  {		// If there is plain text content - which is required!!
-				$parts = split(chr(10),$emailContent,2);		// First line is subject
+				$parts = explode(chr(10),$emailContent,2);		// First line is subject
 				$subject=trim($parts[0]);
 				$plain_message=trim($parts[1]);
 

@@ -10,6 +10,8 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
+			<label index="tstamp">Time stamp</label>
+			<label index="crdate">Creation date</label>
 			<label index="tt_products">Products</label>
 			<label index="tt_products.prod_uid">Template Products</label>
 			<label index="tt_products.related_uid">Related products</label>
@@ -149,6 +151,8 @@
 			<label index="tt_content.pi1_flexform.template_suffix">Template suffix</label>
 		</languageKey>
 		<languageKey index="de" type="array">
+			<label index="tstamp">Zeitstempel</label>
+			<label index="crdate">Bestelldatum</label>
 			<label index="tt_products">Produkte</label>
 			<label index="tt_products.prod_uid">Template Produkte</label>
 			<label index="tt_products.related_uid">verwandte Produkte</label>

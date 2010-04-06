@@ -153,7 +153,7 @@ class tx_ttproducts_activity_finalize {
 					$empty='';
 					$emailContent=trim($basketView->getView($empty,'EMAIL',$address, false, false, '###EMAIL_NEWUSER_TEMPLATE###'));
 					if ($emailContent) {
-						$parts = split(chr(10),$emailContent,2);
+						$parts = explode(chr(10),$emailContent,2);
 						$subject=trim($parts[0]);
 						$plain_message = trim($parts[1]);
 						tx_ttproducts_email_div::send_mail(

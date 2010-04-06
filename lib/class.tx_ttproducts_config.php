@@ -47,6 +47,7 @@ class tx_ttproducts_config {
 	var $conf;
 	var $config;
 
+
 	/**
 	 * Getting the configurations
 	 */
@@ -54,6 +55,7 @@ class tx_ttproducts_config {
 		$this->conf = &$conf;
 		$this->config = &$config;
 	} // init
+
 
 	function &getTableDesc ($tablename)	{
 
@@ -65,6 +67,7 @@ class tx_ttproducts_config {
 		}
 		return $tableDesc;
 	}
+
 
 	function &getSpecialConf ($type, $tablename='', $theCode='')	{
 		$specialConf = array();
@@ -96,24 +99,27 @@ class tx_ttproducts_config {
 		return $specialConf;
 	}
 
+
 	function &getTableConf ($functablename, $theCode='')	{
 		$tableConf = $this->getSpecialConf('conf', $functablename, $theCode);
 		return $tableConf;
 	}
 
+
 	function bUseLanguageTable ($tableConf) 	{
 		global $TSFE;
 
-		$rc = false;
+		$rc = FALSE;
 		$sys_language_uid = $TSFE->config['config']['sys_language_uid'];
 		if (is_numeric($sys_language_uid))	{
 
 			if ((is_array($tableConf['language.']) && $tableConf['language.']['type'] == 'table' && $sys_language_uid > 0))	{
-				$rc = true;
+				$rc = TRUE;
 			}
 		}
 		return $rc;
 	}
+
 
 	function getTranslationFields($tableConf)	{
 		$fieldArray = array();
@@ -127,6 +133,7 @@ class tx_ttproducts_config {
 		}
 		return $fieldArray;
 	}
+
 
 	function getImageFields($tableConf)	{
 		$retArray = array();
@@ -147,6 +154,7 @@ class tx_ttproducts_config {
 		}
 		return $retArray;
 	}
+
 
 	function getTemplateFile($theCode) {
 		$rc = '';

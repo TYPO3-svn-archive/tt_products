@@ -283,11 +283,15 @@ class tx_ttproducts_order {
 		$fieldsArray['tstamp'] = time();
 		$fieldsArray['deleted'] = 0;
 		$fieldsArray['tracking_code'] = $this->basket->order['orderTrackingNo'];
-		$fieldsArray['agb'] = $address->infoArray['billing']['agb'];
-		$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
-		$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
-		$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
-		$fieldsArray['creditpoints_gifts'] = t3lib_div::_GP('creditpoints_gifts');
+		$fieldsArray['agb'] = intval($address->infoArray['billing']['agb']);
+
+		if ($this->conf['creditpoints.'] && $this->basket->recs['tt_products']['creditpoints'] != '')	{
+
+			$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
+			$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
+			$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
+			$fieldsArray['creditpoints_gifts'] = t3lib_div::_GP('creditpoints_gifts');
+		}
 
 			// Saving the order record
 		$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid=' . intval($orderUid), $fieldsArray);

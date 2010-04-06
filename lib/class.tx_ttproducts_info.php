@@ -192,6 +192,13 @@ class tx_ttproducts_info {
 					'tx_feuserextrafields_city_deliv,tx_feuserextrafields_country,' .
 					'tx_feuserextrafields_country_deliv';
 			}
+			if (isset($TCA['fe_users']['columns']) && is_array(($TCA['fe_users']['columns'])))	{
+				foreach (($TCA['fe_users']['columns']) as $field => $fieldTCA)	{
+					if (!t3lib_div::inList($this->feuserfields, $field))	{
+						$infoExtraFields .= ',' . $field;
+					}
+				}
+			}
 			$infoFields = explode(',','feusers_uid,telephone,salutation,name,cnum,first_name,last_name,email,' .
 				'date_of_birth,company,address,city,zip,state,country,country_code,tt_products_vat'.
 				$infoExtraFields
@@ -334,7 +341,7 @@ class tx_ttproducts_info {
 		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
 		$markerArray['###DELIVERY_ADDRESS_DISPLAY###'] = nl2br($markerArray['###DELIVERY_ADDRESS###']);
 
-		$this->fe_users->getItemMarkerArray($this->infoArray['billing'], $markerArray, $bSelectSalutation,'person');
+		$this->fe_users->getItemMarkerArray($this->infoArray['billing'], $markerArray, $bSelectSalutation,'personinfo');
 		$this->fe_users->getItemMarkerArray($this->infoArray['delivery'], $markerArray, $bSelectSalutation,'delivery');
 
 			// Delivery note.

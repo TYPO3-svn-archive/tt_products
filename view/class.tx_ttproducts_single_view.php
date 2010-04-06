@@ -191,6 +191,7 @@ class tx_ttproducts_single_view {
 				'LINK_DATASHEET' => 'datasheet');
 			$viewTagArray = array();
 			$parentArray = array();
+
 			$fieldsArray = $this->marker->getMarkerFields(
 				$itemFrameWork,
 				$itemTableArray[$this->type]->table->tableFieldArray,
@@ -362,7 +363,7 @@ class tx_ttproducts_single_view {
 					array(),
 					'SINGLE',
 					1,
-     TRUE
+					TRUE
 				);
 			} else {
 				$itemTableArray['product']->variant->getItemMarkerArray (
@@ -382,7 +383,6 @@ class tx_ttproducts_single_view {
 				// if the page remains the same then the product parameter will still be needed if there is no list view
 				$addQueryString[$this->type] = $row['uid'];
 			}
-
 			$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
 			$markerArray = $this->marker->addURLMarkers($pid, $markerArray, $addQueryString); // Applied it here also...
 			$queryPrevPrefix = '';
@@ -493,6 +493,7 @@ class tx_ttproducts_single_view {
 
 				// Substitute
 			$content = $this->pibase->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
+
 			if ($personDataFrameWork) {
 				$subpartArray = array();
 				$wrappedSubpartArray=array();

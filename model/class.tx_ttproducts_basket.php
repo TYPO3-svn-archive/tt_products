@@ -177,7 +177,6 @@ class tx_ttproducts_basket {
 		} else {
 			$this->viewTable = &$this->tt_products;
 		}
-
 		$this->itemArray = array();
 		$tmpBasketExt = $TSFE->fe_user->getKey('ses','basketExt');
 		$this->order = $TSFE->fe_user->getKey('ses','order');
@@ -351,6 +350,7 @@ class tx_ttproducts_basket {
 				}
 			}
 			$this->basketExt = $basketExtNew;
+
 			if ($bStoreBasket)	{
 				if (is_array($this->basketExt) && count($this->basketExt))	{
 
@@ -427,13 +427,13 @@ class tx_ttproducts_basket {
 		if (count($uidArr) == 0) {
 			return;
 		}
-
 		$where = 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->viewTable->table->enableFields();
 		$res = $this->viewTable->table->exec_SELECTquery('*',$where);
 		$productsArray = array();
 		$this->page->setPageArray();
 
 		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+
 			$pid = $row['pid'];
 			// only the basket items for the pages belonging to this shop shall be used here
 			if (isset($this->page->pageArray[$pid]))	{
@@ -599,6 +599,28 @@ class tx_ttproducts_basket {
 		);
 	} // getCalculatedBasket
 
+
+	function isInBasket ($prod_uid)	{
+		$rc = FALSE;
+		if (count($this->itemArray))	{
+			// loop over all items in the basket indexed by a sort string
+			foreach ($this->itemArray as $sort => $actItemArray) {
+				foreach ($actItemArray as $k1 => $actItem) {
+					$row = &$actItem['rec'];
+					if ($prod_uid == $row['uid'])	{
+						$rc = TRUE;
+						break;
+					}
+				}
+				if ($rc == TRUE)	{
+					break;
+				}
+			}
+		}
+		return $rc;
+	}
+
+
 	function &getItem (&$row, $variant) {
 		global $TSFE;
 
@@ -631,6 +653,7 @@ class tx_ttproducts_basket {
 		);
 		return $item;
 	}
+
 
 	// This calculates the total for everything in the basket
 	function getCalculatedSums () {

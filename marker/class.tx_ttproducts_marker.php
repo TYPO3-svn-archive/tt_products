@@ -219,16 +219,21 @@ class tx_ttproducts_marker {
 	}
 
 	function getSearchParams (&$queryString) {
-		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
 
-		if (!$temp)	{
-			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
+		$sword = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
+		if (!$sword)	{
+			$sword = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
 		}
 
-		if ($temp) {
-			$queryString['sword'] = $temp;
+		if (!$sword)	{
+			$sword = $this->pibase->piVars['sword'];
+		}
+
+		if ($sword) {
+			$queryString['sword'] = $sword;
 		}
 	}
+
 
 	/**
 	 * Returns a url for use in forms and links

@@ -42,6 +42,8 @@
 global $TYPO3_CONF_VARS;
 
 
+
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_activity.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_info.php');
 
 
@@ -199,6 +201,27 @@ class tx_ttproducts_control {
 		}
 		$account = '';
 		$order = '';
+
+		$update = t3lib_div::_POST('products_update');
+		$payment = t3lib_div::_POST('products_payment');
+		$postVars = t3lib_div::_POST(TT_PRODUCTS_EXTkey);
+
+		if (!$update && !$payment && isset($postVars) && is_array($postVars) && isset($postVars['activity']))	{
+			$activityVarsArray = array(
+				'clear_basket' => 'products_clear_basket',
+				'customized_payment' => 'products_customized_payment',
+				'finalize' => 'products_finalize',
+				'info' => 'products_info',
+				'overview' => 'products_overview',
+				'payment' => 'products_payment',
+				'redeem_gift' => 'products_redeem_gift',
+				'verify' => 'products_verify'
+			);
+			$theActivity = $activityVarsArray[$postVars['activity']];
+			if ($theActivity)	{
+				$activityArray[$theActivity] = TRUE;
+			}
+		}
 
 			// use '_x' for coordinates from Internet Explorer if button images are used
 		if (t3lib_div::_GP('products_redeem_gift') || t3lib_div::_GP('products_redeem_gift_x'))    {

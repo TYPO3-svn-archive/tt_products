@@ -680,10 +680,81 @@ $TCA['tt_products_language'] = Array (
 $TCA['tt_products_cat'] = Array (
 	'ctrl' => $TCA['tt_products_cat']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,title, subtitle, image, email_uid'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title, subtitle, note, image, email_uid'
 	),
 	'feInterface' => $TCA['tt_products_cat']['feInterface'],
 	'columns' => Array (
+		'hidden' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.hidden',
+			'config' => Array (
+				'type' => 'check'
+			)
+		),
+		'tstamp' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:tstamp',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'default' => '0'
+			)
+		),
+		'crdate' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:crdate',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'default' => '0'
+			)
+		),
+		'starttime' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.starttime',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'checkbox' => '0',
+				'default' => '0'
+			)
+		),
+		'endtime' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.endtime',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'checkbox' => '0',
+				'default' => '0',
+				'range' => Array (
+					'upper' => mktime(0,0,0,12,31,2020),
+					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+				)
+			)
+		),
+		'fe_group' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('', 0),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.any_login', -2),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.usergroups', '--div--')
+				),
+				'foreign_table' => 'fe_groups'
+			)
+		),
 		'title' => Array (
 			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
@@ -735,7 +806,10 @@ $TCA['tt_products_cat'] = Array (
 		),
 	),
 	'types' => Array (
-		'0' => Array('showitem' => 'hidden;;;;1-1-1, title, subtitle, email_uid, image;;;;3-3-3')
+		'0' => Array('showitem' => 'title, subtitle, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], email_uid, image;;;;3-3-3,hidden;;1;;')
+	),
+	'palettes' => Array (
+		'1' => Array('showitem' => 'starttime, endtime, fe_group')
 	)
 );
 
@@ -1501,7 +1575,7 @@ $TCA['sys_products_orders'] = Array (
 		),
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,fax,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,cc_uid')
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,fax,agb,feusers_uid,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,cc_uid')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),

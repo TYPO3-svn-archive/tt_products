@@ -150,8 +150,8 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		$this->version = $eInfo['version'];
 		$this->pi_initPIflexForm();
 		$config['code'] =
-			tx_div2007_alpha::getSetupOrFFvalue_fh001(
-				$this,
+			tx_div2007_alpha::getSetupOrFFvalue_fh003(
+				$this->cObj,
 	 			$conf['code'],
 	 			$conf['code.'],
 				$conf['defaultCode'],
@@ -441,10 +441,6 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 
 				break;
 				case 'SINGLE':
-					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList'] &&
-						!$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']) {
-						$this->set_no_cache();
-					}
 					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
 				case 'OVERVIEW':
@@ -651,7 +647,13 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			$config['code']='SINGLE';
 			$this->tt_product_single['product'] = true;
 		} else {
-			$tmp = ($this->piVars['product'] ? $this->piVars['product'] : t3lib_div::_GP('tt_products'));
+			$tmp = $this->piVars['product'];
+			if (!$tmp)	{
+				$ttpOld = t3lib_div::_GP('tt_products');
+				if (isset($ttpOld) && !is_array($ttpOld))	{
+					$tmp = $ttpOld;
+				}
+			}
 			if (isset($tmp) && is_array($tmp) && isset($tmp['product']))	{	// upwards compatible to tt_products parameter
 				$tmp = $tmp['product'];
 			}
@@ -1002,7 +1004,17 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
-		if ((($theCode=='SEARCH') && $this->conf['listViewOnSearch'] == '1' || (strstr($theCode,'LIST'))) && ($theCode != 'LISTARTICLES') && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'] && !$this->getSingleFromList())	{
+		$bSingleFromList = FALSE;
+
+		if (
+			(
+				(
+					($theCode=='SEARCH') && $this->conf['listViewOnSearch'] == '1' || (strpos($theCode,'LIST') !== FALSE)
+				) &&
+				$theCode != 'LISTARTICLES' && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'] &&
+			!$this->getSingleFromList()
+			)
+		) {
 			$this->setSingleFromList(TRUE);
 			$bSingleFromList = TRUE;
 		}
@@ -1014,6 +1026,13 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			$extVars = $this->piVars['variants'];
 			$extVars = ($extVars ? $extVars : t3lib_div::_GP('ttp_extvars'));
 				// performing query:
+
+
+			if ($this->tt_product_single['product'] && $this->basket->isInBasket($this->tt_product_single['product']) ||
+				!$this->conf['NoSingleViewOnList'] && !$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']
+			) {
+				$this->set_no_cache();
+			}
 
 			if (!is_object($this->singleView)) {
 				// List single product:

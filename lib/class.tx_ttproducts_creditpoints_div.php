@@ -50,31 +50,32 @@ class tx_ttproducts_creditpoints_div {
 	function getCreditPoints($amount)	{
 		$type = '';
 		$creditpoints = 0;
-		foreach ($this->conf['creditpoints.'] as $k1=>$priceCalcTemp) {
-			if (is_array($priceCalcTemp)) {
-				foreach ($priceCalcTemp as $k2=>$v2) {
-					if (!is_array($v2)) {
-						switch ($k2) {
-							case 'type':
-								$type = $v2;
-								break;
+		if (isset($this->conf['creditpoints.']) && is_array($this->conf['creditpoints.']))	{
+			foreach ($this->conf['creditpoints.'] as $k1 => $priceCalcTemp) {
+				if (is_array($priceCalcTemp)) {
+					foreach ($priceCalcTemp as $k2 => $v2) {
+						if (!is_array($v2)) {
+							switch ($k2) {
+								case 'type':
+									$type = $v2;
+									break;
+							}
 						}
 					}
-				}
+					$dumCount = 0;
+					$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
 
-				$dumCount = 0;
-				$creditpoints = doubleval($priceCalcTemp['prod.']['1']);
+					if ($type != 'price') {
+						break;
+					}
+					krsort($priceCalcTemp['prod.']);
+					reset($priceCalcTemp['prod.']);
 
-				if ($type != 'price') {
-					break;
-				}
-				krsort($priceCalcTemp['prod.']);
-				reset($priceCalcTemp['prod.']);
-	
-				foreach ($priceCalcTemp['prod.'] as $k2=>$points) {
-					if ($amount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
-						$creditpoints = $points;
-						break; // finish
+					foreach ($priceCalcTemp['prod.'] as $k2=>$points) {
+						if ($amount >= intval($k2)) { // only the highest value for this count will be used; 1 should never be reached, this would not be logical
+							$creditpoints = $points;
+							break; // finish
+						}
 					}
 				}
 			}
@@ -101,7 +102,7 @@ class tx_ttproducts_creditpoints_div {
 			if ($uid_voucher) {
 				$fieldsArrayFeUserCredit = array();
 				$fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + $creditpoints;
-		
+
 				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.intval($uid_voucher), $fieldsArrayFeUserCredit);
 			}
 		}

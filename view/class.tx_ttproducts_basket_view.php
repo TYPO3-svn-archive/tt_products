@@ -44,6 +44,8 @@
 
 global $TYPO3_CONF_VARS;
 
+
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_activity.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
 
 
@@ -116,8 +118,24 @@ class tx_ttproducts_basket_view {
 
 		$splitMark = md5(microtime());
 		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
+//		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
 
+		$tmpLinkParam = $this->marker->getLinkParams(
+			'',
+			array(),
+			TRUE,
+			TRUE
+		);
+		$wrappedSubpartArray['###LINK_BASKET###'] = array(
+			'<a href="' . htmlspecialchars(
+				$this->pibase->pi_getPageLink(
+					$pid,
+					'',
+					$tmpLinkParam
+				)
+			) . '">',
+			'</a>'
+		);
 		return $markerArray;
 	}
 
@@ -131,7 +149,6 @@ class tx_ttproducts_basket_view {
 				and substitutes a lot of fields and subparts.
 				Any pre-preparred fields can be set in $mainMarkerArray, which is substituted in the subpart before the item-and-categories part is substituted.
 			*/
-
 		global $TSFE, $TCA;
 		global $TYPO3_DB, $TYPO3_CONF_VARS;
 
@@ -173,6 +190,7 @@ class tx_ttproducts_basket_view {
 			'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
 			'LINK_DATASHEET' => 'datasheet');
 		$parentArray = array();
+
 		$fieldsArray = $this->marker->getMarkerFields(
 			$t['item'],
 			$this->viewTable->table->tableFieldArray,
@@ -254,24 +272,22 @@ class tx_ttproducts_basket_view {
 					$sum_pricediscount_total_totunits += $pricediscount_total_tot_units;
 				}
 
-/* Added els4: TOTUNITS_: both prices mulitplied by unit_factor and third line is calculating the sum, necessary in winkelwagen.tmpl. All articles in kurkenshop are payed with creditpoints*/
-				$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###'] = $this->price->priceFormat($actItem['totalTax']*$row['unit_factor']);
 				if ($row['category'] == $this->conf['creditsCategory']) {
-/* Added els7: different calculation of PRICECREDITS_TOTAL_TOTUNITS_NO_TAX */
-//						$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###']=$this->price->priceFormat($actItem['totalNoTax']*$actItem['rec']['unit_factor']);
-					$markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($row['price2']*$row['unit_factor']) * $actItem['count'];
-				} else {
-/* Added els7: different calculation of PRICECREDITS_TOTAL_TOTUNITS_NO_TAX */
-//						$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###']=$actItem['totalNoTax']*$actItem['rec']['unit_factor'];
-					$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'] = $row['price2']*$row['unit_factor'] * $actItem['count'];
+					// creditpoint system start
+					$pricecredits_total_totunits_no_tax = $actItem['totalNoTax']*$row['unit_factor'];
+					$pricecredits_total_totunits_tax = $actItem['totalTax']*$row['unit_factor'];
+				} else if ($row['price'] > 0 && $row['price2'] > 0 && $row['unit_factor'] > 0) {
+					$pricecredits_total_totunits_no_tax = 0;
+					$pricecredits_total_totunits_tax = 0;
+					$unitdiscount = ($row['price'] - $row['price2']) * $row['unit_factor'] * $actItem['count'];
+					$sum_pricediscount_total_totunits += $unitdiscount;
 				}
+				$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($pricecredits_total_totunits_no_tax);
+				$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###'] = $this->price->priceFormat($pricecredits_total_totunits_tax);
 
-				$sum_pricecredits_total_totunits_no_tax += $markerArray['###PRICECREDITS_TOTAL_TOTUNITS_NO_TAX###'];
-				$sum_price_total_totunits_no_tax += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
-
-				if ($actItem['rec']['special_preparation'] != '0.00') {
-					$sum_pricecreditpoints_total_totunits += $markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'];
-				}
+				$sum_pricecredits_total_totunits_no_tax += $pricecredits_total_totunits_no_tax;
+				$sum_price_total_totunits_no_tax += $pricecredits_total_totunits_no_tax;
+				$sum_pricecreditpoints_total_totunits += $pricecredits_total_totunits_no_tax;
 
 				$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row, $TSFE->rootLine[1]);
 				$addQueryString=array();
@@ -313,6 +329,24 @@ class tx_ttproducts_basket_view {
 
 			// Initializing the markerArray for the rest of the template
 		$markerArray=$mainMarkerArray;
+
+		$activityArray = tx_ttproducts_model_activity::getActivityArray();
+		$hiddenFields = '';
+		if (is_array($activityArray))	{
+			$activity = '';
+			if ($activityArray['products_payment'])	{
+				$activity = 'payment';
+			} else if ($activityArray['products_info']) {
+				$activity = 'info';
+			}
+			if ($activity)	{
+				$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
+				$hiddenFields .= '<input type="hidden" name="' . TT_PRODUCTS_EXTkey . '[activity]" value="' . $activity . '" ' . ($bUseXHTML ? '/' : '') . '>';
+			}
+		}
+		$markerArray['###HIDDENFIELDS###'] = $hiddenFields;
+
+
 		$basketMarkerArray = $this->getMarkerArray();
 		$markerArray = array_merge($markerArray,$basketMarkerArray);
 

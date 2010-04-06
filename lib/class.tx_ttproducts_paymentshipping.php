@@ -497,7 +497,7 @@ class tx_ttproducts_paymentshipping {
 			$pricePaymentTax += $this->price->getPrice($payment,true,$taxpercentage,$taxIncluded,true);
 			$pricePaymentNoTax += $this->price->getPrice($payment,false,$taxpercentage,$taxIncluded,true);
 		}
-		$this->getSpecialPrices ('payment', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
+		$this->getSpecialPrices ('payment', $taxpercentage, $pricePaymentTax, $pricePaymentNoTax);
 	} // getPaymentShippingData
 
 	/**

@@ -161,7 +161,7 @@ class tx_ttproducts_list_view {
 		$htmlSwords = '';
 		if ($calllevel == 0)	{
 			$sword = $this->pibase->piVars['sword'];
-			if (!$sword)	{
+			if (!isset($sword))	{
 				$sword = t3lib_div::_GP('sword');
 				$sword = (isset($sword) ? $sword : t3lib_div::_GP('swords'));
 			}
@@ -406,7 +406,7 @@ class tx_ttproducts_list_view {
 				// sorting by category not yet possible for articles
 			if ($itemTable->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
 				$orderByCat = '';	// articles do not have a direct category
-				$orderByArray = split (',', $selectConf['orderBy']);
+				$orderByArray = t3lib_div::trimExplode(',', $selectConf['orderBy']);
 				$orderByArray = array_diff($orderByArray, array('category'));
 				$selectConf['orderBy'] = implode (',', $orderByArray);
 			}
