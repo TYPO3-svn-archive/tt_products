@@ -687,13 +687,6 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 </table><br>
 <table width="100%"><tr>
 <td>
-<!-- ###MESSAGE_MINPRICE_ERROR### -->
-Es mssen Produkte im Gesamtwert von mindestens 250 Euro eingekauft werden.
-###PRICE_GOODSTOTAL_TAX### sind zu wenig.
-<!-- ###MESSAGE_MINPRICE_ERROR### -->
-<!-- ###MESSAGE_MINPRICE### -->
-Ihre Bestellung wird bearbeitet werden.
-<!-- ###MESSAGE_MINPRICE### -->
 <input type="hidden" name="mode_update" value="1">
 <input type="Submit" name="products_update" value="Warenkorb aktualisieren"></td>
 <input type="Submit" name="products_clear_basket" value="Warenkorb l&ouml;schen" >
@@ -1637,7 +1630,7 @@ Wenn Sie sich &uuml;ber den Status Ihrer Bestellung informieren lassen wollen (#
 <form method="post" action="###FORM_URL###" name="statusInform">
 
 <input type="hidden" name="orderRecord[email_notify]" value="0">
-<input type="checkbox" name="orderRecord[email_notify]" value="1"###FIELD_EMAIL_NOTIFY###>Nachricht &uuml;ber Ablauf des Bestellvorgangs erhalten.<br>
+<input type="checkbox" name="orderRecord[email_notify]" value="1" ###FIELD_EMAIL_NOTIFY###>Nachricht &uuml;ber Ablauf des Bestellvorgangs erhalten.<br>
 <input type="text" size=40 name="orderRecord[email]" value="###FIELD_EMAIL###">
 <input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
 

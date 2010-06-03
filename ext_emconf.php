@@ -35,7 +35,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'constraints' => array(
 		'depends' => array(
 			'cms' => '',
-			'table' => '0.1.32-',
+			'table' => '0.1.35-',
 			'div2007' => '0.3.0-',
 			'tsparser' => '',
 			'php' => '4.2.3-0.0.0',
@@ -51,7 +51,6 @@ $EM_CONF[$_EXTKEY] = array(
 			'c3bi_cookie_at_login' => '',
 		),
 		'suggests' => array(
-			'ajaxgroupsearch' => '',
 			'mbi_products_categories' => '',
 			'patch1822' => '',
 			'sr_feuser_register' => '',

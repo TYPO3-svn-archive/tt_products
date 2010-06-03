@@ -118,7 +118,6 @@ class tx_ttproducts_basket_view {
 
 		$splitMark = md5(microtime());
 		$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-//		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
 
 		$tmpLinkParam = $this->marker->getLinkParams(
 			'',
@@ -265,7 +264,6 @@ class tx_ttproducts_basket_view {
 				$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($actItem['totalNoTax']);
 				$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $this->price->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
 
-/* Added els4: calculating of price_discount necessary in winkelwagen.tmpl (articles in kurkenshop are excluded, because these articled will be payed with creditpoints) */
 				if ( doubleval($row['price']) && doubleval($row['price2']) && ($row['category'] != $this->conf['creditsCategory']) ) {
 					$pricediscount_total_tot_units = "";
 					$pricediscount_total_tot_units = ($row['price'] - $row['price2']) * $row['unit_factor'] * $actItem['count'];
@@ -346,7 +344,6 @@ class tx_ttproducts_basket_view {
 		}
 		$markerArray['###HIDDENFIELDS###'] = $hiddenFields;
 
-
 		$basketMarkerArray = $this->getMarkerArray();
 		$markerArray = array_merge($markerArray,$basketMarkerArray);
 
@@ -362,12 +359,10 @@ class tx_ttproducts_basket_view {
 		$markerArray['###SHIPPING_WEIGHT###'] = doubleval($this->basket->calculatedArray['weight']);
 		$markerArray['###DELIVERYCOSTS###']=$this->price->priceFormat($this->basket->calculatedArray['priceTax']['shipping'] + $this->basket->calculatedArray['priceTax']['payment']);
 
-		//$markerArray['###PRICE_PAYMENT_PERCENT###'] = $perc;
 		$markerArray['###PRICE_PAYMENT_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['payment']);
 		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['payment']);
 		$markerArray['###PRICE_PAYMENT_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['payment']-$this->basket->calculatedArray['priceNoTax']['payment'] );
 
-/* Added els4: payment layout (used in basket_payment_template, winkelwagen.tmpl) */
 		$markerArray['###PAYMENT_SELECTOR###'] = $this->paymentshipping->generateRadioSelect('payment', $this->basket->calculatedArray);
 		$markerArray['###PAYMENT_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basket->basketExtra['payment.']['image.']);
 		$markerArray['###PAYMENT_TITLE###'] = $this->basket->basketExtra['payment.']['title'];
@@ -417,10 +412,6 @@ class tx_ttproducts_basket_view {
 			// URL
 		$markerArray =  $this->marker->addURLMarkers(0, $markerArray);
 
-
-/* Added els6: reorganized this part. First calculating amount in euros, then calculate voucher discount, then calcualte the creditpoints */
-
-/* Added Els: below 3 lines moved from above */
 			// This is the total for everything
 		$this->basket->getCalculatedSums();
 		$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['total']);
@@ -430,21 +421,12 @@ class tx_ttproducts_basket_view {
 		$taxFromShipping = $this->paymentshipping->getReplaceTAXpercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
 		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
-
-/* Added els4: PRICE_GOODSTOTAL_TOTUNITS_NO_TAX: sum total price (winkelwagen.tmpl) */
 		$markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] = $this->price->priceFormat($sum_price_total_totunits_no_tax);
 
-/* Added els8: shipping project meerwijn depends on subtotal amount, below shipping.NoTaxPrice, shipping price is shipping.fixprice, above no shiiping price */
 		if ($markerArray['###PRICE_GOODSTOTAL_TOTUNITS_NO_TAX###'] <= $this->conf['shipping.']['NoTaxPrice']) {
 			$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $this->conf['shipping.']['fixprice'];
 		}
-//		} else { Franz: This is wrong here!
-//			$markerArray['###PRICE_SHIPPING_NO_TAX###'] = '0.00';
-//		}
 
-
-/* Added Els: voucher marker inclusive conditions */
-/* Added Els5: small changes in voucher marker inclusive conditions */
 		if ($TSFE->fe_user->user['tt_products_vouchercode'] == '') {
 			$subpartArray['###SUB_VOUCHERCODE###'] = '';
 			$markerArray['###INSERT_VOUCHERCODE###'] = 'recs[tt_products][vouchercode]';
@@ -478,23 +460,14 @@ class tx_ttproducts_basket_view {
 			}
 		} else {
 			$subpartArray['###SUB_VOUCHERCODE_EMPTY###'] = '';
-/* Added Els8: put voucher_discount 0 for plain text email */
 			$markerArray['###VOUCHER_DISCOUNT###'] = '0.00';
 		}
 
-/* Added Els: creditpoint inclusive conditions*/
-/* Added Els6: more conditions on creditpoints calculations inclusive redeeming of gift certificates */
-
-/* Added els6: do not execute the redeeming of the gift certificate if template = OVERVIEW */
 		if ($subpartMarker != '###BASKET_OVERVIEW_TEMPLATE###') {
 
-// Added Franz: GIFT CERTIFICATE
 			$markerArray['###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###']='recs[tt_products][gift_certificate_unique_number]';
 			$markerArray['###FORM_NAME###']='BasketForm';
 			$markerArray['###FORM_NAME_GIFT_CERTIFICATE###']='BasketGiftForm';
-
-/* Added els5: markerarrays for gift certificates */
-/* Added Els6: routine for redeeming the gift certificate (other way then proposed by Franz */
 			$markerArray['###INSERT_GIFTCODE###'] = 'recs[tt_products][giftcode]';
 			$markerArray['###VALUE_GIFTCODE###'] = $this->basket->recs['tt_products']['giftcode'];
 			if ($this->basket->recs['tt_products']['giftcode'] == '') {

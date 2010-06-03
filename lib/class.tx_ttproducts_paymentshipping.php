@@ -215,6 +215,14 @@ class tx_ttproducts_paymentshipping {
 		$out='';
 		$submitCode = 'this.form.action=\''.$basketUrl.'\';this.form.submit();';
 		$template = $this->conf[$pskey.'.']['template'] ? ereg_replace('\' *\. *\$pskey *\. *\'',$pskey, $this->conf[$pskey.'.']['template']) : '###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>';
+
+		$template = (
+			$this->conf[$pskey.'.']['template'] ?
+				preg_replace('/[:space:]*\\.[:space:]*' . $pskey . '[:space:]*\\.[:space:]*/',$pskey, $this->conf[$pskey.'.']['template']) :
+				'###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>'
+			);
+
+
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
 		$t = array();
 		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];

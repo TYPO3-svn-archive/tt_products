@@ -144,8 +144,9 @@ class tx_ttproducts_activity_finalize {
 				if ($address->infoArray['billing']['cnum'])	{
 					$insertFields['cnum'] = $address->infoArray['billing']['cnum'];
 				}
-				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country' : 'country');
-				$insertFields[$countryKey] = $address->infoArray['billing']['country'];
+				if ($this->conf['useStaticInfoCountry'])	{
+					$insertFields['static_info_country'] = $address->infoArray['billing']['country_code'];
+				}
 
 				$res = $TYPO3_DB->exec_INSERTquery('fe_users', $insertFields);
 				// send new user mail

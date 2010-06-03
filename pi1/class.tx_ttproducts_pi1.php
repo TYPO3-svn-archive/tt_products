@@ -166,22 +166,10 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		if (t3lib_extMgm::isLoaded('xajax')) {
 			include_once(t3lib_extMgm::extPath('xajax').'class.tx_xajax.php');
 			$this->xajax = t3lib_div::makeInstance('tx_xajax');
-				// Decode form vars from utf8
-			// $this->xajax->decodeUTF8InputOn();
 				// Encoding of the response to iso-8859-1.
 			$this->xajax->setCharEncoding('iso-8859-1');
-
-				// Encoding of the response to utf-8.
-			// $this->xajax->setCharEncoding('utf-8');
-				// To prevent conflicts, prepend the extension prefix.
-			// $this->xajax->setWrapperPrefix($this->prefixId);
 			$this->xajax->setWrapperPrefix('');
-				// Do you want messages in the status bar?
-			// $this->xajax->statusMessagesOn();
-				// Turn only on during testing
-			// $this->xajax->debugOff();
 			$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING');
-			// $reqURI .= $this->jsspecialchars('&no_cache=1');
 
 			$this->xajax->setRequestURI($reqURI);
 			$this->xajax->setWrapperPrefix('');

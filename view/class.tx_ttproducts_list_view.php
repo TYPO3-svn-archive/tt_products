@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2010 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -496,7 +496,8 @@ class tx_ttproducts_list_view {
 
 			$tablename = $itemTable->table->name;
 			$queryParts = $itemTable->table->getQueryConf($this->pibase->cObj,$tablename, $selectConf, TRUE);
-			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
+			$res = $itemTable->table->exec_SELECT_queryArray($queryParts);
+//			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
 			$itemArray=array();
 			$iCount = 0;
 			while ($iCount < $this->config['limit'] && ($row = $TYPO3_DB->sql_fetch_assoc($res)))		{

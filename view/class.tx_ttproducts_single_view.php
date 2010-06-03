@@ -119,8 +119,6 @@ class tx_ttproducts_single_view {
 			$itemTableLangFields[$this->type] = $this->cnf->getTranslationFields($itemTableConf[$this->type]);
 			$rowArray[$this->type] = $itemTableArray[$this->type]->get($this->uid, $where);
 
-			// TODO: $itemImageFields[$this->type] = $this->cnf->getImageFields($itemTableConf[$this->type]);
-
 			if ($this->type == 'product')	{
 				if ($this->variants) {
 					$itemTableArray[$this->type]->variant->modifyRowFromVariant ($rowArray[$this->type], $this->variants);

@@ -34,6 +34,10 @@ if (t3lib_extMgm::isLoaded(TABLE_EXTkey)) {
 	}
 }
 
+if (!defined ('ADDONS_EXTkey')) {
+	define('ADDONS_EXTkey','addons_tt_products');
+}
+
 if (!defined ('TT_ADDRESS_EXTkey')) {
 	define('TT_ADDRESS_EXTkey','tt_address');
 }

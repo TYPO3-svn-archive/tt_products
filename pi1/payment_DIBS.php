@@ -5,18 +5,18 @@
 *  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
-*  This script is part of the TYPO3 project. The TYPO3 project is 
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
 *  (at your option) any later version.
-* 
+*
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license 
+*  A copy is found in the textfile GPL.txt and important notices to the license
 *  from the author is found in LICENSE.txt distributed with these scripts.
 *
-* 
+*
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -33,7 +33,7 @@
  * This script is used as a "handleScript" for payment of the Shop System.
  *
  * DIBS:	http://www.dibs.dk
- * 
+ *
  * $Id$
  *
  * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
@@ -45,7 +45,6 @@ if (!is_object($this->pibase) || !is_object($this->pibase->cObj)  || !is_object(
 
 global $TYPO3_CONF_VARS;
 
-// $lConf = $this->basketExtra["payment."]["handleScript."];		
 // Loads the handleScript TypoScript into $lConf.
 $lConf = $confScript;
 
@@ -77,7 +76,7 @@ switch($products_cmd)	{
 		$content=$basketView->getView($localTemplateCode,'PAYMENT', $address, false, false, $tSubpart);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 
 		$markerArray=array();
-		$markerArray['###HIDDEN_FIELDS###'] = 
+		$markerArray['###HIDDEN_FIELDS###'] =
 ' <input type="hidden" name="merchant"
 value="'.$lConf['merchant'].'">
 <input type="hidden" name="amount"
@@ -87,7 +86,7 @@ value="'.round($this->basket->calculatedArray['priceTax']['total']
 value="'.$lConf['currency'].'">		<!--Valuta som angivet i
 ISO4217, danske kroner=208-->
 <input type="hidden" name="orderid"
-value="'.$order->getNumber($orderUid).'">		
+value="'.$order->getNumber($orderUid).'">
 <!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type="hidden" name="uniqueoid" value="1">
 <input type="hidden" name="accepturl"
@@ -138,7 +137,7 @@ doPopup(this);" target="Betaling"'; // if this is empty then no popup window wil
 
 
 				// Adds order info to hiddenfields.
-		if ($lConf['addOrderInfo']) {	
+		if ($lConf['addOrderInfo']) {
 			$theFields="";
 				// Delivery info
 			reset($this->address->infoArray['delivery']);
@@ -158,10 +157,9 @@ doPopup(this);" target="Betaling"'; // if this is empty then no popup window wil
 <input type="hidden" name="ordline1-2" value="Beskrivelse">
 <input type="hidden" name="ordline1-3" value="Antal">
 <input type="hidden" name="ordline1-4" value="Pris">
-';			  
+';
 			$cc=1;
 
-//while(list(,$rec)=each($this->basket->calculatedBasket))	  {
 			// loop over all items in the basket indexed by a sorting text
 			foreach ($this->basket->itemArray as $sort=>$actItemArray) {
 				foreach ($actItemArray as $k1=>$actItem) {
@@ -186,7 +184,7 @@ value="'.$this->pibase->price->priceFormat( $this->basket->calculatedArray['pric
 			$markerArray['###HIDDEN_FIELDS###'].=$theFields;
 		}
 		$content= $this->pibase->cObj->substituteMarkerArrayCached($content, $markerArray);
-	break;	  
+	break;
 	case 'decline':
 		$markerArray=array();
 		$markerArray['###REASON_CODE###'] = t3lib_div::_GP('reason');
@@ -202,7 +200,7 @@ value="'.$this->pibase->price->priceFormat( $this->basket->calculatedArray['pric
 			// DIBS md5 keys
 		$k1=$lConf['k1'];
 		$k2=$lConf['k2'];
-	
+
 			// Checking transaction
 		$amount=round($this->basket->calculatedArray['priceTax']['total'] *100);
 		$currency='208';

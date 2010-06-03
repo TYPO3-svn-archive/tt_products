@@ -138,6 +138,7 @@ $TCA['tt_products_articles'] = Array (
 		'crdate' => 'crdate',
 //		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_articles.gif',
+		'dividers2tabs' => '1',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
 	),
 	'feInterface' => Array (

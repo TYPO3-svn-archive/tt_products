@@ -1,3 +1,10 @@
+2010-06-03 Franz Holzinger <franz@ttproducts.de>
+	* Add marker for EAN: ###PRODUCT_EAN###
+	* Fix bug: static_info_country of the fe_users must be written only if useStaticInfoCountry=1. It must not contain values outside the range of the country ISO3 codes.
+	* Consider the installed extension addons_tt_products in the marker ###PATH_FE_REL###
+	* Fix bug: The deleted products in alternative languages shall not be shown in the single view
+	* ready for PHP 5.3: replace ereg_replace by preg_replace
+
 2010-04-06 Franz Holzinger <franz@ttproducts.de>
 	* Fix bug with usage of shipping price for the payment's special prices
 	* support of new POST parameters for the activity. This is for future changes and support of the ###HIDDENFIELDS### marker.
