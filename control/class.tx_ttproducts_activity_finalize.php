@@ -146,8 +146,10 @@ class tx_ttproducts_activity_finalize {
 					}
 				}
 
-				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country' : 'country');
-				$insertFields[$countryKey] =  $address->infoArray['billing']['country'];
+				if ($this->conf['useStaticInfoCountry'])	{
+					$insertFields['static_info_country'] = $address->infoArray['billing']['country_code'];
+				}
+
 				if($address->infoArray['billing']['date_of_birth'])	{
 					$date = str_replace ('-', '/', $address->infoArray['billing']['date_of_birth']);
 					$insertFields['date_of_birth'] = strtotime($date);
@@ -159,7 +161,7 @@ class tx_ttproducts_activity_finalize {
 					$empty='';
 					$emailContent=trim($basketView->getView($empty,'EMAIL',$address, false, false, false, '###EMAIL_NEWUSER_TEMPLATE###'));
 					if ($emailContent) {
-						$parts = split(chr(10),$emailContent,2);
+						$parts = explode(chr(10),$emailContent,2);
 						$subject=trim($parts[0]);
 						$plain_message = trim($parts[1]);
 						tx_ttproducts_email_div::send_mail(

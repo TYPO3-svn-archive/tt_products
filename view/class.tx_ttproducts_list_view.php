@@ -191,6 +191,18 @@ class tx_ttproducts_list_view {
 		$sword = '';
 		$htmlSwords = '';
 
+debug ($theCode, '$theCode Pos 1', __LINE__, __FILE__);
+		$viewControlConf = $this->cnf->getViewControlConf($theCode);
+debug ($viewControlConf, '$viewControlConf Pos 1', __LINE__, __FILE__);
+		if (count($viewControlConf))	{
+			if (isset($viewControlConf['param.']) && is_array($viewControlConf['param.']))	{
+				$viewParamConf = $viewControlConf['param.'];
+			}
+debug ($viewParamConf, '$viewParamConf Pos 1', __LINE__, __FILE__);
+		}
+		$bUseBackPid = (isset($viewParamConf) && $viewParamConf['use'] == 'backPID' ? TRUE : FALSE);
+debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
+
 		if ($calllevel == 0)	{
 			$sword = t3lib_div::_GP('sword');
 			$sword = (isset($sword) ? $sword : t3lib_div::_GP('swords'));
@@ -823,7 +835,12 @@ class tx_ttproducts_list_view {
 					} else {
 						$addQueryString[$itemTable->piVar] = intval($row['uid']);
 						$piVarCat = $this->pibase->piVars[$categoryTable->piVar];
-						$bUseBackPid = ($pid != $TSFE->id);
+debug ($pid, '$pid Pos 1', __LINE__, __FILE__);
+debug ($TSFE->id, '$TSFE->id Pos 1', __LINE__, __FILE__);
+
+						$bUseBackPid = $bUseBackPid && ($pid != $TSFE->id);
+debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
+
 						if ($piVarCat)	{
 							if ($this->conf['PIDlistDisplay'])	{
 								$bUseBackPid = FALSE;
@@ -837,6 +854,8 @@ class tx_ttproducts_list_view {
 						$queryString = $this->marker->getLinkParams('begin_at', $addQueryString, FALSE, $bUseBackPid, $categoryTable->piVar);
 						$pageLink = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid));
 					}
+debug ($pageLink, '$pageLink Pos 1', __LINE__, __FILE__);
+
 					if ($childCatWrap)	{
 						$wrappedSubpartArray['###LINK_ITEM###'] = t3lib_div::trimExplode('|',$childCatWrap);
 					} else {
