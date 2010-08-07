@@ -29,7 +29,7 @@
  *
  * functions for the product
  *
- * $Id:$
+ * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
