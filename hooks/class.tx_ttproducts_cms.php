@@ -29,7 +29,7 @@
  *
  * hook functions for the TYPO3 cms
  *
- * $Id:$
+ * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
