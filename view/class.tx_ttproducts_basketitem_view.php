@@ -49,7 +49,7 @@ class tx_ttproducts_basketitem_view {
 	var $pibase; // reference to object of pibase
 	var $tx_dam; // element of class tx_table_db
 	var $tx_dam_cat; // element of class tx_table_db
-	
+
 	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
 	 * $basket is the TYPO3 default shopping basket array from ses-data
@@ -84,7 +84,7 @@ class tx_ttproducts_basketitem_view {
 
 		$row = &$item['rec'];
 		$basketQuantityName = $this->basketVar.'['.$row['uid'].'][quantity]';
-		$quantity = $item['count'];
+		$quantity = htmlspecialchars($item['count']);
 		$markerArray['###FIELD_NAME###'] = $basketQuantityName;
 		$markerArray['###FIELD_QTY###'] = $quantity ? $quantity : '';
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($theCode).'_id_'.$id;

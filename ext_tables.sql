@@ -21,6 +21,7 @@ CREATE TABLE tt_products (
 	ean varchar(48) DEFAULT '' NOT NULL,
 	price decimal(19,2) DEFAULT '0.00' NOT NULL,
 	price2 decimal(19,2) DEFAULT '0.00' NOT NULL,
+	creditpoints int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
 	note2 text NOT NULL,
 	note_uid varchar(255) DEFAULT '0' NOT NULL,
@@ -162,6 +163,7 @@ CREATE TABLE tt_products_cat_language (
 	title tinytext NOT NULL,
 	subtitle mediumtext NOT NULL,
 	note text NOT NULL,
+	note2 text NOT NULL,
 	cat_uid int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)

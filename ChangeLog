@@ -1,3 +1,24 @@
+2010-08-15 Franz Holzinger <franz@ttproducts.de>
+	* security: fix CSS with giftcodes
+
+2010-06-03 Franz Holzinger <franz@fholzinger.com>
+	* fix bug 11655: Invalid arguments in call of tx_ttproducts_paymentshipping::includeHandleScript
+	* Fix bug in tracking where the status has been lost after a new log entry
+	* Fix bug in marker ###PRICE_TOTAL_TOTUNITS_TAX###
+	* Change constants.txt: use eint+ instead of int+ together with the extension tsparser because empty values must not be converted to 0
+	* Fix bug with not working salutation select box for delivery
+	* Fix bug with product single view called wrongly by a category parameter
+	* check the $TCA for the fields of the fe_users table and add all those field to the billing and delivery address
+	* fix bug with PHP 5.3: replace split by explode or t3lib_div::trimExplode or preg_split
+	* Activate the flexforms if nothing has been set in the Extension Manager
+
+2010-06-03 Franz Holzinger <franz@ttproducts.de>
+	* Add marker for EAN: ###PRODUCT_EAN###
+	* Fix bug: static_info_country of the fe_users must be written only if useStaticInfoCountry=1. It must not contain values outside the range of the country ISO3 codes.
+	* Consider the installed extension addons_tt_products in the marker ###PATH_FE_REL###
+	* Fix bug: The deleted products in alternative languages shall not be shown in the single view
+	* ready for PHP 5.3: replace ereg_replace by preg_replace
+
 2009-12-14 Franz Holzinger <franz@fholzinger.com>
 	* fix bug with accounts=1 when no static_info_tables_banks_de is installed
 	* fix bug to allow account data replacement in the order confirmation

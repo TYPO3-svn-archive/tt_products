@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2010 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -191,17 +191,14 @@ class tx_ttproducts_list_view {
 		$sword = '';
 		$htmlSwords = '';
 
-debug ($theCode, '$theCode Pos 1', __LINE__, __FILE__);
 		$viewControlConf = $this->cnf->getViewControlConf($theCode);
-debug ($viewControlConf, '$viewControlConf Pos 1', __LINE__, __FILE__);
+
 		if (count($viewControlConf))	{
 			if (isset($viewControlConf['param.']) && is_array($viewControlConf['param.']))	{
 				$viewParamConf = $viewControlConf['param.'];
 			}
-debug ($viewParamConf, '$viewParamConf Pos 1', __LINE__, __FILE__);
 		}
 		$bUseBackPid = (isset($viewParamConf) && $viewParamConf['use'] == 'backPID' ? TRUE : FALSE);
-debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
 
 		if ($calllevel == 0)	{
 			$sword = t3lib_div::_GP('sword');
@@ -269,6 +266,7 @@ debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
 		}
 
 		$addrTablename = $this->conf['table.']['address'];
+
 		if (
 				(
 					$addrTablename == 'tx_party_addresses' && t3lib_extMgm::isLoaded(PARTY_EXTkey) ||
@@ -502,7 +500,7 @@ debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
 				// sorting by category not yet possible for articles
 			if ($itemTable->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
 				$orderByCat = '';	// articles do not have a direct category
-				$orderByArray = split (',', $selectConf['orderBy']);
+				$orderByArray = t3lib_div::trimExplode (',', $selectConf['orderBy']);
 				$orderByArray = array_diff($orderByArray, array('category'));
 				$selectConf['orderBy'] = implode (',', $orderByArray);
 			}
@@ -521,6 +519,7 @@ debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
 			}
 			$viewTagArray = array();
 			$parentArray = array();
+
 			$fieldsArray = $this->marker->getMarkerFields(
 				$t['item'],
 				$itemTable->table->tableFieldArray,
@@ -530,6 +529,7 @@ debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
 				$viewTagArray,
 				$parentArray
 			);
+
 			if ($itemTable->type == 'article')	{
 				$viewProductsTagArray = array();
 				$productsParentArray = array();
@@ -603,9 +603,11 @@ debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
 			}
 			$tablename = $itemTable->table->name;
 			$queryParts = $itemTable->table->getQueryConf($this->pibase->cObj,$tablename, $selectConf, TRUE);
-			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
+
+			$res = $itemTable->table->exec_SELECT_queryArray($queryParts);
 			$itemArray=array();
 			$iCount = 0;
+
 			while ($iCount < $this->config['limit'] && ($row = $TYPO3_DB->sql_fetch_assoc($res)))		{
 
 				$iCount++;
@@ -835,11 +837,7 @@ debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
 					} else {
 						$addQueryString[$itemTable->piVar] = intval($row['uid']);
 						$piVarCat = $this->pibase->piVars[$categoryTable->piVar];
-debug ($pid, '$pid Pos 1', __LINE__, __FILE__);
-debug ($TSFE->id, '$TSFE->id Pos 1', __LINE__, __FILE__);
-
 						$bUseBackPid = $bUseBackPid && ($pid != $TSFE->id);
-debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
 
 						if ($piVarCat)	{
 							if ($this->conf['PIDlistDisplay'])	{
@@ -854,7 +852,6 @@ debug ($bUseBackPid, '$bUseBackPid Pos 1', __LINE__, __FILE__);
 						$queryString = $this->marker->getLinkParams('begin_at', $addQueryString, FALSE, $bUseBackPid, $categoryTable->piVar);
 						$pageLink = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid));
 					}
-debug ($pageLink, '$pageLink Pos 1', __LINE__, __FILE__);
 
 					if ($childCatWrap)	{
 						$wrappedSubpartArray['###LINK_ITEM###'] = t3lib_div::trimExplode('|',$childCatWrap);
@@ -1048,8 +1045,6 @@ debug ($pageLink, '$pageLink Pos 1', __LINE__, __FILE__);
 		}	// if ($where ...
 
 		if ($out)	{
-			// next / prev:
-			// $url = $this->getLinkUrl('','begin_at');
 				// Reset:
 			$subpartArray=array();
 			$wrappedSubpartArray=array();
@@ -1094,6 +1089,7 @@ debug ($pageLink, '$pageLink Pos 1', __LINE__, __FILE__);
 				$subpartArray['###LINK_PREV###']='';
 			}
 			$markerArray['###BROWSE_LINKS###']='';
+
 			if ($productsCount > $this->config['limit'] )	{ // there is more than one page, so let's browse
 				$wrappedSubpartArray['###LINK_BROWSE###']=array('',''); // <- this could be done better I think, or not?
 				for ($i = 0 ; $i < ($productsCount/$this->config['limit']); $i++)	 {

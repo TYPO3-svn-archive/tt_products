@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2000 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2010 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -47,6 +47,7 @@ global $TYPO3_CONF_VARS;
 require_once(PATH_t3lib.'class.t3lib_div.php');
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc.php');
+include_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_creditpoints.php');
 
 
 class tx_ttproducts_basket {
@@ -192,6 +193,7 @@ class tx_ttproducts_basket {
 
 		$this->itemArray = array();
 		$tmpBasketExt = $TSFE->fe_user->getKey('ses','basketExt');
+
 		$this->order = $TSFE->fe_user->getKey('ses','order');
 
 		if (is_array($tmpBasketExt)) {
@@ -201,10 +203,12 @@ class tx_ttproducts_basket {
 		}
 
 		$basketExtRaw = t3lib_div::_GP('ttp_basket');
+
 		$this->giftnumber = count ($this->basketExt['gift']) + 1;
 		$newGiftData = t3lib_div::_GP('ttp_gift');
 		$extVars = $this->pibase->piVars['variants'];
 		$extVars = ($extVars ? $extVars : t3lib_div::_GP('ttp_extvars'));
+
 		$paramProduct = strtolower($this->viewTable->marker);
 		$uid = $this->pibase->piVars[$paramProduct];
 		$uid = ($uid ? $uid : t3lib_div::_GP('tt_products'));
@@ -379,15 +383,21 @@ class tx_ttproducts_basket {
 			$this->basketExt = $basketExtNew;
 
 			if ($bStoreBasket)	{
-				if (is_array($this->basketExt) && count($this->basketExt))
+				if (is_array($this->basketExt) && count($this->basketExt))	{
 					$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
-				else
+				} else {
 					$TSFE->fe_user->setKey('ses','basketExt',array());
+				}
 				$TSFE->fe_user->storeSessionData(); // The basket shall not get lost when coming back from external scripts
 			}
 		}
 		$this->paymentshipping->setBasketExtras($formerBasket);
 	} // init
+
+
+	public function &getItemArray ()	{
+		return $this->itemArray;
+	}
 
 
 	/**
@@ -457,6 +467,7 @@ class tx_ttproducts_basket {
 		}
 		$where = 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->viewTable->table->enableFields();
 		$rcArray = $this->viewTable->getWhere($where);
+
 		$productsArray = array();
 		$this->page->setPageArray();
 		$this->extTableItemArray = array();
@@ -466,6 +477,7 @@ class tx_ttproducts_basket {
 			$uid = $row['uid'];
 
 			// only the basket items for the pages belonging to this shop shall be used here
+
 			if (isset($this->page->pageArray[$pid]))	{
 				foreach ($this->basketExt[$uid] as $bextVarLine => $bRow)	{
 				// while(list($bextVars,)=each($this->basketExt[$row['uid']])) {
@@ -488,8 +500,10 @@ class tx_ttproducts_basket {
 					}
 					// $currRow['extVars'] = $bextVars;
 					$currRow['ext'][$extTable][] = array('uid' => $extUid, 'vars' => $bextVars);
+
 					if ($this->useArticles == 1 && $this->viewTable->table->name == 'tt_products') {
 						// get the article uid with these colors, sizes and gradings
+
 						$articleRow = $this->viewTable->getArticleRow($currRow);
 
 							// use the fields of the article instead of the product
@@ -732,6 +746,7 @@ class tx_ttproducts_basket {
 			$count = intval($count);
 		}
 		$oldPrice = $row['price'];
+
 		$row['price'] = $this->price->getDiscountPrice($oldPrice, $discount);
 		$priceTax = $this->price->getResellerPrice($row,1);
 		$priceNoTax = $this->price->getResellerPrice($row,0);
@@ -760,6 +775,7 @@ class tx_ttproducts_basket {
 			'totalNoTax' => 0,
 			'rec' => $row,
 		);
+
 		if ($this->conf['TAXmode'] == '2')	{
 			$taxFieldArray = array('priceTax', 'priceNoTax', 'price0Tax', 'price0NoTax', 'price2Tax', 'price2NoTax');
 			foreach ($taxFieldArray as $k => $field)	{
@@ -771,17 +787,27 @@ class tx_ttproducts_basket {
 
 
 	// This calculates the total for everything in the basket
-	function getCalculatedSums () {
+	function getCalculatedSums ($recs) {
+		global $TSFE;
 
-		$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
-		$this->calculatedArray['priceTax']['creditpoints'] = $this->recs['tt_products']['creditpoints']*$pricefactor;
+		$pricefactor = doubleval($this->conf['creditpoints.']['priceprod']);
+		$creditpointsObj = &t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
+		$autoCreditpointsTotal = $creditpointsObj->getBasketTotal();
+		if ($autoCreditpointsTotal > 0)	{
+			$creditpoints = $autoCreditpointsTotal;
+		} else {
+			$creditpoints = $recs['tt_products']['creditpoints'];
+		}
+		if ($creditpoints > $TSFE->fe_user->user['tt_products_creditpoints'])	{
+			$creditpoints = $TSFE->fe_user->user['tt_products_creditpoints'];
+		}
+		$this->calculatedArray['priceTax']['creditpoints'] = $creditpoints * $pricefactor;
 
 		$this->calculatedArray['priceTax']['total']  = $this->calculatedArray['priceTax']['goodstotal'];
 		$this->calculatedArray['priceTax']['total'] += $this->calculatedArray['priceTax']['payment'];
 		$this->calculatedArray['priceTax']['total'] += $this->calculatedArray['priceTax']['shipping'];
 
 		$this->calculatedArray['priceTax']['vouchertotal'] = $this->calculatedArray['priceTax']['total'] - $this->calculatedArray['priceTax']['creditpoints'];
-
 		$this->calculatedArray['priceTax']['vouchertotal'] -= $this->calculatedArray['priceTax']['voucher'];
 
 		$this->calculatedArray['priceNoTax']['total']  = $this->calculatedArray['priceNoTax']['goodstotal'];
@@ -789,7 +815,6 @@ class tx_ttproducts_basket {
 		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['shipping'];
 
 		$this->calculatedArray['priceNoTax']['vouchertotal'] = $this->calculatedArray['priceNoTax']['total'] - $this->calculatedArray['priceTax']['creditpoints'];
-
 		$this->calculatedArray['priceNoTax']['vouchertotal'] -= $this->calculatedArray['priceTax']['voucher'];
 	}
 }

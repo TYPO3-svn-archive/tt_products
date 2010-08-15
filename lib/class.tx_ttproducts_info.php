@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -102,6 +102,14 @@ class tx_ttproducts_info {
 					'tx_feuserextrafields_pobox, tx_feuserextrafields_pobox_deliv, tx_feuserextrafields_zip_deliv, tx_feuserextrafields_city_deliv,'.
 					'tx_feuserextrafields_country, tx_feuserextrafields_country_deliv';
 			$this->feuserfields .= ','.$this->feuserextrafields;
+		}
+
+		if (isset($TCA['fe_users']['columns']) && is_array(($TCA['fe_users']['columns'])))	{
+			foreach (($TCA['fe_users']['columns']) as $field => $fieldTCA)	{
+				if (!t3lib_div::inList($this->feuserfields, $field))	{
+					$this->feuserfields .= ',' . $field;
+				}
+			}
 		}
 
 		if (t3lib_extMgm::isLoaded('static_info_tables')) {
@@ -336,7 +344,7 @@ class tx_ttproducts_info {
 		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
 		$markerArray['###DELIVERY_ADDRESS_DISPLAY###'] = nl2br($markerArray['###DELIVERY_ADDRESS###']);
 
-		$this->fe_users->getItemMarkerArray($this->infoArray['billing'], $markerArray, $bSelectSalutation,'person');
+		$this->fe_users->getItemMarkerArray($this->infoArray['billing'], $markerArray, $bSelectSalutation,'personinfo');
 		$this->fe_users->getItemMarkerArray($this->infoArray['delivery'], $markerArray, $bSelectSalutation,'delivery');
 
 			// Delivery note.
@@ -387,6 +395,7 @@ class tx_ttproducts_info {
 		$markerArray['###FE_USER_TT_PRODUCTS_DISCOUNT###'] = $TSFE->fe_user->user['tt_products_discount'];
 		$markerArray['###FE_USER_USERNAME###'] = $TSFE->fe_user->user['username'];
 		$markerArray['###FE_USER_UID###'] = $TSFE->fe_user->user['uid'];
+
 		$bAgb = ($this->infoArray['billing']['agb'] && (!isset($this->pibase->piVars['agb']) || $this->pibase->piVars['agb']>0));
 		$markerArray['###PERSON_AGB###'] = 'value="1" ' . ($bAgb ? 'checked="checked"' : '');
 		$markerArray['###USERNAME###'] = $this->infoArray['billing']['email'];

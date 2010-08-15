@@ -1,22 +1,22 @@
 <?php
 /***************************************************************
 *  Copyright notice
-*  
+*
 *  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is 
+*  This script is part of the Typo3 project. The Typo3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
 *  (at your option) any later version.
-* 
+*
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license 
+*  A copy is found in the textfile GPL.txt and important notices to the license
 *  from the author is found in LICENSE.txt distributed with these scripts.
 *
-* 
+*
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -116,7 +116,7 @@ class tx_ttproducts_variant {
 	 * @see modifyRowFromVariant
 	 */
 	 function getVariantFromRow (&$row) {
-		// take only the first color, size and gradings, if there are more entries from the item table		
+		// take only the first color, size and gradings, if there are more entries from the item table
 		$variantArray = array();
 
 		if (is_array($this->conf) && ($this->useArticles == 1 || count ($this->bSelectableArray)))	{
@@ -129,7 +129,7 @@ class tx_ttproducts_variant {
 		}
 
 		$rc = implode (';', $variantArray);
-		return $rc; 
+		return $rc;
 	 }
 
 
@@ -151,13 +151,13 @@ class tx_ttproducts_variant {
 					}
 				}
 			}
-					
+
 			if ($this->itemTable->hasAdditional($row,'isSingle')) {
 				$areaArray[] = 'display_variant5_isSingle';
 			} else {
 				$areaArray[] = 'display_variant5_isNotSingle';
 			}
-			
+
 			foreach ($areaArray as $k => $area) {
 				$subpartArray['###'.$area.'###'] = $this->pibase->cObj->getSubpart($tempContent,'###'.$area.'###');
 			}
@@ -194,7 +194,7 @@ class tx_ttproducts_variant {
 		foreach ($remSubpartArray as $k => $subpart) {
 			$subpartArray['###'.$subpart.'###'] = '';
 		}
-		
+
 		foreach ($remMarkerArray as $k => $marker)	{
 			$markerArray['<!-- ###'.$marker.'### -->'] = '';
 		}
@@ -202,17 +202,23 @@ class tx_ttproducts_variant {
 
 
 	function fetchArticle($productRow, $articleRows) {
+
 		$fieldArray = array();
+
 		foreach ($this->conf as $k => $field)	{
 			if ($productRow[$field] && $field != 'additional')	{
 				$fieldArray[$field] = t3lib_div::trimExplode(';', $productRow[$field]);
 			}
 		}
+
 		$articleRow = array();
 		if (count($fieldArray))	{
+
 			foreach ($articleRows as $k => $row)	{
+
 				$bFits = true;
 				foreach ($fieldArray as $field => $valueArray)	{
+
 					if ($row[$field] && !in_array($row[$field], $valueArray) && $field != 'additional')	{
 						$bFits = false;
 						break;
@@ -228,11 +234,11 @@ class tx_ttproducts_variant {
 	}
 
 
-	function &getFieldArray()	{	
+	function &getFieldArray()	{
 		return $this->fieldArray;
 	}
 
-	function getAdditionalKey()	{	
+	function getAdditionalKey()	{
 		return $this->additionalKey;
 	}
 }

@@ -282,7 +282,13 @@ class tx_ttproducts_paymentshipping {
 		$basketUrl = $urlMarkerArray['###FORM_URL###'];	// the former parameters must be preserved
 
 		$submitCode = 'this.form.action=\''.$basketUrl.'\';this.form.submit();';
-		$template = $this->conf[$pskey.'.']['template'] ? ereg_replace('\' *\. *\$pskey *\. *\'',$pskey, $this->conf[$pskey.'.']['template']) : '###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>';
+// 		$template = $this->conf[$pskey.'.']['template'] ? ereg_replace('\' *\. *\$pskey *\. *\'',$pskey, $this->conf[$pskey.'.']['template']) : '###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>';
+
+		$template = (
+			$this->conf[$pskey.'.']['template'] ?
+				preg_replace('/[:space:]*\\.[:space:]*' . $pskey . '[:space:]*\\.[:space:]*/',$pskey, $this->conf[$pskey.'.']['template']) :
+				'###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>'
+			);
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
 		$t = array();
 		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];
@@ -579,14 +585,14 @@ class tx_ttproducts_paymentshipping {
 			$pricePaymentTax += $this->price->getPrice($payment,true,$taxpercentage,$taxIncluded,true);
 			$pricePaymentNoTax += $this->price->getPrice($payment,false,$taxpercentage,$taxIncluded,true);
 		}
-		$this->getSpecialPrices ('payment', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
+		$this->getSpecialPrices ('payment', $taxpercentage, $pricePaymentTax, $pricePaymentNoTax);
 		$this->getPrices ('payment', $countTotal, $priceTotalTax, $pricePaymentTax, $pricePaymentNoTax, $taxpercentage);
 	} // getPaymentShippingData
 
 	/**
 	 * Include handle script
 	 */
-	function includeHandleScript ($handleScript, &$confScript, $activity, &$bFinalize)	{
+	function includeHandleScript ($handleScript, &$confScript, &$order, $activity, &$bFinalize)	{
 		$content = '';
 		include($handleScript);
 		return $content;

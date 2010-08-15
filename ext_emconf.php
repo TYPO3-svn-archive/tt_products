@@ -37,10 +37,11 @@ $EM_CONF[$_EXTKEY] = array(
 	'constraints' => array(
 		'depends' => array(
 			'cms' => '',
-			'div2007' => '0.2.1-',
-			'table' => '0.1.32-',
+			'div2007' => '0.3.0-',
+			'table' => '0.1.35-',
+			'tsparser' => '',
 			'php' => '4.2.3-0.0.0',
-			'typo3' => '3.8-4.3.99',
+			'typo3' => '3.8-4.5.99',
 		),
 		'conflicts' => array(
 			'mkl_products' => '',
@@ -52,13 +53,11 @@ $EM_CONF[$_EXTKEY] = array(
 			'c3bi_cookie_at_login' => '',
 		),
 		'suggests' => array(
-			'ajaxgroupsearch' => '',
-			'patch1822' => '',
+			'pmkhtmlcrop' => '',
 			'sr_feuser_register' => '',
 			'static_info_tables' => '2.0.5-',
 			'tt_address' => '',
 			'xajax' => '',
-			'pmkhtmlcrop' => '',
 		),
 	),
 	'suggests' => array(

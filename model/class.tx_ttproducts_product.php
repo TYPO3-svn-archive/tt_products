@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -119,7 +119,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	function &getArticleRows ($uid)	{
+
 		$rowArray = $this->articleArray[$uid];
+
 		if (!$rowArray && $uid) {
 			$rowArray = $this->tt_products_articles->getWhereArray('uid_product=\''.intval($uid).'\'');
 			$this->articleArray[$uid] = $rowArray;
@@ -130,8 +132,10 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 	function &getArticleRow ($row) {
 		global $TYPO3_DB;
+
 		$articleRows = $this->getArticleRows(intval($row['uid']));
 		$articleRow = $this->variant->fetchArticle($row, $articleRows);
+
 		return $articleRow;
 	}
 
@@ -256,9 +260,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$iconImgCode = $this->pibase->cObj->IMAGE($this->conf['datasheetIcon.']);
 		$markerArray['###ICON_DATASHEET###'] = $iconImgCode;
 		$markerArray['###'.$this->marker.'_WWW###'] = $row['www'];
-//		$markerArray['###CATEGORY_TITLE###'] = $catTitle;
-
-//		$markerArray["###FIELD_NAME###"]="recs[tt_products][".$row["uid"]."]";
+		$markerArray['###'.$this->marker.'_EAN###'] = $row['ean'];
+		$markerArray['###'.$this->marker.'_CREDITPOINTS###'] = $row['creditpoints'];
 
 		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? htmlentities($this->conf['bulkilyWarning']) : '';

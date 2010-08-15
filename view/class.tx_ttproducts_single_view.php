@@ -265,6 +265,7 @@ class tx_ttproducts_single_view {
 				$pid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $row);
 			} else {
 				$pid = $TSFE->id;
+
 				if ($this->conf['NoSingleViewOnList'])	{
 					$bNeedSingleParams = TRUE;
 				}
@@ -334,16 +335,19 @@ class tx_ttproducts_single_view {
 			}
 			$this->marker->getSearchParams($addQueryString);
 			$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
-
 			$linkPid = $pid;
 			if ($bUseBackPid && $backPID)	{
 				$linkPid = $backPID;
 			}
-			$linkUrl = tx_div2007_alpha::getPageLink_fh002($this->cObj,$linkPid,'',$this->marker->getLinkParams('',$addQueryString,TRUE,FALSE,$viewCatTable->piVar),array('useCacheHash' => TRUE));
-			$linkUrl = htmlspecialchars($linkUrl);
 
-			// link back to the list view or basket view
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="' . $linkUrl . '">','</a>');
+			if ($viewTagArray['LINK_ITEM'])	{
+
+				$linkUrl = tx_div2007_alpha::getPageLink_fh002($this->cObj,$linkPid,'',$this->marker->getLinkParams('',$addQueryString,TRUE,FALSE,$viewCatTable->piVar),array('useCacheHash' => TRUE));
+				$linkUrl = htmlspecialchars($linkUrl);
+
+				// link back to the list view or basket view
+				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="' . $linkUrl . '">','</a>');
+			}
 
 			$catTitle = $viewCatTable->getMarkerArrayCatTitle($categoryMarkerArray);
 			$viewParentCatTagArray = array();
@@ -469,7 +473,7 @@ class tx_ttproducts_single_view {
 			if (is_array($itemTableConf[$this->type]['filter.']) && $itemTableConf[$this->type]['filter.']['type'] == 'regexp')	{
 				if (is_array($itemTableConf[$this->type]['filter.']['field.']))	{
 					foreach ($itemTableConf[$this->type]['filter.']['field.'] as $field => $value)	{
-						$whereFilter .= ' AND '.$field.' REGEXP \''.$value.'\'';
+						$whereFilter .= ' AND ' . $field . ' REGEXP ' . $TYPO3_DB->fullQuoteStr($value,$tablename);
 					}
 				}
 			}

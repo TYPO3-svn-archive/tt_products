@@ -342,7 +342,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			while(list(,$val) = each($pid_list_arr))	{
 				$pid_list .= $val.','.$this->pibase->cObj->getTreeList($val,$recursive);
 			}
-			$pid_list = ereg_replace(',$','',$pid_list);
+			$pid_list = preg_replace('/,$/','',$pid_list);
 			$pid_list_arr = explode(',',$pid_list);
 			$pid_list_arr = array_unique ($pid_list_arr);
 			$pid_list = implode(',', $pid_list_arr);

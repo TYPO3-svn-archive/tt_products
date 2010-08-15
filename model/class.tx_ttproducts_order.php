@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -179,8 +179,19 @@ class tx_ttproducts_order {
 	 * Saves the order record and returns the result
 	 *
 	 */
-	function putRecord ($orderUid, &$deliveryInfo, $feusers_uid, $cardUid, $accountUid,
-		$email_notify, $payment, $shipping, $amount, &$orderConfirmationHTML, &$address)	{
+	function putRecord (
+		$orderUid,
+		&$deliveryInfo,
+		$feusers_uid,
+		$cardUid,
+		$accountUid,
+		$email_notify,
+		$payment,
+		$shipping,
+		$amount,
+		&$orderConfirmationHTML,
+		&$address
+	)	{
 		global $TYPO3_DB;
 		global $TSFE;
 

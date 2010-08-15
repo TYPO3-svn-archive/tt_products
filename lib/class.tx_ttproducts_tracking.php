@@ -69,7 +69,7 @@ class tx_ttproducts_tracking {
 		$this->conf = &$this->cnf->conf;
 		$this->basket = &$basket;
 		$this->order = &$order;
-		$this->price = &$price;	 
+		$this->price = &$price;
 	}
 
 
@@ -158,7 +158,7 @@ class tx_ttproducts_tracking {
 				}
 				if ($update)	{
 					$fieldsArray['status_log'] = serialize($status_log);
-					$fieldsArray['status'] = intval($status_log_element['status'],'sys_products_orders');
+					$fieldsArray['status'] = intval($status_log_element['status']);
 					if ($fieldsArray['status'] >= 100)  {
 
 							// Deletes any M-M relations between the tt_products table and the order.

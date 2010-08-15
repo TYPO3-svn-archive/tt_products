@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2010 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -52,6 +52,10 @@ require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
 require_once(PATH_tslib.'class.tslib_pibase.php');
 
 require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
+
+if (t3lib_extMgm::isLoaded('fh_debug')) {
+	require_once (t3lib_extMgm::extPath('fh_debug') . 'lib/class.tx_fhdebug_control.php');
+}
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 
@@ -155,8 +159,8 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		$this->version = $eInfo['version'];
 		$this->pi_initPIflexForm();
 		$config['code'] =
-			tx_div2007_alpha::getSetupOrFFvalue_fh001(
-				$this,
+			tx_div2007_alpha::getSetupOrFFvalue_fh003(
+				$this->cObj,
 	 			$conf['code'],
 	 			$conf['code.'],
 				$conf['defaultCode'],
@@ -259,6 +263,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		return $templateCode;
 	}
 
+
 	function doProcessing ($content='', $bRunAjax = false)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS; // needed for include_once and PHP 5.1 which otherwise would not allow XCLASS for HtmlMail, DAM aso.
@@ -314,7 +319,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		// *************************************
 		if (!$this->errorMessage) {
 			$this->basket->getCalculatedBasket(); // get the basket->itemArray
-			$this->basket->getCalculatedSums ();
+			$this->basket->getCalculatedSums ($this->basket->recs);
 			$this->templateCode=$this->getTemplateCode('BASKET');
 
 			$this->control->init (
@@ -625,12 +630,20 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 
 			// If the current record should be displayed.
 		$config['displayCurrentRecord'] = $this->conf['displayCurrentRecord'];
+
+
 		if ($config['displayCurrentRecord'])	{
 			// $config['code']='SINGLE';
 			$row = $this->cObj->data;
 			$this->tt_product_single['product'] = $row['uid'];
 		} else {
-			$tmp = ($this->piVars['product'] ? $this->piVars['product'] : t3lib_div::_GP('tt_products'));
+			$tmp = $this->piVars['product'];
+			if (!$tmp)	{
+				$ttpOld = t3lib_div::_GP('tt_products');
+				if (isset($ttpOld) && !is_array($ttpOld))	{
+					$tmp = $ttpOld;
+				}
+			}
 			if (isset($tmp) && is_array($tmp) && isset($tmp['product']))	{	// upwards compatible to tt_products parameter
 				$tmp = $tmp['product'];
 			}
@@ -975,6 +988,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 
 
 	function getSingleFromList ()	{
+
 		return $this->bSingleFromList;
 	}
 
@@ -986,12 +1000,22 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
-		if (($theCode=='SINGLE') || ((($theCode=='SEARCH') && $this->conf['listViewOnSearch'] == '1' || strstr($theCode,'LIST')) && $theCode != 'LISTARTICLES' && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList']) && !$this->getSingleFromList()) {
+		$bSingleFromList = FALSE;
+
+		if (
+			(
+				(
+					($theCode=='SEARCH') && $this->conf['listViewOnSearch'] == '1' || (strpos($theCode,'LIST') !== FALSE)
+				) &&
+				$theCode != 'LISTARTICLES' && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'] &&
+			!$this->getSingleFromList()
+			)
+		) {
 			$this->setSingleFromList(TRUE);
 			$bSingleFromList = TRUE;
 		}
 
-		if (($theCode == 'SINGLE') || $bSingleFromList) {
+		if (($theCode=='SINGLE') || $bSingleFromList) {
 
 			$extVars = $this->piVars['variants'];
 			$extVars = ($extVars ? $extVars : t3lib_div::_GP('ttp_extvars'));

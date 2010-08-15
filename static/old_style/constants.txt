@@ -43,7 +43,6 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Category images: As above, but for the category images
   clickEnlarge_listcat = 0
 
-
     # cat=plugin.products//; type=boolean; label= Color selectable, List display: Make the color selectable in the list
   selectColor = 1
     # cat=plugin.products//; type=boolean; label= 2nd Color selectable, List display: Make the 2nd color selectable in the list
@@ -140,48 +139,49 @@ plugin.tt_products {
     # cat=plugin.products/dims; type=int+; label= Max image width, popup window: The maximum width in pixels of an image when displayed in the popup window.
   maxW_popup = 400
 
-
-    # cat=plugin.products//; type=int+; label=PID for info page: This is the PID of the infoPage of the store.
+    # cat=plugin.products//; type=eint+; label=list of allowed pids: Use the root page id of your store items and also set recursive
+  pid_list =
+    # cat=plugin.products//; type=eint+; label=PID for info page: This is the PID of the infoPage of the store.
   PIDinfo =
-    # cat=plugin.products//; type=int+; label=PID for finalize page
+    # cat=plugin.products//; type=eint+; label=PID for finalize page
   PIDfinalize =
-    # cat=plugin.products//; type=int+; label=PID for thanks page
+    # cat=plugin.products//; type=eint+; label=PID for thanks page
   PIDthanks =
-    # cat=plugin.products//; type=int+; label=PID for tracking page
+    # cat=plugin.products//; type=eint+; label=PID for tracking page
   PIDtracking =
-    # cat=plugin.products//; type=int+; label=PID for billing page
+    # cat=plugin.products//; type=eint+; label=PID for billing page
   PIDbilling =
-    # cat=plugin.products//; type=int+; label=PID for delivery sheet page
+    # cat=plugin.products//; type=eint+; label=PID for delivery sheet page
   PIDdelivery =
-    # cat=plugin.products//; type=int+; label=PID for payment page
+    # cat=plugin.products//; type=eint+; label=PID for payment page
   PIDpayment =
-    # cat=plugin.products//; type=int+; label=PID for single item display: Set this in your setup manually for defining where conditions for several pages.
+    # cat=plugin.products//; type=eint+; label=PID for single item display: Set this in your setup manually for defining where conditions for several pages.
   PIDitemDisplay =
-    # cat=plugin.products//; type=int+; label=PID for list items display: Set this in your setup manually for defining where conditions for several pages.
+    # cat=plugin.products//; type=eint+; label=PID for list items display: Set this in your setup manually for defining where conditions for several pages.
   PIDlistDisplay =
-    # cat=plugin.products//; type=int+; label=PID for search page: If you want all product searches to go to a specific page, enter the PID it here! NOTE: If you set this PID, all searchqueries will (must) be handled with a list content element with the code "search" on that page.
+    # cat=plugin.products//; type=eint+; label=PID for search page: If you want all product searches to go to a specific page, enter the PID it here! NOTE: If you set this PID, all searchqueries will (must) be handled with a list content element with the code "search" on that page.
   PIDsearch =
-    # cat=plugin.products//; type=int+; label=PID for basket page: If you want every change in the number of items anywhere to go to a specific page (eg. the shopping basket page), enter the PID here.
+    # cat=plugin.products//; type=eint+; label=PID for basket page: If you want every change in the number of items anywhere to go to a specific page (eg. the shopping basket page), enter the PID here.
   PIDbasket =
-    # cat=plugin.products//; type=int+; label=PID for store root: This is the PID of the rootPage of the store. If not set the store will operate over all pages from the root of the site. But if the site has many pages, performance may improve
+    # cat=plugin.products//; type=eint+; label=PID for store root: This is the PID of the rootPage of the store. If not set the store will operate over all pages from the root of the site. But if the site has many pages, performance may improve
   PIDstoreRoot =
-    # cat=plugin.products//; type=int+; label=PID for the memo page: Needed if you want to use the memo page
+    # cat=plugin.products//; type=eint+; label=PID for the memo page: Needed if you want to use the memo page
   PIDmemo =
-    # cat=plugin.products//; type=int+; label=PID for the sys_products_orders records: By default they will get the pid of the payment (finalize) page.
+    # cat=plugin.products//; type=eint+; label=PID for the sys_products_orders records: By default they will get the pid of the payment (finalize) page.
   PID_sys_products_orders = 0
-    # cat=plugin.products//; type=int+; label=PID for the tt_products_gifts records: By default they will get the pid of the payment (finalize) page.
+    # cat=plugin.products//; type=eint+; label=PID for the tt_products_gifts records: By default they will get the pid of the payment (finalize) page.
   PIDGiftsTable = 0
-    # cat=plugin.products//; type=int+; label=User Sysfolder PID: PID of the sysfolder for the new users
+    # cat=plugin.products//; type=eint+; label=User Sysfolder PID: PID of the sysfolder for the new users
   PIDuserFolder =
-    # cat=plugin.products//; type=int+; label=allowed pages for related products
+    # cat=plugin.products//; type=eint+; label=allowed pages for related products
   pidsRelatedProducts =
-    # cat=plugin.products//; type=int+; label=allowed pages for addresses
+    # cat=plugin.products//; type=eint+; label=allowed pages for addresses
   pidsAddresses =
 
     # cat=plugin.products//; type=string; label=When the payment shall be executed. Possible values:  'payment', 'finalize'
   paymentActivity=finalize
 
-    # cat=plugin.products//; type=int+; label=advance order number with integer: If this value is set, then each time a new order is created the order-number counter will be incremented with a random number between [first-integer] and [second integer].
+    # cat=plugin.products//; type=eint+; label=advance order number with integer: If this value is set, then each time a new order is created the order-number counter will be incremented with a random number between [first-integer] and [second integer].
   advanceOrderNumberWithInteger =
 
     # cat=plugin.products//; type=boolean; label=always advance order number: If set then the order number will always get increased and the empty order numbers are not reused.
@@ -189,19 +189,19 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label=always update order amount: If set then the order amount will always be updated and not increased by the entered number
   alwaysUpdateOrderAmount = 1
 
-    # cat=plugin.products//; type=int+; label=default article ID: ID of the default article that will be shown in a single page when nothing else is configured
-   defaultArticleID = 1
-    # cat=plugin.products//; type=int+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
-  defaultProductID = 1
-    # cat=plugin.products//; type=int+; label=default category ID: ID of the default category that will be shown in the list view when no tx_ttproducts_pi1[cat] parameter is given
+    # cat=plugin.products//; type=eint+; label=default article ID: ID of the default article that will be shown in a single page when nothing else is configured
+   defaultArticleID =
+    # cat=plugin.products//; type=eint+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
+  defaultProductID =
+    # cat=plugin.products//; type=eint+; label=default category ID: ID of the default category that will be shown in the list view when no tx_ttproducts_pi1[cat] parameter is given
   defaultCategoryID =
-    # cat=plugin.products//; type=int+; label=default DAM category ID: ID of the default DAM category that will be shown in the list view when no tx_ttproducts_pi1[damcat] parameter is given
+    # cat=plugin.products//; type=eint+; label=default DAM category ID: ID of the default DAM category that will be shown in the list view when no tx_ttproducts_pi1[damcat] parameter is given
   defaultDAMCategoryID =
-    # cat=plugin.products//; type=int+; label=root category ID: The upper most category ID from where you want to start to list categories.
+    # cat=plugin.products//; type=eint+; label=root category ID: The upper most category ID from where you want to start to list categories.
   rootCategoryID =
-    # cat=plugin.products//; type=int+; label=root DAM category ID: The upper most DAM category ID from where you want to start to list DAM categories.
+    # cat=plugin.products//; type=eint+; label=root DAM category ID: The upper most DAM category ID from where you want to start to list DAM categories.
   rootDAMCategoryID =
-    # cat=plugin.products//; type=int+; label=root page ID: The upper most page as category ID from where you want to start to list pages as categories.
+    # cat=plugin.products//; type=eint+; label=root page ID: The upper most page as category ID from where you want to start to list pages as categories.
   rootPageID =
     # cat=plugin.products//; type=int+; label=recursive levels: Number of recursive levels to select tt_products from in lists.
   recursive = 99
@@ -215,7 +215,7 @@ plugin.tt_products {
   TAXincluded = 1
     # cat=plugin.products//; type=int+; label=TAX mode. 1 ... add taxes to the end net sum - 2 ... add taxes on each single product first
   TAXmode = 1
-    # cat=plugin.products//; type=int+; label=TAX rates. Comma separated list of tax rates. The first will be taken as tax A, the second as tax B aso.
+    # cat=plugin.products//; type=eint+; label=TAX rates. Comma separated list of tax rates. The first will be taken as tax A, the second as tax B aso.
   TAXrates =
     # Price decimals
   priceDec = 2
@@ -264,7 +264,7 @@ plugin.tt_products {
   bulkilyWarning = <p><b>Warning! This article needs special transport.</b></p>
     # cat=plugin.products//; type=int+; label=Additional cost for bulkily items
   bulkilyAddition = 25
-    # cat=plugin.products//; type=int+; label=Tax fee in percent for shipping of bulkily
+    # cat=plugin.products//; type=eint+; label=Tax fee in percent for shipping of bulkily
   bulkilyFeeTax =
     # cat=plugin.products//; type=text; label=Special preparation: Message displayed at items marked as special preparation
   specialPreparation = Special preparation possible! <A HREF="?id=999&tt_products=###PRODUCT_ID###">Order here</A>.
@@ -279,7 +279,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=int+; label=Group of customers
   memberOfGroup = 1
 
-    # cat=plugin.products//; type=int+; label=PID of AGB page: PID of the page with the AGB
+    # cat=plugin.products//; type=eint+; label=PID of AGB page: PID of the page with the AGB
   PIDagb = 0
     # cat=plugin.products//; type=small; label=Target of AGB page: Target for the AGB page
   AGBtarget = _blank
@@ -307,7 +307,7 @@ plugin.tt_products {
   notInStockMessage = not in stock
     # cat=plugin.products//; type=string; label=Unit for pieces
   inStockPieces = pieces
-    # cat=plugin.products//; type=int+; label=In stock warning limit: When this number of items in stock is reached a warning email will be sent.
+    # cat=plugin.products//; type=eint+; label=In stock warning limit: When this number of items in stock is reached a warning email will be sent.
   warningInStockLimit =
 
     # cat=plugin.products//; type=int+; label=New Item Days: How many days list new items in LISTNEWITEMS

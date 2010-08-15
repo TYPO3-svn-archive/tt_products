@@ -143,6 +143,7 @@ $TCA['tt_products_articles'] = Array (
 		'crdate' => 'crdate',
 //		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_articles.gif',
+		'dividers2tabs' => '1',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
 		'transForeignTable' => 'tt_products_articles_language',
 	),
@@ -267,8 +268,10 @@ $TCA['sys_products_orders'] = Array (
 
 t3lib_div::loadTCA('tt_content');
 
-
-if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
+if (
+	!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']) ||
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1
+)	{
 	$TCA['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='pi_flexform';
 	t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:'.TT_PRODUCTS_EXTkey.'/flexform_ds_pi1.xml');

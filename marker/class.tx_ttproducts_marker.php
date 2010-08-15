@@ -150,6 +150,11 @@ class tx_ttproducts_marker {
 		$markerArray['###GC3###'] = $this->pibase->cObj->stdWrap($this->conf['color3'],$this->conf['color3.']);
 		$markerArray['###DOMAIN###'] = $this->conf['domain'];
 		$markerArray['###PATH_FE_REL###'] = PATH_FE_ttproducts_rel;
+		if (t3lib_extMgm::isLoaded(ADDONS_EXTkey)) {
+			$markerArray['###PATH_FE_REL###'] = PATH_FE_addons_rel;
+			$markerArray['###PATH_FE_ICONS###'] = PATH_FE_addons_icon_rel;
+		}
+
 		$pidMarkerArray = array('agb','basket','info','finalize','payment', 'thanks','itemDisplay','listDisplay','search','storeRoot',
 			'memo','tracking','billing','delivery');
 		foreach ($pidMarkerArray as $k => $function)	{

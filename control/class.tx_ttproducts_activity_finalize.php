@@ -221,6 +221,9 @@ class tx_ttproducts_activity_finalize {
 			$address
 		);
 
+		$creditpointsObj = &t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
+		$creditpointsObj->pay();
+
 		// any gift orders in the extended basket?
 		if ($this->basket->basketExt['gift']) {
 			$pid = intval($this->conf['PIDGiftsTable']);

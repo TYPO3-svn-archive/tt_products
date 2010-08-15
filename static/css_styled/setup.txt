@@ -373,6 +373,9 @@ plugin.tt_products {
   }
 
   shopAdmin = BE
+  control.ALL.param {
+    use = backPID
+  }
 }
 
 ## This enables the record item to display product items

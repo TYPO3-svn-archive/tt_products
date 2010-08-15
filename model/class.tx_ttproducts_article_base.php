@@ -125,6 +125,7 @@ class tx_ttproducts_article_base {
 		}
 	}
 
+
 	/**
 	 * Reduces the instock value of the orderRecords with the sold items and returns the result
 	 *
@@ -235,11 +236,16 @@ class tx_ttproducts_article_base {
 		$markerArray['###PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceNoTax'], $taxInclExcl));
 		$markerArray['###PRICE_ONLY_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax']-$item['priceNoTax']));
 
+		$pricefactor = doubleval($this->conf['creditpoints.']['priceprod']);
+		// price if discounted by credipoints
+		$markerArray['###PRICE_IF_DISCOUNTED_BY_CREDITPOINTS_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat(($item['priceTax'] - $pricefactor * $row['creditpoints']), $taxInclExcl));
+		$markerArray['###PRICE_IF_DISCOUNTED_BY_CREDITPOINTS_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat(($item['priceNoTax'] - $pricefactor * $row['creditpoints']), $taxInclExcl));
+
 		$markerArray['###UNIT_PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceUnitNoTax'], $taxInclExcl));
 		$markerArray['###UNIT_PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceUnitTax'], $taxInclExcl));
 		$markerArray['###WEIGHT_UNIT_PRICE_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceWeightUnitNoTax'], $taxInclExcl));
 		$markerArray['###WEIGHT_UNIT_PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceWeightUnitTax'], $taxInclExcl));
-		$price2NoTax =  $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],0,$row['tax'],$this->conf['TAXincluded'])));
+		$price2NoTax = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],0,$row['tax'],$this->conf['TAXincluded'])));
 		$markerArray['###PRICE2_NO_TAX###'] = $price2NoTax;
 
 		$markerArray['###DIRECTCOST_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['directcost'],1,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));

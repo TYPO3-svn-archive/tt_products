@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2010 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -119,7 +119,6 @@ class tx_ttproducts_basket_view {
 		$markerArray['###PRICE2_DISCOUNT_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPrice2NoTax']['goodstotal']-$this->basket->calculatedArray['price2NoTax']['goodstotal']);
 
 			// This is the total for everything
-//			$this->basket->getCalculatedSums();
 		$taxRateArray = t3lib_div::trimExplode(',', $this->conf['TAXrates']);
 		if (isset($taxRateArray) && is_array($taxRateArray))	{
 			foreach ($taxRateArray as $k => $taxrate)	{
@@ -143,14 +142,13 @@ class tx_ttproducts_basket_view {
 	/**
 	 * This generates the shopping basket layout and also calculates the totals. Very important function.
 	 */
-	function getView (&$templateCode, $code, &$info, $bSelectSalutation, $bSelectVariants, $bHtml=true, $subpartMarker='###BASKET_TEMPLATE###', $mainMarkerArray=array())	{
+	function getView (&$templateCode, $code, &$info, $bSelectSalutation, $bSelectVariants, $bHtml=TRUE, $subpartMarker='###BASKET_TEMPLATE###', $mainMarkerArray=array())	{
 			/*
 				Very central function in the library.
 				By default it extracts the subpart, ###BASKET_TEMPLATE###, from the $templateCode (if given, else the default $this->templateCode)
 				and substitutes a lot of fields and subparts.
 				Any pre-preparred fields can be set in $mainMarkerArray, which is substituted in the subpart before the item-and-categories part is substituted.
 			*/
-
 		global $TSFE, $TCA;
 		global $TYPO3_DB, $TYPO3_CONF_VARS;
 
@@ -159,6 +157,9 @@ class tx_ttproducts_basket_view {
 		if (!$templateCode)	{
 			$templateCode = &$this->templateCode;
 		}
+// #### START
+		$creditpointsObj = &t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
+// #### ENDE
 
 			// Getting subparts from the template code.
 		$t=array();
@@ -322,7 +323,7 @@ class tx_ttproducts_basket_view {
 						// creditpoint system start
 						$pricecredits_total_totunits_no_tax = $actItem['totalNoTax']*$row['unit_factor'];
 						$pricecredits_total_totunits_tax = $actItem['totalTax']*$row['unit_factor'];
-					} else if ( doubleval($row['price']) && doubleval($row['price2'])) {
+					} else if ($row['price'] > 0 && $row['price2'] > 0 && $row['unit_factor'] > 0) {
 						$pricecredits_total_totunits_no_tax = 0;
 						$pricecredits_total_totunits_tax = 0;
 						$unitdiscount = ($row['price'] - $row['price2']) * $row['unit_factor'] * $actItem['count'];
@@ -334,6 +335,7 @@ class tx_ttproducts_basket_view {
 					$sum_pricecredits_total_totunits_no_tax += $pricecredits_total_totunits_no_tax;
 					$sum_price_total_totunits_no_tax += $pricecredits_total_totunits_no_tax;
 					$sum_pricecreditpoints_total_totunits += $pricecredits_total_totunits_no_tax;
+
 					// creditpoint system end
 
 					$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row, $TSFE->rootLine[1]);
@@ -455,7 +457,7 @@ class tx_ttproducts_basket_view {
 			$markerArray['###SHIPPING_SELECTOR###'] = $this->paymentshipping->generateRadioSelect('shipping', $this->basket->calculatedArray);
 			$markerArray['###SHIPPING_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basket->basketExtra['shipping.']['image.']);
 
-			$shippingTitle = $this->basket->basketExtra['shipping.']['title'];
+			$shippingTitle = htmlspecialchars($this->basket->basketExtra['shipping.']['title']);
 			$markerArray['###SHIPPING_TITLE###'] = $shippingTitle;
 			$markerArray['###SHIPPING_WEIGHT###'] = doubleval($this->basket->calculatedArray['weight']);
 			$markerArray['###DELIVERYCOSTS###'] = $this->price->priceFormat($this->paymentshipping->getDeliveryCosts());
@@ -465,18 +467,16 @@ class tx_ttproducts_basket_view {
 			$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['payment']);
 			$markerArray['###PRICE_PAYMENT_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['payment']-$this->basket->calculatedArray['priceNoTax']['payment'] );
 
-	/* Added els4: payment layout (used in basket_payment_template, winkelwagen.tmpl) */
 			$markerArray['###PAYMENT_SELECTOR###'] = $this->paymentshipping->generateRadioSelect('payment', $this->basket->calculatedArray);
 			$markerArray['###PAYMENT_IMAGE###'] = $this->pibase->cObj->IMAGE($this->basket->basketExtra['payment.']['image.']);
 			$markerArray['###PAYMENT_TITLE###'] = $this->basket->basketExtra['payment.']['title'];
 
-	/* Added els4: output for payment (used in basket_payment_template, winkelwagen.tmpl)*/
-			$markerArray['###PAYMENT_NUMBER###'] = t3lib_div::_GP('payment_number');
-			$markerArray['###PAYMENT_NAME###'] = t3lib_div::_GP('payment_name');
-			$markerArray['###PAYMENT_CITY###'] = t3lib_div::_GP('payment_city');
+			$markerArray['###PAYMENT_NUMBER###'] = htmlspecialchars(t3lib_div::_GP('payment_number'));
+			$markerArray['###PAYMENT_NAME###'] = htmlspecialchars(t3lib_div::_GP('payment_name'));
+			$markerArray['###PAYMENT_CITY###'] = htmlspecialchars(t3lib_div::_GP('payment_city'));
 
 			// for receipt from DIBS script
-			$markerArray['###TRANSACT_CODE###'] = t3lib_div::_GP('transact');
+			$markerArray['###TRANSACT_CODE###'] = htmlspecialchars(t3lib_div::_GP('transact'));
 
 				// Fill the Currency Symbol or not
 			if ($this->conf['showcurSymbol']) {
@@ -488,7 +488,6 @@ class tx_ttproducts_basket_view {
 			$markerArray['###PRICE_DISCOUNT###'] = $this->price->priceFormat($this->basket->calculatedArray['oldPriceNoTax']-$this->basket->calculatedArray['priceNoTax']['goodstotal']);
 			$markerArray['###PRICE_VAT###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['goodstotal']-$this->basket->calculatedArray['priceNoTax']['goodstotal']);
 
-	/* Added els4: discount based on total units (without articles in kurkenshop), necessary in winkelwagen.tmpl */
 			$markerArray['###PRICE_TOTUNITS_DISCOUNT###'] = $this->price->priceFormat($sum_pricediscount_total_totunits);
 
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
@@ -518,7 +517,7 @@ class tx_ttproducts_basket_view {
 			if ($TSFE->fe_user->user['tt_products_vouchercode'] == '') {
 				$subpartArray['###SUB_VOUCHERCODE###'] = '';
 				$markerArray['###INSERT_VOUCHERCODE###'] = 'recs[tt_products][vouchercode]';
-				$markerArray['###VALUE_VOUCHERCODE###'] = $this->basket->recs['tt_products']['vouchercode'];
+				$markerArray['###VALUE_VOUCHERCODE###'] = htmlspecialchars($this->basket->recs['tt_products']['vouchercode']);
 				if ($this->basket->recs['tt_products']['vouchercode'] == '') {
 					$subpartArray['###SUB_VOUCHERCODE_DISCOUNT###'] = '';
 					$subpartArray['###SUB_VOUCHERCODE_DISCOUNTOWNID###'] = '';
@@ -548,14 +547,9 @@ class tx_ttproducts_basket_view {
 				}
 			} else {
 				$subpartArray['###SUB_VOUCHERCODE_EMPTY###'] = '';
-	/* Added Els8: put voucher_discount 0 for plain text email */
 				$markerArray['###VOUCHER_DISCOUNT###'] = '0.00';
 			}
 
-	/* Added Els: creditpoint inclusive conditions*/
-	/* Added Els6: more conditions on creditpoints calculations inclusive redeeming of gift certificates */
-
-	/* Added els6: do not execute the redeeming of the gift certificate if template = OVERVIEW */
 			if ($subpartMarker != '###BASKET_OVERVIEW_TEMPLATE###') {
 
 	// Added Franz: GIFT CERTIFICATE
@@ -563,10 +557,8 @@ class tx_ttproducts_basket_view {
 				$markerArray['###FORM_NAME###']='BasketForm';
 				$markerArray['###FORM_NAME_GIFT_CERTIFICATE###']='BasketGiftForm';
 
-	/* Added els5: markerarrays for gift certificates */
-	/* Added Els6: routine for redeeming the gift certificate (other way then proposed by Franz */
 				$markerArray['###INSERT_GIFTCODE###'] = 'recs[tt_products][giftcode]';
-				$markerArray['###VALUE_GIFTCODE###'] = $this->basket->recs['tt_products']['giftcode'];
+				$markerArray['###VALUE_GIFTCODE###'] = htmlspecialchars($this->basket->recs['tt_products']['giftcode']);
 				$cpArray = $TSFE->fe_user->getKey('ses','cp');
 				$creditpointsGifts = $cpArray['gift']['amount'];
 				$markerArray['###CREDITPOINTS_GIFTS###'] = $creditpointsGifts;
@@ -579,14 +571,14 @@ class tx_ttproducts_basket_view {
 					}
 				} else {
 					$uniqueId = t3lib_div::trimExplode ('-', $this->basket->recs['tt_products']['giftcode'], true);
-					$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\'';
+					$query='uid=\'' . intval($uniqueId[0]) . '\' AND crdate=\'' . intval($uniqueId[1]) . '\'';
 					$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
 					$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
 					$TYPO3_DB->sql_free_result($giftRes);
 					$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
 					$creditpointsDiscount = $creditpointsGifts * $pricefactor;
-					$markerArray['###GIFT_DISCOUNT###'] = $creditpointsDiscount;
-					$markerArray['###VALUE_GIFTCODE_USED###'] = $this->basket->recs['tt_products']['giftcode'];
+					$markerArray['###GIFT_DISCOUNT###'] = htmlspecialchars($creditpointsDiscount);
+					$markerArray['###VALUE_GIFTCODE_USED###'] = htmlspecialchars($this->basket->recs['tt_products']['giftcode']);
 
 					if ($row && $creditpointsGifts && $pricefactor > 0) {
 						$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###']= '';
@@ -603,18 +595,36 @@ class tx_ttproducts_basket_view {
 				}
 			}
 			$amountCreditpoints = $TSFE->fe_user->user['tt_products_creditpoints']+$creditpointsGifts;
+
 			$markerArray['###AMOUNT_CREDITPOINTS###'] = $amountCreditpoints;
 
-			// maximum1 amount of creditpoint to change is amount on account minus amount already spended in the credit-shop
+// #### START
+			$pricefactor = doubleval($this->conf['creditpoints.']['priceprod']);
+ 			$autoCreditpointsTotal = $creditpointsObj->getBasketTotal();
+ 			$markerArray['###AUTOCREDITPOINTS_TOTAL###'] = number_format($autoCreditpointsTotal,'0');
+ 			$markerArray['###AUTOCREDITPOINTS_PRICE_TOTAL_TAX###'] = $this->price->priceFormat($autoCreditpointsTotal * $pricefactor);
+ 			$markerArray['###USERCREDITPOINTS_PRICE_TOTAL_TAX###'] = $this->price->priceFormat(($autoCreditpointsTotal < $amountCreditpoints ? $autoCreditpointsTotal : $amountCreditpoints) * $pricefactor);
 
-			$creditpoints = $sum_pricecreditpoints_total_totunits * tx_ttproducts_creditpoints_div::getCreditPoints($sum_pricecreditpoints_total_totunits);
-			$max1_creditpoints = $TSFE->fe_user->user['tt_products_creditpoints'] + $creditpointsGifts + $creditpoints;
+			$markerArray['###CREDITPOINTS_AVAILABLE###'] = number_format($TSFE->fe_user->user['tt_products_creditpoints'],'0');
+
+			// maximum1 amount of creditpoint to change is amount on account minus amount already spended in the credit-shop
+			if ($autoCreditpointsTotal > $TSFE->fe_user->user['tt_products_creditpoints'])	{
+				$autoCreditpointsTotal = $TSFE->fe_user->user['tt_products_creditpoints'];
+			}
+
+			$creditpoints = $autoCreditpointsTotal + $sum_pricecreditpoints_total_totunits * tx_ttproducts_creditpoints_div::getCreditPoints($sum_pricecreditpoints_total_totunits, $this->conf['creditpoints.']);
+
+// #### ENDE
+
+//			$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
+
+			$max1_creditpoints = $TSFE->fe_user->user['tt_products_creditpoints'] + $creditpointsGifts;
 
 			// maximum2 amount of creditpoint to change is amount bought multiplied with creditpointfactor
-			$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
 			if ($pricefactor > 0) {
-				$max2_creditpoints = intval (($this->basket->calculatedArray['priceTax']['total'] - $this->basket->calculatedArray['priceTax']['voucher']) / $pricefactor );
+				$max2_creditpoints = intval(($this->basket->calculatedArray['priceTax']['total'] - $this->basket->calculatedArray['priceTax']['vouchertotal']) / $pricefactor );
 			}
+
 			// real maximum amount of creditpoint to change is minimum of both maximums
 			$markerArray['###AMOUNT_CREDITPOINTS_MAX###'] = number_format( min ($max1_creditpoints,$max2_creditpoints),0);
 
@@ -630,19 +640,20 @@ class tx_ttproducts_basket_view {
 				$wrappedSubpartArray['###SUB_CREDITPOINTS_AMOUNT###'] = '';
 			}
 			$markerArray['###CHANGE_AMOUNT_CREDITPOINTS###'] = 'recs[tt_products][creditpoints]';
+
 			if ($this->basket->recs['tt_products']['creditpoints'] == '') {
 				$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = 0;
 				$subpartArray['###SUB_CREDITPOINTS_DISCOUNT###'] = '';
-	/* Added Els8: put credit_discount 0 for plain text email */
 				$markerArray['###CREDIT_DISCOUNT###'] = '0.00';
 			} else {
+
 				// quantity chosen can not be larger than the maximum amount, above calculated
-				if ($this->basket->recs['tt_products']['creditpoints'] > number_format( min ($max1_creditpoints,$max2_creditpoints),0))	{
-					$this->basket->recs['tt_products']['creditpoints'] = number_format( min ($max1_creditpoints,$max2_creditpoints),0);
+				if ($this->basket->recs['tt_products']['creditpoints'] > min ($max1_creditpoints,$max2_creditpoints))	{
+					$this->basket->recs['tt_products']['creditpoints'] = min ($max1_creditpoints,$max2_creditpoints);
 				}
 				// $this->basket->calculatedArray['priceTax']['creditpoints'] = $this->price->priceFormat($this->basket->recs['tt_products']['creditpoints']*$pricefactor);
 
-				$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = $this->basket->recs['tt_products']['creditpoints'];
+				$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = htmlspecialchars($this->basket->recs['tt_products']['creditpoints']);
 				$subpartArray['###SUB_CREDITPOINTS_DISCOUNT_EMPTY###'] = '';
 				$markerArray['###CREDIT_DISCOUNT###'] = $this->basket->calculatedArray['priceTax']['creditpoints'];
 			}
@@ -701,23 +712,22 @@ class tx_ttproducts_basket_view {
 			}
 
 			if (is_object($info))	{
-				$info->getItemMarkerArray ($markerArray, $bSelectSalutation);
+				$info->getItemMarkerArray($markerArray, $bSelectSalutation);
 			}
 
 			$markerArray['###PRICE_TOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['total']);
 			$markerArray['###PRICE_TOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['total']);
 			$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['total']-$this->basket->calculatedArray['priceNoTax']['total']);
-
 			$markerArray['###PRICE_VOUCHERTOTAL_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceTax']['vouchertotal']);
 			$markerArray['###PRICE_VOUCHERTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['priceNoTax']['vouchertotal']);
 			$markerArray['###PRODUCT_RELATED_UID###'] = '';
 
 				// Call all getItemMarkerArrays hooks at the end of this method
 			if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'])) {
-				foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'] as $classRef) {
+				foreach ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'] as $classRef) {
 					$hookObj= &t3lib_div::getUserObj($classRef);
 					if (method_exists($hookObj, 'getItemMarkerArrays')) {
-						$hookObj->getItemMarkerArrays ($this, $templateCode, $code, $markerArray,$subpartArray,$wrappedSubpartArray, $code, $mainMarkerArray, $count);
+						$hookObj->getItemMarkerArrays($this, $templateCode, $code, $markerArray,$subpartArray,$wrappedSubpartArray, $code, $mainMarkerArray, $count);
 					}
 				}
 			}

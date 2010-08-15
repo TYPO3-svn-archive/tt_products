@@ -375,6 +375,9 @@ plugin.tt_products {
    BASKET_MINI_HEADER = Warenkorb
   }
   shopAdmin = BE
+  control.ALL.param {
+    use = backPID
+  }
 }
 
 ## This enables the record item to display product items

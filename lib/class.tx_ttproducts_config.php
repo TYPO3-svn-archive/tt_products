@@ -68,41 +68,55 @@ class tx_ttproducts_config {
 	}
 
 
-	function &getSpecialConf ($type, $tablename, $theCode='')	{
-
+	public function &getSpecialConf ($type, $tablename='', $theCode='')	{
 		$specialConf = array();
-		if (is_array($this->conf[$type.'.']) &&
-			is_array($this->conf[$type.'.'][$tablename.'.'])
-			)	{
-			if (is_array($this->conf[$type.'.'][$tablename.'.']['ALL.']))	{
-				$specialConf = $this->conf[$type.'.'][$tablename.'.']['ALL.'];
-			}
-			if ($theCode &&
-				is_array($this->conf[$type.'.'][$tablename.'.'][$theCode.'.']))	{
-				$tempConf = $this->conf[$type.'.'][$tablename.'.'][$theCode.'.'];
-				$specialConf = array_merge($specialConf, $tempConf);
-			}
-			if ($specialConf['orderBy'] == '{$plugin.tt_products.orderBy}')	{
-				$specialConf['orderBy'] = '';
+
+		if (is_array($this->conf[$type.'.']))	{
+
+			if ($tablename != '' && is_array($this->conf[$type.'.'][$tablename.'.']))	{
+				if (is_array($this->conf[$type.'.'][$tablename.'.']['ALL.']))	{
+					$specialConf = $this->conf[$type.'.'][$tablename.'.']['ALL.'];
+				}
+				if ($theCode &&
+					is_array($this->conf[$type.'.'][$tablename.'.'][$theCode.'.']))	{
+					$tempConf = $this->conf[$type.'.'][$tablename.'.'][$theCode.'.'];
+					$specialConf = array_merge($specialConf, $tempConf);
+				}
+				if ($specialConf['orderBy'] == '{$plugin.'.TT_PRODUCTS_EXTkey.'.orderBy}')	{
+					$specialConf['orderBy'] = '';
+				}
+			} else {
+				if (is_array($this->conf[$type.'.']['ALL.']))	{
+					$specialConf = $this->conf[$type.'.']['ALL.'];
+				}
+				if ($theCode &&
+					is_array($this->conf[$type.'.'][$theCode.'.']))	{
+					$tempConf = $this->conf[$type.'.'][$theCode.'.'];
+					$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
+				}
 			}
 		}
-
 		return $specialConf;
 	}
 
 
 	function &getTableConf ($tablename, $theCode='')	{
-
 		$tableConf = $this->getSpecialConf('conf', $tablename, $theCode);
 		return $tableConf;
 	}
 
 
 	function &getCSSConf ($tablename, $theCode='')	{
-
 		$cssConf = $this->getSpecialConf('CSS', $tablename, $theCode);
 
 		return $cssConf;
+	}
+
+
+	function &getViewControlConf ($theCode)	{
+		$viewConf = $this->getSpecialConf('control', '', $theCode);
+
+		return $viewConf;
 	}
 
 

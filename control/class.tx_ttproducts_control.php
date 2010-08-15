@@ -158,19 +158,33 @@ class tx_ttproducts_control {
 		global $TSFE;
 
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-		$this->basket->getCalculatedSums();
+		$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
+		$this->basket->getCalculatedSums($this->basket->recs);
+
 		if ($handleScript)	{
 			$content.= $this->paymentshipping->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $order, $this->conf['paymentActivity'], $bFinalize);
-		} else if (t3lib_extMgm::isLoaded ('paymentlib') && version_compare(phpversion(), '5.0.0', '>=') ) {
-			$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
+		} else if (strpos($handleLib,'paymentlib') !== FALSE && t3lib_extMgm::isLoaded($handleLib) ) {
 
-			if ($handleLib == 'paymentlib')	{
-				// Payment Library
-				require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
+			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001($handleLib);
 
-				$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-				$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $info, $card, $account);
-				$content .= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
+			$paymentlibVersion = $eInfo['version'];
+
+			$phpVersion = phpversion();
+			if (isset($this->basket->basketExtra['payment.']['handleLib.']) && is_array($this->basket->basketExtra['payment.']['handleLib.']))	{
+				$gatewayExtName = $this->basket->basketExtra['payment.']['handleLib.']['extName'];
+			}
+
+			if (version_compare($paymentlibVersion, '0.2.1', '>=') && version_compare($paymentlibVersion, '0.4.0', '<') && version_compare($phpVersion, '5.0.0', '>='))	{
+
+				if ($gatewayExtName != '' && t3lib_extMgm::isLoaded($gatewayExtName))	{
+					// Payment Library
+
+					require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
+
+					$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
+					$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $info, $card, $account);
+					$content .= $paymentlib->includeHandleLib($handleLib,$this->basket->basketExtra['payment.']['handleLib.'], $bFinalize);
+				}
 			}
 		}
 	}

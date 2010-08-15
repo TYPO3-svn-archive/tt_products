@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -212,7 +212,7 @@ class tx_ttproducts_feuser {
 
 		if ($bSelect)	{
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-			$typeSalutationText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'info][salutation]', $row['salutation'], array());
+			$typeSalutationText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'][salutation]', $row['salutation'], array());
 
 		} else if (is_numeric($row['salutation'])) {
 			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];
@@ -222,7 +222,7 @@ class tx_ttproducts_feuser {
 			$typeSalutationText = '';
 		}
 
-		$markerArray['###'.strtoupper($type).'_SALUTATION###'] = $typeSalutationText;
+		$markerArray['###'.($type=='personinfo' ? 'PERSON' : 'DELIVERY').'_SALUTATION###'] = $typeSalutationText;
 	} // getMarkerArray
 }
 
