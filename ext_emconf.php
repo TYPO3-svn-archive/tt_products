@@ -39,7 +39,7 @@ $EM_CONF[$_EXTKEY] = array(
 			'div2007' => '0.3.0-',
 			'tsparser' => '',
 			'php' => '4.2.3-0.0.0',
-			'typo3' => '3.8.0-4.4.99',
+			'typo3' => '3.8.0-4.5.99',
 		),
 		'conflicts' => array(
 			'mkl_products' => '',

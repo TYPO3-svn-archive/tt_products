@@ -82,7 +82,7 @@ class tx_ttproducts_basketitem_view {
 
 		$row = &$item['rec'];
 		$basketQuantityName = $this->basketVar.'['.$row['uid'].'][quantity]';
-		$quantity = $item['count'];
+		$quantity = htmlspecialchars($item['count']);
 		$markerArray['###FIELD_NAME###']=$basketQuantityName;
 		$markerArray['###FIELD_NAME_BASKET###'] = $this->basketVar.'['.$row['uid'].']['.md5($row['extVars']).']';
 		$markerArray['###FIELD_QTY###']= $quantity ? $quantity : '';

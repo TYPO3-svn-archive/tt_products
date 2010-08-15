@@ -54,7 +54,7 @@ class tx_ttproducts_content {
 	 */
 	function init() {
 		global $TYPO3_DB;
-		
+
 		$this->table = t3lib_div::makeInstance('tx_table_db');
 		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'sorting'=> 'sorting',
 			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));
@@ -69,7 +69,7 @@ class tx_ttproducts_content {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', '*');
 			$sql->prepareWhereFields ($this->table, 'uid', '=', intval($uid));
-			$this->table->enableFields();		
+			$this->table->enableFields();
 			// Fetching the category
 			$res = $sql->exec_SELECTquery();
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
@@ -86,8 +86,10 @@ class tx_ttproducts_content {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->table, 'select', '*');
 			$sql->prepareWhereFields ($this->table, 'pid', '=', intval($pid));
-			$this->table->enableFields();		
-			// Fetching the category
+			$enableFields = $this->table->enableFields();
+			$sql->where_clause .= $enableFields;
+
+			// Fetching the category			// Fetching the category
 			$res = $sql->exec_SELECTquery();
 			while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 				$this->dataPageArray[$pid][$row['uid']] = $row;
@@ -102,7 +104,7 @@ class tx_ttproducts_content {
 	// returns the Path of all categories above, separated by '/'
 	function getCategoryPath ($uid) {
 		$rc = '';
-		
+
 		return $rc;
 	}
 }

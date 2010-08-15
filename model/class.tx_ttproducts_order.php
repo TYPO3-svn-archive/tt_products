@@ -89,7 +89,7 @@ class tx_ttproducts_order {
 		$pid = intval($this->conf['PID_sys_products_orders']);
 		if (!$pid)	$pid = intval($TSFE->id);
 
-		if ($TSFE->sys_page->getPage_noCheck ($pid))	{
+		if ($TSFE->sys_page->getPage_noCheck($pid))	{
 			$advanceUid = 0;
 			if ($this->conf['advanceOrderNumberWithInteger'] || $this->conf['alwaysAdvanceOrderNumber'])	{
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', '', '', 'uid DESC', '1');

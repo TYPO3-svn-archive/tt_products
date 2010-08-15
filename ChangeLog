@@ -1,3 +1,10 @@
+2010-08-15 Franz Holzinger <franz@ttproducts.de>
+	* Fix bug: do not show the payment output if the paymentlib has been called and will go to the order confirmation page.
+	* Fix bug: consider the enable fields for the related pages content
+	* remove duplicate language select box: sys_language_uid
+	* Fix bug: unit has been missing in the backend TCE for the product in the alternative language
+	* security: fix CSS with giftcodes
+
 2010-06-03 Franz Holzinger <franz@ttproducts.de>
 	* Add marker for EAN: ###PRODUCT_EAN###
 	* Fix bug: static_info_country of the fe_users must be written only if useStaticInfoCountry=1. It must not contain values outside the range of the country ISO3 codes.

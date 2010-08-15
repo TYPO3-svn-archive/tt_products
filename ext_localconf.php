@@ -84,7 +84,7 @@ if (isset($_EXTCONF) && is_array($_EXTCONF))	{
 }
 
 
-if ($_EXTCONF['usePatch1822'] &&
+if (($_EXTCONF['usePatch1822'] || $typoVersion >= 4004000) &&
 !defined($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = array (
 		'default' => array(

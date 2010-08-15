@@ -662,7 +662,7 @@ $TCA['tt_products_language'] = Array (
 		),
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, prod_uid,title;;2;;3-3-3, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;4-4-4,datasheet')
+		'1' => Array('showitem' => 'sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, prod_uid,title;;2;;3-3-3, unit, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;4-4-4,datasheet')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime,endtime,fe_group'),
@@ -921,7 +921,7 @@ $TCA['tt_products_cat_language'] = Array (
 	),
 	'types' => Array (
 		'0' => Array('showitem' => '
-		sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1,  cat_uid;;;;2-2-2, sys_language_uid, title, subtitle, note;;;;3-3-3')
+		sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1,  cat_uid;;;;2-2-2, title, subtitle, note;;;;3-3-3')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group')

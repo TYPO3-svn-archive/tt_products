@@ -430,13 +430,13 @@ class tx_ttproducts_basket_view {
 		if ($TSFE->fe_user->user['tt_products_vouchercode'] == '') {
 			$subpartArray['###SUB_VOUCHERCODE###'] = '';
 			$markerArray['###INSERT_VOUCHERCODE###'] = 'recs[tt_products][vouchercode]';
-			$markerArray['###VALUE_VOUCHERCODE###'] = $this->basket->recs['tt_products']['vouchercode'];
+			$markerArray['###VALUE_VOUCHERCODE###'] = htmlspecialchars($this->basket->recs['tt_products']['vouchercode']);
 			if ($this->basket->recs['tt_products']['vouchercode'] == '') {
 				$subpartArray['###SUB_VOUCHERCODE_DISCOUNT###'] = '';
 				$subpartArray['###SUB_VOUCHERCODE_DISCOUNTOWNID###'] = '';
 				$subpartArray['###SUB_VOUCHERCODE_DISCOUNTWRONG###'] = '';
 			} else {
-				$res = $TYPO3_DB->exec_SELECTquery('uid', 'fe_users', 'username="'.$this->basket->recs['tt_products']['vouchercode'].'"');
+				$res = $TYPO3_DB->exec_SELECTquery('uid', 'fe_users', 'username=' . $TYPO3_DB->fullQuoteStr($this->basket->recs['tt_products']['vouchercode'], 'fe_users'));
 				if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 					$uid_voucher = $row['uid'];
 				}
@@ -469,7 +469,7 @@ class tx_ttproducts_basket_view {
 			$markerArray['###FORM_NAME###']='BasketForm';
 			$markerArray['###FORM_NAME_GIFT_CERTIFICATE###']='BasketGiftForm';
 			$markerArray['###INSERT_GIFTCODE###'] = 'recs[tt_products][giftcode]';
-			$markerArray['###VALUE_GIFTCODE###'] = $this->basket->recs['tt_products']['giftcode'];
+			$markerArray['###VALUE_GIFTCODE###'] = htmlspecialchars($this->basket->recs['tt_products']['giftcode']);
 			if ($this->basket->recs['tt_products']['giftcode'] == '') {
 				$subpartArray['###SUB_GIFTCODE_DISCOUNT###'] = '';
 				$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###'] = '';
@@ -482,7 +482,7 @@ class tx_ttproducts_basket_view {
 			} else {
 				$uniqueId = t3lib_div::trimExplode ('-', $this->basket->recs['tt_products']['giftcode'], true);
 
-				$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
+				$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\'' . intval($uniqueId[1]) . '\'' . ' AND NOT deleted' ;
 				$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
 
 				$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
@@ -498,7 +498,7 @@ class tx_ttproducts_basket_view {
 					$creditpoints_gift = $money / $pricefactor;
 					tx_ttproducts_creditpoints_div::addCreditPoints($TSFE->fe_user->user['username'], $creditpoints_gift);
 					$markerArray['###GIFT_DISCOUNT###'] = $creditpoints_gift;
-					$markerArray['###VALUE_GIFTCODE_USED###'] = $this->basket->recs['tt_products']['giftcode'];
+					$markerArray['###VALUE_GIFTCODE_USED###'] = htmlspecialchars($this->basket->recs['tt_products']['giftcode']);
 					$markerArray['###VALUE_GIFTCODE###'] = '';
 					$subpartArray['###SUB_GIFTCODE_DISCOUNTWRONG###']= '';
 					if (t3lib_div::_GP('creditpoints_gifts') == '') {
@@ -549,7 +549,7 @@ class tx_ttproducts_basket_view {
 			// quantity chosen can not be larger than the maximum amount, above calculated
 			if ($this->basket->recs['tt_products']['creditpoints'] > number_format( min ($max1_creditpoints,$max2_creditpoints[0]),0)) $this->basket->recs['tt_products']['creditpoints'] = number_format( min ($max1_creditpoints,$max2_creditpoints[0]),0);
 			$this->basket->calculatedArray['priceTax']['creditpoints'] = $this->price->priceFormat($this->basket->recs['tt_products']['creditpoints']*$pricefactor);
-			$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = $this->basket->recs['tt_products']['creditpoints'];
+			$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = intval($this->basket->recs['tt_products']['creditpoints']);
 			$subpartArray['###SUB_CREDITPOINTS_DISCOUNT_EMPTY###'] = '';
 			$markerArray['###CREDIT_DISCOUNT###'] = $this->basket->calculatedArray['priceTax']['creditpoints'];
 		}

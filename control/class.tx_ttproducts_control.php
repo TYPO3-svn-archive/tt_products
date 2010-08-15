@@ -375,8 +375,6 @@ class tx_ttproducts_control {
 										$basketView->init($this->basket, $this->templateCode);
 									}
 
-									$content.=$basketView->getView($empty, 'PAYMENT', $info, $this->activityArray['products_info'], false, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
-
 									if (trim($this->conf['paymentActivity'])=='payment')	{
 										if (!is_object($order))	{
 											include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
@@ -394,6 +392,10 @@ class tx_ttproducts_control {
 											);
 										}
 										$this->processPayment($content, $bFinalize, $order, $basketView, $info, $card, $account);
+									}
+
+									if (!$bFinalize)	{
+										$content.=$basketView->getView($empty, 'PAYMENT', $info, $this->activityArray['products_info'], false, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
 									}
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$content.=$this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
