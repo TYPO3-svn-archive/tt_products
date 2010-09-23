@@ -10,6 +10,7 @@ Florian Strauß: Payment methods
 Udo Gerhards: Payment methods
 Andrea Herzog-Kienast: Tutorial, Backend icons
 Heiko Özaykut: HTML validated CSS template for German and English
+Dmitry Dulepov: Caching improvements
 
 
 

@@ -1,3 +1,6 @@
+2010-09-23 Franz Holzinger <franz@ttproducts.de>
+	* Improved caching by Dmitry Dulepov. tt_products runs without the clearing of the cache of the whole page now. no_cache is not used any more. A USER object is converted automatically into a USER_INT object.
+
 2010-08-15 Franz Holzinger <franz@ttproducts.de>
 	* Fix bug: do not show the payment output if the paymentlib has been called and will go to the order confirmation page.
 	* Fix bug: consider the enable fields for the related pages content
