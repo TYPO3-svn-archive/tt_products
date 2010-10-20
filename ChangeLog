@@ -1,3 +1,7 @@
+2010-10-20 Franz Holzinger <franz@ttproducts.de>
+	* fix tax string in calculatedArray to a format with 2 digits after the comma
+	* fix bug in setup of caching
+
 2010-09-23 Franz Holzinger <franz@ttproducts.de>
 	* Improved caching by Dmitry Dulepov. tt_products runs without the clearing of the cache of the whole page now. no_cache is not used any more. A USER object is converted automatically into a USER_INT object.
 

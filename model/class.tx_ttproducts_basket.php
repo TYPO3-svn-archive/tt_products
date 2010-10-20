@@ -514,10 +514,11 @@ class tx_ttproducts_basket {
 					if (!$tax)	{
 						$tax = doubleval($this->conf['TAXpercentage']);
 					}
+					$taxstr = strval(number_format($tax,2)); // needed for floating point taxes as in Swizzerland
 					$this->itemArray[$sort][$k1]['totalTax'] = $this->price->getPrice($this->itemArray[$sort][$k1]['totalNoTax'],true,$tax,false);
-					$this->calculatedArray['priceNoTax']['goodssametaxtotal'][strval($tax)] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
-					$this->calculatedArray['price2NoTax']['goodssametaxtotal'][strval($tax)] += $price2NoTax * $count;
-					$this->calculatedArray['categoryPriceNoTax']['goodssametaxtotal'][$tax][$row['category']] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
+					$this->calculatedArray['priceNoTax']['goodssametaxtotal'][$taxstr] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
+					$this->calculatedArray['price2NoTax']['goodssametaxtotal'][$taxstr] += $price2NoTax * $count;
+					$this->calculatedArray['categoryPriceNoTax']['goodssametaxtotal'][$taxstr][$row['category']] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
 				} else if ($this->conf['TAXmode'] == '2')	{
 					//  multiplicate it with the count :
 					$this->itemArray[$sort][$k1]['totalTax'] = $this->itemArray[$sort][$k1]['priceTax'] * $actItem['count'];
