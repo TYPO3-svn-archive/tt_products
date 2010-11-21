@@ -53,10 +53,6 @@ require_once(PATH_tslib.'class.tslib_pibase.php');
 
 require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
 
-if (t3lib_extMgm::isLoaded('fh_debug')) {
-	require_once (t3lib_extMgm::extPath('fh_debug') . 'lib/class.tx_fhdebug_control.php');
-}
-
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 
 require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_control.php');
@@ -84,6 +80,10 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
 	var $version;			// version number
 
+	/**
+	 * Content object
+	 * @var tslib_cObj
+	 */
 	var $cObj;			// The backReference to the mother cObj object set at call time
 
 		// Internal
@@ -124,7 +124,6 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	var $singleView;				// single view object
 	var $memoView;					// memo view and data object
 
-	var $pi_checkCHash = TRUE;			// activate cHash
 	var $pid;					// the page to which the script shall go
 
 	var $xajax;					// xajax object
@@ -135,6 +134,29 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	var $templateSuffix; 			// suffix for template subpart area markers
 	var $bNoCachePossible = TRUE;	// if the cache may be turned off
 	var $pageAsCategory;			// > 0 if pages are used as categories
+	/**
+	 * The list of codes that must run uncached. Note that if you combine any
+	 * of these codes with cached codes in TS or flexform, those cached will
+	 * be rendered uncached too! Better insert two or more instances of
+	 * tt_products where cached and uncached codes are separate.
+	 *
+	 * @var array
+	 */
+	var $uncachedCodes = array(
+		'BASKET',
+		'BILL',
+		'CURRENCY',
+		'DELIVERY',
+		'FINALIZE',
+		'HELP',
+		'INFO',
+		'MEMO',
+		'ORDERS',
+		'OVERVIEW',
+		'PAYMENT',
+		'SEARCH',
+		'TRACKING'
+	);
 
 
 	/**
@@ -157,6 +179,8 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		$backPID = ($backPID ? $backPID : t3lib_div::_GP('backPID'));
 		$eInfo = tx_div2007_alpha::getExtensionInfo_fh001(TT_PRODUCTS_EXTkey);
 		$this->version = $eInfo['version'];
+		// Save the original flexform in case if we need it later as USER_INT
+		$this->cObj->data['_original_pi_flexform'] = $this->cObj->data['pi_flexform'];
 		$this->pi_initPIflexForm();
 		$config['code'] =
 			tx_div2007_alpha::getSetupOrFFvalue_fh003(
@@ -168,38 +192,22 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 				'display_mode',
 				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
 			);
-
 		$this->codeArray = t3lib_div::trimExplode(',', $config['code'],1);
 
 			// initialise AJAX at the beginning because the AJAX functions can set piVars
 		if (t3lib_extMgm::isLoaded('xajax')) {
 			include_once(t3lib_extMgm::extPath('xajax').'class.tx_xajax.php');
 			$this->xajax = t3lib_div::makeInstance('tx_xajax');
-				// Decode form vars from utf8
-			// $this->xajax->decodeUTF8InputOn();
 				// Encoding of the response to iso-8859-1.
 			$this->xajax->setCharEncoding('iso-8859-1');
-				// Encoding of the response to utf-8.
-			// $this->xajax->setCharEncoding('utf-8');
-				// Do you want messages in the status bar?
-			// $this->xajax->statusMessagesOn();
-				// Turn only on during testing
-//			if ($this->conf['debug'])	{
-//				$this->xajax->debugOn();
-//			} else	{
-				$this->xajax->debugOff();
-//			}
+			$this->xajax->debugOff();
 			$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING');
 			$reqURI .= '&no_cache=1';
-			// $reqURI = tx_ttproducts_javascript::jsspecialchars($reqURI);
 			$this->xajax->setRequestURI($reqURI);
 
 				// To prevent conflicts, prepend the extension prefix.
-			// $this->xajax->setWrapperPrefix($this->prefixId);
 			$this->xajax->setWrapperPrefix('');
 			$this->xajax->registerFunction(array($this->extKey.'_showArticle',&$this,'showArticle'));
-//            $this->xajax->registerFunction(array('tt_products_changeValue',&$this,'tt_products_changeValue'));
-//            $this->xajax->registerFunction(array('tt_products_processFormData',&$this,'tt_products_processFormData'));
 		}
 
 		// page where to go usually
@@ -230,12 +238,28 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	}
 
 
-	function set_no_cache () {
-		global $TSFE;
-
-		if ($this->bNoCachePossible)	{
-			$TSFE->set_no_cache();
+	/**
+	 * Converts the plugin to USER_INT if it is not USER_INT already. After
+	 * calling this function the plugin should return if the function returns
+	 * TRUE. The content will be ignored and the plugin will be called again
+	 * later as USER_INT.
+	 *
+	 * @return boolean TRUE if the plugin should return immediately
+	 */
+	function convertToUserInt() {
+		$result = FALSE;
+		if ($this->cObj->getUserObjectType() == tslib_cObj::OBJECTTYPE_USER) {
+			$this->cObj->convertToUserIntObject();
+			$this->cObj->data['pi_flexform'] = $this->cObj->data['_original_pi_flexform'];
+			unset($this->cObj->data['_original_pi_flexform']);
+			$result = TRUE;
 		}
+		return $result;
+	}
+
+
+	function set_no_cache () {
+		// Should never be used!
 	}
 
 
@@ -267,12 +291,15 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	function doProcessing ($content='', $bRunAjax = false)	{
 		global $TSFE;
 		global $TYPO3_CONF_VARS; // needed for include_once and PHP 5.1 which otherwise would not allow XCLASS for HtmlMail, DAM aso.
-		$bStoreBasket = TRUE;
 
+		$bStoreBasket = TRUE;
 		if (!count($this->codeArray) && !$bRunAjax)	{
 			$this->codeArray = array('HELP');
 		}
-		$this->init($content);
+		$bDoProcessing = $this->init($content, $this->config);
+		if (!$bDoProcessing)	{
+			return '';
+		}
 
 		if ((t3lib_extMgm::isLoaded('xajax')))	{
 			if ($bRunAjax)	{
@@ -281,7 +308,6 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 				$this->javascript->set('xajax');
 			}
 		}
-
 		$error_code = array();
 
 		if (t3lib_div::_GP('mode_update'))	{
@@ -335,20 +361,20 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 				$this->paymentshipping,
 				$error_code
 			);
-
 			$content .= $this->control->doProcessing($this->codeArray, $this->errorMessage);
 		}
 
 		reset($this->codeArray);
 
-		// $TSFE->set_no_cache(); uncomment this line if you have a problem with the cache
 		while(!$this->errorMessage && list($key,$theCode)=each($this->codeArray))	{
 			$theCode = (string) trim($theCode);
 			$contentTmp = '';
 			$this->templateCode=$this->getTemplateCode($theCode);
 			switch($theCode)	{
 				case 'SEARCH':
-					$this->set_no_cache();
+					if ($this->convertToUserInt()) {
+						return '';
+					}
 					// no break!
 				case 'LIST':
 				case 'LISTGIFTS':
@@ -361,11 +387,15 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 						continue;
 					}
 					if (count($this->tt_product_single) || !$this->conf['NoSingleViewOnList']) {
-						$this->set_no_cache();
+						if ($this->convertToUserInt()) {
+							return '';
+						}
 					}
 
 					if (count($this->basket->itemArray)) {
-						$this->set_no_cache();
+						if ($this->convertToUserInt()) {
+							return '';
+						}
 					}
 					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
@@ -376,7 +406,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 					if ($theCode == 'LISTDAMCAT' && !t3lib_extMgm::isLoaded('dam'))	{
 						continue;
 					}
-					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view.php');
+					t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.tx_ttproducts_catlist_view.php');
 						// category view
 					$categoryView = t3lib_div::makeInstance('tx_ttproducts_catlist_view');
 					$categoryView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products_cat, $this->pid);
@@ -397,7 +427,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 								$tablename == 'tx_partner_main' && t3lib_extMgm::isLoaded(PARTNER_EXTkey) ||
 								$tablename == 'tt_address' && t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)
 							) {
-								include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
+								t3lib_div::requireOnce (PATH_BE_ttproducts . 'model/class.tx_ttproducts_address.php');
 								$categoryTable = t3lib_div::makeInstance('tx_ttproducts_address');
 								$categoryTable->init(
 									$this,
@@ -420,7 +450,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 						}
 
 						if (!$this->errorMessage)	{
-							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_selectcat_view.php');
+							t3lib_div::requireOnce (PATH_BE_ttproducts . 'view/class.tx_ttproducts_selectcat_view.php');
 								// category select view
 							$selectCatView = t3lib_div::makeInstance('tx_ttproducts_selectcat_view');
 							$selectCatView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $categoryTable, $this->javascript, $this->pid);
@@ -432,13 +462,17 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
 				case 'OVERVIEW':
-					$this->set_no_cache();
+					if ($this->convertToUserInt()) {
+						return '';
+					}
 				break;
 				case 'BASKET':
 				case 'FINALIZE':
 				case 'INFO':
 				case 'PAYMENT':
-					$this->set_no_cache();
+					if ($this->convertToUserInt()) {
+						return '';
+					}
 					$contentTmp = $content;
 					$content = '';
 						// nothing here any more. This work is done in the control processing before
@@ -446,18 +480,24 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 				break;
 				case 'BILL':
 				case 'DELIVERY':
-					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_billdelivery.php');
-					$this->set_no_cache();
+					if ($this->convertToUserInt()) {
+						return '';
+					}
+					t3lib_div::requireOnce(PATH_BE_ttproducts . 'lib/class.tx_ttproducts_billdelivery.php');
 					$contentTmp=$this->products_tracking($theCode);
 				break;
 				case 'TRACKING':
-					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_tracking.php');
-					$this->set_no_cache();
+					if ($this->convertToUserInt()) {
+						return '';
+					}
+					t3lib_div::requireOnce(PATH_BE_ttproducts . 'lib/class.tx_ttproducts_tracking.php');
 					$contentTmp=$this->products_tracking($theCode);
 				break;
 				case 'MEMO':
-					$this->set_no_cache();
-					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_memo_view.php');
+					if ($this->convertToUserInt()) {
+						return '';
+					}
+					t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.tx_ttproducts_memo_view.php');
 
 						// memo view: has to be called always because it reads parameters from the list
 					$this->memoView = t3lib_div::makeInstance('tx_ttproducts_memo_view');
@@ -480,17 +520,20 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 					$contentTmp=$this->memoView->printView($this->templateCode, $error_code);
 				break;
 				case 'CURRENCY':
-					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_currency_view.php');
-					$this->set_no_cache();
+					if ($this->convertToUserInt()) {
+						return '';
+					}
+					t3lib_div::requireOnce (PATH_BE_ttproducts . 'view/class.tx_ttproducts_currency_view.php');
 						// currency view
 					$currencyView = t3lib_div::makeInstance('tx_ttproducts_currency_view');
 					$currencyView->init($this, $this->cnf, $this->basket);
-
 					$contentTmp=$currencyView->printView();
 				break;
 				case 'ORDERS':
+					if ($this->convertToUserInt()) {
+						return '';
+					}
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_order_view.php');
-					$this->set_no_cache();
 
 						// order view
 					$orderView = t3lib_div::makeInstance('tx_ttproducts_order_view');
@@ -498,7 +541,9 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 					$contentTmp=$orderView->printView($this->templateCode, $error_code);
 				break;
 				default:	// 'HELP'
-					$this->set_no_cache();
+					if ($this->convertToUserInt()) {
+						return '';
+					}
 					$contentTmp = 'error';
 				break;
 			}
@@ -515,7 +560,6 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 					}
 					$i++;
 				}
-				// $contentTmp.=$messageArr[0].intval($this->uid) .$messageArr[1];
 			}
 
 			if ($contentTmp == 'error') {
@@ -549,18 +593,35 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 
 
 	/**
-	* does the initialization stuff
-	*
-	* @param		string		  content string
-	* @param		string		  configuration array
-	* @param		string		  modified configuration array
-	* @return	  void
-	*/
-	function init (&$content) {
+	 * does the initialization stuff
+	 *
+	 * @param		string		  content string
+	 * @param		string		  configuration array
+	 * @param		string		  modified configuration array
+	 * @return	  void
+ 	 */
+	function init (&$content, &$config) {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
+		$bDoProcessing = TRUE;
 
-		$config = &$this->config;
+		if ($conf['no_cache'] && $this->convertToUserInt()) {
+			// Compatibility with previous versions where users could set
+			// 'no_cache' TS option. This option does not exist anymore and we
+			// simply convert the plugin to USER_INT if that old option is set.
+			$bDoProcessing = FALSE;
+		}
+		if ($this->cObj->getUserObjectType() == tslib_cObj::OBJECTTYPE_USER) {
+			$intersection = array_intersect($this->uncachedCodes, $this->codeArray);
+			if (count($intersection)) {
+				$this->convertToUserInt();
+				$bDoProcessing = FALSE;
+			}
+		}
+		if (!$bDoProcessing)	{
+			return FALSE;
+		}
+
 		$this->pi_setPiVarDefaults();
 
 		// corrections for not initialized deprecated 'AlwaysInStock'
@@ -606,7 +667,9 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		$config['limitImageSingle'] = t3lib_div::intInRange($this->conf['limitImageSingle'],0,50);
 		$config['limitImageSingle'] = $config['limitImageSingle'] ? $config['limitImageSingle'] : 1;
 		$recursive = ($this->cObj->data['recursive'] ? $this->cObj->data['recursive']: $this->conf['recursive']);
+
 		$config['recursive'] = t3lib_div::intInRange($recursive,0,100);
+
 		if ($this->conf['PIDstoreRoot'])	{
 			$config['storeRootPid'] = $this->conf['PIDstoreRoot'];
 		} else {
@@ -630,7 +693,6 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 
 			// If the current record should be displayed.
 		$config['displayCurrentRecord'] = $this->conf['displayCurrentRecord'];
-
 
 		if ($config['displayCurrentRecord'])	{
 			// $config['code']='SINGLE';
@@ -712,6 +774,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 
 			// This cObject may be used to call a function which manipulates the shopping basket based on settings in an external order system. The output is included in the top of the order (HTML) on the basket-page.
 		$this->externalCObject = $this->getExternalCObject('externalProcessing');
+		return TRUE;
 	} // init
 
 
@@ -1031,7 +1094,9 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			if ($this->tt_product_single['product'] && $this->basket->isInBasket($this->tt_product_single['product']) ||
 				!$this->conf['NoSingleViewOnList'] && !$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']
 			) {
-				$this->set_no_cache();
+				if ($this->convertToUserInt()) {
+					return '';
+				}
 			}
 
 			if (!is_object($this->singleView)) {
@@ -1064,7 +1129,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 				$this->templateSuffix
 			);
 		} else {
-			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
+			t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.tx_ttproducts_list_view.php');
 
 			// List all products:
 			$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');

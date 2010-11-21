@@ -131,13 +131,8 @@ class tx_ttproducts_paymentlib {
 				$gatewayMode = $this->getGatewayMode($confScript);
 				$ok =  $providerObject->transaction_init(TX_PAYMENTLIB_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER, $paymentMethod, $gatewayMode, TT_PRODUCTS_EXTkey);
 
-///######### Florian Strauß -  Hier Aufruf ändern  TX_PAYMENTLIB_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER
-
 				if (!$ok) return 'ERROR: Could not initialize transaction.';
 
-//*******************************************************************************//
-//* Changed by Udo Gerhards: If the $providerObject has a basket fill it, begin *//
-//*******************************************************************************//
 				if (t3lib_extMgm::isLoaded('static_info_tables'))	{
 					$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
 					$sitVersion = $eInfo['version'];
@@ -146,9 +141,6 @@ class tx_ttproducts_paymentlib {
 					}
 				}
 
-//*******************************************************************************//
-//* Changed by Udo Gerhards: If the $providerObject has a basket fill it, end   *//
-//*******************************************************************************//
 				$transactionId = $this->getTransactionId($providerObject);
 				if (!$transactionId)	{
 					return 'ERROR: transaction ID could not be generated';
@@ -219,7 +211,6 @@ class tx_ttproducts_paymentlib {
 							}
 						}
 					} else if ($gatewayMode == TX_PAYMENTLIB_GATEWAYMODE_WEBSERVICE)	{
-						/// ####### Florian Strauß -
 						$content = $providerObject->transaction_process(); //betrag buchen
 						if ($content) 	{
 							echo $content;
@@ -233,8 +224,6 @@ class tx_ttproducts_paymentlib {
 							$bFinalize = true;
 						}
 						$contentArray=array();
-
-						/// ####### Florian Strauß -
 					}
 				}
 			}
@@ -345,16 +334,12 @@ class tx_ttproducts_paymentlib {
 		return $transactionDetailsArr;
 	}
 
-//*******************************************************************************//
-//* Added by Udo Gerhards: If the $providerObject has a basket fill it, begin   *//
-//*******************************************************************************//
-
 	//****************************************************//
 	//* Filling the basket of a paymentlib basket if the *//
 	//* selected payment-method has a own basket for its *//
 	//* needs                                            *//
 	//*--------------------------------------------------*//
-	//* @providerObject		The paymentlib-object which  *//
+	//* @providerObject	The paymentlib-object which  *//
 	//*                     holds the payment-basket     *//
 	//****************************************************//
 
@@ -464,8 +449,6 @@ class tx_ttproducts_paymentlib {
 					'on1' => $row['www'],
 					'os2' => $row['note2'],
 					'quantity' => $count,
-// 					'singlepricenotax' => $this->fFloat($actItem['priceNoTax']),
-// 					'singleprice' =>  $this->fFloat($actItem['priceTax']),
 					'amount' => $this->fFloat($actItem['priceNoTax']),
 					'shipping' => $this->fFloat($count * $totalArr['shippingtax'] / $totalCount),
 					'handling' => $this->fFloat($this->price->getPrice($row['handling'],0,$tax)),
@@ -489,9 +472,6 @@ class tx_ttproducts_paymentlib {
 			return round($float,2);
 	}
 
-//*******************************************************************************//
-//* Changed by Udo Gerhards: If the $providerObject has a basket fill it, end   *//
-//*******************************************************************************//
 }
 
 

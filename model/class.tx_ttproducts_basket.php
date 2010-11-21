@@ -84,6 +84,11 @@ class tx_ttproducts_basket {
 	var $checkMinPrice;		// if the minimum price needs to be checked
 
 
+	function getCalculatedArray ()	{
+		return $this->calculatedArray;
+	}
+
+
 	/**
 	 * Removes a gift from the basket
 	 *
@@ -193,7 +198,6 @@ class tx_ttproducts_basket {
 
 		$this->itemArray = array();
 		$tmpBasketExt = $TSFE->fe_user->getKey('ses','basketExt');
-
 		$this->order = $TSFE->fe_user->getKey('ses','order');
 
 		if (is_array($tmpBasketExt)) {
@@ -203,7 +207,6 @@ class tx_ttproducts_basket {
 		}
 
 		$basketExtRaw = t3lib_div::_GP('ttp_basket');
-
 		$this->giftnumber = count ($this->basketExt['gift']) + 1;
 		$newGiftData = t3lib_div::_GP('ttp_gift');
 		$extVars = $this->pibase->piVars['variants'];
@@ -383,6 +386,7 @@ class tx_ttproducts_basket {
 			$this->basketExt = $basketExtNew;
 
 			if ($bStoreBasket)	{
+
 				if (is_array($this->basketExt) && count($this->basketExt))	{
 					$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
 				} else {
@@ -586,10 +590,12 @@ class tx_ttproducts_basket {
 					if (!$tax)	{
 						$tax = doubleval($this->conf['TAXpercentage']);
 					}
+					$taxstr = strval(number_format($tax,2)); // needed for floating point taxes as in Swizzerland
+
 					$this->itemArray[$sort][$k1]['totalTax'] = $this->price->getModePrice($this->conf['TAXmode'],$this->itemArray[$sort][$k1]['totalNoTax'],true,$tax,false);
-					$this->calculatedArray['priceNoTax']['goodssametaxtotal'][strval($tax)] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
-					$this->calculatedArray['price2NoTax']['goodssametaxtotal'][strval($tax)] += $price2NoTax * $count;
-					$this->calculatedArray['categoryPriceNoTax']['goodssametaxtotal'][strval($tax)][$row['category']] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
+					$this->calculatedArray['priceNoTax']['goodssametaxtotal'][$taxstr] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
+					$this->calculatedArray['price2NoTax']['goodssametaxtotal'][$taxstr] += $price2NoTax * $count;
+					$this->calculatedArray['categoryPriceNoTax']['goodssametaxtotal'][$taxstr][$row['category']] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
 				} else if ($this->conf['TAXmode'] == '2')	{
 					//  multiplicate it with the count :
 					$this->itemArray[$sort][$k1]['totalTax'] = $this->itemArray[$sort][$k1]['priceTax'] * $actItem['count'];

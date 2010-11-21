@@ -83,7 +83,11 @@ if (isset($_EXTCONF) && is_array($_EXTCONF))	{
 	if (isset($tmpArray) && is_array($tmpArray))	{
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey] = array_merge($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey], $tmpArray);
 	}
+} else {
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey] = array();
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = '1';
 }
+
 
 
 if (($_EXTCONF['usePatch1822'] || $typoVersion >= 4004000) &&
@@ -172,13 +176,7 @@ if (isset($_EXTCONF['where.']) && is_array($_EXTCONF['where.']))	{
 }
 
 if (
-	$bPhp5 &&
-	isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]) &&
-	is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]) &&
-		(
-			!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']) ||
-			$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
-		)
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
 )	{
 	// replace the output of the former CODE field with the flexform
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][5][] = 'EXT:'.TT_PRODUCTS_EXTkey.'/hooks/class.tx_ttproducts_cms.php:&tx_ttproducts_cms->pmDrawItem';

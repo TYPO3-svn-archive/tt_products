@@ -378,6 +378,10 @@ plugin.tt_products {
   }
 }
 
+[globalVar = GP:ttp_basket != '']
+plugin.tt_products = USER_INT
+[global]
+
 ## This enables the record item to display product items
 tt_products >
 tt_products = < plugin.tt_products

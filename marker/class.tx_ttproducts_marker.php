@@ -264,7 +264,11 @@ class tx_ttproducts_marker {
 				$queryString['backPID'] = $TSFE->id;
 			}
 		}
+
+		$this->addQueryStringParam($queryString, 'mode', FALSE);
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
+		$this->addQueryStringParam($queryString, 'article', $bUsePrefix);
+		$this->addQueryStringParam($queryString, 'product', $bUsePrefix);
 		$this->addQueryStringParam($queryString, $piVarCat, $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);

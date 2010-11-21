@@ -721,6 +721,16 @@ $TCA['tt_products_language'] = Array (
 			),
 			'l10n_mode' => 'prefixLangTitle',
 		),
+		'itemnumber' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.itemnumber',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '20',
+				'eval' => 'trim',
+				'max' => '40'
+			)
+		),
 		'unit' => Array (
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.unit',
 			'config' => Array (
@@ -774,13 +784,28 @@ $TCA['tt_products_language'] = Array (
 			),
 			'l10n_mode' => 'prefixLangTitle',
 		),
+		'image' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.image',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'file',
+				'allowed' => $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'],
+				'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],
+				'uploadfolder' => 'uploads/pics',
+				'show_thumbs' => '1',
+				'size' => '3',
+				'maxitems' => '10',
+				'minitems' => '0'
+			)
+		),
 	),
 	'types' => Array (
 		'1' => Array('showitem' => 'sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, prod_uid,title;;2;;3-3-3, unit, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;4-4-4,datasheet')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime,endtime,fe_group'),
-		'2' => Array('showitem' => 'subtitle, www'),
+		'2' => Array('showitem' => 'subtitle, itemnumber, www'),
 	)
 );
 
@@ -1065,7 +1090,7 @@ $TCA['tt_products_cat_language'] = Array (
 	),
 	'types' => Array (
 		'0' => Array('showitem' => '
-		sys_language_uid;;;;1-1-1, l18n_diffsource, cat_uid;;;;2-2-2, sys_language_uid, title, subtitle, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],hidden;;1;;')
+		sys_language_uid;;;;1-1-1, l18n_diffsource, cat_uid;;;;2-2-2, title, subtitle, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],hidden;;1;;')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group')

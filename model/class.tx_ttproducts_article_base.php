@@ -273,9 +273,11 @@ class tx_ttproducts_article_base {
 			$text = '';
 			$variantRow = $row[$variantRec[0]];
 			$prodTmpRow = explode(';', $variantRow);
+
 			if ($bSelect && $variantRow && $prodTmpRow[0])	{ // $variantRec[1]
 				$prodTranslatedRow = $prodTmpRow;
 				$this->table->substituteMarkerArray($prodTranslatedRow);
+
 				foreach ($prodTmpRow as $k => $prodVal)	{
 					$val = trim($prodTranslatedRow[$k]);
 					$basketVal = trim($prodVal);
@@ -287,7 +289,6 @@ class tx_ttproducts_article_base {
 			$markerKey = '###'.$this->marker.'_'.strtoupper($variantRec[0]).'###';
 			$markerArray[$markerKey] = $text;
 		}
-
 		$markerArray['###'.$this->marker.'_WEIGHT###'] = doubleval($row['weight']);
 
 		$cObjectMarkerArray = array();

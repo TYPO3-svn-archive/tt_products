@@ -167,14 +167,16 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		return $rc;
 	}
 
-	function getParamDefault ()	{
-		$pid = $this->pibase->piVars[$this->piVar];
+
+	function getParamDefault ($theCode, $pid)	{
+//		$pid = $this->pibase->piVars[$this->piVar];
 		$pid = ($pid ? $pid : $this->conf['defaultPageID']);
 		if ($pid)	{
 			$pid = implode(',',t3lib_div::intExplode(',', $pid));
 		}
 		return $pid;
 	}
+
 
 	function &getRelationArray ($excludeCat=0,$currentCat=0,$rootUids='') {
 		$relationArray = array();

@@ -96,7 +96,17 @@ class tx_ttproducts_activity_finalize {
 	 *
 	 * returns the email address of the customer to whom the order notification has been sent
 	 */
-	function doProcessing ($templateCode, &$basketView, &$viewTable, &$price, $orderUid, &$orderConfirmationHTML, &$error_message, &$address, &$mainMarkerArray)	{
+	function doProcessing (
+		$templateCode,
+		&$basketView,
+		&$viewTable,
+		&$price,
+		$orderUid,
+		&$orderConfirmationHTML,
+		&$error_message,
+		&$address,
+		&$mainMarkerArray
+	)	{
 		global $TSFE;
 		global $TYPO3_DB;
 		global $TYPO3_CONF_VARS;

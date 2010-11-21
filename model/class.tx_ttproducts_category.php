@@ -117,6 +117,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 
 			if ($uid)	{
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
+
 				if (is_array($this->table->langArray) && $this->table->langArray[$row['title']])	{
 					$row['title'] = $this->table->langArray[$row['title']];
 				}
@@ -126,6 +127,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 				}
 			} else {
 				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+
 					if (is_array($this->table->langArray) && $this->table->langArray[$row['title']])	{
 						$row['title'] = $this->table->langArray[$row['title']];
 					}
@@ -138,6 +140,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 				}
 			}
 		}
+
 		if (!$rc) {
 			$rc = array();
 			$this->dataArray = array();
@@ -254,6 +257,12 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	}
 
 
+	function getTableConf ($theCode)	{
+		$rc = $this->cnf->getTableConf($this->table->name, $theCode);
+		return $rc;
+	}
+
+/*
 	function getParamDefault ()	{
 		$cat = $this->pibase->piVars[$this->piVar];
 		if (!$cat)	{
@@ -267,6 +276,46 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 
 		if ($cat)	{
 			$cat = implode(',',t3lib_div::intExplode(',', $cat));
+		}
+		return $cat;
+	}*/
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$theCode: ...
+	 * @param	[type]		$cat: ...
+	 * @return	[type]		...
+	 */
+	function getParamDefault ($theCode, $cat)	{
+
+		if (!$cat)	{
+			if ($this->table->name == 'tt_products_cat')	{
+				$cat = $this->conf['defaultCategoryID'];
+			}
+			if ($this->table->name == 'tx_dam_cat')	{
+				$cat = $this->conf['defaultDAMCategoryID'];
+			}
+		}
+
+		if ($cat)	{
+			$tableConf = $this->getTableConf($theCode);
+			$catArray = t3lib_div::intExplode(',', $cat);
+
+			if (
+				is_array($tableConf['special.']) &&
+				(
+					t3lib_div::testInt($tableConf['special.']['all']) && in_array($tableConf['special.']['all'], $catArray) ||
+					$tableConf['special.']['all'] == 'all'
+				)
+			) 	{
+				$cat = '';	// no filter shall be used
+			} else if (is_array($tableConf['special.']) && t3lib_div::testInt($tableConf['special.']['no']) && in_array($tableConf['special.']['no'], $catArray)) {
+				$cat = '0';	// no products shall be shown
+			} else {
+				$cat = implode(',',$catArray);
+			}
 		}
 		return $cat;
 	}

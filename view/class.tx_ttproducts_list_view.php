@@ -213,6 +213,7 @@ class tx_ttproducts_list_view {
 
 		$more = 0;		// If set during this loop, the next-item is drawn
 		$where = '';
+		$whereCat = '';
 		$formName = 'ShopListForm';
 		$itemTable = &$this->tt_products;
 		if ($theCode == 'LISTARTICLES' && $this->useArticles)	{
@@ -258,8 +259,10 @@ class tx_ttproducts_list_view {
 				$where .= ' AND ('. implode(' OR ', $whereTimeFieldArray). ')';
 			}
 		}
-		$cat = $categoryTable->getParamDefault();
-		$pid = $this->page->getParamDefault();
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] != '2') {
+			$cat = $categoryTable->getParamDefault($theCode, $this->pibase->piVars[$categoryTable->piVar]);
+		}
+		$pid = $this->page->getParamDefault($theCode, $this->pibase->piVars[$this->page->piVar]);
 
 		if ($itemTable->type == 'product')	{
 			$address = $this->pibase->piVars['address'];
@@ -469,6 +472,7 @@ class tx_ttproducts_list_view {
 			$selectConf['selectFields'] = 'count(*)';
 			$tablename = $itemTable->table->name;
 			$queryParts = $itemTable->table->getQueryConf($this->pibase->cObj, $tablename, $selectConf, TRUE);
+
 			$res = $itemTable->table->exec_SELECT_queryArray($queryParts);
 			$row = $TYPO3_DB->sql_fetch_row($res);
 			$productsCount = $row[0];
@@ -874,7 +878,8 @@ class tx_ttproducts_list_view {
 					$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 					$basketItemView->init($this->pibase, $this->tt_products_cat, $this->basket->basketExt, $this->tx_dam, $this->tx_dam_cat);
 
-					$basketItemView->getItemMarkerArray($itemTable, $item, $markerArray, $this->basket->basketExt, $theCode, $iCount, $mergeRow);
+					$basketItemView->getItemMarkerArray($itemTable, $item, $markerArray, $theCode, $iCount);
+
 					$image = ($childCatWrap ? 'listImageHasChilds': 'listImage');
 					if (is_array($categoryArray) && !isset($categoryArray[$currentCat]) && is_array($this->conf['listImageRoot.']))	{
 						$image = 'listImageRoot';

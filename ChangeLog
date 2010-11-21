@@ -1,7 +1,16 @@
-2010-08-15 Franz Holzinger <franz@ttproducts.de>
+2010-11-21 Franz Holzinger <franz@ttproducts.de>
+	* keep the parameters product and article in the url form markers ###FORM_URL###
+	* fix tax string in calculatedArray to a format with 2 digits after the comma
+	* fix bug in setup of caching for TYPO3 4.3
+	* Improved caching by Dmitry Dulepov. tt_products runs without the clearing of the cache of the whole page now. no_cache is not used any more. A USER object is converted automatically into a USER_INT object.
+	* Fix bug: do not show the payment output if the paymentlib has been called and will go to the order confirmation page.
+	* Fix bug: consider the enable fields for the related pages content
+	* remove duplicate language select box: sys_language_uid
+	* Fix bug: unit has been missing in the backend TCE for the product in the alternative language
 	* security: fix CSS with giftcodes
+	* add itemnumber and image to tt_products_language
 
-2010-06-03 Franz Holzinger <franz@fholzinger.com>
+2010-06-03 Franz Holzinger <franz@ttproducts.de>
 	* fix bug 11655: Invalid arguments in call of tx_ttproducts_paymentshipping::includeHandleScript
 	* Fix bug in tracking where the status has been lost after a new log entry
 	* Fix bug in marker ###PRICE_TOTAL_TOTUNITS_TAX###

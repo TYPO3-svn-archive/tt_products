@@ -145,8 +145,7 @@ class tx_ttproducts_catlist_view {
 			$excludeCat = $this->pibase->cObj->data['pid'];
 			$rootCat = $this->cnf->config['storeRootPid'];
 			$categoryTable = &$this->page;
-			$currentCat = $categoryTable->getParamDefault();
-
+			$currentCat = $categoryTable->getParamDefault($theCode, $this->pibase->piVars[$categoryTable->piVar]);
 		} else {
 			if ($theCode == 'LISTDAMCAT'){
 
@@ -167,7 +166,7 @@ class tx_ttproducts_catlist_view {
 				$categoryTable = &$this->tt_products_cat;
 				$rootCat = $this->conf['rootCategoryID'];
 			}
-			$currentCat = $categoryTable->getParamDefault();
+			$currentCat = $categoryTable->getParamDefault($theCode, $this->pibase->piVars[$categoryTable->piVar]);
 			if (($htmlTagMain == 'ul') && $this->conf['clickIntoSubmenu'])	{
 				$relatedArray = $categoryTable->getRelated($rootCat, $currentCat, $this->page->pid_list);	// read only related categories
 			} else {

@@ -97,10 +97,10 @@ class tx_ttproducts_info {
 		// if feuserextrafields is loaded use also these extra fields
 		if (t3lib_extMgm::isLoaded('feuserextrafields')) {
 			$this->feuserextrafields = ',tx_feuserextrafields_initials_name, tx_feuserextrafields_prefix_name, tx_feuserextrafields_gsm_tel,'.
-					'tx_feuserextrafields_company_deliv, tx_feuserextrafields_address_deliv, tx_feuserextrafields_housenumber,'.
-					'tx_feuserextrafields_housenumber_deliv, tx_feuserextrafields_housenumberadd, tx_feuserextrafields_housenumberadd_deliv,'.
-					'tx_feuserextrafields_pobox, tx_feuserextrafields_pobox_deliv, tx_feuserextrafields_zip_deliv, tx_feuserextrafields_city_deliv,'.
-					'tx_feuserextrafields_country, tx_feuserextrafields_country_deliv';
+				'tx_feuserextrafields_company_deliv, tx_feuserextrafields_address_deliv, tx_feuserextrafields_housenumber,'.
+				'tx_feuserextrafields_housenumber_deliv, tx_feuserextrafields_housenumberadd, tx_feuserextrafields_housenumberadd_deliv,'.
+				'tx_feuserextrafields_pobox, tx_feuserextrafields_pobox_deliv, tx_feuserextrafields_zip_deliv, tx_feuserextrafields_city_deliv,'.
+				'tx_feuserextrafields_country, tx_feuserextrafields_country_deliv';
 			$this->feuserfields .= ','.$this->feuserextrafields;
 		}
 
@@ -151,6 +151,15 @@ class tx_ttproducts_info {
 		if ($this->conf['useStaticInfoCountry'] && $this->infoArray['billing']['country_code'] && is_object($this->staticInfo))	{
 			$this->infoArray['billing']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['billing']['country_code'],'','');
 			if ($this->infoArray['delivery']['name'] && !$this->bDeliveryAddress)	{
+				$this->infoArray['delivery']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
+			}
+
+			$bFixCountries = $this->fixCountries($this->infoArray);
+			if (
+				!$bFixCountries &&
+				$this->infoArray['delivery']['name'] &&
+				!$this->bDeliveryAddress
+			)	{
 				$this->infoArray['delivery']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
 			}
 		}
@@ -204,6 +213,24 @@ class tx_ttproducts_info {
 			$this->infoArray['billing']['agb'] = FALSE;
 		}
 	} // init
+
+	function fixCountries (&$infoArray)	{
+		$rc = FALSE;
+
+		if (
+			$infoArray['billing']['country_code'] != '' &&
+			(
+				$infoArray['delivery']['zip'] == '' ||
+				($infoArray['delivery']['zip'] != '' && $infoArray['delivery']['zip'] == $infoArray['billing']['zip'])
+			)
+		)	{
+			// a country change in the select box shall be copied
+			$infoArray['delivery']['country_code'] = $infoArray['billing']['country_code'];
+			$rc = TRUE;
+		}
+		return $rc;
+	}
+
 
 	/**
 	 * Fills in all empty fields in the delivery info array
@@ -395,6 +422,7 @@ class tx_ttproducts_info {
 		$markerArray['###FE_USER_TT_PRODUCTS_DISCOUNT###'] = $TSFE->fe_user->user['tt_products_discount'];
 		$markerArray['###FE_USER_USERNAME###'] = $TSFE->fe_user->user['username'];
 		$markerArray['###FE_USER_UID###'] = $TSFE->fe_user->user['uid'];
+		$markerArray['###FE_USER_CNUM###'] = $TSFE->fe_user->user['cnum'];
 
 		$bAgb = ($this->infoArray['billing']['agb'] && (!isset($this->pibase->piVars['agb']) || $this->pibase->piVars['agb']>0));
 		$markerArray['###PERSON_AGB###'] = 'value="1" ' . ($bAgb ? 'checked="checked"' : '');

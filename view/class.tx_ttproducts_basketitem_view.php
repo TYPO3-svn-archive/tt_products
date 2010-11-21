@@ -57,7 +57,6 @@ class tx_ttproducts_basketitem_view {
 	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
 	 * @return	  void
 	 */
-
 	function init(&$pibase, &$tt_products_cat, &$basketExt, &$tx_dam, &$tx_dam_cat)	{
 		$this->pibase = &$pibase;
 		$this->tt_products_cat = &$tt_products_cat;
@@ -98,13 +97,12 @@ class tx_ttproducts_basketitem_view {
 				$fieldMarker = strtoupper($field);
 				$markerArray['###FIELD_'.$fieldMarker.'_NAME###'] = $this->basketVar.'['.$row['uid'].']['.$field.']';
 				$markerArray['###FIELD_'.$fieldMarker.'_VALUE###'] = $row[$field];
-				$markerArray['###FIELD_'.$fieldMarker.'_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
+				$markerArray['###FIELD_'.$fieldMarker.'_ONCHANGE'] = '';
 			}
 			if (isset($row['ext']))	{
 				$markerArray['###PRODUCT_'.strtoupper($field).'###'] = $row[$field];
 			}
 		}
-		// $markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
 		$prodAdditionalText['single'] = '';
 		// $variant = $row['extVars'];
 		$extArray = $row['ext'];
