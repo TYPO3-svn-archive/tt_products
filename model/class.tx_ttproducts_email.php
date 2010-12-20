@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -32,32 +32,26 @@
  * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
- *
- *
  */
-
-global $TYPO3_CONF_VARS;
-
-
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
-
-
-class tx_ttproducts_email {
+class tx_ttproducts_email extends tx_ttproducts_table_base {
 	var $emailArray;	// array of read in emails
 	var $table;		 // object of the type tx_table_db
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
+	 *
+	 * @param	[type]		$$pibase: ...
+	 * @param	[type]		$functablename: ...
+	 * @return	[type]		...
 	 */
-	function init() {
-		global $TYPO3_DB;
-		
-		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
-		$this->table->setTCAFieldArray('tt_products_emails');
+	function init(&$pibase, $functablename)  {
+		parent::init($pibase, $functablename);
+		$tablename = $this->getTablename();
+		$this->getTableObj()->addDefaultFieldArray(array('sorting' => 'sorting'));
+		$this->getTableObj()->setTCAFieldArray('tt_products_emails');
 	} // init
 
 
@@ -66,9 +60,9 @@ class tx_ttproducts_email {
 		$rc = $this->emailArray[$uid];;
 		if ($uid && !$rc) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
-			$sql->prepareFields($this->table, 'select', '*');
-			$sql->prepareWhereFields ($this->table, 'uid', '=', intval($uid));
-			$this->table->enableFields();
+			$sql->prepareFields($this->getTableObj(), 'select', '*');
+			$sql->prepareWhereFields ($this->getTableObj(), 'uid', '=', intval($uid));
+			$this->getTableObj()->enableFields();
 			// Fetching the email
 			$res = $sql->exec_SELECTquery();
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
@@ -76,14 +70,12 @@ class tx_ttproducts_email {
 		}
 		return $rc;
 	}
-
-
 }
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_email.php'])  {
-  include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_email.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_email.php'])  {
+  include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_email.php']);
 }
 
 

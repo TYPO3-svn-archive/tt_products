@@ -5,7 +5,7 @@
 *  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
@@ -32,12 +32,12 @@
  * $Id$
  *
  * @author  Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  */
 
-global $TYPO3_CONF_VARS;
 
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
@@ -45,98 +45,108 @@ require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 class tx_ttproducts_dam extends tx_ttproducts_article_base {
 	var $dataArray; // array of read in categories
 
-	var $pibase; // reference to object of pibase
-	var $cnf;
-	var $conf;
-	var $config;
-	var $tt_content; // element of class tx_table_db to get the content elements
-	var $tt_products; // element of class tx_table_db to get the parent product
-	var $paymentshipping;		// payment and shipping object to make the price dependant on it
+	var $marker='DAM';
+	var $type='dam';
+	var $piVar='dam';
 
-	var $bIsProduct=true;	// if this is the base for a product
-	var $marker = 'DAM';
-	var $type = 'dam';
-	var $piVar = 'dam';
-
-	var $tableconf;
-	var $tabledesc;
-	var $mm_table = 'tx_dam_mm_cat';
-
+	var $mm_table='tx_dam_mm_cat';
 	var $image;
 	var $variant; // object for the product variant attributes, must initialized in the init function
 
 	/**
 	 * DAM elements
+	 *
+	 * @param	[type]		$$cObj: ...
+	 * @param	[type]		$functablename: ...
+	 * @return	[type]		...
 	 */
-	function init(&$pibase, &$cnf, &$tt_products, &$tt_content, &$paymentshipping, $LLkey, $tablename)  {
-		global $TYPO3_DB,$TSFE,$TCA,$TYPO3_CONF_VARS;
+	function init(&$cObj, $functablename)  {
+		global $TYPO3_DB,$TSFE,$TCA;
 
-		parent::init($pibase, $cnf, 'tx_dam', $tt_content, $paymentshipping, 0);
-
-		$this->tt_products = &$tt_products;
-
-		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->table->addDefaultFieldArray(array('sorting' => 'sorting'));
-		$this->table->setTCAFieldArray($tablename);
+		parent::init($cObj, $functablename);
+		$tableObj = &$this->getTableObj();
+		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
 
 		$requiredFields = 'uid,pid,parent_id,category,file_mime_type,file_name,file_path';
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
-		}	
+		}
 
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
-		$this->table->setRequiredFieldArray($requiredListArray);
+		$tableObj->setRequiredFieldArray($requiredListArray);
 
-		$this->pibase = &$pibase;
-		$this->cnf = &$cnf;
-		$this->conf = &$cnf->conf;
-		$this->config = &$cnf->config;
-		$this->tt_content = &$tt_content;
-		$this->tableconf = $this->cnf->getTableConf($tablename);
-		$this->tabledesc = $this->cnf->getTableDesc($tablename);
- 		$this->paymentshipping = &$paymentshipping;
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tablename = $cnf->getTableName($functablename);
+		$tableObj->setTCAFieldArray($tablename, 'dam');
 	} // init
 
-
-
-	function get ($uid) {
+/*
+	function get($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
 		if (!$rc) {
-			$this->table->enableFields();		
-			$res = $this->table->exec_SELECTquery('*','uid = '.intval($uid));
+			$this->getTableObj()->enableFields();
+			$res = $this->getTableObj()->exec_SELECTquery('*','uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
+			$TYPO3_DB->sql_free_result($res);
 			$rc = $this->dataArray[$uid] = $row;
 		}
 		return $rc;
 	}
+*/
 
+	function getRelated ($uid, $type) {
+		$rcArray = array();
 
+		if ($type == 'products')	{
+			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$productTable = &$tablesObj->get('tt_products', FALSE);
+
+			$additional = $productTable->getFlexQuery ('isImage',1);
+			$rowArray = $productTable->getWhere ('additional REGEXP \''.$additional.'\'');
+
+			$rcArray = array_keys($rowArray);
+		}
+		return $rcArray;
+	}
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$where: ...
+	 * @return	[type]		...
+	 */
 	function &getWhereArray ($where) {
 		global $TYPO3_DB;
-		
+
 		$rowArray = array();
-		$this->table->enableFields();		
-		$res = $this->table->exec_SELECTquery('*',$where);
-		
+		$this->getTableObj()->enableFields();
+		$res = $this->getTableObj()->exec_SELECTquery('*',$where);
+
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 			$uid = intval($row[uid]);
 			$this->dataArray[$uid] = $row;	// remember for later queries
 			$rowArray[] = $row;
 		}
+		$TYPO3_DB->sql_free_result($res);
 		return $rowArray;
 	}
 
-
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$cat: ...
+	 * @param	[type]		$pid_list: ...
+	 * @return	[type]		...
+	 */
 	function addWhereCat($cat, $pid_list)	{
-		global $TYPO3_CONF_VARS;
 		$bOpenBracket = FALSE;
 		$where = '';
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['DAMCategory'])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['DAMCategory'] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['DAMCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['DAMCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addWhereCat')) {
 					$whereNew = $hookObj->addWhereCat($this, $cat, $where, $operator, $pid_list, $this->mm_table);
@@ -157,22 +167,31 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
 	 *
+	 * 			 			for the tt_producst record, $row
+	 *
 	 * @param	array		reference to an item array with all the data of the item
 	 * @param	string		title of the category
 	 * @param	integer		number of images to be shown
 	 * @param	object		the image cObj to be used
 	 * @param	array		information about the parent HTML form
+	 * @param	[type]		$imageRenderObj: ...
+	 * @param	[type]		$tagArray: ...
+	 * @param	[type]		$forminfoArray: ...
+	 * @param	[type]		$code: ...
+	 * @param	[type]		$id: ...
+	 * @param	[type]		$prefix: ...
+	 * @param	[type]		$linkWrap: ...
 	 * @return	array		Returns a markerArray ready for substitution with information
-	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
 	function getItemMarkerArray (&$item, &$markerArray, $catTitle, &$basketExt, $imageNum=0, $imageRenderObj='image', $tagArray, $forminfoArray=array(), $code='', $id='1', $prefix='', $linkWrap='')	{
-		global $TSFE, $TYPO3_CONF_VARS;
+		global $TSFE;
 		$row = &$item['rec'];
 
-			// Get image	
-		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, $prefix, $linkWrap);
-		
+		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+			// Get image
+		$imageObj->getItemMarkerArrayEnhanced ($this->getFuncTablename(), $row, $this->marker, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, $prefix, $linkWrap);
+
 		foreach ($row as $field => $value)	{
 			if (!is_array($row[$field]))	{
 				$markerArray['###'.$this->marker.'_'.strtoupper($field).'###'] = htmlentities($row[$field],ENT_QUOTES,$TSFE->renderCharset);
@@ -180,11 +199,11 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		}
 
 			// Call all getItemMarkerArray hooks at the end of this method
-		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
-			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getItemMarkerArray')) {
-					$hookObj->getItemMarkerArray ($this, $markerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $code, $id, $linkWrap);
+					$hookObj->getItemMarkerArray ($this, $item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id, $prefix, $linkWrap);
 				}
 			}
 		}
@@ -193,17 +212,23 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 
 	/**
 	 * Returns true if the item has the $check value checked
-	 * 
+	 *
+	 * @param	[type]		$$row: ...
+	 * @param	[type]		$check: ...
+	 * @return	[type]		...
 	 */
 	function hasAdditional(&$row, $check)  {
 		$hasAdditional = false;
-		return $hasAdditional; 
+		return $hasAdditional;
 	}
 
 
 	/**
 	 * Sets the markers for DAM specific FORM fields
-	 * 
+	 *
+	 * @param	[type]		$uid: ...
+	 * @param	[type]		$markerArray: ...
+	 * @return	[type]		...
 	 */
 	function setFormMarkerArray($uid, &$markerArray)  {
 		$markerArray['###DAM_FIELD_NAME###'] = 'ttp_basket[dam]';
@@ -215,8 +240,8 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 	 * fills in the row fields from a DAM record
 	 *
 	 * @param	array		the row
-	 * @param	string	  variants separated by ';'
-	 * @return  void
+	 * @param	string		variants separated by ';'
+	 * @return	void
 	 * @access private
 	 * @see getVariantFromRow
 	 */
@@ -241,8 +266,8 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_dam.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_dam.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_dam.php']) {
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_dam.php']);
 }
 
 

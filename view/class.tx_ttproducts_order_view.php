@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -32,6 +32,7 @@
  * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -39,10 +40,7 @@
  */
 
 
-global $TYPO3_CONF_VARS;
-
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
+require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 
 
@@ -51,66 +49,52 @@ class tx_ttproducts_order_view {
 
 	var $pibase; // reference to object of pibase
 	var $conf;
-	var $basket;
-	var $order;			 // object of the type tx_ttproducts_order
-	var $marker; // marker functions
+	var $subpartmarkerObj; 		// subpart marker functions
 
-	var $paymentshipping; 		// object of the type tx_ttproducts_paymentshipping
-
-	function init(&$pibase, &$cnf, &$basket, $formerBasket, &$fe_users, &$paymentshipping) {
-		global $TYPO3_CONF_VARS;
+	function init(&$pibase, $formerBasket) {
 
 		$this->pibase = &$pibase;
-		$this->cnf = &$cnf;
-		$this->conf = &$this->cnf->conf;
-		$this->basket = &$basket;
-		$this->paymentshipping = &$paymentshipping;
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 
-		$info = &t3lib_div::getUserObj('tx_ttproducts_info');
-		$info->init($pibase, $cnf, $formerBasket, $fe_users, $this->paymentshipping, FALSE);
+		$this->conf = &$cnf->conf;
 
-		include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-
-			// order
-		$this->order = &t3lib_div::getUserObj('tx_ttproducts_order');
-		$this->order->init(
-			$this->pibase,
-			$this->cnf,
-			$this->tt_products,
-			$this->tt_products_articles,
-			$this->tt_products_cat,
-			$this->basket,
-			$address,
-			$this->conf['useArticles']
-		);
-
-		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init(
-			$pibase,
-			$cnf,
-			$basket
+		$this->subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
+		$this->subpartmarkerObj->init(
+			$pibase->cObj
 		);
 	}
 
-
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$$templateCode: ...
+	 * @param	[type]		$error_code: ...
+	 * @return	[type]		...
+	 */
 	function &printView(&$templateCode, &$error_code)	 {
 		global $TSFE, $TYPO3_DB;
 
 		$feusers_uid = $TSFE->fe_user->user['uid'];
+		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+
+			// order
+		$orderObj = &$tablesObj->get('sys_products_orders');
 
 		if (!$feusers_uid)	{
-			return $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###MEMO_NOT_LOGGED_IN###'));
+			return $this->pibase->cObj->getSubpart($templateCode,$this->subpartmarkerObj->spMarker('###MEMO_NOT_LOGGED_IN###'));
 		}
 
 		$where = 'feusers_uid='.intval($feusers_uid).' AND NOT deleted ORDER BY crdate';
 		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders', $where);
-		$content=$this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ORDERS_LIST_TEMPLATE###'));
-		$orderitem=$this->pibase->cObj->getSubpart($content,'###ORDER_ITEM###');
 
-		if ($TYPO3_DB->sql_num_rows($res)) {
+		$content = $this->pibase->cObj->getSubpart($templateCode,$this->subpartmarkerObj->spMarker('###ORDERS_LIST_TEMPLATE###'));
+		$orderitem = $this->pibase->cObj->getSubpart($content,'###ORDER_ITEM###');
+		$count = $TYPO3_DB->sql_num_rows($res);
+		if ($count) {
 			// Fill marker arrays
-			$markerArray=Array();
-			$subpartArray=Array();
+			$markerArray=array();
+			$subpartArray=array();
 			$tot_creditpoints_saved = 0;
 			$tot_creditpoints_changed = 0;
 			$tot_creditpoints_spended = 0;
@@ -120,16 +104,17 @@ class tx_ttproducts_order_view {
 				//$this->orders[$row['uid']] = $row['tracking_code'];
 				$markerArray['###TRACKING_CODE###'] = $row['tracking_code'];
 				$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']);
-				$markerArray['###ORDER_NUMBER###'] = $this->order->getNumber($row['uid']);
+				$markerArray['###ORDER_NUMBER###'] = $orderObj->getNumber($row['uid']);
 				//$rt= $row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
-				$markerArray['###ORDER_CREDITS###'] = $row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
-				$markerArray['###ORDER_AMOUNT###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($row['amount']));
+				$markerArray['###ORDER_CREDITS###'] =$row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
+				$markerArray['###ORDER_AMOUNT###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($row['amount']));
 
 				// total amount of saved creditpoints
 				$tot_creditpoints_saved += $row['creditpoints_saved'];
 
 				// total amount of changed creditpoints
 				$tot_creditpoints_changed += $row['creditpoints'];
+
 				// total amount of spended creditpoints
 				$tot_creditpoints_spended += $row['creditpoints_spended'];
 
@@ -147,18 +132,18 @@ class tx_ttproducts_order_view {
 
 			$res2 = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode='.$TYPO3_DB->fullQuoteStr($username, 'fe_users'));
 			$num_rows = $TYPO3_DB->sql_num_rows($res2) * 5;
-			$res3 = $TYPO3_DB->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.intval($feusers_uid).' AND NOT deleted');
 			$TYPO3_DB->sql_free_result($res2);
 
+			$res3 = $TYPO3_DB->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.intval($feusers_uid).' AND NOT deleted');
 			$this->creditpoints = array();
 			while($row = $TYPO3_DB->sql_fetch_assoc($res3)) {
 				$this->creditpoints[$row['uid']] = $row['tt_products_creditpoints'];
-				$totalcreditpoints = $row['tt_products_creditpoints'];
+				$totalcreditpoints= $row['tt_products_creditpoints'];
 			}
 			$TYPO3_DB->sql_free_result($res3);
 
-			$markerArray=Array();
-			$subpartArray=Array();
+			$markerArray=array();
+			$subpartArray=array();
 
 			$markerArray['###CLIENT_NUMBER###'] = $feusers_uid;
 			$markerArray['###CLIENT_NAME###'] = $username;
@@ -174,19 +159,18 @@ class tx_ttproducts_order_view {
 			$subpartArray['###ORDER_NOROWS###'] = '';
 		 	$content= $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
 		} else {
+			$TYPO3_DB->sql_free_result($res);
 			$norows=$this->pibase->cObj->getSubpart($content,'###ORDER_NOROWS###');
 			$content = $norows;
 		} // else of if ($GLOBALS['TYPO3_DB']->sql_num_rows($res))
 
 		return $content;
 	}
-
 }
 
 
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_order_view.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_order_view.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_order_view.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_order_view.php']);
 }
 
 

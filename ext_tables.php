@@ -6,7 +6,7 @@ t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXTkey, 'static/css_styled/', 'Shop Syst
 
 //t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXTkey, 'static/test/', 'Shop System Test');
 $typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
-
+		
 $TCA['tt_products'] = Array (
 	'ctrl' => Array (
 		'title' =>'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products',
@@ -16,7 +16,6 @@ $TCA['tt_products'] = Array (
 		'tstamp' => 'tstamp',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
-//		'sortby' => 'sorting',
 		'delete' => 'deleted',
 		'enablecolumns' => Array (
 			'disabled' => 'hidden',
@@ -30,12 +29,82 @@ $TCA['tt_products'] = Array (
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products.gif',
 		'dividers2tabs' => '1',
-		'transForeignTable' => 'tt_products_language',
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden,title,subtitle,itemnumber,price,price2,note,category,address,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',
+		'fe_admin_fieldList' => 'title,subtitle,itemnumber,price,price2,note,category,address,inStock,tax,weight,bulkily,offer,highlight,directcost,color,size,description,gradings,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime',
 	)
 );
+
+$TCA['tt_products_language'] = Array (
+	'ctrl' => Array (
+		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_language',
+		'label' => 'title',
+		'default_sortby' => 'ORDER BY title',
+		'tstamp' => 'tstamp',
+		'delete' => 'deleted',
+		'enablecolumns' => Array (
+			'disabled' => 'hidden',
+			'starttime' => 'starttime',
+			'endtime' => 'endtime',
+			'fe_group' => 'fe_group',
+		),
+		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
+		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
+		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_language.gif',
+		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
+	),
+	'feInterface' => Array (
+		'fe_admin_fieldList' => 'title,subtitle,prod_uid,note,unit,www,datasheet,sys_language_uid,hidden,starttime,endtime',
+	)
+);
+
+$TCA['tt_products_mm_graduated_price'] = Array (
+	'ctrl' => Array (
+		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_mm_graduated_price',
+		'label' => 'title',
+		'tstamp' => 'tstamp',
+		'delete' => 'deleted',
+		'enablecolumns' => Array (
+			'disabled' => 'hidden'
+		),
+		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
+		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
+		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_cat.gif',
+		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
+	),
+	'feInterface' => Array (
+		'fe_admin_fieldList' => 'hidden,title',
+	)
+);
+
+
+$TCA['tt_products_graduated_price'] = Array (
+	'ctrl' => Array (
+		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_graduated_price',
+		'label' => 'title',
+		'default_sortby' => 'ORDER BY title',
+		'tstamp' => 'tstamp',
+		'delete' => 'deleted',
+		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
+		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
+		'delete' => 'deleted',
+		'enablecolumns' => Array (
+			'disabled' => 'hidden',
+			'starttime' => 'starttime',
+			'endtime' => 'endtime',
+			'fe_group' => 'fe_group',
+		),
+		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_cat.gif',
+		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
+	),
+	'feInterface' => Array (
+		'fe_admin_fieldList' => 'hidden,starttime,endtime,title',
+	)
+);
+
 
 $TCA['tt_products_cat'] = Array (
 	'ctrl' => Array (
@@ -51,46 +120,14 @@ $TCA['tt_products_cat'] = Array (
 			'endtime' => 'endtime',
 			'fe_group' => 'fe_group',
 		),
-		'thumbnail' => 'image',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
 //		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_cat.gif',
-		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
-		'transForeignTable' => 'tt_products_cat_language',
+		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden,title,note,image,email',
-	)
-);
-
-
-$TCA['tt_products_language'] = Array (
-	'ctrl' => Array (
-		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_language',
-		'label' => 'title',
-		'label_alt' => 'subtitle',
-		'default_sortby' => 'ORDER BY title',
-		'tstamp' => 'tstamp',
-		'delete' => 'deleted',
-		'enablecolumns' => Array (
-			'disabled' => 'hidden',
-			'starttime' => 'starttime',
-			'endtime' => 'endtime',
-			'fe_group' => 'fe_group',
-		),
-		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
-		'crdate' => 'crdate',
-//		'sortby' => 'sorting',
-		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_language.gif',
-		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
-		'transOrigPointerField' => 'prod_uid',
-		'transOrigPointerTable' => 'tt_products',
-		'languageField' => 'sys_language_uid',
-		'mainpalette' => 1,
-	),
-	'feInterface' => Array (
-		'fe_admin_fieldList' => 'title,subtitle,prod_uid,note,unit,www,datasheet,sys_language_uid,hidden,starttime,endtime',
+		'fe_admin_fieldList' => 'hidden,starttime,endtime,title,note,image,email',
 	)
 );
 
@@ -99,7 +136,6 @@ $TCA['tt_products_cat_language'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_cat_language',
 		'label' => 'title',
-		'label_alt' => 'subtitle',
 		'default_sortby' => 'ORDER BY title',
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
@@ -114,13 +150,59 @@ $TCA['tt_products_cat_language'] = Array (
 //		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_cat_language.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
-		'transOrigPointerField' => 'cat_uid',
-		'transOrigPointerTable' => 'tt_products_cat',
-		'languageField' => 'sys_language_uid',
-		'mainpalette' => 1,
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden,cat_uid, sys_language_uid,title',
+		'fe_admin_fieldList' => 'hidden,starttime,endtime,cat_uid, sys_language_uid,title',
+	)
+);
+
+
+$TCA['tt_products_texts'] = Array (
+	'ctrl' => Array (
+		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_texts',
+		'label' => 'title',
+		'default_sortby' => 'ORDER BY title',
+		'tstamp' => 'tstamp',
+		'delete' => 'deleted',
+		'enablecolumns' => Array (
+			'disabled' => 'hidden',
+			'starttime' => 'starttime',
+			'endtime' => 'endtime',
+			'fe_group' => 'fe_group',
+		),
+		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
+		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
+		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_texts.gif',
+		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php'
+	),
+	'feInterface' => Array (
+		'fe_admin_fieldList' => 'hidden,starttime,endtime,title,note',
+	)
+);
+
+
+$TCA['tt_products_texts_language'] = Array (
+	'ctrl' => Array (
+		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_texts_language',
+		'label' => 'title',
+		'default_sortby' => 'ORDER BY title',
+		'tstamp' => 'tstamp',
+		'delete' => 'deleted',
+		'enablecolumns' => Array (
+			'disabled' => 'hidden',
+			'starttime' => 'starttime',
+			'endtime' => 'endtime',
+			'fe_group' => 'fe_group',
+		),
+		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
+		'crdate' => 'crdate',
+//		'sortby' => 'sorting',
+		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_texts_language.gif',
+		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
+	),
+	'feInterface' => Array (
+		'fe_admin_fieldList' => 'hidden,starttime,endtime,cat_uid, sys_language_uid,title',
 	)
 );
 
@@ -129,7 +211,6 @@ $TCA['tt_products_articles'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_articles',
 		'label' => 'title',
-		'label_alt' => 'subtitle',
 		'default_sortby' => 'ORDER BY title',
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
@@ -143,12 +224,10 @@ $TCA['tt_products_articles'] = Array (
 		'crdate' => 'crdate',
 //		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_articles.gif',
-		'dividers2tabs' => '1',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
-		'transForeignTable' => 'tt_products_articles_language',
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden,cat_uid, title',
+		'fe_admin_fieldList' => 'hidden,starttime,endtime,cat_uid, title',
 	)
 );
 
@@ -157,7 +236,6 @@ $TCA['tt_products_articles_language'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_articles_language',
 		'label' => 'title',
-		'label_alt' => 'subtitle',
 		'default_sortby' => 'ORDER BY title',
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
@@ -172,13 +250,9 @@ $TCA['tt_products_articles_language'] = Array (
 //		'sortby' => 'sorting',
 		'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_articles_language.gif',
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
-		'transOrigPointerField' => 'article_uid',
-		'transOrigPointerTable' => 'tt_products_articles',
-		'languageField' => 'sys_language_uid',
-		'mainpalette' => 1,
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden,article_uid,title',
+		'fe_admin_fieldList' => 'hidden,starttime,endtime,article_uid, title',
 	)
 );
 
@@ -204,7 +278,7 @@ $TCA['tt_products_emails'] = Array (
 		'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
 	),
 	'feInterface' => Array (
-		'fe_admin_fieldList' => 'hidden',
+		'fe_admin_fieldList' => 'hidden,starttime,endtime',
 	)
 );
 
@@ -247,13 +321,9 @@ $TCA['sys_products_orders'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders',
 		'label' => 'name',
-		'label_alt' => 'last_name',
 		'default_sortby' => 'ORDER BY name',
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
-		'enablecolumns' => Array (
-			'disabled' => 'hidden',
-		),
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
 		'mainpalette' => 1,
@@ -265,13 +335,9 @@ $TCA['sys_products_orders'] = Array (
 	)
 );
 
-
 t3lib_div::loadTCA('tt_content');
 
-if (
-	!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']) ||
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1
-)	{
+if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']==1)	{
 	$TCA['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 	$TCA['tt_content']['types']['list']['subtypes_addlist']['5']='pi_flexform';
 	t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:'.TT_PRODUCTS_EXTkey.'/flexform_ds_pi1.xml');
@@ -279,27 +345,27 @@ if (
 
 t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_content.list_type_pi1','5'),'list_type');
 
-if ($typoVersion < 3008000)	{
-	// overwrite the values for former language files
-	$TCA['tt_products']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products';
-	$TCA['tt_products_cat']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat';
-	$TCA['tt_products_language']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products_language';
-	$TCA['tt_products_cat_language']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:tt_products_cat_language';
-	$TCA['tt_products_articles']['ctrl']['title'] =  'LLL:EXT:tt_products/locallang_tca.php:tt_products_articles';
-	$TCA['tt_products_emails']['ctrl']['title'] =  'LLL:EXT:tt_products/locallang_tca.php:tt_products_emails';
-	$TCA['sys_products_orders']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:sys_products_orders';
-	$TCA['sys_products_cards']['ctrl']['title'] = 'LLL:EXT:tt_products/locallang_tca.php:sys_products_cards';
-	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:tt_content.list_type_pi1','5'),'list_type');
-} else {
-	t3lib_extMgm::addPlugin(Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_content.list_type_pi1','5'),'list_type');
-}
+t3lib_extMgm::addToInsertRecords('tt_products');
+t3lib_extMgm::addToInsertRecords('tt_products_articles');
+t3lib_extMgm::addToInsertRecords('tt_products_cat');
+t3lib_extMgm::addToInsertRecords('tt_products_cat_language');
+t3lib_extMgm::addToInsertRecords('tt_products_emails');
+t3lib_extMgm::addToInsertRecords('tt_products_graduated_price');
+t3lib_extMgm::addToInsertRecords('tt_products_language');
+t3lib_extMgm::addToInsertRecords('tt_products_mm_graduated_price');
+t3lib_extMgm::addToInsertRecords('tt_products_texts');
+t3lib_extMgm::addToInsertRecords('tt_products_texts_language');
 
 t3lib_extMgm::allowTableOnStandardPages('tt_products');
-t3lib_extMgm::allowTableOnStandardPages('tt_products_language');
+t3lib_extMgm::allowTableOnStandardPages('tt_products_articles');
 t3lib_extMgm::allowTableOnStandardPages('tt_products_cat');
 t3lib_extMgm::allowTableOnStandardPages('tt_products_cat_language');
-t3lib_extMgm::allowTableOnStandardPages('tt_products_articles');
+t3lib_extMgm::allowTableOnStandardPages('tt_products_graduated_price');
 t3lib_extMgm::allowTableOnStandardPages('tt_products_emails');
+t3lib_extMgm::allowTableOnStandardPages('tt_products_language');
+t3lib_extMgm::allowTableOnStandardPages('tt_products_mm_graduated_price');
+t3lib_extMgm::allowTableOnStandardPages('tt_products_texts');
+t3lib_extMgm::allowTableOnStandardPages('tt_products_texts_language');
 t3lib_extMgm::allowTableOnStandardPages('sys_products_accounts');
 t3lib_extMgm::allowTableOnStandardPages('sys_products_cards');
 t3lib_extMgm::allowTableOnStandardPages('sys_products_orders');
@@ -307,17 +373,28 @@ t3lib_extMgm::allowTableOnStandardPages('sys_products_orders');
 
 //t3lib_extMgm::addToInsertRecords('tt_products');
 
-if (TYPO3_MODE=='BE')
+if (TYPO3_MODE=='BE')	{
 	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = PATH_BE_ttproducts.'class.tx_ttproducts_wizicon.php';
+}
 
-t3lib_extMgm::addLLrefForTCAdescr('tt_products','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprod.php');
-t3lib_extMgm::addLLrefForTCAdescr('tt_products_cat','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprodc.php');
-t3lib_extMgm::addLLrefForTCAdescr('tt_products_articles','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttproda.php');
-t3lib_extMgm::addLLrefForTCAdescr('tt_products_emails','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprode.php');
-t3lib_extMgm::addLLrefForTCAdescr('sys_products_accounts','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprodac.php');
-t3lib_extMgm::addLLrefForTCAdescr('sys_products_cards','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprodca.php');
-t3lib_extMgm::addLLrefForTCAdescr('sys_products_orders','EXT:'.TT_PRODUCTS_EXTkey.'//locallang_csh_ttprodo.php');
+t3lib_extMgm::addLLrefForTCAdescr('tt_products','EXT:'.TT_PRODUCTS_EXTkey.'/locallang_csh_ttprod.php');
+t3lib_extMgm::addLLrefForTCAdescr('tt_products_cat','EXT:'.TT_PRODUCTS_EXTkey.'/locallang_csh_ttprodc.php');
+t3lib_extMgm::addLLrefForTCAdescr('tt_products_articles','EXT:'.TT_PRODUCTS_EXTkey.'/locallang_csh_ttproda.php');
+t3lib_extMgm::addLLrefForTCAdescr('tt_products_emails','EXT:'.TT_PRODUCTS_EXTkey.'/locallang_csh_ttprode.php');
+t3lib_extMgm::addLLrefForTCAdescr('tt_products_texts','EXT:'.TT_PRODUCTS_EXTkey.'/locallang_csh_ttprodt.php');
+t3lib_extMgm::addLLrefForTCAdescr('sys_products_accounts','EXT:'.TT_PRODUCTS_EXTkey.'/locallang_csh_ttprodac.php');
+t3lib_extMgm::addLLrefForTCAdescr('sys_products_cards','EXT:'.TT_PRODUCTS_EXTkey.'/locallang_csh_ttprodca.php');
+t3lib_extMgm::addLLrefForTCAdescr('sys_products_orders','EXT:'.TT_PRODUCTS_EXTkey.'/locallang_csh_ttprodo.php');
 
+$productsTableArray = array('tt_products', 'tt_products_language', 'tt_products_related_products_products_mm', 'tt_products_accessory_products_products_mm', 'tt_products_products_dam_mm', 'tt_products_products_note_pages_mm', 'tt_products_cat', 'tt_products_cat_language', 'tt_products_articles', 'tt_products_articles_language', 'tt_products_gifts', 'tt_products_gifts_articles_mm', 'tt_products_emails', 'tt_products_texts', 'tt_products_texts_language', 'tt_products_mm_graduated_price', 'tt_products_graduated_price', 'sys_products_accounts', 'sys_products_cards', 'sys_products_orders', 'sys_products_orders_mm_tt_products', 'fe_users', 'pages_language_overlay');
+
+if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['orderBySortingTables']))	{
+	foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['orderBySortingTables'] as $k => $productTable)	{
+		if (in_array($productTable, $productsTableArray))	{
+			$TCA[$productTable]['ctrl']['sortby'] = 'sorting';
+		}
+	}
+}
 
 $tempColumns = Array (
 	'tt_products_memoItems' => Array (
@@ -335,8 +412,8 @@ $tempColumns = Array (
 		'config' => Array (
 			'type' => 'input',
 			'size' => '4',
-			'max' => '4',
-			'eval' => 'int',
+			'max' => '8',
+			'eval' => 'trim,double2',
 			'checkbox' => '0',
 			'range' => Array (
 				'upper' => '1000',
@@ -374,14 +451,6 @@ $tempColumns = Array (
 		)
 	),
 );
-
-
-if ($typoVersion < 3008000)	{
-	$tempColumns['tt_products_memoItems']['label'] = 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_memoItems';
-	$tempColumns['tt_products_discount']['label'] = 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_discount';
-	$tempColumns['tt_products_creditpoints']['label'] = 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_creditpoints';
-	$tempColumns['tt_products_vouchercode']['label'] =  'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_tca.php:fe_users.tt_products_vouchercode';
-}
 
 t3lib_div::loadTCA('fe_users');
 

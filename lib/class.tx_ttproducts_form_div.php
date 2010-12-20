@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -31,47 +31,75 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <franz@ttproducts.de>
- * @maintainer	Franz Holzinger <franz@ttproducts.de>
+ * @author  Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
- *
- *
  */
-
-global $TYPO3_CONF_VARS;
-
-
 class tx_ttproducts_form_div {
 
-	function createSelect (&$pibase, &$valueArray, $name, $indexSelected, $allowedArray = array()) {
+	function createSelect (&$pibase, &$valueArray, $name, $selectedKey, $bSelectTags=true, $bTranslateText=true, $allowedArray = array(), $type = 'select') {
 		global $TYPO3_DB, $TSFE;
 
-		$text = '';
-		foreach ($valueArray as $key => $parts) {
-			if (is_array($parts))	{
-				$selectKey = $parts[1];
-				$selectValue = $parts[0];
-			} else {
-				$selectKey = $key;
-				$selectValue = $parts;
-			}
-			$tmp = tx_div2007_alpha::sL_fh001($selectValue);
-			$text = tx_div2007_alpha::getLL($pibase, $tmp);
-			if ($text == '')	{
-				$text = htmlentities($selectValue,ENT_QUOTES,$TSFE->renderCharset);
-			}
-			if (!count($allowedArray) || in_array($selectKey, $allowedArray))	{
-				$selectedText = '';
-				if (intval($selectKey) == intval($indexSelected))	{
-					$selectedText = ' selected="selected"';
+		if (is_array($valueArray))	{
+			$totaltext = '';
+
+			foreach ($valueArray as $key => $parts) {
+				if (is_array($parts))	{
+					$selectKey = $parts[1];
+					$selectValue = $parts[0];
+				} else {
+					$selectKey = $key;
+					$selectValue = $parts;
 				}
-				$totaltext .= '<option value="'.htmlentities($selectKey,ENT_QUOTES,$TSFE->renderCharset).'"'.$selectedText.'>'.$text.'</option>';
+				if ($bTranslateText)	{
+					$tmp = tx_div2007_alpha::sL_fh001($selectValue);
+					$text = tx_div2007_alpha::getLL($pibase, $tmp);
+				} else {
+					$text = '';
+				}
+				if ($text == '')	{
+					if (strpos($selectValue,'LLL:EXT') === 0)	{
+						continue;
+					}
+					$text = $selectValue;
+				}
+				if (!count($allowedArray) || in_array($selectKey, $allowedArray))	{
+					$nameText = htmlentities(trim($text),ENT_QUOTES,$TSFE->renderCharset);
+					$valueText = htmlentities($selectKey,ENT_QUOTES,$TSFE->renderCharset);
+					$selectedText = '';
+					if ($selectKey == $selectedKey)	{
+						switch ($type)	{
+							case 'select':
+								$selectedText = ' selected="selected"';
+								break;
+							case 'radio':
+								$selectedText = ' checked="checked"';
+								break;
+						}
+					}
+					switch ($type)	{
+						case 'select':
+							$totaltext .= '<option value="'.$valueText.'"'.$selectedText.'>'.$nameText.'</option>';
+							break;
+						case 'radio':
+							$totaltext .= '<input type="radio" name="'.$name.'" value="'.$valueText.'" '.$selectedText.'> '.$nameText;
+							break;
+					}
+				}
 			}
+			if ($bSelectTags && $type == 'select')	{
+				$text = '<select name="'.$name.'">' . $totaltext .'</select>';
+			} else {
+				$text = $totaltext;
+			}
+		} else {
+			$text = FALSE;
 		}
-		$text = '<select name="'.$name.'">' . $totaltext .'</select>';
+
 		return $text;
 	}
+
 
 	// fetches the valueArray needed for the functions of this class form a valueArray setup
 	function fetchValueArray($confArray)	{
@@ -84,6 +112,12 @@ class tx_ttproducts_form_div {
 		return $rcArray;
 	}
 
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$valueArray: ...
+	 * @return	[type]		...
+	 */
 	function getKeyValueArray($valueArray)	{
 		$rc = array();
 
@@ -93,5 +127,6 @@ class tx_ttproducts_form_div {
 		return $rc;
 	}
 }
+
 
 ?>

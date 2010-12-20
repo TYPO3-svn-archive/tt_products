@@ -32,46 +32,23 @@
  * $Id$
  *
  * @author	Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com> 
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-global $TYPO3_CONF_VARS;
+require_once(PATH_BE_div2007.'hooks/class.tx_div2007_hooks_cms.php');
 
+class tx_ttproducts_cms extends tx_div2007_hooks_cms {
+	public $extKey=TT_PRODUCTS_EXTkey;
 
-class tx_ttproducts_cms {
-	var $cObj;
-	var $conf;
-	var $config;
-	var $markerArray;
-	var $globalMarkerArray;
-	var $urlArray;
-
-
-	/**
-	 * Draw the item in the page module
-	 *
-	 * @param	array		parameters
-	 * @param	object		the parent object
-	 * @return	  string
-	 */
-	function pmDrawItem(&$params, &$pObj)	{
-		if (defined ('PATH_BE_div2007') && $pObj->pageRecord['doktype'] == 1 && $params['row']['pi_flexform'])	{
-			include_once (PATH_BE_div2007.'class.tx_div2007_ff.php');
-
-			tx_div2007_ff::load($params['row']['pi_flexform'],TT_PRODUCTS_EXTkey);
-			$codes = 'CODE: '.tx_div2007_ff::get(TT_PRODUCTS_EXTkey, 'display_mode');
-		}
-		return $codes;
-	}
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/hooks/class.tx_ttproducts_cms.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/hooks/class.tx_ttproducts_cms.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/hooks/class.tx_ttproducts_cms.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/hooks/class.tx_ttproducts_cms.php']);
 }
 
 ?>

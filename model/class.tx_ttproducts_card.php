@@ -5,7 +5,7 @@
 *  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -35,31 +35,23 @@
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
- *
- *
  */
-
-
-global $TYPO3_CONF_VARS;
-
-
-class tx_ttproducts_card {
-	var $pibase; // reference to object of pibase
-	var $conf;
+class tx_ttproducts_card extends tx_ttproducts_table_base {
 	var $ccArray;	// credit card data
 	var $allowedArray = array(); // allowed uids of credit cards
 	var $fieldArray = array('cc_type', 'cc_number_1','cc_number_2','cc_number_3', 'cc_number_4', 'owner_name', 'cvv2', 'endtime_mm', 'endtime_yy');
 	var $sizeArray = array('cc_type' => 4, 'cc_number_1' => 4,'cc_number_2' => 4,'cc_number_3' => 4, 'cc_number_4' => 4, 'owner_name' => 0, 'cvv2' => 4, 'endtime_mm' => 2, 'endtime_yy'  => 2);
-	var $tablename = 'sys_products_cards';
 	var $asteriskArray = array(2 => '**', 4 => '****');
 
-	function init (&$pibase, &$cnf, $formerBasket, $allowedUids='') {
+	function init(&$pibase, $functablename) {
+		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$formerBasket = $basketObj->recs;
+		$allowedUids = $basketObj->basketExtra['payment.']['creditcards'];
 
-		$this->pibase = &$pibase;
-		$this->conf = &$cnf->conf;
+		parent::init($pibase, $functablename);
+
 		$this->ccArray = array();
 		$this->ccArray = $formerBasket['creditcard'];
-
 		if (isset($allowedUids))	{
 			$this->allowedArray = t3lib_div::trimExplode(',',$allowedUids);
 		}
@@ -119,15 +111,20 @@ class tx_ttproducts_card {
 	 *
 	 * This creates a new credit card record on the page with pid PID_sys_products_orders. That page must exist!
 	 * Should be called only internally by eg. $order->getBlankUid, that first checks if a blank record is already created.
+	 *
+	 * @param	[type]		$uid: ...
+	 * @param	[type]		$ccArray: ...
+	 * @return	[type]		...
 	 */
-	function create ($uid, $ccArray)	{
+	function create($uid, $ccArray)	{
 		global $TSFE, $TYPO3_DB;
 
 		$newId = 0;
+		$tablename = $this->getTablename();
 		$pid = intval($this->conf['PID_sys_products_orders']);
 		if (!$pid)	$pid = intval($TSFE->id);
 
-		if ($ccArray['cc_number_1'] && $TSFE->sys_page->getPage_noCheck($pid))	{
+		if ($ccArray['cc_number_1'] && $TSFE->sys_page->getPage_noCheck ($pid))	{
 			$time = time();
 			$timeArray =
 				array(
@@ -157,8 +154,9 @@ class tx_ttproducts_card {
 
 			if ($uid)	{
 				$where_clause = 'uid='.$uid;
-				$res = $TYPO3_DB->exec_SELECTquery('*',$this->tablename,$where_clause);
+				$res = $TYPO3_DB->exec_SELECTquery('*',$tablename,$where_clause);
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
+				$TYPO3_DB->sql_free_result($res);
 				for ($i = 1; $i <= 4; ++$i)	{
 					$tmpOldPart = substr($row['cc_number'],($i-1) * 4, 4);
 					if (strcmp($ccArray['cc_number_'.$i],$this->asteriskArray[$this->sizeArray['cc_number_'.$i]]) == 0)	{
@@ -190,13 +188,13 @@ class tx_ttproducts_card {
 						'day' => 28, // day
 						'year' => intval($ccArray['endtime_yy']) // year
 					);
-				$endtime = mktime($timeArray['hour'], $timeArray['minute'], $timeArray['second'], $timeArray['month'], $timeArray['day'], $timeArray['year']);
+				$endtime = mktime ($timeArray['hour'], $timeArray['minute'], $timeArray['second'], $timeArray['month'], $timeArray['day'], $timeArray['year']);
 				$newFields['endtime'] = $endtime;
 
-				$TYPO3_DB->exec_UPDATEquery($this->tablename,$where_clause,$newFields);
+				$TYPO3_DB->exec_UPDATEquery($tablename,$where_clause,$newFields);
 				$newId = $uid;
 			} else {
-				$TYPO3_DB->exec_INSERTquery($this->tablename, $newFields);
+				$TYPO3_DB->exec_INSERTquery($tablename, $newFields);
 				$newId = $TYPO3_DB->sql_insert_id();
 			}
 		}
@@ -204,14 +202,20 @@ class tx_ttproducts_card {
 	} // create
 
 
-	function getUid ()	{
+	function getUid()	{
 		global $TSFE;
 
 		$ccArray = $TSFE->fe_user->getKey('ses','cc');
 		return $ccArray['cc_uid'];
 	}
 
-
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$uid: ...
+	 * @param	[type]		$bFieldArrayAll: ...
+	 * @return	[type]		...
+	 */
 	function get ($uid, $bFieldArrayAll=false) {
 		global $TYPO3_DB;
 		$rcArray = array();
@@ -228,8 +232,10 @@ class tx_ttproducts_card {
 			if ($bFieldArrayAll)	{
 				$fields = implode(',',$this->fieldArray);
 			}
-			$res = $TYPO3_DB->exec_SELECTquery($fields, $this->tablename, $where);
+			$tablename = $this->getTablename();
+			$res = $TYPO3_DB->exec_SELECTquery($fields, $tablename, $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
+			$TYPO3_DB->sql_free_result($res);
 			if ($row)	{
 				$rcArray = $row;
 			}
@@ -252,14 +258,24 @@ class tx_ttproducts_card {
 	 */
 	function getItemMarkerArray (&$markerArray)	{
 		global $TCA, $TSFE;
-		global $TYPO3_CONF_VARS;
 
 		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 
 		$ccNumberArray = array();
 		$ccTypeTextSelected = '';
+		$tablename = $this->getTablename();
+
 		if (count($this->allowedArray))	{
-			$ccTypeText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA[$this->tablename]['columns']['cc_type']['config']['items'], 'recs[creditcard][cc_type]', $this->ccArray['cc_type'], $this->allowedArray);
+			$ccTypeText =
+				tx_ttproducts_form_div::createSelect (
+					$this->pibase,
+					$TCA[$tablename]['columns']['cc_type']['config']['items'],
+					'recs[creditcard][cc_type]',
+					$this->ccArray['cc_type'],
+					true,
+					true,
+					$this->allowedArray
+				);
 			for ($i = 1; $i <= 4; ++$i)	{
 				$ccNumberArray[$i - 1] = $this->ccArray['cc_number_'.$i];
 			}
@@ -273,11 +289,12 @@ class tx_ttproducts_card {
 		$markerArray['###PERSON_CARDS_OWNER_NAME###'] = htmlentities($ccOwnerName,ENT_QUOTES,$TSFE->renderCharset);
 		$markerArray['###PERSON_CARDS_CC_TYPE###'] = $ccTypeText;
 		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $this->ccArray['cc_type'];
-		if (isset($this->ccArray['cc_type']))	{ // tx_fhlibrary_language::sL
-			$tmp = $TCA[$this->tablename]['columns']['cc_type']['config']['items'][$this->ccArray['cc_type']]['0'];
+		if (isset($this->ccArray['cc_type']))	{
+			$tmp = $TCA[$tablename]['columns']['cc_type']['config']['items'][$this->ccArray['cc_type']]['0'];
 			$tmp = tx_div2007_alpha::sL_fh001($tmp);
 			$ccTypeTextSelected = tx_div2007_alpha::getLL($this->pibase,$tmp);
 		}
+
 		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $ccTypeTextSelected;
 		for ($i = 1; $i <= 4; ++$i)	{
 			$markerArray['###PERSON_CARDS_CC_NUMBER_'.$i.'###'] = $ccNumberArray[$i - 1];
@@ -293,13 +310,27 @@ class tx_ttproducts_card {
 			if (is_array($mmArray))	{
 				$valueArray = tx_ttproducts_form_div::fetchValueArray($mmArray['valueArray.']);
 				$markerArray['###PERSON_CARDS_ENDTIME_MM_SELECT###'] =
-					tx_ttproducts_form_div::createSelect ($this->pibase, $valueArray, 'recs[creditcard][endtime_mm]', $this->ccArray['endtime_mm']);
+					tx_ttproducts_form_div::createSelect (
+						$this->pibase,
+						$valueArray,
+						'recs[creditcard][endtime_mm]',
+						$this->ccArray['endtime_mm'],
+						true,
+						true
+					);
 			}
 			$yyArray = $this->conf['payment.']['creditcardSelect.']['yy.'];
 			if (is_array($yyArray))	{
 				$valueArray = tx_ttproducts_form_div::fetchValueArray($yyArray['valueArray.']);
 				$markerArray['###PERSON_CARDS_ENDTIME_YY_SELECT###'] =
-					tx_ttproducts_form_div::createSelect ($this->pibase, $valueArray, 'recs[creditcard][endtime_yy]', $this->ccArray['endtime_yy']);
+					tx_ttproducts_form_div::createSelect (
+						$this->pibase,
+						$valueArray,
+						'recs[creditcard][endtime_yy]',
+						$this->ccArray['endtime_yy'],
+						true,
+						true
+					);
 			}
 		}
 	} // getMarkerArray
@@ -307,8 +338,10 @@ class tx_ttproducts_card {
 
 	/**
 	 * Checks if required fields for credit cards and bank accounts are filled in
+	 *
+	 * @return	[type]		...
 	 */
-	function checkRequired ()	{
+	function checkRequired()	{
 		$rc = '';
 
 		foreach ($this->fieldArray as $k => $field)	{
@@ -320,11 +353,12 @@ class tx_ttproducts_card {
 		}
 		return $rc;
 	} // checkRequired
+
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_card.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_card.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_card.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_card.php']);
 }
 
 

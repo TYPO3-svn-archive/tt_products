@@ -5,7 +5,7 @@
 *  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -32,43 +32,44 @@
  * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-global $TYPO3_CONF_VARS;
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 
 
-class tx_ttproducts_country  {
-	var $cnf;
+class tx_ttproducts_country extends tx_ttproducts_table_base {
 	var $dataArray; // array of read in contents
-	var $table;		 // object of the type tx_table_db
+	var $table;	// object of the type tx_table_db
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
+	 *
+	 * @param	[type]		$$pibase: ...
+	 * @param	[type]		$functablename: ...
+	 * @return	[type]		...
 	 */
-	function init(&$pibase, &$cnf, $LLkey, $tablename)	{
-		global $TYPO3_DB;
-
-		$this->pibase = &$pibase;
-		$this->cnf = &$cnf;
+	function init(&$pibase, $functablename)	{
+		parent::init($pibase, $functablename);
+		$tablename = $this->getTablename();
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tablename = ($tablename ? $tablename : 'pages');
-		$this->tableconf = $this->cnf->getTableConf('static_countries');
-		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid'));		
-		$this->table->setTCAFieldArray('static_countries');
+		$this->tableconf = $cnf->getTableConf('static_countries');
+		$this->getTableObj()->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid'));
+		$this->getTableObj()->setTCAFieldArray('static_countries');
 
 		$requiredFields = 'uid,pid';
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
-		}	
+		}
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
-		$this->table->setRequiredFieldArray($requiredListArray);
+		$this->getTableObj()->setRequiredFieldArray($requiredListArray);
 
 		if (is_array($this->tableconf['generatePath.']) &&
 			$this->tableconf['generatePath.']['type'] == 'tablefields' &&
@@ -78,13 +79,13 @@ class tx_ttproducts_country  {
 			foreach ($this->tableconf['generatePath.']['field.'] as $field => $value)	{
 				$addRequiredFields[] = $field;
 			}
-			$this->table->addRequiredFieldArray ($addRequiredFields);
+			$this->getTableObj()->addRequiredFieldArray ($addRequiredFields);
 		}
 	} // init
 
 
-
 	function get ($country_code, $where, $fields='') {
+
 		global $TYPO3_DB, $TCA;
 
 		if (!$fields)	{
@@ -92,7 +93,7 @@ class tx_ttproducts_country  {
 		}
 		if (!$rc || $where) {
 			if ($country_code)	{
-				$whereString = 'cn_iso_3 = '.$TYPO3_DB->fullQuoteStr($country_code, $this->table->name);
+				$whereString = 'cn_iso_3 = '.$TYPO3_DB->fullQuoteStr($country_code, $this->getTableObj()->name);
 			} else {
 				$whereString = '1=1';
 			}
@@ -100,11 +101,10 @@ class tx_ttproducts_country  {
 				$whereString .= ' AND '.$where;
 			}
 
-			$whereString .= ' '.$this->table->enableFields();
+			$whereString .= ' '.$this->getTableObj()->enableFields();
 			$fields = ($fields ? $fields : '*');
-			// Fetching the countries
-
-			$res = $this->table->exec_SELECTquery($fields, $whereString);
+			// Fetching the products
+			$res = $this->getTableObj()->exec_SELECTquery($fields, $whereString);
 			if ($country_code)	{
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
 			 	$rc = $row;
@@ -116,6 +116,7 @@ class tx_ttproducts_country  {
 					$rc []= $this->dataArray[$row['uid']] = $row;
 				}
 			}
+			$TYPO3_DB->sql_free_result($res);
 		}
 		return $rc;
 	}
@@ -123,29 +124,31 @@ class tx_ttproducts_country  {
 
 	/**
 	 * Template marker substitution
-	 * Fills in the markerArray with data for a product
+	 * Fills in the markerArray with data for a country
 	 *
 	 * @param	array		reference to an item array with all the data of the item
 	 * @param	array		marker array
+	 * @param	[type]		$fieldsArray: ...
 	 * @return	array
 	 * @access private
 	 */
 	function getItemMarkerArray (&$row, &$markerArray, &$fieldsArray)	{
-			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		global $TSFE;
-		$markerTable = implode('',t3lib_div::trimExplode('_',$this->table->name));
-		
+
+		$markerTable = implode('',t3lib_div::trimExplode('_',$this->getTableObj()->name));
+
 		foreach ($fieldsArray as $k => $field)	{
 			$markerArray['###'.strtoupper($markerTable.'_'.$field).'###'] = htmlentities($row [$field],ENT_QUOTES,$TSFE->renderCharset);
 		}
 	}
 
+
 }
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_country.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_country.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_country.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_country.php']);
 }
 
 

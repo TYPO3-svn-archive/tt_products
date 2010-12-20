@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -31,52 +31,41 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <franz@ttproducts.de>
+ * @author	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
- *
- *
  */
-
-global $TYPO3_CONF_VARS;
-
 class tx_ttproducts_javascript {
 	var $pibase; // reference to object of pibase
-	var $cnf;
 	var $conf;
 	var $config;
-	var $page;
-	var $xajax;
-	var $bXajaxAdded;
+	var $ajax;
+	var $bAjaxAdded;
 	var $bCopyrightShown;
 	var $copyright;
 
 
-	function init(&$pibase, &$cnf, &$page, &$xajax) {
+	function init(&$pibase, &$ajax) {
 		$this->pibase = &$pibase;
-		$this->cnf = &$cnf;
-		$this->conf = &$this->cnf->conf;
-		$this->config = &$this->cnf->config;
-		$this->page = &$page;
-		$this->xajax = &$xajax;
-		$this->bXajaxAdded = false;
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+
+		$this->conf = &$cnf->conf;
+		$this->config = &$cnf->config;
+		$this->ajax = &$ajax;
+		$this->bAjaxAdded = false;
 		$this->bCopyrightShown = false;
 		$this->copyright = '
 /***************************************************************
 *
-*  javascript functions for the tt_products Shop System
+*  javascript functions for the TYPO3 Shop System tt_products
 *  relies on the javascript library "xajax"
-*
 *
 *  Copyright notice
 *
-*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the TYPO3 t3lib/ library provided by
-*  Kasper Skaarhoj <kasper@typo3.com> together with TYPO3
-*
-*  Released under GNU/GPL (see license file in tslib/)
+*  Released under GNU/GPL (http://typo3.com/License.1625.0.html)
 *
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -86,82 +75,105 @@ class tx_ttproducts_javascript {
 ***************************************************************/
 ';
 
-
 	}
 
-
-	/*
-	 * Escapes strings to be included in javascript
-	 */
+ /*
+ * Escapes strings to be included in javascript
+ *
+ * @param	[type]		$s: ...
+ * @return	[type]		...
+ */
 	function jsspecialchars($s) {
 	   return preg_replace('/([\x09-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e])/e',
 	       "'\\x'.(ord('\\1')<16? '0': '').dechex(ord('\\1'))",$s);
 	}
 
 		/**
-		 * Sets JavaScript code in the additionalJavaScript array
-		 *
-		 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
-		 * @param		array		  category array
-		 * @param		integer		  counter
-		 * @return	  	void
-		 * @see
-		 */
+ * Sets JavaScript code in the additionalJavaScript array
+ *
+ * @param	string		$fieldname is the field in the table you want to create a JavaScript for
+ * @param	array		category array
+ * @param	integer		counter
+ * @param	string		$catid: id for the category
+ * @param	array		$parentFieldArray: function table name as key, variantFieldArray as value
+ * @param	array		$piVarArray: pivars to be set
+ * @param	array		$fieldArray: array of fields
+ * @param	string		$method: Ajax method
+ * @return	void
+ * @see
+ */
 	function set($fieldname, $params='', $count=0, $catid='cat', $parentFieldArray=array(), $piVarArray=array(), $fieldArray=array(), $method='clickShow') {
 		global $TSFE;
 
 		$bDirectHTML = false;
 		$code = '';
 		$bError = false;
-		$emailArr =  explode('|', $message = $this->pibase->pi_getLL('invalid_email'));
+		$emailArr =  explode('|', $message = tx_div2007_alpha::getLL($this->pibase,'invalid_email'));
 
 		if (!$this->bCopyrightShown && $fieldname != 'xajax')	{
 			$code = $this->copyright;
 			$this->bCopyrightShown = TRUE;
 		}
+		if (!is_object($this->ajax) && in_array($fieldname, array('fetchdata')))	{
+			$fieldname = 'error';
+		}
 
 		$JSfieldname = $fieldname;
 		switch ($fieldname) {
 			case 'email' :
-				$code .=
-				'function test(eing) {
-					var reg = /@/;
-					var rc = true;
-					if (!reg.exec(eing)) {
-				 		rc = false;
-				 	}
-				 	return rc;
-				}
+				$code .= '
+	function test(eing) {
+		var reg = /@/;
+		var rc = true;
+		if (!reg.exec(eing)) {
+	 		rc = false;
+	 	}
+	 	return rc;
+	}
 
-				function checkEmail(element) {
-					if (test(element.value)){
-						return (true);
-					}
-					alert("'.$emailArr[0].'\'"+element.value+"\''.$emailArr[1].'");
-					return (false);
-				}
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$element: ...
+	 * @return	[type]		...
+	 */
+	function checkEmail(element) {
+		if (test(element.value)){
+			return (true);
+		}
+		alert("'.$emailArr[0].'\'"+element.value+"\''.$emailArr[1].'");
+		return (false);
+	}
 
-				function checkParams(formObj) {
-					var rc = true;
-					for (var i = 0; i < formObj.length; i++) {
-						if (formObj[i].type == "text") {
-							var email = /email/i;
-							if (email.exec(formObj[i].name)) {
-								rc = checkEmail (formObj[i]);
-							}
-						}
-						if (!rc) {
-							break;
-						}
-					}
-					return rc;
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$formObj: ...
+	 * @return	[type]		...
+	 */
+	function checkParams(formObj) {
+		var rc = true;
+		for (var i = 0; i < formObj.length; i++) {
+			if (formObj[i].type == "text") {
+				var email = /email/i;
+				if (email.exec(formObj[i].name)) {
+					rc = checkEmail (formObj[i]);
 				}
-				';
+			}
+			if (!rc) {
+				break;
+			}
+		}
+		return rc;
+	}
+	';
 				break;
 			case 'selectcat':
 				if (is_array($params))	{
 					$funcs = count ($params);
-					$ajaxConf = $this->cnf->getAJAXConf();
+					$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+
+					$ajaxConf = $cnf->getAJAXConf();
 					if (is_array($ajaxConf))	{
 						// TODO: make it possible that AJAX gets all the necessary configuration
 						$code .= 'var conf = new Array();
@@ -240,12 +252,11 @@ class tx_ttproducts_javascript {
 
 			sb = document.getElementById("'.$catid.'"+1);
 			func = sb.selectedIndex - 1;
-			len = sb.options.length; // test+++
 			if (maxFunc == 1 || func < 0 || func > maxFunc)	{
 				func = 0;
 				bRootFunctions = false;
 			}
-			// sb.options[len] = new Option("1. +++ func = "+func+"len = "+len+" id = "+id+" index = "+index+" category = "+category+" bRootFunctions = "+bRootFunctions, "B");
+
 			for (var l = boxCount; l >= id+1; l--)	{
 				idel = "'.$catid.'" + l;
 				sbt = document.getElementById(idel);
@@ -289,20 +300,19 @@ class tx_ttproducts_javascript {
 		} else {
 			bShowArticle = 1;
 		}
-	    if (bShowArticle)	{
-	        /* sb.options[0] = new Option(len, "keine Unterkategorie");*/
+		if (bShowArticle)	{
 			var data = new Array();
 
-	        data["'.$this->pibase->prefixId.'"] = new Array();
-	        data["'.$this->pibase->prefixId.'"]["'.$catid.'"] = category;
-	        ';
-		        if ($method == 'clickShow')	{
-		        	$code .= $this->pibase->extKey.'_showArticle(data);';
-		        }
+		data["'.$this->pibase->extKey.'"] = new Array();
+		data["'.$this->pibase->extKey.'"]["'.$catid.'"] = category;
+		';
+			if ($method == 'clickShow')	{
+				$code .= $this->pibase->extKey.'_showArticle(data);';
+			}
 				$code .= '
-	    } else {
+		} else {
 			/* nothing */
-	    }
+		}
 		';
 				$code .= '
 		inAction = false;
@@ -310,50 +320,100 @@ class tx_ttproducts_javascript {
 	}
 		';
 				$code .= '
-		function doFetchData() {
-			var data = new Array();
-			var func;
+	function doFetchData() {
+		var data = new Array();
+		var func;
 
-			sb = document.getElementById("'.$catid.'"+1);
-			func = sb.selectedIndex - 1;
-			for (var k = 2; k <= boxCount; k++) {
-				sb = document.getElementById("'.$catid.'"+k);
-				index = sb.selectedIndex;
-				if (index > 0)	{
-					value = sb.options[index].value;
-					if (value)	{
-						data["'.$this->pibase->prefixId.'"] = new Array();
-						data["'.$this->pibase->prefixId.'"][pi[func]] = value;
-					}
+		sb = document.getElementById("'.$catid.'"+1);
+		func = sb.selectedIndex - 1;
+		for (var k = 2; k <= boxCount; k++) {
+			sb = document.getElementById("'.$catid.'"+k);
+			index = sb.selectedIndex;
+			if (index > 0)	{
+				value = sb.options[index].value;
+				if (value)	{
+					data["'.$this->pibase->extKey.'"] = new Array();
+					data["'.$this->pibase->extKey.'"][pi[func]] = value;
 				}
 			}
-			var sub = document.getElementsByName("'.$this->pibase->prefixId.'[submit]")[0];
-			for (k in sub.form.elements)	{
-				var el = sub.form.elements[k];
-				var elname;
-				if (el)	{
-					elname = String(el.name);
-				}
-				if (elname && elname.indexOf("function") == -1 && elname.indexOf("'.$this->pibase->prefixId.'") == 0)	{
-					var start = elname.indexOf("[");
-					var end = elname.indexOf("]");
-					var element = elname.substring(start+1,end);
-					data["'.$this->pibase->prefixId.'"][element] = el.value;
-				}
+		}
+		var sub = document.getElementsByName("'.$this->pibase->prefixId.'[submit]")[0];
+		for (k in sub.form.elements)	{
+			var el = sub.form.elements[k];
+			var elname;
+			if (el)	{
+				elname = String(el.name);
 			}
+			if (elname && elname.indexOf("function") == -1 && elname.indexOf("'.$this->pibase->prefixId.'") == 0)	{
+				var start = elname.indexOf("[");
+				var end = elname.indexOf("]");
+				var element = elname.substring(start+1,end);
+				data["'.$this->pibase->extKey.'"][element] = el.value;
+			}
+		}
 
 			';
-		        if ($method == 'submitShow')	{
-		        	$code .= $this->pibase->extKey.'_showList(data);';
-		        }
+				if ($method == 'submitShow')	{
+		        		$code .= $this->pibase->extKey.'_showList(data);';
+				}
 				$code .= '
-			return true;
+		return true;
+	}
+	'		;
+				break;
+
+			case 'fetchdata':
+				$code .= 'var vBoxCount = new Array('.count($params).'); // number of select boxes'.chr(13);
+				$code .= 'var v = new Array(); // variants'.chr(13).chr(13);
+				foreach ($params as $tablename => $variantFieldArray)	{
+					if (is_array($variantFieldArray))	{
+						$code .= 'vBoxCount["'.$tablename.'"] = '.(count($variantFieldArray)).';'.chr(13);
+						$code .= 'v["'.$tablename.'"] = new Array('.count($variantFieldArray).');'.chr(13);
+						$k = 0;
+						foreach ($variantFieldArray as $variant => $field)	{
+							$code .= 'v["'.$tablename.'"]['.$k.'] = "'.$field.'";'.chr(13);
+							$k++;
+						}
+					}
+				}
+				$tableName = str_replace('_','-',$this->conftablename);
+				$code .= '
+
+	function doFetchRow(table, view, uid) {
+		var data = new Array();
+		var sb;
+		var temp = table.split("_");
+		var feTable = temp.join("-");
+
+		data["view"] = view;
+		data[table] = new Array();
+		data[table]["uid"] = uid;
+		for (var k = 0; k < vBoxCount[table]; k++) {
+			var field = v[table][k];
+			var id = feTable+"-"+view+"-"+uid+"-"+field;
+			sb = document.getElementById(id);
+			if (typeof sb == "object")	{
+				try {
+					var index = sb.selectedIndex;
+					if (typeof index != "undefined")	{
+						var value = sb.options[index].value;
+						data[table][field] = value;
+					}
+				}
+				catch (e)	{
+					// nothing
+				}
+			}
 		}
-		';
+	';
+				$code .= '	'.$this->pibase->extKey.'_fetchRow(data);
+		return true;
+	}';
 				break;
 
 			case 'direct':
 				if (is_array($params))	{
+					reset ($params);
 					$code .= current($params);
 					$JSfieldname = $fieldname .'-'. key($params);
 				}
@@ -361,8 +421,8 @@ class tx_ttproducts_javascript {
 
 			case 'xajax':
 				// XAJAX part
-				if (!$this->bXajaxAdded && is_object($this->xajax))	{
-					$code = $this->xajax->getJavascript(t3lib_extMgm::siteRelPath('xajax'));
+				if (!$this->bAjaxAdded && is_object($this->ajax) && is_object($this->ajax->taxajax))	{
+					$code = $this->ajax->taxajax->getJavascript(PATH_FE_taxajax_rel);
 					$this->bXajaxAdded = true;
 				}
 				$bDirectHTML = true;
@@ -384,12 +444,11 @@ class tx_ttproducts_javascript {
 			}
 		}
 	} // setJS
-
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_javascript.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_javascript.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_javascript.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_javascript.php']);
 }
 
 

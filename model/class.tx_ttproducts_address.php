@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
@@ -31,97 +31,133 @@
  *
  * $Id $
  *
- * @author  Franz Holzinger <franz@ttproducts.de>
- * @maintainer	Franz Holzinger <franz@ttproducts.de>
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-global $TYPO3_CONF_VARS;
-
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
 
 
 class tx_ttproducts_address extends tx_ttproducts_category_base {
-	var $dataArray; // array of read in categories
-	var $table;		 // object of the type tx_table_db
+	var $dataArray = array(); // array of read in categories
 	var $fields = array();
 	var $pibase; // reference to object of pibase
-	var $cnf;
 	var $conf;
 	var $config;
+	var $piVar = 'a';
+	var $marker = 'ADDRESS';
+
+	public $tableObj;	// object of the type tx_table_db
 
 	/**
-	 * Getting all tt_address values into internal array
+	 * Getting all address values into internal array
+	 *
+	 * @param	[type]		$$pibase: ...
+	 * @param	[type]		$functablename: ...
+	 * @return	[type]		...
 	 */
-	function init (&$pibase, &$cnf, $tablename)  {
+	function init(&$pibase, $functablename)	{
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$this->pibase = $pibase;
-		$this->cnf = &$cnf;
-		$this->conf = &$this->cnf->conf;
-		$this->config = &$this->cnf->config;
+		parent::init($pibase, $functablename);
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 
-		$tablename = ($tablename ? $tablename : 'tt_address');
-		$this->conftablename = 'address';
-		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->tableconf = $this->cnf->getTableConf('address');
-		$this->tabledesc = $this->cnf->getTableDesc('address');
+		$tableconf = $cnf->getTableConf('address');
+		$tabledesc = $cnf->getTableDesc('address');
 
+		$tableObj = &$this->getTableObj();
+		$tablename = $this->getTablename();
+
+		$tableObj->setConfig($tableconf);
 		$defaultFieldArray = array('uid'=>'uid', 'pid'=>'pid', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'deleted' => 'deleted');
-		$this->table->setDefaultFieldArray($defaultFieldArray);
-		$this->table->setNewFieldArray();
-
+		$tableObj->setDefaultFieldArray($defaultFieldArray);
+		$tableObj->setNewFieldArray();
 		$requiredListFields = 'uid,pid,title';
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
-		$this->table->setRequiredFieldArray($requiredListArray);
-		$this->table->setTCAFieldArray($tablename);
-		$this->fields['name'] = ($this->tabledesc['name'] ? $this->tabledesc['name'] : 'name');
+		$tableObj->setRequiredFieldArray($requiredListArray);
+		$tableObj->setTCAFieldArray($tablename);
+
+		$this->fields['name'] = ($tabledesc['name'] ? $tabledesc['name'] : 'name');
 	} // init
 
-	/**
-	 * Getting all addresses into internal array
-	 */
- 	function get ($uid=0,$pid=0,$bStore=true,$orderBy='') {
+
+		/**
+ * Getting all addresses into internal array
+ *
+ * @param	[type]		$uid: ...
+ * @param	[type]		$pid: ...
+ * @param	[type]		$bStore: ...
+ * @param	[type]		$where_clause: ...
+ * @param	[type]		$limit: ...
+ * @param	[type]		$fields: ...
+ * @param	[type]		$bCount: ...
+ * @return	[type]		...
+ */
+	function get($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
 		global $TYPO3_DB;
 
-		$where = '';
-		$pid = $this->conf['pidsAddresses'];
-		if ($pid)	{
-			$where = ' pid IN ('.$pid.')';
-		}
 		if ($uid)	{
-			$whereUid = 'uid = '.intval($uid);
-			if ($where)	{
-				$where .= ' AND '.$whereUid;
+			$rc = $this->dataArray[$uid];
+		}
+		if (!$rc) {
+			$where = '1=1 '.$this->getTableObj()->enableFields();
+			if ($uid)	{
+				$where .= ' AND uid = '.intval($uid);
+			}
+			if ($where_clause)	{
+				$where .= ' '.$where_clause;
+			}
+			if ($bCount)	{
+				$fields = 'count(*)';
 			} else {
-				$where = $whereUid;
+				$fields = '*';
+			}
+
+			// Fetching the records
+			$res = $this->getTableObj()->exec_SELECTquery($fields, $where, $groupBy, $orderBy, $limit);
+			$rc = array();
+			while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+				$rc[] = $this->dataArray[$row['uid']] = $row;
+			}
+
+			$TYPO3_DB->sql_free_result($res);
+			if ($uid)	{
+				reset ($rc);
+				$rc = current ($rc);
+			}
+
+			if ($bCount)	{
+				reset ($rc[0]);
+				$rc = intval(current($rc[0]));
 			}
 		}
-		$whereEnable = $this->pibase->cObj->enableFields($this->table->getName());
-		$where = ($where != '' ? $where . $whereEnable : '1=1 ' . $whereEnable);
-		if (!$orderBy)	{
-			$orderBy = $this->tableconf['orderBy'];
-		}
-		$res = $this->table->exec_SELECTquery('*',$where,'',$orderBy);
-
-		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-			$rc = $this->dataArray[$row['uid']] = $row;
-		}
-		if (!$uid)	{
-			$rc = $this->dataArray;
-		}
 		return $rc;
 	}
 
-	function getRootCat ()	{
-		$rc = $this->cnf->config['rootAddressID'];
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function getRootCat()	{
+		$rc = $this->conf['rootAddressID'];
 		return $rc;
 	}
 
-	function &getRelationArray ($excludeCat=0,$currentCat=0,$rootUids='',$pid=0) {
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$excludeCats: ...
+	 * @param	[type]		$rootUids: ...
+	 * @param	[type]		$allowedCats: ...
+	 * @return	[type]		...
+	 */
+	function &getRelationArray ($excludeCats='',$rootUids='',$allowedCats='') {
 		$relationArray = array();
 		$rootArray = t3lib_div::trimExplode(',', $rootUids);
 
@@ -134,13 +170,52 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 				$relationArray [$uid]['parent_category'] = '';
 			}
 		}
+
 		return $relationArray;
 	}
+
+
+	/**
+	 * Template marker substitution
+	 * Fills in the markerArray with data for the address
+	 *
+	 * 			 			for the tt_producst record, $row
+	 *
+	 * @param	array		reference to an item array with all the data of the item
+	 * @param	integer		number of images to be shown
+	 * @param	object		the image cObj to be used
+	 * @param	array		information about the parent HTML form
+	 * @param	[type]		$imageRenderObj: ...
+	 * @param	[type]		$viewCatTagArray: ...
+	 * @param	[type]		$forminfoArray: ...
+	 * @param	[type]		$pageAsCategory: ...
+	 * @param	[type]		$theCode: ...
+	 * @param	[type]		$id: ...
+	 * @param	[type]		$prefix: ...
+	 * @param	[type]		$linkWrap: ...
+	 * @return	array		Returns a markerArray ready for substitution with information
+	 * @access private
+	 */
+	function getMarkerArray (&$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $theCode, $id, $prefix,$linkWrap='')	{
+
+		$row = ($category ? $this->get($category) : array ('title' => '', 'pid' => $pid));
+
+		$catTitle = '';
+		$titleField = $this->fields['name'];
+		if (($row[$titleField]))	{
+			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$tableConfig = $cnf->getTableConf('address', $theCode);
+			$catTitle .= ($tableConfig['separator'].$row[$titleField]);
+		}
+		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
+		parent::getItemMarkerArray ($row, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, $bHtml, $charset, $prefix, $imageRenderObj);
+	}
+
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_address.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_address.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_address.php']) {
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_address.php']);
 }
 
 

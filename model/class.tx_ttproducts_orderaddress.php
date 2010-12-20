@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2010 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
@@ -27,48 +27,51 @@
 /**
  * Part of the tt_products (Shop System) extension.
  *
- * functions for the frontend users
+ * functions for the order addresses
  *
  * $Id$
  *
- * @author  Franz Holzinger <franz@ttproducts.de>
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-global $TYPO3_CONF_VARS;
 
-class tx_ttproducts_feuser {
-	var $pibase; // reference to object of pibase
-	var $cnf;
-	var $conf;
-	var $config;
+require_once (PATH_BE_table.'lib/class.tx_table_db.php');
+
+
+class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 	var $dataArray; // array of read in frontend users
 	var $table;		 // object of the type tx_table_db
 	var $fields = array();
 	var $tableconf;
-	var $bCondition = FALSE;
-	var $bConditionRecord = FALSE;
+	var $piVar = 'fe';
+	var $marker = 'FEUSER';
+	var $image;
 
+	private $bCondition = FALSE;
+	private $bConditionRecord = FALSE;
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init (&$pibase, &$cnf, $tablename)  {
+	public function init(&$pibase, $functablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$this->pibase = &$pibase;
-		$this->cnf = &$cnf;
-		$this->conf = &$this->cnf->conf;
-		$this->config = &$this->cnf->config;
+		parent::init($pibase, $functablename);
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 
-		$tablename = ($tablename ? $tablename : 'fe_users');
-		$this->tableconf = $this->cnf->getTableConf('fe_users');
+		$this->tableconf = $cnf->getTableConf($functablename);
+		$tablename = $this->getTablename ();
 
-		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->table->setTCAFieldArray($tablename);
+			// image
+		$this->image = t3lib_div::makeInstance('tx_ttproducts_field_image_view');
+		$this->image->init($this->pibase->cObj, $this->pibase);
+
+		$this->getTableObj()->setTCAFieldArray($tablename);
 		$this->fields['payment'] = ($this->tableconf['payment'] ? $this->tableconf['payment'] : '');
 		$requiredFields = 'uid,pid,email'.($this->fields['payment'] ? ','.$this->fields['payment'] : '');
 		if (is_array($this->tableconf['ALL.']))	{
@@ -76,23 +79,26 @@ class tx_ttproducts_feuser {
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
 		}
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
-		$this->table->setRequiredFieldArray($requiredListArray);
+		$this->getTableObj()->setRequiredFieldArray($requiredListArray);
 	} // init
 
-	function get ($uid) {
+
+	public function get ($uid) {
 		global $TYPO3_DB;
 
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
-			$where = '1=1 '.$this->table->enableFields();
-			$res = $this->table->exec_SELECTquery('*',$where.' AND uid = '.intval($uid));
+			$where = '1=1 '.$this->getTableObj()->enableFields();
+			$res = $this->getTableObj()->exec_SELECTquery('*',$where.' AND uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
+			$TYPO3_DB->sql_free_result($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}
 		return $rc;
 	}
 
-	function getFieldName ($field)	{
+
+	public function getFieldName ($field)	{
 		$rc = $field;
 		if (is_array($this->fields) && $this->fields[$field])	{
 			$rc = $this->fields[$field];
@@ -101,7 +107,8 @@ class tx_ttproducts_feuser {
 		return $rc;
 	}
 
-	function isUserInGroup ($feuser, $group)	{
+
+	public function isUserInGroup($feuser, $group)	{
 		$groups = explode(',', $feuser['usergroup']);
 		foreach ($groups as $singlegroup)
 			if ($singlegroup == $group)
@@ -109,14 +116,15 @@ class tx_ttproducts_feuser {
 		return false;
 	} // isUserInGroup
 
-	function setCondition ($row, $funcTablename)	{
+
+	public function setCondition($row, $funcTablename)	{
 		global $TSFE;
 
 		$bCondition = FALSE;
 
 		if (isset($this->conf['conf.'][$funcTablename.'.']['ALL.']['fe_users.']['date_of_birth.']['period.']['y']))	{
 			$year = $this->conf['conf.'][$funcTablename.'.']['ALL.']['fe_users.']['date_of_birth.']['period.']['y'];
-			$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
+			$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
 
 			if ($infoObj->infoArray['billing']['date_of_birth'])	{
 				$timeTemp = $infoObj->infoArray['billing']['date_of_birth'];
@@ -169,66 +177,19 @@ class tx_ttproducts_feuser {
 		}
 	}
 
-	function getCondition ()	{
+	public function getCondition()	{
 		return $this->bCondition;
 	}
 
-	function getWrappedSubpartArray (&$subpartArray, &$wrappedSubpartArray, $funcTablename)	{
-		global $TSFE;
-
-		if ($TSFE->fe_user->user)	{
-			$wrappedSubpartArray['###FE_GROUP_1_TEMPLATE###'] = array('','');
-			$subpartArray['###FE_GROUP_0_TEMPLATE###'] = '';
-		} else {
-			$wrappedSubpartArray['###FE_GROUP_0_TEMPLATE###'] = array('','');
-			$subpartArray['###FE_GROUP_1_TEMPLATE###'] = '';
-		}
-
-		if ($this->getCondition() || !$this->bConditionRecord)	{
-			$wrappedSubpartArray['###FE_CONDITION1_TRUE_TEMPLATE###'] = array('','');
-			$subpartArray['###FE_CONDITION1_FALSE_TEMPLATE###'] = '';
-		} else {
-			$wrappedSubpartArray['###FE_CONDITION1_FALSE_TEMPLATE###'] = array('','');
-			$subpartArray['###FE_CONDITION1_TRUE_TEMPLATE###'] = '';
-		}
-		return;
+	public function getConditionRecord()	{
+		return $this->bConditionRecord;
 	}
 
-	/**
-	 * Template marker substitution
-	 * Fills in the markerArray with data for a product
-	 *
-	 * @param	array		reference to an item array with all the data of the item
-	 * @param	string		title of the category
-	 * @param	integer		number of images to be shown
-	 * @param	object		the image cObj to be used
-	 * @param	array		information about the parent HTML form
-	 * @return	array
-	 * @access private
-	 */
-	function getItemMarkerArray (&$row, &$markerArray, $bSelect, $type)	{
-		global $TCA;
-		global $TYPO3_CONF_VARS;
-
-		if ($bSelect)	{
-			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-			$typeSalutationText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'][salutation]', $row['salutation'], array());
-
-		} else if (is_numeric($row['salutation'])) {
-			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];
-			$tmp = tx_div2007_alpha::sL_fh001($salutation[0]);
-			$typeSalutationText = htmlspecialchars(tx_div2007_alpha::getLL($this->pibase, $tmp));
-		} else {
-			$typeSalutationText = '';
-		}
-
-		$markerArray['###'.($type=='personinfo' ? 'PERSON' : 'DELIVERY').'_SALUTATION###'] = $typeSalutationText;
-	} // getMarkerArray
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_feuser.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_feuser.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_orderaddress.php']) {
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_orderaddress.php']);
 }
 
 

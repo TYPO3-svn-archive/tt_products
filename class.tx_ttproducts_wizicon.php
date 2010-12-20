@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2006 Kasper SkÃ¥rhÃ¸j (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,23 +27,17 @@
 /**
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @author	Kasper SkÃ¥rhÃ¸j <kasperYYYY@typo3.com>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  */
-
 class tx_ttproducts_wizicon {
 	function proc($wizardItems)	{
-		global $LANG, $TYPO3_CONF_VARS;
+		global $LANG;
 
 		$LL = $this->includeLocalLang();
-
-		if ($TYPO3_CONF_VARS['EXTCONF']['tt_products']['pageAsCategory'] == 0)	{
-			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=HELP';
-		} else {
-			$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][tt_products_code]=HELP';
-		}
+		$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=HELP';
 		$wizardItems['plugins_tx_ttproducts_pi1'] = array(
 			'icon'=>PATH_BE_ttproducts_rel.'res/icons/be/ce_wiz.gif',
 			'title'=>$LANG->getLLL('plugins_title',$LL),
@@ -54,10 +48,12 @@ class tx_ttproducts_wizicon {
 	}
 	/**
 	 * Includes the locallang.xml and returns the $LOCAL_LANG array found in that file.
+	 *
+	 * @return	[type]		...
 	 */
 	function includeLocalLang()	{
-		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']); 
-		
+		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
+
 		if ($typoVersion >= 3008000)	{
 			$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(PATH_BE_ttproducts.'locallang.xml',FALSE);
 		} else {
@@ -65,11 +61,11 @@ class tx_ttproducts_wizicon {
 		}
 		return $LOCAL_LANG;
 	}
-	
+
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/class.tx_ttproducts_wizicon.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/class.tx_ttproducts_wizicon.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/class.tx_ttproducts_wizicon.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/class.tx_ttproducts_wizicon.php']);
 }
 
 ?>

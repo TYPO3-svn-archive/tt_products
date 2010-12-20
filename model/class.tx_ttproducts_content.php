@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -32,68 +32,78 @@
  * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-global $TYPO3_CONF_VARS;
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
 
-class tx_ttproducts_content {
+class tx_ttproducts_content extends tx_ttproducts_table_base {
 	var $dataArray=array(); // array of read in contents
 	var $dataPageArray=array(); // array of read in contents with page id as index
 	var $table;		 // object of the type tx_table_db
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
+	 *
+	 * @param	[type]		$$pibase: ...
+	 * @param	[type]		$functablename: ...
+	 * @return	[type]		...
 	 */
-	function init() {
-		global $TYPO3_DB;
-		
-		$this->table = t3lib_div::makeInstance('tx_table_db');
-		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'sorting'=> 'sorting',
-			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));
-		$this->table->setTCAFieldArray('tt_content');
+	function init(&$pibase, $functablename)  {
+		parent::init($pibase, $functablename);
+
+		$this->getTableObj()->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'sorting'=> 'sorting',
+		'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));
+		$this->getTableObj()->setTCAFieldArray('tt_content');
 	} // init
 
 
-	function get ($uid) {
+	function get($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
 		if (!$rc) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
-			$sql->prepareFields($this->table, 'select', '*');
-			$sql->prepareWhereFields ($this->table, 'uid', '=', intval($uid));
-			$this->table->enableFields();		
+			$sql->prepareFields($this->getTableObj(), 'select', '*');
+			$sql->prepareWhereFields ($this->getTableObj(), 'uid', '=', intval($uid));
+			$this->getTableObj()->enableFields();
 			// Fetching the category
 			$res = $sql->exec_SELECTquery();
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
+			$TYPO3_DB->sql_free_result($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
 		}
 		return $rc;
 	}
 
-
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$pid: ...
+	 * @return	[type]		...
+	 */
 	function getFromPid ($pid) {
 		global $TYPO3_DB, $TSFE;
 		$rcArray = $this->dataPageArray[$pid];
 		if (!is_array($rcArray)) {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
-			$sql->prepareFields($this->table, 'select', '*');
-			$sql->prepareFields($this->table, 'orderBy', 'sorting');
-			$sql->prepareWhereFields ($this->table, 'pid', '=', intval($pid));
-			$sql->prepareWhereFields ($this->table, 'sys_language_uid', '=', intval($TSFE->config['config']['sys_language_uid']));
-			$this->table->enableFields();			
+			$sql->prepareFields($this->getTableObj(), 'select', '*');
+			$sql->prepareFields($this->getTableObj(), 'orderBy', 'sorting');
+			$sql->prepareWhereFields ($this->getTableObj(), 'pid', '=', intval($pid));
+			$sql->prepareWhereFields ($this->getTableObj(), 'sys_language_uid', '=', intval($TSFE->config['config']['sys_language_uid']));
+			$this->getTableObj()->enableFields();
 			// Fetching the category
 			$res = $sql->exec_SELECTquery();
 			while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 				$this->dataPageArray[$pid][$row['uid']] = $row;
 			}
+			$TYPO3_DB->sql_free_result($res);
 			$tmp = $this->dataPageArray[$pid];
 			$rcArray = (is_array($tmp) ? $tmp : array());
 		}
@@ -104,15 +114,15 @@ class tx_ttproducts_content {
 	// returns the Path of all categories above, separated by '/'
 	function getCategoryPath ($uid) {
 		$rc = '';
-		
+
 		return $rc;
 	}
 }
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_content.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_content.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_content.php']) {
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_content.php']);
 }
 
 

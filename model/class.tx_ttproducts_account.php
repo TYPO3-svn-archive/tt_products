@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -31,31 +31,27 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <franz@ttproducts.de>
+ * @author	Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
- *
- *
  */
-
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_bank_de.php');
-
-global $TYPO3_CONF_VARS;
-
-class tx_ttproducts_account {
+class tx_ttproducts_account extends tx_ttproducts_table_base {
 	var $pibase; // reference to object of pibase
 	var $conf;
 	var $acArray;	// credit card data
 	var $bIsAllowed = array(); // allowed uids of bank ACCOUNTS
 	var $fieldArray = array('owner_name', 'ac_number', 'bic');
 	var $tablename = 'sys_products_accounts';
-	var	$asterisk = '********';
+	var $asterisk = '********';
 
 
-	function init (&$pibase, &$cnf, $formerBasket, $bIsAllowed='') {
+	function init(&$pibase, $functablename) {
+		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$formerBasket = $basketObj->recs;
+		$bIsAllowed = $basketObj->basketExtra['payment.']['accounts'];
 
-		$this->pibase = &$pibase;
-		$this->conf = &$cnf->conf;
+		parent::init($pibase, 'sys_products_accounts');
 		$this->acArray = array();
 		$this->acArray = $formerBasket['account'];
 		if (isset($bIsAllowed))	{
@@ -85,13 +81,18 @@ class tx_ttproducts_account {
 	// **************************
 	// ORDER related functions
 	// **************************
+
 	/**
 	 * Create a new credit card record
 	 *
 	 * This creates a new credit card record on the page with pid PID_sys_products_orders. That page must exist!
 	 * Should be called only internally by eg. $order->getBlankUid, that first checks if a blank record is already created.
+	 *
+	 * @param	[type]		$uid: ...
+	 * @param	[type]		$acArray: ...
+	 * @return	[type]		...
 	 */
-	function create ($uid, $acArray)	{
+	function create($uid, $acArray)	{
 		global $TSFE, $TYPO3_DB;
 
 		$newId = 0;
@@ -119,18 +120,25 @@ class tx_ttproducts_account {
 				$newId = $TYPO3_DB->sql_insert_id();
 			}
 		}
+
 		return $newId;
 	} // create
 
 
-	function getUid ()	{
+	function getUid()	{
 		global $TSFE;
 
 		$acArray = $TSFE->fe_user->getKey('ses','ac');
 		return $acArray['ac_uid'];
 	}
 
-
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$uid: ...
+	 * @param	[type]		$bFieldArrayAll: ...
+	 * @return	[type]		...
+	 */
 	function get ($uid, $bFieldArrayAll=false) {
 		global $TYPO3_DB;
 		$rcArray = array();
@@ -149,10 +157,12 @@ class tx_ttproducts_account {
 			}
 			$res = $TYPO3_DB->exec_SELECTquery($fields, $this->tablename, $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
+			$TYPO3_DB->sql_free_result($res);
 			if ($row)	{
 				$rcArray = $row;
 			}
 		}
+
 		return $rcArray;
 	}
 
@@ -171,7 +181,6 @@ class tx_ttproducts_account {
 	 */
 	function getItemMarkerArray (&$markerArray)	{
 		global $TCA;
-		global $TYPO3_CONF_VARS;
 
 		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 
@@ -193,34 +202,25 @@ class tx_ttproducts_account {
 
 	/**
 	 * Checks if required fields for bank accounts are filled in
+	 *
+	 * @return	[type]		...
 	 */
-	function checkRequired ()	{
+	function checkRequired()	{
 		$rc = '';
-		$bankObj = &t3lib_div::getUserObj('&tx_ttproducts_bank_de');
-		$bankObj->init();
 
 		foreach ($this->fieldArray as $k => $field)	{
 			if (!$this->acArray[$field])	{
 				$rc = $field;
 				break;
 			}
-			if ($field == 'bic' && is_object($bankObj) /* && t3lib_extMgm::isLoaded('static_info_tables_banks_de')*/)	{
-				$where_clause = 'sort_code=' . intval(implode('',t3lib_div::trimExplode(' ',$this->acArray[$field]))) . ' AND level=1';
-				$bankRow = $bankObj->get('',0,FALSE,$where_clause);
-
-				if (!$bankRow)	{
-					$rc = $field;
-					break;
-				}
-			}
 		}
 		return $rc;
-	}
+	} // checkRequired
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_account.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_account.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_account.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_account.php']);
 }
 
 

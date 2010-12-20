@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,37 +31,77 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <franz@ttproducts.de>
- * @maintainer	Franz Holzinger <franz@ttproducts.de>
+ * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
- *
- *
  */
+class tx_ttproducts_field_datafield_view extends tx_ttproducts_field_base_view {
 
-
-class tx_ttproducts_field_datafield_view {
-
-	function getItemSubpartArrays ($itemTableConf, &$row, &$wrappedSubpartArray, &$markerArray, &$cObj)	{
+	function &getItemSubpartArrays (&$templateCode, &$row, $fieldname, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $theCode='', $id='1')	{
 		global $TCA;
 
-		$datasheetFile = $row['datasheet'];
-		if($datasheetFile == '')  {
-			$wrappedSubpartArray['###LINK_DATASHEET###'] = array('<!--','-->');
-		}  else  {
-			if (
-				isset($itemTableConf['fieldLink.']) &&
-				is_array($itemTableConf['fieldLink.']) &&
-				isset($itemTableConf['fieldLink.']['datasheet.'])
-			)	{
-				$typolinkConf = $itemTableConf['fieldLink.']['datasheet.'];
-			} else {
-				$typolinkConf = array();
+		$dirname = $this->getModelObj()->getDirname ($row, $fieldname);
+		$dataFileArray = t3lib_div::trimExplode(',',$row[$fieldname]);
+		$upperField = strtoupper($fieldname);
+
+		if (count($dataFileArray) && $dataFileArray[0])	{
+			foreach ($dataFileArray as $k => $dataFile)	{
+				$marker = '###LINK_'.$upperField.($k+1).'###';
+				if ($tagArray[$marker])	{
+					$wrappedSubpartArray[$marker] = array('<a href="'.$dirname.'/'.$dataFile.'">','</a>');
+				}
 			}
-			$typolinkConf['parameter'] = 'uploads/tx_ttproducts/datasheet/'.$datasheetFile;
-			$linkTxt = '9999999999';
-			$typoLink = $cObj->typoLink($linkTxt, $typolinkConf);
-			$wrappedSubpartArray['###LINK_DATASHEET###'] = t3lib_div::trimExplode($linkTxt,$typoLink);
+			$marker = '###LINK_'.$upperField.'###';
+			$wrappedSubpartArray[$marker] = array('<a href="'.$dirname.'/'.$dataFileArray[0].'">','</a>');
+		}
+
+
+		// empty all image fields with no available image
+		foreach ($tagArray as $value => $k1)	{
+			$keyMarker = '###'.$value.'###';
+			if (strstr($value, '_'.$upperField) && strstr($value, 'LINK') && !$wrappedSubpartArray[$keyMarker])	{
+				$wrappedSubpartArray[$keyMarker] =  array('<!--','-->');
+			}
+		}
+	}
+
+	/**
+	 * Template marker substitution
+	 * Fills in the markerArray with data for a product
+	 *
+	 * 				for the tt_producst record, $row
+	 *
+	 * @param	string		name of the marker prefix
+	 * @param	array		reference to an item array with all the data of the item
+	 * @param	[type]		$row: ...
+	 * @param	[type]		$markerKey: ...
+	 * @param	[type]		$markerArray: ...
+	 * @param	[type]		$tagArray: ...
+	 * @param	[type]		$theCode: ...
+	 * @param	[type]		$id: ...
+	 * @param	[type]		$bSkip: ...
+	 * @param	[type]		$bHtml: ...
+	 * @param	[type]		$charset: ...
+	 * @param	[type]		$prefix: ...
+	 * @param	[type]		$imageRenderObj: ...
+	 * @return	[type]		...
+	 * @access private
+	 */
+	function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $imageRenderObj='')	{
+
+		$val = $row[$fieldname];
+		if (isset($imageRenderObj) && $val)	{
+			$imageConf = $this->conf[$imageRenderObj.'.'];
+			$dirname = $this->modelObj->getDirname ($row, $fieldname);
+			$iconImgCode = $this->cObj->IMAGE($imageConf);
+			$markerArray['###ICON_'.strtoupper($fieldname).'###'] = $iconImgCode;
+			$imageConf['file'] = $dirname.'/'.$val;
+			$iconImgCode = $this->cObj->IMAGE($imageConf);
+			$markerArray['###'.$markerKey.'_'.strtoupper($fieldname).'1###'] = $iconImgCode; // new marker now
+		} else {
+			$markerArray['###ICON_'.strtoupper($fieldname).'###'] = '';
+			$markerArray['###'.$markerKey.'_'.strtoupper($fieldname).'1###'] = '';
 		}
 	}
 }

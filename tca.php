@@ -3,9 +3,7 @@
 $addressTable = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addressTable'];
 
 if (!$addressTable)	{
-	if (t3lib_extMgm::isLoaded(PARTY_EXTkey))	{
-		$addressTable = 'tx_party_addresses';
-	} else if (t3lib_extMgm::isLoaded(PARTNER_EXTkey))	{
+	if (t3lib_extMgm::isLoaded(PARTNER_EXTkey))	{
 		$addressTable = 'tx_partner_main';
 	} else if (t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) {
 		$addressTable = 'tt_address';
@@ -15,6 +13,11 @@ if (!$addressTable)	{
 }
 
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addressTable'] = $addressTable;
+
+$imageFolder = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['imageFolder'];
+if (!$imageFolder)	{
+	$imageFolder = 'uploads/pics';
+}
 
 if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']) && isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']['category']))	{
 	$whereCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']['category'];
@@ -26,7 +29,7 @@ if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']) 
 $TCA['tt_products'] = Array (
 	'ctrl' => $TCA['tt_products']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,related_uid,itemnumber,ean,price,price2,creditpoints,note,note2,note_uid,category,address,inStock,tax,weight,bulkily,offer,highlight,directcost,color,color2,color3,size,size2,size3,description,gradings,material,quality,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,sellstarttime,sellendtime,shipping,shipping2,handling'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,accessory_uid,related_uid,itemnumber,ean,price,price2,graduated_price_uid,note,note2,note_uid,category,address,inStock,tax,weight,usebydate,bulkily,offer,highlight,directcost,color,color2,color3,size,size2,size3,description,gradings,material,quality,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,starttime,endtime,shipping,shipping2,handling,dam_uid'
 	),
 	'columns' => Array (
 		'hidden' => Array (
@@ -79,7 +82,7 @@ $TCA['tt_products'] = Array (
 			)
 		),
 		'title' => Array (
-			'exclude' => 0,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.title',
 			'config' => Array (
 				'type' => 'input',
@@ -101,7 +104,9 @@ $TCA['tt_products'] = Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.prod_uid',
 			'config' => Array (
-				'type' => 'select',
+				'type' => 'group',
+				'internal_type' => 'db',
+				'allowed' => 'tt_products',
 				'foreign_table' => 'tt_products',
 				'foreign_table_where' => ' ORDER BY tt_products.uid',
 				'size' => 3,
@@ -149,15 +154,19 @@ $TCA['tt_products'] = Array (
 				'max' => '20'
 			)
 		),
-		'creditpoints' => Array (
+		'graduated_price_uid' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.creditpoints',
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.graduated_price_uid',
 			'config' => Array (
-				'type' => 'input',
-				'size' => '12',
-				'eval' => 'int',
-				'max' => '12'
-			)
+				'type' => 'inline',
+				'appearance' => Array ('collapseAll' => TRUE, 'useCombination' => TRUE),
+				'foreign_table' => 'tt_products_mm_graduated_price',
+				'foreign_field' => 'product_uid',
+				'foreign_sortby' => 'productsort',
+				'foreign_label' => 'graduated_price_uid',
+				'foreign_selector' => 'graduated_price_uid',
+				'maxitems' => 10
+			),
 		),
 		'note' => Array (
 			'exclude' => 1,
@@ -192,6 +201,17 @@ $TCA['tt_products'] = Array (
 				'show_thumbs' => '1',
 			),
 		),
+		'text_uid' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.text_uid',
+			'config' => Array (
+				'type' => 'inline',
+				'foreign_table' => 'tt_products_texts',
+				'foreign_field' => 'parentid',
+				'foreign_table_field' => 'parenttable',
+				'maxitems' => 20
+			),
+		),
 		'unit_factor' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.unit_factor',
@@ -219,8 +239,8 @@ $TCA['tt_products'] = Array (
 			'config' => Array (
 				'type' => 'input',
 				'eval' => 'trim',
-				'size' => '20',
-				'max' => '80'
+				'size' => '30',
+				'max' => '160'
 			)
 		),
 		'category' => Array (
@@ -267,9 +287,25 @@ $TCA['tt_products'] = Array (
 				'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],
 				'uploadfolder' => 'uploads/tx_ttproducts/datasheet',
 				'show_thumbs' => '1',
-				'size' => '1',
-				'maxitems' => '1',
+				'size' => '3',
+				'maxitems' => '20',
 				'minitems' => '0'
+			)
+		),
+		'dam_uid' => Array (
+			'displayCond' => 'EXT:'.DAM_EXTkey.':LOADED:true',
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.DAM_EXTkey.'/locallang_db.xml:tx_dam_item',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'db',
+				'allowed' => 'tx_dam',
+				'MM' => 'tt_products_products_dam_mm',
+				'foreign_table' => 'tx_dam',
+				'foreign_table_where' => ' ORDER BY tx_dam.title',
+				'size' => 10,
+				'minitems' => 0,
+				'maxitems' => 20,
 			)
 		),
 		'tax' => Array (
@@ -290,6 +326,18 @@ $TCA['tt_products'] = Array (
 				'size' => '10',
 				'max' => '20',
 				'eval' => 'trim,tx_double6',
+			)
+		),
+		'usebydate' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.usebydate',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'checkbox' => '0',
+				'default' => '0'
 			)
 		),
 		'bulkily' => Array (
@@ -323,6 +371,21 @@ $TCA['tt_products'] = Array (
 				'max' => '20'
 			)
 		),
+		'accessory_uid' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.accessory_uid',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'db',
+				'allowed' => 'tt_products',
+				'MM' => 'tt_products_accessory_products_products_mm',
+				'foreign_table' => 'tt_products',
+				'foreign_table_where' => ' ORDER BY tt_products.uid',
+				'size' => 3,
+				'minitems' => 0,
+				'maxitems' => 12,
+			),
+		),
 		'related_uid' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.related_uid',
@@ -335,7 +398,7 @@ $TCA['tt_products'] = Array (
 				'foreign_table_where' => ' ORDER BY tt_products.uid',
 				'size' => 3,
 				'minitems' => 0,
-				'maxitems' => 50,
+				'maxitems' => 12,
 			),
 		),
 		'color' => Array (
@@ -483,6 +546,14 @@ $TCA['tt_products'] = Array (
 										</config>
 									</TCEforms>
 								</noMinPrice>
+								<noGiftService>
+									<TCEforms>
+										<label>LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.additional.noGiftService</label>
+										<config>
+											<type>check</type>
+										</config>
+									</TCEforms>
+								</noGiftService>
 								</el>
 							</ROOT>
 							<meta>
@@ -508,10 +579,10 @@ $TCA['tt_products'] = Array (
 				'internal_type' => 'file',
 				'allowed' => $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'],
 				'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],
-				'uploadfolder' => 'uploads/pics',
+				'uploadfolder' => $imageFolder,
 				'show_thumbs' => '1',
 				'size' => '3',
-				'maxitems' => '10',
+				'maxitems' => '30',
 				'minitems' => '0'
 			)
 		),
@@ -590,27 +661,23 @@ $TCA['tt_products'] = Array (
 		),
 	),
 	'types' => Array (
-		'0' => Array('showitem' => 'title;;5;;3-3-3, itemnumber;;3, category, address, price;;4,weight;;6, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],note_uid;;;;1-1-1,image;;;;4-4-4,datasheet;;;;1-1-1,hidden;;1,' .
-			'--div--;LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.variants,color;;;;4-4-4,color2;;7;;,size,size2;;8,description,gradings,material;;9,additional,'.
-			'--div--;LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.relations,related_uid,'.
+		'0' => Array('showitem' => 'title;;5;;3-3-3, itemnumber;;3, category, address, price;;4,graduated_price_uid,weight;;6,hidden;;1,' .
+			'--div--;LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.descriptions,note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],note_uid;;;;1-1-1,text_uid;;;;1-1-1,image;;;;4-4-4,datasheet;;;;1-1-1,dam_uid;;;;1-1-1,'.
+			'--div--;LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.variants,color;;;;4-4-4,color2;;7;;,size,size2;;8,description,gradings,material,quality;;9,additional;;10,'.
+			'--div--;LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.relations,accessory_uid,related_uid,'.
 			'--div--;LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.shippingdiv,shipping,shipping2,handling,delivery,')
 	),
 	'palettes' => Array (
-		'1' => Array('showitem' => 'sellstarttime,sellendtime, starttime, endtime, fe_group'),
+		'1' => Array('showitem' => 'sellstarttime,sellendtime,starttime, endtime, fe_group'),
 		'3' => Array('showitem' => 'inStock,ean'),
-		'4' => Array('showitem' => 'price2, directcost, tax, creditpoints, offer, highlight'),
+		'4' => Array('showitem' => 'price2, directcost, tax, offer, highlight'),
 		'5' => Array('showitem' => 'subtitle, www'),
 		'6' => Array('showitem' => 'bulkily, special_preparation, unit, unit_factor'),
 		'7' => Array('showitem' => 'color3'),
 		'8' => Array('showitem' => 'size3'),
-		'9' => Array('showitem' => 'quality'),
+		'10' => Array('showitem' => 'usebydate')
 	)
 );
-
-
-if (!t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) {
-	$TCA['tt_products']['types']['0']['showitem'] = str_replace ('address,','',$TCA['tt_products']['types']['0']['showitem']);
-}
 
 
 // ******************************************************************
@@ -690,25 +757,21 @@ $TCA['tt_products_language'] = Array (
 			'exclude' => 0,
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_language.prod_uid',
 			'config' => Array (
-				'type' => 'group',
-				'internal_type' => 'db',
-				'allowed' => 'tt_products',
+				'type' => 'select',
 				'foreign_table' => 'tt_products',
-				'foreign_table_where' => 'AND tt_products.pid IN (###CURRENT_PID###,###STORAGE_PID###) ORDER BY tt_products.uid',
+				'foreign_table_where' => 'AND tt_products.pid=###CURRENT_PID### ORDER BY tt_products.uid',
 				'size' => 1,
 				'minitems' => 0,
 				'maxitems' => 1,
-			),
+			)
 		),
 		'title' => Array (
-			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '40',
 				'max' => '256'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 		'subtitle' => Array (
 			'exclude' => 1,
@@ -718,17 +781,6 @@ $TCA['tt_products_language'] = Array (
 				'rows' => '3',
 				'cols' => '20',
 				'max' => '512'
-			),
-			'l10n_mode' => 'prefixLangTitle',
-		),
-		'itemnumber' => Array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.itemnumber',
-			'config' => Array (
-				'type' => 'input',
-				'size' => '20',
-				'eval' => 'trim',
-				'max' => '40'
 			)
 		),
 		'unit' => Array (
@@ -738,7 +790,7 @@ $TCA['tt_products_language'] = Array (
 				'size' => '20',
 				'eval' => 'trim',
 				'max' => '20'
-			),
+			)
 		),
 		'note' => Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
@@ -746,8 +798,7 @@ $TCA['tt_products_language'] = Array (
 				'type' => 'text',
 				'cols' => '48',
 				'rows' => '5'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 		'note2' => Array (
 			'label' => '2:',
@@ -755,8 +806,7 @@ $TCA['tt_products_language'] = Array (
 				'type' => 'text',
 				'cols' => '48',
 				'rows' => '2'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 		'datasheet' => Array (
 			'exclude' => 1,
@@ -779,24 +829,8 @@ $TCA['tt_products_language'] = Array (
 			'config' => Array (
 				'type' => 'input',
 				'eval' => 'trim',
-				'size' => '20',
-				'max' => '80'
-			),
-			'l10n_mode' => 'prefixLangTitle',
-		),
-		'image' => Array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.image',
-			'config' => Array (
-				'type' => 'group',
-				'internal_type' => 'file',
-				'allowed' => $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'],
-				'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],
-				'uploadfolder' => 'uploads/pics',
-				'show_thumbs' => '1',
-				'size' => '3',
-				'maxitems' => '10',
-				'minitems' => '0'
+				'size' => '30',
+				'max' => '160'
 			)
 		),
 	),
@@ -805,21 +839,60 @@ $TCA['tt_products_language'] = Array (
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime,endtime,fe_group'),
-		'2' => Array('showitem' => 'subtitle, itemnumber, www'),
+		'2' => Array('showitem' => 'subtitle, www'),
 	)
 );
 
 
 
-
-
 // ******************************************************************
-// This is the standard TypoScript products category table, tt_products_cat
+// products to graduated price relation table, tt_products_mm_graduated_price
 // ******************************************************************
-$TCA['tt_products_cat'] = Array (
-	'ctrl' => $TCA['tt_products_cat']['ctrl'],
+$TCA['tt_products_mm_graduated_price'] = Array (
+	'ctrl' => $TCA['tt_products_mm_graduated_price']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title, subtitle, image, email_uid'
+		'showRecordFieldList' => 'product_uid,graduated_price_uid'
+	),
+	'feInterface' => $TCA['tt_products_mm_graduated_price']['feInterface'],
+	'columns' => Array (
+		'product_uid' => Array (
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_mm_graduated_price.product_uid',
+			'config' => Array (
+				'type' => 'select',
+				'foreign_table' => 'tt_products',
+				'maxitems' => 1
+			)
+		),
+		'graduated_price_uid' => Array (
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_mm_graduated_price.graduated_price_uid',
+			'config' => Array (
+				'type' => 'select',
+				'foreign_table' => 'tt_products_graduated_price',
+				'maxitems' => 1
+			)
+		),
+		'productsort' => Array (
+			'config' => Array (
+				'type' => 'passthrough',
+			)
+		),
+		'graduatedsort' => Array (
+			'config' => Array (
+				'type' => 'passthrough',
+			)
+		),
+	),
+);
+
+
+
+// ******************************************************************
+// graduated price calculation table, tt_products_graduated_price
+// ******************************************************************
+$TCA['tt_products_graduated_price'] = Array (
+	'ctrl' => $TCA['tt_products_graduated_price']['ctrl'],
+	'interface' => Array (
+		'showRecordFieldList' => 'title, formula, startamount, note, parentid'
 	),
 	'feInterface' => $TCA['tt_products_cat']['feInterface'],
 	'columns' => Array (
@@ -830,26 +903,113 @@ $TCA['tt_products_cat'] = Array (
 				'type' => 'check'
 			)
 		),
-		'tstamp' => Array (
+		'starttime' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:tstamp',
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_graduated_price.starttime',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '8',
 				'max' => '20',
 				'eval' => 'date',
+				'checkbox' => '0',
 				'default' => '0'
 			)
 		),
-		'crdate' => Array (
+		'endtime' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:crdate',
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_graduated_price.endtime',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '8',
 				'max' => '20',
 				'eval' => 'date',
-				'default' => '0'
+				'checkbox' => '0',
+				'default' => '0',
+				'range' => Array (
+					'upper' => mktime(0,0,0,12,31,2020),
+					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+				)
+			)
+		),
+		'title' => Array (
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '40',
+				'max' => '256'
+			)
+		),
+		'formula' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_graduated_price.formula',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '1'
+			)
+		),
+		'startamount' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_graduated_price.startamount',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '12',
+				'eval' => 'trim,double2',
+				'max' => '20'
+			)
+		),
+		'note' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '2'
+			)
+		),
+		'items' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_graduated_price.items',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('',0),
+				),
+				'foreign_table' => 'tt_products_mm_graduated_price',
+				'foreign_field' => 'graduated_price_uid',
+				'foreign_sortby' => 'graduatedsort',
+				'foreign_label' => 'product_uid',
+				'size' => 6,
+				'minitems' => 0,
+				'maxitems' => 100,
+			)
+		),
+	),
+	'types' => Array (
+		'0' => Array('showitem' => 'hidden;;1;;1-1-1, title, formula, startamount, note, items')
+	),
+	'palettes' => Array (
+		'1' => Array('showitem' => 'starttime, endtime')
+	)
+);
+
+
+
+// ******************************************************************
+// This is the standard TypoScript products category table, tt_products_cat
+// ******************************************************************
+$TCA['tt_products_cat'] = Array (
+	'ctrl' => $TCA['tt_products_cat']['ctrl'],
+	'interface' => Array (
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title, subtitle, note, note2, image, email_uid'
+	),
+	'feInterface' => $TCA['tt_products_cat']['feInterface'],
+	'columns' => Array (
+		'hidden' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.hidden',
+			'config' => Array (
+				'type' => 'check'
 			)
 		),
 		'starttime' => Array (
@@ -895,7 +1055,6 @@ $TCA['tt_products_cat'] = Array (
 			)
 		),
 		'title' => Array (
-			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
 			'config' => Array (
 				'type' => 'input',
@@ -913,6 +1072,24 @@ $TCA['tt_products_cat'] = Array (
 				'max' => '512'
 			)
 		),
+		'note' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			)
+		),
+		'note2' => Array (
+			'exclude' => 1,
+			'label' => '2:',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			)
+		),
 		'image' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.image',
@@ -921,7 +1098,7 @@ $TCA['tt_products_cat'] = Array (
 				'internal_type' => 'file',
 				'allowed' => $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'],
 				'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],
-				'uploadfolder' => 'uploads/pics',
+				'uploadfolder' => $imageFolder,
 				'show_thumbs' => '1',
 				'size' => '3',
 				'maxitems' => '10',
@@ -937,7 +1114,7 @@ $TCA['tt_products_cat'] = Array (
 					Array('',0),
 				),
 				'foreign_table' => 'tt_products_emails',
-				'foreign_table_where' => 'AND tt_products_emails.pid IN (###CURRENT_PID###,###STORAGE_PID###) ORDER BY tt_products_emails.uid',
+				'foreign_table_where' => 'AND tt_products_emails.pid=###CURRENT_PID### ORDER BY tt_products_emails.uid',
 				'size' => 6,
 				'minitems' => 0,
 				'maxitems' => 1,
@@ -945,7 +1122,7 @@ $TCA['tt_products_cat'] = Array (
 		),
 	),
 	'types' => Array (
-		'0' => Array('showitem' => 'hidden;;;;1-1-1, title, subtitle, email_uid, image;;;;3-3-3')
+		'0' => Array('showitem' => 'title, subtitle, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], email_uid, image;;;;3-3-3,hidden;;1;;')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group')
@@ -975,28 +1152,6 @@ $TCA['tt_products_cat_language'] = Array (
 					Array('LLL:EXT:lang/locallang_general.php:LGL.allLanguages',-1),
 					Array('LLL:EXT:lang/locallang_general.php:LGL.default_value',0)
 				)
-			)
-		),
-		'tstamp' => Array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:tstamp',
-			'config' => Array (
-				'type' => 'input',
-				'size' => '8',
-				'max' => '20',
-				'eval' => 'date',
-				'default' => '0'
-			)
-		),
-		'crdate' => Array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:crdate',
-			'config' => Array (
-				'type' => 'input',
-				'size' => '8',
-				'max' => '20',
-				'eval' => 'date',
-				'default' => '0'
 			)
 		),
 		'hidden' => Array (
@@ -1041,8 +1196,7 @@ $TCA['tt_products_cat_language'] = Array (
 				'type' => 'input',
 				'size' => '40',
 				'max' => '256'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 		'subtitle' => Array (
 			'exclude' => 1,
@@ -1052,8 +1206,7 @@ $TCA['tt_products_cat_language'] = Array (
 				'rows' => '3',
 				'cols' => '20',
 				'max' => '512'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 		'note' => Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
@@ -1061,8 +1214,7 @@ $TCA['tt_products_cat_language'] = Array (
 				'type' => 'text',
 				'cols' => '48',
 				'rows' => '5'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 		'note2' => Array (
 			'label' => '2',
@@ -1070,22 +1222,19 @@ $TCA['tt_products_cat_language'] = Array (
 				'type' => 'text',
 				'cols' => '48',
 				'rows' => '5'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 		'cat_uid' => Array (
 			'exclude' => 0,
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_cat_language.cat_uid',
 			'config' => Array (
-				'type' => 'group',
-				'internal_type' => 'db',
-				'allowed' => 'tt_products_cat',
+				'type' => 'select',
 				'foreign_table' => 'tt_products_cat',
-				'foreign_table_where' => 'AND tt_products_cat.pid IN (###CURRENT_PID###,###STORAGE_PID###) ORDER BY tt_products_cat.uid',
+				'foreign_table_where' => 'AND tt_products_cat.pid=###CURRENT_PID### ORDER BY tt_products_cat.uid',
 				'size' => 1,
 				'minitems' => 0,
 				'maxitems' => 1,
-			),
+			)
 		),
 	),
 	'types' => Array (
@@ -1096,7 +1245,6 @@ $TCA['tt_products_cat_language'] = Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group')
 	)
 );
-
 
 
 // ******************************************************************
@@ -1160,13 +1308,13 @@ $TCA['tt_products_articles'] = Array (
 			)
 		),
 		'title' => Array (
-			'exclude' => 0,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '40',
 				'max' => '80',
-				'eval' => 'trim',
+				'eval' => 'required,trim',
 			)
 		),
 		'subtitle' => Array (
@@ -1234,7 +1382,7 @@ $TCA['tt_products_articles'] = Array (
 				'type' => 'input',
 				'size' => '10',
 				'max' => '20',
-				'eval' => 'trim,tx_double6',
+				'eval' => 'trim,double2',
 			)
 		),
 		'color' => Array (
@@ -1347,7 +1495,7 @@ $TCA['tt_products_articles'] = Array (
 				'internal_type' => 'file',
 				'allowed' => $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'],
 				'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],
-				'uploadfolder' => 'uploads/pics',
+				'uploadfolder' => $imageFolder,
 				'show_thumbs' => '1',
 				'size' => '3',
 				'maxitems' => '10',
@@ -1356,7 +1504,7 @@ $TCA['tt_products_articles'] = Array (
 		)
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;1, title;;3;;3-3-3, uid_product, itemnumber, inStock, price;;2, weight, color, color2, color3, size, size2, size3, description, gradings, material, quality, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],image;;;;3-3-3')
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, title;;3;;3-3-3, uid_product, itemnumber, inStock, price;;2, weight, color, color2, color3, size, size2, size3, description, gradings, material, quality, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],image;;;;3-3-3')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
@@ -1444,25 +1592,21 @@ $TCA['tt_products_articles_language'] = Array (
 			'exclude' => 0,
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_articles_language.article_uid',
 			'config' => Array (
-				'type' => 'group',
-				'internal_type' => 'db',
-				'allowed' => 'tt_products_articles',
+				'type' => 'select',
 				'foreign_table' => 'tt_products_articles',
-				'foreign_table_where' => 'AND tt_products_articles.pid IN (###CURRENT_PID###,###STORAGE_PID###) ORDER BY tt_products_articles.title',
+				'foreign_table_where' => 'AND tt_products_articles.pid=###CURRENT_PID### ORDER BY tt_products_articles.title',
 				'size' => 1,
 				'minitems' => 0,
 				'maxitems' => 1,
-			),
+			)
 		),
 		'title' => Array (
-			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '40',
 				'max' => '256'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 		'subtitle' => Array (
 			'exclude' => 1,
@@ -1472,8 +1616,7 @@ $TCA['tt_products_articles_language'] = Array (
 				'rows' => '3',
 				'cols' => '20',
 				'max' => '512'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 		'note' => Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
@@ -1481,8 +1624,7 @@ $TCA['tt_products_articles_language'] = Array (
 				'type' => 'text',
 				'cols' => '48',
 				'rows' => '5'
-			),
-			'l10n_mode' => 'prefixLangTitle',
+			)
 		),
 	),
 	'types' => Array (
@@ -1493,7 +1635,6 @@ $TCA['tt_products_articles_language'] = Array (
 		'2' => Array('showitem' => 'subtitle'),
 	)
 );
-
 
 
 // ******************************************************************
@@ -1584,6 +1725,175 @@ $TCA['tt_products_emails'] = Array (
 
 
 
+
+// ******************************************************************
+// This is the standard TypoScript products texts table, tt_products_texts
+// ******************************************************************
+$TCA['tt_products_texts'] = Array (
+	'ctrl' => $TCA['tt_products_texts']['ctrl'],
+	'interface' => Array (
+		'showRecordFieldList' => 'hidden,title,marker,note'
+	),
+	'feInterface' => $TCA['tt_products_texts']['feInterface'],
+	'columns' => Array (
+		'title' => Array (
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '40',
+				'max' => '256'
+			)
+		),
+		'marker' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_texts.marker',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '40',
+				'max' => '256'
+			)
+		),
+		'note' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			)
+		),
+		'parentid' => Array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_texts.parentid',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'db',
+				'allowed' => 'tt_products',
+				'prepend_tname' => FALSE,
+				'foreign_table_where' => 'AND tt_products.pid=###CURRENT_PID### ORDER BY tt_products.title',
+				'size' => 1,
+				'minitems' => 0,
+				'maxitems' => 1,
+			)
+		),
+		'parenttable' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_texts.parenttable',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array(
+					Array('tt_products', 'tt_products')
+				)
+			)
+		),
+	),
+	'types' => Array (
+		'0' => Array('showitem' => 'hidden;;;;1-1-1, title, marker, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], parentid;;;;2-2-2, parenttable')
+	)
+);
+
+
+
+// ******************************************************************
+// This is the language overlay for  products texts table, tt_products_texts
+// ******************************************************************
+$TCA['tt_products_texts_language'] = Array (
+	'ctrl' => $TCA['tt_products_texts_language']['ctrl'],
+	'interface' => Array (
+		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,fe_group,title,marker,note'
+	),
+	'feInterface' => $TCA['tt_products_texts_language']['feInterface'],
+	'columns' => Array (
+		'sys_language_uid' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.language',
+			'config' => Array (
+				'type' => 'select',
+				'foreign_table' => 'sys_language',
+				'foreign_table_where' => 'ORDER BY sys_language.title',
+				'items' => Array(
+					Array('LLL:EXT:lang/locallang_general.php:LGL.allLanguages',-1),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.default_value',0)
+				)
+			)
+		),
+		'hidden' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.hidden',
+			'config' => Array (
+				'type' => 'check',
+				'default' => '0'
+			)
+		),
+		'starttime' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.starttime',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'default' => '0',
+				'checkbox' => '0'
+			)
+		),
+		'endtime' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.endtime',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'checkbox' => '0',
+				'default' => '0',
+				'range' => Array (
+					'upper' => mktime(0,0,0,12,31,2020),
+					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+				)
+			)
+		),
+		'title' => Array (
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '40',
+				'max' => '256'
+			)
+		),
+		'note' => Array (
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			)
+		),
+		'text_uid' => Array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products_texts_language.text_uid',
+			'config' => Array (
+				'type' => 'select',
+				'foreign_table' => 'tt_products_texts',
+				'foreign_table_where' => 'AND tt_products_texts.pid=###CURRENT_PID### ORDER BY tt_products_texts.uid',
+				'size' => 1,
+				'minitems' => 0,
+				'maxitems' => 1,
+			)
+		),
+	),
+	'types' => Array (
+		'0' => Array('showitem' => '
+		sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, text_uid;;;;2-2-2, title, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], parenttable')
+	),
+	'palettes' => Array (
+		'1' => Array('showitem' => 'starttime, endtime, fe_group')
+	)
+);
+
+
+
+
 // ******************************************************************
 // These are the bank account data used for orders
 // ******************************************************************
@@ -1605,7 +1915,6 @@ $TCA['sys_products_accounts'] = Array (
 			)
 		),
 		'owner_name' => Array (
-			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.name',
 			'config' => Array (
 				'type' => 'input',
@@ -1720,20 +2029,12 @@ $TCA['sys_products_cards'] = Array (
 $TCA['sys_products_orders'] = Array (
 	'ctrl' => $TCA['sys_products_orders']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,name,first_name,last_name,salutation,address,zip,country,telephone,email,fax,payment,shipping,amount,email_notify,tracking_code,status,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,cc_uid,ac_uid'
+		'showRecordFieldList' => 'name,first_name,last_name,salutation,address,zip,country,telephone,email,fax,payment,shipping,amount,email_notify,tracking_code,status,status_log,orderData,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,giftservice,cc_uid,ac_uid,date_of_birth,radio1'
 	),
-	'feInterface' => $TCA['sys_products_orders']['feInterface'],
+	'feInterface' => $TCA['tt_products_articles']['feInterface'],
 	'columns' => Array (
-		'hidden' => Array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.hidden',
-			'config' => Array (
-				'type' => 'check',
-				'default' => '0'
-			)
-		),
 		'name' => Array (
-			'exclude' => 0,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.name',
 			'config' => Array (
 				'type' => 'input',
@@ -1997,6 +2298,15 @@ $TCA['sys_products_orders'] = Array (
 				'rows' => '5'
 			)
 		),
+		'giftservice' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.giftservice',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			)
+		),
 		'cc_uid' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_cards.cc_number',
@@ -2021,13 +2331,66 @@ $TCA['sys_products_orders'] = Array (
 				'maxitems' => 1,
 			)
 		),
+		'foundby' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.foundby',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.foundby.I.0', '0'),
+					Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.foundby.I.1', '1'),
+					Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.foundby.I.2', '2'),
+					Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.foundby.I.3', '3'),
+					Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.foundby.I.4', '4'),
+					Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.foundby.I.5', '5'),
+					Array('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.foundby.I.6', '6'),
+				),
+				'size' => 1,
+				'maxitems' => 1,
+			)
+		),
+		'giftcode' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.order_code',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '30',
+				'max' => '80',
+			)
+		),
+		'date_of_birth' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.date_of_birth',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'checkbox' => '0',
+				'default' => '0'
+			)
+		),
+		'radio1' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.radio1',
+			'config' => Array (
+				'type' => 'radio',
+				'items' => Array (
+					Array ('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.radio1.I.0', '0'),
+					Array ('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.radio1.I.1', '1'),
+					Array ('LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:sys_products_orders.radio1.I.2', '2'),
+				),
+				'default' => '0'
+			)
+		),
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,fax,agb,feusers_uid,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,cc_uid,ac_uid')
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,status_log,orderData,fax,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,giftservice,foundby,giftcode,cc_uid,ac_uid,date_of_birth,radio1')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
 	)
+
 );
 
 

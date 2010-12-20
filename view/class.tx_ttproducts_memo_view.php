@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2003-2006 Klaus Zierer <zierer@pz-systeme.de>
+*  (c) 2003-2007 Klaus Zierer <zierer@pz-systeme.de>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
@@ -32,31 +32,16 @@
  * $Id$
  *
  * @author  Klaus Zierer <zierer@pz-systeme.de>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
- *
- *
  */
-
-
-global $TYPO3_CONF_VARS;
-
-
 class tx_ttproducts_memo_view {
 	var $pibase; // reference to object of pibase
-	var $cnf;
 	var $conf;
 	var $config;
-	var $basket;
-	var $page;
-	var $tt_content; // element of class tx_table_db
-	var $tt_products; // element of class tx_table_db
-	var $tt_products_cat; // element of class tx_table_db
-	var $tx_dam; // element of class tx_table_db
-	var $tx_dam_cat; // element of class tx_table_db
-	var $fe_users; // element of class tx_table_db
+	var $pid_list;
 	var $pid; // pid where to go
-	var $LLkey; // language key
 	var $useArticles;
 
 	var $searchFieldList='';
@@ -64,50 +49,20 @@ class tx_ttproducts_memo_view {
 
 	function init(
 			&$pibase,
-			&$cnf,
-			&$basket,
 			&$pid_list,
-			&$tt_content,
-			&$tt_products,
-			&$tt_products_cat,
-			&$tt_products_articles,
-			&$tx_dam,
-			&$tx_dam_cat,
-			&$fe_users,
 			$pid,
-			$LLkey,
 			$useArticles
 		) {
 
 		global $TSFE, $TYPO3_DB;
 
 		$this->pibase = &$pibase;
-		$this->cnf = &$cnf;
-		$this->conf = &$this->cnf->conf;
-		$this->config = &$this->cnf->config;
-		$this->basket = &$basket;
-		$this->tt_content = &$tt_content;
-		$this->page = tx_ttproducts_page::createPageTable(
-			$this->pibase,
-			$this->cnf,
-			$this->tt_content,
-			$this->pibase->LLkey,
-			$this->conf['table.']['pages'],
-			$this->conf['conf.']['pages.'],
-			$this->page,
-			$pid_list,
-			99
-		);
-		$this->tt_products = &$tt_products;
-		$this->tt_products_cat = &$tt_products_cat;
-		$this->tt_products_articles = &$tt_products_articles;
-		$this->tx_dam = $tx_dam;
-		$this->tx_dam_cat = $tx_dam_cat;
-		$this->fe_users = &$fe_users;
-		$this->pid = $pid;
-		$this->LLkey = $LLkey;
-		$this->useArticles = $useArticles;
+		$this->conf = &$cnf->conf;
+		$this->config = &$cnf->config;
 
+		$this->pid_list = $pid_list;
+		$this->pid = $pid;
+		$this->useArticles = $useArticles;
 		$fe_user_uid = $TSFE->fe_user->user['uid'];
 		$this->memoItems = array();
 
@@ -147,10 +102,13 @@ class tx_ttproducts_memo_view {
 
 	/**
 	 * Displays the memo
+	 *
+	 * @param	[type]		$$templateCode: ...
+	 * @param	[type]		$error_code: ...
+	 * @return	[type]		...
 	 */
-	function &printView(&$templateCode, &$error_code)
-	{
-		global $TSFE, $TYPO3_CONF_VARS;;
+	function &printView(&$templateCode, &$error_code)	{
+		global $TSFE;
 
 		$content = '';
 
@@ -163,56 +121,44 @@ class tx_ttproducts_memo_view {
 				$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
 				$listView->init (
 					$this->pibase,
-					$this->cnf,
-					$this->basket,
-					$this->page,
-					$this->tt_content,
-					$this->tt_products,
-					$this->tt_products_articles,
-					$this->tt_products_cat,
-					$this->tx_dam,
-					$this->tx_dam_cat,
-					$this->fe_users,
 					$this->pid,
-					$this->LLkey,
 					$this->useArticles,
-					array()
+					array(),
+					$this->pid_list,
+					99
 				);
 
 				$templateArea = 'MEMO_TEMPLATE';
 				$content = $listView->printView(
 					$templateCode,
 					'MEMO',
+					'tt_products',
 					implode(',', $this->memoItems),
 					false,
 					$error_code,
 					$templateArea,
-					$this->pibase->pageAsCategory,
+					$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'],
 					array()
 				);
 			} else {
-				include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
+				include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
 
-				$marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-				$marker->init(
-					$this->pibase,
-					$this->cnf,
-					$this->basket
+				$subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
+				$subpartmarkerObj->init(
+					$this->pibase->cObj
 				);
 
-				$content = $this->pibase->cObj->getSubpart($templateCode,$marker->spMarker('###MEMO_EMPTY###'));
+				$content = $this->pibase->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###MEMO_EMPTY###'));
 			}
 		} else {
-			include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
+			include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
 
-			$marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-			$marker->init(
-				$this->pibase,
-				$this->cnf,
-				$this->basket
+			$subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
+			$subpartmarkerObj->init(
+				$this->pibase->cObj
 			);
 
-			$content = $this->pibase->cObj->getSubpart($templateCode,$marker->spMarker('###MEMO_NOT_LOGGED_IN###'));
+			$content = $this->pibase->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###MEMO_NOT_LOGGED_IN###'));
 		}
 
 		return $content;
@@ -221,8 +167,8 @@ class tx_ttproducts_memo_view {
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']) {
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']);
 }
 
 

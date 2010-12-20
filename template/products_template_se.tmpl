@@ -17,10 +17,10 @@ This subpart is used to display the regular list of products.
 It's also used by search-results.
 
 -->
-<h1>Shop System for TYPO3</h1>
-<p> Welcome to the tt_products Shop System for TYPO3. Take a look at the German tutorial at <a href="http://fholzinger.com/index.php?id=170">tt_products - Open Source Shop System</a> before you start with it. There you can find also a forum for questions.
-</p>
 
+<h1>Shop System for TYPO3</h1>
+<p> Welcome to the tt_products Shop System for TYPO3. Take a look at the German tutorial at <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop System</a> before you start with it. There you can find also a forum for questions.
+</p>
 		<TABLE border="1" cellspacing="0" cellpadding="1" width=1>
 			<tr>
 				<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>Föregående sida</b></div>###GW2E###<!--###LINK_PREV###--></td>
@@ -169,7 +169,7 @@ Subpart for the search-form
 
 -->
 <FORM method="post" action="###FORM_URL###">
-	<INPUT size="30" maxlength="100" type="text" name="sword" value="###SWORD###">
+	<INPUT size="30" maxlength="100" type="text" name="swords" value="###SWORDS###">
 	<input type="Submit" name="order" value="Sök">
 </form>
 <!-- ###ITEM_SEARCH### -->
@@ -248,7 +248,7 @@ In addition there's a number of fields used for delivery and payment information
 
 					</TD>
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
-					<TD valign=top>&nbsp;<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###">&nbsp;</TD>
+					<TD valign=top>&nbsp;<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">&nbsp;</TD>
 					<td valign=top align=right>###GW1B### <b>###PRICE_TOTAL_TAX###</b> ###GW1E###</td>
 				</TR>
 			<!-- ###ITEM_SINGLE### end -->
@@ -801,7 +801,7 @@ Exact same features as BASKET_TEMPLATE
 			Leverans sker enligt våran leveranspolicy. Din order är daterad ###ORDER_DATE###<br />
 			<br>
 			Du kan följa din order genom att använda ditt spårningsnummer vilket är: <br />
-			<strong>###ORDER_TRACKING_NO###</strong>. Klicka här för <a href="index.php?id=###PID_TRACKING###&type=1&tracking=###ORDER_TRACKING_NO###">att se statusen just nu.</a><br><br>
+			<strong>###ORDER_TRACKING_NO###</strong>. Klicka här för <a href="index.php?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###">att se statusen just nu.</a><br><br>
 			<br>
 		###GW1E###
 		###EXTERNAL_COBJECT###				
@@ -1255,7 +1255,7 @@ orderinformationen genom att använda följande spårningsnummer:
         ###ORDER_TRACKING_NO###
 		
 Klicka här för att se information nu:
-        http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=1&tracking=###ORDER_TRACKING_NO###
+        http://www.myTypoShop.com/?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###
 
 
 
@@ -1281,6 +1281,7 @@ Mycket vänliga hälsningar
 	Subpart used as template for the order-emails
 	First line is used as subject for the mail.
 -->
+
 Sven Svensson AB order ####ORDER_UID###
 
 ORDER BEKRÄFTELSE: 
@@ -1289,7 +1290,7 @@ Använd det nummret som referens när du kontaktar oss.
 
 SPÅRNING:
 Du kan spåra din ordersstatus genom att använda följande spårningsnummer: ###ORDER_TRACKING_NO###
-        http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=1&tracking=###ORDER_TRACKING_NO###
+        http://www.myTypoShop.com/?id=trackpage&type=1&tracking=###ORDER_TRACKING_NO###
 
 
 ORDER:
@@ -1326,7 +1327,7 @@ Epost: ###DELIVERY_EMAIL###
 
 
 5) Leverans:
-###SHIPPING_TITLE###				
+###SHIPPING_TITLE###
 Pris: ###PRICE_SHIPPING_TAX### SEK (###PRICE_SHIPPING_NO_TAX### utan moms)
 
 
@@ -1344,43 +1345,6 @@ Vänliga hälsningar, Sven Svensson AB
 
 <!-- ###EMAIL_PLAINTEXT_TEMPLATE### end -->
 
-
- 	
-
-
-
-<HR>
-
-
-
-<h3>EMAIL_NEWUSER_TEMPLATE</h3>
-<em>
-Subpart used as template for the account-creation-emails. First line is
-used as subject for the mail.
-
-</em>
-
-<!-- ###EMAIL_NEWUSER_TEMPLATE### begin
-Subpart used as template for the account-creation-emails First line is
-used as subject for the mail.
--->
-Your New User Account at ###DOMAIN###
-
-Dear ###PERSON_NAME###,
-
-Thank you for placing an order at our site!
-
-To make future purchases quick and easy, we've created a new account for you. When
-you return to our site, enter this information in the Customer Login form.
-
-Your username: ###USERNAME###
-Your password: ###PASSWORD###
-
-Best Regards,
-###DOMAIN###
-###SHOPADMIN_EMAIL###
-
-<!-- ###EMAIL_NEWUSER_TEMPLATE### end -->
 
 
 

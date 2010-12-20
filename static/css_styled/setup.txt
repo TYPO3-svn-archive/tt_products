@@ -7,7 +7,7 @@
 ## Includes the productsLib:
 includeLibs.tt_products = EXT:tt_products/pi1/class.tx_ttproducts_pi1.php
 
-## This enables the tt_content.list item to display the guestbook:
+## This enables the tt_content.list item to display the product plugins:
 plugin.tt_products >
 plugin.tt_products = USER
 plugin.tt_products {
@@ -17,6 +17,7 @@ plugin.tt_products {
   pid_list = {$plugin.tt_products.pid_list}
   code.field = select_key
   defaultCode = HELP
+  defaultImageDir = uploads/pics/
   wrapInBaseClass = 1
 
   limit = {$plugin.tt_products.limit}
@@ -103,15 +104,18 @@ plugin.tt_products {
   basketMaxQuantity = {$plugin.tt_products.basketMaxQuantity}
   quantityIsFloat = {$plugin.tt_products.quantityIsFloat}
 
-  CSS.tt_products.LIST.row.even = {$plugin.tt_products.CSSRowEven}
-  CSS.tt_products.LIST.row.uneven = {$plugin.tt_products.CSSRowUneven}
-  CSS.tt_products.LIST.itemSingleWrap = <div class="###UNEVEN###">|</div>
-  CSS.tt_products.LIST.itemRowWrap =
+  CSS {
+    file = EXT:tt_products/template/tt_products_example.css
+    tt_products.LIST.row.even = {$plugin.tt_products.CSSRowEven}
+    tt_products.LIST.row.uneven = {$plugin.tt_products.CSSRowUneven}
+    tt_products.LIST.itemSingleWrap = <div class="###UNEVEN###">|</div>
+    tt_products.LIST.itemRowWrap =
+  }
   CSSListDefault = {$plugin.tt_products.CSSListDefault}
   CSSListCurrent = {$plugin.tt_products.CSSListCurrent}
 
   NoSingleViewOnList = {$plugin.tt_products.NoSingleViewOnList}
-  listViewOnSearch = {$plugin.tt_products.listViewOnSearch}
+
   PIDagb = {$plugin.tt_products.PIDagb}
   PIDinfo = {$plugin.tt_products.PIDinfo}
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
@@ -152,6 +156,7 @@ plugin.tt_products {
   priceDec = {$plugin.tt_products.priceDec}
   priceDecPoint = {$plugin.tt_products.priceDecPoint}
   priceThousandPoint = {$plugin.tt_products.priceThousandPoint}
+  percentDec = {$plugin.tt_products.percentDec}
   currencySymbol = {$plugin.tt_products.currencySymbol}
 
   TAXpercentage = {$plugin.tt_products.TAXpercentage}
@@ -172,9 +177,10 @@ plugin.tt_products {
   orderEmail_subject = {$plugin.tt_products.orderEmail_subject}
   orderEmail_htmlmail = {$plugin.tt_products.orderEmail_htmlmail}
   orderEmail_apostrophe = {$plugin.tt_products.orderEmail_apostrophe}
+  orderEmail_order2 = {$plugin.tt_products.orderEmail_order2}
   email_notify_default = {$plugin.tt_products.email_notify_default}
   statusCodes {
-# 1: Incoming orders
+# 1: Incoming orders    
     1 = Order submitted by user
 # 2-49: Useable by the shop admin
     2 = Order is received and accepted by store
@@ -199,6 +205,7 @@ plugin.tt_products {
   update_code = {$plugin.tt_products.update_code}
   statusDate_stdWrap.strftime= %d-%m-%Y %H:%M
   orderDate_stdWrap.strftime = %d-%m-%Y
+  usebyDate_stdWrap.strftime = %d-%m-%Y
 
   usePriceTag = {$plugin.tt_products.usePriceTag}
   useStaticInfoCountry = {$plugin.tt_products.useStaticInfoCountry}
@@ -231,8 +238,10 @@ plugin.tt_products {
   PIDuserFolder = {$plugin.tt_products.PIDuserFolder}
   pidsRelatedProducts = {$plugin.tt_products.pidsRelatedProducts}
   pidsAddresses = {$plugin.tt_products.pidsAddresses}
-  outputFolder = {$plugin.tt_products.outputFolder}
+  outputFolder = {$plugin.tt_products.outputFolder} 
   memberOfGroup = {$plugin.tt_products.memberOfGroup}
+  discountGroupName = {$plugin.tt_products.discountGroupName}
+  getDiscountPrice = {$plugin.tt_products.getDiscountPrice}
 
   stdSearchFieldExt = {$plugin.tt_products.stdSearchFieldExt}
   AGBtarget = {$plugin.tt_products.AGBtarget}
@@ -249,24 +258,25 @@ plugin.tt_products {
   inStockPieces = {$plugin.tt_products.inStockPieces}
   warningInStockLimit = {$plugin.tt_products.warningInStockLimit}
   newItemDays = {$plugin.tt_products.newItemDays}
-  substitutePagetitle = {$plugin.tt_products.substitutePagetitle}
+  substitutePagetitle = {$plugin.tt_products.substitutePagetitle}  
 
   whereGift = {$plugin.tt_products.whereGift}
+  whereGiftService = {$plugin.tt_products.whereGiftService}
 
   form.SEARCH.name = ShopSearchForm
 
   # table settings
   # attention: Do not change the tt_products fields if you don't know what you do
-
-  table.address = tt_address
+  table.address = tx_partner_main
   table.address {
-    name = name
+    name = last_name
   }
 
   table.tt_products = tt_products
   table.tt_products {
     address = address
     itemnumber = itemnumber
+    inStock = inStock
     variant {
       1 = color
       2 = size
@@ -284,25 +294,22 @@ plugin.tt_products {
 
   conf.tt_products.ALL {
     orderBy = title
-    requiredFields = uid,pid,category,price,price2,tax,inStock,datasheet
-  	language.type = table
-  	language.table = tt_products_language
-    controlFields {
-		newItemDays = crdate, starttime
+    requiredFields = uid,pid,category,price,price2,directcost,graduated_price_uid,tax,inStock
+    language.type = table
+    language.table = tt_products_language
+    functions {
+       htmlentities = title, subtitle, itemnumber
     }
-  }
-
-  conf.tt_products.LIST {
-	field {
-		note = TEXT
-		note.postUserFunc = tx_pmkhtmlcrop->htmlCrop
-		note.postUserFunc.htmlCrop = 9 | ... More
-	}
+    controlFields {
+      newItemDays = crdate, starttime
+    }
   }
 
   table.tt_products_articles = tt_products_articles
   table.tt_products_articles {
     itemnumber = itemnumber
+    inStock = inStock
+    uid_product = uid_product
     variant {
       1 = color
       2 = size
@@ -324,67 +331,78 @@ plugin.tt_products {
 
   table.tt_products_cat = tt_products_cat
   conf.tt_products_cat.ALL {
+    onlyChildsOfCurrent = 1
+    language.type = table
+    language.table = tt_products_cat_language
+    orderBy = sorting
+  }
+
+  table.tt_products_graduated_price = tt_products_graduated_price
+  conf.tt_products_graduated_price.ALL {
     language.type = noTranslation
+  }
+
+  table.tt_products_mm_graduated_price = tt_products_mm_graduated_price
+  conf.tt_products_mm_graduated_price.ALL {
+    language.type = noTranslation
+  }
+
+  table.tt_products_texts = tt_products_texts
+  conf.tt_products_texts.ALL {
+    onlyChildsOfCurrent = 1
+    language.type = table
+    language.table = tt_products_texts_language
     orderBy = sorting
   }
 
   conf.pages.ALL {
-    requiredFields = uid,pid,title
-  	language.type = table
-  	language.table = pages_language_overlay
+     requiredFields = uid,pid,title,subtitle,media,shortcut
+     language.type = table
+     language.table = pages_language_overlay
   }
 
   table.tx_dam = tx_dam
   conf.tx_dam.ALL {
-    language.type = noTranslation
-    orderBy = sorting
+     language.type = noTranslation
+     orderBy = sorting
   }
 
   table.tx_dam_cat = tx_dam_cat
   conf.tx_dam_cat.ALL {
-  	language.type = noTranslation
-    orderBy = sorting
+     onlyChildsOfCurrent = 1
+     language.type = noTranslation
+     orderBy = sorting
   }
 
   debug = {$plugin.tt_products.debug}
+  ajaxDebug = {$plugin.tt_products.ajaxDebug}
   delivery	{
   	0.image < .image
   	0.image {
-    	file = EXT:tt_products/res/icons/fe/availableDemand.gif
-    	file.maxW = {$plugin.tt_products.maxW_single}
+  	file = EXT:tt_products/res/icons/fe/availableDemand.gif
+  	file.maxW = {$plugin.tt_products.maxW_single}
     }
   	1.image < plugin.tt_products.delivery.0.image
   	1.image {
-    	file = EXT:tt_products/res/icons/fe/availableImmediate.gif
+  	file = EXT:tt_products/res/icons/fe/availableImmediate.gif
     }
   	2.image < plugin.tt_products.delivery.0.image
   	2.image {
-    	file = EXT:tt_products/res/icons/fe/availableShort.gif
+  	file = EXT:tt_products/res/icons/fe/availableShort.gif
     }
   }
 
   _CSS_DEFAULT_STYLE (
       .tx-ttproducts-pi1-wrap1 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }
-      .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }
+      .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }   
   )
-
-  marks {
-   BASKET_MINI_HEADER = Warenkorb
-  }
-
-  shopAdmin = BE
-  control.ALL.param {
-    use = backPID
-  }
 }
 
-[globalVar = GP:ttp_basket != '']
-plugin.tt_products = USER_INT
-[global]
 
 ## This enables the record item to display product items
 tt_products >
 tt_products = < plugin.tt_products
+tt_products.defaultCode = SINGLE
 tt_products.displayCurrentRecord = 1
 
 
@@ -406,6 +424,6 @@ tt_products.displayCurrentRecord = 1
 #}
 
   # Example of how to set default values from TS in the incoming array, $this->piVars of the plugin:
-#plugin.tt_products._DEFAULT_PI_VARS.test = test
+#plugin.tt_products._DEFAULT_PI_VARS.test = 15
 
 

@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
@@ -32,13 +32,13 @@
  * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-global $TYPO3_CONF_VARS;
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 
@@ -47,10 +47,12 @@ class tx_ttproducts_attribute {
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
+	 *
+	 * @return	[type]		...
 	 */
 	function init() {
 		global $TYPO3_DB;
-		
+
 		$this->attributeArray = array();
 	} // init
 
@@ -63,6 +65,12 @@ class tx_ttproducts_attribute {
 		return ($this->attributeArray[$uid] > 0);
 	}
 
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$uid: ...
+	 * @return	[type]		...
+	 */
 	function getAttribute ($uid) {
 		global $TYPO3_DB;
 		$rc = $this->attributeArray[$uid];
@@ -72,15 +80,21 @@ class tx_ttproducts_attribute {
 		return $rc;
 	}
 
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$uid: ...
+	 * @return	[type]		...
+	 */
 	function setAttribute ($uid) {
 		$this->attributeArray[$uid] = $uid;
 	}
-	
+
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_attribute.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_attribute.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_attribute.php']) {
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_attribute.php']);
 }
 
 ?>

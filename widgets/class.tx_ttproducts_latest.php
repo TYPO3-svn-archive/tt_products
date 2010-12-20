@@ -99,7 +99,7 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 
 				// Show Database List
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','sys_products_orders','deleted=0','','uid DESC',$limit);
-		
+
 				// Render List
 				$c .= $this->showDatabaseList('Orders:',$res,'uid,name,amount,crdate,note');
 			break;
@@ -108,7 +108,7 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 
 				// Show Database List
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tt_products','deleted=0 AND hidden=0','','crdate DESC',$limit);
-		
+
 				// Render List
 				$c .= $this->showDatabaseList('Products:',$res,'uid,itemnumber,title,price');
 			break;
@@ -117,7 +117,7 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 
 				// Show Database List
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tt_products','deleted=0 AND hidden=0 AND inStock<=0','','inStock',$limit);
-		
+
 				// Render List
 				$c .= $this->showDatabaseList('Products:',$res,'uid,itemnumber,title,inStock');
 			break;
@@ -126,7 +126,7 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 
 				// Show Database List
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tt_products','deleted=0 AND hidden=0 AND inStock>0','','inStock',$limit);
-		
+
 				// Render List
 				$c .= $this->showDatabaseList('Products:',$res,'uid,itemnumber,title,inStock');
 			break;

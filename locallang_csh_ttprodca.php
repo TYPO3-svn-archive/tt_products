@@ -21,8 +21,6 @@ $LOCAL_LANG = Array (
 	'it' => Array (
 	),
 	'fr' => Array (
-		'.description' => 'Shop Cartes de crédit',
-		'.details' => 'Quelques commandes seront payes avec cartes de crédit. Cachez cettes données tant bien que mal. Effacez-les le plus tôt possible.',
 	),
 	'es' => Array (
 	),

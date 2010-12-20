@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2010 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
@@ -31,87 +31,83 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <franz@ttproducts.de>
+ * @author  Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-global $TYPO3_CONF_VARS;
 
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_activity.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_info.php');
+require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_info_view.php');
+require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
+require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
+require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
 
 
 class tx_ttproducts_control {
 	var $pibase; // reference to object of pibase
-	var $cnf;
+	var $cObj;
 	var $conf;
 	var $config;
 	var $basket; 	// the basket object
-
-	var $tt_products; 			// object of the type tx_ttproducts_product
-	var $tt_products_articles;		// object of the type tx_table_db
-	var $tt_products_cat;			// object of the type tx_ttproducts_category
-	var $fe_users;				// object of the type tx_table_db
-	var $paymentshipping; 			// object of the type tx_ttproducts_paymentshipping
-	var $templateCode='';			// In init(), set to the content of the templateFile. Used by default in getView()
-	var $activityArray;			// activities for the CODEs
-	var $viewTable;
-	var $price;
+	var $templateCode='';		// In init(), set to the content of the templateFile. Used by default in getView()
+	var $activityArray;		// activities for the CODEs
+	var $funcTablename;
 	var $error_code = array();
-	var $marker; // marker functions
+	var $subpartmarkerObj; // subpart marker functions
+	var $urlObj; // url functions
+	var $urlArray; // overridden url destinations
+	var $bUseArtcles;
 
 
 	/**
-	 * Getting all tt_products_cat categories into internal array
+	 * Initialization of member variables
+	 *
+	 * @param	object		$$pibase: object derived from tslib_pibase
+	 * @param	string		$funcTablename: functional table name
+	 * @param	string		$$templateCode: HTML template
+	 * @param	integer		$bUseArtcles: useArticles configuration
+	 * @param	array		out: $$error_code: contains error indices
+	 * @return	void
 	 */
-	function init (&$pibase, &$cnf, &$templateCode, &$basket, &$tt_products, &$tt_products_articles, &$tt_products_cat, &$fe_users, &$price, &$paymentshipping, &$error_code)  {
+	function init(&$pibase, $funcTablename, &$templateCode, $bUseArtcles, &$error_code)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = &$pibase;
-		$this->cnf = &$cnf;
+		$this->cObj = &$pibase->cObj;
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 		$this->templateCode = &$templateCode;
-		$this->basket = &$basket;
-
-		$this->tt_products = &$tt_products;
-		$this->tt_products_articles = &$tt_products_articles;
-		$this->tt_products_cat = &$tt_products_cat;
-		$this->fe_users = &$fe_users;
-		$this->price = &$price;
-		$this->paymentshipping = &$paymentshipping;
-
-		$this->viewTable = &$basket->viewTable;
+		$this->basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$this->funcTablename = $funcTablename;
+		$this->bUseArtcles = $bUseArtcles;
 		$this->error_code = &$error_code;
 
-		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->marker->init($this->pibase, $this->cnf, $this->basket);
-	} // init
-
-
-	function getOrderUid ($orderObj)	{
-		$rc = FALSE;
-		if (count($this->basket->itemArray))	{
-			$orderUid = $orderObj->getUid();
-			if (!$orderUid)	{
-				$orderUid = $orderObj->getBlankUid();
-			}
-			$rc = $orderUid;
+		$this->subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
+		$this->subpartmarkerObj->init($this->cObj);
+		$this->urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view'); // a copy of it
+		// This handleURL is called instead of the THANKS-url in order to let handleScript process the information if payment by credit card or so.
+		$this->urlArray = array();
+		if ($this->basket->basketExtra['payment.']['handleURL'])	{
+			$this->urlArray['form_url_thanks'] = $this->basket->basketExtra['payment.']['handleURL'];
 		}
-		return $rc;
-	}
+		if ($this->basket->basketExtra['payment.']['handleTarget'])	{	// Alternative target
+			$this->urlArray['form_url_target'] = $this->basket->basketExtra['payment.']['handleTarget'];
+		}
+		$this->urlObj->setUrlArray($this->urlArray);
+	} // init
 
 
 	/**
 	 * returns the activities in the order in which they have to be processed
 	 *
-	 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
-	 * @return	  void
+	 * @param	array		$activities: activities which need handling
+	 * @return	void
 	 */
-	function transformActivities ($activities)	{
+	function transformActivities($activities)	{
 		$retActivities = array();
 		$codeActivities = array();
 		$codeActivityArray =  Array (
@@ -121,7 +117,6 @@ class tx_ttproducts_control {
 				'products_info',
 				'products_payment',
 				'products_customized_payment',
-				'products_verify',
 				'products_finalize',
 		);
 
@@ -164,113 +159,55 @@ class tx_ttproducts_control {
 			}
 			$retActivities = array_merge ($retActivities, $codeActivities);
 		}
+
 		return ($retActivities);
 	}
-
 
 	/**
 	 * processing of the payment script
 	 *
 	 * @param	boolean		out: $$bFinalize: determines if the order will be finalized afterwards
 	 * @param	object		$basketView: tx_ttproducts_basket_view
+	 * @param	object		$infoViewObj: tx_ttproducts_info_view
 	 * @return	string		out: content of payment script
 	 */
-	public function &processPayment ($orderUid, $cardRow, $pidArray, $currentPaymentActivity, &$bFinalize, &$errorMessage)	{
+	function &processPayment(&$bFinalize, &$basketView, &$infoViewObj)	{
 		global $TSFE;
 
 		$content = '';
-		include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-		$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
-		$basketView->init ($this->basket, $this->templateCode, $this->error_code);
-
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-		$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
+		$this->basket->getCalculatedSums();
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 
-		if ($handleScript)	{
-
-			$content.= $this->paymentshipping->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $order, $this->conf['paymentActivity'], $bFinalize);
-		} else if (strpos($handleLib,'transactor') !== FALSE && t3lib_extMgm::isLoaded($handleLib))	{
-				// Payment Transactor
-			require_once(t3lib_extMgm::extPath($handleLib) . 'lib/class.tx_' . $handleLib . '_api.php');
-		// Get references to the concerning baskets
-			$calculatedArray = $this->basket->getCalculatedArray();
-			$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
-			$addQueryString = array();
-			$excludeList = '';
-			$linkParams = $this->marker->getLinkParams($excludeList,$addQueryString,TRUE);
-			$markerArray = $this->marker->getGlobalMarkers();
-			tx_transactor_api::init($this->pibase, $this->cObj, $this->conf);
-			$content = tx_transactor_api::includeHandleLib(
-				$handleLib,
-				$this->basket->basketExtra['payment.']['handleLib.'],
-				TT_PRODUCTS_EXTkey,
-				$this->basket->getItemArray(),
-				$calculatedArray,
-				$this->basket->recs['delivery']['note'],
-				$this->conf['paymentActivity'],
-				$currentPaymentActivity,
-				$infoObj->infoArray,
-				$pidArray,
-				$linkParams,
-				$this->basket->order['orderTrackingNo'],
-				$orderUid,
-				$cardRow,
-				$bFinalize,
-				$markerArray,
-				$templateFilename,
-				$localTemplateCode,
-				$errorMessage
-			);
-
-			if ($errorMessage == '' && $content=='' && !$bFinalize && $localTemplateCode != '')	{
-
-				$content = $basketView->getView(
-					$localTemplateCode,
-					'PAYMENT',
-					$infoObj,
-					FALSE,
-					FALSE,
-					TRUE,
-					'###TRANSACTOR_FORM_TEMPLATE###',
-					$markerArray
-				);
-
-			}
-		} else if (strpos($handleLib,'paymentlib') !== FALSE && t3lib_extMgm::isLoaded($handleLib)) {
-
-			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001($handleLib);
-
+		if (t3lib_extMgm::isLoaded ('paymentlib'))	{
+			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('paymentlib');
 			$paymentlibVersion = $eInfo['version'];
-			$phpVersion = phpversion();
-			if (isset($this->basket->basketExtra['payment.']['handleLib.']) && is_array($this->basket->basketExtra['payment.']['handleLib.']))	{
-				$gatewayExtName = $this->basket->basketExtra['payment.']['handleLib.']['extName'];
-			}
-
-			if (version_compare($paymentlibVersion, '0.2.1', '>=') && version_compare($paymentlibVersion, '0.4.0', '<') && version_compare($phpVersion, '5.0.0', '>='))	{
-				if ($gatewayExtName != '' && t3lib_extMgm::isLoaded($gatewayExtName))	{
-					$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
-
-					// Payment Library
-					require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
-
-					$paymentObj = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-					$paymentObj->init(
-						$this->pibase,
-						$basketView,
-						$infoObj,
-						$this->urlObj
-					);
-
-					$content = $paymentObj->includeHandleLib(
-						$handleLib,
-						$this->basket->basketExtra['payment.']['handleLib.'],
-						$bFinalize
-					);
-				}
-			}
 		}
 
+		if ($handleScript)	{
+			$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+			$content = $paymentshippingObj->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $this->conf['paymentActivity'], $bFinalize, $this->pibase, $infoViewObj);
+		} else if (version_compare($paymentlibVersion, '0.3.0', '>=') && version_compare(phpversion(), '5.0.0', '>=') ) {
+			$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
+			if ($handleLib == 'paymentlib')	{
+				// Payment Library
+				require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
+
+				$paymentObj = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
+				$paymentObj->init(
+					$this->pibase,
+					$basketView,
+					$infoViewObj,
+					$this->urlObj
+				);
+
+				$content = $paymentObj->includeHandleLib(
+					$handleLib,
+					$this->basket->basketExtra['payment.']['handleLib.'],
+					$bFinalize
+				);
+			}
+		}
 		return $content;
 	}
 
@@ -281,10 +218,11 @@ class tx_ttproducts_control {
 	 * Takes care of basket, address info, confirmation and gate to payment
 	 * Also the 'products_...' script parameters are used here.
 	 *
-	 * @param		array		  CODEs for display mode
-	 * @return	  void
+	 * @param	array		CODEs for display mode
+	 * @param	string		$error_message: filled in case of errors
+	 * @return	string		text to display
 	 */
-	function doProcessing (&$codes, &$error_message) {
+	function &doProcessing (&$codes, &$error_message) {
 		global $TSFE;
 		global $TYPO3_DB;
 
@@ -294,35 +232,16 @@ class tx_ttproducts_control {
 		$bBasketEmpty = false;
 		$basketView = '';
 		$order = '';
-		$pidTypeArray = array('PIDthanks','PIDfinalize','PIDpayment');
-		$pidArray = array();
-		foreach ($pidTypeArray as $pidType)	{
-			if ($this->conf[$pidType])	{
-				$pidArray[$pidType] = $this->conf[$pidType];
-			}
-		}
-
-		$update = t3lib_div::_POST('products_update');
-		$payment = t3lib_div::_POST('products_payment');
-		$gpVars = t3lib_div::_GP(TT_PRODUCTS_EXTkey);
-		$activityVarsArray = array(
-			'clear_basket' => 'products_clear_basket',
-			'customized_payment' => 'products_customized_payment',
-			'finalize' => 'products_finalize',
-			'info' => 'products_info',
-			'overview' => 'products_overview',
-			'payment' => 'products_payment',
-			'redeem_gift' => 'products_redeem_gift',
-			'verify' => 'products_verify'
+		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$basketView = &t3lib_div::getUserObj('&tx_ttproducts_basket_view');
+		$basketView->init (
+			$this->pibase,
+			$this->urlArray,
+			$this->bUseArtcles,
+			$this->templateCode,
+			$this->error_code
 		);
-
-		if (!$update && !$payment && isset($gpVars) && is_array($gpVars) && isset($gpVars['activity']) && is_array($gpVars['activity']))	{
-			$changedActivity = key($gpVars['activity']);
-			$theActivity = $activityVarsArray[$changedActivity];
-			if ($theActivity)	{
-				$activityArray[$theActivity] = $gpVars['activity'][$changedActivity];
-			}
-		}
 
 			// use '_x' for coordinates from Internet Explorer if button images are used
 		if (t3lib_div::_GP('products_redeem_gift') || t3lib_div::_GP('products_redeem_gift_x'))    {
@@ -343,12 +262,10 @@ class tx_ttproducts_control {
 		if (t3lib_div::_GP('products_customized_payment') || t3lib_div::_GP('products_customized_payment_x'))    {
 			$activityArray['products_customized_payment'] = true;
 		}
-		if (t3lib_div::_GP('products_verify') || t3lib_div::_GP('products_verify_x'))    {
-			$activityArray['products_verify'] = TRUE;
-		}
 		if (t3lib_div::_GP('products_finalize') || t3lib_div::_GP('products_finalize_x'))    {
 			$activityArray['products_finalize'] = true;
 		}
+
 		$codeActivityArray=array();
 		$bBasketCode = false;
 		if (is_array($codes)) {
@@ -356,7 +273,7 @@ class tx_ttproducts_control {
 				if ($code=='BASKET')	{
 					$codeActivityArray['products_basket']=true;
 					$bBasketCode = true;
-				} elseif ($code=='INFO' && !($activityArray['products_payment'] || $activityArray['products_verify'] || $activityArray['products_finalize']))	{
+				} elseif ($code=='INFO' && !($activityArray['products_payment'] || $activityArray['products_finalize']))	{
 					$codeActivityArray['products_info']=true;
 					$bBasketCode = true;
 				} elseif ($code=='OVERVIEW') {
@@ -377,58 +294,43 @@ class tx_ttproducts_control {
 			$this->activityArray = $codeActivityArray;
 		}
 
-		$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
-		$infoObj->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping, $activityArray['products_payment']);
-		if ($infoObj->checkRequired('billing')=='')	{
-			$infoObj->mapPersonIntoDelivery();
+		$infoViewObj = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
+		$infoViewObj->init(
+			$this->pibase,
+			$this->basket->recs,
+			$activityArray['products_payment']
+		);
+		if ($infoViewObj->checkRequired('billing')=='')	{
+			$infoViewObj->mapPersonIntoDelivery();
 		}
 
 		if (count($this->basket->itemArray) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
 			$basket_tmpl = '';
-
 			if (count($this->activityArray)) {
 				// $this->basket->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
 				$mainMarkerArray=array();
 				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject.'';  // adding extra preprocessing CObject
-				$bFinalize = FALSE; // no finalization must be called.
+				$bFinalize = false; // no finalization must be called.
 
-				if ($this->activityArray['products_info'] || $this->activityArray['products_payment'] || $this->activityArray['products_customized_payment'] || $this->activityArray['products_verify'] || $this->activityArray['products_finalize'])	{
+				if ($this->activityArray['products_info'] || $this->activityArray['products_payment'] || $this->activityArray['products_customized_payment'] || $this->activityArray['products_finalize'])	{
 					// get credit card info
-					include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_card.php');
-					$cardObj = t3lib_div::makeInstance('tx_ttproducts_card');
-					$cardObj->init(
-						$this->pibase,
-						$this->cnf,
-						$this->basket->recs,
-						$this->basket->basketExtra['payment.']['creditcards']
-					);
-					$cardObj->getItemMarkerArray($mainMarkerArray);
-					$cardUid = $cardObj->getUid();
-					$cardRow = $cardObj->get($cardUid);
+					$cardObj = &$tablesObj->get('sys_products_cards');
+					$cardObj->getItemMarkerArray ($mainMarkerArray);
 
 					// get bank account info
-					include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_account.php');
-					$account = t3lib_div::makeInstance('tx_ttproducts_account');
-					$account->init(
-						$this->pibase,
-						$this->cnf,
-						$this->basket->recs,
-						$this->basket->basketExtra['payment.']['accounts']
-					);
-					$account->getItemMarkerArray($mainMarkerArray);
+					$accountObj = &$tablesObj->get('sys_products_accounts');
+					$accountObj->getItemMarkerArray ($mainMarkerArray);
 				}
 
 				foreach ($this->activityArray as $activity => $value) {
 					if ($value) {
-						$currentPaymentActivity = array_search($activity, $activityVarsArray);
-
 							// perform action
 						switch($activity)	{
 							case 'products_clear_basket':
 								// Empties the shopping basket!
 								$this->basket->clearBasket(TRUE);
-								$bBasketEmpty = TRUE;
+								$bBasketEmpty = true;
 							break;
 							case 'products_basket':
 								if (count($this->activityArray) == 1) {
@@ -436,7 +338,7 @@ class tx_ttproducts_control {
 								}
 							break;
 							case 'products_overview':
-								$this->pibase->load_noLinkExtCobj();	// TODO
+								tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase);	// TODO
 								$basket_tmpl = 'BASKET_OVERVIEW_TEMPLATE';
 							break;
 							case 'products_redeem_gift': 	// this shall never be the only activity
@@ -444,17 +346,16 @@ class tx_ttproducts_control {
 									$basket_tmpl = 'BASKET_TEMPLATE_NOT_LOGGED_IN';
 								} else {
 									$uniqueId = t3lib_div::trimExplode ('-', $this->basket->recs['tt_products']['giftcode'], true);
-									$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.$uniqueId[1].'\''.' AND NOT deleted' ;
+									$query='uid=\''.intval($uniqueId[0]).'\' AND crdate=\''.intval($uniqueId[1]).'\''.' AND NOT deleted' ;
 									$giftRes = $TYPO3_DB->exec_SELECTquery('*', 'tt_products_gifts', $query);
 									$row = $TYPO3_DB->sql_fetch_assoc($giftRes);
-									$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
 
+									$pricefactor = doubleval($this->conf['creditpoints.']['pricefactor']);
 									if ($row && $pricefactor > 0) {
 										$money = $row['amount'];
 										$uid = $row['uid'];
 										$fieldsArray = array();
 										$fieldsArray['deleted']=1;
-
 											// Delete the gift record
 										$TYPO3_DB->exec_UPDATEquery('tt_products_gifts', 'uid='.intval($uid), $fieldsArray);
 										$creditpoints = $money / $pricefactor;
@@ -466,131 +367,57 @@ class tx_ttproducts_control {
 								}
 							break;
 							case 'products_info':
-								$this->pibase->load_noLinkExtCobj(); // TODO
+								// if (!$this->activityArray['products_payment'] && !$this->activityArray['products_finalize']) {
+								tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase); // TODO
 								$basket_tmpl = 'BASKET_INFO_TEMPLATE';
 								// }
 							break;
 							case 'products_payment':
-								$this->pibase->load_noLinkExtCobj();	// TODO
+								tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase);	// TODO
 								$pidagb = intval($this->conf['PIDagb']);
 
-								$checkRequired = $infoObj->checkRequired();
-								$checkAllowed = $infoObj->checkAllowed();
-								if ($this->paymentshipping->useCreditcard ())	{
+								$checkRequired = $infoViewObj->checkRequired();
+								$checkAllowed = $infoViewObj->checkAllowed();
+								$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+								if ($paymentshippingObj->useCreditcard ())	{
 									$cardRequired = $cardObj->checkRequired();
 								}
-								if ($this->paymentshipping->useAccount())	{
-									$accountRequired = $account->checkRequired();
+
+								if ($paymentshippingObj->useAccount())	{
+									$accountRequired = $accountObj->checkRequired();
 								}
-
-								if ($this->conf['paymentActivity'] == 'payment' || $this->conf['paymentActivity'] == 'verify')	{
-
-									if (!is_object($order))	{
-										include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-
-											// order
-										$order = &t3lib_div::getUserObj('tx_ttproducts_order');
-										$order->init(
-											$this->pibase,
-											$this->cnf,
-											$this->tt_products,
-											$this->tt_products_articles,
-											$this->tt_products_cat,
-											$this->basket,
-											$this->conf['useArticles']
-										);
-									}
-/*									if ($this->paymentshipping->useGatewayRequest ())	{
+								if (trim($this->conf['paymentActivity'])=='payment')	{
+									$order = &$tablesObj->get('sys_products_orders');
+									if ($paymentshippingObj->useGatewayRequest ())	{
 										require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
 										$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-										$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $infoObj, $card, $account);
-										$paymentErrorMsg = $paymentlib->checkRequired($this->basket->basketExtra['payment.']['handleLib.']);
-									}*/
-									$handleLib = $this->paymentshipping->getHandleLib('request');
-// 									if ($handleLib == '')	{
-// 										$handleLib = $paymentshippingObj->getHandleLib('form');
-// 									}
-
-									if (strpos($handleLib,'transactor') !== FALSE)	{
-										// Payment Transactor
-										require_once(t3lib_extMgm::extPath($handleLib) . 'lib/class.tx_' . $handleLib . '_api.php');
-										tx_transactor_api::init($this->pibase, $this->cObj, $this->conf);
-										$referenceId = tx_transactor_api::getReferenceUid(
-											$handleLib,
-											$this->basket->basketExtra['payment.']['handleLib.'],
-											TT_PRODUCTS_EXTkey,
-											$orderUid
-										);
-										$addQueryString = array();
-										$excludeList = '';
-										$linkParams = $this->marker->getLinkParams($excludeList,$addQueryString,TRUE);
-										$paymentErrorMsg = tx_transactor_api::checkRequired(
-											$referenceId,
-											$this->basket->basketExtra['payment.']['handleLib'],
-											$this->basket->basketExtra['payment.']['handleLib.'],
-											TT_PRODUCTS_EXTkey,
-											$this->basket->getCalculatedArray(),
-											$this->conf['paymentActivity'],
-											$pidArray,
-											$linkParams,
-											$this->basket->order['orderTrackingNo'],
-											$orderUid,
-											$cardRow
-										);
-									} else if (strpos($handleLib,'paymentlib') !== FALSE)	{
-										require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
-										$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-										$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $infoObj, $card, $account);
+										$paymentlib->init($this->pibase, $basketView, $infoViewObj, $this->urlObj);
 										$paymentErrorMsg = $paymentlib->checkRequired($this->basket->basketExtra['payment.']['handleLib.']);
 									}
 								}
-
 								if ($checkRequired == '' && $checkAllowed == '' && $cardRequired == '' && $accountRequired == '' && $paymentErrorMsg == '' &&
-									(empty($pidagb) || $_REQUEST['recs']['personinfo']['agb'] || $this->pibase->piVars['agb'] || $infoObj->infoArray['billing']['agb'])) {
+									(empty($pidagb) || $_REQUEST['recs']['personinfo']['agb'] || t3lib_div::_GET('products_payment') || $infoViewObj->infoArray['billing']['agb'])) {
 
-									// basket view
-									if (!is_object($basketView))	{
-										include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
-										$basketView->init ($this->basket, $this->templateCode, $this->error_code);
-									}
-									if ($this->conf['paymentActivity'] == 'payment' || $this->conf['paymentActivity'] == 'verify')	{
-
-										$orderUid = $this->getOrderUid($order);
-										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] =
-											$this->processPayment(
-												$orderUid,
-												$cardRow,
-												$pidArray,
-												$currentPaymentActivity,
-												$bFinalize,
-												$errorMessage
-											);
-
-										if ($errorMessage != '')	{
-											$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $errorMessage;
-										}
-/*
-										$paymentContent = '';
-										$this->processPayment($paymentContent, $bFinalize, $order, $basketView, $infoObj, $cardObj, $account);
-										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $paymentContent;*/
+									if ($this->conf['paymentActivity'] == 'payment')	{
+										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $this->processPayment($bFinalize, $basketView, $infoViewObj);
 									} else {
 										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 									}
-									$content .= $basketView->getView($empty, 'PAYMENT', $infoObj, $this->activityArray['products_info'], false, true, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
+									$content .= $basketView->getView($empty, 'PAYMENT', $infoViewObj, $this->activityArray['products_info'], false, true, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
 								} else {	// If not all required info-fields are filled in, this is shown instead:
-									$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-									$label = '';
+									$infoViewObj->infoArray['billing']['error'] = 1;
+									$content .= $this->cObj->getSubpart($this->templateCode,$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 									$addQueryString = array();
 									$overwriteMarkerArray = array();
-									if ($pidagb && !$_REQUEST['recs']['personinfo']['agb'] &&  !$infoObj->infoArray['billing']['agb'] && !t3lib_div::_GET('products_payment')) {
+									$label = '';
+									if ($pidagb && !$_REQUEST['recs']['personinfo']['agb'] && !t3lib_div::_GET('products_payment') && !$infoViewObj->infoArray['billing']['agb']) {
 										 // so AGB has not been accepted
-										$label = $this->pibase->pi_getLL('accept_AGB');
 										$addQueryString['agb']=0;
+										$label = tx_div2007_alpha::getLL($this->pibase,'accept_AGB');
 									} else if ($cardRequired)	{
-										$label = '*'.$this->pibase->pi_getLL($cardObj->tablename.'.'.$cardRequired).'*';
+										$label = '*'.tx_div2007_alpha::getLL($this->pibase, $cardObj->tablename.'.'.$cardRequired).'*';
 									} else if ($accountRequired)	{
-										$label = '*'.$this->pibase->pi_getLL($account->tablename).': '.$this->pibase->pi_getLL($account->tablename.'.'.$accountRequired).'*';
+										$label = '*'.tx_div2007_alpha::getLL($this->pibase,$accountObj->tablename).': '.tx_div2007_alpha::getLL($this->pibase,$accountObj->tablename.'.'.$accountRequired).'*';
 									} else if ($paymentErrorMsg)	{
 										$label = $paymentErrorMsg;
 									} else {
@@ -600,122 +427,50 @@ class tx_ttproducts_control {
 											$editPID = $TSFE->tmpl->setup['plugin.']['tx_srfeuserregister_pi1.']['editPID'];
 											if ($TSFE->loginUser && $editPID) {
 												$addParams = array ('products_payment' => 1);
-												$addParams = $this->marker->getLinkParams('',$addParams,true);
+												$addParams = $this->urlObj->getLinkParams('',$addParams,true);
 												$srfeuserBackUrl = $this->pibase->pi_getPageLink($TSFE->id,'',$addParams);
 												$srfeuserParams = array('tx_srfeuserregister_pi1[backURL]' => $srfeuserBackUrl);
-												$addParams = $this->marker->getLinkParams('',$srfeuserParams,true);
-												$overwriteMarkerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($editPID,'',$addParams);
+												$addParams = $this->urlObj->getLinkParams('',$srfeuserParams,true);
+												$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($editPID,'',$addParams);
 											}
 										} else {
-											$label = 'field: '.$checkRequired;
+											$tmpArray = t3lib_div::trimExplode('|', tx_div2007_alpha::getLL($this->pibase, 'missing'));
+											$label = tx_div2007_alpha::getLL($this->pibase, 'missing_'.$checkRequired);
+											if ($label)	{
+												$label = $tmpArray[0] .' '. $label . ' '. $tmpArray[1];
+											} else {
+												$label = 'field: '.$checkRequired;
+											}
 										}
 									}
-									$markerArray = $this->marker->addURLMarkers(0, array(), $addQueryString);
-
+									$markerArray = $this->urlObj->addURLMarkers(0, array(),$addQueryString);
 									$markerArray['###ERROR_DETAILS###'] = $label;
 									$markerArray = array_merge($markerArray,$overwriteMarkerArray);
-
-									$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
+									$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 								}
 							break;
 							// a special step after payment and before finalization needed for some payment systems
 							case 'products_customized_payment':
-							case 'products_verify':
-								if ($this->conf['paymentActivity']=='verify' || $this->conf['paymentActivity']=='customized' /* deprecated */)	{
-									if (!is_object($order))	{
-										include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-
-										$order = &t3lib_div::getUserObj('tx_ttproducts_order');
-										$order->init(
-											$this->pibase,
-											$this->cnf,
-											$this->tt_products,
-											$this->tt_products_articles,
-											$this->tt_products_cat,
-											$this->basket,
-											$this->conf['useArticles']
-										);
-									}
+								if (trim($this->conf['paymentActivity'])=='customized')	{
 									// basket view
-									if (!is_object($basketView))	{
-										include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
-										$basketView->init ($this->basket, $this->templateCode, $this->error_code);
-									}
-									$paymentContent = '';
-									$orderUid = $this->getOrderUid($order);
-									$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] =
-										$this->processPayment(
-											$orderUid,
-											$cardRow,
-											$pidArray,
-											$currentPaymentActivity,
-											$bFinalize,
-											$errorMessage
-										);
-
-									if ($errorMessage != '')	{
-										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $errorMessage;
-									}
-
-/*									$this->processPayment($paymentContent, $bFinalize, $order, $basketView, $infoObj, $cardObj, $account);
-									$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $paymentContent;*/
-									if (!$bFinalize)	{
-										$content = $basketView->getView($empty, 'PAYMENT', $infoObj, $this->activityArray['products_info'], false, true, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
-									}
-								} else {
-									$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
+									$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $this->processPayment($bFinalize, $basketView, $infoViewObj);
 								}
 							break;
 							case 'products_finalize':
-
-								$handleLib = $this->paymentshipping->getHandleLib('request');
-								if ($handleLib == '')	{
-									$handleLib = $this->paymentshipping->getHandleLib('form');
-								}
-
-								if ($handleLib != '') {
-									if (!is_object($order)) {
-										include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-										// order
-										$order = &t3lib_div::getUserObj('tx_ttproducts_order');
-										$order->init(
-											$this->pibase,
-											$this->cnf,
-											$this->tt_products,
-											$this->tt_products_articles,
-											$this->tt_products_cat,
-											$this->basket,
-											$this->conf['useArticles']
-										);
-									}
-									$orderUid = $this->getOrderUid($order);
-									$rc = $this->processPayment(
-										$orderUid,
-										$cardRow,
-										$pidArray,
-										$currentPaymentActivity,
-										$bFinalize,
-										$errorMessage
-									);
-
-//									$test = $this->processPayment($content, $bFinalize, $order, $basketView, $infoObj, $cardObj, $account);
+								$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+								// ############## Florian Strauß ############# add an etxra step for pre-finalize payment
+								if ($paymentshippingObj->useGatewayRequest()) {
+									$rc = $this->processPayment($bFinalize, $basketView, $infoViewObj);
 									if($bFinalize == FALSE ){
-										$label = $errorMessage;
-										$addQueryString = array();
-										$markerArray = $this->marker->addURLMarkers(0, $markerArray, $addQueryString);
-										$content= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+										$label = $rc;
+										$content = $this->cObj->getSubpart($this->templateCode,$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 										$markerArray['###ERROR_DETAILS###'] = $label;
-										$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
-										$bFinalize = false;
-
-									} else {
-										$bFinalize = true;
+										$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 									}
 								} else {
-									$bFinalize = true;
+									$bFinalize = TRUE;
 								}
-								// ############## florian Strauß  #############
+								// ############## Florian Strauß  #############
 							break;
 							default:
 								// nothing yet
@@ -728,8 +483,8 @@ class tx_ttproducts_control {
 					}
 
 					if ($this->basket->checkMinPrice)	{
-						$basketConf = $this->cnf->getBasketConf('minPrice'); // check the basket limits
-						$bNeedsMinCheck = in_array($activity, array('products_info','products_payment', 'products_customized_payment', 'products_verify', 'products_finalize', 'unknown'));
+						$basketConf = $cnf->getBasketConf('minPrice'); // check the basket limits
+						$bNeedsMinCheck = in_array($activity, array('products_info','products_payment', 'products_customized_payment', 'products_finalize', 'unknown'));
 						if ($bNeedsMinCheck && $basketConf['type'] == 'price')	{
 							$value = $this->basket->calculatedArray['priceTax'][$basketConf['collect']];
 							if (isset($value) && isset($basketConf['collect']) && $value < doubleval($basketConf['value']))	{
@@ -742,13 +497,18 @@ class tx_ttproducts_control {
 						// in case the basket template has been set
 					if ($basket_tmpl) {
 						// basket view
-						if (!is_object($basketView))	{
-							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-							$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
-							$basketView->init ($this->basket, $this->templateCode, $this->error_code);
-						}
-						$content .= $basketView->getView($empty, 'BASKET', $infoObj, $this->activityArray['products_info'], FALSE, TRUE, '###'.$basket_tmpl.'###',$mainMarkerArray);
-						$bFinalize = FALSE;
+
+						$content .= $basketView->getView(
+							$empty,
+							'BASKET',
+							$infoViewObj,
+							$this->activityArray['products_info'],
+							false,
+							true,
+							'###'.$basket_tmpl.'###',
+							$mainMarkerArray
+						);
+						$bFinalize = false;
 						// stop here as soon as the first basket content has been drawn
 						break; // foreach
 					}
@@ -756,92 +516,82 @@ class tx_ttproducts_control {
 
 					// finalization at the end so that after every activity this can be called
 				if ($bFinalize)	{
-					$checkRequired = $infoObj->checkRequired();
-					$checkAllowed = $infoObj->checkAllowed();
+					$checkRequired = $infoViewObj->checkRequired();
+					$checkAllowed = $infoViewObj->checkAllowed();
 					if ($checkRequired == '' && $checkAllowed == '')	{
-						$this->pibase->load_noLinkExtCobj();	// TODO
+						tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase);	// TODO
 						$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-						if (!is_object($order))	{
-							include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
+						$order = &$tablesObj->get('sys_products_orders');
+						$orderUid = $order->getBlankUid();
 
-								// order
-							$order = &t3lib_div::getUserObj('tx_ttproducts_order');
-							$order->init(
-								$this->pibase,
-								$this->cnf,
-								$this->tt_products,
-								$this->tt_products_articles,
-								$this->tt_products_cat,
-								$this->basket,
-								$this->conf['useArticles']
-							);
-						}
-						$orderUid = $this->getOrderUid($order);
-
-						if (!is_object($basketView))	{
-							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-							$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
-							$basketView->init ($this->basket, $this->templateCode, $this->error_code);
-						}
-
-						if ($this->conf['paymentActivity'] == 'finalize') {
-/*							$paymentContent = '';
-							$this->processPayment($paymentContent, $bFinalize, $order, $basketView, $infoObj, $cardObj, $account);
-							$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $paymentContent;*/
-							$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] =
-								$this->processPayment(
-									$orderUid,
-									$cardRow,
-									$pidArray,
-									'finalize',
-									$bFinalize,
-									$errorMessage
-								);
-
-							if ($errorMessage != '')	{
-								$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $errorMessage;
-							}
+						if (trim($this->conf['paymentActivity']) == 'finalize')	{
+							$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $this->processPayment($bFinalize, $basketView, $infoViewObj);
 						} else {
 							$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 						}
 
 						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
-						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $infoObj, false, false, true, '###'.$tmpl.'###', $mainMarkerArray);
+						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $infoViewObj, false, false, true, '###'.$tmpl.'###', $mainMarkerArray);
 
 						include_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_finalize.php');
+
 							// order finalization
 						$activityFinalize = t3lib_div::makeInstance('tx_ttproducts_activity_finalize');
-						$activityFinalize->init($this->pibase, $this->cnf, $this->basket, $this->tt_products, $this->tt_products_cat, $this->fe_users, $order, $mainMarkerArray);
+						$activityFinalize->init(
+							$this->pibase,
+							$order
+						);
 						$activityFinalize->doProcessing(
 							$this->templateCode,
 							$basketView,
-							$this->viewTable,
-							$this->price,
+							$this->funcTablename,
 							$orderUid,
 							$orderConfirmationHTML,
 							$error_message,
-							$infoObj,
-							$mainMarkerArray
+							$infoViewObj
 						);
 								// Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
 						$contentTmp = $orderConfirmationHTML;
 
 						if ($this->conf['PIDthanks'] > 0) {
 							$tmpl = 'BASKET_ORDERTHANKS_TEMPLATE';
-							$contentTmpThanks = $basketView->getView($empty, 'BASKET', $infoObj, false, false, true, '###'.$tmpl.'###', $mainMarkerArray);
+							$contentTmpThanks = $basketView->getView(
+								$empty,
+								'BASKET',
+								$infoViewObj,
+								false,
+								false,
+								true, '###'.$tmpl.'###',
+								$mainMarkerArray
+							);
 							if ($contentTmpThanks != '')	{
 								$contentTmp = $contentTmpThanks;
 							}
 						}
+
 						$content .= $contentTmp;
-						$content .= $basketView->getView($empty, 'BASKET', $infoObj, false, false, true, '###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
+						$content .= $basketView->getView(
+							$empty,
+							'BASKET',
+							$infoViewObj,
+							false,
+							false,
+							true,
+							'###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###'
+						);
 
 						// Empties the shopping basket!
 						$this->basket->clearBasket();
 					} else {	// If not all required info-fields are filled in, this is shown instead:
-						$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-						$content = $this->pibase->cObj->substituteMarkerArray($content, $this->marker->addURLMarkers(0, array()));
+						$content .= $this->cObj->getSubpart(
+							$this->templateCode,
+							$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###')
+						);
+						$content = $this->cObj->substituteMarkerArray(
+							$content,
+							$this->urlObj->addURLMarkers(0, array())
+						);
 					}
 				}
 			} else { // if (count($this->activityArray))
@@ -851,33 +601,32 @@ class tx_ttproducts_control {
 			$bBasketEmpty = true;
 		}
 
-		$basketMarkerArray = array();
-		if (!is_object($basketView))	{
-			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-			$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
-			$basketView->init($this->basket, $this->templateCode, $this->error_code);
-		}
-
 		if ($bBasketEmpty)	{
 			if ($this->activityArray['products_overview']) {
-				$this->pibase->load_noLinkExtCobj();	//
-				$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_OVERVIEW_EMPTY###'));
+				tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase);	//
+				$content .= $this->cObj->getSubpart(
+					$this->templateCode,
+					$this->subpartmarkerObj->spMarker('###BASKET_OVERVIEW_EMPTY###')
+				);
 			} else if ($this->activityArray['products_basket'] || $this->activityArray['products_info'] || $this->activityArray['products_payment']) {
-				$content .= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_TEMPLATE_EMPTY###'));
+				$content .= $this->cObj->getSubpart(
+					$this->templateCode,
+					$this->subpartmarkerObj->spMarker('###BASKET_TEMPLATE_EMPTY###')
+				);
 			}
 		}
-		$basketMarkerArray = $basketView->getMarkerArray();
-		$markerArray = $basketMarkerArray;
+		$markerArray = array();
 		$markerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject;	// adding extra preprocessing CObject
-		$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
+		$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 
 		return $content;
 	} //
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_control.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_control.php']);
+
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_control.php']) {
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_control.php']);
 }
 
 

@@ -2,9 +2,14 @@
 pageAsCategory = 0
   # cat=basic/enable; type=boolean; label=Use Flexforms: Enable the use of Flexforms in the backend.
 useFlexforms = 1
-  # cat=basic/enable; type=string; label=Address table: Name of the address table to be used in the backend. The usage of the 'tx_party_addresses' table is recommended.
+  # cat=basic/enable; type=string; label=Address table: Name of the address table to be used in the backend. The installation of the 'partner' extension is recommended.
 addressTable =
+  # cat=basic/enable; type=string; label=Image upload folder: This is the place where the images lie.
+imageFolder = uploads/pics
+  # cat=basic/enable; type=string; label=Order tables by sorting: Enter a comma separated list of tt_products table names where the items should be listed by sorting in the backend
+orderBySortingTables =
   # cat=basic/enable; type=boolean; label=Use patch 1822: Automatically activated in TYPO3 >= 4.4. Otherwise you need to apply the patch for bug #1822 from bugs.typo3.org or install the extension patch1822 to have an advanced page module.
 usePatch1822 =
   # cat=basic/enable; type=string; label=category where: Foreign table where for the selection of categories. See TSConfig for more info.
 where.category =
+

@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2006 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2008-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
@@ -27,46 +27,28 @@
 /**
  * Part of the tt_products (Shop System) extension.
  *
- * base class with functions for the different activities of the ordering process
+ * functions for the DAM category
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-global $TYPO3_CONF_VARS;
-
-class tx_ttproducts_activity_base {
-
-	/**
-	 * Getting all tt_products_cat categories into internal array
-	 */
-	function init(&$pibase, &$cnf)  {
-		global $TYPO3_DB,$TSFE,$TCA;
-		
-		$this->pibase = &$pibase;
-		$this->cnf = &$cnf;
-		$this->conf = &$cnf->conf;
-		$this->config = &$cnf->config;
-	} // init
+require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category.php');
 
 
-	/**
-	 * Do all the things to be done for this activity
-	 */	
-	function doProcessing ()	{
-		
-	}
+class tx_ttproducts_damcategory extends tx_ttproducts_category {
+
 }
 
 
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_activity_base.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_activity_base.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_damcategory.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_damcategory.php']);
 }
 
 
