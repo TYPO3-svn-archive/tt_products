@@ -29,7 +29,7 @@
  *
  * basket price calculation functions
  *
- * $Id $
+ * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com>

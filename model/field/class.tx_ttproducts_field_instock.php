@@ -29,7 +29,7 @@
  *
  * functions for the inStock field
  *
- * $Id $
+ * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
