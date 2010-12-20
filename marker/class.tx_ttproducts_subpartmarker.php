@@ -29,7 +29,7 @@
  *
  * subpart marker functions
  *
- * $Id:$
+ * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author	Franz Holzinger <kontakt@fholzinger.com>
