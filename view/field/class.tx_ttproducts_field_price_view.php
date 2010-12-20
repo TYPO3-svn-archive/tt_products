@@ -29,7 +29,7 @@
  *
  * price view functions
  *
- * $Id $
+ * $Id$
  *
  * @author	Franz Holzinger <contact@fholzinger.com>
  * @maintainer	Franz Holzinger <contact@fholzinger.com>

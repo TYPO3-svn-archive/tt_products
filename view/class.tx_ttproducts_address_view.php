@@ -29,7 +29,7 @@
  *
  * functions for the frontend users
  *
- * $Id $
+ * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
