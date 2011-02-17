@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -47,13 +47,23 @@ require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_feuser.php');
 
 class tx_ttproducts_email_div {
 
+
+	function slashName ($name) {
+		$name = str_replace(',' , ' ', $name);
+		$rc = '"' . addcslashes($name, '<>&()\\"' . chr('\n')) . '"';
+		return $rc;
+	}
+
+
 	/**
 	 * Extended mail function
 	 */
-	function send_mail($toEMail,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
+	function send_mail ($toEMail,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
 		global $TYPO3_CONF_VARS;
 
 		include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
+
+		$fromName = self::slashName($fromName);
 
 		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
 		if (class_exists($cls)) {
@@ -68,7 +78,7 @@ class tx_ttproducts_email_div {
 
 			$Typo3_htmlmail->subject = $subject;
 			$Typo3_htmlmail->from_email = $fromEMail;
-			$Typo3_htmlmail->from_name = str_replace (',' , ' ', $fromName);
+			$Typo3_htmlmail->from_name = $fromName;
 			$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
 			$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
 			$Typo3_htmlmail->organisation = '';
@@ -193,7 +203,6 @@ class tx_ttproducts_email_div {
 		}
 	}
 }
-
 
 
 ?>

@@ -107,6 +107,11 @@ class tx_ttproducts_article_base {
 	}
 
 
+	function getPivar ()	{
+		return $this->piVar;
+	}
+
+
 	/**
 	 * Reduces the instock value of the orderRecord with the amount and returns the result
 	 *

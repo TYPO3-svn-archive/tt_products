@@ -119,6 +119,7 @@ class tx_ttproducts_activity_finalize {
 
 		$recipientsArray['shop'] = $this->tt_products_cat->getEmail($this->basket->itemArray);
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
+
 		$markerArray = array_merge($mainMarkerArray,$this->pibase->globalMarkerArray);
 		$markerArray['###CUSTOMER_RECIPIENTS_EMAIL###'] = implode(',', $recipientsArray['customer']);
 		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
@@ -180,7 +181,7 @@ class tx_ttproducts_activity_finalize {
 							$plain_message,
 							$tmp='',
 							$this->conf['orderEmail_from'],
-							$apostrophe.$this->conf['orderEmail_fromName'].$apostrophe
+							$this->conf['orderEmail_fromName']
 						);
 					}
 				}
@@ -352,7 +353,7 @@ class tx_ttproducts_activity_finalize {
 						$plainMessageArray['customer'],
 						$HTMLmailContent,
 						$this->conf['orderEmail_from'],
-						$apostrophe.$this->conf['orderEmail_fromName'].$apostrophe,
+						$this->conf['orderEmail_fromName'],
 						$agbAttachment
 					);
 				}
@@ -364,7 +365,7 @@ class tx_ttproducts_activity_finalize {
 						$plainMessageArray['shop'],
 						$HTMLmailContent,
 						$customerEmail,
-						$apostrophe.$address->infoArray['billing']['name'].$apostrophe,
+						$address->infoArray['billing']['name'],
 						$addcsv
 					);
 				}
@@ -385,7 +386,7 @@ class tx_ttproducts_activity_finalize {
 										$subject,
 										$tmp='',	// no HTML order confirmation email for shop admins
 										$this->conf['orderEmail_from'],
-										$apostrophe.$this->conf['orderEmail_fromName'].$apostrophe
+										$this->conf['orderEmail_fromName']
 									);
 								}
 							}

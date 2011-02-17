@@ -609,7 +609,7 @@ class tx_ttproducts_basket {
 					$value = $row['handling'];
 					$this->calculatedArray['priceTax']['handling'] += $this->price->getModePrice($this->conf['TAXmode'],$value,TRUE,$shippingTax,$this->conf['TAXincluded'],TRUE);
 					$value = $row['shipping'];
-					$this->calculatedArray['priceTax']['shipping'] += $this->price->getModePrice($this->conf['TAXmode'],$value*($count-1),TRUE,$shippingTax,$this->conf['TAXincluded'],TRUE);
+					$this->calculatedArray['priceTax']['shipping'] += $this->price->getModePrice($this->conf['TAXmode'],$value,TRUE,$shippingTax,$this->conf['TAXincluded'],TRUE);
 					$value = $row['shipping2'];
 					if ($count > 1)	{
 						$this->calculatedArray['priceTax']['shipping'] += $this->price->getModePrice($this->conf['TAXmode'],$value*($count-1),TRUE,$shippingTax,$this->conf['TAXincluded'],TRUE);
@@ -619,7 +619,7 @@ class tx_ttproducts_basket {
 				$this->calculatedArray['priceNoTax']['handling'] += $this->price->getModePrice($this->conf['TAXmode'],$value,FALSE,$shippingTax,$this->conf['TAXincluded'],TRUE);
 
 				$value = $row['shipping'];
-				$this->calculatedArray['priceNoTax']['shipping'] += $this->price->getModePrice($this->conf['TAXmode'],$value*($count-1),FALSE,$shippingTax,$this->conf['TAXincluded'],TRUE);
+				$this->calculatedArray['priceNoTax']['shipping'] += $this->price->getModePrice($this->conf['TAXmode'],$value,FALSE,$shippingTax,$this->conf['TAXincluded'],TRUE);
 
 				$value = $row['shipping2'];
 				if ($count > 1)	{

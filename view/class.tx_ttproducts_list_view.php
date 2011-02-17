@@ -853,7 +853,7 @@ class tx_ttproducts_list_view {
 							$addQueryString[$categoryTable->piVar] = $cat;
 						}
 						$this->marker->getSearchParams($addQueryString);
-						$queryString = $this->marker->getLinkParams('begin_at', $addQueryString, FALSE, $bUseBackPid, $categoryTable->piVar);
+						$queryString = $this->marker->getLinkParams('begin_at', $addQueryString, FALSE, $bUseBackPid, $itemTable->piVar, $categoryTable->piVar);
 						$pageLink = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid));
 					}
 
@@ -960,7 +960,7 @@ class tx_ttproducts_list_view {
 					}
 					$markerArray['###ITEM_SINGLE_POST_HTML###'] = $temp;
 					$pid = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
-					$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array(), TRUE))); //$this->getLinkUrl($this->conf['PIDmemo']);
+					$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', array(), TRUE, TRUE, $itemTable->piVar))); //$this->getLinkUrl($this->conf['PIDmemo']);
 
 					// cuts note in list view
 					if (strlen($markerArray['###'.$itemTable->marker.'_NOTE###']) > $this->conf['max_note_length']) {
@@ -1070,7 +1070,7 @@ class tx_ttproducts_list_view {
 
 			$backPID = $this->pibase->piVars['backPID'];
 			$pid = ($backPID ? $backPID : $TSFE->id);
-			$linkUrl = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',$addQueryString,TRUE));
+			$linkUrl = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',$addQueryString,TRUE,TRUE,''));
 			$linkUrl = htmlspecialchars($linkUrl);
 			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>',array('useCacheHash' => TRUE));
 			$bUseCache = $bUseCache && (count($this->basket->itemArray)==0);

@@ -342,7 +342,22 @@ class tx_ttproducts_single_view {
 
 			if ($viewTagArray['LINK_ITEM'])	{
 
-				$linkUrl = tx_div2007_alpha::getPageLink_fh002($this->cObj,$linkPid,'',$this->marker->getLinkParams('',$addQueryString,TRUE,FALSE,$viewCatTable->piVar),array('useCacheHash' => TRUE));
+				$linkUrl = tx_div2007_alpha::getPageLink_fh002(
+					$this->cObj,
+					$linkPid,
+					'',
+					$this->marker->getLinkParams(
+						'',
+						$addQueryString,
+						TRUE,
+						TRUE,
+						'',
+						$viewCatTable->piVar
+					),
+					array(
+						'useCacheHash' => TRUE
+					)
+				);
 				$linkUrl = htmlspecialchars($linkUrl);
 
 				// link back to the list view or basket view
@@ -428,7 +443,7 @@ class tx_ttproducts_single_view {
 			$subpartArray = array();
 			$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'];
 			$pidMemo = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
-			$markerArray['###FORM_MEMO###'] = htmlspecialchars(tx_div2007_alpha::getPageLink_fh002($this->cObj, $pidMemo,'',$this->marker->getLinkParams('', array(), true)));
+			$markerArray['###FORM_MEMO###'] = htmlspecialchars(tx_div2007_alpha::getPageLink_fh002($this->cObj, $pidMemo,'',$this->marker->getLinkParams('', array(), TRUE, TRUE, $itemTableArray[$this->type]->getPivar())));
 
 			$addQueryString = array();
 			if ($pid == $TSFE->id)	{
@@ -493,7 +508,7 @@ class tx_ttproducts_single_view {
 					$addQueryString[$viewCatTable->piVar] = $linkCat;
 				}
 				$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###'] = array('<a href="'. tx_div2007_alpha::getPageLink_fh002($this->cObj, $TSFE->id,'',$this->marker->getLinkParams('',$addQueryString,TRUE,$bUseBackPid,$viewCatTable->piVar),array('useCacheHash' => true)) .'">','</a>');
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###'] = array('<a href="'. tx_div2007_alpha::getPageLink_fh002($this->cObj, $TSFE->id,'',$this->marker->getLinkParams('',$addQueryString,TRUE,$bUseBackPid,'',$viewCatTable->piVar),array('useCacheHash' => true)) .'">','</a>');
 
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
@@ -511,7 +526,7 @@ class tx_ttproducts_single_view {
 					$addQueryString[$viewCatTable->piVar] = $linkCat;
 				}
 				$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="' . tx_div2007_alpha::getPageLink_fh002($this->cObj, $TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,TRUE,$bUseBackPid,$viewCatTable->piVar),array('useCacheHash' => true)) . '">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="' . tx_div2007_alpha::getPageLink_fh002($this->cObj, $TSFE->id,'',$this->marker->getLinkParams('', $addQueryString,TRUE,$bUseBackPid,'',$viewCatTable->piVar),array('useCacheHash' => true)) . '">','</a>');
 			} else {
 				$subpartArray['###LINK_NEXT_SINGLE###'] = '';
 			}

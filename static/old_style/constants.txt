@@ -248,7 +248,7 @@ plugin.tt_products {
   orderEmail_subject = this is the subject
     # cat=plugin.products//; type=boolean; label=HTML email: If set, the order confirmation email is sent as HTML
   orderEmail_htmlmail = 0
-    # cat=plugin.products//; type=string; label=header in apostrophes: If set, the order email subject and sender name will be set inside of apostrophes.
+    # cat=plugin.products//; type=string; label=header in apostrophes: If set, the order email subject will be set inside of apostrophes.
   orderEmail_apostrophe =
     # cat=plugin.products//; type=boolean; label=email notify: If email-notification for the customer is enabled by default (he can change it himself in the tracking module later)
   email_notify_default = 1

@@ -251,7 +251,14 @@ class tx_ttproducts_marker {
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=FALSE,$bUseBackPid=TRUE,$piVarCat='cat') {
+	function getLinkParams (
+		$excludeList='',
+		$addQueryString=array(),
+		$bUsePrefix=FALSE,
+		$bUseBackPid=TRUE,
+		$piVarSingle='product',
+		$piVarCat='cat'
+	) {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
@@ -267,9 +274,12 @@ class tx_ttproducts_marker {
 
 		$this->addQueryStringParam($queryString, 'mode', FALSE);
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
-		$this->addQueryStringParam($queryString, 'article', $bUsePrefix);
-		$this->addQueryStringParam($queryString, 'product', $bUsePrefix);
-		$this->addQueryStringParam($queryString, $piVarCat, $bUsePrefix);
+		if ($piVarSingle != '') {
+			$this->addQueryStringParam($queryString, $piVarSingle, $bUsePrefix);
+		}
+		if ($piVarCat != '') {
+			$this->addQueryStringParam($queryString, $piVarCat, $bUsePrefix);
+		}
 		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 

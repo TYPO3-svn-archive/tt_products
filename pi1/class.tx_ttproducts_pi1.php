@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2010 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 2011 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -89,44 +89,44 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		// Internal
 	var $uid_list='';				// List of existing uid's from the basket, set by initBasket()
 	var $pid_list;					// list of page ids
-	var $orderRecord = array();			// Will hold the order record if fetched.
+	var $orderRecord = array();		// Will hold the order record if fetched.
 
 		// Internal: init():
-	var $templateCode='';				// In init(), set to the content of the templateFile.
+	var $templateCode='';			// In init(), set to the content of the templateFile.
 	var $templateFile;
-	var $config=array();				// updated configuration
+	var $config=array();			// updated configuration
 	var $conf;
-	var $cnf;					// object for configuration purposes
+	var $cnf;						// object for configuration purposes
 	var $tt_product_single=array();
 	var $globalMarkerArray=array();
 	var $externalCObject='';
 		// mkl - multicurrency support
-	var $currency = '';			// currency iso code for selected currency
+	var $currency = '';				// currency iso code for selected currency
 	var $baseCurrency = '';			// currency iso code for default shop currency
-	var $xrate = 1.0;			// currency exchange rate (currency/baseCurrency)
+	var $xrate = 1.0;				// currency exchange rate (currency/baseCurrency)
 
-	var $mkl; 				// if compatible to mkl_products
-	var $tt_products; 			// object of the type tx_ttproducts_product
+	var $mkl; 						// if compatible to mkl_products
+	var $tt_products; 				// object of the type tx_ttproducts_product
 	var $tt_products_articles;		// object of the type tx_table_db
 	var $tt_products_cat; 			// object of the type tx_ttproducts_category
 
 	var $tt_content; 				// object of the type tx_ttproducts_content
-	var $page;	 				// object of the type tx_ttproducts_page
+	var $page;	 					// object of the type tx_ttproducts_page
 	var $paymentshipping; 				// object of the type tx_ttproducts_paymentshipping
 	var $fe_users;					// object of the type tx_table_db
 	var $bank_de;
 	var $tx_dam;					// object of the type tx_table_db
 	var $tx_dam_cat;				// object of the type tx_table_db
-	var $price;	 				// object for price functions
+	var $price;	 					// object for price functions
 	var $marker; 					// object for marker functions
 	var $basket;					// basket object
 	var $control;					// object for the control of the application
 	var $singleView;				// single view object
 	var $memoView;					// memo view and data object
 
-	var $pid;					// the page to which the script shall go
+	var $pid;						// the page to which the script shall go
 
-	var $xajax;					// xajax object
+	var $xajax;						// xajax object
 	var $ajaxconf;					// configuration from xajax
 	var $javascript;				// JavaScript object
 	var $codeArray;					// Codes
@@ -345,7 +345,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		// *************************************
 		if (!$this->errorMessage) {
 			$this->basket->getCalculatedBasket(); // get the basket->itemArray
-			$this->basket->getCalculatedSums ($this->basket->recs);
+			$this->basket->getCalculatedSums($this->basket->recs);
 			$this->templateCode=$this->getTemplateCode('BASKET');
 
 			$this->control->init (

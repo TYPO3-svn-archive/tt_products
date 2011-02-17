@@ -334,11 +334,12 @@ class tx_ttproducts_control {
 		if (t3lib_div::_GP('products_overview') || t3lib_div::_GP('products_overview_x'))    {
 			$activityArray['products_overview'] = true;
 		}
-		if (t3lib_div::_GP('products_info') || t3lib_div::_GP('products_info_x'))    {
-			$activityArray['products_info'] = true;
-		}
-		if (t3lib_div::_GP('products_payment') || t3lib_div::_GP('products_payment_x'))    {
-			$activityArray['products_payment'] = true;
+		if (!$update) {
+			if (t3lib_div::_GP('products_payment') || t3lib_div::_GP('products_payment_x'))    {
+				$activityArray['products_payment'] = TRUE;
+			} else if (t3lib_div::_GP('products_info') || t3lib_div::_GP('products_info_x'))    {
+				$activityArray['products_info'] = TRUE;
+			}
 		}
 		if (t3lib_div::_GP('products_customized_payment') || t3lib_div::_GP('products_customized_payment_x'))    {
 			$activityArray['products_customized_payment'] = true;

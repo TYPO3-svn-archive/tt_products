@@ -234,11 +234,18 @@ class tx_ttproducts_order {
 		$uid_voucher = ''; // define it here
 		$cpArray = $TSFE->fe_user->getKey('ses','cp');
 
+		$usedCreditpoints = 0;
+		if (isset($_REQUEST['recs']) && is_array($_REQUEST['recs']) && isset($_REQUEST['recs']['tt_products']) && is_array($_REQUEST['recs']['tt_products'])) {
+			$usedCreditpoints = floatval($_REQUEST['recs']['tt_products']['creditpoints']);
+		}
+
 		if ($this->conf['creditpoints.']) {
 			$fieldsArrayFeUsers['tt_products_creditpoints'] =
 				floatval($TSFE->fe_user->user['tt_products_creditpoints'] -
-					$this->basket->recs['tt_products']['creditpoints'] +
-					t3lib_div::_GP('creditpoints_saved'));
+					$usedCreditpoints);
+			if ($fieldsArrayFeUsers['tt_products_creditpoints'] < 0) {
+				$fieldsArrayFeUsers['tt_products_creditpoints'] = 0;
+			}
 		}
 
 		if ($address->infoArray['billing']['date_of_birth'])	{
@@ -259,7 +266,7 @@ class tx_ttproducts_order {
 
 		if ($this->basket->recs['tt_products']['vouchercode'] != '') {
 			// first check if vouchercode exist and is not their own vouchercode
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'fe_users', 'username="'.$this->basket->recs['tt_products']['vouchercode'].'"');
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'fe_users', 'username=' . $TYPO3_DB->fullQuoteStr($this->basket->recs['tt_products']['vouchercode'], 'fe_users'));
 			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				$uid_voucher = $row['uid'];
 			}
@@ -304,9 +311,9 @@ class tx_ttproducts_order {
 		$fieldsArray['tracking_code'] = $this->basket->order['orderTrackingNo'];
 		$fieldsArray['agb'] = intval($address->infoArray['billing']['agb']);
 
-		if ($this->conf['creditpoints.'] && $this->basket->recs['tt_products']['creditpoints'] != '')	{
+		if ($this->conf['creditpoints.'] && $usedCreditpoints)	{
 
-			$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
+			$fieldsArray['creditpoints'] = $usedCreditpoints;
 			$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
 			$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
 			$fieldsArray['creditpoints_gifts'] = $cpArray['gift']['amount'];
