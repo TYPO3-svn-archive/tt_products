@@ -64,7 +64,7 @@ class tx_ttproducts_pi1_base extends tslib_pibase {
 	 * @param	[type]		$conf: ...
 	 * @return	[type]		...
 	 */
-	function main($content,&$conf)	{
+	function main($content,$conf)	{
 		global $TSFE;
 
 		if ($conf['templateFile'] != '')	{
