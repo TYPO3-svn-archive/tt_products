@@ -57,39 +57,7 @@ $TT->push('Include Frontend libraries','');
     require_once(PATH_t3lib.'class.t3lib_cs.php');
 $TT->pull();
 
-$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
-if ($typoVersion >= 4003000)    {
-
-	// ***********************************
-	// Initializing the Caching System
-	// ***********************************
-
-	$TT->push('Initializing the Caching System','');
-			// TODO implement autoloading so that we only require stuff we really need
-		require_once(PATH_t3lib . 'class.t3lib_cache.php');
-
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_abstractbackend.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_abstractcache.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_exception.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_factory.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_manager.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_variablecache.php');
-
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_classalreadyloaded.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_duplicateidentifier.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_invalidbackend.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_invalidcache.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_invaliddata.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_nosuchcache.php');
-
-		$typo3CacheManager = t3lib_div::makeInstance('t3lib_cache_Manager');
-		$cacheFactoryClass = t3lib_div::makeInstanceClassName('t3lib_cache_Factory');
-		$typo3CacheFactory = new $cacheFactoryClass($typo3CacheManager);
-
-		unset($cacheFactoryClass);
-	$TT->pull();
-}
-
+//
 // ***********************************
 // Create $TSFE object (TSFE = TypoScript Front End)
 // Connecting to database

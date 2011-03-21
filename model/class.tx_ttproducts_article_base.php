@@ -118,6 +118,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 
 	}
 
+
 	/**
 	 * [Describe function...]
 	 *
@@ -127,6 +128,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	 */
 	function getRelated ($uid, $type) {
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -142,6 +144,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 		 return $rc;
 	}
 
+
 	/**
 	 * [Describe function...]
 	 *
@@ -155,6 +158,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 		return $where;
 	}
 
+
 	/**
 	 * [Describe function...]
 	 *
@@ -164,6 +168,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	 */
 	function addselectConfCat($cat, &$selectConf)	{
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -176,6 +181,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 
 		return $uids;
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -200,6 +206,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 		$hasAdditional = false;
 		return $hasAdditional;
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -240,7 +247,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	 * @return	[type]		...
 	 */
 	function searchWhere(&$searchFieldList, $sw)	{
-		$where = $this->cObj->searchWhere($sw, $searchFieldList, $this->getTableObj()->getAliasName());
+		$where = $this->cObj->searchWhere($sw, $searchFieldList, $this->getTableObj()->getAlias());
 		return $where;
 	} // searchWhere
 
@@ -255,6 +262,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 		return $rc;
 	}
 
+
 	/**
 	 * [Describe function...]
 	 *
@@ -264,29 +272,35 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	 * @return	[type]		...
 	 */
 	function mergeAttributeFields(&$targetRow, &$sourceRow, $bKeepNotEmpty = TRUE)	{
+
 		$fieldArray = array();
-		$fieldArray['text'] = array('title', 'subtitle', 'itemnumber', 'image', 'weight');
+		$fieldArray['data'] = array('title', 'subtitle', 'itemnumber', 'image', 'weight', 'inStock');
 		$fieldArray['number'] = array('price', 'price2', 'directcost');
 
 		foreach ($fieldArray as $type => $fieldTypeArray)	{
 			foreach ($fieldTypeArray as $k => $field)	{
+
 				if (isset($sourceRow[$field]))	{
+
+					$value = $sourceRow[$field];
+
 					if ($type == 'number') {
 						if($bKeepNotEmpty)	{
 							if (!floatval($targetRow[$field]))	{
-								$targetRow[$field] = $sourceRow[$field];
+								$targetRow[$field] = $value;
 							}
 						} else { // $bKeepNotEmpty == FALSE
-							$targetRow[$field] = $sourceRow[$field];
+							$targetRow[$field] = $value;
 						}
-					} else if ($type == 'text')	{
+					} else if ($type == 'data')	{
+
 						if($bKeepNotEmpty)	{
 							if (!$targetRow[$field])	{
-								$targetRow[$field] = $sourceRow[$field];
+								$targetRow[$field] = $value;
 							}
 						} else { // $bKeepNotEmpty == FALSE
 							if (!$targetRow[$field] || $sourceRow[$field] != '')	{
-								$targetRow[$field] = $sourceRow[$field];
+								$targetRow[$field] = $value;
 							}
 						}
 					}
@@ -295,7 +309,6 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 		}
 	}
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_article_base.php']) {

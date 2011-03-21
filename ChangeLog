@@ -1,4 +1,12 @@
+
+2011-03-21 Franz Holzinger <franz@ttproducts.de>
+	* birth day with date_of_birth for sr_feuser_register
+	* markers for pricesums for each tax rate
+	* gift service
+	* enable sorting of categories in category list view
+
 2011-03-01 Franz Holzinger <franz@ttproducts.de>
+	* fix bug 12022: PHP 5.3. warning with parameter of main function
 	* bug fixes needed for PHP 5.3 and TYPO3 4.4
 
 2010-12-20 Franz Holzinger <franz@ttproducts.de>

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -48,7 +48,16 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	private $bHasBeenInitialised = false;
 	private $taxIncluded;	// if tax is already included in the price
 	var $priceConf; 	// price configuration
-	public $priceFieldArray = array ('price', 'price2', 'pricetax', 'price2tax', 'priceonlytax', 'price2onlytax', 'pricenotax', 'price2notax');
+	public $priceFieldArray = array (
+		'price',
+		'price2',
+		'pricetax',
+		'price2tax',
+		'priceonlytax',
+		'price2onlytax',
+		'pricenotax',
+		'price2notax'
+	);
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -60,10 +69,12 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	 */
 	function init(&$cObj, &$priceConf)	{
 		$this->priceConf = &$priceConf;
+
 		if (!isset($this->priceConf['TAXincluded']))	{
 			$this->priceConf['TAXincluded'] = '1';	// default '1' for TAXincluded
 		}
 		$this->setTaxIncluded($this->priceConf['TAXincluded']);
+
 		$this->bHasBeenInitialised = true;
 	} // init
 
@@ -71,6 +82,7 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	function needsInit()	{
 		return !$this->bHasBeenInitialised;
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -104,6 +116,7 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 		return $rc;
 	}
 
+
 	/**
 	 * [Describe function...]
 	 *
@@ -112,6 +125,7 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	function getTaxIncluded ()	{
 		return $this->taxIncluded;
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -122,6 +136,7 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	function setTaxIncluded ($bTaxIncluded=TRUE)	{
 		$this->taxIncluded = $bTaxIncluded;
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -148,6 +163,7 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 		}
 		return $rc;
 	}
+
 
 	/**
 	 * return the price with tax mode considered
@@ -199,7 +215,7 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	 * @param	[type]		$bEnableTaxZero: ...
 	 * @return	[type]		...
 	 */
-	function getPrice($price, $tax=true, $taxpercentage, $taxIncluded=false, $bEnableTaxZero=false)	{
+	function getPrice ($price, $tax=true, $taxpercentage, $taxIncluded=false, $bEnableTaxZero=false)	{
 		global $TSFE;
 
 		$rc = 0;
@@ -210,8 +226,12 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 //		}
 		$price = $this->toNumber(true, $price);
 
-		if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
-			$taxpercentage = doubleval($this->priceConf['TAXpercentage']);
+		if ($price > 0)	{
+			if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
+				$taxpercentage = doubleval($this->priceConf['TAXpercentage']);
+			}
+		} else {
+			$taxpercentage = 0;
 		}
 
 //		Buch 'Der TYPO3 Webshop'
@@ -220,7 +240,6 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 // 		}
 
 		$taxFactor = 1 + $taxpercentage / 100;
-		// $taxIncluded = ($taxIncluded ? $taxIncluded : $this->conf['TAXincluded']);
 
 		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		if (isset($paymentshippingObj) && is_object($paymentshippingObj))	{
@@ -230,13 +249,12 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 		if (isset($taxFromShipping) && is_double($taxFromShipping))	{
 //			$bUseTaxFromShopping = true;
 			$newtaxFactor = 1 + $taxFromShipping / 100;
-			$corrTaxFactor = 1;
 			// we need the net price in order to apply another tax
 			if ($taxIncluded)	{
 				$price = $price / $taxFactor;
 				$taxIncluded = false;
 			}
-			$taxFactor = $newtaxFactor * $corrTaxFactor;
+			$taxFactor = $newtaxFactor;
 		}
 
 		$rc = $this->getPriceTax($price, $bTax, $taxIncluded, $taxFactor);
@@ -262,26 +280,59 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 		return $returnPrice;
 	} // getResellerPrice
 
+
 	// fetches all calculated prices for a row
 	function getPriceArray ($fieldname, $row)	{
+		global $TSFE;
+
+		$internalRow = $row;
+		$tax = $this->getTax($row);
+		$price0tax = $this->getResellerPrice($internalRow,1,0);
+
 		if ($fieldname == 'price')	{
+
 			$priceArray['tax'] = $this->getResellerPrice($row,1);
-			$priceArray['no_tax'] = $this->getResellerPrice($row,0);
-			$price0Tax = $this->getResellerPrice($row,1,0);
+			$priceArray['notax'] = $this->getResellerPrice($row,0);
+			$discount = $TSFE->fe_user->user['tt_products_discount'];
+			$internalRow['price'] = $this->getDiscountPrice($row['price'], $discount);
+
+			$priceArray['0tax'] = $price0tax;
+			$priceArray['0notax'] = $this->getResellerPrice($row,0,0);
+			$priceArray['unotax'] = $this->getPrice(($internalRow['unit_factor'] > 0 ? ($priceArray['notax']  / $row['unit_factor']) : 0),FALSE,$tax,FALSE);
+			$priceArray['utax'] = $this->getPrice($priceArray['unotax'],TRUE,$tax,FALSE);;
+			$priceArray['wnotax'] = $this->getPrice(($row['weight'] > 0 ? ($priceArray['notax'] / $internalRow['weight']) : 0),FALSE,$tax,FALSE);
+			$priceArray['wtax'] = $this->getPrice($priceArray['wnotax'],TRUE,$tax,FALSE);
+			$priceArray['onlytax'] = $priceArray['tax'] - $priceArray['notax'];
+		} else if (strpos($fieldname,'price') === 0)	{
+			$pricelen = strlen('price');
+			$priceNum = substr($fieldname, $pricelen /*, strlen($fieldName) - $pricelen*/);
+			$priceArray[$priceNum . 'tax'] = $this->getPrice($internalRow[$fieldname],1,$tax,$this->getTaxIncluded());
+			$priceArray[$priceNum . 'notax'] = $this->getPrice($internalRow[$fieldname],0,$tax,$this->getTaxIncluded());
+			$priceArray[$priceNum . 'onlytax'] = $priceArray[$priceNum . 'tax'] - $priceArray[$priceNum . 'notax'];
 		} else {
 			$value = $row[$fieldname];
-			$priceArray['tax'] = $this->getPrice($value,1,$row['tax'],$this->conf['TAXincluded']);
-			$priceArray['no_tax'] = $this->getPrice($value,0,$row['tax'],$this->conf['TAXincluded']);
+			$priceArray['tax'] = $this->getPrice($value,1,$tax,$this->getTaxIncluded());
+			$priceArray['notax'] = $this->getPrice($value,0,$tax,$this->getTaxIncluded());
+			$priceArray['onlytax'] = $priceArray['tax'] - $priceArray['notax'];
 		}
 
-		$priceArray['only_tax'] = $priceArray['tax'] - $priceArray['no_tax'];
 		return $priceArray;
 	}
+
+
+	public function getTax($row)	{
+
+		$tax = doubleval($row['tax']);
+		if (!$tax)	{
+			$tax = doubleval($this->priceConf['TAXpercentage']);
+		}
+		return $tax;
+	}
+
 
 	public function getPriceFieldArray ()	{
 		return $this->priceFieldArray;
 	}
-
 }
 
 

@@ -67,14 +67,16 @@ class tx_ttproducts_javascript_marker {
 	 * @access private
 	 */
 	function getMarkerArray (&$markerArray, &$itemMarkerArray)	{
-		$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
-
-		$jsItemMarkerArray = array();
-		foreach ($itemMarkerArray as $marker => $value)	{
-			$jsItemMarkerArray[$marker] = $javaScriptObj->jsspecialchars($value);
-		}
 
 		if (is_array($this->conf['javaScript.']))	{
+
+			$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
+	
+			$jsItemMarkerArray = array();
+			foreach ($itemMarkerArray as $marker => $value)	{
+				$jsItemMarkerArray[$marker] = $javaScriptObj->jsspecialchars($value);
+			}
+
 			foreach ($this->conf['javaScript.'] as $key => $confJS)	{
 				$marker = rtrim($key,'.');
 				$jsText = $this->pibase->cObj->substituteMarkerArray($confJS['value'], $jsItemMarkerArray);

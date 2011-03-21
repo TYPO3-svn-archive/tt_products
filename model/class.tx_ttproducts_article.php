@@ -81,7 +81,6 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		if ($tableconf['language.'] && is_array($tableconf['language.']['marker.']))	{
 			$this->getTableObj()->initMarkerFile($tableconf['language.']['marker.']['file']);
 		}
-
 	} // init
 
 
@@ -104,6 +103,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		}
 		return $rc;
 	}
+
 
 	/**
 	 * [Describe function...]

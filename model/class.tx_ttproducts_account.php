@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
@@ -46,7 +46,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	var $asterisk = '********';
 
 
-	function init(&$pibase, $functablename) {
+	function init (&$pibase, $functablename) {
 		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$formerBasket = $basketObj->recs;
 		$bIsAllowed = $basketObj->basketExtra['payment.']['accounts'];
@@ -77,7 +77,6 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		}
 	}
 
-
 	// **************************
 	// ORDER related functions
 	// **************************
@@ -92,7 +91,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	 * @param	[type]		$acArray: ...
 	 * @return	[type]		...
 	 */
-	function create($uid, $acArray)	{
+	function create ($uid, $acArray)	{
 		global $TSFE, $TYPO3_DB;
 
 		$newId = 0;
@@ -120,12 +119,10 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 				$newId = $TYPO3_DB->sql_insert_id();
 			}
 		}
-
 		return $newId;
 	} // create
 
-
-	function getUid()	{
+	function getUid ()	{
 		global $TSFE;
 
 		$acArray = $TSFE->fe_user->getKey('ses','ac');
@@ -162,10 +159,8 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 				$rcArray = $row;
 			}
 		}
-
 		return $rcArray;
 	}
-
 
 	/**
 	 * Template marker substitution
@@ -199,19 +194,30 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		$markerArray['###PERSON_ACCOUNTS_BIC###'] = $acBic;
 	} // getMarkerArray
 
-
 	/**
 	 * Checks if required fields for bank accounts are filled in
-	 *
-	 * @return	[type]		...
 	 */
-	function checkRequired()	{
+	function checkRequired ()	{
 		$rc = '';
+		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+
+		if (t3lib_extMgm::isLoaded('static_info_tables_banks_de')) {
+
+			$bankObj = $tablesObj->get('static_banks_de');
+		}
 
 		foreach ($this->fieldArray as $k => $field)	{
 			if (!$this->acArray[$field])	{
 				$rc = $field;
 				break;
+			}
+			if ($field == 'bic' && is_object($bankObj) /* && t3lib_extMgm::isLoaded('static_info_tables_banks_de')*/)	{
+				$where_clause = 'sort_code=' . intval(implode('',t3lib_div::trimExplode(' ',$this->acArray[$field]))) . ' AND level=1';
+				$bankRow = $bankObj->get('',0,FALSE,$where_clause);
+				if (!$bankRow)	{
+					$rc = $field;
+					break;
+				}
 			}
 		}
 		return $rc;

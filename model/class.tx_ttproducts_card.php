@@ -202,7 +202,7 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 	} // create
 
 
-	function getUid()	{
+	function getUid ()	{
 		global $TSFE;
 
 		$ccArray = $TSFE->fe_user->getKey('ses','cc');

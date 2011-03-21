@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -43,7 +43,6 @@
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
 
 class tx_ttproducts_activity_finalize {
-
 	var $pibase; // reference to object of pibase
 	var $cnf;
 	var $conf;
@@ -52,13 +51,14 @@ class tx_ttproducts_activity_finalize {
 	var $alwaysInStock;
 	var $useArticles;
 
+
 	/**
 	 * Initialization of member variables
 	 *
 	 * @param	object		$$pibase: object derived from tslib_pibase
 	 * @return	void
 	 */
-	function init(&$pibase)  {
+	function init (&$pibase)  {
 		$this->pibase = &$pibase;
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
@@ -93,12 +93,13 @@ class tx_ttproducts_activity_finalize {
 	 * @param	object		$address: tx_ttproducts_info_view
 	 * @return	void
 	 */
-	function doProcessing($templateCode, &$basketView, $funcTablename, $orderUid, &$orderConfirmationHTML, &$error_message, &$address)	{
+	function doProcessing ($templateCode, &$basketView, $funcTablename, $orderUid, &$orderConfirmationHTML, &$error_message, &$address, &$mainMarkerArray)	{
 		global $TSFE;
 		global $TYPO3_DB;
 
 		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
 
 		$instockTableArray = '';
 		$recipientsArray = array();
@@ -107,7 +108,9 @@ class tx_ttproducts_activity_finalize {
 		$recipientsArray['customer'][] = $customerEmail;
 		$recipientsArray['shop'] = $tablesObj->get('tt_products_cat')->getEmail($basket->itemArray);
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
-		$markerArray = array('###CUSTOMER_RECIPIENTS_EMAIL###' => implode(',', $recipientsArray['customer']));
+		$markerArray = array_merge($mainMarkerArray,$markerObj->getGlobalMarkerArray());
+		$markerArray['###CUSTOMER_RECIPIENTS_EMAIL###'] = implode(',', $recipientsArray['customer']);
+
 		if (
 			isset ($this->conf['orderEmail_radio.']) && is_array($this->conf['orderEmail_radio.']) &&
 			isset ($this->conf['orderEmail_radio.']['1.']) && is_array($this->conf['orderEmail_radio.']) &&
@@ -116,7 +119,7 @@ class tx_ttproducts_activity_finalize {
 			$recipientsArray['radio1'][] = $this->conf['orderEmail_radio.']['1.'][$address->infoArray['delivery']['radio1']];
 		}
 		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
-		$order = &$tablesObj->get('sys_products_orders');
+		$orderObj = &$tablesObj->get('sys_products_orders');
 		$apostrophe = $this->conf['orderEmail_apostrophe'];
 
 		// Move the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
@@ -125,19 +128,22 @@ class tx_ttproducts_activity_finalize {
 			$pid = ($this->conf['PIDuserFolder'] ? $this->conf['PIDuserFolder'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
 			$pid = intval($pid);
 			$username = strtolower(trim($address->infoArray['billing']['email']));
-			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username=\''.$username.'\''.' AND pid='. $pid.' AND deleted=0');
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username='.$TYPO3_DB->fullQuoteStr($username, 'fe_users').' AND pid='. $pid.' AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 			$TYPO3_DB->sql_free_result($res);
 
 			if (!$num_rows)	{
-				$address->password = substr(md5(rand()), 0, 12);
+				$password = $address->password = substr(md5(rand()), 0, 12);
+				if ($this->conf['useMd5Password'])	{
+					$password = md5($password);
+				}
 				$tableFieldArray = $tablesObj->get('fe_users')->getTableObj()->tableFieldArray;
 				$insertFields = array(	// TODO: check with TCA
 					'pid' => intval($pid),
 					'tstamp' => time(),
 					'crdate' => time(),
 					'username' => $username,
-					'password' => $address->password,
+					'password' => $password,
 					'usergroup' => $this->conf['memberOfGroup'],
 					'uid' => $address->infoArray['billing']['feusers_uid'],
 				);
@@ -149,8 +155,9 @@ class tx_ttproducts_activity_finalize {
 					}
 				}
 
-				$countryKey = ($this->conf['useStaticInfoCountry'] ? 'static_info_country' : 'country');
-				$insertFields[$countryKey] = $address->infoArray['billing']['country'];
+				if ($this->conf['useStaticInfoCountry'])	{
+					$insertFields['static_info_country'] = $address->infoArray['billing']['country_code'];
+				}
 
 				if($address->infoArray['billing']['date_of_birth'])	{
 					$date = str_replace ('-', '/', $address->infoArray['billing']['date_of_birth']);
@@ -160,9 +167,9 @@ class tx_ttproducts_activity_finalize {
 				// send new user mail
 				if (count($address->infoArray['billing']['email'])) {
 					$empty='';
-					$emailContent=trim($basketView->getView($empty, 'EMAIL', $address, false, false, false, '###EMAIL_NEWUSER_TEMPLATE###'));
+					$emailContent=trim($basketView->getView($empty, 'EMAIL', $address, false, false, false, '###EMAIL_NEWUSER_TEMPLATE###', $markerObj->getGlobalMarkerArray()));
 					if ($emailContent) {
-						$parts = split(chr(10),$emailContent,2);
+						$parts = explode(chr(10),$emailContent,2);
 						$subject=trim($parts[0]);
 						$plain_message = trim($parts[1]);
 						tx_ttproducts_email_div::send_mail(
@@ -186,29 +193,10 @@ class tx_ttproducts_activity_finalize {
 				$TYPO3_DB->sql_free_result($res);
 			}
 		}
-		$voucherObj = $tablesObj->get('voucher');
-		$voucherObj->delete();
 
-		// get credit card info
-		$card = &$tablesObj->get('sys_products_cards');
-		$cardUid = $card->getUid();
-
-		// get bank account info
-		$account = &$tablesObj->get('sys_products_accounts');
-		$accountUid = $account->getUid();
-		$rc = $order->putRecord(
-			$orderUid,
-			$address->infoArray['delivery'],
-			$address->infoArray['billing']['feusers_uid'],
-			$cardUid,
-			$accountUid,
-			$this->conf['email_notify_default'],	// Email notification is set here. Default email address is delivery email contact
-			$basket->basketExtra['payment'][0].': '.$basket->basketExtra['payment.']['title'],
-			$basket->basketExtra['shipping'][0].': '.$basket->basketExtra['shipping.']['title'],
-			$basket->calculatedArray['priceTax']['total'],
-			$orderConfirmationHTML,
-			$address
-		);
+		$orderObj->setData($orderUid, $orderConfirmationHTML, 1);
+		$creditpointsObj = &t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
+		$creditpointsObj->pay();
 
 		// any gift orders in the extended basket?
 		if ($basket->basketExt['gift']) {
@@ -234,10 +222,12 @@ class tx_ttproducts_activity_finalize {
 			// loop over all items in the basket indexed by a sort string
 		}
 
-		$order->createMM($orderUid, $basket->itemArray);
 		$addcsv = '';
 		// Generate CSV for each order
 		if ($this->conf['generateCSV'])	{
+			$account = &$tablesObj->get('sys_products_accounts');
+			$accountUid = $account->getUid();
+
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_csv.php');
 			$csv = t3lib_div::makeInstance('tx_ttproducts_csv');
 			$csv->init(
@@ -248,7 +238,7 @@ class tx_ttproducts_activity_finalize {
 			);
 
 			$csvfilepath = PATH_site.$this->conf['CSVdestination'];
-			$csvorderuid = $basket->recs['tt_products']['orderUid'];
+			$csvorderuid = $basket->order['orderUid'];
 			$csv->create($funcTablename, $address, $csvorderuid, $csvfilepath, $error_message);
 			if (!$this->conf['CSVnotInEmail'])	{
 				$addcsv = $csvfilepath;
@@ -257,6 +247,7 @@ class tx_ttproducts_activity_finalize {
 
 			// Sends order emails:
 		$recipientsGroupsArray = array ('shop', 'customer');
+
 		if ($recipientsArray['customer'])	{	// If there is a customer as recipient, then compile and send the mail.
 			$emailTemplateArray = array();
 			$emailTemplateArray['customer'] = 'EMAIL_PLAINTEXT_TEMPLATE';
@@ -271,7 +262,7 @@ class tx_ttproducts_activity_finalize {
 			$markerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 			$empty = '';
 			foreach ($emailTemplateArray as $key => $emailTemplate) {
-				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, false, true, $this->conf['orderEmail_htmlmail'], '###'.$emailTemplate.'###'));
+				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, false, true, $this->conf['orderEmail_htmlmail'], '###'.$emailTemplate.'###', $mainMarkerArray));
 				if ($emailContentArray[$key])	{	// If there is plain text content - which is required!!
 					$parts = preg_split('/[\n\r]+/',$emailContentArray[$key],2);	// First line is subject
 					$subjectArray[$key]=trim($parts[0]);
@@ -288,14 +279,14 @@ class tx_ttproducts_activity_finalize {
 
 			if ($plainMessageArray['shop'])	{
 				if ($this->conf['orderEmail_order2'])	{
-					$recipientsArray['customer'] = array_merge ($recipientsArray['customer'], $recipientsArray['shop']);
+					$recipientsArray['customer'] = array_merge($recipientsArray['customer'], $recipientsArray['shop']);
 				}
 			} else {
 				$plainMessageArray['shop'] = $plainMessageArray['customer'];
 				$subjectArray['shop'] = $subjectArray['customer'];
 			}
-
 			$HTMLmailContent = '';
+			$markerArray = array_merge($mainMarkerArray,$markerObj->getGlobalMarkerArray());
 			if ($plainMessageArray['customer'] || $this->conf['orderEmail_htmlmail'])	{	// If there is plain text content - which is required!!
 				if ($this->conf['orderEmail_htmlmail'])	{
 					include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
@@ -304,11 +295,10 @@ class tx_ttproducts_activity_finalize {
 				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$this->pibase->cObj->getSubpart($templateCode,'###EMAIL_HTML_SHELL###');
 					$HTMLmailContent=$this->pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$orderConfirmationHTML);
-					$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
 					$HTMLmailContent=
 						$this->pibase->cObj->substituteMarkerArray(
 							$HTMLmailContent,
-							$markerObj->getGlobalMarkerArray()
+							$markerArray
 						);
 
 						// Remove image tags to the products:
@@ -316,8 +306,7 @@ class tx_ttproducts_activity_finalize {
 						$parser = t3lib_div::makeInstance('t3lib_parsehtml');
 						$htmlMailParts = $parser->splitTags('img',$HTMLmailContent);
 
-						reset($htmlMailParts);
-						while(list($kkk,$vvv)=each($htmlMailParts))	{
+						foreach($htmlMailParts as $kkk => $vvv)	{
 							if ($kkk%2)	{
 								list($attrib) = $parser->get_tag_attributes($vvv);
 								if (t3lib_div::isFirstPartOfStr($attrib['src'],$this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix']))	{
@@ -330,7 +319,6 @@ class tx_ttproducts_activity_finalize {
 				} else {	// ... else just plain text...
 					// nothing to initialize
 				}
-
 				$agbAttachment = ($this->conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($this->conf['AGBattachment']) : '');
 
 				if (is_array($recipientsArray['customer']))	{
@@ -421,9 +409,10 @@ class tx_ttproducts_activity_finalize {
 				}
 			}
 		}
+
+		$orderObj->clearUid();
 	} // doProcessing
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_activity_finalize.php']) {

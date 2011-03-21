@@ -2,13 +2,13 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2008-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License or
+*  the Free Software Foundation; either version 2 of the License, or
 *  (at your option) any later version.
 *
 *  The GNU General Public License can be found at
@@ -27,12 +27,12 @@
 /**
  * Part of the tt_products (Shop System) extension.
  *
- * interface for all database table field view classes
+ * model for the activities
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,10 +40,18 @@
 
 
 
-interface tx_ttproducts_field_view_int	{
-	public function needsInit ();
-	public function &getModelObj ();
-	public function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='');
+class tx_ttproducts_model_activity {
+	static public $activityArray;
+
+
+	public static function setActivityArray ($activityArray)	{
+		self::$activityArray = $activityArray;
+	}
+
+
+	public static function getActivityArray ()	{
+		return self::$activityArray;
+	}
 }
 
 

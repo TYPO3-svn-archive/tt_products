@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -83,7 +83,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			)	{
 			$addRequiredFields = array();
 			$addRequiredFields = $this->tableconf['language.']['field.'];
-			$this->getTableObj()->addRequiredFieldArray ($addRequiredFields);
+			$this->getTableObj()->addRequiredFieldArray($addRequiredFields);
 		}
 
 		if (is_array($this->tableconf['generatePath.']) &&
@@ -94,13 +94,13 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			foreach ($this->tableconf['generatePath.']['field.'] as $field => $value)	{
 				$addRequiredFields[] = $field;
 			}
-			$this->getTableObj()->addRequiredFieldArray ($addRequiredFields);
+			$this->getTableObj()->addRequiredFieldArray($addRequiredFields);
 		}
 
 		$this->getTableObj()->setTCAFieldArray($tablename, 'pages');
 
 		if ($cnf->bUseLanguageTable($this->tableconf))	{
-			$this->getTableObj()->setLanguage ($this->config['LLkey']);
+			$this->getTableObj()->setLanguage($this->config['LLkey']);
 			$this->getTableObj()->setLangName($this->tableconf['language.']['table']);
 			$this->getTableObj()->setForeignUidArray($this->getTableObj()->langname, 'pid');
 			$this->getTableObj()->setTCAFieldArray($this->getTableObj()->langname);
@@ -110,7 +110,6 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 			$this->getTableObj()->initLanguageFile($this->tableconf['language.']['file']);
 		}
 	} // init
-
 
 //	function get ($uid,$pid=0) {
 //		global $TYPO3_DB, $TSFE;
@@ -142,7 +141,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * @param	[type]		$bCount: ...
 	 * @return	[type]		...
 	 */
-	function get($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
+	function get ($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
 		global $TYPO3_DB;
 
 		$bMultple = (strstr($uid, ',') ? true : false);
@@ -165,7 +164,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 *
 	 * @return	[type]		...
 	 */
-	function getRootCat()	{
+	function getRootCat ()	{
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 		$rc = $cnf->config['rootPageID'];
 		return $rc;
@@ -223,7 +222,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * @param	[type]		$row: ...
 	 * @return	[type]		...
 	 */
-	function getRowPid($row) {
+	function getRowPid ($row) {
 		$rc = $row['uid'];
 		return $rc;
 	}
@@ -297,10 +296,8 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 				}
 			}
 		}
-
 		return $relationArray;
 	}
-
 
 	/**
 	 * Returning the pid out from the row using the where clause
@@ -311,7 +308,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * @param	[type]		$rootRow: ...
 	 * @return	[type]		...
 	 */
-	function getPID($conf, $confExt, $row, $rootRow=array()) {
+	function getPID ($conf, $confExt, $row, $rootRow=array()) {
 		$rc = 0;
 		if ($confExt) {
 			foreach ($confExt as $k1 => $param) {
@@ -337,8 +334,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 							$rc = $param['pid'];
 							break;
 						case 'pid':
-							$pageTmp = $this->get($row['pid']);
-							$rc = intval ($pageTmp['pid']);
+							$rc = intval($row['pid']);
 							break;
 					}
 					break;  //ready with the foreach loop
@@ -356,9 +352,8 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		}
 		return $rc;
 	} // getPID
-
-
 }
+
 
 
 

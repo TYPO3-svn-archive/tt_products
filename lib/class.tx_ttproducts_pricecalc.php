@@ -59,6 +59,7 @@ class tx_ttproducts_pricecalc extends tx_ttproducts_pricecalc_base {
 				continue;
 			}
 			$countedItems = array();
+			$pricefor1 = doubleval($priceCalcTemp['prod.']['1']);
 			$dumCount = 0;
 
 			// loop over all items in the basket indexed by sort string

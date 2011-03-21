@@ -43,8 +43,6 @@ class tx_ttproducts_memo_view {
 	var $pid_list;
 	var $pid; // pid where to go
 	var $useArticles;
-
-	var $searchFieldList='';
 	var $memoItems;
 
 	function init(

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2007 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -101,9 +101,30 @@ class tx_ttproducts_email_div {
 				$Typo3_htmlmail->addPlain($message);
 			}
 			$Typo3_htmlmail->setHeaders();
+			if ($attachment != '' && file_exists($attachment))	{
+				foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
+					$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
+				}
+			}
 			$Typo3_htmlmail->setContent();
 			$Typo3_htmlmail->setRecipient(explode(',', $toEMail));
-			$Typo3_htmlmail->sendTheMail();
+
+			$hookVar = 'sendMail';
+			if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
+				foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
+					$hookObj= &t3lib_div::getUserObj($classRef);
+					if (method_exists($hookObj, 'init')) {
+						$hookObj->init($Typo3_htmlmail);
+					}
+					if (method_exists($hookObj, 'sendMail')) {
+						$rc = $hookObj->sendMail($Typo3_htmlmail,$toEMail,$subject,$message,$html,$fromEMail,$fromName,$attachment);
+					}
+				}
+			}
+
+			if ($rc !== FALSE)	{
+				$Typo3_htmlmail->sendTheMail();
+			}
 		}
 	}
 
@@ -156,7 +177,7 @@ class tx_ttproducts_email_div {
 				$markerArray['###ORDER_TRACKING_NO###'] = $tracking;
 				$markerArray['###ORDER_UID###'] = $orderNumber;
 				$emailContent = $cObj->substituteMarkerArrayCached($emailContent, $markerArray);
-				$parts = split(chr(10),$emailContent,2);
+				$parts = explode(chr(10),$emailContent,2);
 				$subject = trim($parts[0]);
 				$plain_message = trim($parts[1]);
 				self::send_mail(implode($recipients,','), $subject, $plain_message, $tmp='', $senderemail, $sendername);
@@ -191,7 +212,7 @@ class tx_ttproducts_email_div {
 		if (count($recipients)) {	// If any recipients, then compile and send the mail.
 			$emailContent=trim($cObj->getSubpart($templateCode,'###'.$templateMarker.'###'));
 			if ($emailContent)  {		// If there is plain text content - which is required!!
-				$parts = split(chr(10),$emailContent,2);	// First line is subject
+				$parts = explode(chr(10),$emailContent,2);	// First line is subject
 				$subject = trim($parts[0]);
 				$plain_message = trim($parts[1]);
 

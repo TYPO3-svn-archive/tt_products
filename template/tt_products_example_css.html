@@ -16,7 +16,7 @@
 <!----------------------------------------------------------------------------------->
 <!-- ###ITEM_LIST_TEMPLATE### begin
 	This subpart is used to display the regular list of products. It's also used by search-results.-->
-	
+
 <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
 <!-- ###ITEM_CATEGORY### begin -->
 <h2>###CATEGORY_TITLE###</h2>
@@ -24,7 +24,7 @@
 <p>This subpart is used to display the regular list of products. It's also used by search-results. This subpart is used to display the regular list of products. It's also used by search-results. This subpart is used to display the regular list of products. It's also used by search-results. This subpart is used to display the regular list of products. It's also used by search-results. This subpart is used to display the regular list of products. It's also used by search-results.</p>
 <h1>###CATEGORY_TITLE###</h1>
 <!-- ###ITEM_CATEGORY### end -->
-	
+
 <!-- ###ITEM_LIST### begin -->
 <div id="PRODUCT_TITLE_LIST">
 <!-- ###ITEM_SINGLE### begin-->
@@ -32,9 +32,9 @@
 <div id="col">
 <div id="col_content">
 	<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
-	  
+
 	  ###PRODUCT_IMAGE1###
-	  
+
 	  <div id="text">
 		  <!--###LINK_ITEM###-->
 		  	<h2> ###PRODUCT_TITLE###</h2>
@@ -45,15 +45,15 @@
 		  	<span class="right"><INPUT size="3" maxlength="4" type="hidden" name="###FIELD_NAME###" value="###FIELD_QTY###"/><input type="image" src="fileadmin/img/shop/jetzt_kaufen_DE.jpg" name="basket" id="inputimage" alt="Jetzt Kaufen" onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;}; submit();"/></span>
 		  </p>
 	  </div>
-	  
-	  
+
+
 	  <div id="display_variant5_isSingle_LIST">
 		 <!-- ###display_variant5_isSingle### -->
 		 Einzelprodukt, das nur einmal gew&#65533;lt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
 		 <!-- ###display_variant5_isSingle### -->
 		 <!-- ###display_variant5_isNotSingle### -->
 		 <!-- ###display_variant5_isNotSingle### -->
-		
+
 	  </div>
 	</form>
 	</div>
@@ -80,31 +80,31 @@
 <!-- ###ARTICLE_LIST_TEMPLATE### begin
 	This subpart is used to display the regular list of articles. -->
 
-	
+
     <!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b>###GW2E###<!--###LINK_PREV###--></div>
 		<!-- ###LINK_BROWSE### begin -->
 		[ ###BROWSE_LINKS### ]
 		<!-- ###LINK_BROWSE### end-->
 		<!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&#65533;hste Seite</b>###GW2E###<!--###LINK_NEXT###--></div>
-	
+
 	  <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
 		<!-- ###ITEM_CATEGORY### begin -->
-			
+
     <br />###GW1B######CATEGORY_TITLE######GW1E###
 		<br />
-				
+
 		<!-- ###ITEM_CATEGORY### end -->
 		<!-- ###ITEM_PRODUCT_AND_ITEMS### begin -->
 		<!-- ###ITEM_PRODUCT### begin -->
-		
+
     This is the product title: ###PRODUCT_TITLE###
-        
+
 		<!-- ###ITEM_PRODUCT### end -->
 		<!-- ###ITEM_LIST### begin -->
-			
+
 <div align="left" bgcolor="###GC2###">
   ###GW2B###<b>xxxxxxx</b>###GW2E###
-</div>		
+</div>
 
     <!-- ###ITEM_SINGLE### begin-->
     ###ITEM_SINGLE_PRE_HTML###
@@ -117,14 +117,14 @@
     ###GW2B### Gr&ouml;&szlig;e: ###GW2E### ###ARTICLE_SIZE###<br />
     <!-- ###display_variant2### -->
     ###ITEM_SINGLE_POST_HTML###
-    <!-- ###ITEM_SINGLE### end -->   
+    <!-- ###ITEM_SINGLE### end -->
 
 		<!-- ###ITEM_LIST### end -->
 	  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
-	
+
 		<!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b>###GW2E###</div><!--###LINK_PREV###-->
 		<!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&#65533;hste Seite</b>###GW2E###</div><!--###LINK_NEXT###-->
-	
+
     ###GW1B### Zusatztext ###GW1E###
 <!-- ###ARTICLE_LIST_TEMPLATE### end -->
 <!----------------------------------------------------------------------------------->
@@ -152,10 +152,14 @@
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
 		<!-- ###ITEM_CATEGORY### begin -->
 		<!-- ###ITEM_CATEGORY### end -->
-		
-			
+		<!-- ###ITEM_PRODUCT_AND_ITEMS### begin -->
+		<!-- ###ITEM_PRODUCT### begin -->
+		<tr><td>This is the product title: ###PRODUCT_TITLE###</td></tr>
+		<!-- ###ITEM_PRODUCT### end -->
+
+
 	<!-- ###ITEM_LIST### begin -->
-			  
+
 			  <!-- ###ITEM_SINGLE### begin-->
 			  ###ITEM_SINGLE_PRE_HTML###
 			  <tr>
@@ -173,9 +177,10 @@
 			  </tr>
 			  ###ITEM_SINGLE_POST_HTML###
 			  <!-- ###ITEM_SINGLE### end -->
-		<!-- ###ITEM_LIST### end -->			  
-						  
-		
+		<!-- ###ITEM_LIST### end -->
+
+	<!-- ###ITEM_PRODUCT_AND_ITEMS### end -->
+
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
 
 </table>
@@ -199,12 +204,12 @@
 		<!-- ###ITEM_CATEGORY### begin -->
 		<!-- ###ITEM_CATEGORY### end -->
 		<!-- ###ITEM_LIST### begin -->
-		
-			 
+
+
 			  <!-- ###ITEM_SINGLE### begin-->
 			  <div id="ITEM_LIST_RELATED">
 				  ###ITEM_SINGLE_PRE_HTML###
-					
+
 					###PRODUCT_IMAGE1###
 					<div id="text">
 						<h2>
@@ -213,14 +218,14 @@
 							<!--###LINK_ITEM###-->
 						</h2>
 						<p >###PRODUCT_SUBTITLE###</p>
-					  
+
 					  ###ITEM_SINGLE_POST_HTML###
 					  <p ><!--###LINK_ITEM###-->mehr Infos<!--###LINK_ITEM###--></p>
 				  </div>
 			  </div>
 			  <!-- ###ITEM_SINGLE### end -->
-				  
-		  
+
+
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
 
@@ -240,7 +245,7 @@
 		<!-- ###ITEM_CATEGORY### begin -->
 		<!-- ###ITEM_CATEGORY### end -->
 		<!-- ###ITEM_LIST### begin -->
-		
+
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" class="zubehoer">
 			  <tr class="head">
 				<th id="td1">Zubeh&ouml;r</th>
@@ -248,15 +253,15 @@
 				<th id="td3">Menge</th>
 				<th id="td4">Preis*</th>
 			  </tr>
-	
-			  
+
+
 			  <!-- ###ITEM_SINGLE### begin-->
 			  ###ITEM_SINGLE_PRE_HTML###
 			  <tr>
 				<td id="td1">
 				<strong class="strong1">
 					<!--###LINK_ITEM###-->
-				  ###PRODUCT_TITLE### 
+				  ###PRODUCT_TITLE###
 					<!--###LINK_ITEM###-->
 				</strong><br />
 				###PRODUCT_SUBTITLE###
@@ -267,12 +272,12 @@
 			  </tr>
 			  ###ITEM_SINGLE_POST_HTML###
 			  <!-- ###ITEM_SINGLE### end -->
-					  
-			</table>	
+
+			</table>
 
 		<!-- ###ITEM_LIST### end -->
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
-	
+
 <!--###ITEM_LIST_ACCESSORY_TEMPLATE### end-->
 <!----------------------------------------------------------------------------------->
 
@@ -285,7 +290,7 @@
 <!----------------------------------------------------------------------------------->
 <!-- ###ITEM_SINGLE_DISPLAY### begin
 	This subpart is used to display single products.-->
-	
+
 <div class="subcolumns">
 	<div class="c70l">
 		<div class="subcl">
@@ -294,8 +299,8 @@
 			<br />
 
 			<!--Tab_content: Beginn-->
-			<div id="tab_content" style="position:relative;">	
-				<!--tab_menu: Beginn-->	
+			<div id="tab_content" style="position:relative;">
+				<!--tab_menu: Beginn-->
 				<div id="tab_menu" class="clearfix">
 					<ul>
 						<li id="current_tab" onclick="showHideLayers('beschreibung','','show','daten','','hide','konfiguration','','hide','anfragen','','hide'); setCurrent(this)"><a href="#"><span>Beschreibung</span></a></li>
@@ -304,27 +309,27 @@
 						<li id="" onclick="showHideLayers('beschreibung','','hide','daten','','hide','konfiguration','','hide','anfragen','','show'); setCurrent(this)"><a href="#"><span>Anfragen & Angebote</span></a></li>
 					</ul>
 				</div>
-				<!--tab_menu: Ende-->	
-				
+				<!--tab_menu: Ende-->
+
 				<div id="beschreibung" style="display: block; ">
-						
+
 					###PRODUCT_NOTE###
 					###PRODUCT_NOTE_UID_1_title###
-					###PRODUCT_NOTE_UID_1_1_TEXT_bodytext###	
+					###PRODUCT_NOTE_UID_1_1_TEXT_bodytext###
 				</div>
-				
+
 				<div id="daten" style="display: none; ">
 					###PRODUCT_NOTE2###
 				</div>
-				
+
 				<div id="konfiguration" style="display: none; ">
 					<p class="bodytext">Leider ist zu diesem Produkt keine Konfigurationsdarstellung vorhanden.</p>
 				</div>
-				
+
 				<div id="anfragen" style="display: none; ">
 					<h2>Anfragen & Angebote</h2>
 					<p class="bodytext">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
-			
+
 				</div>
 			</div>
 			<!--Tab_content: Ende-->
@@ -334,21 +339,21 @@
 				<!-- hier stehen die Artikel eines Produktes -->
 				###PRODUCT_RELATED_ARTICLES###
 				<!-- ende: Artikel -->
-				
+
 				<!--hier steht Zubehoer zum Produkt-->
 				###PRODUCT_ACCESSORY_UID###
 				<!-- ende: Zubehoer-->
-				
+
 				<div align="right">
 					<br />
 					<input name="order" type="image" id="order" src="fileadmin/img/tt_products/basket.gif" alt="In den Warenkorb" value="In den Warenkorb"/>
 					<br /><br /><br />
 					<strong class="strong2">* Alle Produkte verstehen sich ohne gesetzliche MwSt. und Versandkosten.</strong>
 				</div>
-				
-				
+
+
 			</form>
-			
+
 		</div>
 	</div>
 	<div class="c30r">
@@ -361,13 +366,15 @@
 			</div >
 			<br />
 			<a href="#products"><img src="fileadmin/img/tt_products/buy_now_DE.gif" /></a>
-			     
+
 			###PRODUCT_RELATED_UID###
-			
+
+			###PRODUCT_RELATED_ARTICLES###
+
 		</div>
-	</div>	
+	</div>
 </div>
-	
+
 <!-- ###ITEM_SINGLE_DISPLAY### end -->
 <!----------------------------------------------------------------------------------->
 
@@ -439,7 +446,7 @@
           <tr>
             <td colspan="3" align="CENTER">
             <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"/></td>
-          </tr> 
+          </tr>
         </table>
 			</form>
 			</td></tr>
@@ -470,7 +477,7 @@
 <!----------------------------------------------------------------------------------->
 <!-- ###MEMO_TEMPLATE### begin
 This subpart is used to display the regular list of products. It's also used by search-results.-->
-  
+
 <div align="justify">
   <b>
   <!--###LINK_PREV###-->###GW2B###&lt;&lt;###GW2E###<!--###LINK_PREV###-->
@@ -478,16 +485,16 @@ This subpart is used to display the regular list of products. It's also used by 
   <!--###LINK_NEXT###-->###GW2B###&gt;&gt;###GW2E###<!--###LINK_NEXT###-->
   </b>
 </div>
-  
+
 <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
 <!-- ###ITEM_CATEGORY### begin -->
-  
+
 <div class="TITLE"></div>
 <div class="TITLE" >Artikel</div>
 <div class="TITLE" >Preis</div>
 <div class="TITLE" ></div>
 <div class="TITLE" ></div>
-  
+
 <!-- ###ITEM_CATEGORY### end -->
 <!-- ###ITEM_LIST### begin -->
 <!-- ###ITEM_SINGLE### begin-->
@@ -518,11 +525,11 @@ This subpart is used to display the regular list of products. It's also used by 
     <input type="image" name="remove" src="typo3/ext/tt_products/res/icons/fe/delmemo.png" value="von der Merkliste streichen" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[delmemo]=###PRODUCT_ID###';"/>
   </div>
 </FORM>
-  
+
   <!-- ###ITEM_SINGLE### end -->
   <!-- ###ITEM_LIST### end -->
   <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
-  
+
 <div align="justify">
   <b>
   <!--###LINK_PREV###-->###GW2B###&lt;&lt;###GW2E###<!--###LINK_PREV###-->
@@ -530,7 +537,7 @@ This subpart is used to display the regular list of products. It's also used by 
   <!--###LINK_NEXT###-->###GW2B###&gt;&gt;###GW2E###<!--###LINK_NEXT###-->
   </b>
 </div>
-  
+
 <!-- ###MEMO_TEMPLATE### end -->
 <!----------------------------------------------------------------------------------->
 
@@ -607,13 +614,13 @@ Andrea: Warenkorbansicht Anfang -->
 <div class="basket">
   ###EXTERNAL_COBJECT###
   <form method="post" action="###FORM_URL###">
-    <div class="floatbox_BASKET"> 
+    <div class="floatbox_BASKET">
       <div id="text_Produkt">###GW2B###<b>Produkte:</b>###GW2E###</div>
       <!--<div id="text_Variante">###GW2B###<b>Variante:</b>###GW2E###</div>-->
       <div id="text_Einzelpreis">###GW2B###<b>Einzelpreis:</b>###GW2E###</div>
       <div id="text_Anzahl">###GW2B###<b>Anzahl:</b>###GW2E###</div>
       <div id="text_Gesamt">###GW2B###<b>Gesamt in Euro:</b>###GW2E###</div>
-    </div>  
+    </div>
 
     <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
     <!-- ###ITEM_CATEGORY### begin -->
@@ -622,8 +629,8 @@ Andrea: Warenkorbansicht Anfang -->
     <!-- ###ITEM_CATEGORY### end -->
     <!-- ###ITEM_LIST### begin -->
     <!-- ###ITEM_SINGLE### begin-->
-    <div class="floatbox_BASKET2">   
-      <div id="PRODUCT_TITLE_BASKET2">   
+    <div class="floatbox_BASKET2">
+      <div id="PRODUCT_TITLE_BASKET2">
         <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###-->
       </div>
       <div id="display_variant_BASKET2">
@@ -639,39 +646,39 @@ Andrea: Warenkorbansicht Anfang -->
         ###GW1B### ###PRICE_TAX###<br />(MwSt. ###PRICE_ONLY_TAX###)###GW1E###
       </div>
       <div id="FIELD_QTY_BASKET2">
-        <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"/> 
+        <INPUT size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"/>
       </div>
       <div id="PRICE_TOTAL_TAX_BASKET2">
         ###GW1B### <b>###TAX_INCL_EXCL### ###PRICE_TOTAL_TAX###</b> <br />(exkl. MwSt. ###PRICE_TOTAL_NO_TAX###)###GW1E###
       </div>
-    </div>   
+    </div>
 
       <!-- ###ITEM_SINGLE### end -->
       <!-- ###ITEM_LIST### end -->
       <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
-    
+
     <div id="text_versand_BASKET2">
       ###GW2B###<b>Versand und Verpackung:</b>###GW2E###
     </div>
-    <div id="text_pauschale_BASKET2">  
+    <div id="text_pauschale_BASKET2">
       ###GW1B###Pauschale:<br /><b>###SHIPPING_TITLE###</B>###GW1E###
     </div>
-    
-    <div class="floatbox_BASKET3">  
+
+    <div class="floatbox_BASKET3">
       <div id="SHIPPING_SELECTOR_BASKET3">
         ###GW1B######SHIPPING_SELECTOR######GW1E###
-      </div>  
-      <div id="PRICE_SHIPPING_TAX_BASKET3">  
+      </div>
+      <div id="PRICE_SHIPPING_TAX_BASKET3">
          ###GW1B### <b>###TAX_INCL_EXCL### ###PRICE_SHIPPING_TAX###</b><br />
         (exkl. MwSt. ###PRICE_SHIPPING_NO_TAX###)###GW1E###
       </div>
     </div>
-     
+
     <div id="text_zahlungsweise_BASKET4">
       ###GW2B###<b>Zahlungsweise:</b><br />###GW2E###
     </div>
-    
-    <div class="floatbox_BASKET4"> 
+
+    <div class="floatbox_BASKET4">
       <div id="PAYMENT_SELECTOR_BASKET4">
         ###GW1B######PAYMENT_SELECTOR######GW1E###
       </div>
@@ -679,8 +686,8 @@ Andrea: Warenkorbansicht Anfang -->
         ###GW1B###<b>###TAX_INCL_EXCL### ###PRICE_PAYMENT_TAX###</b><br />
         (exkl. MwSt. ###PRICE_PAYMENT_NO_TAX###)###GW1E###
       </div>
-    </div> 
-   
+    </div>
+
     <div id="MESSAGE_SHIPPING_BASKET4">
         <!-- ###MESSAGE_SHIPPING###
         This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
@@ -688,39 +695,39 @@ Andrea: Warenkorbansicht Anfang -->
         <!-- ###MESSAGE_SHIPPING_10### -->
         <p>Die Ware wird versendet.</p>
         <!-- ###MESSAGE_SHIPPING_10### -->
-        
+
         <!-- ###MESSAGE_SHIPPING_20### -->
         <p>Die Ware wird abgeholt.</p>
         <!-- ###MESSAGE_SHIPPING_20### -->
-        
+
          <!-- ###MESSAGE_SHIPPING_30### -->
         <p>Versand erfolgt nach Deutschland.</p>
         <!-- ###MESSAGE_SHIPPING_30### -->
-        
+
         <!-- ###MESSAGE_SHIPPING_20_13### -->
         <p>Quatsch bei 20: Versand erfolgt nach &#65533;terreich.</p>
         <!-- ###MESSAGE_SHIPPING_20_13### -->
         <!-- ###MESSAGE_SHIPPING### -->
-        
+
         <!-- ###MESSAGE_PAYMENT###
         This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
         -->
         <!-- ###MESSAGE_PAYMENT_10### -->
         <p>Die Bezahlung erfolgt nach Erhalt einer Rechnung.</p>
         <!-- ###MESSAGE_PAYMENT_10### -->
-        
+
         <!-- ###MESSAGE_PAYMENT_20### -->
         <p>Die Bezahlung erfolgt bei Abholung.</p>
         <!-- ###MESSAGE_PAYMENT_20### -->
-        
+
         <!-- ###MESSAGE_PAYMENT_30### -->
         <p>Die Bezahlung erfolgt bei Lieferung.</p>
         <!-- ###MESSAGE_PAYMENT_30### -->
-        
+
         <!-- ###MESSAGE_PAYMENT### -->
         ###GW2E###
     </div>
-    
+
     <div class="floatbox_BASKET5">
       <div id="text_gesamt_BASKET5">
         ###GW2B###<b>Gesamtbetrag:</b>###GW2E###
@@ -729,8 +736,8 @@ Andrea: Warenkorbansicht Anfang -->
         ###GW1B### <b>###TAX_INCL_EXCL### ###PRICE_TOTAL_TAX###</b><br />
         (exkl. MwSt. ###PRICE_TOTAL_NO_TAX###)<br /> (MwSt. ###PRICE_TOTAL_ONLY_TAX###) ###GW1E###
       </div>
-    </div>  
-   
+    </div>
+
     <div align="left">
       <input type="hidden" name="mode_update" value="1"/>
       <input type="submit" id="button3" name="products_update" value="Warenkorb aktualisieren"/>
@@ -770,7 +777,7 @@ Exact same features as BASKET_TEMPLATE
     Feldern angeben. ###GW1E### <br />
     <br />
   </div>
-  
+
   <div id="floatbox_BASKETINFO1">
     <div id="label_PERSON_SALUTATION">
       ###GW1B###<strong>Anrede:</strong>###GW1E###
@@ -789,7 +796,7 @@ Exact same features as BASKET_TEMPLATE
     </div>
     <div id="field_PERSON_ADDRESS">
       <textarea cols="30" rows="5" name="recs[personinfo][address]" wrap="off">###PERSON_ADDRESS###</textarea>
-    </div>    
+    </div>
     <div id="label_PERSON_ZIP###">
       ###GW1B###<strong>PLZ: </strong>*###GW1E###
     </div>
@@ -804,16 +811,16 @@ Exact same features as BASKET_TEMPLATE
     </div>
     <div id="label_PERSON_COUNTRY_CODE###">
       ###GW1B###<strong>Land: </strong>*###GW1E###
-    </div> 
+    </div>
     <div id="field_PERSON_COUNTRY_CODE">
       ###PERSON_COUNTRY_CODE###
     </div>
     <div id="label_PERSON_TELEPHONE###">
       ###GW1B###<strong>Telefon: </strong>*###GW1E###
-    </div>  
+    </div>
     <div id="field_PERSON_TELEPHONE">
       <input type="text" name="recs[personinfo][telephone]" size="30" value="###PERSON_TELEPHONE###"/>
-    </div>    
+    </div>
     <div id="label_PERSON_EMAIL###">
       ###GW1B###<strong>Email: </strong>*###GW1E###
     </div>
@@ -821,13 +828,13 @@ Exact same features as BASKET_TEMPLATE
       <input type="text" name="recs[personinfo][email]" size="30" value="###PERSON_EMAIL###"/>
     </div>
   </div>
-  
+
   ###GW1B###
   <div id="text_hinweis_BASKETINFO">
      Hinweis: Felder mit * sind Pflichtfelder.<br />Ihre Daten werden nicht an Dritte weitergegeben!
   </div>
   ###GW1E###
-  
+
   <!-- ###BILLING_ADDRESS### end-->
   <!-- ###BILLING_ADDRESS_LOGIN### start
   If this part is not empty then this will be used instead of BILLING_ADDRESS if there is a FE-login user.-->
@@ -874,7 +881,7 @@ Exact same features as BASKET_TEMPLATE
     </div>
     <div id="field_PERSON_EMAIL2">
       ###GW1B######PERSON_EMAIL######GW1E###
-    </div> 
+    </div>
   </div>
 
     <!-- ###BILLING_ADDRESS_LOGIN### end-->
@@ -892,37 +899,37 @@ Exact same features as BASKET_TEMPLATE
       ###GW1B###
       Wenn Ihre Bestellung zu einer anderen Anschrift geliefert werden soll, so geben Sie hier bitte die vollst&#65533;dige Adresse an.
       ###GW1E###
-    </div>  
+    </div>
         <br />
         <br />
     <div id="label_DELIVERY_SALUTATION">
       ###GW1B###<strong>Anrede:</strong>###GW1E###
-    </div>  
+    </div>
     <div id="field_DELIVERY_SALUTATION">
       ###GW1B######DELIVERY_SALUTATION######GW1E###
     </div>
     <div id="label_DELIVERY_NAME">
       ###GW1B###<strong>Kontaktperson:</strong>###GW1E###
-    </div> 
-    <div id="field_DELIVERY_NAME"> 
+    </div>
+    <div id="field_DELIVERY_NAME">
       <input type="text" name="recs[delivery][name]" size="30" value="###DELIVERY_NAME###"/>
     </div>
     <div id="label_DELIVERY_ADDRESS">
       ###GW1B###<strong>Adresse:</strong>###GW1E###
     </div>
-    <div id="field_DELIVERY_ADDRESS">  
+    <div id="field_DELIVERY_ADDRESS">
       <textarea cols=30 rows=5 name="recs[delivery][address]" wrap="off">###DELIVERY_ADDRESS###</textarea>
     </div>
     <div id="label_DELIVERY_ZIP">
       ###GW1B###<strong>PLZ:</strong>###GW1E###
     </div>
-    <div id="field_DELIVERY_ZIP"> 
+    <div id="field_DELIVERY_ZIP">
       <input type="text" name="recs[delivery][zip]" size="10" value="###DELIVERY_ZIP###"/>
     </div>
     <div id="label_DELIVERY_CITY">
       ###GW1B###<strong>Stadt:</strong>###GW1E###
     </div>
-    <div id="field_DELIVERY_CITY">  
+    <div id="field_DELIVERY_CITY">
       <input type="text" name="recs[delivery][city]" size="30" value="###DELIVERY_CITY###"/>
     </div>
     <div id="label_DELIVERY_COUNTRY_CODE">
@@ -936,33 +943,33 @@ Exact same features as BASKET_TEMPLATE
     </div>
     <div id="field_DELIVERY_TELEPHONE">
       <input type="text" name="recs[delivery][telephone]" size="30" value="###DELIVERY_TELEPHONE###"/>
-    </div> 
+    </div>
     <div id="label_DELIVERY_EMAIL">
       ###GW1B###<strong>Email:</strong>###GW1E###
     </div>
     <div id="field_DELIVERY_EMAIL">
       <input type="text" name="recs[delivery][email]" size="30" value="###DELIVERY_EMAIL###"/>
-    </div> 
+    </div>
     <div id="label_DELIVERY_DESIRED_DATE">
       ###GW1B###Gewnschtes Lieferdatum:###GW1E###
     </div>
     <div id="field_DELIVERY_DESIRED_DATE">
       <input name="recs[delivery][desired_date]" value="###DELIVERY_DESIRED_DATE###"/>
     </div>
-    <div id="label_DELIVERY_NOTE"> 
+    <div id="label_DELIVERY_NOTE">
       ###GW1B###Kommentar:###GW1E###
     </div>
     <div id="field_DELIVERY_NOTE">
       <textarea cols="30" rows="5" name="recs[delivery][note]">###DELIVERY_NOTE###</textarea>
-    </div> 
+    </div>
     <div id="text_agb_BASKETINFO">
       ###GW1B### Sie best&#65533;igen hiermit, dass Sie
       die AGB des Testshop - Online Vertrieb gelesen haben und diese akzeptieren.<br /><br />
       ###GW1E###
       <input type="checkbox" name="recs[personinfo][agb]" value="###PERSON_AGB###" />
        ###GW1B###<!--###LINK_AGB###-->Die Allgemeinen Gesch&auml;ftsbedingungen <!--###LINK_AGB###--> erkenne ich hiermit an.
-    </div> 
-    <!--<div align="center">--> 
+    </div>
+    <!--<div align="center">-->
       <input type="submit" id="button5" name="products_update" value="zurck zum Warenkorb" />
       <input type="submit" id="button4" name="products_payment" value="ABGs akzeptiert" onclick="document.forms[0].action='###FORM_URL_FINALIZE###';"/>
       <!--<input type="submit" id="button4" name="products_payment" value="ABGs ansehen" />-->
@@ -976,14 +983,14 @@ Exact same features as BASKET_TEMPLATE
 <!----------------------------------------------------------------------------------->
 <!-- ###BASKET_OVERVIEW_TEMPLATE### begin -->
 
-	<a href="index.php?id=###PID_BASKET###" title="###TITLE_LINK_BASKET###"> ###NUMBER_GOODSTOTAL### Produkte ( EUR ###PRICE_GOODSTOTAL_TAX###.- )</a>
-      
+	<a href="index.php?id=###PID_BASKET###" title="###BASKET_MINI_HEADER###"> ###NUMBER_GOODSTOTAL### Produkte ( EUR ###PRICE_GOODSTOTAL_TAX###.- )</a>
+
 <!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
 <!----------------------------------------------------------------------------------->
 
 
 
-<!----------------------------------------------------------------------------------->   
+<!----------------------------------------------------------------------------------->
 <!-- ###BASKET_OVERVIEW_EMPTY### begin -->
 
 	Keine Produkte im Warenkorb.
@@ -1008,11 +1015,11 @@ Exact same features as BASKET_TEMPLATE
 ###EXTERNAL_COBJECT###
 
 <div class="basket_payment">
-  
-  <div class="floatbox_BASKET_PAYMENT_TEMPLATE1"> 
+
+  <div class="floatbox_BASKET_PAYMENT_TEMPLATE1">
     <div class="text_bestellung_BASKET_PAYMENT_TEMPLATE1">
       ###GW2B###<b>Ihre Bestellung:</b>###GW2E###
-    </div>  
+    </div>
     <div id="text_produkte_BASKET_PAYMENT_TEMPLATE1">
       ###GW2B###<b>Produkte:</b>###GW2E###
     </div>
@@ -1024,19 +1031,19 @@ Exact same features as BASKET_TEMPLATE
       ###GW2B###<b>Gesamt:</b>###GW2E###
     </div>
   </div>
-  
-</div> 
-  
+
+</div>
+
   <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
   <!-- ###ITEM_CATEGORY### begin -->
-   
+
   <!-- ###ITEM_CATEGORY### end -->
   <!-- ###ITEM_LIST### begin -->
   <!-- ###ITEM_SINGLE### begin-->
-  
-<div class="floatbox_BASKET_PAYMENT_TEMPLATE2"> 
+
+<div class="floatbox_BASKET_PAYMENT_TEMPLATE2">
   <div id="produkte_BASKET_PAYMENT_TEMPLATE2">
-    ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E### 
+    ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
     <br />###CATEGORY_TITLE###<br />
   </div>
   <div id="anzahl_BASKET_PAYMENT_TEMPLATE2">
@@ -1047,60 +1054,60 @@ Exact same features as BASKET_TEMPLATE
     <br />(exkl. MwSt. ###PRICE_TOTAL_NO_TAX###) ###GW1E###
   </div>
 </div>
-      
+
   <!-- ###ITEM_SINGLE### end -->
   <!-- ###ITEM_LIST### end -->
   <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
-  
+
 <div class="floatbox_BASKET_PAYMENT_TEMPLATE3">
   <div id="text_rechnungsanschrift_BASKET_PAYMENT_TEMPLATE3">
     ###GW2B###<b>Rechnungsanschrift:</b>###GW2E###
-  </div> 
+  </div>
   <!--<div id="text_PERSON_SALUTATION_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###Anrede:###GW1E###
-  </div>-->  
+  </div>-->
   <div id="PERSON_SALUTATION_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_SALUTATION###</strong>###GW1E###
   </div>
-  <!--<div id="text_PERSON_NAME_BASKET_PAYMENT_TEMPLATE3">    
+  <!--<div id="text_PERSON_NAME_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###Name:###GW1E###
-  </div>-->      
-  <div id="PERSON_NAME_BASKET_PAYMENT_TEMPLATE3">      
+  </div>-->
+  <div id="PERSON_NAME_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###
-  </div>    
+  </div>
   <!--<div id="text_PERSON_ADDRESS_DISPLAY_PAYMENT_BASKET_TEMPLATE3">
     ###GW1B###Adresse:###GW1E###
-  </div>--> 
+  </div>-->
   <div id="PERSON_ADDRESS_DISPLAY_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###
-  </div>    
-  <!--<div id="text_PERSON_CITY_BASKET_PAYMENT_TEMPLATE3"> 
+  </div>
+  <!--<div id="text_PERSON_CITY_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###PLZ Stadt:###GW1E###
-  </div>--> 
+  </div>-->
   <div id="PERSON_CITY_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_ZIP### ###PERSON_CITY###</strong>###GW1E###
-  </div>    
+  </div>
   <!--<div id="text_PERSON_COUNTRY_BASKET_PAYMENT_TEMPLATE3">
      ###GW1B###Land:###GW1E###
-  </div>--> 
+  </div>-->
   <div id="PERSON_COUNTRY_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_COUNTRY###</strong>###GW1E###
-  </div>    
+  </div>
   <!--<div id="text_PERSON_TELEPHONE_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###Telefon:###GW1E###
-  </div>--> 
-  <div id="PERSON_TELEPHONE_BASKET_PAYMENT_TEMPLATE3"> 
+  </div>-->
+  <div id="PERSON_TELEPHONE_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###
-  </div>    
+  </div>
   <!--<div id="text_PERSON_EMAIL_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###Email:###GW1E###
-  </div>--> 
+  </div>-->
   <div id="text_PERSON_EMAIL_BASKET_PAYMENT_TEMPLATE3">
     ###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E### ###GW2B###<br />
-  </div>      
+  </div>
   <div id="text_email_BASKET_PAYMENT_TEMPLATE3">
     (An diese Email-Adresse wird die Best&#65533;igung Ihrer Bestellung geschickt!)###GW2E###<br />
-  </div>      
+  </div>
 </div>
 
 <div class="floatbox_BASKET_PAYMENT_TEMPLATE4">
@@ -1113,39 +1120,39 @@ Exact same features as BASKET_TEMPLATE
   <div id="DELIVERY_SALUTATION_BASKET_PAYMENT_TEMPLATE4">
 	  ###GW1B###<strong>###DELIVERY_SALUTATION###</strong>###GW1E###
 	</div>
-	<!--<div id="text_DELIVERY_NAME_BASKET_PAYMENT_TEMPLATE4">  
+	<!--<div id="text_DELIVERY_NAME_BASKET_PAYMENT_TEMPLATE4">
 	  ###GW1B###Kontaktperson:###GW1E###
-  </div> --> 
-  <div id="DELIVERY_NAME_BASKET_PAYMENT_TEMPLATE4">  
+  </div> -->
+  <div id="DELIVERY_NAME_BASKET_PAYMENT_TEMPLATE4">
 	  ###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###
 	</div>
-  <!--<div id="text_DELIVERY_ADDRESS_DISPLAY_BASKET_PAYMENT_TEMPLATE4">  
+  <!--<div id="text_DELIVERY_ADDRESS_DISPLAY_BASKET_PAYMENT_TEMPLATE4">
 		###GW1B###Postadresse:###GW1E###
   </div>-->
-	<div id="DELIVERY_ADDRESS_DISPLAY_BASKET_PAYMENT_TEMPLATE4">  
+	<div id="DELIVERY_ADDRESS_DISPLAY_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###<strong>###DELIVERY_ADDRESS_DISPLAY###</strong>###GW1E###
 	</div>
-	<!--<div id="text_DELIVERY_CITY_BASKET_PAYMENT_TEMPLATE4">  
+	<!--<div id="text_DELIVERY_CITY_BASKET_PAYMENT_TEMPLATE4">
 	  ###GW1B###PLZ Stadt:###GW1E###
   </div>-->
-  <div id="DELIVERY_CITY_BASKET_PAYMENT_TEMPLATE4">    
+  <div id="DELIVERY_CITY_BASKET_PAYMENT_TEMPLATE4">
 	  ###GW1B###<strong>###DELIVERY_ZIP### ###DELIVERY_CITY###</strong>###GW1E###
 	</DIV>
-	<!--<div id="text_DELIVERY_COUNTRY_BASKET_PAYMENT_TEMPLATE4">  
+	<!--<div id="text_DELIVERY_COUNTRY_BASKET_PAYMENT_TEMPLATE4">
 	  ###GW1B###Land:###GW1E###
   </div>  -->
-  <div id="DELIVERY_COUNTRY_BASKET_PAYMENT_TEMPLATE4">  
+  <div id="DELIVERY_COUNTRY_BASKET_PAYMENT_TEMPLATE4">
 	  ###GW1B###<strong>###DELIVERY_COUNTRY###</strong>###GW1E###
 	</div>
-	<!--<div id="text_DELIVERY_TELEPHONE_BASKET_PAYMENT_TEMPLATE4"> 
+	<!--<div id="text_DELIVERY_TELEPHONE_BASKET_PAYMENT_TEMPLATE4">
 	  ###GW1B###Telefon:###GW1E###
   </div>-->
-  <div id="DELIVERY_TELEPHONE_PAYMENT_TEMPLATE4">  
+  <div id="DELIVERY_TELEPHONE_PAYMENT_TEMPLATE4">
 	  ###GW1B###<strong>###DELIVERY_TELEPHONE###</strong>###GW1E###
 	</div>
   <!--<div id="text_DELIVERY_EMAIL_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###Email:###GW1E###
-  </div>  --> 
+  </div>  -->
   <div id="DELIVERY_EMAIL_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E### ###GW2B###<br />
   </div>
@@ -1154,46 +1161,46 @@ Exact same features as BASKET_TEMPLATE
   </div>
   <div id="text_DELIVERY_DESIRED_DATE_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###gewnschtes Lieferdatum:###GW1E###
-  </div> 
-  <div id="DELIVERY_DESIRED_DATE_BASKET_PAYMENT_TEMPLATE4">       
+  </div>
+  <div id="DELIVERY_DESIRED_DATE_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###<strong>###DELIVERY_DESIRED_DATE###</strong>###GW1E###
   </div>
   <div id="text_DELIVERY_BEMERKUNGEN_BASKET_PAYMENT_TEMPLATE4">
     ###GW2B###<b>Bemerkungen:</b>###GW2E###
   </div>
-  <div id="text_DELIVERY_NOTE_DISPLAY_BASKET_PAYMENT_TEMPLATE4"> 
+  <div id="text_DELIVERY_NOTE_DISPLAY_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###Kommentar:###GW1E###
   </div>
-  <div id="text_DELIVERY_NOTE_DISPLAY_BASKET_PAYMENT_TEMPLATE4">   
+  <div id="text_DELIVERY_NOTE_DISPLAY_BASKET_PAYMENT_TEMPLATE4">
     ###GW1B###<strong>###DELIVERY_NOTE_DISPLAY###</strong>###GW1E###
   </div>
-</div>  
-  
+</div>
+
 <div class="floatbox_BASKET_PAYMENT_TEMPLATE5">
   <div id="text_versand_BASKET_PAYMENT_TEMPLATE5">
     ###GW2B###<b>Versand und Verpackung:</b>###GW2E###<br />
   </div>
-  <div id="SHIPPING_TITLE_BASKET_PAYMENT_TEMPLATE5">  
+  <div id="SHIPPING_TITLE_BASKET_PAYMENT_TEMPLATE5">
     ###GW1B###<b>Pauschale: </b>###SHIPPING_TITLE######GW1E###
-  </div>  
+  </div>
   <div id="PRICE_SHIPPING_BASKET_PAYMENT_TEMPLATE5">
     ###GW1B###<b>inkl. MwSt. ###PRICE_SHIPPING_TAX###</b> <br />(exkl. MwSt. ###PRICE_SHIPPING_NO_TAX###)###GW1E###
   </div>
-</div>  
+</div>
 <div class="floatbox_BASKET_PAYMENT_TEMPLATE6">
   <div id="text_zahlungsweise_BASKET_PAYMENT_TEMPLATE6">
     ###GW2B###<b>Zahlungsweise:</b>###GW2E###
   </div>
   <!--
   <div id="PAYMENT_IMAGE_BASKET_PAYMENT_TEMPLATE5">
-    ###GW1B######PAYMENT_IMAGE### ###PAYMENT_TITLE### ###GW1E### ###GW1B### 
+    ###GW1B######PAYMENT_IMAGE### ###PAYMENT_TITLE### ###GW1E### ###GW1B###
   </div>-->
   <div id="PRICE_PAYMENT_BASKET_PAYMENT_TEMPLATE6">
     <b>inkl. MwSt. ###PRICE_PAYMENT_TAX###</b><br />
     (exkl. MwSt. ###PRICE_PAYMENT_NO_TAX###)###GW1E###
   </div>
-</div>  
-<div class="floatbox_BASKET_PAYMENT_TEMPLATE7">   
+</div>
+<div class="floatbox_BASKET_PAYMENT_TEMPLATE7">
   <div id="text_PRICE_TOTAL_BASKET_PAYMENT_TEMPLATE7">
      ###GW1B### <strong>Gesamtbetrag in EURO:</strong>###GW1E###
   </div>
@@ -1210,7 +1217,7 @@ Exact same features as BASKET_TEMPLATE
   <input type="hidden" name="products_cmd" value="cardno" />
   <input type="submit" name="products_finalize" value="Bestellung abschlie&szlig;en!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';"/>###GW1B### <!--(auch PayPal)-->###GW1E###
  </div>
-</div> 
+</div>
 </form>
 
 <!-- ###BASKET_PAYMENT_TEMPLATE### end -->
@@ -1240,24 +1247,24 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
     ###GW1B###Vielen Dank fr Ihre Bestellung!<br /><br />
     Ihre Test-Bestellung ist nun abgeschlossen und hat folgende Nummer:
   </div>
-  <div id="ORDER_UID_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  <div id="ORDER_UID_BASKET_ORDERCONFIRMATION_TEMPLATE">
     ###ORDER_UID###
-  </div>      
-  <div id="text_payment_emailsend_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  </div>
+  <div id="text_payment_emailsend_BASKET_ORDERCONFIRMATION_TEMPLATE">
 		Es handelt sich hierbei nur um einen Test.<br />
     Die Bestellbest&#65533;igung wird ebenfalls an die Emailadresse ###CUSTOMER_RECIPIENTS_EMAIL###
-    geschickt. 
+    geschickt.
   </div>
-  <div id="header_zahlungsart_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  <div id="header_zahlungsart_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Zahlungsart:
     <!-- ###MESSAGE_PAYMENT###
 	  This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'-->
     <!-- ###MESSAGE_PAYMENT_10### begin Message for payment method 10, Rechnung -->
   </div>
-  <div id="header_zahlungsart_rechnung_BASKET_ORDERCONFIRMATION_TEMPLATE">        
+  <div id="header_zahlungsart_rechnung_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Rechnung:
-  </div> 
-  <div id="text_zahlungsart_rechnung_BASKET_ORDERCONFIRMATION_TEMPLATE">     
+  </div>
+  <div id="text_zahlungsart_rechnung_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Bitte &uuml;berweisen Sie den Rechnungsbetrag auf folgendes Konto:<br /><br />
     Bank: Bank Teststadt <br />
     Bankleitzahl: 11111111<br />
@@ -1267,29 +1274,29 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
     Betreff: Ihre Bestellnummer ###ORDER_UID### unbedingt angeben! <br />
 	  <!-- ###MESSAGE_PAYMENT_10### end -->
   </div>
-  <div id="header_zahlungsart_selbstabholer_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  <div id="header_zahlungsart_selbstabholer_BASKET_ORDERCONFIRMATION_TEMPLATE">
     <!-- ###MESSAGE_PAYMENT_20### begin -->
     Selbstabholer:
-  </div> 
-  <div id="text_zahlungsart_selbstabholer_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  </div>
+  <div id="text_zahlungsart_selbstabholer_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Sie holen Ihre Bestellung selbst im Shop ab.
     Sie bezahlen die Ware bei Erhalt.
     <!-- ###MESSAGE_PAYMENT_20### end -->
-  </div> 
-  <div id="header_zahlungsart_nachnahme_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  </div>
+  <div id="header_zahlungsart_nachnahme_BASKET_ORDERCONFIRMATION_TEMPLATE">
     <!-- ###MESSAGE_PAYMENT_30### begin -->
     Nachnahme:
   </div>
-  <div id="text_zahlungsart_nachnahme_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  <div id="text_zahlungsart_nachnahme_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Die Waren werden Ihnen direkt zugesandt.
     Sie bezahlen die Ware bei Erhalt.
     <!-- ###MESSAGE_PAYMENT_30### end -->
   </div>
-  <div id="header_zahlungsart_paypal_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  <div id="header_zahlungsart_paypal_BASKET_ORDERCONFIRMATION_TEMPLATE">
     <!-- ###MESSAGE_PAYMENT_40### begin Message for payment method 40, Paypal -->
     PayPal:
   </div>
-  <div id="text_zahlungsart_paypal_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  <div id="text_zahlungsart_paypal_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Sie haben als Zahlungsart PayPal gew&#65533;lt. Bezahlen Sie ber diesen Link direkt Online per Kreditkarte via PayPal.
   </div>
     <form target="paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post">
@@ -1305,32 +1312,32 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
     </form>
     <!-- ###MESSAGE_PAYMENT_40### end -->
     <!-- ###MESSAGE_PAYMENT### -->
-  <div id="header_lieferstatus__BASKET_ORDERCONFIRMATION_TEMPLATE">                
+  <div id="header_lieferstatus__BASKET_ORDERCONFIRMATION_TEMPLATE">
     Liefer- und Bestellstatus
   </div>
-  <div id="text_lieferstatus_BASKET_ORDERCONFIRMATION_TEMPLATE">       
+  <div id="text_lieferstatus_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Die Ware bleibt bis zur vollst&#65533;digen Bezahlung Eigentum des Testshops.
   </div>
-  <div id="bestelldatum_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  <div id="bestelldatum_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Ihr Bestelldatum: ###ORDER_DATE###.
   </div>
 <!--
-  <div id="link_PID_TRACKING_TRACKING_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+  <div id="link_PID_TRACKING_TRACKING_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Klicken Sie hier <a href="index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###">
     um den Status jetzt zu sehen.</a>
   </div>
-  <div id="link_PID_BILLING_BASKET_ORDERCONFIRMATION_TEMPLATE">     
+  <div id="link_PID_BILLING_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Klicken Sie hier <a href="index.php?id=###PID_BILLING###&type=0&tracking=###ORDER_TRACKING_NO###">
     um die Rechnung jetzt zu sehen.</a>
-  </div>      
-  <div id="link_PID_DELIVERY_BASKET_ORDERCONFIRMATION_TEMPLATE">     
+  </div>
+  <div id="link_PID_DELIVERY_BASKET_ORDERCONFIRMATION_TEMPLATE">
     Klicken Sie hier <a href="index.php?id=###PID_DELIVERY###&type=0&tracking=###ORDER_TRACKING_NO###">
 	  um den Lieferschein jetzt zu sehen.</a>
   </div>
   -->
     ###GW1E### ###EXTERNAL_COBJECT###
-    
-  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE1"> 
+
+  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE1">
     <div id="text_produkte_BASKET_ORDERCONFIRMATION_TEMPLATE1">
       ###GW2B###<b>Produkte:</b>###GW2E###
     </div>
@@ -1342,17 +1349,17 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
       ###GW2B###<b>Gesamt:</b>###GW2E###
     </div>
   </div>
- 
+
     <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
     <!-- ###ITEM_CATEGORY### begin -->
-  
+
     <!-- ###ITEM_CATEGORY### end -->
     <!-- ###ITEM_LIST### begin -->
     <!-- ###ITEM_SINGLE### begin -->
-    
-  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE2"> 
+
+  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE2">
     <div id="produkte_BASKET_ORDERCONFIRMATION_TEMPLATE2">
-      ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E### 
+      ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
       <br />###CATEGORY_TITLE###<br />
     </div>
     <div id="anzahl_BASKET_ORDERCONFIRMATION_TEMPLATE2">
@@ -1363,71 +1370,71 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
       <br />(exkl. MwSt. ###PRICE_TOTAL_NO_TAX###) ###GW1E###
     </div>
   </div>
-    
+
     <!-- ###ITEM_SINGLE### end -->
     <!-- ###ITEM_LIST### end -->
-    <!-- ###ITEM_CATEGORY_AND_ITEMS### end --> 
-              
+    <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+
   <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE3">
     <div id="text_rechnungsanschrift_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW2B###<b>Rechnungsanschrift:</b>###GW2E###
-    </div> 
+    </div>
     <!--<div id="text_PERSON_SALUTATION_BASKET_ORDERCONFIRMATION_TEMPLATE3">
   	###GW1B###Anrede:###GW1E###
-    </div>-->  
+    </div>-->
     <div id="PERSON_SALUTATION_BASKET_ORDERCONFIRMATION_TEMPLATE3">
      ###GW1B###<strong>###PERSON_SALUTATION###</strong>###GW1E###
   	</div>
-    <!--<div id="text_PERSON_NAME_BASKET_ORDERCONFIRMATION_TEMPLATE3">    
+    <!--<div id="text_PERSON_NAME_BASKET_ORDERCONFIRMATION_TEMPLATE3">
      ###GW1B###Name:###GW1E###
-    </div>-->      
-    <div id="PERSON_NAME_BASKET_ORDERCONFIRMATION_TEMPLATE3">      
+    </div>-->
+    <div id="PERSON_NAME_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###
-    </div>    
-    <!--<div id="text_PERSON_ADDRESS_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE3">     
+    </div>
+    <!--<div id="text_PERSON_ADDRESS_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###Adresse:###GW1E###
-    </div>--> 
-    <div id="PERSON_ADDRESS_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE3">        
+    </div>-->
+    <div id="PERSON_ADDRESS_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###
-    </div>    
-    <!--<div id="text_PERSON_CITY_BASKET_ORDERCONFIRMATION_TEMPLATE3">       
+    </div>
+    <!--<div id="text_PERSON_CITY_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###PLZ Stadt:###GW1E###
-    </div>--> 
+    </div>-->
     <div id="PERSON_CITY_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###<strong>###PERSON_ZIP### ###PERSON_CITY###</strong>###GW1E###
-    </div>    
-    <!--<div id="text_PERSON_COUNTRY_BASKET_ORDERCONFIRMATION_TEMPLATE3">    
+    </div>
+    <!--<div id="text_PERSON_COUNTRY_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###Land:###GW1E###
-    </div>--> 
-    <div id="PERSON_COUNTRY_BASKET_ORDERCONFIRMATION_TEMPLATE3">  
+    </div>-->
+    <div id="PERSON_COUNTRY_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###<strong>###PERSON_COUNTRY###</strong>###GW1E###
-    </div>    
-    <!--<div id="text_PERSON_TELEPHONE_BASKET_ORDERCONFIRMATION_TEMPLATE3">    
+    </div>
+    <!--<div id="text_PERSON_TELEPHONE_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###Telefon:###GW1E###
-    </div>--> 
-    <div id="PERSON_TELEPHONE_BASKET_ORDERCONFIRMATION_TEMPLATE3"> 
+    </div>-->
+    <div id="PERSON_TELEPHONE_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###
-    </div>    
-    <!--<div id="text_PERSON_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE3">    
+    </div>
+    <!--<div id="text_PERSON_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###Email:###GW1E###
-    </div>--> 
-    <div id="text_PERSON_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE3">      
+    </div>-->
+    <div id="text_PERSON_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       ###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E### ###GW2B###<br />
-    </div>      
+    </div>
     <div id="text_email_BASKET_ORDERCONFIRMATION_TEMPLATE3">
       (An diese Email-Adresse wird die Best&#65533;igung Ihrer Bestellung geschickt!)###GW2E###<br />
-    </div>      
+    </div>
   </div>
 
     <!-- ###FE_USER_SECTION### begin -->
-        
+
           ###GW1B###Username:###GW1E###
           ###GW1B###<strong>###FE_USER_USERNAME###</strong>###GW1E###
           ###GW1B###User ID:###GW1E###
           ###GW1B###<strong>###FE_USER_UID###</strong>###GW1E###
-        
+
     <!-- ###FE_USER_SECTION### end -->
-  
+
   <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE4">
     <div id="text_lieferanschrift_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       ###GW2B###<b>Lieferanschrift:</b>###GW2E###
@@ -1438,79 +1445,79 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
     <div id="DELIVERY_SALUTATION_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	    ###GW1B###<strong>###DELIVERY_SALUTATION###</strong>###GW1E###
 	  </div>
-	  <!--<div id="text_DELIVERY_NAME_BASKET_ORDERCONFIRMATION_TEMPLATE4">  
+	  <!--<div id="text_DELIVERY_NAME_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	    ###GW1B###Kontaktperson:###GW1E###
-    </div> --> 
-    <div id="DELIVERY_NAME_BASKET_ORDERCONFIRMATION_TEMPLATE4">  
+    </div> -->
+    <div id="DELIVERY_NAME_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	    ###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###
 	  </div>
-    <!--<div id="text_DELIVERY_ADDRESS_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE4">  
+    <!--<div id="text_DELIVERY_ADDRESS_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	  	###GW1B###Postadresse:###GW1E###
     </div>-->
-	  <div id="DELIVERY_ADDRESS_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE4">  
+	  <div id="DELIVERY_ADDRESS_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       ###GW1B###<strong>###DELIVERY_ADDRESS_DISPLAY###</strong>###GW1E###
 	  </div>
-	  <!--<div id="text_DELIVERY_CITY_BASKET_ORDERCONFIRMATION_TEMPLATE4">  
+	  <!--<div id="text_DELIVERY_CITY_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	    ###GW1B###PLZ Stadt:###GW1E###
     </div>-->
-    <div id="DELIVERY_CITY_BASKET_ORDERCONFIRMATION_TEMPLATE4">    
+    <div id="DELIVERY_CITY_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	    ###GW1B###<strong>###DELIVERY_ZIP### ###DELIVERY_CITY###</strong>###GW1E###
 	  </div>
-	  <!--<div id="text_DELIVERY_COUNTRY_BASKET_ORDERCONFIRMATION_TEMPLATE4">  
+	  <!--<div id="text_DELIVERY_COUNTRY_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	    ###GW1B###Land:###GW1E###
     </div>  -->
-    <div id="DELIVERY_COUNTRY_BASKET_ORDERCONFIRMATION_TEMPLATE4">  
+    <div id="DELIVERY_COUNTRY_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	    ###GW1B###<strong>###DELIVERY_COUNTRY###</strong>###GW1E###
 	  </div>
-	  <!--<div id="text_DELIVERY_TELEPHONE_BASKET_ORDERCONFIRMATION_TEMPLATE4"> 
+	  <!--<div id="text_DELIVERY_TELEPHONE_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	    ###GW1B###Telefon:###GW1E###
     </div>-->
-    <div id="DELIVERY_TELEPHONE_BASKET_ORDERCONFIRMATION_TEMPLATE4">  
+    <div id="DELIVERY_TELEPHONE_BASKET_ORDERCONFIRMATION_TEMPLATE4">
 	    ###GW1B###<strong>###DELIVERY_TELEPHONE###</strong>###GW1E###
 	  </div>
-    <!--<div id="text_DELIVERY_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE4">   
+    <!--<div id="text_DELIVERY_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       ###GW1B###Email:###GW1E###
-    </div>  --> 
-    <div id="DELIVERY_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE4">   
+    </div>  -->
+    <div id="DELIVERY_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       ###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E### ###GW2B###<br />
     </div>
-    <div id="text_email_DELIVERY_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE4">       
+    <div id="text_email_DELIVERY_EMAIL_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       (An diese Email-Adresse wird die Best&#65533;igung Ihrer Bestellung geschickt!)###GW2E###<br />
     </div>
-    <div id="text_DELIVERY_DESIRED_DATE_BASKET_ORDERCONFIRMATION_TEMPLATE4">        
+    <div id="text_DELIVERY_DESIRED_DATE_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       ###GW1B###gewnschtes Lieferdatum:###GW1E###
-    </div> 
-    <div id="DELIVERY_DESIRED_DATE_BASKET_ORDERCONFIRMATION_TEMPLATE4">       
+    </div>
+    <div id="DELIVERY_DESIRED_DATE_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       ###GW1B###<strong>###DELIVERY_DESIRED_DATE###</strong>###GW1E###
     </div>
     <!--<div id="text_DELIVERY_BEMERKUNGEN_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       ###GW2B###<b>Bemerkungen:</b>###GW2E###
     </div>-->
-    <div id="text_DELIVERY_NOTE_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE4"> 
+    <div id="text_DELIVERY_NOTE_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       ###GW1B###Kommentar:###GW1E###
     </div>
-    <div id="DELIVERY_NOTE_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE4">   
+    <div id="DELIVERY_NOTE_DISPLAY_BASKET_ORDERCONFIRMATION_TEMPLATE4">
       ###GW1B###<strong>###DELIVERY_NOTE_DISPLAY###</strong>###GW1E###
     </div>
-  </div>  
-   
-  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE5">  
+  </div>
+
+  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE5">
     <div id="text_versand_BASKET_ORDERCONFIRMATION_TEMPLATE5">
       ###GW2B###<b>Versand und Verpackung:</b>###GW2E###
     </div>
-    <div id="text_pauschale_BASKET_ORDERCONFIRMATION_TEMPLATE5">  
+    <div id="text_pauschale_BASKET_ORDERCONFIRMATION_TEMPLATE5">
       ###GW1B###Pauschale:<br /><b>###SHIPPING_TITLE###</B>###GW1E###
     </div>
     <div id="SHIPPING_SELECTOR_BASKET_ORDERCONFIRMATION_TEMPLATE5">
       ###GW1B######SHIPPING_SELECTOR######GW1E###
-    </div>  
-    <div id="PRICE_SHIPPING_TAX_BASKET_ORDERCONFIRMATION_TEMPLATE5">  
+    </div>
+    <div id="PRICE_SHIPPING_TAX_BASKET_ORDERCONFIRMATION_TEMPLATE5">
        ###GW1B### <b>ink. MwSt. ###TAX_INCL_EXCL### ###PRICE_SHIPPING_TAX###</b><br />
       (exkl. MwSt. ###PRICE_SHIPPING_NO_TAX###)###GW1E###
     </div>
   </div>
 
-  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE6"> 
+  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE6">
     <div id="text_zahlungsweise_BASKET_ORDERCONFIRMATION_TEMPLATE6">
       ###GW2B###<b>Zahlungsweise:</b><br />###GW2E###
     </div>
@@ -1522,8 +1529,8 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
       (exkl. MwSt. ###PRICE_PAYMENT_NO_TAX###)###GW1E###
     </div>
   </div>
-     
-  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE7">  
+
+  <div class="floatbox_BASKET_ORDERCONFIRMATION_TEMPLATE7">
     <div id="text_PRICE_TOTAL_BASKET_ORDERCONFIRMATION_TEMPLATE7">
       ###GW1B### <strong>Gesamtbetrag in EURO:</strong>###GW1E###
     </div>
@@ -1533,7 +1540,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
       (exkl. MwSt. ###PRICE_TOTAL_NO_TAX###)<br />###GW1E###
     </div>
   </div>
-    
+
   <div id="text_regards_BASKET_ORDERCONFIRMATION_TEMPLATE">
     ###GW1B###
     <br />
@@ -1548,7 +1555,7 @@ Subpart used if the order is finalized and this is thus the confirmation shown.-
     Email: info@ttproducts.de<br />
     ###GW1E### </p>
   </div>
-</div> 
+</div>
 
 <!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### end -->
 <!----------------------------------------------------------------------------------->
@@ -1565,7 +1572,7 @@ If the basket is empty this subpart is displayed -->
 
 <div class="BASKET_TEMPLATE_EMPTY">
   <B>Ihr Warenkorb ist noch leer.</B>
-</div>  
+</div>
 
   <!-- ###BASKET_TEMPLATE_EMPTY### end -->
 <!----------------------------------------------------------------------------------->
@@ -1633,10 +1640,10 @@ This part is repeated for each order status item and finally this part in the te
   </div>
   <div id="aktion_TRACKING_DISPLAY_INFO2">
     ###GW1B### ###ORDER_STATUS_INFO###  ###GW1E###
-  </div>  
+  </div>
   <div id="kommentar_TRACKING_DISPLAY_INFO2">
     ###GW1B### ###ORDER_STATUS_COMMENT###  ###GW1E###
-  </div>  
+  </div>
 </div>
 
 <!-- ###STATUS_ITEM### end -->
@@ -1649,9 +1656,9 @@ This part is repeated for each order status item and finally this part in the te
 </div>
 Order: ####ORDER_UID###<br /><br />
 
-<div id="text_status_codeORDER_TRACKING_NO_BASKET_ORDERCONFIRMATION_TEMPLATE">      
+<div id="text_status_codeORDER_TRACKING_NO_BASKET_ORDERCONFIRMATION_TEMPLATE">
   Sie k&#65533;nen Ihren Bestellstatus jederzeit mittels Ihres Bestellstatus-Codes
-  <strong>###ORDER_TRACKING_NO###</strong> nachvollziehen. 
+  <strong>###ORDER_TRACKING_NO###</strong> nachvollziehen.
 </div>
 <br />
 
@@ -2004,80 +2011,80 @@ Mein Typo3 Shop
 
 <!----------------------------------------------------------------------------------->
 <!-- ###BILL_TEMPLATE### start -->
-        
+
 <img src="http://shopms.de/images/header_rechnung.jpg" width="669" height="90">
-  
+
    ###GW1B### Testshop &#8211; Online Vertrieb, Testshopstr.
       1, 11111 Teststadt, Germany<br />
       -------------------------------------------------------------------------------------------------
       ###GW1E###
-  
-  
 
-        
+
+
+
           ###PERSON_SALUTATION###
-        
-        
-          ###PERSON_NAME###
-                
-        
-          ###PERSON_ADDRESS_DISPLAY### 
-        
-        
-         ###PERSON_ZIP### ###PERSON_CITY###
-        
-        
-         ###PERSON_COUNTRY### 
-        
-        
 
-        
-      
-  
+
+          ###PERSON_NAME###
+
+
+          ###PERSON_ADDRESS_DISPLAY###
+
+
+         ###PERSON_ZIP### ###PERSON_CITY###
+
+
+         ###PERSON_COUNTRY###
+
+
+
+
+
+
 ###GW1B###<p><b>Rechnung Nr. ###ORDER_UID###:</b></p>###GW1E###<br />
-      <br /><p><strong>Es handelt sich um einen Test.</strong></p> 
+      <br /><p><strong>Es handelt sich um einen Test.</strong></p>
   <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
   <!-- ###ITEM_CATEGORY### begin -->
-  
+
     ###GW1B###Warenwert (###CATEGORY_QTY### x ###CATEGORY_TITLE###)###GW1E###
 ###GW1B###<p> <b>EUR ###PRICE_GOODS_TAX### <br />(ohne MwSt. EUR ###PRICE_GOODS_NO_TAX###)</b></p> ###GW1E###
-  
+
   <!-- ###ITEM_CATEGORY### end -->
   <!-- ###ITEM_LIST### begin -->
   <!-- ###ITEM_SINGLE### begin-->
 
-  
+
 ###FIELD_QTY###x ###GW1B###<p><b>###PRODUCT_TITLE###</b></p>###GW1E###
-    
-  
+
+
   <!-- ###ITEM_SINGLE### end -->
   <!-- ###ITEM_LIST### end -->
   <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
-  
 
-  
-  
+
+
+
 ###GW1B### Zahlungsart: ###PAYMENT_TITLE### ###GW1E###
 ###GW1B### <p><b>EUR ###PRICE_PAYMENT_TAX###</b></p><br />
       ###GW1E###
-  
-  
+
+
 ###GW1B### Verpackung und Versand###GW1E###
 ###GW1B###<p> <b>EUR ###PRICE_SHIPPING_TAX### (###PRICE_SHIPPING_NO_TAX###)</b></p><br />
       ###GW1E###
-  
 
-  
+
+
 --------------------------------------------------------------------------------------------------------------------------
-  
-  
+
+
 ###GW1B###<p> <strong>Gesamt</strong></p> ###GW1E###
 ###GW1B### <p><b>EUR ###PRICE_TOTAL_TAX### <br />(ohne MwSt. EUR ###PRICE_TOTAL_NO_TAX###)</b></p><br />
       ###GW1E###
 
-  
+
 ###GW1B### Vielen Dank <br /><br />
-     
+
       <p>Mit freundlichen Grssen: <br /> <br /> <strong>ttproducts.de<br />
       </strong>Testshop - Online Vertrieb<br />
       Testshopstr. 1<br />
@@ -2104,7 +2111,7 @@ Mein Typo3 Shop
 
 <!----------------------------------------------------------------------------------->
 <!-- ###DELIVERY_TEMPLATE### start -->
-        
+
 <img src="http://shopms.de/images/header_rechnung.jpg" width="669" height="90">
 
 ###GW1B### Testshop &#8211; Online Vertrieb, Testshopstr.
@@ -2120,7 +2127,7 @@ Mein Typo3 Shop
 
 ###DELIVERY_ZIP### ###DELIVERY_CITY###
 
-###DELIVERY_COUNTRY### 
+###DELIVERY_COUNTRY###
 
 ###GW1B###<p><b>Lieferschein fr Rechnung Nr. ###ORDER_UID###:</b></p>###GW1E###<br /><br />
 <br />
@@ -2150,7 +2157,7 @@ Mein Typo3 Shop
 
 
 ###GW1B### Vielen Dank. <br />
-      
+
       <p>Mit freundlichen Grssen: <br /> <br /> <strong>ttproducts.de<br />
       </strong>Testshop - Online Vertrieb<br />
       Testshopstr. 1<br />
@@ -2167,7 +2174,7 @@ Mein Typo3 Shop
         IBAN: DE11 1111 1111 1111 1111 11<br />
         BIC: PBNKTEST<br />
         ###GW1E### </p>
-  
+
 
 <!-- ###DELIVERY_TEMPLATE### end -->
 <!----------------------------------------------------------------------------------->
@@ -2218,7 +2225,7 @@ Mein Typo3 Shop
 			<h1>###LIST_LINK###</h1>
 			###CATEGORY_IMAGE###
 			<p>###CATEGORY_SUBTITLE###</p>
-			
+
 			###SUBCATEGORY_A_1###
 
 		</div>
@@ -2245,7 +2252,7 @@ Mein Typo3 Shop
 
 	<!-- ###CATEGORY_SINGLE### end-->
 		</ul>
-	</div>	
+	</div>
 <!-- ###SUBCATEGORY_A_1_TEMPLATE### end -->
 <!----------------------------------------------------------------------------------->
 

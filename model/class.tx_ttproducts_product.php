@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,6 +40,7 @@
  */
 
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
+require_once(PATH_BE_div2007.'class.tx_div2007_ff.php');
 
 
 
@@ -56,7 +57,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init(&$cObj, $functablename='tt_products')  {
+	function init (&$cObj, $functablename='tt_products')  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($cObj, $functablename);
@@ -79,6 +80,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$requiredFields .= ','.$instockField;
 		}
 		$tableconf = $cnf->getTableConf($functablename,$theCode);
+
 		if ($tableconf['requiredFields'])	{
 			$tmp = $tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
@@ -91,10 +93,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			)	{
 			$addRequiredFields = array();
 			$addRequiredFields = $tableconf['language.']['field.'];
-			$this->getTableObj()->addRequiredFieldArray ($addRequiredFields);
+			$this->getTableObj()->addRequiredFieldArray($addRequiredFields);
 		}
 		$tablename = $cnf->getTableName($functablename);
 		$tableObj->setTCAFieldArray($tablename, 'products');
+
 
 		if ($cnf->bUseLanguageTable($tableconf))	{
 			$tableObj->setLanguage ($this->config['LLkey']);
@@ -115,7 +118,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	} // init
 
 
-	function &getArticleRows($uid, $where='')	{
+	function &getArticleRows ($uid, $where='')	{
 
 		$rowArray = $this->articleArray[$uid];
 
@@ -149,7 +152,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			$whereArray[] = $field.'=\''.$firstRow[$field].'\'';
 		}
 
-		$where = implode (' AND ',$whereArray);
+		if (count($whereArray))	{
+			$where = implode (' AND ',$whereArray);
+		} else {
+			$where = '';
+		}
 		$articleRows = $this->getArticleRows(intval($row['uid']), $where);
 		if (is_array($articleRows) && count($articleRows))	{
 			$articleRow = $this->variant->fetchArticle($row, $articleRows);
@@ -170,83 +177,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		}
 		return $articleRow;
 	}
-
-/*
-	function get($uid=0,$pid=0,$bStore=TRUE,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
-		global $TYPO3_DB;
-
-		$tableObj = &$this->getTableObj();
-		if (t3lib_div::testInt($uid))	{
-			$rc = $this->dataArray[$uid];
-		}
-
-		if (($uid || $where_clause) && !$rc) {
-			$where = '1=1 '.$tableObj->enableFields();
-			if ($uid)	{
-				$where .= ' AND uid = '.intval($uid);
-			}
-			if ($where_clause)	{
-				$where .= ' '.$where_clause;
-			}
-			if ($bCount)	{
-				$fields = 'count(*)';
-			} else {
-				$fields = '*';
-			}
-
-			// Fetching the records
-			$res = $tableObj->exec_SELECTquery($fields, $where, $groupBy, $orderBy, $limit);
-			$rc = array();
-			while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-				$rc[] = $this->dataArray[$row['uid']] = $row;
-			}
-
-			$TYPO3_DB->sql_free_result($res);
-			if ($uid)	{
-				reset ($rc);
-				$rc = current ($rc);
-			}
-
-			if ($bCount)	{
-				reset ($rc[0]);
-				$rc = intval(current($rc[0]));
-			}
-		}
-		return $rc;
-	}*/
-
-
-/*
-	function get ($uid=0,$where_clause='') {
-		global $TYPO3_DB;
-
-		if ($uid)	{
-			$rc = $this->dataArray[$uid];
-		}
-		if (!$rc) {
-			$where = '1=1 '.$this->getTableObj()->enableFields();
-			if ($uid)	{
-				$where .= ' AND uid = '.intval($uid);
-			}
-			if ($where_clause)	{
-				$where .= ' '.$where_clause;
-			}
-			// Fetching the products
-			$res = $this->getTableObj()->exec_SELECTquery('*', $where,$groupBy,$orderBy,$limit);
-			$rc = array();
-
-			$variantFieldArray = $this->variant->getFieldArray();
-			while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-				$this->getTableObj()->substituteMarkerArray($row, $variantFieldArray);
-				$rc[] = $this->dataArray[$row['uid']] = $row;
-			}
-			$TYPO3_DB->sql_free_result($res);
-			if ($uid)	{
-				$rc = current ($rc);
-			}
-		}
-		return $rc;
-	}*/
 
 	/* types:
 		'accessories' ... accessory products
@@ -303,7 +233,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @param	[type]		$useArticles: ...
 	 * @return	[type]		...
 	 */
-	function &reduceInStockItems(&$itemArray, $useArticles)	{
+	function &reduceInStockItems (&$itemArray, $useArticles)	{
 		global $TYPO3_DB, $TCA;
 		$instockTableArray = array();
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
@@ -348,7 +278,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @param	[type]		$check: ...
 	 * @return	[type]		...
 	 */
-	function hasAdditional(&$row, $check)  {
+	function hasAdditional (&$row, $check)  {
 		$hasAdditional = false;
 		$additional = t3lib_div::xml2array($row['additional']);
 		$hasAdditional = tx_div2007_ff::get($additional, $check);
@@ -363,7 +293,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @param	[type]		$pid_list: ...
 	 * @return	[type]		...
 	 */
-	function addWhereCat($cat, $pid_list)	{
+	function addWhereCat ($cat, $pid_list)	{
 		$bOpenBracket = FALSE;
 		$where = '';
 
@@ -392,7 +322,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @param	[type]		$selectConf: ...
 	 * @return	[type]		...
 	 */
-	function addselectConfCat($cat, &$selectConf)	{
+	function addselectConfCat ($cat, &$selectConf)	{
 
 		$tableNameArray = array();
 
@@ -415,7 +345,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @param	[type]		$cat: ...
 	 * @return	[type]		...
 	 */
-	function getPageUidsCat($cat)	{
+	function getPageUidsCat ($cat)	{
 		$uidArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
@@ -439,7 +369,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @param	[type]		$field: ...
 	 * @return	[type]		...
 	 */
-	function getProductField(&$row, $field)	{
+	function getProductField (&$row, $field)	{
 		return $row[$field];
 	}
 }

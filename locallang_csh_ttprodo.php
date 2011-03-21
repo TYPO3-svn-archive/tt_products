@@ -21,6 +21,8 @@ $LOCAL_LANG = Array (
 	'it' => Array (
 	),
 	'fr' => Array (
+		'.description' => 'Shop commandes',
+		'.details' => 'Quelques commandes sont faites. Seulement l\'administrateur doit pouvoir changer elles.',
 	),
 	'es' => Array (
 	),
@@ -37,7 +39,6 @@ $LOCAL_LANG = Array (
 	'fi' => Array (
 		'.description' => 'Tilaukset.',
 		'.details' => 'Joitakin tilauksia on tehty. Vain järjestelmänvalvoja voi muuttaa niitä.',
-		
 	),
 	'tr' => Array (
 	),

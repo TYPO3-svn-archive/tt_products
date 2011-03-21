@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+orderRecord<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <!-- translated by Masod Mohmand / nicht alles ist uebersetzt worden /
-     ist unseren Anforderungen angepasst(z.B.kein frontend user registration , kein Memo 
+     ist unseren Anforderungen angepasst(z.B.kein frontend user registration , kein Memo
 	u. w. ..).-->
 
 
@@ -19,7 +19,7 @@
 <p><em>This subpart is used to display the regular list of products. It's also used by search-results.</em></p>
 <!-- ###ITEM_LIST_TEMPLATE### begin
 This subpart is used to display the regular list of products. It's also used by search-results.-->
-   
+
  <div class="tt_products_item_list">
 	   <div class="page_navigation">
 	   <div class="page_prev"><!--###LINK_PREV###-->vorherige Seite<!--###LINK_PREV###--></div>
@@ -52,11 +52,11 @@ This subpart is used to display the regular list of products. It's also used by 
       <input type="submit" name="order" value="In Warenkorb einf&uuml;gen"/>
                 </div>
 	    	</form>
-+++++++++++++++++++++++++++++++++++++++++++++ 
++++++++++++++++++++++++++++++++++++++++++++++
 	            <!-- ###ITEM_SINGLE### end -->
 
 	        <!-- ###ITEM_LIST### end -->
-**********************************************  
+**********************************************
 <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
 
 
@@ -116,12 +116,12 @@ This subpart is used to display the regular list of products. It's also used by 
 	-->
     <div class="tt_products_item_catlist">
     	<!-- ###CATEGORY_SINGLE### begin-->
-		###ITEM_SINGLE_PRE_HTML### 
+		###ITEM_SINGLE_PRE_HTML###
         	<!--###LINK_CATEGORY### begin-->
             	###LIST_LINK###<br/>
             <!--###LINK_CATEGORY### end-->
-		###ITEM_SINGLE_POST_HTML### 
-        <!-- ###CATEGORY_SINGLE### end--> 
+		###ITEM_SINGLE_POST_HTML###
+        <!-- ###CATEGORY_SINGLE### end-->
 
        </br> <!-- ###CATEGORY_SINGLE_2### begin-->
         <!-- ###CATEGORY_SINGLE_2### end-->
@@ -156,7 +156,7 @@ This subpart is used to display the regular list of products. It's also used by 
 	        <ul><li>(ohne MwSt: ###PRICE_NO_TAX### EUR)</li>
 		<li>(enthaltene MwSt: ###PRICE_ONLY_TAX### EUR)</li>
 		</ul>
-		<div class="product_datasheet">###LINK_DATASHEET### als PDF-Datei zum freien Download ###LINK_DATASHEET###</div>
+		<div class="product_datasheet">###PRODUCT_LINK_DATASHEET### als PDF-Datei zum freien Download ###PRODUCT_LINK_DATASHEET###</div>
 		</dd>
 
 
@@ -166,7 +166,7 @@ This subpart is used to display the regular list of products. It's also used by 
             	<div>
                 	<label for="quantity">Anzahl: </label>
                     	<input size="3" maxlength="4" type="text" id="quantity" name="###FIELD_NAME###" value="###FIELD_QTY###" />
-         	
+
 <input type="submit" name="order" value="In Warenkorb einf&uuml;gen" /><br />
  </div> </form>
 	    </div>
@@ -188,7 +188,7 @@ This subpart is used to display the regular list of products. It's also used by 
             <a href="http://###DOMAIN###/index.php?id=182">Hilfe</a>
         </p>
 		<p class="basket">
-        	<a href="http://###DOMAIN###/index.php?id=###PID_BASKET###"><img src="fileadmin/Templates/shop/wk.gif" height="70" width ="100"  	
+        	<a href="http://###DOMAIN###/index.php?id=###PID_BASKET###"><img src="fileadmin/Templates/shop/wk.gif" height="70" width ="100"
 	" alt="Warenkorb" /></a>&nbsp;
             <a href="http://###DOMAIN###/index.php?id=###PID_BASKET###">###NUMBER_GOODSTOTAL### Artikel (###PRICE_GOODSTOTAL_TAX### EUR)</a>
         </p>
@@ -306,20 +306,20 @@ In addition there's a number of fields used for delivery and payment information
                     Versandkosten: <strong>###PRICE_SHIPPING_TAX###.- EUR</strong>&nbsp;
                 </p>
                 <!-- ###MESSAGE_SHIPPING###
-                    
-                    
-                    
-                    
+
+
+
+
                 <!-- ###MESSAGE_SHIPPING### -->
             </div>
 
             <div class="payment">
                 <h2>Bezahlung</h2>
-                <label for="payment-select">Art der Bezahlung: </label> <br/> 
+                <label for="payment-select">Art der Bezahlung: </label> <br/>
                 	###PAYMENT_SELECTOR######PAYMENT_IMAGE###
                 <p>
                     Bezahlung : <strong>###PAYMENT_TITLE###</strong><br />
-  
+
                 <!-- ###MESSAGE_PAYMENT### begin
                     This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
                     -->
@@ -327,7 +327,7 @@ In addition there's a number of fields used for delivery and payment information
          		<p>Bitte bezahlen Sie den Betrag erst nach Erhalt der Rechnung.
 			Die Rechnung erhalten sie  auf dem Postweg.</p>
                     <!-- ###MESSAGE_PAYMENT_10### end -->
-			
+
 			<!-- ###MESSAGE_PAYMENT_20### begin -->
         		 <p> Bitte tragen sie Ihre Bankdaten(BLZ, Kontonummer) unter Bemerkungen ein. Die Daten werden auf unseren Server verschl&uuml;sselt gespeichert und nach der Bearbeitung wieder gl&ouml;scht! </p>
                    	 <!-- ###MESSAGE_PAYMENT_20### end -->
@@ -337,14 +337,14 @@ In addition there's a number of fields used for delivery and payment information
 
             <div class="price_summary">
                 <h2>Gesamtpreis </h2>
-                
+
                     <strong>Insgesamt: ###PRICE_TOTAL_TAX### EUR</strong></div> </br>
 		   <ul><li> (Insgesamt ohne MwSt: ###PRICE_TOTAL_NO_TAX### EUR)</li>
-                    <li>(enthaltene MwSt: ###PRICE_TOTAL_ONLY_TAX### EUR)</li></ul>	
-		    
-		    
-                
-            
+                    <li>(enthaltene MwSt: ###PRICE_TOTAL_ONLY_TAX### EUR)</li></ul>
+
+
+
+
 
             <div class="form_control">
                 <input type="hidden" name="mode_update" value="1" />
@@ -453,7 +453,7 @@ Sie k&ouml;en auch die Kontaktperson/Email an diesem Ort eingeben?
 	            <legend>Allgemeine Gesch&auml;tsbedingungen</legend>
 	            <div class="trading_conditions">
 	             <p>Hiermit best&auml;tige ich, dass ich die <!--###LINK_AGB### -->Allgemeine Gesch&auml;tsbedingungen(AGB)<!--###LINK_AGB###--> und die <a href="http://###DOMAIN###/index.php?id=188">Datenschutzbestimmungen</a> gelesen und akzeptiert habe:</p>
-	                <input type="checkbox" name="recs[personinfo][agb]" value="0" id="delivery_agb" class="checkbox" ###PERSON_AGB### />&nbsp;
+	                <input type="checkbox" name="recs[personinfo][agb]" id="delivery_agb" class="checkbox" ###PERSON_AGB### />&nbsp;
 	                    <label for="delivery_agb" class="checkbox"><strong>Ich bin mit den Allgemeinen Gesch&auml;tsbedingungen und den Datenschutzbedingungen einverstanden*
 </strong></label>
 	            </div>
@@ -506,7 +506,7 @@ Exact same features as BASKET_TEMPLATE.</em></p>
                                 <td headers="quantity" class="quantity">###FIELD_QTY###</td>
                                 <td headers="image" class="image">###PRODUCT_IMAGE###</td>
                                 <td headers="product" class="product"><strong>###PRODUCT_TITLE###</strong></td>
-                                <td headers="product_number" class="product_number">###PRODUCT_ITEMNUMBER###</td> 
+                                <td headers="product_number" class="product_number">###PRODUCT_ITEMNUMBER###</td>
                                 <td headers="price" class="price">###PRICE_TAX### EUR</td>
                                 <td headers="total" class="total">###PRICE_TOTAL_TAX### EUR</td>
                             </tr>
@@ -591,11 +591,11 @@ Exact same features as BASKET_TEMPLATE.</em></p>
            </br>
 	    <div class="price_summary">
         	<h2>Insgesamt</h2>
-	       
+
             <ul><li>(ohne MwSt:  ###PRICE_TOTAL_NO_TAX### EUR)</li>
 		<li>(enthaltene MwSt: ###PRICE_TOTAL_ONLY_TAX### EUR)</li></ul>
                 <strong>Insgesamt: ###PRICE_TOTAL_TAX### EUR</strong></br>
-			
+
 	    </div>
 
         <div class="form_control">
@@ -619,8 +619,8 @@ Exact same features as BASKET_TEMPLATE.</em></p>
 	Subpart used if the order is finalized and this is thus the confirmation shown.
 	-->
     <div class="tt_products_order_confirmation">
-    	
-        <p><strong>Vielen Dank f&uuml;r Ihre Bestellung bei der Dunia Foundation</br> 
+
+        <p><strong>Vielen Dank f&uuml;r Ihre Bestellung bei der Dunia Foundation</br>
 	Die Einzelheiten dazu sind unten aufgef&uuml;hrt.</strong> </p>
 
         <div class="order_data">
@@ -650,20 +650,20 @@ Sie k&ouml;en ihre Bestellung mit der Auftragsstatusnummer:<strong>###ORDER_TRAC
 	            <!-- ###MESSAGE_PAYMENT_10### begin -->
 <h3>Der n&auml;chste Schritte: </h3>
 	       <p>Die Auslieferung bestellter Artikel erfolgt in der Regel innerhalb von 5 Werktagen nach Eingang der Bestellung bei der AOPNEWS.com. Sie erhalten auf dem Postweg eine Rechnung. Bitte &uuml;berweisen Sie jetzt noch kein Geld.</p>
-                    
+
 	            <!-- ###MESSAGE_PAYMENT_10### end -->
 
-	            <!-- ###MESSAGE_PAYMENT_20### begin --> 
+	            <!-- ###MESSAGE_PAYMENT_20### begin -->
 	Wir werden den Betrag von ihren Konto abziehen.
-                   	
-	            <!-- ###MESSAGE_PAYMENT_20### end --> 
+
+	            <!-- ###MESSAGE_PAYMENT_20### end -->
 	         <!-- ###MESSAGE_PAYMENT### end -->
         </div>
 
 		<div class="delivery_message">
 	        <!-- ###MESSAGE_SHIPPING###-->
 		blah blah blah blah blah blah blah Versand blah
-	            
+
 	        <!-- ###MESSAGE_SHIPPING### end -->
         </div>
         ###EXTERNAL_COBJECT###
@@ -675,7 +675,7 @@ Sie k&ouml;en ihre Bestellung mit der Auftragsstatusnummer:<strong>###ORDER_TRAC
                     <th id="quantity" abbr="Quantity">Anzahl</th>
                     <th id="image">&nbsp;</th>
                     <th id="product">Artikel</th>
-                    <th id="product_number" abbr="Itemnumber">Artikelnr.</th> 
+                    <th id="product_number" abbr="Itemnumber">Artikelnr.</th>
                     <th id="price">Preis</th>
                     <th id="total">Insgesamt</th>
                 </tr>
@@ -694,7 +694,7 @@ Sie k&ouml;en ihre Bestellung mit der Auftragsstatusnummer:<strong>###ORDER_TRAC
                                 <td headers="quantity" class="quantity">###FIELD_QTY###</td>
                                 <td headers="image" class="image">###PRODUCT_IMAGE###</td>
                                 <td headers="product" class="product"><strong>###PRODUCT_TITLE###</strong></td>
-                               <td headers="product_number" class="product_number">###PRODUCT_ITEMNUMBER###</td> 
+                               <td headers="product_number" class="product_number">###PRODUCT_ITEMNUMBER###</td>
                         <td headers="price" class="price">###PRICE_TAX### EUR</td>
                                 <td headers="total" class="total">###PRICE_TOTAL_TAX### EUR</td>
                             </tr>
@@ -763,29 +763,29 @@ Sie k&ouml;en ihre Bestellung mit der Auftragsstatusnummer:<strong>###ORDER_TRAC
 	        <dl>
 	         <dt class="notes">eventuell ein Kommentar: </dt>
 	         <dd class="notes">###DELIVERY_NOTE_DISPLAY###</dd>
-    		</div> 
+    		</div>
 
 	    <div class="price_summary">
-			
+
             	<strong>Insgesamt: ###PRICE_TOTAL_TAX### EUR</strong></br>
 	        <ul><li>(ohne MwSt: ###PRICE_TOTAL_NO_TAX### EUR)</li>
 		<li>(enthaltene MwSt:###PRICE_TOTAL_ONLY_TAX### EUR)</li></ul>
 
 <!--########################################################################################-->
-		
+
 	    </div>
 
         <div class="shop_address">
-        	
+
 
         	<strong>Ihre Ansprechpartnerin </strong><br/>
 		 Dunia Dunia <br/>
 		 Bestellung/ Versand <br/>
-	        
+
             	<strong>Deutsche Dunia Bund </strong><br />
 	            Adenauerallee 111<br />
 	            53113 Bonn<br />
-	            
+
 	        </p>
             <p>
 	        Telefon: 0228/ 000000<br />
@@ -929,6 +929,12 @@ Sie k&ouml;en ihre Bestellung mit der Auftragsstatusnummer:<strong>###ORDER_TRAC
 	            <!-- ###ADMIN_CONTROL_OK### begin -->
                 	<div class="admin_control_ok">
 	                    <form method="post" action="###FORM_URL###">
+	                        <div class="form_control">
+	                            <input type="hidden" name="tracking" value="###TRACKING_NUMBER###" />
+	                            <input type="hidden" name="update_code" value="###UPDATE_CODE###" />
+	                            <input type="submit" name="submit" value="Bestellstatus hinzuf&uuml;gen" />
+	                        </div>
+
 	                        <fieldset>
 	                            <legend>Bestellstatus &auml;ndern</legend>
 	                            <select name="orderRecord[status][]" id="orderRecord_status" size="9" multiple="multiple">
@@ -937,12 +943,6 @@ Sie k&ouml;en ihre Bestellung mit der Auftragsstatusnummer:<strong>###ORDER_TRAC
 	                            <label for="orderRecord_status_comment">Kommentar zum neuen Bestellstatus: </label>
 	                                <textarea cols="40" rows="5" name="orderRecord[status_comment]" id="orderRecord_status_comment"></textarea>
 	                        </fieldset>
-
-	                        <div class="form_control">
-	                            <input type="hidden" name="tracking" value="###TRACKING_NUMBER###" />
-	                            <input type="hidden" name="update_code" value="###UPDATE_CODE###" />
-	                            <input type="submit" name="submit" value="Bestellstatus hinzuf&uuml;gen" />
-	                        </div>
 	                    </form>
                     </div>
 
@@ -993,7 +993,7 @@ Sie k&ouml;en ihre Bestellung mit der Auftragsstatusnummer:<strong>###ORDER_TRAC
 	                <input type="hidden" name="tracking" value="###TRACKING_NUMBER###" />
 	                <input type="hidden" name="orderRecord[email_notify]" value="0" />
 	            </div>
-	        </form> 
+	        </form>
         </div>
 
 		<div class="message_to_shop">
@@ -1006,7 +1006,7 @@ Sie k&ouml;en ihre Bestellung mit der Auftragsstatusnummer:<strong>###ORDER_TRAC
 	                <select name="orderRecord[status][]" id="orderRecord_status_message_topic" size="1">
 	                    <!-- NOTICE: The values/topics MUST correspond with those setup in the TypoScript of the shop! -->
 	                    <option value="51">Nachricht des Kunden an die Dunia <!--Message from the customer to the shop--></option>
-	                   
+
 	                </select><br />
 	                <label for="orderRecord_status_comment">zus&auml;tzliche Bemerkung: </label>
 	                    <textarea cols="40" rows="5" name="orderRecord[status_comment]" id="orderRecord_status_comment"></textarea>
@@ -1023,7 +1023,7 @@ Sie k&ouml;en ihre Bestellung mit der Auftragsstatusnummer:<strong>###ORDER_TRAC
 	     <!--   <h1>Original Bestellbest&auml;tigung</h1>
 	        <p>Das ist die orginal Bestellbest&auml;tigung:<!--This is the original order confirmation: </p>
 	        ###ORDER_HTML_OUTPUT### -->
-        </div> 
+        </div>
     </div>
 <!-- ###TRACKING_DISPLAY_INFO### end -->
 <br /><br />
@@ -1037,7 +1037,7 @@ First line is used as subject for the mail.</em></p>
 	Subpart used as template for the notify emails
 	First line is used as subject for the mail.
 	-->
-Bestellung bei der Dunia 
+Bestellung bei der Dunia
 
 ************************************************************************
 * Der Status ihrer Bestellung ist geändert worden.
@@ -1055,8 +1055,8 @@ eventuelle Bemerkung:
 ************************************************************************
 Auftragstatus:
 
-Sie habe diese Email erhalten, weil sie Informationen 
-über ihren Bestellstatus erhalten wollten. Sie können Ihre Bestellung 
+Sie habe diese Email erhalten, weil sie Informationen
+über ihren Bestellstatus erhalten wollten. Sie können Ihre Bestellung
 jederzeit Überprüfen, den Stand der Bearbeitung verfolgen und die Einstellungen zu Bestellinformationen ändern.
 Klicken sie hier  http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO### um ihren aktuellen
 Bestellstatus zu sehen.
@@ -1069,7 +1069,7 @@ Dunia Foundation
 * Dunia Foundation
 * Adenauerallee 111
 * 53113 Bonn
-* 
+*
 * Telefon: 0228/ 000000
 * Fax	 : 0228/ 0000000
 * Email: dunia@aopnews.com
@@ -1100,7 +1100,7 @@ First line is used as subject for the mail.</em></p>
 	Subpart used as template for the order-emails
 	First line is used as subject for the mail.'( von trackingseite &type=0&tracking=)
 	-->
-Ihre Bestellung bei der Dunia  
+Ihre Bestellung bei der Dunia
 
 ************************************************************************
 * BESTELLBESTÄTIGUNG:
@@ -1113,9 +1113,9 @@ Bestelldatum : ###ORDER_DATE###
 Bestellnummer: ###ORDER_UID###
 
 Bitte benutzen sie diese Nummer als Referenz, wenn sie mit uns Kontakt aufnehmen.
-Sie können Ihre Bestellung jederzeit Überprüfen und den Stand der Bearbeitung verfolgen, wenn Sie die Auftragstatusnummer ###ORDER_TRACKING_NO### auf folgender Seite eingeben: 
+Sie können Ihre Bestellung jederzeit Überprüfen und den Stand der Bearbeitung verfolgen, wenn Sie die Auftragstatusnummer ###ORDER_TRACKING_NO### auf folgender Seite eingeben:
 
-http://###DOMAIN###/index.php?id=###PID_TRACKING### 
+http://###DOMAIN###/index.php?id=###PID_TRACKING###
 
 ************************************************************************
 RECHNUNGS- UND VERSANDINFORMATIONEN
@@ -1170,8 +1170,8 @@ Preis insgesamt:   ###PRICE_TOTAL_TAX### EUR
 Die nächsten Schritte:
 **************************************************************************************
 
-Die Auslieferung bestellter Artikel erfolgt in der Regel innerhalb 
-von 5 Werktagen nach Eingang der Bestellung bei Dunia.  
+Die Auslieferung bestellter Artikel erfolgt in der Regel innerhalb
+von 5 Werktagen nach Eingang der Bestellung bei Dunia.
 Sie erhalten auf dem Postweg eine Rechnung. Bitte Überweisen Sie jetzt noch kein Geld.
 
 Mit freundlichen Grüßen
@@ -1199,7 +1199,7 @@ Benutzer ID: ###FE_USER_UID###
     This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
     -->
     	<!-- ###MESSAGE_PAYMENT_10### begin -->
-        	
+
    	 <!-- ###MESSAGE_PAYMENT_10### end -->
 
     	<!-- ###MESSAGE_PAYMENT_20### begin-->
@@ -1329,13 +1329,13 @@ IMPORTANT: This subpart is rendered as-is, which means it does not contain any h
 <hr />
 <p style="text-align:center">
 Dunia, Adenauerallee 111, 53113 Bonn
-	            
+
 	        </p>
             <p>
 	            Telefon:0228/ 00000,
 	            Fax: 0228/ 0000000,
 	            Email: dunia@aopnews.com
-	
+
 </p>
 
 </body>

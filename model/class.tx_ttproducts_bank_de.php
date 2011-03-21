@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2010 Kasper Skårhøj <kasperYYYY@typo3.com>
+*  (c) 2009-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,38 +27,48 @@
 /**
  * Part of the tt_products (Shop System) extension.
  *
- * Creates a list of products for the shopping basket in TYPO3.
- * Also controls basket, searching and payment.
- *
+ * functions for the static_banks_de table
  *
  * $Id$
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	Renè Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <franz@ttproducts.de>
- * @author	Klaus Zierer <zierer@pz-systeme.de>
- * @author	Milosz Klosowicz <typo3@miklobit.com>
- * @author	Els Verberne <verberne@bendoo.nl>
  * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
- * @see file tt_products/static/old_style/constants.txt
- * @see TSref
  *
  *
  */
 
 
-require_once (PATH_BE_ttproducts . 'pi1/class.tx_ttproducts_pi1_base.php');
+require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 
 
-class tx_ttproducts_pi1 extends tx_ttproducts_pi1_base {
-	var $bRunAjax = false;
+class tx_ttproducts_bank_de extends tx_ttproducts_table_base {
 
+	/**
+	 * bank data elements
+	 *
+	 * @param	[type]		$$cObj: ...
+	 * @param	[type]		$functablename: ...
+	 * @return	[type]		...
+	 */
+	function init (&$cObj, $functablename)  {
+		global $TYPO3_DB,$TSFE,$TCA;
+
+		parent::init($cObj, $functablename);
+		$tableObj = &$this->getTableObj();
+		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
+		$tableObj->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 'starttime'=>'starttime', 'endtime'=>'endtime'));
+
+		$tablename = 'static_banks_de';
+		$this->tableObj->setName($tablename);
+		$this->tableObj->setTCAFieldArray($tablename, 'bank');
+	} // init
 }
 
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1.php'])	{
-	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1.php']);
+
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_bank_de.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_bank_de.php']);
 }
 
 

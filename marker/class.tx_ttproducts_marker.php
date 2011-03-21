@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
@@ -53,7 +53,7 @@ class tx_ttproducts_marker {
 	 * @param	array		array urls which should be overridden with marker key as index
 	 * @return	void
 	 */
-	function init(&$cObj, $urlArray=array())	{
+	function init (&$cObj, $urlArray=array())	{
 		$this->cObj = &$cObj;
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 
@@ -68,7 +68,7 @@ class tx_ttproducts_marker {
 	 *
 	 * @return	[type]		...
 	 */
-	function &getGlobalMarkerArray()	{
+	function &getGlobalMarkerArray ()	{
 		return $this->globalMarkerArray;
 	}
 
@@ -90,6 +90,11 @@ class tx_ttproducts_marker {
 		$markerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'], $this->conf['color3.']);
 		$markerArray['###DOMAIN###'] = $this->conf['domain'];
 		$markerArray['###PATH_FE_REL###'] = PATH_FE_ttproducts_rel;
+		if (t3lib_extMgm::isLoaded(ADDONS_EXTkey)) {
+			$markerArray['###PATH_FE_REL###'] = PATH_FE_addons_rel;
+			$markerArray['###PATH_FE_ICONS###'] = PATH_FE_addons_icon_rel;
+		}
+
 		$pidMarkerArray = array('agb','basket','info','finalize','payment',
 			'thanks','itemDisplay','listDisplay','search','storeRoot',
 			'memo','tracking','billing','delivery'
@@ -102,7 +107,24 @@ class tx_ttproducts_marker {
 		if (is_array($this->conf['marks.']))	{
 				// Substitute Marker Array from TypoScript Setup
 			foreach ($this->conf['marks.'] as $key => $value)	{
-				$markerArray['###'.$key.'###'] = $value;
+
+				if (is_array($value))	{
+					switch($key)	{
+						case 'image.':
+							foreach ($value as $k2 => $v2)	{
+								$fileresource = $this->cObj->fileResource($v2);
+								$markerArray['###IMAGE'.strtoupper($k2).'###'] = $fileresource;
+							}
+						break;
+					}
+				} else {
+					if(isset($this->conf['marks.'][$key.'.']) && is_array($this->conf['marks.'][$key.'.']))	{
+						$out = $this->cObj->cObjGetSingle($this->conf['marks.'][$key],$this->conf['marks.'][$key.'.']);
+					} else {
+						$out = $value;
+					}
+					$markerArray['###'.strtoupper($key).'###'] = $out;
+				}
 			}
 		}
 
@@ -118,6 +140,18 @@ class tx_ttproducts_marker {
 		$this->globalMarkerArray = &$markerArray;
 	} // setGlobalMarkerArray
 
+
+	public function &getAllMarkers (&$templateCode)	{
+		$treffer = array();
+		preg_match_all('/###([\w:]+)###/', $templateCode, $treffer);
+		$tagArray = $treffer[1];
+		$bFieldaddedArray = array();
+
+		if (is_array($tagArray))	{
+			$tagArray = array_flip($tagArray);
+		}
+		return $tagArray;
+	}
 
 	/**
 	 * finds all the markers for a product

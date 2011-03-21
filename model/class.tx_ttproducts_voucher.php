@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -58,10 +58,10 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init(&$pibase, $functablename)  {
+	function init(&$cObj, $functablename)  {
 		global $TSFE;
 
-		parent::init($pibase, $functablename);
+		parent::init($cObj, $functablename);
 		$voucherArray = $TSFE->fe_user->getKey('ses','vo');
 		$amount = $voucherArray['amount'];
 		$this->setAmount (floatval($amount));
@@ -263,7 +263,7 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 				$whereGeneral = '(fe_users_uid="'.$TSFE->fe_user->user['uid'].'" OR fe_users_uid=0) ';
 				$whereGeneral .= 'AND code="'.$voucherCode.'"';
 			}
-			$where = $whereGeneral.$this->pibase->cObj->enableFields($voucherTable);
+			$where = $whereGeneral.$this->cObj->enableFields($voucherTable);
 			$fields = implode (',', $voucherfieldArray);
 
 			$res = $TYPO3_DB->exec_SELECTquery($fields, $voucherTable, $where);

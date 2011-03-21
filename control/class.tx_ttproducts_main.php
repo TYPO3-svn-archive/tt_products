@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2007-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,9 +40,7 @@
  */
 
 
-require_once(PATH_BE_div2007.'class.tx_div2007_ff.php');
-
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_base_view.php');
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_tables.php');
@@ -129,8 +127,8 @@ class tx_ttproducts_main {
 		$this->conf['version'] = $eInfo['version'];
 		$this->pibase->pi_initPIflexForm();
 		$config['code'] =
-			tx_div2007_alpha::getSetupOrFFvalue_fh001(
-				$this->pibase,
+			tx_div2007_alpha::getSetupOrFFvalue_fh003(
+				$this->cObj,
 	 			$conf['code'],
 	 			$conf['code.'],
 				$conf['defaultCode'],
@@ -175,6 +173,9 @@ class tx_ttproducts_main {
 			require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');
 			$db = t3lib_div::makeInstance('tx_ttproducts_db');
 			$db->init($conf, $config, $this->ajax);
+
+//            $this->xajax->registerFunction(array('tt_products_changeValue',&$this,'tt_products_changeValue'));
+//            $this->xajax->registerFunction(array('tt_products_processFormData',&$this,'tt_products_processFormData'));
 
 			if($_POST['xajax']){
 				global $trans;
@@ -227,6 +228,7 @@ class tx_ttproducts_main {
 		}
 
 		$tmp = $this->cObj->stdWrap($this->conf['pid_list'],$this->conf['pid_list.']);
+// ($this->piVars['pid_list'] ? $this->piVars['pid_list']
 		$pid_list = ($this->cObj->data['pages'] ? $this->cObj->data['pages'] : ($this->conf['pid_list.'] ? trim($tmp) : ''));
 		$pid_list = ($pid_list ? $pid_list : $this->conf['pid_list']);
 		$config['pid_list'] = ($pid_list ? $pid_list : $config['storeRootPid']);
@@ -238,16 +240,25 @@ class tx_ttproducts_main {
 			$row = $this->cObj->data;
 			$this->tt_product_single['product'] = $row['uid'];
 		} else {
-			$tmp = ($this->piVars['product'] ? $this->piVars['product'] : t3lib_div::_GP('tt_products'));
-			if ($tmp)	{
+			$tmp = $this->piVars['product'];
+			if (!$tmp)	{
+				$ttpOld = t3lib_div::_GP('tt_products');
+				if (isset($ttpOld) && !is_array($ttpOld))	{
+					$tmp = $ttpOld;
+				}
+			}
+			if (isset($tmp) && is_array($tmp) && isset($tmp['product']))	{	// upwards compatible to tt_products parameter
+				$tmp = $tmp['product'];
+			}
+			if (t3lib_div::testInt($tmp))	{
 				$this->tt_product_single['product'] = $tmp;
 			}
 			$tmp = ($this->piVars['article'] ? $this->piVars['article'] : '');
-			if ($tmp)	{
+			if (t3lib_div::testInt($tmp))	{
 				$this->tt_product_single['article'] = $tmp;
 			}
 			$tmp = ($this->piVars['dam'] ? $this->piVars['dam'] : '');
-			if ($tmp)	{
+			if (t3lib_div::testInt($tmp))	{
 				$this->tt_product_single['dam'] = $tmp;
 			}
 		}
@@ -317,6 +328,12 @@ class tx_ttproducts_main {
 		);
 
 		$classRef = '&tx_ttproducts_paymentshipping';
+
+// 		$loadTablesArray = array('tt_products', 'tt_products_articles', 'tt_content', 'fe_users');
+// 		if (t3lib_extMgm::isLoaded('dam') || $this->piVars['dam']) {
+// 			$loadTablesArray[] = 'tx_dam';
+// 			$loadTablesArray[] = 'tx_dam_cat';
+// 		}
 		$this->javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
 
 			// JavaScript
@@ -342,18 +359,20 @@ class tx_ttproducts_main {
 		return TRUE;
 	} // init
 
-
 	/**
 	 * do the things
 	 *
 	 * @param	string		$content
 	 * @return	string		content for output
 	 */
-	function &run($content='')	{
+	function &run ($content='')	{
 		global $TSFE;
+
 		$bStoreBasket = TRUE;
 
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$orderObj = &$tablesObj->get('sys_products_orders');
+
 		if (!count($this->codeArray) && !$bRunAjax)	{
 			$this->codeArray = array('HELP');
 		}
@@ -375,7 +394,7 @@ class tx_ttproducts_main {
 			$updateMode = 0;
 		}
 
-		if (count ($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW')	{
+		if (isset($this->conf['basket.']) && $this->conf['basket.']['store']=='0' || count($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW' && !$this->conf['basket.']['store'])	{
 			$bStoreBasket = FALSE;
 		}
 
@@ -420,6 +439,7 @@ class tx_ttproducts_main {
 			}
 			$theCode = (string) trim($theCode);
 			$contentTmp = '';
+
 			$this->templateCode=$this->getTemplateCode($theCode);
 			switch($theCode)	{
 				case 'SEARCH':
@@ -475,13 +495,15 @@ class tx_ttproducts_main {
 						if (is_array($this->conf['table.']))	{
 							$tablename = $this->conf['table.'][$functablename];
 						}
+
 						if (
-							$tablename == 'tt_address' && !t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey) ||
-							$tablename == 'tx_partner_main' && !t3lib_extMgm::isLoaded(PARTNER_EXTkey)
+							$tablename == 'tx_party_addresses' && !t3lib_extMgm::isLoaded(PARTY_EXTkey) ||
+							$tablename == 'tx_partner_main' && !t3lib_extMgm::isLoaded(PARTNER_EXTkey) ||
+							$tablename == 'tt_address' && !t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)
 						) {
 							$message = tx_div2007_alpha::getLL($this->pibase,'extension_missing');
 							$messageArr =  explode('|', $message);
-							$extTableArray = array('tt_address' => TT_ADDRESS_EXTkey, 'tx_partner_main' => PARTNER_EXTkey);
+							$extTableArray = array('tt_address' => TT_ADDRESS_EXTkey, 'tx_partner_main' => PARTNER_EXTkey, 'tx_party' => PARTNER_EXTkey);
 							$this->errorMessage=$messageArr[0]. $extTableArray[$tablename] .$messageArr[1];
 						} else if (!$tablename) {
 							$message = tx_div2007_alpha::getLL($this->pibase,'setup_missing');
@@ -525,21 +547,15 @@ class tx_ttproducts_main {
 					}
 				break;
 				case 'SINGLE':
-					if (count($this->basket->itemArray) || !$this->conf['NoSingleViewOnList'] &&
-						!$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']) {
-						$this->set_no_cache();
-					}
 					$contentTmp = $this->products_display($theCode, $this->errorMessage, $error_code);
 				break;
 				case 'OVERVIEW':
-					if (count($this->basket->itemArray)) {
-						$this->set_no_cache();
-					}
-					break;
+					$this->set_no_cache();
+				break;
+				case 'PAYMENT':
 				case 'BASKET':
 				case 'FINALIZE':
 				case 'INFO':
-				case 'PAYMENT':
 					$this->set_no_cache();
 					$contentTmp = $content;
 					$content = '';
@@ -645,11 +661,7 @@ class tx_ttproducts_main {
 					unset($this->errorMessage);
 					break; // while
 			} else {
-				$idNumber = str_replace('_','-',$this->pibase->prefixId.'-'.strtolower($theCode));
-				if ($this->templateSuffix)	{
-					$idNumber .= strtolower(str_replace('_','-',$this->templateSuffix));
-				}
-				$content .='<!-- START: '.$idNumber.' --><div id="'.$idNumber.'">'.($contentTmp ? $contentTmp : '').'</div><!-- END: '.$idNumber.' -->';
+				$content .= tx_div2007_alpha::wrapContentCode_fh003($contentTmp,$theCode,$this->pibase->prefixId,$this->cObj->data['uid']);
 			}
 		}
 
@@ -667,7 +679,6 @@ class tx_ttproducts_main {
 				$rc = $content;
 			}
 		}
-
 		return $rc;
 	}
 
@@ -676,7 +687,7 @@ class tx_ttproducts_main {
 	 *
 	 * @return	void
 	 */
-	function set_no_cache() {
+	function set_no_cache () {
 		global $TSFE;
 
 		if ($this->bNoCachePossible)	{
@@ -690,10 +701,11 @@ class tx_ttproducts_main {
 	 * @param	string		$theCode: plugin's CODE field
 	 * @return	string		HTML template
 	 */
-	function &getTemplateCode($theCode) {
+	function &getTemplateCode ($theCode) {
 		$templateCode = '';
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 		$templateFile = $cnf->getTemplateFile($theCode);
+
 		if ($templateFile) {
 			// template file is fetched. The whole template file from which the various subpart are extracted.
 			$templateCode = $this->cObj->fileResource($templateFile);
@@ -712,7 +724,6 @@ class tx_ttproducts_main {
 				// Substitute Global Marker Array
 			$templateCode = $this->cObj->substituteMarkerArrayCached($templateCode, $markerObj->getGlobalMarkerArray());
 		}
-
 		$this->templateFile = $templateFile;
 		return $templateCode;
 	}
@@ -723,9 +734,9 @@ class tx_ttproducts_main {
 	 * @param	string		out: $$updateCode: FE password for the admin
 	 * @return	boolean
 	 */
-	function shopAdmin(&$updateCode)	{
+	function shopAdmin (&$updateCode)	{
 		$admin=0;
-		if ($GLOBALS['TSFE']->beUserLogin)	{
+		if ($GLOBALS['TSFE']->beUserLogin || $this->conf['shopAdmin'] != 'BE')	{
 			$updateCode = t3lib_div::_GP('update_code');
 			if ($updateCode == $this->conf['update_code'])	{
 				$admin = 1;	// Means that the administrator of the website is authenticated.
@@ -742,7 +753,7 @@ class tx_ttproducts_main {
 	 * @return	void
 	 * @see enableFields()
 	 */
-	function products_tracking($theCode)	{ // t3lib_div::_GP('tracking')
+	function products_tracking ($theCode)	{ // t3lib_div::_GP('tracking')
 		global $TSFE;
 
 		$urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
@@ -816,7 +827,6 @@ class tx_ttproducts_main {
 		return $content;
 	}  // products_tracking
 
-
 	/**
 	 * Ajax method to show articles
 	 *
@@ -824,7 +834,7 @@ class tx_ttproducts_main {
 	 * @return	void
 	 * @see enableFields()
 	 */
-	function showArticle($data)	{
+	function showArticle ($data)	{
 		$rc = '';
         // We put our incomming data to the regular piVars
 		$this->pibase->piVars = array_merge($this->piVars, $data[$this->pibase->prefixId]);
@@ -855,27 +865,24 @@ class tx_ttproducts_main {
 		return $rc;
 	}
 
-
 	/**
 	 * set if the single view will be shown instead of a list view
 	 *
 	 * @param	boolean		$bValue:
 	 * @return	void
 	 */
-	function setSingleFromList($bValue)	{
+	function setSingleFromList ($bValue)	{
 		$this->bSingleFromList = $bValue;
 	}
-
 
 	/**
 	 * Returns TRUE if the single view is shown instead of the list view
 	 *
 	 * @return	boolean
 	 */
-	function getSingleFromList()	{
+	function getSingleFromList ()	{
 		return $this->bSingleFromList;
 	}
-
 
 	/**
 	 * Displaying single products/ the products list / searching
@@ -885,11 +892,20 @@ class tx_ttproducts_main {
 	 * @param	array		out: $$error_code: contains error indices
 	 * @return	string		content of the single view or list view
 	 */
-	function products_display($theCode, &$errorMessage, &$error_code)	{
+	function products_display ($theCode, &$errorMessage, &$error_code)	{
 		global $TSFE;
 
 		$bSingleFromList = FALSE;
-		if ((($theCode=='SEARCH') || (strstr($theCode,'LIST'))) && ($theCode != 'LISTARTICLES') && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'] && !$this->getSingleFromList())	{
+
+		if (
+			(
+				(
+					($theCode=='SEARCH') && $this->conf['listViewOnSearch'] == '1' || (strpos($theCode,'LIST') !== FALSE)
+				) &&
+				$theCode != 'LISTARTICLES' && count($this->tt_product_single) && !$this->conf['NoSingleViewOnList'] &&
+			!$this->getSingleFromList()
+			)
+		) {
 			$this->setSingleFromList(TRUE);
 			$bSingleFromList = TRUE;
 		}
@@ -904,6 +920,12 @@ class tx_ttproducts_main {
 				} else if ($this->conf['defaultArticleID'])	{
 					$this->tt_product_single['article'] = $this->conf['defaultArticleID'];
 				}
+			}
+
+			if ($this->tt_product_single['product'] && $this->basket->isInBasket($this->tt_product_single['product']) ||
+				!$this->conf['NoSingleViewOnList'] && !$this->conf['PIDitemDisplay'] && !$this->conf['PIDitemDisplay.']
+			) {
+				$this->set_no_cache();
 			}
 
 			if (!is_object($this->singleView)) {
@@ -974,7 +996,6 @@ class tx_ttproducts_main {
 		return $content;
 	}	// products_display
 }
-
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_main.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_main.php']);

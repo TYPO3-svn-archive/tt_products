@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -70,7 +70,7 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 	 *
 	 * @return	[type]		...
 	 */
-	function getRootCat()	{
+	function getRootCat ()	{
 		$rc = 0;
 		return $rc;
 	}
@@ -160,7 +160,6 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 			} else if($functablename == 'tx_dam_cat')	{
 				$hookVar = 'DAMCategory';
 			}
-			$tmpArray = array();
 				// Call all addWhere hooks for categories at the end of this method
 			if ($hookVar && isset ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar]) && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
 				foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
@@ -169,12 +168,14 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 						$hookObj->init($this->parentField);
 					}
 					if (method_exists($hookObj, 'getCategories')) {
-						$tmpArray = $hookObj->getCategories($this, $uid, $this->mm_table, $orderBy);
+						$retArray = $hookObj->getCategories($this, $uid, $this->mm_table, $orderBy);
+						if (isset($retArray) && is_array($retArray))	{
+							foreach ($retArray as $k => $row)	{
+								$catArray[] = $row['cat'];
+							}
+						}
 					}
 				}
-			}
-			foreach ($tmpArray as $k => $row)	{
-				$catArray[] = $row['cat'];
 			}
 		}
 		return $catArray;
@@ -257,7 +258,6 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 				$catArray[] = $row['cat'];
 			}
 		}
-
 		return $catArray;
 	}
 
@@ -268,7 +268,7 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 	 * @param	[type]		$categoryArray: ...
 	 * @return	[type]		...
 	 */
-	function &getRootArray($rootCat, &$categoryArray)	{
+	function &getRootArray ($rootCat, &$categoryArray)	{
 		$rootArray = array();
 		$rootCatArray = t3lib_div::trimExplode(',', $rootCat);
 
@@ -279,7 +279,6 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 				$rootArray[] = $uid;
 			}
 		}
-
 		return $rootArray;
 	}
 

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2005-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -152,7 +152,7 @@ class tx_ttproducts_tracking {
 				}
 				if ($update)	{
 					$fieldsArray['status_log'] = serialize($status_log);
-					$fieldsArray['status'] = intval($status_log_element['status'],'sys_products_orders');
+					$fieldsArray['status'] = intval($status_log_element['status']);
 					if ($fieldsArray['status'] >= 100)  {
 
 							// Deletes any M-M relations between the tt_products table and the order.

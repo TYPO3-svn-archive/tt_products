@@ -70,7 +70,7 @@ class tx_ttproducts_address_view extends tx_ttproducts_category_base_view {
 	 */
 	function getMarkerArray (&$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $theCode, $id, $prefix,$linkWrap='')	{
 
-		$row = ($category ? $this->get($category) : array ('title' => '', 'pid' => $pid));
+		$row = ($category ? $this->modelObj->get($category) : array ('title' => '', 'pid' => $pid));
 
 		$catTitle = '';
 		$titleField = $this->fields['name'];
@@ -79,10 +79,9 @@ class tx_ttproducts_address_view extends tx_ttproducts_category_base_view {
 			$tableConfig = $cnf->getTableConf('address', $theCode);
 			$catTitle .= ($tableConfig['separator'].$row[$titleField]);
 		}
-		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
-		parent::getItemMarkerArray ($row, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, $bHtml, $charset, $prefix, $imageRenderObj);
+		$this->setMarkerArrayCatTitle($markerArray, $catTitle, $prefix);
+		parent::getItemMarkerArray($row, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, $bHtml, $charset, $prefix, $imageRenderObj);
 	}
-
 }
 
 

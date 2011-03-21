@@ -2,13 +2,13 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2009-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License or
+*  the Free Software Foundation; either version 2 of the License, or
 *  (at your option) any later version.
 *
 *  The GNU General Public License can be found at
@@ -27,24 +27,37 @@
 /**
  * Part of the tt_products (Shop System) extension.
  *
- * interface for all database table field view classes
+ * hook functions for TYPO3 FE extensions
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
+ *
  */
 
+require_once(PATH_BE_div2007.'hooks/class.tx_div2007_hooks_cms.php');
 
+class tx_ttproducts_hooks_fe {
 
-interface tx_ttproducts_field_view_int	{
-	public function needsInit ();
-	public function &getModelObj ();
-	public function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='');
+	public function resetAdresses (&$params, &$pObj)	{
+		global $TSFE;
+
+		$recs = $TSFE->fe_user->getKey('ses','recs');
+		if (isset($recs) && is_array($recs))	{
+			unset($recs['personinfo']);
+			unset($recs['delivery']);
+			$TSFE->fe_user->setKey('ses','recs',$recs);
+		}
+	}
 }
 
+
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/hooks/class.tx_ttproducts_hooks_fe.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/hooks/class.tx_ttproducts_hooks_fe.php']);
+}
 
 ?>

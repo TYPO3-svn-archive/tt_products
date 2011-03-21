@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Klaus Zierer <zierer@pz-systeme.de>
+*  (c) 2005-2009 Klaus Zierer <zierer@pz-systeme.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -24,6 +24,7 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+
 /**
  * Part of the tt_products (Shop System) extension.
  *
@@ -32,8 +33,8 @@
  * $Id$
  *
  * @author	Klaus Zierer <zierer@pz-systeme.de>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
@@ -53,7 +54,7 @@ class tx_ttproducts_csv {
 	 * @param	[type]		$accountUid: ...
 	 * @return	[type]		...
 	 */
-	function init(&$pibase, &$itemArray, &$calculatedArray, $accountUid)	{
+	function init (&$pibase, &$itemArray, &$calculatedArray, $accountUid)	{
 		global $TYPO3_DB;
  		$this->pibase = &$pibase;
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
@@ -64,8 +65,7 @@ class tx_ttproducts_csv {
  		$this->accountUid = $accountUid;
 	} // init
 
-
-	function create($functablename, &$address, $csvorderuid, &$csvfilepath, &$error_message) {
+	function create ($functablename, &$address, $csvorderuid, &$csvfilepath, &$error_message) {
 
 		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
@@ -86,7 +86,7 @@ class tx_ttproducts_csv {
 			$csvlineperson = '';
 			$csvlinedelivery = '';
 
-			$infoFields = explode(',','feusers_uid,name,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country,agb');
+			$infoFields = explode(',','feusers_uid,name,cnum,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country,agb');
 			foreach($infoFields as $fName) {
 				if ($csvlinehead != '') {
 					$csvlinehead .= ';';
@@ -127,14 +127,16 @@ class tx_ttproducts_csv {
 			// Write description header
 			$csvdescr = '"uid";"count";"';
 			$variantFieldArray = $itemTable->variant->getSelectableFieldArray();
-			$csvdescr .= implode('";"',$variantFieldArray);
-			reset($csvfields);
+			if (count($variantFieldArray))	{
+				$csvdescr .= ';"'.implode('";"',$variantFieldArray).'"';
+			}
 			foreach($csvfields as $csvfield)	{
 				$csvdescr .= ';"'.$csvfield.'"';
 			}
 
 			if ($this->conf['CSVinOneLine'])	{
 				$csvdescr .= ';"deliverynote";"desired date";"shipping method";"shipping_price";"shipping_no_tax";"payment method";"payment_price";"payment_no_tax"';
+				$csvdescr .= ';"giftcode"';
 				$csvdescr .= ';'.$csvlinehead.';'.$csvlinehead;
 			}
 			$csvdescr .= chr(13);
@@ -151,18 +153,16 @@ class tx_ttproducts_csv {
 						// product belongs to another basket
 						continue;
 					}
-					$extArray = $actItem['rec']['ext'];
-					reset ($extArray['tt_products']);
 					$variants = explode(';', $itemTable->variant->getVariantFromRow($row));
 					// $variants = explode(';', $actItem['rec']['extVars']);
-					$csvdata = '"'.intval($row['uid']).'";"'.
-						intval($actItem['count']).'";"'.implode('";"',$variants);
+					$csvdata = '"' . intval($row['uid']) . '";"' .
+						intval($actItem['count']) . '";"' . implode('";"',$variants) . '"';
 					foreach($csvfields as $csvfield) {
-						$csvdata .= ';"'.$actItem['rec'][$csvfield].'"';
+						$csvdata .= ';"' . $actItem['rec'][$csvfield] . '"';
 					}
 					if ($this->conf['CSVinOneLine'] && (!$infoWritten))	{
 						$infoWritten = true;
-						$csvdata .= ';'.$csvlinedeliverynote.';'.$csvlinedeliverydesireddate.';'.$csvlineshipping.';'.$csvlinepayment.';'.$csvlinegift.';'.$csvlineperson.';'.$csvlinedelivery;
+						$csvdata .= ';' . $csvlinedeliverynote . ';' . $csvlinedeliverydesireddate . ';' . $csvlineshipping . ';' . $csvlinepayment . ';' . $csvlinegift . ';' . $csvlineperson . ';' . $csvlinedelivery;
 					}
 					$csvdata .= chr(13);
 					fwrite($csvfile, $csvdata);
@@ -186,11 +186,10 @@ class tx_ttproducts_csv {
 		} else {
 			$message = tx_div2007_alpha::getLL($this->pibase,'no_csv_creation');
 			$messageArr =  explode('|', $message);
-			$error_message=$messageArr[0]. $csvfilepath .$messageArr[1];
+			$error_message=$messageArr[0] . $csvfilepath . $messageArr[1];
 		}
 	}
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_csv.php'])	{

@@ -90,7 +90,7 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 					$this->langObj,
 					$TCA['sys_products_orders']['columns']['salutation']['config']['items'],
 					'recs['.$type.'][salutation]',
-					$row['salutation'],
+					(is_array($row) ? $row['salutation'] : ''),
 					true,
 					true,
 					array()

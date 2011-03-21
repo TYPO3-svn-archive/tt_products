@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -61,7 +61,7 @@ class tx_ttproducts_billdelivery {
 	 * @param	[type]		$type: ...
 	 * @return	void
 	 */
-	function init(&$pibase, $type) {
+	function init (&$pibase, $type) {
 		global $TSFE;
 
 		$this->pibase = &$pibase;
@@ -86,7 +86,7 @@ class tx_ttproducts_billdelivery {
 	 * @param	[type]		$tracking: ...
 	 * @return	[type]		...
 	 */
-	function getInformation($theCode, $orderRow, $templateCode, $tracking)	{
+	function getInformation ($theCode, $orderRow, $templateCode, $tracking)	{
 		/*
 		Bill or delivery information display, which needs tracking code to be shown
 		This is extension information to tracking at another page
@@ -211,10 +211,15 @@ class tx_ttproducts_billdelivery {
 							$count
 						);
 
+						$markerArray['###PRICE_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($actItem['priceTax'], $taxInclExcl));
+						$markerArray['###PRICE_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($actItem['priceNoTax'], $taxInclExcl));
+						$markerArray['###PRICE_ONLY_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($actItem['priceTax']-$actItem['priceNoTax']));
+
 						$markerArray['###FIELD_QTY###'] = $actItem['count'];
-						$markerArray['###PRICE_TOTAL_TAX###']=$priceViewObj->priceFormat($actItem['totalTax']);
-						$markerArray['###PRICE_TOTAL_NO_TAX###']=$priceViewObj->priceFormat($actItem['totalNoTax']);
-						$markerArray['###PRICE_TOTAL_ONLY_TAX###']=$priceViewObj->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
+						$markerArray['###PRICE_TOTAL_TAX###'] = $priceViewObj->priceFormat($actItem['totalTax']);
+						$markerArray['###PRICE_TOTAL_NO_TAX###'] = $priceViewObj->priceFormat($actItem['totalNoTax']);
+						$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $priceViewObj->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
+
 						$itemsOut = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,array(),$wrappedSubpartArray);
 						if ($itemsOut) {
 							$out2 =$this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
@@ -226,7 +231,6 @@ class tx_ttproducts_billdelivery {
 				}
 			}
 		}
-
 		$subpartArray['###ITEM_CATEGORY_AND_ITEMS###'] = $out;
 
 			// Final things
@@ -236,7 +240,7 @@ class tx_ttproducts_billdelivery {
 		$orderData['delivery']['salutation'] = tx_div2007_alpha::getLL($this->pibase, 'salutation'.$orderData['delivery']['salutation']);
 
 		/* Added Els: 'feusers_uid,'*/
-		$infoFields = explode(',','feusers_uid,name,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country');
+		$infoFields = explode(',','feusers_uid,name,cnum,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country');
 		  // Fields...
 		while(list(,$fName)=each($infoFields))	{
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['billing'][$fName];
@@ -251,6 +255,7 @@ class tx_ttproducts_billdelivery {
 		$markerArray['###PRICE_PAYMENT_NO_TAX###'] = $priceViewObj->priceFormat($calculatedArray['priceNoTax']['payment']);
 		$temp = explode(' ', $orderRow['shipping']);
 		$markerArray['###SHIPPING_TITLE###'] = $temp[1];
+		$markerArray['###SHIPPING_WEIGHT###'] = doubleval($calculatedArray['weight']);
 		$markerArray['###PRICE_SHIPPING_TAX###'] = $priceViewObj->priceFormat($calculatedArray['priceTax']['shipping']);
 		$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $priceViewObj->priceFormat($calculatedArray['priceNoTax']['shipping']);
 		$markerArray['###PRICE_TOTAL_TAX###'] = $priceViewObj->priceFormat($calculatedArray['priceTax']['total']);
@@ -291,8 +296,8 @@ class tx_ttproducts_billdelivery {
 		// $dateiname = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $reldateiname;
 		$dateiname = t3lib_div::getFileAbsFileName($reldateiname);
 		$datei = fopen($dateiname, 'wb');
-		fwrite ($datei, $content);
-		fclose ($datei);
+		fwrite($datei, $content);
+		fclose($datei);
 
 		$message = tx_div2007_alpha::getLL($this->pibase,'open_'.$this->type);
 		$content = '<a href="' . $reldateiname . '" >'.$message.'</a>';

@@ -6,7 +6,6 @@ Else Verberne: Creditpoint and Voucher System
 Elmar Hinz: Help with XAJAX
 Tapio Markula: Finnish template
 Andrea Giorgini: Italian template
-
-
+Markus Friedrich <markus.friedrich@media-lights.de>: storage of order data before finalize
 
 

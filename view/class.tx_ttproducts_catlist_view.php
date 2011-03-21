@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -67,7 +67,6 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 
 		$content='';
 		$out='';
-		$where='';
 		$bFinished = false;
 		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
@@ -114,9 +113,7 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 					$pageAsCategory,
 					$row
 				);
-
 				$childArray = $row['child_category'];
-
 				if (is_array($childArray))	{
 					foreach ($subCategoryMarkers as $depth => $subCategoryMarker)	{
 						if ($depth == 1)	{
@@ -126,10 +123,10 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 								$childRow = $categoryArray[$child];
 								$childMarkerArray = array();
 								$icCount++;
-								$this->getMarkerArray($childMarkerArray, $linkOutArray, $icCount, $child, $viewCatTagArray, $currentCat, $pageAsCategory, $childRow);
+								$this->getMarkerArray($functablename,$childMarkerArray, $linkOutArray, $icCount, $child, $viewCatTagArray, $currentCat, $pageAsCategory, $childRow);
 								if ($t[$subCategoryMarker]['linkCategoryFrameWork'])	{
 									$newOut = $this->pibase->cObj->substituteMarkerArray($t[$subCategoryMarker]['linkCategoryFrameWork'], $childMarkerArray);
-									$childOut = $linkOutArray[0].$categoryOut.$linkOutArray[1];
+									$childOut = $linkOutArray[0].$newOut.$linkOutArray[1];
 								}
 
 								$wrappedSubpartArray = array();
@@ -148,6 +145,7 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 						}
 					}
 				} else {
+
 					foreach ($subCategoryMarkers as $depth => $subCategoryMarker)	{
 						$markerArray['###'.$subCategoryMarker.'###'] = '';
 					}
@@ -164,7 +162,6 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 			$markerArray[$this->htmlPartsMarkers[0]] = '';
 			$markerArray[$this->htmlPartsMarkers[1]] = '';
 			$out = $this->pibase->cObj->substituteMarkerArrayCached($out, $markerArray);
-
 			$markerArray = array();
 			$subpartArray = array();
 			$wrappedSubpartArray = array();
@@ -211,7 +208,7 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 			$actCategory,
 			$row['pid'],
 			$this->config['limitImage'],
-			'listImage',
+			'listcatImage',
 			$viewCatTagArray,
 			array(),
 			$pageAsCategory,

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,36 +31,59 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
 class tx_ttproducts_field_datafield_view extends tx_ttproducts_field_base_view {
 
-	function &getItemSubpartArrays (&$templateCode, &$row, $fieldname, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $theCode='', $id='1')	{
+	function &getItemSubpartArrays (
+		&$templateCode,
+		$markerKey,
+		$functablename,
+		&$row,
+		$fieldname,
+		$tableConf,
+		&$subpartArray,
+		&$wrappedSubpartArray,
+		&$tagArray,
+		$theCode='',
+		$id='1'
+	)	{
 		global $TCA;
 
-		$dirname = $this->getModelObj()->getDirname ($row, $fieldname);
+		$dirname = $this->getModelObj()->getDirname($row, $fieldname);
 		$dataFileArray = t3lib_div::trimExplode(',',$row[$fieldname]);
 		$upperField = strtoupper($fieldname);
 
 		if (count($dataFileArray) && $dataFileArray[0])	{
 			foreach ($dataFileArray as $k => $dataFile)	{
-				$marker = '###LINK_'.$upperField.($k+1).'###';
+				$marker = '###'.$markerKey.'_LINK_'.$upperField.($k+1).'###';
 				if ($tagArray[$marker])	{
 					$wrappedSubpartArray[$marker] = array('<a href="'.$dirname.'/'.$dataFile.'">','</a>');
 				}
 			}
-			$marker = '###LINK_'.$upperField.'###';
-			$wrappedSubpartArray[$marker] = array('<a href="'.$dirname.'/'.$dataFileArray[0].'">','</a>');
+			$marker = '###'.$markerKey.'_LINK_'.$upperField.'###';
+			if (
+				isset($tableConf['fieldLink.']) &&
+				is_array($tableConf['fieldLink.']) &&
+				isset($tableConf['fieldLink.'][$fieldname.'.'])
+			)	{
+				$typolinkConf = $tableConf['fieldLink.'][$fieldname.'.'];
+			} else {
+				$typolinkConf = array();
+			}
+			$typolinkConf['parameter'] = $dirname.'/'.$dataFileArray[0];
+			$linkTxt = microtime();
+			$typoLink = $this->cObj->typoLink($linkTxt, $typolinkConf);
+			$wrappedSubpartArray[$marker] = t3lib_div::trimExplode($linkTxt,$typoLink);
 		}
-
 
 		// empty all image fields with no available image
 		foreach ($tagArray as $value => $k1)	{
 			$keyMarker = '###'.$value.'###';
-			if (strstr($value, '_'.$upperField) && strstr($value, 'LINK') && !$wrappedSubpartArray[$keyMarker])	{
+			if (strpos($value, $markerKey.'_LINK_'.$upperField)!==FALSE && !$wrappedSubpartArray[$keyMarker])	{
 				$wrappedSubpartArray[$keyMarker] =  array('<!--','-->');
 			}
 		}
@@ -91,17 +114,24 @@ class tx_ttproducts_field_datafield_view extends tx_ttproducts_field_base_view {
 	function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $imageRenderObj='')	{
 
 		$val = $row[$fieldname];
-		if (isset($imageRenderObj) && $val)	{
-			$imageConf = $this->conf[$imageRenderObj.'.'];
+		$marker1 = '###ICON_' . strtoupper($fieldname) . '###';
+		$marker2 = '###' . $markerKey . '1###';
+
+		if (isset($imageRenderObj) && $val && (isset($tagArray[$marker1]) || isset($tagArray[$marker2])))	{
+			$imageConf = $this->conf[$imageRenderObj . '.'];
 			$dirname = $this->modelObj->getDirname ($row, $fieldname);
-			$iconImgCode = $this->cObj->IMAGE($imageConf);
-			$markerArray['###ICON_'.strtoupper($fieldname).'###'] = $iconImgCode;
-			$imageConf['file'] = $dirname.'/'.$val;
-			$iconImgCode = $this->cObj->IMAGE($imageConf);
-			$markerArray['###'.$markerKey.'_'.strtoupper($fieldname).'1###'] = $iconImgCode; // new marker now
+			if (isset($tagArray[$marker1]))	{
+				$iconImgCode = $this->cObj->IMAGE($imageConf);
+				$markerArray['###ICON_' . strtoupper($fieldname) . '###'] = $iconImgCode;
+			}
+			if (isset($tagArray[$marker2]))	{
+				$imageConf['file'] = $dirname.'/'.$val;
+				$iconImgCode = $this->cObj->IMAGE($imageConf);
+				$markerArray['###' . $markerKey . '1###'] = $iconImgCode; // new marker now
+			}
 		} else {
-			$markerArray['###ICON_'.strtoupper($fieldname).'###'] = '';
-			$markerArray['###'.$markerKey.'_'.strtoupper($fieldname).'1###'] = '';
+			$markerArray['###ICON_' . strtoupper($fieldname) . '###'] = '';
+			$markerArray['###' . $markerKey . '1###'] = '';
 		}
 	}
 }

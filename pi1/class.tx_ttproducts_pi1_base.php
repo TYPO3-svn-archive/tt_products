@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -33,8 +33,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  * @see file tt_products/static/old_style/constants.txt
@@ -51,11 +51,12 @@ require_once(PATH_tslib.'class.tslib_pibase.php');
 
 
 class tx_ttproducts_pi1_base extends tslib_pibase {
-	var $prefixId = 'tx_ttproducts_pi1';	// Same as class name
+	var $prefixId = 'tt_products';	// Same as class name
 	var $scriptRelPath = 'pi1/class.tx_ttproducts_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
 	var $pi_checkCHash = true;		// activate cHash
 	var $bRunAjax = false;			// overrride this
+
 
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
@@ -64,7 +65,7 @@ class tx_ttproducts_pi1_base extends tslib_pibase {
 	 * @param	[type]		$conf: ...
 	 * @return	[type]		...
 	 */
-	function main($content,$conf)	{
+	function main ($content,$conf)	{
 		global $TSFE;
 
 		if ($conf['templateFile'] != '')	{
@@ -82,9 +83,9 @@ class tx_ttproducts_pi1_base extends tslib_pibase {
 			tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/pi1/locallang.xml');
 			$content = tx_div2007_alpha::getLL($this,'no_template').' plugin.tt_products.templateFile';
 		}
-
 		return $content;
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -92,10 +93,11 @@ class tx_ttproducts_pi1_base extends tslib_pibase {
 	 * @param	[type]		$bRunAjax: ...
 	 * @return	[type]		...
 	 */
-	function set($bRunAjax)	{
+	function set ($bRunAjax)	{
 		$this->bRunAjax = $bRunAjax;
 	}
 }
+
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1_base.php'])	{
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1_base.php']);

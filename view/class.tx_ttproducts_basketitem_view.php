@@ -178,14 +178,21 @@ class tx_ttproducts_basketitem_view {
 					$markerArray['###FIELD_'.$fieldMarker.'_VALUE###'] = $row[$field];
 					$markerArray['###FIELD_'.$fieldMarker.'_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
 
+					// ###PRODUCT_SIZE_FUNCTION### +++
 					$markerKey = '###'.$viewTable->marker.'_'.$fieldMarker.'###';
 					$markerArray[$markerKey] = $text;
 					$markerKey = '###'.$viewTable->marker.'_'.$fieldMarker.'_FUNCTION1###';
 					$markerArray[$markerKey] = 'doFetchRow(\''.$functablename.'\',\''.strtolower($theCode).'\','.$row['uid'].');';
+
+	/*				if (isset($row['ext']))	{
+						$markerArray['###PRODUCT_'.$fieldMarker.'###'] = $row[$field];
+					}*/
 				}
 			}
 		}
+		// $markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
 		$prodAdditionalText['single'] = '';
+		// $variant = $row['extVars'];
 
 		if ($keyAdditional !== FALSE) {
 			$isSingleProduct = $viewTable->hasAdditional($row,'isSingle');

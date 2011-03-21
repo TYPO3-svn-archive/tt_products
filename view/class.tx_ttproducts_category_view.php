@@ -67,7 +67,8 @@ class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 			// Get image
-		$imageObj->getItemMarkerArrayEnhanced ($functablename, $row, $this->marker, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $theCode, $id, $prefix, $linkWrap);
+		$imageObj->getItemMarkerArray($functablename, 'image', $row, $this->marker, $markerArray, $viewCatTagArray, $theCode, $id, $tmp, TRUE, '', $prefix, $imageRenderObj);
+
 		$pageCatTitle = '';
 		if ($pageAsCategory == 1) {
 			$pageObj = &$tablesObj->get('pages');
@@ -79,7 +80,6 @@ class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 		if (($row['title']))	{
 			$catTitle .= ($this->tableconf['separator'].$row['title']);
 		}
-
 		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
 		parent::getItemMarkerArray ($row, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, TRUE, '', $prefix, $imageRenderObj);
 	}

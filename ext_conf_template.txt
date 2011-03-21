@@ -2,7 +2,7 @@
 pageAsCategory = 0
   # cat=basic/enable; type=boolean; label=Use Flexforms: Enable the use of Flexforms in the backend.
 useFlexforms = 1
-  # cat=basic/enable; type=string; label=Address table: Name of the address table to be used in the backend. The installation of the 'partner' extension is recommended.
+  # cat=basic/enable; type=string; label=Address table: Name of the address table to be used in the backend. The usage of the 'tx_party_addresses' table is recommended.
 addressTable =
   # cat=basic/enable; type=string; label=Image upload folder: This is the place where the images lie.
 imageFolder = uploads/pics

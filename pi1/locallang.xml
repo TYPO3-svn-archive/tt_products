@@ -19,7 +19,7 @@
 			<label index="accept_AGB">You have to accept the general trading conditions to proceed.</label>
 			<label index="additional_single">buy this product</label>
 			<label index="additional_gift_service">wrap product by gift service</label>
-			<label index="wrong_parameter">Wrong parameters. GET/POST var 'tx_ttproducts_pi1[|]' is missing or item with uid = | found on allowed pages | .</label>
+			<label index="wrong_parameter">Wrong parameters. GET/POST var 'tt_products[|]' is missing or item with uid = | found on allowed pages | .</label>
 			<label index="no_csv_creation">Warning: Cannot create CSV file '|' for this order!</label>
 			<label index="wrong_code">Wrong display mode or code '|'.</label>
 			<label index="instock_warning">Warning: | no. | runs out of stock.</label>
@@ -51,7 +51,7 @@
 			<label index="accept_AGB">Sie haben unsere AGB nicht akzeptiert.</label>
 			<label index="additional_single">Produkt kaufen</label>
 			<label index="additional_gift_service">Verpacke Produkt mit Geschenk Service</label>
-			<label index="wrong_parameter">Falscher Parameter. GET/POST var 'tx_ttproducts_pi1[|]' wurde nicht angegeben oder kein Element mit uid = | auf den erlaubten Seiten | gefunden.</label>
+			<label index="wrong_parameter">Falscher Parameter. GET/POST var 'tt_products[|]' wurde nicht angegeben oder kein Element mit uid = | auf den erlaubten Seiten | gefunden.</label>
 			<label index="no_csv_creation">Warnung: Für diese Bestellung kann keine CSV Datei '|' erzeugt werden!</label>
 			<label index="wrong_code">Falscher Anzeigetyp oder CODE '|'.</label>
 			<label index="instock_warning">Warnung: | Nr. | ist bald nicht mehr auf Lager.</label>
@@ -97,7 +97,7 @@
 			<label index="accept_AGB">Vous devez accepter les conditions de ventes pour continuer</label>
 			<label index="additional_no">sans</label>
 			<label index="additional_yes">avec</label>
-			<label index="wrong_parameter">Mauvais paramètres, GET/POST var 'tx_ttproducts_pi1[|]' inexistante ou pas de produit correspondant à l'uid = | trouvé sur les pages | .</label>
+			<label index="wrong_parameter">Mauvais paramètres, GET/POST var 'tt_products[|]' inexistante ou pas de produit correspondant à l'uid = | trouvé sur les pages | .</label>
 			<label index="no_csv_creation">Alerte: Impossible de créer le fichier CSV  '|' pour cette commande!</label>
 		</languageKey>
 		<languageKey index="es" type="array">
@@ -111,7 +111,7 @@
 			<label index="no_subtemplate">Het onderdeel | of het sjabloon | is niet gevonden.</label>
 			<label index="accept_AGB">Je dient de algemene voorwaarden te accepteren voordat je verder kunt.</label>
 			<label index="additional_single">koop dit product</label>
-			<label index="wrong_parameter">Verkeerde parameters, GET/POST var 'tx_ttproducts_pi1[|]' ontbreekt of er is geen product met uid = | gevonden.</label>
+			<label index="wrong_parameter">Verkeerde parameters, GET/POST var 'tt_products[|]' ontbreekt of er is geen product met uid = | gevonden.</label>
 			<label index="no_csv_creation">Waarschuwing: kan geen CSV bestand creëren '|' voor deze order!</label>
 			<label index="wrong_code">Verkeerde display modus of code '|'.</label>
 		</languageKey>
@@ -130,7 +130,7 @@
 			<label index="no_subtemplate">Mallinteen osaa | tai mallinnetiedostoa | ei löydy.</label>
 			<label index="accept_AGB">Sinun täytyy hyväksyä yleiset kuljetusehdot voidaksesi jatkaa.</label>
 			<label index="additional_single">osta tämä tuote</label>
-			<label index="wrong_parameter">Väärät parametrit, GET/POST-parametrit puuttuvat 'tx_ttproducts_pi1[|]'-taulusta tai tuotetta, jonka uid = | ei löydy.</label>
+			<label index="wrong_parameter">Väärät parametrit, GET/POST-parametrit puuttuvat 'tt_products[|]'-taulusta tai tuotetta, jonka uid = | ei löydy.</label>
 			<label index="no_csv_creation">Varoitus: Tälle tilaukselle ei voi luoda CSV-tiedostoa '|'!</label>
 			<label index="wrong_code">Väärä näyttömoodi tai koodi '|'.</label>
 		</languageKey>

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -47,12 +47,11 @@ abstract class tx_ttproducts_table_base_view	{
 	public $conf;
 	public $config;
 	public $piVar;
-
 	public $modelObj;
 	public $langObj;
 	public $marker;		// must be overridden
 
-	public function init(&$langObj, &$modelObj)	{
+	public function init (&$langObj, &$modelObj)	{
 		$this->langObj = &$langObj;
 		$this->modelObj = &$modelObj;
 		$this->cObj = &$langObj->cObj;
@@ -84,7 +83,7 @@ abstract class tx_ttproducts_table_base_view	{
 	 *
 	 * @return	[type]		...
 	 */
-	function getPivar()	{
+	function getPivar ()	{
 		return $this->piVar;
 	}
 
@@ -94,11 +93,11 @@ abstract class tx_ttproducts_table_base_view	{
 	 * @param	[type]		$piVar: ...
 	 * @return	[type]		...
 	 */
-	function setPivar($piVar)	{
+	function setPivar ($piVar)	{
 		$this->piVar = $piVar;
 	}
 
-	public function getMarker()	{
+	public function getMarker ()	{
 		return $this->marker;
 	}
 
@@ -128,12 +127,27 @@ abstract class tx_ttproducts_table_base_view	{
 		global $TCA;
 
 		if (is_array($row))	{
+			$modelObj = &$this->getModelObj();
+			$tableConf = $modelObj->getTableConf($theCode);
+
 			foreach ($row as $field => $value)	{
 				$className = $this->getfieldClass($field);
 				if ($className)	{
 					$fieldViewObj = $this->getObj($className);
 					if (method_exists ($fieldViewObj, 'getItemSubpartArrays'))	{
-						$fieldViewObj->getItemSubpartArrays($templateCode, $row, $field, $subpartArray, $wrappedSubpartArray, $tagArray, $theCode, $id);
+						$fieldViewObj->getItemSubpartArrays(
+							$templateCode,
+							$this->marker,
+							$functablename,
+							$row,
+							$field,
+							$tableConf,
+							$subpartArray,
+							$wrappedSubpartArray,
+							$tagArray,
+							$theCode,
+							$id
+						);
 					}
 				}
 			}
@@ -172,6 +186,7 @@ abstract class tx_ttproducts_table_base_view	{
 				$theMarkerArray = &$markerArray;
 				$fieldId = $id.'-'.$viewField;
 				$markerKey = $marker.'_'.strtoupper($viewField);
+
 				if (isset($tagArray[$markerKey]))	{
 					$markerArray['###'.$markerKey.'_ID###'] = $fieldId;
 				}
@@ -184,6 +199,7 @@ abstract class tx_ttproducts_table_base_view	{
 				}
 				if ($className)	{
 					$fieldViewObj = $this->getObj($className);
+
 					$modifiedValue =
 						$fieldViewObj->getItemMarkerArray	(
 							$functablename,

@@ -44,6 +44,7 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 	var $config;
 	var $tt_products_texts; // element of class tx_table_db
 
+
 	/**
 	 * text elements
 	 *
@@ -51,7 +52,7 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init(&$pibase, $functablename)  {
+	function init (&$pibase, $functablename)  {
 		parent::init($pibase, $functablename);
 		$tablename = $this->getTablename();
 		$this->getTableObj()->addDefaultFieldArray(array('sorting' => 'sorting'));
@@ -60,17 +61,16 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 		$this->tableconf = $cnf->getTableConf($functablename);
 		$this->tabledesc = $cnf->getTableDesc($functablename);
 		$requiredFields = 'uid,pid,title,marker,note,parentid,parenttable';
+
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
 		}
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->getTableObj()->setRequiredFieldArray($requiredListArray);
-
 	} // init
 
-
-	function get($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
+	function get ($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
 		if (!$rc) {
@@ -90,7 +90,7 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 	 * @param	[type]		$parentMarker: ...
 	 * @return	[type]		...
 	 */
-	function &getTagMarkerArray(&$tagArray, $parentMarker)	{
+	function &getTagMarkerArray (&$tagArray, $parentMarker)	{
 		$rcArray = array();
 		$search = $parentMarker.'_'.$this->marker.'_';
 		$searchLen = strlen($search);

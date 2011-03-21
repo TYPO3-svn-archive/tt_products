@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -54,7 +54,8 @@ abstract class tx_ttproducts_catlist_view_base {
 	var $htmlTagElement = ''; // HTML tag element
 	var $htmlPartsMarkers = array('###ITEM_SINGLE_PRE_HTML###', '###ITEM_SINGLE_POST_HTML###');
 
-	public function init(&$pibase, &$pid_list, $pid) {
+
+	public function init (&$pibase, &$pid_list, $pid) {
 		$this->pibase = &$pibase;
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
@@ -86,7 +87,8 @@ abstract class tx_ttproducts_catlist_view_base {
 		}
 	}
 
-	public function &getIsParentArray($cat, &$categoryArray)	{
+
+	public function &getIsParentArray ($cat, &$categoryArray)	{
 		$isParentArray = array();
 
 		if ($cat)	{
@@ -99,6 +101,7 @@ abstract class tx_ttproducts_catlist_view_base {
 		}
 		return $isParentArray;
 	}
+
 
 	// sets the 'depth' field
 	public function setDepths (&$categoryRootArray, &$categoryArray)	{
@@ -130,6 +133,7 @@ abstract class tx_ttproducts_catlist_view_base {
 		}
 	}
 
+
 	public function getFrameWork (&$t, &$templateCode, $area)	{
 		$subpart = $this->subpartmarkerObj->spMarker('###'.$area.'###');
 		$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$subpart);
@@ -137,13 +141,13 @@ abstract class tx_ttproducts_catlist_view_base {
 		if ($t['listFrameWork'])	{
 			$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###CATEGORY_SINGLE###');
 
-//		###SUBCATEGORY_A_1###
 			$t['linkCategoryFrameWork'] = $this->pibase->cObj->getSubpart($t['categoryFrameWork'],'###LINK_CATEGORY###');
 		}
 	}
 
+
 	// returns the products list view
-	public function printView(
+	public function printView (
 		$functablename,
 		&$templateCode,
 		&$t,
@@ -159,20 +163,22 @@ abstract class tx_ttproducts_catlist_view_base {
 		&$isParentArray,
 		&$subCategoryMarkers
 	 ) {
-		global $TSFE, $TCA;
+		global $TSFE, $TCA, $TYPO3_DB;
 
 		$rc = TRUE;
 		$mode = '';
-		$this->getFrameWork ($t, $templateCode, $templateArea.$templateSuffix);
+		$this->getFrameWork($t, $templateCode, $templateArea.$templateSuffix);
 		$bUseFilter = FALSE;
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$categoryTableView = &$tablesObj->get($functablename,1);
 		$categoryTable = &$categoryTableView->getModelObj();
 		$categoryTable->clear();
-		$categoryTable->initCodeConf ($theCode);
+		$categoryTable->initCodeConf($theCode);
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tableConf = $cnf->getTableConf($functablename, $theCode);
+		$orderBy = $TYPO3_DB->stripOrderBy($tableConf['orderBy']);
+
 		if (!count($error_code) && $t['listFrameWork'] && is_object($categoryTable))	{
-//		###SUBCATEGORY_A_1###
 			$subCategoryMarkers = array();
 			$offset = 0;
 			$depth = 0;
@@ -191,16 +197,12 @@ abstract class tx_ttproducts_catlist_view_base {
 					}
 				}
 				$offset = $pos+1;
-
 			}
 			$subpartArray = array();
 			$subpartArray['###LINK_CATEGORY###'] = '###CATEGORY_TMP###';
-
 			$tmp = $this->pibase->cObj->substituteMarkerArrayCached($t['categoryFrameWork'],array(),$subpartArray);
-			$htmlParts = t3lib_div::trimExplode ('###CATEGORY_TMP###', $tmp);
-
+			$htmlParts = t3lib_div::trimExplode('###CATEGORY_TMP###', $tmp);
 			$rootCat = $categoryTable->getRootCat();
-			$tableConf = $cnf->getTableConf($functablename, $theCode);
 			$currentCat = $categoryTable->getParamDefault($theCode, $this->pibase->piVars[$categoryTableView->piVar]);
 
 			if ($pageAsCategory && $functablename == 'pages')	{
@@ -221,11 +223,6 @@ abstract class tx_ttproducts_catlist_view_base {
 					is_array($tableConf['filter.']) &&
 					is_array($tableConf['filter.']['param.']) &&
 					$tableConf['filter.']['param.']['cat'] == 'gp'
-// 					(
-// 						is_array($tableConf['special.']) &&
-// 						isset($tableConf['special.']['all']) &&
-// 						$currentCat == $tableConf['special.']['all']
-// 					)
 				)	{
 					$bUseFilter = TRUE;
 					if ($mode == 'all')	{
@@ -233,14 +230,14 @@ abstract class tx_ttproducts_catlist_view_base {
 						unset ($tmpRowArray[$currentCat]);
 						$childArray = array_keys($tmpRowArray);
 					} else {
-						$childArray = $categoryTable->getChildCategoryArray ($currentCat);
+						$childArray = $categoryTable->getChildCategoryArray($currentCat);
 					}
 					$allowedCatArray = array();
 					foreach ($childArray as $k => $cat)	{
-						$bIsSpecial = $categoryTable->hasSpecialConf ($cat, $theCode, 'no');
+						$bIsSpecial = $categoryTable->hasSpecialConf($cat, $theCode, 'no');
 
 						if (!$bIsSpecial)	{
-							$categoryTable->get($cat, $this->pidListObj->getPidlist());	// read all categories
+							$categoryTable->get($cat, $this->pidListObj->getPidlist(),TRUE,'','','',FALSE,'',$orderBy);	// read all categories
 
 							if ($depth && !$tableConf['onlyChildsOfCurrent'])	{
 								$subChildArray = $categoryTable->getChildCategoryArray ($cat);
@@ -258,16 +255,17 @@ abstract class tx_ttproducts_catlist_view_base {
 					$allowedCats = implode (',', $allowedCatArray);
 					$excludeCat = $rootCat;
 				} else if ($tableConf['onlyChildsOfCurrent'])	{
-					$relatedArray = $categoryTable->getRelated($rootCat, $currentCat, $this->pidListObj->getPidlist());	// read only related categories
+
+					$relatedArray = $categoryTable->getRelated($rootCat, $currentCat, $this->pidListObj->getPidlist(), $orderBy);	// read only related categories
 				} else {
 					// read in all categories
-					$categoryTable->get('0', $this->pidListObj->getPidlist());	// read all categories
+					$categoryTable->get('0', $this->pidListObj->getPidlist(),TRUE,'','','',FALSE,'',$orderBy);	// read all categories
 					$excludeCat = 0;
 				}
-
 				if (is_array($categoryTable->dataArray))	{
 					// ksort ($categoryTable->dataArray);
 					$excludeCat = 0;
+					$categoryTable->translateByFields($theCode);
 				}
 
 				if (is_array($tableConf['special.']) && strlen($tableConf['special.']['no']))	{
@@ -277,7 +275,6 @@ abstract class tx_ttproducts_catlist_view_base {
 			if ($functablename == 'pages')	{
 				$allowedCats = $this->pidListObj->getPidlist($rootCat);
 			}
-
 			$categoryArray = $categoryTable->getRelationArray($excludeCat, $rootCat, $allowedCats);
 			$rootpathArray = $categoryTable->getRootpathArray($categoryArray, $rootCat, $currentCat);
 			$rootArray = $categoryTable->getRootArray($rootCat, $categoryArray);
@@ -301,7 +298,6 @@ abstract class tx_ttproducts_catlist_view_base {
 			$error_code[2] = $functablename;
 			$rc = FALSE;
 		}
-
 		return $rc;
 	}
 }
