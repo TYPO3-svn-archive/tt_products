@@ -271,9 +271,19 @@ class tx_ttproducts_marker {
 				$queryString['backPID'] = $TSFE->id;
 			}
 		}
+		if ($excludeList != '' && $bUsePrefix) {
+			$excludeArray = explode(',', $excludeList);
+			foreach ($excludeArray as $k => $v) {
+				$excludeArray[$k] = $this->pibase->prefixId.'[' . $v . ']';
+			}
+			$excludeList = implode(',', $excludeArray);
+		}
 
 		$this->addQueryStringParam($queryString, 'mode', FALSE);
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
+		$this->addQueryStringParam($queryString, 'article', $bUsePrefix);
+		$this->addQueryStringParam($queryString, 'product', $bUsePrefix);
+
 		if ($piVarSingle != '') {
 			$this->addQueryStringParam($queryString, $piVarSingle, $bUsePrefix);
 		}

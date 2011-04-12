@@ -65,7 +65,7 @@ plugin.tt_products {
   listcatImage.file.maxH = {$plugin.tt_products.maxH_listcat}
   listcatImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_listcat}
 
-  image.wrap = | <BR>
+  image.wrap = | <br />
 
   noImageAvailable = {$plugin.tt_products.file.noImageAvailable}
   datasheetIcon {
@@ -373,7 +373,10 @@ plugin.tt_products {
 
   marks {
    BASKET_MINI_HEADER = Warenkorb
+   BASKET_INTO = in den Warenkorb
+   BASKET_INTO_ID = basketInto
   }
+
   shopAdmin = BE
   control.ALL.param {
     use = backPID

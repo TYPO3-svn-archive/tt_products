@@ -290,12 +290,14 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 */
 	function getParamDefault ($theCode, $cat)	{
 
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+
 		if (!$cat)	{
 			if ($this->table->name == 'tt_products_cat')	{
-				$cat = $this->conf['defaultCategoryID'];
+				$cat = $cnf->conf['defaultCategoryID'];
 			}
 			if ($this->table->name == 'tx_dam_cat')	{
-				$cat = $this->conf['defaultDAMCategoryID'];
+				$cat = $cnf->conf['defaultDAMCategoryID'];
 			}
 		}
 

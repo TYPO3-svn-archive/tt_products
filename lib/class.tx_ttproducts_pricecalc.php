@@ -157,6 +157,10 @@ class tx_ttproducts_pricecalc {
 						}
 					}
 				}
+				if (isset($row)) {
+					unset($row);
+				}
+
 				$countTotal += $dumCount;
 
 				if ($additive == 0) {

@@ -50,7 +50,7 @@ class tx_ttproducts_email_div {
 
 	function slashName ($name) {
 		$name = str_replace(',' , ' ', $name);
-		$rc = '"' . addcslashes($name, '<>&()\\"' . chr('\n')) . '"';
+		$rc = '"' . addcslashes($name, '<>()@;:\\".[]' . chr('\n')) . '"';
 		return $rc;
 	}
 
@@ -104,9 +104,11 @@ class tx_ttproducts_email_div {
 				$Typo3_htmlmail->addPlain($message);
 			}
 			$Typo3_htmlmail->setHeaders();
-			if ($attachment != '' && file_exists($attachment))	{
-				foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
-					$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
+			if ($attachment != '')	{
+				if (isset($Typo3_htmlmail->theParts) && is_array($Typo3_htmlmail->theParts) && isset($Typo3_htmlmail->theParts['attach']) && is_array($Typo3_htmlmail->theParts['attach'])) {
+					foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
+						$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
+					}
 				}
 			}
 			$Typo3_htmlmail->setContent();

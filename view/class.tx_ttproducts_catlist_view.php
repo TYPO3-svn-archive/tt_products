@@ -55,7 +55,7 @@ class tx_ttproducts_catlist_view {
 	var $marker; // marker functions
 
 
-	function init (&$pibase, &$cnf, &$basket, &$pid_list, &$tt_content, &$tt_products_cat, $pid) {
+	function init (&$pibase, &$cnf, &$basket, &$pid_list, $recursive, &$tt_content, &$tt_products_cat, $pid) {
 		$this->pibase = &$pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$this->cnf->conf;
@@ -74,7 +74,7 @@ class tx_ttproducts_catlist_view {
 				$this->conf['conf.']['pages.'],
 				$this->page,
 				$pid_list,
-				99
+				$recursive
 			);
 		}
 		if (is_object($basket))	{

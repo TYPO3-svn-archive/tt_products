@@ -409,7 +409,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 					t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.tx_ttproducts_catlist_view.php');
 						// category view
 					$categoryView = t3lib_div::makeInstance('tx_ttproducts_catlist_view');
-					$categoryView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->tt_content, $this->tt_products_cat, $this->pid);
+					$categoryView->init($this, $this->cnf, $this->basket, $this->pid_list, $this->config['recursive'], $this->tt_content, $this->tt_products_cat, $this->pid);
 					$htmlTagMain = $this->conf['displayCatListType'];
 
 					if ($theCode == 'LISTCAT' || $theCode == 'LISTDAMCAT')	{

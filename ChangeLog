@@ -1,3 +1,13 @@
+2011-04-12 Franz Holzinger <franz@ttproducts.de>
+	* consider the recursive setup for the category list view
+	* keep always the singe product and article parameters, except with the link from the single view to list view if both are on the same page
+	* fix bug: if 2 plugins in the list view are filtered by the category, then the category object is not initialized with the modified config. Use the real config instead and not from the category object.
+
+2011-02-17 Franz Holzinger <franz@ttproducts.de>
+	* fix bug: the link to return to the list from the product single view must not keep always the product parameter
+	* fix bug: the shipping price on the product level must be added only once for the first shipping price
+	* fix bug #17622: the email name must be encoded using addcslashes and have double quotes around it
+
 2010-11-21 Franz Holzinger <franz@ttproducts.de>
 	* keep the parameters product and article in the url form markers ###FORM_URL###
 	* fix tax string in calculatedArray to a format with 2 digits after the comma

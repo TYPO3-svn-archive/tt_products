@@ -332,6 +332,9 @@ class tx_ttproducts_single_view {
 			if ($bNeedSingleParams)	{
 				// if the page remains the same then the product parameter will still be needed if there is no list view
 				$addQueryString[$this->type] = $row['uid'];
+				$excludeList = '';
+			} else {
+				$excludeList = $itemTableArray[$this->type]->getPivar();
 			}
 			$this->marker->getSearchParams($addQueryString);
 			$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
@@ -347,7 +350,7 @@ class tx_ttproducts_single_view {
 					$linkPid,
 					'',
 					$this->marker->getLinkParams(
-						'',
+						$excludeList,
 						$addQueryString,
 						TRUE,
 						TRUE,
