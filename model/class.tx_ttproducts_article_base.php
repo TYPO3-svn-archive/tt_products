@@ -188,7 +188,7 @@ class tx_ttproducts_article_base {
 		$this->image->getItemMarkerArray($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, '', $linkWrap);
 
 		if (isset($row['delivery']))	{
-			$this->image->getSingleImageMarkerArray ($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.']);
+			$this->image->getSingleImageMarkerArray($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.'], $code);
 		} else {
 			$markerArray['###'.$this->marker.'_DELIVERY###'] = '';
 		}

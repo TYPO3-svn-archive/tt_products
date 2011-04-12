@@ -62,58 +62,89 @@ class tx_ttproducts_email_div {
 		global $TYPO3_CONF_VARS;
 
 		include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
-
 		$fromName = self::slashName($fromName);
 
-		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
-		if (class_exists($cls)) {
-			$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
-			$Typo3_htmlmail->start();
-			$Typo3_htmlmail->mailer = 'TYPO3 HTMLMail';
-			// $Typo3_htmlmail->useBase64(); +++ TODO
-			$message = html_entity_decode($message);
-			if ($Typo3_htmlmail->linebreak == chr(10))	{
-				$message = str_replace(chr(13).chr(10),$Typo3_htmlmail->linebreak,$message);
-			}
+		if (
+			isset($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
+			is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
+			isset($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) &&
+			is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) &&
+			array_search('t3lib_mail_SwiftMailerAdapter', $TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) !== FALSE
+		) {
+			/** @var $mail t3lib_mail_Message */
+			$mailMessage = t3lib_div::makeInstance('t3lib_mail_Message');
+			$mailMessage->setTo($toEMail)
+				->setFrom(array($fromEMail => $fromName))
+				->setSubject($subject)
+				->setBody($html, 'text/html', $GLOBALS['TSFE']->renderCharset);
 
-			$Typo3_htmlmail->subject = $subject;
-			$Typo3_htmlmail->from_email = $fromEMail;
-			$Typo3_htmlmail->from_name = $fromName;
-			$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
-			$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
-			$Typo3_htmlmail->organisation = '';
-
-			if ($attachment != '' && file_exists($attachment))	{
-				$Typo3_htmlmail->addAttachment($attachment);
-			}
-
-			if ($html)  {
-				$Typo3_htmlmail->theParts['html']['content'] = $html; // Fetches the content of the page
-				$Typo3_htmlmail->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
-
-				$Typo3_htmlmail->extractMediaLinks();
-				$Typo3_htmlmail->extractHyperLinks();
-				$Typo3_htmlmail->fetchHTMLMedia();
-				$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
-				$Typo3_htmlmail->substHREFsInHTML();
-				$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
-				if ($message)	{
-					$Typo3_htmlmail->addPlain($message);
+			if (isset($attachment)) {
+				if (is_array($attachment)) {
+					$attachmentArray = $attachment;
+				} else {
+					$attachmentArray = array($attachment);
 				}
-			} else {
-				$Typo3_htmlmail->addPlain($message);
-			}
-			$Typo3_htmlmail->setHeaders();
-			if ($attachment != '')	{
-				if (isset($Typo3_htmlmail->theParts) && is_array($Typo3_htmlmail->theParts) && isset($Typo3_htmlmail->theParts['attach']) && is_array($Typo3_htmlmail->theParts['attach'])) {
-					foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
-						$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
+				foreach ($attachmentArray as $theAttachment) {
+					if (file_exists($theAttachment)) {
+						$mailMessage->attach(Swift_Attachment::fromPath($theAttachment));
 					}
 				}
 			}
-			$Typo3_htmlmail->setContent();
-			$Typo3_htmlmail->setRecipient(explode(',', $toEMail));
-			$Typo3_htmlmail->sendTheMail();
+			if ($bcc != '') {
+				$mailMessage->addBcc($bcc);
+			}
+			$mailMessage->send();
+		} else {
+			$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
+			if (class_exists($cls)) {
+				$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
+				$Typo3_htmlmail->start();
+				$Typo3_htmlmail->mailer = 'TYPO3 HTMLMail';
+				// $Typo3_htmlmail->useBase64(); +++ TODO
+				$message = html_entity_decode($message);
+				if ($Typo3_htmlmail->linebreak == chr(10))	{
+					$message = str_replace(chr(13).chr(10),$Typo3_htmlmail->linebreak,$message);
+				}
+
+				$Typo3_htmlmail->subject = $subject;
+				$Typo3_htmlmail->from_email = $fromEMail;
+				$Typo3_htmlmail->from_name = $fromName;
+				$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
+				$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
+				$Typo3_htmlmail->organisation = '';
+
+				if ($attachment != '' && file_exists($attachment))	{
+					$Typo3_htmlmail->addAttachment($attachment);
+				}
+
+				if ($html)  {
+					$Typo3_htmlmail->theParts['html']['content'] = $html; // Fetches the content of the page
+					$Typo3_htmlmail->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
+
+					$Typo3_htmlmail->extractMediaLinks();
+					$Typo3_htmlmail->extractHyperLinks();
+					$Typo3_htmlmail->fetchHTMLMedia();
+					$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
+					$Typo3_htmlmail->substHREFsInHTML();
+					$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
+					if ($message)	{
+						$Typo3_htmlmail->addPlain($message);
+					}
+				} else {
+					$Typo3_htmlmail->addPlain($message);
+				}
+				$Typo3_htmlmail->setHeaders();
+				if ($attachment != '')	{
+					if (isset($Typo3_htmlmail->theParts) && is_array($Typo3_htmlmail->theParts) && isset($Typo3_htmlmail->theParts['attach']) && is_array($Typo3_htmlmail->theParts['attach'])) {
+						foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
+							$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
+						}
+					}
+				}
+				$Typo3_htmlmail->setContent();
+				$Typo3_htmlmail->setRecipient(explode(',', $toEMail));
+				$Typo3_htmlmail->sendTheMail();
+			}
 		}
 	}
 

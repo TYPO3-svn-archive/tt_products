@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -112,6 +112,8 @@ class tx_ttproducts_activity_finalize {
 		global $TYPO3_CONF_VARS;
 
 		$instockTableArray = '';
+		$empty='';
+		$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
 		$recipientsArray = array();
 		$recipientsArray['customer'] = array();
 		$customerEmail = ($this->conf['orderEmail_toDelivery'] && $address->infoArray['delivery']['email'] || !$address->infoArray['billing']['email'] ? $address->infoArray['delivery']['email'] : $address->infoArray['billing']['email']); // former: deliveryInfo
@@ -169,7 +171,6 @@ class tx_ttproducts_activity_finalize {
 				$res = $TYPO3_DB->exec_INSERTquery('fe_users', $insertFields);
 				// send new user mail
 				if (count($address->infoArray['billing']['email'])) {
-					$empty='';
 					$emailContent=trim($basketView->getView($empty,'EMAIL',$address, false, false, false, '###EMAIL_NEWUSER_TEMPLATE###'));
 					if ($emailContent) {
 						$parts = explode(chr(10),$emailContent,2);
@@ -321,10 +322,18 @@ class tx_ttproducts_activity_finalize {
 					include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
 					$cls = t3lib_div::makeInstanceClassName('t3lib_htmlmail');
 				}
+
 				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$this->pibase->cObj->getSubpart($templateCode,'###EMAIL_HTML_SHELL###');
-					$HTMLmailContent=$this->pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$orderConfirmationHTML);
-					$HTMLmailContent=$this->pibase->cObj->substituteMarkerArray($HTMLmailContent, $this->pibase->globalMarkerArray);
+					$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
+
+					if ($GLOBALS['TSFE']->absRefPrefix == '') {
+						$absRefPrefix = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
+						$markerArray['"index.php'] = '"' . $absRefPrefix . 'index.php';
+					}
+					$orderConfirmationHTML = $basketView->getView($empty, 'EMAIL', $infoObj, false, false, true, '###' . $tmpl . '###', $markerArray);
+					$HTMLmailContent = $this->pibase->cObj->substituteMarker($HTMLmailShell, '###HTML_BODY###', $orderConfirmationHTML);
+					$HTMLmailContent = $this->pibase->cObj->substituteMarkerArray($HTMLmailContent,  $this->pibase->globalMarkerArray);
 
 						// Remove image tags to the products:
 					if ($this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix'])	{
@@ -369,6 +378,7 @@ class tx_ttproducts_activity_finalize {
 						$addcsv
 					);
 				}
+
 				if (is_array($instockTableArray) && $this->conf['warningInStockLimit'])	{
 					$tableDescArray = array ('tt_products' => 'product', 'tt_products_articles' => 'article');
 					foreach ($instockTableArray as $tablename => $instockArray)	{
@@ -414,6 +424,7 @@ class tx_ttproducts_activity_finalize {
 				}
 			}
 		}
+
 		$this->order->clearUid();
 	} // doProcessing
 }

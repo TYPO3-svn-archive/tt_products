@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -74,6 +74,19 @@ class tx_ttproducts_image {
 	} // init
 
 
+	function getImageCode ($imageConf, $theCode) {
+		$imageCode = $this->pibase->cObj->IMAGE($imageConf);
+
+		if ($theCode == 'EMAIL' && $GLOBALS['TSFE']->absRefPrefix == '') {
+			$absRefPrefix = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
+			$fixImgCode = str_replace('index.php', $absRefPrefix . 'index.php', $imageCode);
+			$fixImgCode = str_replace('src="', 'src="' . $absRefPrefix, $fixImgCode);
+			$imageCode = $fixImgCode;
+		}
+		return $imageCode;
+	}
+
+
 	/* returns the key for the tag array and marker array without leading and ending '###' */
 	function getMarkerkey(&$imageMarkerArray, $imageName, $c = 1, $suffix='')	{
 
@@ -143,8 +156,8 @@ class tx_ttproducts_image {
 	}
 
 
-	function getSingleImageMarkerArray ($markerKey, &$markerArray, &$imageConf)	{
-		$tmpImgCode = $this->pibase->cObj->IMAGE($imageConf);
+	function getSingleImageMarkerArray ($markerKey, &$markerArray, &$imageConf, $theCode)	{
+		$tmpImgCode = $this->getImageCode($imageConf, $theCode);
 		$markerArray['###'.$markerKey.'###'] = $tmpImgCode;
 	}
 
@@ -360,7 +373,7 @@ class tx_ttproducts_image {
 
 			$this->pibase->cObj->alternativeData = ($meta ? $meta : $imageRow);
 			$this->replaceMarkerArray($confMarkerArray, $imageConf, $this->pibase->cObj->alternativeData);
-			$tmpImgCode = $this->pibase->cObj->IMAGE($imageConf);
+			$tmpImgCode = $this->getImageCode($imageConf, $theCode);
 			$theImgCode[$key] .= $tmpImgCode;
 			if ($meta)	{
 				$theImgDAM[$key] = $meta;
@@ -384,7 +397,7 @@ class tx_ttproducts_image {
 					$theImageConf = array_merge($imageConf, $specialImageConf);
 					$this->pibase->cObj->alternativeData = ($meta ? $meta : $imageRow); // has to be redone here
 					$this->replaceMarkerArray($confMarkerArray, $theImageConf, $this->pibase->cObj->alternativeData);
-					$tmpImgCode = $this->pibase->cObj->IMAGE($theImageConf);
+					$tmpImgCode = $this->getImageCode($theImageConf, $theCode);
 					$key1 = $key.':'.$specialConfType;
 					$theImgCode[$key1] .= $tmpImgCode;
 				}
@@ -394,7 +407,7 @@ class tx_ttproducts_image {
 		if (!count($imgs))	{
 			$imageConf = $this->conf[$imageRenderObj.'.'];
 			$imageConf['file'] = $this->conf['noImageAvailable'];
-			$tmpImgCode = $this->pibase->cObj->IMAGE($imageConf);
+			$tmpImgCode = $this->getImageCode($imageConf, $theCode);
 			$theImgCode[0] = $tmpImgCode;
 		}
 		reset ($theImgCode);
