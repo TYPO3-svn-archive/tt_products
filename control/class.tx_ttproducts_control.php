@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2010 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -571,10 +571,6 @@ class tx_ttproducts_control {
 										if ($errorMessage != '')	{
 											$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $errorMessage;
 										}
-/*
-										$paymentContent = '';
-										$this->processPayment($paymentContent, $bFinalize, $order, $basketView, $infoObj, $cardObj, $account);
-										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $paymentContent;*/
 									} else {
 										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 									}
@@ -659,8 +655,6 @@ class tx_ttproducts_control {
 										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $errorMessage;
 									}
 
-/*									$this->processPayment($paymentContent, $bFinalize, $order, $basketView, $infoObj, $cardObj, $account);
-									$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $paymentContent;*/
 									if (!$bFinalize)	{
 										$content = $basketView->getView($empty, 'PAYMENT', $infoObj, $this->activityArray['products_info'], false, true, '###BASKET_PAYMENT_TEMPLATE###', $mainMarkerArray);
 									}
@@ -700,23 +694,20 @@ class tx_ttproducts_control {
 										$errorMessage
 									);
 
-//									$test = $this->processPayment($content, $bFinalize, $order, $basketView, $infoObj, $cardObj, $account);
 									if($bFinalize == FALSE ){
 										$label = $errorMessage;
 										$addQueryString = array();
 										$markerArray = $this->marker->addURLMarkers(0, $markerArray, $addQueryString);
-										$content= $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+										$content = $this->pibase->cObj->getSubpart($this->templateCode,$this->marker->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 										$markerArray['###ERROR_DETAILS###'] = $label;
 										$content = $this->pibase->cObj->substituteMarkerArray($content, $markerArray);
 										$bFinalize = false;
-
 									} else {
 										$bFinalize = true;
 									}
 								} else {
 									$bFinalize = true;
 								}
-								// ############## florian Strauß  #############
 							break;
 							default:
 								// nothing yet
@@ -759,6 +750,7 @@ class tx_ttproducts_control {
 				if ($bFinalize)	{
 					$checkRequired = $infoObj->checkRequired();
 					$checkAllowed = $infoObj->checkAllowed();
+
 					if ($checkRequired == '' && $checkAllowed == '')	{
 						$this->pibase->load_noLinkExtCobj();	// TODO
 						$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
@@ -786,9 +778,6 @@ class tx_ttproducts_control {
 						}
 
 						if ($this->conf['paymentActivity'] == 'finalize') {
-/*							$paymentContent = '';
-							$this->processPayment($paymentContent, $bFinalize, $order, $basketView, $infoObj, $cardObj, $account);
-							$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $paymentContent;*/
 							$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] =
 								$this->processPayment(
 									$orderUid,

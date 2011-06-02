@@ -48,7 +48,6 @@
 *
 */
 
-require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
 require_once(PATH_tslib.'class.tslib_pibase.php');
 
 require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');

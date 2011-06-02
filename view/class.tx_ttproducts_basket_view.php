@@ -115,8 +115,8 @@ class tx_ttproducts_basket_view {
 
 		$markerArray['###PRICE_DISCOUNT_GOODSTOTAL_TAX###']    = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPriceTax']['goodstotal']-$this->basket->calculatedArray['priceTax']['goodstotal']);
 		$markerArray['###PRICE_DISCOUNT_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPriceNoTax']['goodstotal']-$this->basket->calculatedArray['priceNoTax']['goodstotal']);
-		$markerArray['###PRICE2_DISCOUNT_GOODSTOTAL_TAX###']    = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPrice2Tax']['goodstotal']-$this->basket->calculatedArray['price2Tax']['goodstotal']);
-		$markerArray['###PRICE2_DISCOUNT_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPrice2NoTax']['goodstotal']-$this->basket->calculatedArray['price2NoTax']['goodstotal']);
+		$markerArray['###PRICE2_DISCOUNT_GOODSTOTAL_TAX###']    = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPriceTax']['goodstotal']-$this->basket->calculatedArray['price2Tax']['goodstotal']);
+		$markerArray['###PRICE2_DISCOUNT_GOODSTOTAL_NO_TAX###'] = $this->price->priceFormat($this->basket->calculatedArray['noDiscountPriceNoTax']['goodstotal']-$this->basket->calculatedArray['price2NoTax']['goodstotal']);
 
 			// This is the total for everything
 		$taxRateArray = t3lib_div::trimExplode(',', $this->conf['TAXrates']);
@@ -398,6 +398,7 @@ class tx_ttproducts_basket_view {
 					}
 					$markerArray = array_merge($markerArray, $damMarkerArray, $damCategoryMarkerArray);
 					// $addQueryString['ttp_extvars'] = htmlspecialchars($actItem['rec']['extVars']);
+
 					$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('', $addQueryString, true), array('useCacheHash' => true)).'"'.$css_current.'>','</a>');
 
 					// Substitute
@@ -750,6 +751,7 @@ class tx_ttproducts_basket_view {
 			}
 			$this->paymentshipping->getSubpartArray($subpartArray, $markerArray, $t['basketFrameWork']);
 			$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray, $this->viewTable->conftablename);
+
 			$bFrameWork=$this->pibase->cObj->substituteMarkerArrayCached($t['basketFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
 
 				// substitute the main subpart with the rendered content.

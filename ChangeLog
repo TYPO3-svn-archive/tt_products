@@ -1,3 +1,8 @@
+2011-06-02 Franz Holzinger <franz@ttproducts.de>
+	* Fix bug with price2 basket calculation
+	* Fix bug with missing images in HTML email
+	* Fix bug with Swift Mailer
+
 2011-04-12 Franz Holzinger <franz@ttproducts.de>
 	* Fix compatibility break in the HTML emails with Swift Mailer of TYPO3 4.5
 

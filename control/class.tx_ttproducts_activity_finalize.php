@@ -337,8 +337,9 @@ class tx_ttproducts_activity_finalize {
 
 						// Remove image tags to the products:
 					if ($this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix'])	{
+						t3lib_div::requireOnce(PATH_t3lib . 'class.t3lib_parsehtml.php');
 						$parser = t3lib_div::makeInstance('t3lib_parsehtml');
-						$htmlMailParts = $parser->splitTags('img',$HTMLmailContent);
+						$htmlMailParts = t3lib_parsehtml::splitTags('img', $HTMLmailContent);
 
 						foreach($htmlMailParts as $kkk => $vvv)	{
 							if ($kkk%2)	{
@@ -366,6 +367,7 @@ class tx_ttproducts_activity_finalize {
 						$agbAttachment
 					);
 				}
+
 				foreach ($recipientsArray['shop'] as $key => $recipient) {
 					// $headers variable removed everywhere!
 					tx_ttproducts_email_div::send_mail(

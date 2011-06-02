@@ -338,7 +338,13 @@ class tx_ttproducts_single_view {
 			}
 			$this->marker->getSearchParams($addQueryString);
 			$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
-			$linkPid = $pid;
+
+			if ($pid === $TSFE->id && isset($this->conf['PIDlistDisplay'])) {
+				$linkPid = $this->page->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $row);
+			} else {
+				$linkPid = $pid;
+			}
+
 			if ($bUseBackPid && $backPID)	{
 				$linkPid = $backPID;
 			}

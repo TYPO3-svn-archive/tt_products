@@ -402,10 +402,11 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 				$category = $this->get($actItem['rec']['category']);
 				$tmp = $this->tt_products_email->getEmail($category['email_uid']);
 				if ($tmp) {
-					$emailArray[$actItem['rec']['category']] = tx_ttproducts_email_div::slashName($tmp['name']) . ' <' . $tmp['email'] . '>';
+					$emailArray[$actItem['rec']['category']] = array($tmp['email'] => $tmp['name']);
 				}
 			}
 		}
+
 		return $emailArray;
 	}
 

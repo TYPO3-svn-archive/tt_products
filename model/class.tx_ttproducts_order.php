@@ -251,17 +251,24 @@ class tx_ttproducts_order {
 		if ($address->infoArray['billing']['date_of_birth'])	{
 
 			$dateArray = t3lib_div::trimExplode ('-', $address->infoArray['billing']['date_of_birth']);
-			if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-				require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
 
-				// prepare for handling dates before 1970
-				$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
-				$dateBirth = $adodbTime->adodb_mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
-			} else {
-				$dateBirth = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+			if (
+				is_int($dateArray[0]) &&
+				is_int($dateArray[1]) &&
+				is_int($dateArray[2])
+			) {
+				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
+					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
+
+					// prepare for handling dates before 1970
+					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
+					$dateBirth = $adodbTime->adodb_mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+				} else {
+					$dateBirth = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+				}
+
+				$fieldsArrayFeUsers['date_of_birth'] = $dateBirth;
 			}
-
-			$fieldsArrayFeUsers['date_of_birth'] = $dateBirth;
 		}
 
 		if ($this->basket->recs['tt_products']['vouchercode'] != '') {

@@ -81,6 +81,7 @@ class tx_ttproducts_image {
 			$absRefPrefix = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
 			$fixImgCode = str_replace('index.php', $absRefPrefix . 'index.php', $imageCode);
 			$fixImgCode = str_replace('src="', 'src="' . $absRefPrefix, $fixImgCode);
+			$fixImgCode = str_replace('"uploads/', '"' . $absRefPrefix . 'uploads/', $fixImgCode);
 			$imageCode = $fixImgCode;
 		}
 		return $imageCode;

@@ -133,12 +133,14 @@ class tx_ttproducts_list_view {
 	} // comp
 
 
-	function &advanceCategory (&$categoryAndItemsFrameWork, &$itemListOut, &$categoryOut, $itemListSubpart, &$formCount)	{
+	function &advanceCategory (&$categoryAndItemsFrameWork, &$itemListOut, &$categoryOut, $itemListSubpart, $oldFormCount, &$formCount)	{
 		$subpartArray = array();
 		$subpartArray['###ITEM_CATEGORY###'] = $categoryOut;
 		$subpartArray[$itemListSubpart] = $itemListOut;
 		$rc = $this->pibase->cObj->substituteMarkerArrayCached($categoryAndItemsFrameWork,array(),$subpartArray);
-		$formCount++; // next form must have another name
+		if ($formCount == $oldFormCount) {
+			$formCount++; // next form must have another name
+		}
 		$categoryOut = '';
 		$itemListOut = '';			// Clear the item-code var
 		return $rc;
@@ -278,7 +280,7 @@ class tx_ttproducts_list_view {
 				)
 				&& $address && $itemTable->fields['address']
 		)	{
-			$where = ' AND ('.$itemTable->fields['address'].'='.intval($address);
+			$whereAddress = ' AND ('.$itemTable->fields['address'].'='.intval($address);
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_address.php');
 			$addressObj = t3lib_div::makeInstance('tx_ttproducts_address');
 			$addressObj->init(
@@ -288,8 +290,11 @@ class tx_ttproducts_list_view {
 			);
 			$addressRow = $addressObj->get($address);
 			$addressText = $addressRow[$addressObj->fields['name']];
-			$where .= ' OR '.$itemTable->fields['address'].'='.$TYPO3_DB->fullQuoteStr($addressText,$address->table->name).')';
-		} else {	// do not mix address with category filter
+			$whereAddress .= ' OR '.$itemTable->fields['address'].'='.$TYPO3_DB->fullQuoteStr($addressText,$address->table->name).')';
+			$where .= $whereAddress;
+		}
+
+		if ($whereAddress == '') {	// do not mix address with category filter
 			if (isset($productsConf['filter.']) && is_array($productsConf['filter.']) &&
 				isset($productsConf['filter.']['param.']) && is_array($productsConf['filter.']['param.']) &&
 				$productsConf['filter.']['param.']['cat'] == 'gp')	{
@@ -316,6 +321,7 @@ class tx_ttproducts_list_view {
 			}
 			$where .= $whereCat;
 		}
+
 		if (is_array($this->conf['form.'][$theCode.'.']) && is_array($this->conf['form.'][$theCode.'.']['data.']))	{
 			$tmp = $this->conf['form.'][$theCode.'.']['data.']['name'];
 		}
@@ -662,6 +668,7 @@ class tx_ttproducts_list_view {
 			$tableRowOpen = 0;
 			$itemListSubpart = ($itemTable->type == 'article' && $t['productAndItemsFrameWork'] ? '###ITEM_PRODUCT_AND_ITEMS###' : '###ITEM_LIST###');
 			$prodRow = array();
+			$oldFormCount = 0;
 			$formCount = 1;
 			$bFormPerItem = FALSE;
 			$itemLower = strtolower($t['item']);
@@ -683,7 +690,6 @@ class tx_ttproducts_list_view {
 
 					$iColCount++;
 					$iCount++;
-					$oldFormCount = $formCount;
 
 					$currentCat = $row['category'];
 					$catArray = $categoryTable->getCategoryArray($row['uid']);
@@ -755,7 +761,7 @@ class tx_ttproducts_list_view {
 							$catItemsListOut = &$productListOut;
 						}
 						if ($catItemsListOut)	{
-							$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $formCount);
+							$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $oldFormCount, $formCount);
 						}
 						$currentArray['category'] = (($pageAsCategory < 2 || $itemTable->type == 'dam') ? $currentCat : $row['pid']);
 						$bCategoryHasChanged = TRUE;
@@ -920,9 +926,10 @@ class tx_ttproducts_list_view {
 
 					$urlMarkerArray = $this->marker->addURLMarkers($TSFE->id,$markerArray,$addQueryString,$itemTable->type);
 					$markerArray = array_merge($markerArray, $urlMarkerArray);
+					$oldFormCount = $formCount;
 					$markerArray['###FORM_NAME###'] = $formName . ($bFormPerItem ? $formCount : '');
 
-					if ($bFormPerItem && $oldFormCount == $formCount)	{
+					if ($bFormPerItem)	{
 						$formCount++;
 					}
 					$markerArray['###ITEM_NAME###'] = 'item_'.$iCount;
@@ -1045,7 +1052,7 @@ class tx_ttproducts_list_view {
 					$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);
 					$catItemsListOut = &$productListOut;
 				}
-				$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $formCount);
+				$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $oldFormCount, $formCount);
 			}
 		}	// if ($where ...
 

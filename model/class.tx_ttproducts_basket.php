@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2010 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -571,6 +571,7 @@ class tx_ttproducts_basket {
 				//  multiplicate it with the count :
 				$this->itemArray[$sort][$k1]['totalTax'] = $this->itemArray[$sort][$k1]['priceTax'] * $actItem['count'];
 				$this->itemArray[$sort][$k1]['totalNoTax'] = $this->itemArray[$sort][$k1]['priceNoTax'] * $actItem['count'];
+				$this->itemArray[$sort][$k1]['total2NoTax'] = $this->itemArray[$sort][$k1]['price2NoTax'] * $actItem['count'];
 						// Fills this array with the product records. Reason: Sorting them by category (based on the page, they reside on)
 				$this->calculatedArray['priceTax']['goodstotal'] += $this->itemArray[$sort][$k1]['totalTax'];
 				$this->calculatedArray['priceNoTax']['goodstotal'] += $this->itemArray[$sort][$k1]['totalNoTax'];
@@ -582,8 +583,8 @@ class tx_ttproducts_basket {
 
 				$this->calculatedArray['noDiscountPriceTax']['goodstotal']  += $this->price->getPrice($row['price'] * $actItem['count'], true, $this->conf['TAXpercentage']);
 				$this->calculatedArray['noDiscountPriceNoTax']['goodstotal'] += $this->price->getPrice($row['price'] * $actItem['count'], false, $this->conf['TAXpercentage']);
-				$this->calculatedArray['noDiscountPriceTax']['goodstotal']  += $this->price->getPrice($row['price2'] * $actItem['count'], true, $this->conf['TAXpercentage']);
-				$this->calculatedArray['noDiscountPriceNoTax']['goodstotal'] += $this->price->getPrice($row['price2'] * $actItem['count'], false, $this->conf['TAXpercentage']);
+// 				$this->calculatedArray['noDiscountPriceTax']['goodstotal']  += $this->price->getPrice($row['price2'] * $actItem['count'], true, $this->conf['TAXpercentage']);
+// 				$this->calculatedArray['noDiscountPriceNoTax']['goodstotal'] += $this->price->getPrice($row['price2'] * $actItem['count'], false, $this->conf['TAXpercentage']);
 
 				if ($this->conf['TAXmode'] == '1')	{
 					$tax = doubleval($row['tax']);
@@ -762,6 +763,9 @@ class tx_ttproducts_basket {
 		$row['price'] = $oldPrice;
 
 		$Price0NoTax = $this->price->getResellerPrice($row,0,0);
+		$price2Tax = $this->price->getPrice($row['price2'],true,$row['tax'],$this->conf['TAXincluded']);
+		$price2NoTax = $this->price->getPrice($row['price2'],false,$row['tax'],$this->conf['TAXincluded']);
+
 		$priceUnitNoTax = $this->price->getPrice(($row['unit_factor'] > 0 ? ($priceNoTax / $row['unit_factor']) : 0),false,$row['tax'],false);
 		$priceUnitTax = $this->price->getPrice($priceUnitNoTax,true,$row['tax'],false);
 		$priceWeightNoTax = $this->price->getPrice(($row['weight'] > 0 ? ($priceNoTax / $row['weight']) : 0),false,$row['tax'],false);
@@ -776,7 +780,10 @@ class tx_ttproducts_basket {
 			'priceUnitNoTax' => $priceUnitNoTax,
 			'priceWeightUnitNoTax' => $priceWeightNoTax,
 			'priceWeightUnitTax' => $priceWeightTax,
-			'price0NoTax' => $Price0NoTax,
+			'price0Tax' => $price0Tax,
+			'price0NoTax' => $price0NoTax,
+			'price2Tax' => $price2Tax,
+			'price2NoTax' => $price2NoTax,
 			'totalTax' => 0,
 			'totalNoTax' => 0,
 			'rec' => $row,
@@ -822,6 +829,9 @@ class tx_ttproducts_basket {
 
 		$this->calculatedArray['priceNoTax']['vouchertotal'] = $this->calculatedArray['priceNoTax']['total'] - $this->calculatedArray['priceTax']['creditpoints'];
 		$this->calculatedArray['priceNoTax']['vouchertotal'] -= $this->calculatedArray['priceTax']['voucher'];
+
+		$this->calculatedArray['price2NoTax']['total']  = $this->calculatedArray['price2NoTax']['goodstotal'];
+		$this->calculatedArray['price2Tax']['total']  = $this->calculatedArray['price2Tax']['goodstotal'];
 	}
 }
 

@@ -240,7 +240,7 @@ class tx_ttproducts_javascript {
 
 			sb = document.getElementById("'.$catid.'"+1);
 			func = sb.selectedIndex - 1;
-			len = sb.options.length; // test+++
+			len = sb.options.length;
 			if (maxFunc == 1 || func < 0 || func > maxFunc)	{
 				func = 0;
 				bRootFunctions = false;

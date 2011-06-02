@@ -47,7 +47,6 @@ require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_feuser.php');
 
 class tx_ttproducts_email_div {
 
-
 	function slashName ($name) {
 		$name = str_replace(',' , ' ', $name);
 		$rc = '"' . addcslashes($name, '<>()@;:\\".[]' . chr('\n')) . '"';
@@ -61,9 +60,6 @@ class tx_ttproducts_email_div {
 	function send_mail ($toEMail,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
 		global $TYPO3_CONF_VARS;
 
-		include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
-		$fromName = self::slashName($fromName);
-
 		if (
 			isset($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
 			is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
@@ -71,12 +67,22 @@ class tx_ttproducts_email_div {
 			is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) &&
 			array_search('t3lib_mail_SwiftMailerAdapter', $TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) !== FALSE
 		) {
+			if (!is_array($toEMail)) {
+				$emailArray = t3lib_div::trimExplode(',', $toEMail);
+
+				$toEMail = array();
+				foreach ($emailArray as $email) {
+					$toEMail[] = $email;
+				}
+			}
+
 			/** @var $mail t3lib_mail_Message */
 			$mailMessage = t3lib_div::makeInstance('t3lib_mail_Message');
 			$mailMessage->setTo($toEMail)
 				->setFrom(array($fromEMail => $fromName))
 				->setSubject($subject)
-				->setBody($html, 'text/html', $GLOBALS['TSFE']->renderCharset);
+				->setBody($html, 'text/html', $GLOBALS['TSFE']->renderCharset)
+				->addPart($message, 'text/plain', $GLOBALS['TSFE']->renderCharset);
 
 			if (isset($attachment)) {
 				if (is_array($attachment)) {
@@ -95,6 +101,9 @@ class tx_ttproducts_email_div {
 			}
 			$mailMessage->send();
 		} else {
+			$fromName = tx_ttproducts_email_div::slashName($fromName);
+			t3lib_div::requireOnce(PATH_t3lib.'class.t3lib_htmlmail.php');
+
 			$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
 			if (class_exists($cls)) {
 				$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
