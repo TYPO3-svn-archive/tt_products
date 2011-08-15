@@ -196,17 +196,16 @@ class tx_ttproducts_control {
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
 		$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$infoViewObj = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
 
 		if ($handleScript)	{
 			$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 			$content = $paymentshippingObj->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $this->conf['paymentActivity'], $bFinalize, $this->pibase, $infoViewObj);
-
 		} else if (strpos($handleLib,'transactor') !== FALSE && t3lib_extMgm::isLoaded($handleLib))	{
 				// Payment Transactor
 			require_once(t3lib_extMgm::extPath($handleLib) . 'lib/class.tx_' . $handleLib . '_api.php');
 		// Get references to the concerning baskets
 			$calculatedArray = $this->basket->getCalculatedArray();
-			$infoViewObj = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
 			$addQueryString = array();
 			$excludeList = '';
 			$linkParams = $this->urlObj->getLinkParams($excludeList,$addQueryString,TRUE);
@@ -249,11 +248,10 @@ class tx_ttproducts_control {
 				);
 			}
 		} else if (strpos($handleLib,'paymentlib') !== FALSE && t3lib_extMgm::isLoaded($handleLib)) {
-
 			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001($handleLib);
-
 			$paymentlibVersion = $eInfo['version'];
 			$phpVersion = phpversion();
+
 			if (isset($this->basket->basketExtra['payment.']['handleLib.']) && is_array($this->basket->basketExtra['payment.']['handleLib.']))	{
 				$gatewayExtName = $this->basket->basketExtra['payment.']['handleLib.']['extName'];
 			}
@@ -272,10 +270,12 @@ class tx_ttproducts_control {
 						$infoViewObj,
 						$this->urlObj
 					);
+
 					$content = $paymentObj->includeHandleLib(
 						$handleLib,
 						$this->basket->basketExtra['payment.']['handleLib.'],
-						$bFinalize
+						$bFinalize,
+						$errorMessage
 					);
 				}
 			}
@@ -351,11 +351,12 @@ class tx_ttproducts_control {
 		if (t3lib_div::_GP('products_overview') || t3lib_div::_GP('products_overview_x'))    {
 			$activityArray['products_overview'] = TRUE;
 		}
-		if (t3lib_div::_GP('products_info') || t3lib_div::_GP('products_info_x'))    {
-			$activityArray['products_info'] = TRUE;
-		}
-		if (t3lib_div::_GP('products_payment') || t3lib_div::_GP('products_payment_x'))    {
-			$activityArray['products_payment'] = TRUE;
+		if (!$update) {
+			if (t3lib_div::_GP('products_payment') || t3lib_div::_GP('products_payment_x'))    {
+				$activityArray['products_payment'] = TRUE;
+			} else if (t3lib_div::_GP('products_info') || t3lib_div::_GP('products_info_x'))    {
+				$activityArray['products_info'] = TRUE;
+			}
 		}
 		if (t3lib_div::_GP('products_customized_payment') || t3lib_div::_GP('products_customized_payment_x'))    {
 			$activityArray['products_customized_payment'] = TRUE;
@@ -494,18 +495,7 @@ class tx_ttproducts_control {
 								}
 
 								if ($this->conf['paymentActivity'] == 'payment' || $this->conf['paymentActivity'] == 'verify')	{
-// 									if ($paymentshippingObj->useGatewayRequest())	{
-// 										require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
-// 										$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-// 										$paymentlib->init($this->pibase, $basketView, $infoViewObj, $this->urlObj);
-// 										$paymentErrorMsg = $paymentlib->checkRequired($this->basket->basketExtra['payment.']['handleLib.']);
-// 									}
-
 									$handleLib = $paymentshippingObj->getHandleLib('request');
-// 									if ($handleLib == '')	{
-// 										$handleLib = $paymentshippingObj->getHandleLib('form');
-// 									}
-
 									if (strpos($handleLib,'transactor') !== FALSE)	{
 										// Payment Transactor
 										require_once(t3lib_extMgm::extPath($handleLib) . 'lib/class.tx_' . $handleLib . '_api.php');
@@ -553,6 +543,9 @@ class tx_ttproducts_control {
 													$bFinalize,
 													$errorMessage
 												);
+											if ($errorMessage != '')	{
+												$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $errorMessage;
+											}
 									} else {
 										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 									}
@@ -568,7 +561,6 @@ class tx_ttproducts_control {
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$infoViewObj->infoArray['billing']['error'] = 1;
 									$content .= $this->cObj->getSubpart($this->templateCode,$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
-
 									$addQueryString = array();
 									$overwriteMarkerArray = array();
 									$label = '';
@@ -588,6 +580,7 @@ class tx_ttproducts_control {
 											$check = ($checkRequired ? $checkRequired: $checkAllowed);
 											$label = $TSFE->sL('LLL:EXT:sr_feuser_register/pi1/locallang.php:missing_'.$check);
 											$editPID = $TSFE->tmpl->setup['plugin.']['tx_srfeuserregister_pi1.']['editPID'];
+
 											if ($TSFE->loginUser && $editPID) {
 												$addParams = array ('products_payment' => 1);
 												$addParams = $this->urlObj->getLinkParams('',$addParams,TRUE);
@@ -600,7 +593,7 @@ class tx_ttproducts_control {
 											$tmpArray = t3lib_div::trimExplode('|', tx_div2007_alpha::getLL($this->pibase, 'missing'));
 											$label = tx_div2007_alpha::getLL($this->pibase, 'missing_'.$checkRequired);
 											if ($label)	{
-												$label = $tmpArray[0] .' '. $label . ' '. $tmpArray[1];
+												$label = $tmpArray[0] . ' ' . $label . ' ' . $tmpArray[1];
 											} else {
 												$label = 'field: '.$checkRequired;
 											}
@@ -608,8 +601,7 @@ class tx_ttproducts_control {
 									}
 									$markerArray = $this->urlObj->addURLMarkers(0, array(),$addQueryString);
 									$markerArray['###ERROR_DETAILS###'] = $label;
-
-									$markerArray = array_merge($markerArray,$overwriteMarkerArray);
+									$markerArray = array_merge($markerArray, $overwriteMarkerArray);
 									$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 								}
 							break;
@@ -629,6 +621,9 @@ class tx_ttproducts_control {
 											$errorMessage
 										);
 
+									if ($errorMessage != '')	{
+										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $errorMessage;
+									}
 									if (!$bFinalize)	{
 										$basket_tmpl = 'BASKET_PAYMENT_TEMPLATE';
 									}
@@ -657,6 +652,7 @@ class tx_ttproducts_control {
 									if($bFinalize == FALSE ){
 										$label = $errorMessage;
 										$content = $this->cObj->getSubpart($this->templateCode,$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+										$markerArray = $this->urlObj->addURLMarkers(0, $markerArray,$addQueryString);
 										$markerArray['###ERROR_DETAILS###'] = $label;
 										$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 									}
@@ -729,6 +725,10 @@ class tx_ttproducts_control {
 									$bFinalize,
 									$errorMessage
 								);
+
+							if ($errorMessage != '')	{
+								$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $errorMessage;
+							}
 						} else {
 							$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 						}

@@ -112,6 +112,7 @@ class tx_ttproducts_menucat_view extends tx_ttproducts_catlist_view_base {
 			while ($depth > 0 && $iCount < 500)	{
 				$iCount++;
 				$css = 'class="w'.$iCount.'"';
+
 				if($countArray[$depth] < count ($catArray[$depth]))	{
 					$markerArray = array();
 					$actCategory = $catArray[$depth][$countArray[$depth]];

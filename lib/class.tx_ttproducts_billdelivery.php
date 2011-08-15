@@ -242,9 +242,20 @@ class tx_ttproducts_billdelivery {
 		/* Added Els: 'feusers_uid,'*/
 		$infoFields = explode(',','feusers_uid,name,cnum,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country');
 		  // Fields...
-		while(list(,$fName)=each($infoFields))	{
+		foreach($infoFields as $fName)	{
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['billing'][$fName];
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['delivery'][$fName];
+		}
+		$staticInfo = &t3lib_div::getUserObj('&tx_staticinfotables_pi1');
+		$staticInfo->init();
+
+		if (isset($orderData['billing']['country_code'])) {
+			$markerArray['###PERSON_COUNTRY###'] =
+			$staticInfo->getStaticInfoName('COUNTRIES', $orderData['billing']['country_code'],'','');
+		}
+		if (isset($orderData['delivery']['country_code'])) {
+			$markerArray['###DELIVERY_COUNTRY###'] =
+			$staticInfo->getStaticInfoName('COUNTRIES', $orderData['delivery']['country_code'],'','');
 		}
 
 		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);

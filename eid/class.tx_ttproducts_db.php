@@ -230,8 +230,6 @@ class tx_ttproducts_db {
 		$theCode = strtoupper($view);
 		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image');
 		$imageViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
-		$langObj = t3lib_div::makeInstance('tx_ttproducts_language');	// language object which replaces pibase
-		$langObj->init($this->cObj, $this->conf);
 		$imageObj->init($this->cObj);
 		$imageViewObj->init($langObj, $imageObj);
 

@@ -193,7 +193,7 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 
 			// Get image
 		if (isset($row['delivery']))	{
-			$imageObj->getSingleImageMarkerArray ($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.']);
+			$imageObj->getSingleImageMarkerArray ($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.'], $theCode);
 		} else {
 			$markerArray['###'.$this->marker.'_DELIVERY###'] = '';
 		}
@@ -206,27 +206,6 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
 
 		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha::getLL($this->langObj, $taxInclExcl) : '');
-
-// 		$oldPrice = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['price'],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
-// 		$oldPriceNoTax = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['price'],0,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
-//
-
-// 		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
-// 			$markerArray['###'.$priceMarkerPrefix.'OLD_PRICE_TAX###'] = '';
-// 			$markerArray['###'.$priceMarkerPrefix.'OLD_PRICE_NO_TAX###'] = '';
-// 		} else {
-// 			$markerArray['###'.$priceMarkerPrefix.'OLD_PRICE_TAX###'] = $oldPrice;
-// 			$markerArray['###'.$priceMarkerPrefix.'OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
-// 		}
-
-
-/*
-		$markerArray['###'.$priceMarkerPrefix.'UNIT_PRICE_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceUnitNoTax'], $taxInclExcl));
-		$markerArray['###'.$priceMarkerPrefix.'UNIT_PRICE_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceUnitTax'], $taxInclExcl));
-
-		$markerArray['###'.$priceMarkerPrefix.'WEIGHT_UNIT_PRICE_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceWeightUnitNoTax'], $taxInclExcl));
-		$markerArray['###'.$priceMarkerPrefix.'WEIGHT_UNIT_PRICE_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceWeightUnitTax'], $taxInclExcl));
-*/
 
 		$markerArray['###'.$priceMarkerPrefix.'DIRECTCOST_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['directcost'],1,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
 		$markerArray['###'.$priceMarkerPrefix.'DIRECTCOST_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['directcost'],0,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));

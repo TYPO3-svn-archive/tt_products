@@ -117,18 +117,31 @@ class tx_ttproducts_url_view {
 		$bUseBackPid = ($bUseBackPid && $pidNext != $TSFE->id);
 		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
 		$markerArray['###FORM_URL###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
-		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $pidBasket);
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
-		$markerArray['###FORM_URL_INFO###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
-		$pid = ( $this->conf['PIDpayment'] ? $this->conf['PIDpayment'] : $pidBasket);
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
-		$markerArray['###FORM_URL_PAYMENT###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
-		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $pidBasket);
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
-		$markerArray['###FORM_URL_FINALIZE###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
-		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $pidBasket);
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
-		$markerArray['###FORM_URL_THANKS###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
+
+		$commandArray = array('basket', 'info', 'payment', 'finalize', 'thanks', 'memo', 'tracking', 'billing', 'delivery', 'memo', 'search', 'agb');
+
+		foreach ($commandArray as $command) {
+			$pid = ($this->conf['PID' . $command] ? $this->conf['PID' . $command] : $pidBasket);
+			$url = tx_div2007_alpha::getTypoLink_URL_fh002(
+				$this->pibase->cObj,
+				$pid,
+				$this->getLinkParams(
+					$excludeList,
+					$addQueryString,
+					TRUE,
+					$bUseBackPid
+				),
+				$target,
+				$conf
+			);
+			$markerArray['###FORM_URL_' . strtoupper($command) . '###'] =
+				htmlspecialchars(
+					$url,
+					ENT_NOQUOTES,
+					$charset
+				);
+		}
+
 		$markerArray['###FORM_URL_TARGET###'] = '_self';
 
 		if (isset($this->urlArray) && is_array($this->urlArray))	{
@@ -179,7 +192,7 @@ class tx_ttproducts_url_view {
 	 * @param	[type]		$piVarCat: ...
 	 * @return	[type]		...
 	 */
-	function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true,$piVarCat='cat') {
+	function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true,$piVarSingle='product',$piVarCat='cat') {
 		global $TSFE;
 
 		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
@@ -191,12 +204,25 @@ class tx_ttproducts_url_view {
 				$queryString['backPID'] = $TSFE->id;
 			}
 		}
+		if ($excludeList != '' && $bUsePrefix) {
+			$excludeArray = explode(',', $excludeList);
+			foreach ($excludeArray as $k => $v) {
+				$excludeArray[$k] = $this->pibase->prefixId.'[' . $v . ']';
+			}
+			$excludeList = implode(',', $excludeArray);
+		}
 
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
+		$this->addQueryStringParam($queryString, 'article', $bUsePrefix);
+		$this->addQueryStringParam($queryString, 'product', $bUsePrefix);
+		if ($piVarSingle != '') {
+			$this->addQueryStringParam($queryString, $piVarSingle, $bUsePrefix);
+		}
 		if ($piVarCat)	{
 			$this->addQueryStringParam($queryString, $piVarCat, $bUsePrefix);
 		}
 
+		$this->addQueryStringParam($queryString, 'mode', FALSE);
 		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'sword', $bUsePrefix);
@@ -209,6 +235,12 @@ class tx_ttproducts_url_view {
 			$queryString['sword'] = $temp;
 		}
 
+		foreach($queryString as $key => $val)	{
+			if ($val=='' || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
+				unset($queryString[$key]);
+			}
+		}
+
 		if (is_array($addQueryString))	{
 			foreach ($addQueryString as $param => $value){
 				if ($bUsePrefix)	{
@@ -216,11 +248,6 @@ class tx_ttproducts_url_view {
 				} else {
 					$queryString[$param] = $value;
 				}
-			}
-		}
-		foreach($queryString as $key => $val)	{
-			if ($val=='' || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
-				unset($queryString[$key]);
 			}
 		}
 

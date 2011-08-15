@@ -153,8 +153,12 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 															$countedItems[$k1][$k4]['active'] = TRUE;
 															$countedItems[$k1][$k4]['price'] = $prodValue;
 														}
+														if (isset($item)) {
+															unset($item);
+														}
 														break;
 													case 'price':
+													default:
 														$prodValue = $v3;
 
 														if (!t3lib_div::testInt($lastprodValue) || $lastprodValue != $prodValue)	{
@@ -231,6 +235,12 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 								}
 							}
 						}
+						if (isset($item)) {
+							unset($item);
+						}
+						if (isset($row)) {
+							unset($row);
+						}
 					break;
 					case 'price':
 						// nothing
@@ -271,6 +281,9 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 								}
 								break; // finish
 							}
+						}
+						if (isset($row)) {
+							unset($row);
 						}
 					}
 				break;

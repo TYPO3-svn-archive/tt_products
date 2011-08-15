@@ -65,6 +65,7 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 			$subCategoryMarkers
 		);
 
+
 		$content='';
 		$out='';
 		$bFinished = false;

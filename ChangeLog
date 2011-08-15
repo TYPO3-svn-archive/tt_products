@@ -1,3 +1,10 @@
+2011-08-15 Franz Holzinger <franz@ttproducts.de>
+	* Fix compatibility break in the HTML emails with Swift Mailer of TYPO3 4.5
+	* fix bug 12022: PHP 5.3. warning with parameter of main function
+	* use the tax even for negative prices
+	* change in paymentlib: initialize the detailsArray in the beginning
+	* fix bug: the delivery country has not been stored if no name field has been filled out
+	* new feature: fields can be excluded from the TCA of the language tables
 
 2011-03-21 Franz Holzinger <franz@ttproducts.de>
 	* birth day with date_of_birth for sr_feuser_register

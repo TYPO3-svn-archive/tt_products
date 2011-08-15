@@ -58,8 +58,8 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 	} // init
 
 
-	function getSingleImageMarkerArray ($markerKey, &$markerArray, &$imageConf)	{
-		$tmpImgCode = $this->cObj->IMAGE($imageConf);
+	function getSingleImageMarkerArray ($markerKey, &$markerArray, &$imageConf, $theCode)	{
+		$tmpImgCode = $this->getImageCode($imageConf, $theCode);
 		$markerArray['###'.$markerKey.'###'] = $tmpImgCode;
 	}
 

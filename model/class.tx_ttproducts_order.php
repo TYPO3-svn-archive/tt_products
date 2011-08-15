@@ -218,14 +218,21 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 
 		if ($deliveryInfo['date_of_birth'])	{
 			$dateArray = t3lib_div::trimExplode ('-', $deliveryInfo['date_of_birth']);
-			if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-				require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
 
-				// prepare for handling dates before 1970
-				$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
-				$dateBirth = $adodbTime->adodb_mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
-			} else {
-				$dateBirth = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+			if (
+				t3lib_div::testInt($dateArray[0]) &&
+				t3lib_div::testInt($dateArray[1]) &&
+				t3lib_div::testInt($dateArray[2])
+			) {
+				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
+					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
+
+					// prepare for handling dates before 1970
+					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
+					$dateBirth = $adodbTime->adodb_mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+				} else {
+					$dateBirth = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+				}
 			}
 		}
 
@@ -301,20 +308,31 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 			$fieldsArrayFeUsers['date_of_birth'] = $dateBirth;
 		}
 
-		if ($status == 1 && $this->conf['creditpoints.']) {
+		$usedCreditpoints = 0;
+		if (isset($_REQUEST['recs']) && is_array($_REQUEST['recs']) && isset($_REQUEST['recs']['tt_products']) && is_array($_REQUEST['recs']['tt_products'])) {
+			$usedCreditpoints = floatval($_REQUEST['recs']['tt_products']['creditpoints']);
+		}
+
+		if ($status == 1 && $this->conf['creditpoints.'] && $usedCreditpoints) {
 
 /* Added Els: update fe_user with amount of creditpoints (= exisitng amount - used_creditpoints - spended_creditpoints + saved_creditpoints */
 //			$fieldsArrayFeUsers['tt_products_creditpoints'] = $TSFE->fe_user->user['tt_products_creditpoints'] + ($creditpoints * $this->calculatedArray['priceTax']['total']) - $this->basket->recs['tt_products']['creditpoints'];
+
 			$fieldsArrayFeUsers['tt_products_creditpoints'] =
 				floatval($TSFE->fe_user->user['tt_products_creditpoints'] -
-					$this->basket->recs['tt_products']['creditpoints'] +
-					t3lib_div::_GP('creditpoints_saved'));
+					$usedCreditpoints
+					/*+ t3lib_div::_GP('creditpoints_saved')*/);
+
+			if ($fieldsArrayFeUsers['tt_products_creditpoints'] < 0) {
+				$fieldsArrayFeUsers['tt_products_creditpoints'] = 0;
+			}
 		}
+
 
 /* Added Els: update fe_user with vouchercode */
 		if ($status == 1 && $this->basket->recs['tt_products']['vouchercode'] != '') {
 			// first check if vouchercode exist and is not their own vouchercode
-			$res = $TYPO3_DB->exec_SELECTquery('uid', 'fe_users', 'username="'.$this->basket->recs['tt_products']['vouchercode'].'"');
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'fe_users', 'username=' . $TYPO3_DB->fullQuoteStr($this->basket->recs['tt_products']['vouchercode'], 'fe_users'));
 			if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 				$uid_voucher = $row['uid'];
 			}
@@ -328,6 +346,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 	/* Added Els: update user from vouchercode with 5 credits */
 			tx_ttproducts_creditpoints_div::addCreditPoints($this->basket->recs['tt_products']['vouchercode'], $this->conf['voucher.']['price']);
 		}
+
 		if ($TSFE->fe_user->user['uid'] && count($fieldsArrayFeUsers))	{
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('fe_users', 'uid='.intval($TSFE->fe_user->user['uid']), $fieldsArrayFeUsers);
 		}
@@ -361,8 +380,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 		$fieldsArray['agb'] = intval($address->infoArray['billing']['agb']);
 
 		if ($status == 1 && $this->conf['creditpoints.'] && $this->basket->recs['tt_products']['creditpoints'] != '')	{
-
-			$fieldsArray['creditpoints'] = $this->basket->recs['tt_products']['creditpoints'];
+			$fieldsArray['creditpoints'] = $usedCreditpoints;
 			$fieldsArray['creditpoints_spended'] = t3lib_div::_GP('creditpoints_spended');
 			$fieldsArray['creditpoints_saved'] = t3lib_div::_GP('creditpoints_saved');
 			$fieldsArray['creditpoints_gifts'] = $cpArray['gift']['amount'];

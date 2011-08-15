@@ -60,6 +60,10 @@ class tx_ttproducts_paymentlib {
 		$this->basketView = &$basketView;
 		$this->infoView = &$infoView;
 		$this->urlObj = &$urlObj;
+
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');	// language object which replaces pibase
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj->init($pibase, $this->pibase->cObj, $this->conf, 'pi1/class.tx_ttproducts_pi1.php');
 	}
 
 
@@ -95,6 +99,7 @@ class tx_ttproducts_paymentlib {
 			if (!$orderUid)	{
 				$orderUid = $orderObj->getBlankUid();
 			}
+
 			if (method_exists($providerObject, 'generateReferenceUid'))	{
 				$referenceId = $providerObject->generateReferenceUid($orderUid, TT_PRODUCTS_EXTkey);
 			} else if (method_exists($providerObject, 'createUniqueID'))	{
@@ -123,7 +128,7 @@ class tx_ttproducts_paymentlib {
 	/**
 	 * Include handle extension library
 	 */
-	public function includeHandleLib ($handleLib, &$confScript, &$bFinalize)	{
+	public function includeHandleLib ($handleLib, &$confScript, &$bFinalize, &$errorMessage)	{
 		global $TSFE;
 
 		$lConf = $confScript;
@@ -137,6 +142,7 @@ class tx_ttproducts_paymentlib {
 			$providerFactoryObj = ($handleLib == 'paymentlib' ? tx_paymentlib_providerfactory::getInstance() : tx_paymentlib2_providerfactory::getInstance());
 			$paymentMethod = $confScript['paymentMethod'];
 			$providerProxyObject = &$providerFactoryObj->getProviderObjectByPaymentMethod($paymentMethod);
+
 			if (is_object($providerProxyObject))	{
 				if (method_exists($providerProxyObject, 'getRealInstance'))	{
 					$providerObject = $providerProxyObject->getRealInstance();
@@ -154,37 +160,42 @@ class tx_ttproducts_paymentlib {
 					TT_PRODUCTS_EXTkey,
 					$confScript['conf.']
 				);
+
 				if (!$ok)	{
-					return 'ERROR: Could not initialize transaction.';
+					$errorMessage = 'ERROR: Could not initialize transaction.';
+					return '';
 				}
 				$this->getPaymentBasket($totalArr, $addrArr, $paymentBasketArray);
 				$referenceId = $this->getReferenceUid();
+
 				if (!$referenceId)	{
-					$rc = tx_div2007_alpha::getLL($langObj,'error_reference_id');
-					return $rc;
+					$errorMessage = tx_div2007_alpha::getLL($langObj,'error_reference_id');
+					return '';
+				}
+
+				$transactionDetailsArr = &$this->getTransactionDetails($referenceId, $handleLib, $confScript, $totalArr, $addrArr, $paymentBasketArray);
+
+					// Set payment details and get the form data:
+				$ok = $providerObject->transaction_setDetails($transactionDetailsArr);
+
+				if (!$ok) {
+					$errorMessage = tx_div2007_alpha::getLL($langObj,'error_transaction_details');
+					return '';
 				}
 
 					// Get results of a possible earlier submit and display messages:
 				$transactionResultsArr = $providerObject->transaction_getResults($referenceId);
-
 				$referenceId = $this->getReferenceUid(); // in the case of a callback, a former order than the current would have been read in
+
 				if ($providerObject->transaction_succeded($transactionResultsArr)) {
 					$bFinalize = TRUE;
 				} else if ($providerObject->transaction_failed($transactionResultsArr))	{
-					$content = '<span style="color:red;">'.htmlspecialchars($providerObject->transaction_message($transactionResultsArr)).'</span><br />';
-					$content .= '<br />';
+					$errorMessage = '<span style="color:red;">'.htmlspecialchars($providerObject->transaction_message($transactionResultsArr)).'</span><br />';
+					$errorMessage .= '<br />';
+					$content = '';
 				} else {
-					$transactionDetailsArr = &$this->getTransactionDetails($referenceId, $handleLib, $confScript, $totalArr, $addrArr, $paymentBasketArray);
-
-						// Set payment details and get the form data:
-					$ok = $providerObject->transaction_setDetails($transactionDetailsArr);
-					if (!$ok) {
-						$rc = tx_div2007_alpha::getLL($langObj,'error_transaction_details');
-						return $rc;
-					}
 					$providerObject->transaction_setOkPage($transactionDetailsArr['transaction']['successlink']);
 					$providerObject->transaction_setErrorPage($transactionDetailsArr['transaction']['faillink']);
-
 					$compGatewayForm = ($handleLib == 'paymentlib' ? TX_PAYMENTLIB_GATEWAYMODE_FORM : TX_PAYMENTLIB2_GATEWAYMODE_FORM);
 					$compGatewayWebservice = ($handleLib == 'paymentlib' ? TX_PAYMENTLIB_GATEWAYMODE_WEBSERVICE : TX_PAYMENTLIB2_GATEWAYMODE_WEBSERVICE);
 
@@ -205,6 +216,7 @@ class tx_ttproducts_paymentlib {
 						foreach ($hiddenFieldsArr as $key => $value) {
 							$hiddenFields .= '<input name="' . $key . '" type="hidden" value="' . htmlspecialchars($value) . '" />' . chr(10);
 						}
+
 						$formuri = $providerObject->transaction_formGetActionURI();
 
 						if (strstr ($formuri, 'ERROR') != FALSE)	{
@@ -223,17 +235,16 @@ class tx_ttproducts_paymentlib {
 							$content=$this->basketView->getView($localTemplateCode,'PAYMENT', $this->info, FALSE, FALSE, TRUE, 'PAYMENTLIB_FORM_TEMPLATE', $markerArray, $templateFilename);
 						} else {
 							if ($bError)	{
-								$content = $formuri;
+								$errorMessage = $formuri;
 							} else {
-								$content = tx_div2007_alpha::getLL($langObj,'error_relay_url');
+								$errorMessage = tx_div2007_alpha::getLL($langObj,'error_relay_url');
 							}
 						}
 					} else if ($gatewayMode == $compGatewayWebservice)	{
 						$rc = $providerObject->transaction_process();
 						$resultsArray = $providerObject->transaction_getResults($referenceId);//array holen mit allen daten
-
 						if ($providerObject->transaction_succeded($resultsArray) == FALSE) 	{
-							$content = $providerObject->transaction_message($resultsArray); // message auslesen
+							$errorMessage = $providerObject->transaction_message($resultsArray); // message auslesen
 						} else {
 							$bFinalize = TRUE;
 						}
@@ -241,10 +252,10 @@ class tx_ttproducts_paymentlib {
 					}
 				}
 			} else {
-				$rc = tx_div2007_alpha::getLL($langObj,'error_relay_url');
-				return 'ERROR: Could not find provider object for payment method \''.$paymentMethod.'\' .';
+				$errorMessage = 'ERROR: Could not find provider object for payment method \''.$paymentMethod.'\' .';
 			}
 		}
+
 		return $content;
 	} // includeHandleLib
 
@@ -405,7 +416,6 @@ class tx_ttproducts_paymentlib {
 		}
 
 		// Get references to the concerning baskets
-		//$pOBasket = &$providerObject->payment_basket;
 		$shopBasket = &$this->basket;
 
 		// Get references from the shop basket

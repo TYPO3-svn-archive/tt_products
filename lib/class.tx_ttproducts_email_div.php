@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -41,9 +41,11 @@
 
 
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_orderaddress.php');
+require_once(PATH_BE_div2007 . 'class.tx_div2007_alpha5.php');
 
 
 class tx_ttproducts_email_div {
+
 
 	/**
 	 * Extended mail function
@@ -57,73 +59,132 @@ class tx_ttproducts_email_div {
 	 * @param	[type]		$attachment: ...
 	 * @return	[type]		...
 	 */
-	function send_mail($toEMail,$subject,&$message,&$html,$fromEMail,$fromName,$attachment='') {
+	function send_mail (
+		$toEMail,
+		$subject,
+		&$message,
+		&$html,
+		$fromEMail,
+		$fromName,
+		$attachment=''
+	) {
+		global $TYPO3_CONF_VARS;
 
-		include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
-
-		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
-		if (class_exists($cls)) {
-
-			$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
-			$Typo3_htmlmail->start();
-			$Typo3_htmlmail->mailer = 'TYPO3 HTMLMail';
-			// $Typo3_htmlmail->useBase64(); +++ TODO
-			$message = html_entity_decode($message);
-			if ($Typo3_htmlmail->linebreak == chr(10))	{
-				$message = str_replace(chr(13).chr(10),$Typo3_htmlmail->linebreak,$message);
+		if (
+			isset($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
+			is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
+			isset($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) &&
+			is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) &&
+			array_search('t3lib_mail_SwiftMailerAdapter', $TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) !== FALSE
+		) {
+			if (!is_array($toEMail)) {
+				$emailArray = t3lib_div::trimExplode(',', $toEMail);
+				$toEMail = array();
+				foreach ($emailArray as $email) {
+					$toEMail[] = $email;
+				}
 			}
 
-			$Typo3_htmlmail->subject = $subject;
-			$Typo3_htmlmail->from_email = $fromEMail;
-			$Typo3_htmlmail->returnPath = $fromEMail;
-			$Typo3_htmlmail->from_name = str_replace (',' , ' ', $fromName);
-			$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
-			$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
-			$Typo3_htmlmail->organisation = '';
+			/** @var $mail t3lib_mail_Message */
+			$mailMessage = t3lib_div::makeInstance('t3lib_mail_Message');
+			$mailMessage->setTo($toEMail)
+				->setFrom(array($fromEMail => $fromName))
+				->setSubject($subject)
+				->setBody($html, 'text/html', $GLOBALS['TSFE']->renderCharset)
+				->addPart($message, 'text/plain', $GLOBALS['TSFE']->renderCharset);
 
-			if ($attachment != '' && file_exists($attachment))	{
-				$Typo3_htmlmail->addAttachment($attachment);
+			if (isset($attachment)) {
+				if (is_array($attachment)) {
+					$attachmentArray = $attachment;
+				} else {
+					$attachmentArray = array($attachment);
+				}
+				foreach ($attachmentArray as $theAttachment) {
+					if (file_exists($theAttachment)) {
+						$mailMessage->attach(Swift_Attachment::fromPath($theAttachment));
+					}
+				}
+			}
+			if ($bcc != '') {
+				$mailMessage->addBcc($bcc);
+			}
+			$mailMessage->send();
+		} else {
+			include_once(PATH_t3lib.'class.t3lib_htmlmail.php');
+			$fromName = tx_div2007_alpha5::slashName($fromName);
+
+			if (is_array($toEMail)) {
+				list($email, $name) = each($toEMail);
+				$toEMail = tx_div2007_alpha5::slashName($name) . ' <' . $email . '>';
 			}
 
-			if ($html)  {
-				$Typo3_htmlmail->theParts['html']['content'] = $html; // Fetches the content of the page
-				$Typo3_htmlmail->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
-				$Typo3_htmlmail->extractMediaLinks();
-				$Typo3_htmlmail->extractHyperLinks();
-				$Typo3_htmlmail->fetchHTMLMedia();
-				$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
-				$Typo3_htmlmail->substHREFsInHTML();
-				$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
-				if ($message)	{
+			$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
+
+			if (class_exists($cls)) {
+
+				$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
+				$Typo3_htmlmail->start();
+				$Typo3_htmlmail->mailer = 'TYPO3 HTMLMail';
+				// $Typo3_htmlmail->useBase64(); TODO
+				$message = html_entity_decode($message);
+				if ($Typo3_htmlmail->linebreak == chr(10))	{
+					$message = str_replace(chr(13).chr(10),$Typo3_htmlmail->linebreak,$message);
+				}
+
+				$Typo3_htmlmail->subject = $subject;
+				$Typo3_htmlmail->from_email = $fromEMail;
+				$Typo3_htmlmail->returnPath = $fromEMail;
+				$Typo3_htmlmail->from_name = $fromName;
+				$Typo3_htmlmail->replyto_email = $Typo3_htmlmail->from_email;
+				$Typo3_htmlmail->replyto_name = $Typo3_htmlmail->from_name;
+				$Typo3_htmlmail->organisation = '';
+
+				if ($attachment != '' && file_exists($attachment))	{
+					$Typo3_htmlmail->addAttachment($attachment);
+				}
+
+				if ($html)  {
+					$Typo3_htmlmail->theParts['html']['content'] = $html; // Fetches the content of the page
+					$Typo3_htmlmail->theParts['html']['path'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/';
+					$Typo3_htmlmail->extractMediaLinks();
+					$Typo3_htmlmail->extractHyperLinks();
+					$Typo3_htmlmail->fetchHTMLMedia();
+					$Typo3_htmlmail->substMediaNamesInHTML(0);	// 0 = relative
+					$Typo3_htmlmail->substHREFsInHTML();
+					$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($Typo3_htmlmail->theParts['html']['content']));
+					if ($message)	{
+						$Typo3_htmlmail->addPlain($message);
+					}
+				} else {
 					$Typo3_htmlmail->addPlain($message);
 				}
-			} else {
-				$Typo3_htmlmail->addPlain($message);
-			}
-			$Typo3_htmlmail->setHeaders();
-			if ($attachment != '' && file_exists($attachment))	{
-				foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
-					$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
-				}
-			}
-			$Typo3_htmlmail->setContent();
-			$Typo3_htmlmail->setRecipient(explode(',', $toEMail));
-
-			$hookVar = 'sendMail';
-			if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
-				foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
-					$hookObj= &t3lib_div::getUserObj($classRef);
-					if (method_exists($hookObj, 'init')) {
-						$hookObj->init($Typo3_htmlmail);
-					}
-					if (method_exists($hookObj, 'sendMail')) {
-						$rc = $hookObj->sendMail($Typo3_htmlmail,$toEMail,$subject,$message,$html,$fromEMail,$fromName,$attachment);
+				$Typo3_htmlmail->setHeaders();
+				if ($attachment != '')	{
+					if (isset($Typo3_htmlmail->theParts) && is_array($Typo3_htmlmail->theParts) && isset($Typo3_htmlmail->theParts['attach']) && is_array($Typo3_htmlmail->theParts['attach'])) {
+						foreach ($Typo3_htmlmail->theParts['attach'] as $k => $media)	{
+							$Typo3_htmlmail->theParts['attach'][$k]['filename'] = basename($media['filename']);
+						}
 					}
 				}
-			}
+				$Typo3_htmlmail->setContent();
+				$Typo3_htmlmail->setRecipient(explode(',', $toEMail));
 
-			if ($rc !== FALSE)	{
-				$Typo3_htmlmail->sendTheMail();
+				$hookVar = 'sendMail';
+				if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
+					foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
+						$hookObj= &t3lib_div::getUserObj($classRef);
+						if (method_exists($hookObj, 'init')) {
+							$hookObj->init($Typo3_htmlmail);
+						}
+						if (method_exists($hookObj, 'sendMail')) {
+							$rc = $hookObj->sendMail($Typo3_htmlmail,$toEMail,$subject,$message,$html,$fromEMail,$fromName,$attachment);
+						}
+					}
+				}
+
+				if ($rc !== FALSE)	{
+					$Typo3_htmlmail->sendTheMail();
+				}
 			}
 		}
 	}

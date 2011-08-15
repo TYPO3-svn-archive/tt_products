@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2007-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -43,7 +43,6 @@
  *
  */
 
-require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
 require_once (PATH_BE_div2007.'class.tx_div2007_alpha.php');
 require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_main.php');
 
@@ -54,7 +53,6 @@ class tx_ttproducts_pi1_base extends tslib_pibase {
 	var $prefixId = 'tt_products';	// Same as class name
 	var $scriptRelPath = 'pi1/class.tx_ttproducts_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
-	var $pi_checkCHash = true;		// activate cHash
 	var $bRunAjax = false;			// overrride this
 
 

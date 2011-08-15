@@ -100,6 +100,7 @@ if (isset($_EXTCONF) && is_array($_EXTCONF))	{
 }
 
 
+
 if (($_EXTCONF['usePatch1822'] || $typoVersion >= 4004000) &&
 !defined($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products']['MENU'])) {
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = array (
@@ -198,6 +199,9 @@ if (TYPO3_MODE=='FE')	{ // hooks for FE extensions
 	if (t3lib_extMgm::isLoaded('felogin')) {
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['login_confirmed'][TT_PRODUCTS_EXTkey] = 'EXT:'.TT_PRODUCTS_EXTkey.'/hooks/class.tx_ttproducts_hooks_fe.php:&tx_ttproducts_hooks_fe->resetAdresses';
 	}
+
+	// add the table enhancements to the FE
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['extendingTCA'][] = TT_PRODUCTS_EXTkey;
 }
 
   // Extending TypoScript from static template uid=43 to set up userdefined tag:

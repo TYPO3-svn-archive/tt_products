@@ -141,7 +141,6 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 // 		$markerArray['###PRICE_IF_DISCOUNTED_BY_CREDITPOINTS_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat(($item['priceTax'] - $pricefactor * $row['creditpoints']), $taxInclExcl));
 // 		$markerArray['###PRICE_IF_DISCOUNTED_BY_CREDITPOINTS_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat(($item['priceNoTax'] - $pricefactor * $row['creditpoints']), $taxInclExcl));
 //
-
 		$priceArray = array();
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$prodTable = &$tablesObj->get($functablename, TRUE);
@@ -154,6 +153,7 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 
 // tt-products-single-1-pricetax
 		$priceArray = $modelObj->getPriceArray($fieldname,$row);
+
 		$priceMarkerPrefix = $prodTable->getMarker() . '_';
 
 		foreach ($priceArray as $displayTax => $priceValue)	{

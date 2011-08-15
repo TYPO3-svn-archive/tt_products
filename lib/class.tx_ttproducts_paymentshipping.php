@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -147,7 +147,6 @@ class tx_ttproducts_paymentshipping {
 			$this->basket->basketExtra['payment'] = array($k);
 			$this->basket->basketExtra['payment.'] = $this->conf['payment.'][$k.'.'];
 		}
-
 	} // setBasketExtras
 
 
@@ -251,14 +250,20 @@ class tx_ttproducts_paymentshipping {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$item, &$markerArray, $value, $activeArray)	{
+	function getItemMarkerArray ($theCode, &$item, &$markerArray, $value, $activeArray)	{
+
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item;
 
 		$markerArray['###VALUE###'] = $value;
 		$markerArray['###CHECKED###'] = ($value==implode('-',$activeArray) ? ' checked="checked"':'');
 		$markerArray['###TITLE###'] = $row['title'];
-		$markerArray['###IMAGE###'] = $this->cObj->IMAGE($row['image.']);
+		$imageCode = $this->cObj->IMAGE($row['image.']);
+
+		if ($theCode == 'EMAIL') {
+			tx_div2007_alpha5::fixImageCodeAbsRefPrefix($imageCode);
+		}
+		$markerArray['###IMAGE###'] = $imageCode;
 	}
 
 
@@ -270,7 +275,7 @@ class tx_ttproducts_paymentshipping {
 	 * @param	[type]		$basketUrl: ...
 	 * @return	[type]		...
 	 */
-	function generateRadioSelect ($pskey, &$calculatedArray, $basketUrl)	{
+	function generateRadioSelect ($theCode, $pskey, &$calculatedArray, $basketUrl)	{
 			/*
 			 The conf-array for the payment/shipping configuration has numeric keys for the elements
 			 But there are also these properties:
@@ -293,10 +298,8 @@ class tx_ttproducts_paymentshipping {
 		$activeArray = is_array($active) ? $active : array($active);
 		$confArr = $this->cleanConfArr($this->conf[$pskey.'.']);
 		$out='';
-		// tx_div2007_alpha::getPageLink_fh001(&$pibase, $id
 
 		$submitCode = 'this.form.action=\''.$basketUrl.'\';this.form.submit();';
-
 		$template = (
 			$this->conf[$pskey.'.']['template'] ?
 				preg_replace('/[:space:]*\\.[:space:]*' . $pskey . '[:space:]*\\.[:space:]*/',$pskey, $this->conf[$pskey.'.']['template']) :
@@ -305,6 +308,7 @@ class tx_ttproducts_paymentshipping {
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
 		$t = array();
 		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];
+
 		if (is_array($confArr))	{
 			foreach($confArr as $key => $item)	{
 				if (
@@ -355,7 +359,7 @@ class tx_ttproducts_paymentshipping {
 
 							if (is_array($row))	{
 								$markerArray = array();
-								$itemTable->getItemMarkerArray ($row, $markerArray, $fieldsArray);
+								$itemTable->getItemMarkerArray($row, $markerArray, $fieldsArray);
 								$item['title'] = $this->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
 								$value = $key . '-'.$row['uid'];
 								if ($value == implode('-',$activeArray))	{
@@ -365,7 +369,7 @@ class tx_ttproducts_paymentshipping {
 								$value = $key;
 							}
 							$markerArray = array();
-							$this->getItemMarkerArray ($item, $markerArray, $value, $activeArray);
+							$this->getItemMarkerArray($theCode, $item, $markerArray, $value, $activeArray);
 							$out .= $this->cObj->substituteMarkerArrayCached($template, $markerArray).chr(10);
 						}
 					} else {
@@ -524,10 +528,10 @@ class tx_ttproducts_paymentshipping {
 			// $actItemArray = all items array
 			foreach ($actItemArray as $k2=>$actItem) {
 				$row = &$actItem['rec'];
-				if ($row['shipping'])	{
+/*				if ($row['shipping'])	{
 					$priceShippingTax += $this->priceObj->getPrice($row['shipping'],true,$taxpercentage,$taxIncluded,true);
 					$priceShippingNoTax += $this->priceObj->getPrice($row['shipping'],false,$taxpercentage,$taxIncluded,true);
-				}
+				}*/
 				if ($row['bulkily'])	{
 					$value = floatval($this->basket->basketExtra['shipping.']['bulkilyAddition']) * $actItem['count'];
 					$tax = floatval($this->basket->basketExtra['shipping.']['bulkilyFeeTax']);
@@ -560,7 +564,6 @@ class tx_ttproducts_paymentshipping {
 		$taxpercentage = doubleVal($this->conf[$pskey.'.']['TAXpercentage']);
 // 		$taxFrom = $this->getReplaceTaxPercentage();
 		$this->priceObj->init($this->cObj, $this->conf[$pskey.'.'], 0);
-
 		if ($confArr) {
 			$this->getConfiguredPrice($taxpercentage, $confArr, $countTotal, $priceTotalTax, $priceTax, $priceNoTax);
 		} else {
@@ -602,7 +605,6 @@ class tx_ttproducts_paymentshipping {
 		$perc = doubleVal($this->basket->basketExtra[$pskey.'.']['percentOfGoodstotal']);
 		if ($perc)  {
 			$priceShipping = doubleVal(($this->basket->calculatedArray['priceTax']['goodstotal']/100)*$perc);
-			$dum = $this->priceObj->getPrice($priceShipping,1,$taxpercentage);
 			$taxIncluded = $this->priceObj->getTaxIncluded();
 			$priceShippingTax = $priceShippingTax + $this->priceObj->getPrice($priceShipping,true,$taxpercentage,$taxIncluded,true);
 			$priceShippingNoTax = $priceShippingNoTax + $this->priceObj->getPrice($priceShipping,false,$taxpercentage,$taxIncluded,true);
@@ -657,7 +659,6 @@ class tx_ttproducts_paymentshipping {
 		}
 
 		$this->getSpecialPrices('shipping', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
-
 		$this->getPrices('shipping', $taxpercentage, $countTotal, $priceTotalTax, $priceShippingTax, $priceShippingNoTax);
 		$taxIncluded = $this->priceObj->getTaxIncluded();
 

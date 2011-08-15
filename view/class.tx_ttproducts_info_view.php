@@ -115,6 +115,15 @@ class tx_ttproducts_info_view {
 				}
 			}
 		}
+		$requiredInfoFields = $this->getRequiredInfoFields();
+		$checkField = '';
+		$possibleCheckFieldArray = array('name', 'last_name', 'email', 'telephone');
+		foreach ($possibleCheckFieldArray as $possibleCheckField) {
+			if (t3lib_div::inList($requiredInfoFields, $possibleCheckField)) {
+				$checkField = $possibleCheckField;
+				break;
+			}
+		}
 
 		if (t3lib_extMgm::isLoaded('static_info_tables')) {
 			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
@@ -141,18 +150,28 @@ class tx_ttproducts_info_view {
 
 		if ($this->conf['useStaticInfoCountry'] && $this->infoArray['billing']['country_code'] && is_object($this->staticInfo))	{
 			$this->infoArray['billing']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['billing']['country_code'],'','');
-			if ($this->infoArray['delivery']['name'] && !$this->bDeliveryAddress)	{
+			if ($this->infoArray['delivery'][$checkField] && !$this->bDeliveryAddress)	{
+				$this->infoArray['delivery']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
+			}
+
+			$bFixCountries = self::fixCountries($this->infoArray);
+
+			if (
+				!$bFixCountries &&
+				$this->infoArray['delivery'][$checkField] &&
+				!$this->bDeliveryAddress
+			)	{
 				$this->infoArray['delivery']['country'] = $this->staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
 			}
 		}
-		if (isset($this->infoArray) && is_array($this->infoArray) && is_array($this->infoArray['delivery']) && !$this->infoArray['delivery']['name'])	{
+		if (isset($this->infoArray) && is_array($this->infoArray) && is_array($this->infoArray['delivery']) && !$this->infoArray['delivery'][$checkField])	{
 			unset ($this->infoArray['delivery']['country_code']);
 			unset ($this->infoArray['delivery']['salutation']);
 		}
 
 		if (
 			$TSFE->loginUser &&
-			(!$this->infoArray['billing'] || !$this->infoArray['billing']['name'] || $this->conf['editLockedLoginInfo'] || $this->infoArray['billing']['error']) &&
+			(!$this->infoArray['billing'] || !$this->infoArray['billing'][$checkField] || $this->conf['editLockedLoginInfo'] || $this->infoArray['billing']['error']) &&
 			$this->conf['lockLoginUserInfo']
 		)	{
 			$address = '';
@@ -208,6 +227,25 @@ class tx_ttproducts_info_view {
 	} // init
 
 
+	public static function fixCountries (&$infoArray)	{
+		$rc = FALSE;
+
+		if (
+			$infoArray['billing']['country_code'] != '' &&
+			(
+				$infoArray['delivery']['zip'] == '' ||
+				($infoArray['delivery']['zip'] != '' && $infoArray['delivery']['zip'] == $infoArray['billing']['zip'])
+			)
+		)	{
+			// a country change in the select box shall be copied
+			$infoArray['delivery']['country_code'] = $infoArray['billing']['country_code'];
+			$rc = TRUE;
+		}
+
+		return $rc;
+	}
+
+
 	/**
 	 * Fills in all empty fields in the delivery info array
 	 *
@@ -226,6 +264,7 @@ class tx_ttproducts_info_view {
 			foreach ($requiredInfoFieldArray as $field)	{
 				if (!trim($this->infoArray['delivery'][$field]))	{
 					$bMissingField = TRUE;
+					break;
 				}
 			}
 		}
@@ -376,6 +415,7 @@ class tx_ttproducts_info_view {
 					$markerArray['###PERSON_COUNTRY_FIRST_HIDDEN###'] = '<input type="hidden" name="recs[personinfo][country_code]" size="3" value="'.current(array_keys($countryArray)).'">';
 					$markerArray['###PERSON_COUNTRY###'] =
 						$this->staticInfo->getStaticInfoName('COUNTRIES', $countryCodeArray['billing'],'','');
+
 					$markerArray['###DELIVERY_COUNTRY_CODE###'] =
 						$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[delivery][country_code]', '', $countryCodeArray['delivery'], '', 0, '', '', $whereCountries);
 					$markerArray['###DELIVERY_COUNTRY_FIRST###'] = $markerArray['###PERSON_COUNTRY_FIRST###'];
@@ -465,6 +505,7 @@ class tx_ttproducts_info_view {
 		$markerArray['###FE_USER_TT_PRODUCTS_DISCOUNT###'] = $TSFE->fe_user->user['tt_products_discount'];
 		$markerArray['###FE_USER_USERNAME###'] = $TSFE->fe_user->user['username'];
 		$markerArray['###FE_USER_UID###'] = $TSFE->fe_user->user['uid'];
+		$markerArray['###FE_USER_CNUM###'] = $TSFE->fe_user->user['cnum'];
 		$bAgb = ($this->infoArray['billing']['agb'] && (!isset($this->pibase->piVars['agb']) || $this->pibase->piVars['agb']>0));
 		$markerArray['###PERSON_AGB###'] = 'value="1" '. ($bAgb ? 'checked="checked"' : '');
 		$markerArray['###USERNAME###'] = $this->infoArray['billing']['email'];

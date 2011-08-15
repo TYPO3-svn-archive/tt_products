@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2005-2011 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -285,19 +285,28 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 */
 	function getParamDefault ($theCode, $cat)	{
 
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+
 		if (!$cat)	{
 			if ($this->getFuncTablename() == 'tt_products_cat')	{
-				$cat = $this->conf['defaultCategoryID'];
+				$cat = $cnf->conf['defaultCategoryID'];
 			}
 			if ($this->getFuncTablename() == 'tx_dam_cat')	{
-				$cat = $this->conf['defaultDAMCategoryID'];
+				$cat = $cnf->conf['defaultDAMCategoryID'];
 			}
 		}
 
 		if ($cat)	{
 			$tableConf = $this->getTableConf($theCode);
 			$catArray = t3lib_div::intExplode(',', $cat);
-			if (is_array($tableConf['special.']) && t3lib_div::testInt($tableConf['special.']['all']) && in_array($tableConf['special.']['all'], $catArray)) 	{
+
+			if (
+				is_array($tableConf['special.']) &&
+				(
+					t3lib_div::testInt($tableConf['special.']['all']) && in_array($tableConf['special.']['all'], $catArray) ||
+					$tableConf['special.']['all'] == 'all'
+				)
+			) 	{
 				$cat = '';	// no filter shall be used
 			} else if (is_array($tableConf['special.']) && t3lib_div::testInt($tableConf['special.']['no']) && in_array($tableConf['special.']['no'], $catArray)) {
 				$cat = '0';	// no products shall be shown
@@ -436,7 +445,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 				$category = $this->get($actItem['rec']['category']);
 				$tmp = $emailObj->getEmail($category['email_uid']);
 				if ($tmp) {
-					$emailArray[$actItem['rec']['category']] = $tmp['name'].' <'.$tmp['email'].'>';
+					$emailArray[$actItem['rec']['category']] = array($tmp['email'] => $tmp['name']);
 				}
 			}
 		}

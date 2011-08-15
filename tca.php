@@ -16,6 +16,14 @@ if (!$addressTable)	{
 
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addressTable'] = $addressTable;
 
+if (
+	isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['exclude'])
+	&& is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['exclude'])
+) {
+	$excludeArray = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['exclude'];
+}
+
+
 $imageFolder = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['imageFolder'];
 if (!$imageFolder)	{
 	$imageFolder = 'uploads/pics';
@@ -800,6 +808,16 @@ $TCA['tt_products_language'] = Array (
 			),
 			'l10n_mode' => 'prefixLangTitle',
 		),
+		'itemnumber' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.itemnumber',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '20',
+				'eval' => 'trim',
+				'max' => '40'
+			)
+		),
 		'unit' => Array (
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.unit',
 			'config' => Array (
@@ -853,13 +871,28 @@ $TCA['tt_products_language'] = Array (
 			),
 			'l10n_mode' => 'prefixLangTitle',
 		),
+		'image' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.image',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'file',
+				'allowed' => $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'],
+				'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],
+				'uploadfolder' => 'uploads/pics',
+				'show_thumbs' => '1',
+				'size' => '3',
+				'maxitems' => '10',
+				'minitems' => '0'
+			)
+		),
 	),
 	'types' => Array (
 		'1' => Array('showitem' => 'sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, prod_uid,title;;2;;3-3-3, unit, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;4-4-4,datasheet')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime,endtime,fe_group'),
-		'2' => Array('showitem' => 'subtitle, www'),
+		'2' => Array('showitem' => 'subtitle, itemnumber, www'),
 	)
 );
 
@@ -2493,8 +2526,61 @@ $TCA['sys_products_orders'] = Array (
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
 	)
-
 );
+
+
+if (isset($excludeArray) && is_array($excludeArray)) {
+	foreach ($excludeArray as $tablename => $excludeFieldArray) {
+
+		if (
+			isset($TCA[$tablename])
+			&& isset($excludeFieldArray)
+			&& is_array($excludeFieldArray)
+		) {
+			$tmpArray = explode(',', $TCA[$tablename]['interface']['showRecordFieldList']);
+			$tmpArray = array_diff($tmpArray, $excludeFieldArray);
+			$TCA[$tablename]['interface']['showRecordFieldList'] = implode(',', $tmpArray);
+
+			foreach ($excludeFieldArray as $excludeField) {
+				if (isset($TCA[$tablename]['columns'][$excludeField])) {
+					unset($TCA[$tablename]['columns'][$excludeField]);
+				}
+			}
+
+			$conigTypeArray = array('types', 'palettes');
+
+			foreach ($conigTypeArray as $configType) {
+				if (
+					isset($TCA[$tablename][$configType])
+					&& is_array($TCA[$tablename][$configType])
+				) {
+					foreach ($TCA[$tablename][$configType] as $k => $config) {
+						if (isset($config) && is_array($config)) {
+							$showItemArray = explode(',', $config['showitem']);
+							if (isset($showItemArray) && is_array($showItemArray)) {
+								foreach ($showItemArray as $k2 => $showItem) {
+									$showItem = trim($showItem);
+									foreach ($excludeFieldArray as $excludeField) {
+										if (strpos($showItem, $excludeField) === 0) {
+											$length = strlen($excludeField);
+											if (
+												strlen($showItem) == $length
+												|| substr($showItem, $length, 1) == ';'
+											) {
+												unset($showItemArray[$k2]);
+											}
+										}
+									}
+								}
+								$TCA[$tablename][$configType][$k]['showitem'] = implode(',', $showItemArray);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 
 ?>

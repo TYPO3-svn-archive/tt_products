@@ -209,7 +209,7 @@ class tx_ttproducts_single_view {
 				'BULKILY_WARNING' => 'bulkily',
 				'PRODUCT_SPECIAL_PREP' => 'special_preparation',
 				'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
-				'LINK_DATASHEET' => 'datasheet');
+				'PRODUCT_LINK_DATASHEET' => 'datasheet');
 			$viewTagArray = array();
 			$parentArray = array();
 			$fieldsArray = $markerObj->getMarkerFields(
@@ -353,7 +353,13 @@ class tx_ttproducts_single_view {
 					$cat = $currentCat;
 				}
 			}
-			$linkPid = $pid;
+
+			if ($pid === $TSFE->id && isset($this->conf['PIDlistDisplay'])) {
+				$linkPid = $pageObj->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $row);
+			} else {
+				$linkPid = $pid;
+			}
+
 			if ($bUseBackPid && $backPID)	{
 				$linkPid = $backPID;
 			}
@@ -363,18 +369,21 @@ class tx_ttproducts_single_view {
 
 				if ((($linkPid == $TSFE->id && !$bUseBackPid) || ($bUseBackPid && $linkPid != $TSFE->id)) && $this->conf['NoSingleViewOnList'])	{
 					// if the page remains the same then the product parameter will still be needed
-					$addQueryString[$this->type] = $row['uid'];
+					$excludeList = '';
+				} else {
+					$excludeList = $itemTableViewArray[$this->type]->getPivar();
 				}
 				$sword = $this->pibase->piVars['sword'];
 				if ($sword) 	{
 					$addQueryString['sword'] = $sword;
 				}
 
-				$queryString = $this->urlObj->getLinkParams('', $addQueryString, TRUE, FALSE, $viewCatViewTable->getPivar());
+				$queryString = $this->urlObj->getLinkParams($excludeList, $addQueryString, TRUE, FALSE, $viewCatViewTable->getPivar());
 				$linkUrl = tx_div2007_alpha::getPageLink_fh002($this->cObj,$linkPid,'',$queryString, array('useCacheHash' => TRUE));
 				$linkUrl = htmlspecialchars($linkUrl);
 				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="' . $linkUrl . '">','</a>');
 			}
+
 			if ($viewCatTagArray['LINK_CATEGORY'])	{
 				$catRow = $viewCatTable->get($cat);
 				$catListPid = $pageObj->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $catRow);
@@ -599,7 +608,7 @@ class tx_ttproducts_single_view {
 
 			$queryprev = '';
 			$wherestock = ($this->conf['showNotinStock'] || !is_array($TCA[$itemTableArray[$this->type]->getTableObj()->name]['columns']['inStock']) ? '' : ' AND (inStock <>0) ') . $whereFilter;
-			$queryprev = $queryPrevPrefix . $wherePid . $wherestock . $itemTableArray[$this->type]->getTableObj()->enableFields() . $wherePid;
+			$queryprev = $queryPrevPrefix . $wherePid . $wherestock . $itemTableArray[$this->type]->getTableObj()->enableFields();
 
 			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
 			$resprev = $itemTableArray[$this->type]->getTableObj()->exec_SELECTquery('*', $queryprev, '', $TYPO3_DB->stripOrderBy($prevOrderby));
@@ -737,7 +746,7 @@ class tx_ttproducts_single_view {
 								implode(',', $relatedIds),
 								$listPids,
 								$error_code,
-								$funcArray['template'],
+								$funcArray['template'] . $this->config['templateSuffix'],
 								$pageAsCategory,
 								array(),
 								1

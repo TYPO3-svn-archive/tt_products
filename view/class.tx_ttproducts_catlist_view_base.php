@@ -55,7 +55,7 @@ abstract class tx_ttproducts_catlist_view_base {
 	var $htmlPartsMarkers = array('###ITEM_SINGLE_PRE_HTML###', '###ITEM_SINGLE_POST_HTML###');
 
 
-	public function init (&$pibase, &$pid_list, $pid) {
+	public function init (&$pibase, &$pid_list, $recursive, $pid) {
 		$this->pibase = &$pibase;
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
@@ -65,7 +65,7 @@ abstract class tx_ttproducts_catlist_view_base {
 		$this->urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
 		$this->pidListObj = &t3lib_div::getUserObj('tx_ttproducts_pid_list');
 		$this->pidListObj->init($this->pibase->cObj);
-		$this->pidListObj->applyRecursive(99, $pid_list, TRUE);
+		$this->pidListObj->applyRecursive($recursive, $pid_list, TRUE);
 		$this->pidListObj->setPageArray();
 
 		$this->subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
@@ -275,6 +275,7 @@ abstract class tx_ttproducts_catlist_view_base {
 			if ($functablename == 'pages')	{
 				$allowedCats = $this->pidListObj->getPidlist($rootCat);
 			}
+
 			$categoryArray = $categoryTable->getRelationArray($excludeCat, $rootCat, $allowedCats);
 			$rootpathArray = $categoryTable->getRootpathArray($categoryArray, $rootCat, $currentCat);
 			$rootArray = $categoryTable->getRootArray($rootCat, $categoryArray);

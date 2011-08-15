@@ -12,4 +12,16 @@ orderBySortingTables =
 usePatch1822 =
   # cat=basic/enable; type=string; label=category where: Foreign table where for the selection of categories. See TSConfig for more info.
 where.category =
+  # cat=basic/enable; type=string; label=tt_products exclude: exclude these fields from the table tt_products.
+exclude.tt_products =
+  # cat=basic/enable; type=string; label=tt_products_language exclude: exclude these fields from the table tt_products_language.
+exclude.tt_products_language = datasheet,www,image
+  # cat=basic/enable; type=string; label=tt_products_cat exclude: exclude these fields from the table tt_products_cat.
+exclude.tt_products_cat =
+  # cat=basic/enable; type=string; label=tt_products_cat_language exclude: exclude these fields from the table tt_products_cat_language.
+exclude.tt_products_cat_language
+  # cat=basic/enable; type=string; label=tt_products_articles exclude: exclude these fields from the table tt_products_articles.
+exclude.tt_products_articles =
+  # cat=basic/enable; type=string; label=tt_products_articles_language exclude: exclude these fields from the table tt_products_articles_language.
+exclude.tt_products_articles_language =
 
