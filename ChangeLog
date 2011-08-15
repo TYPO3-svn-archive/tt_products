@@ -4,7 +4,10 @@
 	* use the tax even for negative prices
 	* change in paymentlib: initialize the detailsArray in the beginning
 	* fix bug: the delivery country has not been stored if no name field has been filled out
-	* new feature: fields can be excluded from the TCA of the language tables
+	* new feature: fields can be excluded from TCA and TCE of the normal data and the language tables
+	* add the fields itemnumber and image to the translation of the product
+	* add the field cnum for the customer number
+	* fix bug in the numbering of the form ids in the list view
 
 2011-03-21 Franz Holzinger <franz@ttproducts.de>
 	* birth day with date_of_birth for sr_feuser_register
