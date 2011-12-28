@@ -16,6 +16,13 @@ if (!$addressTable)	{
 
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addressTable'] = $addressTable;
 
+if (
+	isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['exclude'])
+	&& is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['exclude'])
+) {
+	$excludeArray = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['exclude'];
+}
+
 if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']) && isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']['category']))	{
 	$whereCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.']['category'];
 }
@@ -333,7 +340,8 @@ $TCA['tt_products'] = Array (
 				'MM' => 'tt_products_related_products_products_mm',
 				'foreign_table' => 'tt_products',
 				'foreign_table_where' => ' ORDER BY tt_products.uid',
-				'size' => 3,
+				'size' => 10,
+				'selectedListStyle' => 'width:450px',
 				'minitems' => 0,
 				'maxitems' => 50,
 			),
@@ -2029,6 +2037,60 @@ $TCA['sys_products_orders'] = Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
 	)
 );
+
+
+if (isset($excludeArray) && is_array($excludeArray)) {
+	foreach ($excludeArray as $tablename => $excludeFieldArray) {
+
+		if (
+			isset($TCA[$tablename])
+			&& isset($excludeFieldArray)
+			&& is_array($excludeFieldArray)
+		) {
+			$tmpArray = explode(',', $TCA[$tablename]['interface']['showRecordFieldList']);
+			$tmpArray = array_diff($tmpArray, $excludeFieldArray);
+			$TCA[$tablename]['interface']['showRecordFieldList'] = implode(',', $tmpArray);
+
+			foreach ($excludeFieldArray as $excludeField) {
+				if (isset($TCA[$tablename]['columns'][$excludeField])) {
+					unset($TCA[$tablename]['columns'][$excludeField]);
+				}
+			}
+
+			$conigTypeArray = array('types', 'palettes');
+
+			foreach ($conigTypeArray as $configType) {
+				if (
+					isset($TCA[$tablename][$configType])
+					&& is_array($TCA[$tablename][$configType])
+				) {
+					foreach ($TCA[$tablename][$configType] as $k => $config) {
+						if (isset($config) && is_array($config)) {
+							$showItemArray = explode(',', $config['showitem']);
+							if (isset($showItemArray) && is_array($showItemArray)) {
+								foreach ($showItemArray as $k2 => $showItem) {
+									$showItem = trim($showItem);
+									foreach ($excludeFieldArray as $excludeField) {
+										if (strpos($showItem, $excludeField) === 0) {
+											$length = strlen($excludeField);
+											if (
+												strlen($showItem) == $length
+												|| substr($showItem, $length, 1) == ';'
+											) {
+												unset($showItemArray[$k2]);
+											}
+										}
+									}
+								}
+								$TCA[$tablename][$configType][$k]['showitem'] = implode(',', $showItemArray);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 
 ?>

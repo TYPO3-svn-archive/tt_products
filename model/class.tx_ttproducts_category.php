@@ -152,6 +152,9 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 
 	function getRootCat ()	{
 		$rc = $this->cnf->config['rootCategoryID'];
+		if ($rc == '') {
+			$rc = 0;
+		}
 		return $rc;
 	}
 
@@ -162,10 +165,11 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		$bRootfound = false;
 		$rc = array();
 		if ($uid)	{
-			$rc [$uid] = $row = $this->get($uid, $pid, false);
+			$rc[$uid] = $row = $this->get($uid, $pid, false);
 			$orderBy = $this->tableconf['orderBy'];
 			if (!in_array($row['uid'],$rootArray))	{
-				while ($parent = $row[$this->parentField])	{
+				$iCount = 0;
+				while (is_array($row) && ($parent = $row[$this->parentField]) && ($iCount < 100))	{
 					$where = 'uid ='.$parent;
 					$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
 					$where .= $this->table->enableFields();
@@ -178,6 +182,10 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 						$bRootfound = true;
 						break;
 					}
+					$iCount++;
+				}
+				if (!$parent && in_array($parent, $rootArray)) {
+					$bRootfound = true;
 				}
 			} else {
 				$bRootfound = true;
@@ -240,8 +248,13 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 
 
 	function getParent ($uid=0) {
-		$rc = array();
-		return $rc;
+		$result = FALSE;
+
+		$row = $this->get($uid);
+		if (isset($row) && is_array($row) && isset($row['parent_category'])) {
+			$result = $this->get($row['parent_category']);
+		}
+		return $result;
 	}
 
 
@@ -308,12 +321,25 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			if (
 				is_array($tableConf['special.']) &&
 				(
-					t3lib_div::testInt($tableConf['special.']['all']) && in_array($tableConf['special.']['all'], $catArray) ||
+					(
+						class_exists('t3lib_utility_Math') ?
+						t3lib_utility_Math::canBeInterpretedAsInteger($tableConf['special.']['all']) :
+						t3lib_div::testInt($tableConf['special.']['all'])
+					) &&
+					in_array($tableConf['special.']['all'], $catArray) ||
 					$tableConf['special.']['all'] == 'all'
 				)
 			) 	{
 				$cat = '';	// no filter shall be used
-			} else if (is_array($tableConf['special.']) && t3lib_div::testInt($tableConf['special.']['no']) && in_array($tableConf['special.']['no'], $catArray)) {
+			} else if (
+				is_array($tableConf['special.']) &&
+				(
+					class_exists('t3lib_utility_Math') ?
+					t3lib_utility_Math::canBeInterpretedAsInteger($tableConf['special.']['no'])  :
+					t3lib_div::testInt($tableConf['special.']['no'])
+				) &&
+				in_array($tableConf['special.']['no'], $catArray)
+			) {
 				$cat = '0';	// no products shall be shown
 			} else {
 				$cat = implode(',',$catArray);

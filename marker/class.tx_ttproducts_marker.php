@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -155,7 +155,7 @@ class tx_ttproducts_marker {
 			$markerArray['###PATH_FE_ICONS###'] = PATH_FE_addons_icon_rel;
 		}
 
-		$pidMarkerArray = array('agb','basket','info','finalize','payment', 'thanks','itemDisplay','listDisplay','search','storeRoot',
+		$pidMarkerArray = array('agb','basket','info','finalize','payment', 'thanks','itemDisplay','listDisplay','revocation','search','storeRoot',
 			'memo','tracking','billing','delivery');
 		foreach ($pidMarkerArray as $k => $function)	{
 			$markerArray['###PID_'.strtoupper($function).'###'] = $this->conf['PID'.$function];
@@ -262,7 +262,6 @@ class tx_ttproducts_marker {
 		global $TSFE;
 		global $TYPO3_CONF_VARS;
 
-		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 		$queryString=array();
 		if ($bUseBackPid)	{
 			if ($bUsePrefix && !$addQueryString[$this->pibase->prefixId.'[backPID]'])	{
@@ -380,6 +379,7 @@ class tx_ttproducts_marker {
 			}
 			$tagArray = $retTagArray;
 		}
+		$parentArray = array_unique($parentArray);
 		sort($parentArray);
 
 		if (is_array($addCheckArray))	{

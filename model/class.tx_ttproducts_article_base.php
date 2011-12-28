@@ -363,15 +363,15 @@ class tx_ttproducts_article_base {
 	}
 
 
-	function getWhere ($where, $theCode='') {
+	function getWhere ($where, $theCode = '', $orderBy = '') {
 		global $TYPO3_DB;
 
-		$this->tableconf = $this->cnf->getTableConf($this->conftablenam, $theCode);
+		$tableconf = $this->cnf->getTableConf($this->conftablename, $theCode);
 		$rc = array();
 		$where = ($where ? $where : '1=1 ').$this->table->enableFields();
 
 		// Fetching the products
-		$res = $this->table->exec_SELECTquery('*', $where);
+		$res = $this->table->exec_SELECTquery('*', $where, $TYPO3_DB->stripOrderBy($orderBy));
 		$translateFields = $this->cnf->getTranslationFields($this->tableconf);
 
 		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{

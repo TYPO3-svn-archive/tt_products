@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2010 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -179,6 +179,7 @@ class tx_ttproducts_list_view {
 		if (count($error_code))	{
 			return '';
 		}
+
 		$bUseCache = TRUE;
 		$content = '';
 		$out = '';
@@ -326,19 +327,13 @@ class tx_ttproducts_list_view {
 			$tmp = $this->conf['form.'][$theCode.'.']['data.']['name'];
 		}
 		$formName = ($tmp ? $tmp : $formName);
-		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
 		if ($allowedItems || $allowedItems == '0')	{
 			$allowedItemArray = array();
 			$tempArray = t3lib_div::trimExplode(',',$allowedItems);
-			if ($typoVersion < 4000000)	{
-				foreach ($tempArray as $k => $value)	{
-					$allowedItemArray[$k] = $TYPO3_DB->fullQuoteStr($value,$itemTable->table->name);
-				}
-			} else {
-				$dblangfile = 'locallang_db.xml';
-				$allowedItemArray = $TYPO3_DB->fullQuoteArray($tempArray,$itemTable->table->name);
-			}
+
+			$dblangfile = 'locallang_db.xml';
+			$allowedItemArray = $TYPO3_DB->fullQuoteArray($tempArray,$itemTable->table->name);
 
 			$where .= ' AND uid IN ('.implode(',',$allowedItemArray).')';
 		}
@@ -423,7 +418,14 @@ class tx_ttproducts_list_view {
 			$begin_at = $this->pibase->piVars['begin_at'];
 			$begin_at = ($begin_at ? $begin_at : t3lib_div::_GP('begin_at'));
 		}
-		$begin_at = t3lib_div::intInRange($begin_at,0,100000);
+
+		$begin_at = (
+			class_exists('t3lib_utility_Math') ?
+			t3lib_utility_Math::forceIntegerInRange($begin_at, 0, 100000) :
+			t3lib_div::intInRange($begin_at, 0, 100000)
+		);
+
+
 		if ($theCode == 'SINGLE')	{
 			$begin_at = ''; // no page browser in single view for related products
 		}
@@ -483,8 +485,14 @@ class tx_ttproducts_list_view {
 			$row = $TYPO3_DB->sql_fetch_row($res);
 			$productsCount = $row[0];
 
+			$begin_at_start = (($begin_at >= $productsCount) ? ($productsCount >= $this->config['limit'] ? $productsCount - $this->config['limit'] : $productsCount) : $begin_at);
 				// range check to current productsCount
-			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount) ? ($productsCount >= $this->config['limit'] ? $productsCount - $this->config['limit'] : $productsCount) : $begin_at,0);
+			$begin_at = (
+				class_exists('t3lib_utility_Math') ?
+				t3lib_utility_Math::forceIntegerInRange($begin_at_start, 0) :
+				t3lib_div::intInRange($begin_at_start, 0)
+			);
+
 
 			$displayColumnsConf = '';
 			if ($productsConf['displayColumns.'])	{
@@ -725,7 +733,13 @@ class tx_ttproducts_list_view {
 
 						if (is_array($displayColumnsConf))	{
 							foreach ($displayColumnsConf as $k => $val)	{
-								if (t3lib_div::testInt($k) && $depth >= $k)	{
+								if (
+									(
+										class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k) :
+										t3lib_div::testInt($k)
+									) &&
+									$depth >= $k
+								)	{
 									$displayColumns = $val;
 								} else {
 									break;
@@ -839,29 +853,24 @@ class tx_ttproducts_list_view {
 						// Print Item Title
 					$wrappedSubpartArray=array();
 					$addQueryString=array();
-					$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 					$pid = $this->page->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
 
-					if ($typoVersion < 3008000)	{
-						$pageLink = htmlspecialchars('index.php?id='.$pid.'&amp;'.$this->pibase->prefixId.'['.strtolower($itemTable->marker).']='.intval($row['uid']).'&amp;'.$this->pibase->prefixId.'[backPID]='.$TSFE->id);
-					} else {
-						$addQueryString[$itemTable->piVar] = intval($row['uid']);
-						$piVarCat = $this->pibase->piVars[$categoryTable->piVar];
-						$bUseBackPid = $bUseBackPid && ($pid != $TSFE->id);
+					$addQueryString[$itemTable->piVar] = intval($row['uid']);
+					$piVarCat = $this->pibase->piVars[$categoryTable->piVar];
+					$bUseBackPid = $bUseBackPid && ($pid != $TSFE->id);
 
-						if ($piVarCat)	{
-							if ($this->conf['PIDlistDisplay'])	{
-								$bUseBackPid = FALSE;
-							}
-							$cat = $piVarCat;
+					if ($piVarCat)	{
+						if ($this->conf['PIDlistDisplay'])	{
+							$bUseBackPid = FALSE;
 						}
-						if ($cat)	{
-							$addQueryString[$categoryTable->piVar] = $cat;
-						}
-						$this->marker->getSearchParams($addQueryString);
-						$queryString = $this->marker->getLinkParams('begin_at', $addQueryString, FALSE, $bUseBackPid, $itemTable->piVar, $categoryTable->piVar);
-						$pageLink = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid));
+						$cat = $piVarCat;
 					}
+					if ($cat)	{
+						$addQueryString[$categoryTable->piVar] = $cat;
+					}
+					$this->marker->getSearchParams($addQueryString);
+					$queryString = $this->marker->getLinkParams('begin_at', $addQueryString, FALSE, $bUseBackPid, $itemTable->piVar, $categoryTable->piVar);
+					$pageLink = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid));
 
 					if ($childCatWrap)	{
 						$wrappedSubpartArray['###LINK_ITEM###'] = t3lib_div::trimExplode('|',$childCatWrap);
@@ -959,10 +968,18 @@ class tx_ttproducts_list_view {
 						}
 						$tableRowOpen = 1;
 					}
+
+					$itemSingleWrapArray = t3lib_div::trimExplode('|', $cssConf['itemSingleWrap']);
+					if ($itemSingleWrapArray[0]) {
+						$temp .= str_replace('###UNEVEN###', $evenUneven, $itemSingleWrapArray[0]);
+					}
+
 					$markerArray['###ITEM_SINGLE_PRE_HTML###'] = $temp;
-					$temp='';
+
+					$temp = $itemSingleWrapArray[1];
+
 					if (!$displayColumns || $iColCount == $displayColumns) {
-						$temp = $itemRowWrapArray[1];
+						$temp .= $itemRowWrapArray[1];
 						$tableRowOpen = 0;
 					}
 					$markerArray['###ITEM_SINGLE_POST_HTML###'] = $temp;
@@ -1075,12 +1092,13 @@ class tx_ttproducts_list_view {
 			}
 			$this->marker->getSearchParams($addQueryString);
 
-			$backPID = $this->pibase->piVars['backPID'];
-			$pid = ($backPID ? $backPID : $TSFE->id);
-			$linkUrl = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',$addQueryString,TRUE,TRUE,''));
-			$linkUrl = htmlspecialchars($linkUrl);
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>',array('useCacheHash' => TRUE));
-			$bUseCache = $bUseCache && (count($this->basket->itemArray)==0);
+// 			$backPID = $this->pibase->piVars['backPID'];
+// 			$pid = ($backPID ? $backPID : $TSFE->id);
+
+// 			$linkUrl = $this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams('',$addQueryString,TRUE,TRUE,''));
+//
+// 			$linkUrl = htmlspecialchars($linkUrl);
+// 			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>',array('useCacheHash' => TRUE));
 
 			if ($more)	{
 				$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
@@ -1130,6 +1148,7 @@ class tx_ttproducts_list_view {
 			$markerArray['###HIDDEN_FIELDS###'] = $hiddenText; // TODO
 
 			$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
+
 			$content .= $out;
 		} elseif ($sword && $allowedItems!='0' && $theCode=='SEARCH' && $this->conf['listViewOnSearch'] == '1')	{
 			$content .= $this->pibase->cObj->getSubpart($templateCode,$this->marker->spMarker('###ITEM_SEARCH_EMPTY###'));

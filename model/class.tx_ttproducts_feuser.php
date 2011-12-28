@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2010 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -210,14 +210,16 @@ class tx_ttproducts_feuser {
 		global $TCA;
 		global $TYPO3_CONF_VARS;
 
-		if ($bSelect)	{
-			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-			$typeSalutationText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'][salutation]', $row['salutation'], array());
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
 
+		if ($bSelect)	{
+
+			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
+			$typeSalutationText = tx_ttproducts_form_div::createSelect($langObj, $TCA['sys_products_orders']['columns']['salutation']['config']['items'], 'recs['.$type.'][salutation]', $row['salutation'], array());
 		} else if (is_numeric($row['salutation'])) {
 			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];
 			$tmp = tx_div2007_alpha::sL_fh001($salutation[0]);
-			$typeSalutationText = htmlspecialchars(tx_div2007_alpha::getLL($this->pibase, $tmp));
+			$typeSalutationText = htmlspecialchars(tx_div2007_alpha5::getLL_fh002($langObj, $tmp));
 		} else {
 			$typeSalutationText = '';
 		}

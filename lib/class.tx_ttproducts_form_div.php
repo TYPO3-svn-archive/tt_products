@@ -44,7 +44,7 @@ global $TYPO3_CONF_VARS;
 
 class tx_ttproducts_form_div {
 
-	function createSelect (&$pibase, &$valueArray, $name, $indexSelected, $allowedArray = array()) {
+	function createSelect ($langObj, &$valueArray, $name, $indexSelected, $allowedArray = array()) {
 		global $TYPO3_DB, $TSFE;
 
 		$text = '';
@@ -57,7 +57,8 @@ class tx_ttproducts_form_div {
 				$selectValue = $parts;
 			}
 			$tmp = tx_div2007_alpha::sL_fh001($selectValue);
-			$text = tx_div2007_alpha::getLL($pibase, $tmp);
+			$text = tx_div2007_alpha5::getLL_fh002($langObj, $tmp);
+
 			if ($text == '')	{
 				$text = htmlentities($selectValue,ENT_QUOTES,$TSFE->renderCharset);
 			}

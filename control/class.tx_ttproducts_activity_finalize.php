@@ -318,12 +318,8 @@ class tx_ttproducts_activity_finalize {
 			}
 			$HTMLmailContent = '';
 			if ($plainMessageArray['customer'] || $this->conf['orderEmail_htmlmail'])	{	// If there is plain text content - which is required!!
-				if ($this->conf['orderEmail_htmlmail'])	{
-					include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
-					$cls = t3lib_div::makeInstanceClassName('t3lib_htmlmail');
-				}
 
-				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
+				if ($this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$this->pibase->cObj->getSubpart($templateCode,'###EMAIL_HTML_SHELL###');
 					$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 
@@ -331,8 +327,9 @@ class tx_ttproducts_activity_finalize {
 						$absRefPrefix = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
 						$markerArray['"index.php'] = '"' . $absRefPrefix . 'index.php';
 					}
-					$orderConfirmationHTML = $basketView->getView($empty, 'EMAIL', $infoObj, false, false, true, '###' . $tmpl . '###', $markerArray);
-					$HTMLmailContent = $this->pibase->cObj->substituteMarker($HTMLmailShell, '###HTML_BODY###', $orderConfirmationHTML);
+					$emailContent = trim($basketView->getView($empty, 'EMAIL', $infoObj, false, false, true, '###' . $tmpl . '###', $markerArray));
+
+					$HTMLmailContent = $this->pibase->cObj->substituteMarker($HTMLmailShell, '###HTML_BODY###', $emailContent);
 					$HTMLmailContent = $this->pibase->cObj->substituteMarkerArray($HTMLmailContent,  $this->pibase->globalMarkerArray);
 
 						// Remove image tags to the products:
@@ -356,6 +353,7 @@ class tx_ttproducts_activity_finalize {
 				}
 
 				$agbAttachment = ($this->conf['AGBattachment'] ? t3lib_div::getFileAbsFileName($this->conf['AGBattachment']) : '');
+
 				foreach ($recipientsArray['customer'] as $key => $recipient) {
 					tx_ttproducts_email_div::send_mail(
 						$recipient,

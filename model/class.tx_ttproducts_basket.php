@@ -115,7 +115,10 @@ class tx_ttproducts_basket {
 
 		if ($this->conf['basketMaxQuantity'] == 'inStock' && !$this->conf['alwaysInStock'] && !empty($uid)) {
 			$row = $this->tt_products->get($uid);
-			$count = t3lib_div::intInRange($quantity,0,$row['inStock'],0);
+			$count =
+				(
+					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::forceIntegerInRange($quantity, 0, $row['inStock'], 0) : t3lib_div::intInRange($quantity, 0, $row['inStock'], 0)
+				);
 		} elseif ($this->conf['quantityIsFloat'])	{
 			$count = (float) $quantity;
 			if ($count < 0)	{
@@ -125,7 +128,10 @@ class tx_ttproducts_basket {
 				$count = $this->conf['basketMaxQuantity'];
 			}
 		} else {
-			$count=t3lib_div::intInRange($quantity,0,$this->conf['basketMaxQuantity'],0);
+			$count =
+				(
+					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::forceIntegerInRange($quantity, 0, $this->conf['basketMaxQuantity'], 0) : t3lib_div::intInRange($quantity, 0, $this->conf['basketMaxQuantity'], 0)
+				);
 		}
 		return $count;
 	}
@@ -277,9 +283,7 @@ class tx_ttproducts_basket {
 		}
 
 		if (is_array($basketExtRaw)) {
-			// while(list($uid,$basketItem) = each($basketExtRaw)) {
 			foreach ($basketExtRaw as $uid => $basketItem)	{
-
 				if (is_numeric($uid))	{
 					$variant = $this->viewTable->variant->getVariantFromRow($basketItem);
 					$damUid = intval($basketExtRaw['dam']);
@@ -287,19 +291,29 @@ class tx_ttproducts_basket {
 						$tableVariant = $this->viewTable->variant->getTableUid ('tx_dam', $damUid);
 						$variant .= $tableVariant;
 					}
-					if (t3lib_div::testInt($uid))	{
+
+					if (
+						(
+							class_exists('t3lib_utility_Math') ?
+							t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
+							t3lib_div::testInt($uid)
+						)
+					) {
 						// quantities for single values are stored in an array. This is necessary because a HTML checkbox does not send any values if it has been unchecked
 						if (is_array($basketItem['quantity']))	{
 							$basketItem['quantity'] = current($basketItem['quantity']);
 						}
+
 						$quantity = 0;
 						$quantity = $this->price->toNumber($this->conf['quantityIsFloat'],$basketItem['quantity']);
 
 						if ($this->conf['quantityIsFloat'])	{
 							$this->basketExt[$uid][$variant] = $quantity;
 						}
+
 						if (!$updateMode) {
 							$count = $this->getMaxCount($quantity, $uid);
+
 							if ($count >= 0) {
 								$newcount = $count;
 								$oldcount = $this->basketExt[$uid][$variant];
@@ -331,14 +345,17 @@ class tx_ttproducts_basket {
 							}
 						} else {
 							reset($basketItem);
+
 							while(list($md5,$quantity)=each($basketItem)) {
 								$quantity = $this->price->toNumber($this->conf['quantityIsFloat'],$quantity);
 
 								if (is_array($this->basketExt[$uid]))	{
 									reset($this->basketExt[$uid]);
+
 									while(list($variant,)=each($this->basketExt[$uid])) {
 										 // useArticles if you have different prices and therefore articles for color, size, additional and gradings
 										$actMd5 = md5($variant);
+
 										if ($actMd5==$md5) {
 											$count=$this->getMaxCount($quantity, $uid);
 											$this->basketExt[$uid][$variant] = $count;
@@ -469,8 +486,15 @@ class tx_ttproducts_basket {
 		if (count($uidArr) == 0) {
 			return;
 		}
+
+		$cnfObj = &t3lib_div::getUserObj('&tx_ttproducts_config');
+
+		$funcTablename = 'tt_products';
+		$itemTableConf = $cnfObj->getTableConf($funcTablename, 'BASKET');
+		$orderBy = $this->viewTable->getTableObj()->transformOrderby($itemTableConf['orderBy']);
+
 		$where = 'uid IN ('.implode(',',$uidArr).') AND pid IN ('.$this->page->pid_list.')'.$this->viewTable->table->enableFields();
-		$rcArray = $this->viewTable->getWhere($where);
+		$rcArray = $this->viewTable->getWhere($where, 'BASKET', $orderBy);
 
 		$productsArray = array();
 		$this->page->setPageArray();
@@ -702,7 +726,7 @@ class tx_ttproducts_basket {
 		);
 
 		if ($shippingTax)	{
-			$this->calculatedArray['priceNoTax']['sametaxtotal'][strval($shippingTax)] += $this->calculatedArray['priceNoTax']['shipping'];
+			$this->calculatedArray['priceNoTax']['sametaxtotal'][strval(number_format($shippingTax, 2))] += $this->calculatedArray['priceNoTax']['shipping'];
 		}
 	} // getCalculatedBasket
 
@@ -823,9 +847,9 @@ class tx_ttproducts_basket {
 		$this->calculatedArray['priceTax']['vouchertotal'] = $this->calculatedArray['priceTax']['total'] - $this->calculatedArray['priceTax']['creditpoints'];
 		$this->calculatedArray['priceTax']['vouchertotal'] -= $this->calculatedArray['priceTax']['voucher'];
 
-		$this->calculatedArray['priceNoTax']['total']  = $this->calculatedArray['priceNoTax']['goodstotal'];
-		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['payment'];
-		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['shipping'];
+		$this->calculatedArray['priceNoTax']['total']  = round($this->calculatedArray['priceNoTax']['goodstotal'], 2);
+		$this->calculatedArray['priceNoTax']['total'] += round($this->calculatedArray['priceNoTax']['payment'], 2);
+		$this->calculatedArray['priceNoTax']['total'] += round($this->calculatedArray['priceNoTax']['shipping'], 2);
 
 		$this->calculatedArray['priceNoTax']['vouchertotal'] = $this->calculatedArray['priceNoTax']['total'] - $this->calculatedArray['priceTax']['creditpoints'];
 		$this->calculatedArray['priceNoTax']['vouchertotal'] -= $this->calculatedArray['priceTax']['voucher'];

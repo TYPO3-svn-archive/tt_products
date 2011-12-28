@@ -255,11 +255,12 @@ class tx_ttproducts_card {
 		global $TYPO3_CONF_VARS;
 
 		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		$ccNumberArray = array();
 		$ccTypeTextSelected = '';
 		if (count($this->allowedArray))	{
-			$ccTypeText = tx_ttproducts_form_div::createSelect ($this->pibase, $TCA[$this->tablename]['columns']['cc_type']['config']['items'], 'recs[creditcard][cc_type]', $this->ccArray['cc_type'], $this->allowedArray);
+			$ccTypeText = tx_ttproducts_form_div::createSelect($langObj, $TCA[$this->tablename]['columns']['cc_type']['config']['items'], 'recs[creditcard][cc_type]', $this->ccArray['cc_type'], $this->allowedArray);
 			for ($i = 1; $i <= 4; ++$i)	{
 				$ccNumberArray[$i - 1] = $this->ccArray['cc_number_'.$i];
 			}
@@ -276,7 +277,7 @@ class tx_ttproducts_card {
 		if (isset($this->ccArray['cc_type']))	{ // tx_fhlibrary_language::sL
 			$tmp = $TCA[$this->tablename]['columns']['cc_type']['config']['items'][$this->ccArray['cc_type']]['0'];
 			$tmp = tx_div2007_alpha::sL_fh001($tmp);
-			$ccTypeTextSelected = tx_div2007_alpha::getLL($this->pibase,$tmp);
+			$ccTypeTextSelected = tx_div2007_alpha5::getLL_fh002($langObj,$tmp);
 		}
 		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $ccTypeTextSelected;
 		for ($i = 1; $i <= 4; ++$i)	{
@@ -293,13 +294,13 @@ class tx_ttproducts_card {
 			if (is_array($mmArray))	{
 				$valueArray = tx_ttproducts_form_div::fetchValueArray($mmArray['valueArray.']);
 				$markerArray['###PERSON_CARDS_ENDTIME_MM_SELECT###'] =
-					tx_ttproducts_form_div::createSelect ($this->pibase, $valueArray, 'recs[creditcard][endtime_mm]', $this->ccArray['endtime_mm']);
+					tx_ttproducts_form_div::createSelect($langObj, $valueArray, 'recs[creditcard][endtime_mm]', $this->ccArray['endtime_mm']);
 			}
 			$yyArray = $this->conf['payment.']['creditcardSelect.']['yy.'];
 			if (is_array($yyArray))	{
 				$valueArray = tx_ttproducts_form_div::fetchValueArray($yyArray['valueArray.']);
 				$markerArray['###PERSON_CARDS_ENDTIME_YY_SELECT###'] =
-					tx_ttproducts_form_div::createSelect ($this->pibase, $valueArray, 'recs[creditcard][endtime_yy]', $this->ccArray['endtime_yy']);
+					tx_ttproducts_form_div::createSelect($langObj, $valueArray, 'recs[creditcard][endtime_yy]', $this->ccArray['endtime_yy']);
 			}
 		}
 	} // getMarkerArray
@@ -313,7 +314,14 @@ class tx_ttproducts_card {
 
 		foreach ($this->fieldArray as $k => $field)	{
 			$testVal = $this->ccArray[$field];
-			if (!t3lib_div::testInt($testVal) && !$testVal)	{
+
+			if (
+				!$testVal &&
+				(
+					class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($testVal) :
+					!t3lib_div::testInt($testVal)
+				)
+			)	{
 				$rc = $field;
 				break;
 			}

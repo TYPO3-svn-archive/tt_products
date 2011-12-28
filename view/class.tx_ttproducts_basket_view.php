@@ -433,8 +433,8 @@ class tx_ttproducts_basket_view {
 			$basketMarkerArray = $this->getMarkerArray();
 			$markerArray = array_merge($markerArray,$basketMarkerArray);
 			$pid = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		//	$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->marker->getLinkParams())).'">','</a>');
 
+/*
 			$tmpLinkParam = $this->marker->getLinkParams(
 				'',
 				array(),
@@ -450,7 +450,30 @@ class tx_ttproducts_basket_view {
 					)
 				) . '">',
 				'</a>'
+			);*/
+
+			$conf = array('useCacheHash' => FALSE);
+			$url = tx_div2007_alpha::getTypoLink_URL_fh002(
+				$this->pibase->cObj,
+				$pid,
+				$this->marker->getLinkParams(
+					'',
+					array(),
+					TRUE,
+					TRUE,
+					''
+				),
+				$target = '',
+				$conf
 			);
+			$htmlUrl = htmlspecialchars(
+					$url,
+					ENT_NOQUOTES,
+					$GLOBALS['TSFE']->renderCharset
+				);
+
+			$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'. $htmlUrl .'">','</a>');
+
 			$activityArray = tx_ttproducts_model_activity::getActivityArray();
 			$hiddenFields = '';
 			if (is_array($activityArray))	{
@@ -723,6 +746,23 @@ class tx_ttproducts_basket_view {
 				'<a href="'. $this->pibase->pi_getPageLink($pidagb,'',$this->marker->getLinkParams('', $addQueryString, true)) .'" target="'.$this->conf['AGBtarget'].'">',
 				'</a>'
 			);
+
+			$pidRevocation = intval($this->conf['PIDrevocation']);
+			$wrappedSubpartArray['###LINK_REVOCATION###'] = array(
+				'<a href="' . htmlspecialchars(
+					$this->pibase->pi_getPageLink(
+						$pidRevocation,
+						'',
+						$this->marker->getLinkParams(
+							'',
+							$addQueryString,
+							TRUE
+						)
+					)
+				) . '" target="' . $this->conf['AGBtarget'] . '">',
+				'</a>'
+			);
+
 
 				// Final substitution:
 			if (!$TSFE->loginUser)	{	// Remove section for FE_USERs only, if there are no fe_user

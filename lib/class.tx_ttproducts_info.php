@@ -241,11 +241,17 @@ class tx_ttproducts_info {
 			// all of the delivery address will be overwritten when no address and no email address have been filled in
 		if (!trim($this->infoArray['delivery']['address']) && !trim($this->infoArray['delivery']['email']) && !$this->bDeliveryAddress) {
 			$fieldArray = t3lib_div::trimExplode(',',$this->feuserfields);
-			foreach($fieldArray as $fName)	{
-				$this->infoArray['delivery'][$fName] = $this->infoArray['billing'][$fName];
+			foreach($fieldArray as $k => $fName) {
+				if (
+					isset($this->infoArray['billing'][$fName]) &&
+					($this->infoArray['delivery'][$fName] == '' || ($this->infoArray['delivery'][$fName] == '0' && !trim($this->infoArray['delivery']['address'])))
+				) {
+					$this->infoArray['delivery'][$fName] = $this->infoArray['billing'][$fName];
+				}
 			}
 		}
 	} // mapPersonIntoDelivery
+
 
 	/**
 	 * Checks if required fields are filled in
@@ -319,6 +325,8 @@ class tx_ttproducts_info {
 		global $TCA, $TSFE;
 		global $TYPO3_CONF_VARS;
 
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+
 		$infoFields = t3lib_div::trimExplode(',',$this->feuserfields); // Fields...
 		reset($infoFields);
 		while(list(,$fName)=each($infoFields))	{
@@ -339,13 +347,16 @@ class tx_ttproducts_info {
 				$sitVersion = $eInfo['version'];
 
 				if (version_compare($sitVersion, '2.0.1', '>='))	{
+
 					$markerArray['###PERSON_COUNTRY_CODE###'] =
 						$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[personinfo][country_code]', '', $countryCodeArray['billing'], '', 0, '', '', $whereCountries);
+
 					$countryArray = $this->staticInfo->initCountries('ALL','',false,$whereCountries);
 					$markerArray['###PERSON_COUNTRY_FIRST###'] = current($countryArray);
 					$markerArray['###PERSON_COUNTRY_FIRST_HIDDEN###'] = '<input type="hidden" name="recs[personinfo][country_code]" size="3" value="'.current(array_keys($countryArray)).'">';
 					$markerArray['###PERSON_COUNTRY###'] =
 						$this->staticInfo->getStaticInfoName('COUNTRIES', $countryCodeArray['billing'],'','');
+
 					$markerArray['###DELIVERY_COUNTRY_CODE###'] =
 						$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[delivery][country_code]', '', $countryCodeArray['delivery'], '', 0, '', '', $whereCountries);
 					$markerArray['###DELIVERY_COUNTRY_FIRST###'] = $markerArray['###PERSON_COUNTRY_FIRST###'];
@@ -356,10 +367,13 @@ class tx_ttproducts_info {
 			}
 
 			if (!$bReady)	{
+
 				$markerArray['###PERSON_COUNTRY_CODE###'] =
 					$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[personinfo][country_code]', '', $countryCodeArray['billing'],'');
+
 				$markerArray['###PERSON_COUNTRY###'] =
 					$this->staticInfo->getStaticInfoName('COUNTRIES', $countryCodeArray['billing'],'','');
+
 				$markerArray['###DELIVERY_COUNTRY_CODE###'] =
 					$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[delivery][country_code]', '', $countryCodeArray['delivery'],'');
 				$markerArray['###DELIVERY_COUNTRY###'] =
@@ -406,7 +420,7 @@ class tx_ttproducts_info {
 					include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 
 					$markerArray['###DELIVERY_STORE_SELECT###'] =
-						tx_ttproducts_form_div::createSelect($this->pibase, $valueArray, 'recs[delivery][store]', $actUidStore, array());
+						tx_ttproducts_form_div::createSelect($langObj, $valueArray, 'recs[delivery][store]', $actUidStore, array());
 
 					if ($actUidStore)	{
 						$row = $addressArray[$actUidStore];

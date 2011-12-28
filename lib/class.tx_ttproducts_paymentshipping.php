@@ -60,6 +60,7 @@ class tx_ttproducts_paymentshipping {
 	var $price;	// price functions
 	var $typeArray = array('shipping','payment');
 
+
 	function init (&$pibase, &$cnf, &$basket, &$fe_users)	{
 		global $TSFE;
 
@@ -263,13 +264,19 @@ class tx_ttproducts_paymentshipping {
 			$type = $this->conf[$pskey.'.']['radio'];
 		}
 
-		if (!t3lib_div::testInt($type))	{
+		if (
+			class_exists('t3lib_utility_Math') ?
+			!t3lib_utility_Math::canBeInterpretedAsInteger($type) :
+			!t3lib_div::testInt($type)
+		) {
 			$type = 0;
 		}
 
 		$active = $this->basket->basketExtra[$pskey];
 		$activeArray = is_array($active) ? $active : array($active);
 		$confArr = $this->cleanConfArr($this->conf[$pskey.'.']);
+		$bUseXHTML = $GLOBALS['TSFE']->config['config']['xhtmlDoctype'] != '';
+		$selectedText = ($bUseXHTML ? 'selected="selected"' : 'selected');
 
 		$out='';
 		if ($this->conf['PIDbasket'])	{
@@ -286,7 +293,7 @@ class tx_ttproducts_paymentshipping {
 
 		$template = (
 			$this->conf[$pskey.'.']['template'] ?
-				preg_replace('/[:space:]*\\.[:space:]*' . $pskey . '[:space:]*\\.[:space:]*/',$pskey, $this->conf[$pskey.'.']['template']) :
+				preg_replace('/[[:space:]]*\\.[[:space:]]*' . $pskey . '[[:space:]]*\\.[[:space:]]*/', $pskey, $this->conf[$pskey.'.']['template']) :
 				'###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>'
 			);
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
@@ -367,7 +374,7 @@ class tx_ttproducts_paymentshipping {
 								$value = $key;
 								$title = $item['title'];
 							}
-							$out .= '<option value="' . $value . '"' . ($value == implode('-',$activeArray) ? ' selected':'') . '>'  . $title .'</option>' . chr(10);
+							$out .= '<option value="' . $value . '"' . ($value == implode('-',$activeArray) ? ' ' . $selectedText : '') . '>'  . $title .'</option>' . chr(10);
 						}
 					}
 				}
@@ -405,7 +412,16 @@ class tx_ttproducts_paymentshipping {
 		if (is_array($confArr)) {
 			reset($confArr);
 			while(list($key,$val)=each($confArr))	{
-				if (!t3lib_div::testInt($key) && intval($key) && is_array($val) && (!$checkShow || $val['show'] || !isset($val['show'])))	{
+				if (
+					(
+						class_exists('t3lib_utility_Math') ?
+						!t3lib_utility_Math::canBeInterpretedAsInteger($key) :
+						!t3lib_div::testInt($key)
+					) &&
+					intval($key) &&
+					is_array($val) &&
+					(!$checkShow || $val['show'] || !isset($val['show']))
+				)	{
 					$outArr[intval($key)]=$val;
 				}
 			}
@@ -438,30 +454,47 @@ class tx_ttproducts_paymentshipping {
 				}
 			}
 
-/*				foreach ($confArr['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
-					if (is_array($this->basket->itemArray[$minPricePID]) && $minPrice<doubleval($minPriceValue)) {
-						$minPrice=$minPriceValue;
-					}
-				}*/
 			krsort($confArr);
 
 			if ($confArr['type'] == 'count') {
 				foreach ($confArr as $k1 => $price1)	{
-					if (t3lib_div::testInt($k1) && $countTotal >= $k1) {
+					if (
+						(
+							class_exists('t3lib_utility_Math') ?
+							t3lib_utility_Math::canBeInterpretedAsInteger($k1) :
+							t3lib_div::testInt($k1)
+						) &&
+						$countTotal >= $k1
+					) {
 						$priceNew = $price1;
 						break;
 					}
 				}
 			} else if ($confArr['type'] == 'weight') {
+
 				foreach ($confArr as $k1 => $price1)	{
-					if (t3lib_div::testInt($k1) && $this->basket->calculatedArray['weight'] * 1000 >= $k1) {
+					if (
+						(
+							class_exists('t3lib_utility_Math') ?
+							t3lib_utility_Math::canBeInterpretedAsInteger($k1) :
+							t3lib_div::testInt($k1)
+						) &&
+						$this->basket->calculatedArray['weight'] * 1000 >= $k1
+					) {
 						$priceNew = $price1;
 						break;
 					}
 				}
 			} else if ($confArr['type'] == 'price') {
 				foreach ($confArr as $k1 => $price1)	{
-					if (t3lib_div::testInt($k1) && $priceTotalTax >= $k1) {
+					if (
+						(
+							class_exists('t3lib_utility_Math') ?
+							t3lib_utility_Math::canBeInterpretedAsInteger($k1) :
+							t3lib_div::testInt($k1)
+						) &&
+						$priceTotalTax >= $k1
+					) {
 						$priceNew = $price1;
 						break;
 					}
@@ -673,16 +706,27 @@ class tx_ttproducts_paymentshipping {
 		return $rc;
 	}
 
-	function useGatewayRequest ()	{
-		$rc = false;
-		if (t3lib_extMgm::isLoaded ('paymentlib') && version_compare(phpversion(), '5.0.0', '>='))	{
-			$payConf = &$this->basket->basketExtra['payment.'];
-			if (is_array($payConf) && $payConf['handleLib'] == 'paymentlib' && is_array($payConf['handleLib.']) && $payConf['handleLib.']['gatewaymode'] == 'request')	{
-				$rc = true;
-			}
+	function getHandleLib ($request)	{ // getGatewayRequestExt
+
+		$rc = FALSE;
+		$payConf = &$this->basket->basketExtra['payment.'];
+
+		if (is_array($payConf))	{
+			$handleLib = $payConf['handleLib'];
 		}
+
+		if (
+			(strpos($handleLib,'transactor') !== FALSE || strpos($handleLib,'paymentlib') !== FALSE) &&
+			is_array($payConf['handleLib.']) &&
+			$payConf['handleLib.']['gatewaymode'] == $request &&
+			t3lib_extMgm::isLoaded($handleLib)
+		)	{
+			$rc = $handleLib;
+		}
+
 		return $rc;
 	}
+
 }
 
 

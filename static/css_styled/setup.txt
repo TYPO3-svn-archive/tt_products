@@ -113,6 +113,7 @@ plugin.tt_products {
   NoSingleViewOnList = {$plugin.tt_products.NoSingleViewOnList}
   listViewOnSearch = {$plugin.tt_products.listViewOnSearch}
   PIDagb = {$plugin.tt_products.PIDagb}
+  PIDrevocation = {$plugin.tt_products.PIDrevocation}
   PIDinfo = {$plugin.tt_products.PIDinfo}
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
   PIDpayment = {$plugin.tt_products.PIDpayment}

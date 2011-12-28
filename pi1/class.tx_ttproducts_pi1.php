@@ -51,8 +51,10 @@
 require_once(PATH_tslib.'class.tslib_pibase.php');
 
 require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
+require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
 
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+
 
 require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_control.php');
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article.php');
@@ -71,6 +73,8 @@ require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_price.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc.php');
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_product.php');
 require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_single_view.php');
+
+require_once(PATH_BE_ttproducts . 'model/class.tx_ttproducts_language.php');
 
 
 class tx_ttproducts_pi1 extends tslib_pibase {
@@ -636,14 +640,14 @@ class tx_ttproducts_pi1 extends tslib_pibase {
  		if ($this->conf['TAXmode'] == '' ||  $this->conf['TAXmode'] == '{$plugin.tt_products.TAXmode}')	{
 			$this->conf['TAXmode'] == 1;
 		}
-		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
-		if ($typoVersion < 3008000)	{
-			$dblangfile = 'locallang_tca.php';
-		} else {
-			$dblangfile = 'locallang_db.xml';
-		}
-		tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/'.$dblangfile);
-		tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/pi1/locallang.xml');
+		$dblangfile = 'locallang_db.xml';
+
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$pLangObj = &$this;
+		$langObj->init($pLangObj, $this->cObj, $this->conf, 'pi1/class.tx_ttproducts_pi1.php');
+
+		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXTkey . '/' . $dblangfile);
+		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXTkey . '/pi1/locallang.xml');
 
 			// get all extending TCAs
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']))	{
@@ -661,13 +665,25 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		$this->templateSuffix = strtoupper($this->templateSuffix);
 		$this->templateSuffix = ($this->templateSuffix ? '_'.$this->templateSuffix : '');
 		$config['limit'] = $this->conf['limit'] ? $this->conf['limit'] : 50;
-		$config['limitImage'] = t3lib_div::intInRange($this->conf['limitImage'],0,50);
+		$config['limitImage'] =
+			(
+				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::forceIntegerInRange($this->conf['limitImage'], 0, 50, 1) : t3lib_div::intInRange($this->conf['limitImage'], 0, 50)
+			);
+
 		$config['limitImage'] = $config['limitImage'] ? $config['limitImage'] : 1;
-		$config['limitImageSingle'] = t3lib_div::intInRange($this->conf['limitImageSingle'],0,50);
+
+		$config['limitImageSingle'] =
+			(
+				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::forceIntegerInRange($this->conf['limitImageSingle'], 0, 50) : t3lib_div::intInRange($this->conf['limitImageSingle'], 0, 50)
+			);
+
 		$config['limitImageSingle'] = $config['limitImageSingle'] ? $config['limitImageSingle'] : 1;
 		$recursive = ($this->cObj->data['recursive'] ? $this->cObj->data['recursive']: $this->conf['recursive']);
 
-		$config['recursive'] = t3lib_div::intInRange($recursive,0,100);
+		$config['recursive'] =
+			(
+				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::forceIntegerInRange($recursive, 0, 100) : t3lib_div::intInRange($recursive, 0, 100)
+			);
 
 		if ($this->conf['PIDstoreRoot'])	{
 			$config['storeRootPid'] = $this->conf['PIDstoreRoot'];
@@ -680,7 +696,14 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			}
 		}
 
-		$config['priceNoReseller'] = $this->conf['priceNoReseller'] ? t3lib_div::intInRange($this->conf['priceNoReseller'],2,2) : NULL;
+		if ($this->conf['priceNoReseller']) {
+			$config['priceNoReseller'] =
+				(
+					class_exists('t3lib_utility_Math') ?
+					t3lib_utility_Math::forceIntegerInRange($this->conf['priceNoReseller'], 2, 10) :
+					t3lib_div::intInRange($this->conf['priceNoReseller'], 2, 10)
+				);
+		}
 
 		if ($this->conf['pid_list'] == '{$plugin.tt_products.pid_list}')	{
 			$this->conf['pid_list'] = '';
@@ -708,15 +731,23 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			if (isset($tmp) && is_array($tmp) && isset($tmp['product']))	{	// upwards compatible to tt_products parameter
 				$tmp = $tmp['product'];
 			}
-			if (t3lib_div::testInt($tmp))	{
+
+			if (
+				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tmp) : t3lib_div::testInt($tmp)
+			) {
 				$this->tt_product_single['product'] = $tmp;
 			}
 			$tmp = ($this->piVars['article'] ? $this->piVars['article'] : '');
-			if (t3lib_div::testInt($tmp))	{
+
+			if (
+				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tmp) : t3lib_div::testInt($tmp)
+			) {
 				$this->tt_product_single['article'] = $tmp;
 			}
 			$tmp = ($this->piVars['dam'] ? $this->piVars['dam'] : '');
-			if (t3lib_div::testInt($tmp))	{
+			if (
+				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tmp) : t3lib_div::testInt($tmp)
+			) {
 				$this->tt_product_single['dam'] = $tmp;
 			}
 		}

@@ -90,7 +90,11 @@ class tx_ttproducts_order {
 
 				if ($this->conf['advanceOrderNumberWithInteger']) {
 					$rndParts = explode(',',$this->conf['advanceOrderNumberWithInteger']);
-					$advanceUid = $prevUid + t3lib_div::intInRange(rand(intval($rndParts[0]),intval($rndParts[1])),1);
+					$randomValue = rand(intval($rndParts[0]), intval($rndParts[1]));
+					$advanceUid = $prevUid +
+						(
+							class_exists('t3lib_utility_Math') ? t3lib_utility_Math::forceIntegerInRange($randomValue, 1) : t3lib_div::intInRange($randomValue, 1)
+						);
 				} else {
 					$advanceUid = $prevUid + 1;
 				}

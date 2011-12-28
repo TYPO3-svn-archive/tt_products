@@ -501,16 +501,7 @@ class tx_ttproducts_control {
 											$this->conf['useArticles']
 										);
 									}
-/*									if ($this->paymentshipping->useGatewayRequest ())	{
-										require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
-										$paymentlib = t3lib_div::makeInstance('tx_ttproducts_paymentlib');
-										$paymentlib->init($this->pibase, $this->cnf, $this->basket, $basketView, $this->price, $order, $infoObj, $card, $account);
-										$paymentErrorMsg = $paymentlib->checkRequired($this->basket->basketExtra['payment.']['handleLib.']);
-									}*/
 									$handleLib = $this->paymentshipping->getHandleLib('request');
-// 									if ($handleLib == '')	{
-// 										$handleLib = $paymentshippingObj->getHandleLib('form');
-// 									}
 
 									if (strpos($handleLib,'transactor') !== FALSE)	{
 										// Payment Transactor
@@ -608,7 +599,6 @@ class tx_ttproducts_control {
 										}
 									}
 									$markerArray = $this->marker->addURLMarkers(0, array(), $addQueryString);
-
 									$markerArray['###ERROR_DETAILS###'] = $label;
 									$markerArray = array_merge($markerArray,$overwriteMarkerArray);
 
@@ -795,7 +785,7 @@ class tx_ttproducts_control {
 							$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = '';
 						}
 
-						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
+						// get the orderconfirmation template as html email and the thanks template as thanks page
 						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $infoObj, false, false, true, '###'.$tmpl.'###', $mainMarkerArray);
 

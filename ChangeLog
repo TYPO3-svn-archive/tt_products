@@ -1,3 +1,21 @@
+2011-12-28 Franz Holzinger <franz@ttproducts.de>
+	* Fix bug with missing images in HTML email
+	* remove deprecated t3lib_div::makeInstanceClassName
+	* support for TYPO3 Caching Framework
+	* allow the fields of the language overlay tables to be excluded from the translation
+	* support for the new language system of TYPO3 4.6
+	* replace deprecated t3lib_div::intInRange by t3lib_utility_Math::forceIntegerInRange
+	* replace deprecated t3lib_div::testInt by t3lib_utility_Math::canBeInterpretedAsInteger
+	* round the total prices internally
+	* new feature: ###LINK_REVOCATION### for the link to the page with the revocation information
+	* fix bug 16798: defaultCategoryID has been overwritten
+	* fix bug 18112: umlaut problem
+	* fix bug 16913: correct XHTML in paymentlib
+	* fix bug 16827: sorting of the basket items
+	* fix bug 15631: recognize useFlexforms
+	* fix bug 15519: shipping and payment selector templates lead to empty markers
+	* fix bug 14221: updating basket-item count
+
 2011-06-02 Franz Holzinger <franz@ttproducts.de>
 	* Fix bug with price2 basket calculation
 	* Fix bug with missing images in HTML email

@@ -280,6 +280,8 @@ plugin.tt_products {
     # cat=plugin.products//; type=int+; label=Group of customers
   memberOfGroup = 1
 
+    # cat=plugin.products//; type=eint+; label=PID of revocation page: PID of the page with the right of revocation
+  PIDrevocation = 0
     # cat=plugin.products//; type=eint+; label=PID of AGB page: PID of the page with the AGB
   PIDagb = 0
     # cat=plugin.products//; type=small; label=Target of AGB page: Target for the AGB page
