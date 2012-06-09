@@ -86,6 +86,14 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 		return $rc;
 	}
 
+	public function setMMTablename ($mm_table) {
+		$this->mm_table = $mm_table;
+	}
+
+	public function getMMTablename () {
+		return $this->mm_table;
+	}
+
 	/**
 	 * [Describe function...]
 	 *
@@ -181,33 +189,37 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 		return $catArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$start: ...
-	 * @param	[type]		$endArray: ...
-	 * @return	[type]		...
-	 */
-	function getLineArray ($start, $endArray)	{
+	public function getDepth ($theCode) {
+		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$functablename = $this->getFuncTablename();
+		$tableconf = $cnf->getTableConf($functablename, $theCode);
+		$rc = $tableconf['hierarchytiers'];
+		if (!isset($rc)) {
+			$rc = 1;
+		}
+		return $rc;
+	}
 
+	function getLineArray ($start, $endArray) {
 		$catArray = array();
 		$hookVar = '';
 		$functablename = $this->getFuncTablename ();
-		if ($functablename == 'tt_products_cat')	{
+		if ($functablename == 'tt_products_cat') {
 			$hookVar = 'prodCategory';
-		} else if($functablename == 'tx_dam_cat')	{
+		} else if($functablename == 'tx_dam_cat') {
 			$hookVar = 'DAMCategory';
 		}
+
 		$tmpArray = array();
 			// Call all addWhere hooks for categories at the end of this method
 		if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'init')) {
 					$hookObj->init($this->parentField);
 				}
 				if (method_exists($hookObj, 'getLineCategories')) {
-					$catArray = $hookObj->getLineCategories($start, $endArray, $this->getFuncTablename(), $this->getTableObj()->enableFields());
+					$catArray = $hookObj->getLineCategories($this, $start, $endArray, $this->getTableObj()->enableFields());
 				}
 			}
 		}
@@ -274,8 +286,13 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 
 		foreach ($categoryArray as $uid => $row)	{
 
-			if (t3lib_div::testInt($uid) && (!$row['parent_category']	||
-				in_array($uid, $rootCatArray)))	{
+			if (
+				(
+					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
+					t3lib_div::testInt($uid)
+				) &&
+				(!$row['parent_category'] || in_array($uid, $rootCatArray))
+			) {
 				$rootArray[] = $uid;
 			}
 		}

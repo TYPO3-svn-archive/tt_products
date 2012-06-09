@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2010 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2012 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -104,7 +104,7 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 			$ptconf = $this->conf['priceTagObj.'];
 			$markContentArray = array();
 			$markContentArray['###PRICE###'] = $priceText;
-			$markContentArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha::getLL($this->langObj, $taxInclExcl) : '');
+			$markContentArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha5::getLL_fh002($this->langObj, $taxInclExcl) : '');
 
 			$this->cObj->substituteMarkerInObject($ptconf, $markContentArray);
 			return $this->cObj->cObjGetSingle($this->conf['priceTagObj'], $ptconf);
@@ -135,32 +135,27 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 
 	public function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $imageRenderObj='')	{
 
-// Todo:
-// 		$pricefactor = doubleval($this->conf['creditpoints.']['priceprod']);
-// 		// price if discounted by credipoints
-// 		$markerArray['###PRICE_IF_DISCOUNTED_BY_CREDITPOINTS_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat(($item['priceTax'] - $pricefactor * $row['creditpoints']), $taxInclExcl));
-// 		$markerArray['###PRICE_IF_DISCOUNTED_BY_CREDITPOINTS_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat(($item['priceNoTax'] - $pricefactor * $row['creditpoints']), $taxInclExcl));
-//
 		$priceArray = array();
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$prodTable = &$tablesObj->get($functablename, TRUE);
 		$modelObj = &$this->getModelObj();
 		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$markerProd = $prodTable->getMarker();
-
 		$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && ($taxFromShipping == 0) ? 'tax_zero' : 'tax_included');
 
 // tt-products-single-1-pricetax
 		$priceArray = $modelObj->getPriceArray($fieldname,$row);
-
 		$priceMarkerPrefix = $prodTable->getMarker() . '_';
 
 		foreach ($priceArray as $displayTax => $priceValue)	{
 			$marker = $this->convertKey($displayTax,$fieldname);
 			$taxMarker = ($markerProd != 'PRODUCT' ? $markerProd . '_' : '') . $marker;
 			$markerArray['###'.$taxMarker.'###'] = $this->printPrice($this->priceFormat($priceValue), $taxInclExcl);
-			$markerArray['###'.$taxMarker.'_ID###'] = $id.str_replace('_','',$displayTax);
+
+			$displaySuffixId = str_replace('_', '', strtolower($displayTax));
+			$displaySuffixId = str_replace($fieldname, '', $displaySuffixId);
+			$markerArray['###'.$taxMarker.'_ID###'] = $id . $displaySuffixId;
 		}
 	}
 }

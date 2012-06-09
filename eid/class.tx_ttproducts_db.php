@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2007-2012 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -46,6 +46,7 @@ require_once (PATH_tslib.'class.tslib_content.php');
 require_once (PATH_tslib.'class.tslib_gifbuilder.php');
 
 require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
+require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_language.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_config.php');
@@ -72,7 +73,7 @@ class tx_ttproducts_db {
 	 * @param	object	$ajax: tx_ttproducts_ajax
 	 * @return	void
 	 */
-	function init (&$conf, &$config, &$ajax)	{
+	public function init (&$conf, &$config, &$ajax, &$pObj, &$error_code) {
 		$this->conf = &$conf;
 		$this->ajax = &$ajax;
 
@@ -83,13 +84,26 @@ class tx_ttproducts_db {
 		);
 
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-
 		$tablesObj->init($this);
-		$ajax->taxajax->registerFunction(array(TT_PRODUCTS_EXTkey.'_fetchRow',&$this,'fetchRow'));
-		tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/pi1/locallang.xml');
+
+		$dblangfile = 'locallang_db.xml';
+
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$pLangObj = &$this;
+		$langObj->init($pLangObj, $this->cObj, $this->conf, 'pi1/class.tx_ttproducts_pi1.php');
+
+		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXTkey . '/' . $dblangfile);
+		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXTkey . '/pi1/locallang.xml');
+
+		if (isset($ajax) && is_object($ajax)) {
+
+			$ajax->taxajax->registerFunction(array(TT_PRODUCTS_EXTkey.'_fetchRow',&$this,'fetchRow'));
+		}
 
 		$this->cObj = t3lib_div::makeInstance('tslib_cObj');	// Local cObj.
 		$this->cObj->start(array());
+
+		return TRUE;
 	}
 
 

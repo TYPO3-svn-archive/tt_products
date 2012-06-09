@@ -137,7 +137,10 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 									foreach ($prodArray as $k3 => $v3)	{
 										if ($k3 == 'type')	{
 											// nothing
-										} else if (t3lib_div::testInt($k3)) {
+										} else if (
+											class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k3) :
+											t3lib_div::testInt($k3)
+										) {
 											$count3 = intval($k3);
 											if ($priceCalcCount >= $count3)	{
 
@@ -161,7 +164,12 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 													default:
 														$prodValue = $v3;
 
-														if (!t3lib_div::testInt($lastprodValue) || $lastprodValue != $prodValue)	{
+														if (
+															(
+																class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($lastprodValue) :
+																!t3lib_div::testInt($lastprodValue)
+															) || $lastprodValue != $prodValue
+														) {
 															if (!$bCollected)	{
 																$countedItems[$k1][] = array ('sort' => $sort, 'item' => $k2, 'active' => FALSE, 'price' );
 															}
@@ -196,7 +204,10 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 
 								$prodValue = 0;
 								foreach ($prodConf as $k3 => $prodv)	{
-									if (t3lib_div::testInt($k3))	 {
+									if (
+										class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k3) :
+										t3lib_div::testInt($k3)
+									) {
 										if ($priceTotalTax >= $k3)	{
 											if (!$prodValue || $prodValue < $prodv)	{
 												$prodValue = $prodv;

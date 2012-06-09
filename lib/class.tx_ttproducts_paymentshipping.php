@@ -207,7 +207,11 @@ class tx_ttproducts_paymentshipping {
 
 			if (isset($this->conf[$type.'.']) && is_array($this->conf[$type.'.']))	{
 				foreach($this->conf[$type.'.'] as $k2 => $confRow)	{
-					if (!t3lib_div::testInt(substr($k2,0,-1)))	{
+					if (
+						class_exists('t3lib_utility_Math') ?
+							!t3lib_utility_Math::canBeInterpretedAsInteger(substr($k2,0,-1)) :
+							!t3lib_div::testInt(substr($k2,0,-1))
+					) {
 						continue;
 					}
 					$key = substr($k2,0,-1);
@@ -258,6 +262,7 @@ class tx_ttproducts_paymentshipping {
 		$markerArray['###VALUE###'] = $value;
 		$markerArray['###CHECKED###'] = ($value==implode('-',$activeArray) ? ' checked="checked"':'');
 		$markerArray['###TITLE###'] = $row['title'];
+
 		$imageCode = $this->cObj->IMAGE($row['image.']);
 
 		if ($theCode == 'EMAIL') {
@@ -289,7 +294,10 @@ class tx_ttproducts_paymentshipping {
 			$type = $this->conf[$pskey.'.']['radio'];
 		}
 
-		if (!t3lib_div::testInt($type))	{
+		if (
+			class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($type) :
+			!t3lib_div::testInt($type)
+		) {
 			$type = 0;
 		}
 
@@ -298,11 +306,16 @@ class tx_ttproducts_paymentshipping {
 		$activeArray = is_array($active) ? $active : array($active);
 		$confArr = $this->cleanConfArr($this->conf[$pskey.'.']);
 		$out='';
+		$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
+		$selectedText = ($bUseXHTML ? 'selected="selected"' : 'selected');
+
+		// tx_div2007_alpha::getPageLink_fh001(&$pibase, $id
 
 		$submitCode = 'this.form.action=\''.$basketUrl.'\';this.form.submit();';
+
 		$template = (
 			$this->conf[$pskey.'.']['template'] ?
-				preg_replace('/[:space:]*\\.[:space:]*' . $pskey . '[:space:]*\\.[:space:]*/',$pskey, $this->conf[$pskey.'.']['template']) :
+				preg_replace('/[[:space:]]*\\.[[:space:]]*' . $pskey . '[[:space:]]*\\.[[:space:]]*/',$pskey, $this->conf[$pskey.'.']['template']) :
 				'###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>'
 			);
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
@@ -387,7 +400,7 @@ class tx_ttproducts_paymentshipping {
 								$value = $key;
 								$title = $item['title'];
 							}
-							$out .= '<option value="' . $value . '"' . ($value == implode('-',$activeArray) ? ' selected':'') . '>' . $title . '</option>' . chr(10);
+							$out .= '<option value="' . $value . '"' . ($value == implode('-',$activeArray) ? ' ' . $selectedText : '') . '>' . $title . '</option>' . chr(10);
 						}
 					}
 				}
@@ -427,7 +440,15 @@ class tx_ttproducts_paymentshipping {
 		if (is_array($confArr)) {
 			reset($confArr);
 			while(list($key,$val)=each($confArr))	{
-				if (!t3lib_div::testInt($key) && intval($key) && is_array($val) && (!$checkShow || $val['show'] || !isset($val['show'])))	{
+				if (
+					(
+						class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($key) :
+						!t3lib_div::testInt($key)
+					) &&
+					intval($key) &&
+					is_array($val) &&
+					(!$checkShow || $val['show'] || !isset($val['show']))
+				)	{
 					$outArr[intval($key)]=$val;
 				}
 			}
@@ -463,21 +484,35 @@ class tx_ttproducts_paymentshipping {
 			krsort($confArr);
 			if ($confArr['type'] == 'count') {
 				foreach ($confArr as $k1 => $price1)	{
-					if (t3lib_div::testInt($k1) && $countTotal >= $k1) {
+					if (
+						(
+							class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k1) :
+							t3lib_div::testInt($k1)
+						) && $countTotal >= $k1
+					) {
 						$priceNew = $price1;
 						break;
 					}
 				}
 			} else if ($confArr['type'] == 'weight') {
 				foreach ($confArr as $k1 => $price1)	{
-					if (t3lib_div::testInt($k1) && $this->basket->calculatedArray['weight'] * 1000 >= $k1) {
+					if (
+						(
+							class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k1) :
+							t3lib_div::testInt($k1)
+						) && $this->basket->calculatedArray['weight'] * 1000 >= $k1) {
 						$priceNew = $price1;
 						break;
 					}
 				}
 			} else if ($confArr['type'] == 'price') {
 				foreach ($confArr as $k1 => $price1)	{
-					if (t3lib_div::testInt($k1) && $priceTotalTax >= $k1) {
+					if (
+						(
+							class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k1) :
+							t3lib_div::testInt($k1)
+						) && $priceTotalTax >= $k1
+					) {
 						$priceNew = $price1;
 						break;
 					}
@@ -605,6 +640,7 @@ class tx_ttproducts_paymentshipping {
 		$perc = doubleVal($this->basket->basketExtra[$pskey.'.']['percentOfGoodstotal']);
 		if ($perc)  {
 			$priceShipping = doubleVal(($this->basket->calculatedArray['priceTax']['goodstotal']/100)*$perc);
+			$dum = $this->priceObj->getPrice($priceShipping,1,$taxpercentage);
 			$taxIncluded = $this->priceObj->getTaxIncluded();
 			$priceShippingTax = $priceShippingTax + $this->priceObj->getPrice($priceShipping,true,$taxpercentage,$taxIncluded,true);
 			$priceShippingNoTax = $priceShippingNoTax + $this->priceObj->getPrice($priceShipping,false,$taxpercentage,$taxIncluded,true);
@@ -659,6 +695,7 @@ class tx_ttproducts_paymentshipping {
 		}
 
 		$this->getSpecialPrices('shipping', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
+
 		$this->getPrices('shipping', $taxpercentage, $countTotal, $priceTotalTax, $priceShippingTax, $priceShippingNoTax);
 		$taxIncluded = $this->priceObj->getTaxIncluded();
 

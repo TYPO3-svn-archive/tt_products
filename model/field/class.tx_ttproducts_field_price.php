@@ -221,18 +221,19 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 		$rc = 0;
 		$bTax = ($tax==1);
 
-//		if (!$this->checkVatInclude())	{
-//			$bTax = false;
-//		}
 		$price = $this->toNumber(true, $price);
 
-		if ($price > 0)	{
-			if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
-				$taxpercentage = doubleval($this->priceConf['TAXpercentage']);
-			}
-		} else {
-			$taxpercentage = 0;
+		if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
+			$taxpercentage = doubleval($this->priceConf['TAXpercentage']);
 		}
+
+// 		if ($price > 0)	{
+// 			if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
+// 				$taxpercentage = doubleval($this->priceConf['TAXpercentage']);
+// 			}
+// 		} else {
+// 			$taxpercentage = 0;
+// 		}
 
 //		Buch 'Der TYPO3 Webshop'
 // 		if (doubleval($taxpercentage) == -1)  {
@@ -265,7 +266,10 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	// function using getPrice and considering a reduced price for resellers
 	function getResellerPrice($row, $tax=1, $priceNo='')	{
 		$returnPrice = 0;
-		if (!t3lib_div::testInt($priceNo))	{
+		if (
+			class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($priceNo) :
+			!t3lib_div::testInt($priceNo)
+		) {
 				// get reseller group number
 			$priceNo = intval($this->priceConf['priceNoReseller']);
 		}
@@ -291,10 +295,10 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 
 		if ($fieldname == 'price')	{
 
-			$priceArray['tax'] = $this->getResellerPrice($row,1);
-			$priceArray['notax'] = $this->getResellerPrice($row,0);
 			$discount = $TSFE->fe_user->user['tt_products_discount'];
 			$internalRow['price'] = $this->getDiscountPrice($row['price'], $discount);
+			$priceArray['tax'] = $this->getResellerPrice($internalRow,1);
+			$priceArray['notax'] = $this->getResellerPrice($internalRow,0);
 
 			$priceArray['0tax'] = $price0tax;
 			$priceArray['0notax'] = $this->getResellerPrice($row,0,0);

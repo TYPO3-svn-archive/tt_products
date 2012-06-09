@@ -202,7 +202,10 @@ class tx_ttproducts_basket {
 		if (is_array($basketExtRaw)) {
 			// while(list($uid,$basketItem) = each($basketExtRaw)) {
 			foreach ($basketExtRaw as $uid => $basketItem)	{
-				if (t3lib_div::testInt($uid))	{
+				if (
+					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
+					t3lib_div::testInt($uid)
+				) {
 					$variant = $viewTableObj->variant->getVariantFromRawRow($basketItem);
 					$oldcount = $this->basketExt[$uid][$variant];
 					$damUid = intval($basketExtRaw['dam']);
@@ -318,8 +321,18 @@ class tx_ttproducts_basket {
 			foreach($this->basketExt as $tmpUid => $tmpSubArr) {
 				if (is_array($tmpSubArr) && count($tmpSubArr))	{
 					foreach($tmpSubArr as $tmpExtVar => $tmpCount) {
-						if (t3lib_div::testInt($tmpCount) && $tmpCount > 0) {
+						if (
+							$tmpCount > 0 &&
+							(
+								$this->conf['quantityIsFloat'] ||
+								(
+									class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tmpCount) :
+									t3lib_div::testInt($tmpCount)
+								)
+							)
+						) {
 							$basketExtNew[$tmpUid][$tmpExtVar] = $this->basketExt[$tmpUid][$tmpExtVar];
+
 							if (isset($this->basketExt[$tmpUid][$tmpExtVar.'.']) && is_array($this->basketExt[$tmpUid][$tmpExtVar.'.']))	{
 								$basketExtNew[$tmpUid][$tmpExtVar.'.'] = $this->basketExt[$tmpUid][$tmpExtVar.'.'];
 							}
@@ -396,7 +409,12 @@ class tx_ttproducts_basket {
 			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
 			$viewTableObj = &$tablesObj->get('tt_products');
 			$row = $viewTableObj->get($uid);
-			$count = t3lib_div::intInRange($quantity,0,$row['inStock'],0);
+			$count =
+				(
+					class_exists('t3lib_utility_Math') ?
+						t3lib_utility_Math::forceIntegerInRange($quantity, 0, $row['inStock'], 0) :
+						t3lib_div::intInRange($quantity, 0, $row['inStock'], 0)
+				);
 		} elseif ($this->conf['quantityIsFloat'])	{
 			$count = (float) $quantity;
 			if ($count < 0)	{
@@ -406,7 +424,12 @@ class tx_ttproducts_basket {
 				$count = $this->conf['basketMaxQuantity'];
 			}
 		} else {
-			$count=t3lib_div::intInRange($quantity,0,$this->conf['basketMaxQuantity'],0);
+			$count =
+				(
+					class_exists('t3lib_utility_Math') ?
+						t3lib_utility_Math::forceIntegerInRange($quantity, 0, $this->conf['basketMaxQuantity'], 0) :
+						t3lib_div::intInRange($quantity, 0, $this->conf['basketMaxQuantity'], 0)
+				);
 		}
 		return $count;
 	}
@@ -474,11 +497,19 @@ class tx_ttproducts_basket {
 			return;
 		}
 
+		$cnfObj = &t3lib_div::getUserObj('&tx_ttproducts_config');
+
+
 		$funcTablename = $this->getFuncTablename();
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$cnfObj = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$itemTableConf = $cnfObj->getTableConf($funcTablename, 'BASKET');
 		$viewTableObj = &$tablesObj->get($funcTablename);
 		$where = 'uid IN ('.implode(',',$uidArr).') AND pid IN ('. $this->pidListObj->getPidlist().')'.$viewTableObj->getTableObj()->enableFields();
-		$rcArray = $viewTableObj->getWhere($where);
+		$orderBy = $viewTableObj->getTableObj()->transformOrderby($itemTableConf['orderBy']);
+
+
+		$rcArray = $viewTableObj->getWhere($where, 'BASKET', $orderBy);
 		$productsArray = array();
 		$this->extTableItemArray = array();
 
@@ -677,6 +708,7 @@ class tx_ttproducts_basket {
 					$this->calculatedArray['noDiscountPriceNoTax']['goodstotal'] += $priceObj->getPrice($row['price'] * $actItem['count'], FALSE, $this->conf['TAXpercentage']);
 
 					if ($this->conf['TAXmode'] == '1')	{
+
 						$taxstr = strval(number_format($tax,2)); // needed for floating point taxes as in Swizzerland
 						$this->itemArray[$sort][$k1]['totalTax'] = $priceObj->getPrice($this->itemArray[$sort][$k1]['totalNoTax'],TRUE,$tax,FALSE);
 						$this->itemArray[$sort][$k1]['total0Tax'] = $priceObj->getPrice($this->itemArray[$sort][$k1]['total0NoTax'],TRUE,$tax,FALSE);
@@ -785,7 +817,7 @@ class tx_ttproducts_basket {
 		);
 
 		if ($shippingTax)	{
-			$this->calculatedArray['priceNoTax']['sametaxtotal'][strval($shippingTax)] += $this->calculatedArray['priceNoTax']['shipping'];
+			$this->calculatedArray['priceNoTax']['sametaxtotal'][strval(number_format($shippingTax, 2))] += $this->calculatedArray['priceNoTax']['shipping'];
 		}
 	} // getCalculatedBasket
 
@@ -878,6 +910,8 @@ class tx_ttproducts_basket {
 
 				if (isset($articleUid))	{
 					$articleRow = $articleObj->get($articleUid);
+					$articleRow['price'] = $priceObj->getDiscountPrice($articleRow['price'], $discount);
+
 					$articleObj->mergeAttributeFields($priceRow, $articleRow, FALSE,TRUE);
 				}
 
@@ -984,9 +1018,9 @@ class tx_ttproducts_basket {
 		}
 		$this->calculatedArray['priceTax']['creditpoints'] = $this->calculatedArray['priceNoTax']['creditpoints'] = $creditpointsObj*$pricefactor;
 
-		$this->calculatedArray['priceNoTax']['total']  = $this->calculatedArray['priceNoTax']['goodstotal'];
-		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['payment'];
-		$this->calculatedArray['priceNoTax']['total'] += $this->calculatedArray['priceNoTax']['shipping'];
+		$this->calculatedArray['priceNoTax']['total']  = round($this->calculatedArray['priceNoTax']['goodstotal'], 2);
+		$this->calculatedArray['priceNoTax']['total'] += round($this->calculatedArray['priceNoTax']['payment'], 2);
+		$this->calculatedArray['priceNoTax']['total'] += round($this->calculatedArray['priceNoTax']['shipping'], 2);
 		$this->calculatedArray['priceNoTax']['vouchertotal'] = $this->calculatedArray['priceNoTax']['total'] - $voucherAmount - $this->calculatedArray['priceNoTax']['creditpoints'];
 		$this->calculatedArray['price0NoTax']['total']  = $this->calculatedArray['price0NoTax']['goodstotal'];
 		$this->calculatedArray['price0Tax']['total']  = $this->calculatedArray['price0Tax']['goodstotal'];
@@ -999,6 +1033,7 @@ class tx_ttproducts_basket {
 		$this->calculatedArray['priceTax']['vouchertotal'] = $this->calculatedArray['priceTax']['total'] - $voucherAmount - $this->calculatedArray['priceTax']['creditpoints'];
 	}
 }
+
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_basket.php'])	{

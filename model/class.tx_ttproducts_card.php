@@ -245,98 +245,6 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 
 
 	/**
-	 * Template marker substitution
-	 * Fills in the markerArray with data for a product
-	 *
-	 * @param	array		reference to an item array with all the data of the item
-	 * @param	string		title of the category
-	 * @param	integer		number of images to be shown
-	 * @param	object		the image cObj to be used
-	 * @param	array		information about the parent HTML form
-	 * @return	array
-	 * @access private
-	 */
-	function getItemMarkerArray (&$markerArray)	{
-		global $TCA, $TSFE;
-
-		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-
-		$ccNumberArray = array();
-		$ccTypeTextSelected = '';
-		$tablename = $this->getTablename();
-
-		if (count($this->allowedArray))	{
-			$ccTypeText =
-				tx_ttproducts_form_div::createSelect (
-					$this->pibase,
-					$TCA[$tablename]['columns']['cc_type']['config']['items'],
-					'recs[creditcard][cc_type]',
-					$this->ccArray['cc_type'],
-					true,
-					true,
-					$this->allowedArray
-				);
-			for ($i = 1; $i <= 4; ++$i)	{
-				$ccNumberArray[$i - 1] = $this->ccArray['cc_number_'.$i];
-			}
-			$ccOwnerName = $this->ccArray['owner_name'];
-		} else {
-			$ccTypeText = '';
-			$ccNumber = '';
-			$ccOwnerName = '';
-		}
-
-		$markerArray['###PERSON_CARDS_OWNER_NAME###'] = htmlentities($ccOwnerName,ENT_QUOTES,$TSFE->renderCharset);
-		$markerArray['###PERSON_CARDS_CC_TYPE###'] = $ccTypeText;
-		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $this->ccArray['cc_type'];
-		if (isset($this->ccArray['cc_type']))	{
-			$tmp = $TCA[$tablename]['columns']['cc_type']['config']['items'][$this->ccArray['cc_type']]['0'];
-			$tmp = tx_div2007_alpha::sL_fh001($tmp);
-			$ccTypeTextSelected = tx_div2007_alpha::getLL($this->pibase,$tmp);
-		}
-
-		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $ccTypeTextSelected;
-		for ($i = 1; $i <= 4; ++$i)	{
-			$markerArray['###PERSON_CARDS_CC_NUMBER_'.$i.'###'] = $ccNumberArray[$i - 1];
-		}
-		$markerArray['###PERSON_CARDS_CVV2###'] = $this->ccArray['cvv2'];
-		$markerArray['###PERSON_CARDS_ENDTIME_MM###'] = $this->ccArray['endtime_mm'];
-		$markerArray['###PERSON_CARDS_ENDTIME_YY###'] = $this->ccArray['endtime_yy'];
-		$markerArray['###PERSON_CARDS_ENDTIME_YY_SELECT###'] = '';
-		$markerArray['###PERSON_CARDS_ENDTIME_MM_SELECT###'] = '';
-
-		if (is_array($this->conf['payment.']['creditcardSelect.']))	{
-			$mmArray = $this->conf['payment.']['creditcardSelect.']['mm.'];
-			if (is_array($mmArray))	{
-				$valueArray = tx_ttproducts_form_div::fetchValueArray($mmArray['valueArray.']);
-				$markerArray['###PERSON_CARDS_ENDTIME_MM_SELECT###'] =
-					tx_ttproducts_form_div::createSelect (
-						$this->pibase,
-						$valueArray,
-						'recs[creditcard][endtime_mm]',
-						$this->ccArray['endtime_mm'],
-						true,
-						true
-					);
-			}
-			$yyArray = $this->conf['payment.']['creditcardSelect.']['yy.'];
-			if (is_array($yyArray))	{
-				$valueArray = tx_ttproducts_form_div::fetchValueArray($yyArray['valueArray.']);
-				$markerArray['###PERSON_CARDS_ENDTIME_YY_SELECT###'] =
-					tx_ttproducts_form_div::createSelect (
-						$this->pibase,
-						$valueArray,
-						'recs[creditcard][endtime_yy]',
-						$this->ccArray['endtime_yy'],
-						true,
-						true
-					);
-			}
-		}
-	} // getMarkerArray
-
-
-	/**
 	 * Checks if required fields for credit cards and bank accounts are filled in
 	 *
 	 * @return	[type]		...
@@ -346,7 +254,13 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 
 		foreach ($this->fieldArray as $k => $field)	{
 			$testVal = $this->ccArray[$field];
-			if (!t3lib_div::testInt($testVal) && !$testVal)	{
+			if (
+				!$testVal &&
+				(
+					class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($testVal) :
+					!t3lib_div::testInt($testVal)
+				)
+			) {
 				$rc = $field;
 				break;
 			}

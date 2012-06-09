@@ -55,7 +55,19 @@ class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_
 	var $mm_table = ''; // mm table
 
 
-	function &getItemSubpartArrays (&$templateCode, &$row, $fieldname, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $theCode='', $id='1')	{
+	public function &getItemSubpartArrays (
+		&$templateCode,
+		$markerKey,
+		$functablename,
+		&$row,
+		$fieldname,
+		$tableConf,
+		&$subpartArray,
+		&$wrappedSubpartArray,
+		&$tagArray,
+		$theCode = '',
+		$id = '1'
+	) {
 		global $TCA;
 
 		$priceTablesViewObj = &t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');

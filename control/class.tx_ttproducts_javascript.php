@@ -108,7 +108,9 @@ class tx_ttproducts_javascript {
 		$bDirectHTML = false;
 		$code = '';
 		$bError = false;
-		$emailArr =  explode('|', $message = tx_div2007_alpha::getLL($this->pibase,'invalid_email'));
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$message = tx_div2007_alpha5::getLL_fh002($langObj, 'invalid_email');
+		$emailArr =  explode('|', $message);
 
 		if (!$this->bCopyrightShown && $fieldname != 'xajax')	{
 			$code = $this->copyright;

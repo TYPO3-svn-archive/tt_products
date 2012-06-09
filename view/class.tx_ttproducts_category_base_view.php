@@ -63,7 +63,7 @@ abstract class tx_ttproducts_category_base_view extends tx_ttproducts_table_base
 	public function &getSubpartArrays (&$urlmarkerObj, $row, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $pid, $linkMarker)	{
 		$addQueryString = array();
 		$addQueryString[$this->piVar] = $row['uid'];
-		$wrappedSubpartArray['###'.$linkMarker.'###'] = array('<a href="'.  tx_div2007_alpha::getPageLink_fh001($this->langObj, $pid,'',$urlmarkerObj->getLinkParams('',$addQueryString,true,FALSE,$this->piVar),array('useCacheHash' => true)) .'">','</a>');
+		$wrappedSubpartArray['###'.$linkMarker.'###'] = array('<a href="'.  tx_div2007_alpha::getPageLink_fh001($this->langObj, $pid,'',$urlmarkerObj->getLinkParams('',$addQueryString,true,FALSE,'product',$this->piVar),array('useCacheHash' => true)) .'">','</a>');
 	}
 
 	/**
@@ -80,19 +80,19 @@ abstract class tx_ttproducts_category_base_view extends tx_ttproducts_table_base
 	 */
 	abstract function getMarkerArray (&$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $theCode, $id, $prefix,$linkWrap='');
 
-	public function getParentMarkerArray (&$parentArray, &$row, &$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
+	public function getParentMarkerArray ($parentArray, $row, &$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
 
 		if (is_array($parentArray) && count($parentArray)) {
 			$currentRow = $row;
 			$count = 0;
-			$currentCategory = $this->getRowCategory($row);
+			$currentCategory = $this->getModelObj()->getRowCategory($row);
 			$parentCategory = '';
 
 			foreach ($parentArray as $key => $parent)	{
 				do	{
-					$parentRow = $this->getParent($currentCategory);
+					$parentRow = $this->getModelObj()->getParent($currentCategory);
 					$parentCategory = $parentRow['uid'];
-					$parentPid = $this->getRowPid($parentRow);
+					$parentPid = $this->getModelObj()->getRowPid($parentRow);
 					$count++;
 					if ($count < $parent) {
 						$currentCategory = $parentCategory;
@@ -133,6 +133,5 @@ abstract class tx_ttproducts_category_base_view extends tx_ttproducts_table_base
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_category_base_view.php'])	{
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_category_base_view.php']);
 }
-
 
 ?>

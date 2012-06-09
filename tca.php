@@ -401,7 +401,8 @@ $TCA['tt_products'] = Array (
 				'MM' => 'tt_products_accessory_products_products_mm',
 				'foreign_table' => 'tt_products',
 				'foreign_table_where' => ' ORDER BY tt_products.uid',
-				'size' => 3,
+				'size' => 10,
+				'selectedListStyle' => 'width:450px',
 				'minitems' => 0,
 				'maxitems' => 12,
 			),
@@ -416,7 +417,8 @@ $TCA['tt_products'] = Array (
 				'MM' => 'tt_products_related_products_products_mm',
 				'foreign_table' => 'tt_products',
 				'foreign_table_where' => ' ORDER BY tt_products.uid',
-				'size' => 3,
+				'size' => 10,
+				'selectedListStyle' => 'width:450px',
 				'minitems' => 0,
 				'maxitems' => 50,
 			),
@@ -706,7 +708,7 @@ $TCA['tt_products'] = Array (
 $TCA['tt_products_language'] = Array (
 	'ctrl' => $TCA['tt_products_language']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,prod_uid,title,subtitle,unit,note,datasheet,www'
+		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,prod_uid,title,subtitle,unit,note,note2,datasheet,www'
 	),
 	'feInterface' => $TCA['tt_products_language']['feInterface'],
 	'columns' => Array (
@@ -947,7 +949,7 @@ $TCA['tt_products_graduated_price'] = Array (
 	'interface' => Array (
 		'showRecordFieldList' => 'title, formula, startamount, note, parentid'
 	),
-	'feInterface' => $TCA['tt_products_cat']['feInterface'],
+	'feInterface' => $TCA['tt_products_graduated_price']['feInterface'],
 	'columns' => Array (
 		'hidden' => Array (
 			'exclude' => 1,
@@ -1359,7 +1361,7 @@ $TCA['tt_products_cat_language'] = Array (
 $TCA['tt_products_articles'] = Array (
 	'ctrl' => $TCA['tt_products_articles']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,itemnumber,price,price2,weight,inStock,color,color2,color3,size,size2,size3,description,gradings,material,quality,note,image,uid_product'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,itemnumber,price,price2,weight,inStock,color,color2,color3,size,size2,size3,description,gradings,material,quality,note,note2,image,uid_product'
 	),
 	'feInterface' => $TCA['tt_products_articles']['feInterface'],
 	'columns' => Array (
@@ -1469,7 +1471,17 @@ $TCA['tt_products_articles'] = Array (
 				'type' => 'text',
 				'cols' => '48',
 				'rows' => '5'
-			)
+			),
+			'l10n_mode' => 'prefixLangTitle',
+		),
+		'note2' => Array (
+			'label' => '2',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			),
+			'l10n_mode' => 'prefixLangTitle',
 		),
 		'inStock' => Array (
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXTkey.'/locallang_db.xml:tt_products.inStock',
@@ -1610,7 +1622,7 @@ $TCA['tt_products_articles'] = Array (
 		)
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;1, title;;3;;3-3-3, uid_product, itemnumber, inStock, price;;2, weight, color, color2, color3, size, size2, size3, description, gradings, material, quality, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],image;;;;3-3-3')
+		'1' => Array('showitem' => 'hidden;;1, title;;3;;3-3-3, uid_product, itemnumber, inStock, price;;2, weight, color, color2, color3, size, size2, size3, description, gradings, material, quality, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/],image;;;;3-3-3')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
@@ -1627,7 +1639,7 @@ $TCA['tt_products_articles'] = Array (
 $TCA['tt_products_articles_language'] = Array (
 	'ctrl' => $TCA['tt_products_articles_language']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,fe_group,article_uid,title,subtitle,note'
+		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,fe_group,article_uid,title,subtitle,note,note2'
 	),
 	'feInterface' => $TCA['tt_products_articles_language']['feInterface'],
 	'columns' => Array (
@@ -1738,9 +1750,18 @@ $TCA['tt_products_articles_language'] = Array (
 			),
 			'l10n_mode' => 'prefixLangTitle',
 		),
+		'note2' => Array (
+			'label' => '2',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '5'
+			),
+			'l10n_mode' => 'prefixLangTitle',
+		),
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, article_uid,title;;2;;3-3-3, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/]')
+		'1' => Array('showitem' => 'sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, article_uid,title;;2;;3-3-3, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/]')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime,endtime,fe_group'),
@@ -1857,6 +1878,48 @@ $TCA['tt_products_texts'] = Array (
 				'default' => '0'
 			)
 		),
+		'starttime' => array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.starttime',
+			'config' => array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'default' => '0',
+				'checkbox' => '0'
+			)
+		),
+		'endtime' => array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.endtime',
+			'config' => array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'date',
+				'checkbox' => '0',
+				'default' => '0',
+				'range' => array (
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
+				)
+			)
+		),
+		'fe_group' => array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
+			'config' => array (
+				'type' => 'select',
+				'items' => array (
+					array('', 0),
+					array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
+					array('LLL:EXT:lang/locallang_general.php:LGL.any_login', -2),
+					array('LLL:EXT:lang/locallang_general.php:LGL.usergroups', '--div--')
+				),
+				'foreign_table' => 'fe_groups'
+			)
+		),
 		'title' => Array (
 			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
@@ -1911,6 +1974,9 @@ $TCA['tt_products_texts'] = Array (
 	),
 	'types' => Array (
 		'0' => Array('showitem' => 'hidden;;;;1-1-1, title, marker, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], parentid;;;;2-2-2, parenttable')
+	),
+	'palettes' => array (
+		'1' => array('showitem' => 'starttime,endtime,fe_group'),
 	)
 );
 
@@ -2158,7 +2224,7 @@ $TCA['sys_products_cards'] = Array (
 $TCA['sys_products_orders'] = Array (
 	'ctrl' => $TCA['sys_products_orders']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'hidden,name,first_name,last_name,salutation,address,zip,country,telephone,email,fax,payment,shipping,amount,email_notify,tracking_code,status,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,giftservice,cc_uid,ac_uid,date_of_birth,radio1'
+		'showRecordFieldList' => 'hidden,name,first_name,last_name,salutation,address,zip,country,telephone,email,fax,business_partner,organisation_form,payment,shipping,amount,email_notify,tracking_code,status,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,giftservice,cc_uid,ac_uid,date_of_birth,radio1'
 	),
 	'feInterface' => $TCA['sys_products_orders']['feInterface'],
 	'columns' => Array (
@@ -2278,6 +2344,57 @@ $TCA['sys_products_orders'] = Array (
 				'type' => 'input',
 				'size' => '4',
 				'max' => '4',
+			)
+		),
+		'business_partner' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_business_partner',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_business_partner.I.0', '0'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_business_partner.I.1', '1'),
+				),
+				'size' => 1,
+				'maxitems' => 1,
+			)
+		),
+		'organisation_form' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.A1', 'A1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.A2', 'A2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.A3', 'A3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.BH', 'BH'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.E1', 'E1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.E2', 'E2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.E3', 'E3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.E4', 'E4'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G1', 'G1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G2', 'G2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G3', 'G3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G4', 'G4'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G5', 'G5'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G6', 'G6'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G7', 'G7'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.K2', 'K2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.K3', 'K3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.KG', 'KG'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.KO', 'KO'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.O1', 'O1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.P', 'P'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.S1', 'S1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.S2', 'S2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.S3', 'S3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.U', 'U'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.V1', 'V1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.Z1', 'Z1'),
+				),
+				'size' => 1,
+				'maxitems' => 1,
 			)
 		),
 		'payment' => Array (
@@ -2521,7 +2638,7 @@ $TCA['sys_products_orders'] = Array (
 		),
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,fax,agb,feusers_uid,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,giftservice,foundby,giftcode,cc_uid,ac_uid,date_of_birth,radio1')
+		'1' => Array('showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,fax,business_partner,organisation_form,agb,feusers_uid,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,giftservice,foundby,giftcode,cc_uid,ac_uid,date_of_birth,radio1')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),

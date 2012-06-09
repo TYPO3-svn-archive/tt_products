@@ -57,24 +57,30 @@ $TT->push('Include Frontend libraries','');
     require_once(PATH_t3lib.'class.t3lib_cs.php');
 $TT->pull();
 
-//
 // ***********************************
 // Create $TSFE object (TSFE = TypoScript Front End)
 // Connecting to database
 // ***********************************
-$temp_TSFEclassName=t3lib_div::makeInstanceClassName('tslib_fe');
-$TSFE = new $temp_TSFEclassName(
-        $GLOBALS['TYPO3_CONF_VARS'],
-        t3lib_div::_GP('id'),
-        t3lib_div::_GP('type'),
-        t3lib_div::_GP('no_cache'),
-        t3lib_div::_GP('cHash'),
-        t3lib_div::_GP('jumpurl'),
-        t3lib_div::_GP('MP'),
-        t3lib_div::_GP('RDCT')
-    );
+$TSFE = t3lib_div::makeInstance('tslib_fe',
+	$TYPO3_CONF_VARS,
+	t3lib_div::_GP('id'),
+	t3lib_div::_GP('type'),
+	t3lib_div::_GP('no_cache'),
+	t3lib_div::_GP('cHash'),
+	t3lib_div::_GP('jumpurl'),
+	t3lib_div::_GP('MP'),
+	t3lib_div::_GP('RDCT')
+);
+/** @var $TSFE tslib_fe */
 
-$TSFE->connectToMySQL();
+
+if($TYPO3_CONF_VARS['FE']['pageUnavailable_force'] &&
+	!t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $TYPO3_CONF_VARS['SYS']['devIPmask'])) {
+	$TSFE->pageUnavailableAndExit('This page is temporarily unavailable.');
+}
+
+$TSFE->connectToDB();
+
 if ($TSFE->RDCT)    {
 	$TSFE->sendRedirect();
 }

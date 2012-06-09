@@ -42,6 +42,7 @@ class tx_ttproducts_text_view extends tx_ttproducts_table_base_view {
 	function &getTagMarkerArray(&$tagArray, $parentMarker)	{
 		$rcArray = array();
 		$search = $parentMarker.'_'.$this->marker.'_';
+
 		$searchLen = strlen($search);
 		foreach ($tagArray as $marker => $k)	{
 			if (substr($marker, 0, $searchLen) == $search)	{

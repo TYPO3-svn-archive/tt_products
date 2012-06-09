@@ -94,6 +94,7 @@ class tx_ttproducts_basketitem_view {
 		global $TCA, $TSFE;
 
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
 		$viewTable = &$tablesObj->get($functablename);
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
@@ -197,7 +198,7 @@ class tx_ttproducts_basketitem_view {
 		if ($keyAdditional !== FALSE) {
 			$isSingleProduct = $viewTable->hasAdditional($row,'isSingle');
 			if ($isSingleProduct)	{
-				$message = tx_div2007_alpha::getLL($this->pibase,'additional_single');
+				$message = tx_div2007_alpha5::getLL_fh002($langObj, 'additional_single');
 				$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($quantity ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="1">';
 				$hiddenText .= '<input type="hidden" name="'.$basketQuantityName.'[1]" value="'.($quantity ? '1' : '0') .'">';
 			}
@@ -222,7 +223,7 @@ class tx_ttproducts_basketitem_view {
 			$basketAdditionalName = $this->basketVar.'['.$row['uid'].'][additional]['.md5($variant).']';
 			$bGiftService = $this->basketExt[$row['uid']][$variant.'.']['additional']['giftservice'];
 			$giftServicePostfix = '[giftservice]';
-			$message = $this->pibase->pi_getLL('additional_gift_service');
+			$message = tx_div2007_alpha5::getLL_fh002($langObj, 'additional_gift_service');
 			$value = ($bGiftService ? '1' : '0');
 			$prodAdditionalText['giftService'] = $message.'<input type="checkbox" name="'.$basketAdditionalName.$giftServicePostfix.'" '.($value ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="'.$value.'">';
 			$hiddenText .= '<input type="hidden" name="'.$basketAdditionalName.$giftServicePostfix.'[1]" value="'.$value.'">';

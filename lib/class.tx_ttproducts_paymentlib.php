@@ -50,7 +50,7 @@ class tx_ttproducts_paymentlib {
 	var $urlObj;
 
 
-	function init (&$pibase, &$basketView, &$infoView, &$urlObj)	{
+	public function init (&$pibase, &$basketView, &$infoView, &$urlObj)	{
 		$this->pibase = &$pibase;
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
  		$this->conf = &$cnf->conf;
@@ -62,7 +62,6 @@ class tx_ttproducts_paymentlib {
 		$this->urlObj = &$urlObj;
 
 		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');	// language object which replaces pibase
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
 		$langObj->init($pibase, $this->pibase->cObj, $this->conf, 'pi1/class.tx_ttproducts_pi1.php');
 	}
 
@@ -132,6 +131,7 @@ class tx_ttproducts_paymentlib {
 		global $TSFE;
 
 		$lConf = $confScript;
+
 		$content = '';
 		if (strpos($handleLib,'paymentlib') !== FALSE)	{
 
@@ -169,7 +169,7 @@ class tx_ttproducts_paymentlib {
 				$referenceId = $this->getReferenceUid();
 
 				if (!$referenceId)	{
-					$errorMessage = tx_div2007_alpha::getLL($langObj,'error_reference_id');
+					$errorMessage = tx_div2007_alpha5::getLL_fh002($langObj,'error_reference_id');
 					return '';
 				}
 
@@ -177,9 +177,8 @@ class tx_ttproducts_paymentlib {
 
 					// Set payment details and get the form data:
 				$ok = $providerObject->transaction_setDetails($transactionDetailsArr);
-
 				if (!$ok) {
-					$errorMessage = tx_div2007_alpha::getLL($langObj,'error_transaction_details');
+					$errorMessage = tx_div2007_alpha5::getLL_fh002($langObj,'error_transaction_details');
 					return '';
 				}
 
@@ -197,6 +196,7 @@ class tx_ttproducts_paymentlib {
 					$providerObject->transaction_setOkPage($transactionDetailsArr['transaction']['successlink']);
 					$providerObject->transaction_setErrorPage($transactionDetailsArr['transaction']['faillink']);
 					$compGatewayForm = ($handleLib == 'paymentlib' ? TX_PAYMENTLIB_GATEWAYMODE_FORM : TX_PAYMENTLIB2_GATEWAYMODE_FORM);
+
 					$compGatewayWebservice = ($handleLib == 'paymentlib' ? TX_PAYMENTLIB_GATEWAYMODE_WEBSERVICE : TX_PAYMENTLIB2_GATEWAYMODE_WEBSERVICE);
 
 					if ($gatewayMode == $compGatewayForm)	{
@@ -213,6 +213,7 @@ class tx_ttproducts_paymentlib {
 							// Render hidden fields:
 						$hiddenFields = '';
 						$hiddenFieldsArr = $providerObject->transaction_formGetHiddenFields();
+
 						foreach ($hiddenFieldsArr as $key => $value) {
 							$hiddenFields .= '<input name="' . $key . '" type="hidden" value="' . htmlspecialchars($value) . '" />' . chr(10);
 						}
@@ -237,7 +238,7 @@ class tx_ttproducts_paymentlib {
 							if ($bError)	{
 								$errorMessage = $formuri;
 							} else {
-								$errorMessage = tx_div2007_alpha::getLL($langObj,'error_relay_url');
+								$errorMessage = tx_div2007_alpha5::getLL_fh002($langObj,'error_relay_url');
 							}
 						}
 					} else if ($gatewayMode == $compGatewayWebservice)	{
@@ -385,11 +386,6 @@ class tx_ttproducts_paymentlib {
 	}
 
 
-//*******************************************************************************//
-//* Added by Udo Gerhards: If the $providerObject has a basket fill it, begin   *//
-//*******************************************************************************//
-
-
 	//****************************************************//
 	//* Filling the basket of a paymentlib basket if the *//
 	//* selected payment-method has a own basket for its *//
@@ -432,13 +428,14 @@ class tx_ttproducts_paymentlib {
 		$totalArr['shippingtax'] = $this->fFloat($calculatedArray['priceTax']['shipping']);
 		$totalArr['handlingnotax'] = $this->fFloat($calculatedArray['priceNoTax']['handling']);
 		$totalArr['handlingtax'] = $this->fFloat($calculatedArray['priceTax']['handling']);
-		$totalArr['amountnotax'] = $this->fFloat($calculatedArray['priceNoTax']['total']);
-		$totalArr['amounttax'] = $this->fFloat($calculatedArray['priceTax']['total']);
+		$totalArr['amountnotax'] = $this->fFloat($calculatedArray['priceNoTax']['vouchertotal']);
+		$totalArr['amounttax'] = $this->fFloat($calculatedArray['priceTax']['vouchertotal']);
 		$totalArr['taxrate'] = $calculatedArray['maxtax']['goodstotal'];
 
 		$totalArr['totaltax'] = $this->fFloat($totalArr['amounttax'] - $totalArr['amountnotax']);
-		$totalArr['totalamountnotax'] = $this->fFloat($totalArr['amountnotax'] + $totalArr['shippingnotax'] + $totalArr['handlingnotax']);
-		$totalArr['totalamount'] = $this->fFloat($totalArr['amounttax'] + $totalArr['shippingtax'] + $totalArr['handlingtax']);
+// 		$totalArr['totalamountnotax'] = $this->fFloat($totalArr['amountnotax'] + $totalArr['shippingnotax'] + $totalArr['handlingnotax']);
+//
+// 		$totalArr['totalamount'] = $this->fFloat($totalArr['amounttax'] + $totalArr['shippingtax'] + $totalArr['handlingtax']);
 
 		// Setting up address info values
 		$mapAddrFields = array(

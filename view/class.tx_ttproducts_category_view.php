@@ -81,7 +81,7 @@ class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 			$catTitle .= ($this->tableconf['separator'].$row['title']);
 		}
 		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
-		parent::getItemMarkerArray ($row, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, TRUE, '', $prefix, $imageRenderObj);
+		parent::getItemMarkerArray($row, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, TRUE, '', $prefix, $imageRenderObj);
 	}
 }
 

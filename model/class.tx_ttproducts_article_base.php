@@ -145,28 +145,14 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	}
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$cat: ...
-	 * @param	[type]		$pid_list: ...
-	 * @return	[type]		...
-	 */
-	function addWhereCat($cat, $pid_list)	{
+	public function addWhereCat (&$catObject, $theCode, $cat, $pid_list) {
 		$where = '';
 
 		return $where;
 	}
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$cat: ...
-	 * @param	[type]		$selectConf: ...
-	 * @return	[type]		...
-	 */
-	function addselectConfCat($cat, &$selectConf)	{
+	public function addselectConfCat ($catObject, $cat, &$selectConf) {
 	}
 
 
@@ -215,7 +201,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	 * @param	[type]		$theCode: ...
 	 * @return	[type]		...
 	 */
-	function getWhere ($where, $theCode='') {
+	function getWhere ($where, $theCode = '', $orderBy = '') {
 		global $TYPO3_DB;
 
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
@@ -225,7 +211,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 		$where = ($where ? $where : '1=1 ').$this->getTableObj()->enableFields();
 
 		// Fetching the products
-		$res = $this->getTableObj()->exec_SELECTquery('*', $where);
+		$res = $this->getTableObj()->exec_SELECTquery('*', $where, '', $TYPO3_DB->stripOrderBy($orderBy));
 		$translateFields = $cnf->getTranslationFields($tableconf);
 
 		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{

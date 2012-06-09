@@ -286,6 +286,8 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label=Get discount price: If set the discount price will be used even for normal customers without having a frontend user in the discount group.
   getDiscountPrice =
 
+    # cat=plugin.products//; type=eint+; label=PID of revocation page: PID of the page with the right of revocation
+  PIDrevocation = 0
     # cat=plugin.products//; type=eint+; label=PID of AGB page: PID of the page with the AGB
   PIDagb = 0
     # cat=plugin.products//; type=small; label=Target of AGB page: Target for the AGB page

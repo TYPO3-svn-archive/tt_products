@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2011 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2005-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -114,7 +114,33 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		} else if ($functablename == 'tx_dam_cat')	{
 			$rc = $this->conf['rootDAMCategoryID'];
 		}
+		if ($rc == '') {
+			$rc = 0;
+		}
+
 		return $rc;
+	}
+
+	public function getAllChildCats ($pid, $orderBy, $category = 0) {
+		$rowArray = array();
+		if ($this->parentField != '') {
+			$where = $this->parentField . '=' . intval($category);
+			$rowArray = $this->get('', $pid, FALSE, $where, '', 'uid', FALSE, '', $orderBy);
+debug ($rowArray, 'getAllChildCats $rowArray');
+		}
+
+		$resultArray = array();
+		$result = '';
+		if (isset($rowArray) && is_array($rowArray)) {
+			foreach($rowArray as $row) {
+				$resultArray[] = $row['uid'];
+			}
+			$result = implode (',', $resultArray);
+		}
+
+debug ($result, 'getAllChildCats ENDE $result');
+
+		return $result;
 	}
 
 	/**
@@ -140,8 +166,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 				if (!in_array($actUid,$rootArray))	{
 					$iCount = 0;
 					$row = $rowArray[$actUid];
-					while (($parent = $row[$this->parentField]) && ($iCount < 100))	{
-
+					while (is_array($row) && ($parent = $row[$this->parentField]) && ($iCount < 100))	{
 						$where = 'uid ='.$parent;
 						$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
 						$where .= $tableObj->enableFields();
@@ -157,8 +182,16 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 						}
 						$iCount++;
 					}
+					if (!$parent && in_array($parent, $rootArray)) {
+						$bRootfound = TRUE;
+						break;
+					}
 				} else {
 					$bRootfound = true;
+				}
+
+				if ($bRootfound) {
+					break;
 				}
 			}
 		}
@@ -190,30 +223,36 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 				$uidArray[] = $k;
 			}
 		}
+
 		foreach ($uidArray as $uid)	{
 
-			$row = $this->get($uid, $pid, in_array($uid, $rootArray),'','','',FALSE,'',$orderBy);
-			$relatedArray[$uid] = $row;
+			if (
+				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
+				t3lib_div::testInt($uid)
+			) {
+				$row = $this->get($uid, $pid, in_array($uid, $rootArray),'','','',FALSE,'',$orderBy);
+				$relatedArray[$uid] = $row;
 
-			if (isset($rootLine[$uid]))	{
-				if ($this->parentField)	{
-					$where = $this->parentField.'='.intval($uid);
-				} else {
-					$where = '1=1';
-				}
-				$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
-				$where .= $tableObj->enableFields();
-				$res = $tableObj->exec_SELECTquery('*',$where,'',$TYPO3_DB->stripOrderBy($orderBy));
-
-				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-
-					if (is_array($tableObj->langArray) && $tableObj->langArray[$row['title']])	{
-						$row['title'] = $tableObj->langArray[$row['title']];
+				if (isset($rootLine[$uid]))	{
+					if ($this->parentField)	{
+						$where = $this->parentField.'='.intval($uid);
+					} else {
+						$where = '1=1';
 					}
-					$rc = $this->dataArray[$row['uid']] = $row;
-					$relatedArray[$row['uid']] = $row;
+					$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
+					$where .= $tableObj->enableFields();
+					$res = $tableObj->exec_SELECTquery('*',$where,'',$TYPO3_DB->stripOrderBy($orderBy));
+
+					while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+
+						if (is_array($tableObj->langArray) && $tableObj->langArray[$row['title']])	{
+							$row['title'] = $tableObj->langArray[$row['title']];
+						}
+						$rc = $this->dataArray[$row['uid']] = $row;
+						$relatedArray[$row['uid']] = $row;
+					}
+					$TYPO3_DB->sql_free_result($res);
 				}
-				$TYPO3_DB->sql_free_result($res);
 			}
 		}
 		foreach ($rootLine as $k => $row)	{
@@ -250,8 +289,13 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 * @return	integer		parent
 	 */
 	function getParent ($uid=0) {
-		$rc = array();
-		return $rc;
+		$result = FALSE;
+
+		$row = $this->get($uid);
+		if (isset($row) && is_array($row) && isset($row['parent_category'])) {
+			$result = $this->get($row['parent_category']);
+		}
+		return $result;
 	}
 
 	/**
@@ -303,12 +347,23 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			if (
 				is_array($tableConf['special.']) &&
 				(
-					t3lib_div::testInt($tableConf['special.']['all']) && in_array($tableConf['special.']['all'], $catArray) ||
+					(
+						class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tableConf['special.']['all']) :
+						t3lib_div::testInt($tableConf['special.']['all'])
+					) &&
+					in_array($tableConf['special.']['all'], $catArray) ||
 					$tableConf['special.']['all'] == 'all'
 				)
 			) 	{
 				$cat = '';	// no filter shall be used
-			} else if (is_array($tableConf['special.']) && t3lib_div::testInt($tableConf['special.']['no']) && in_array($tableConf['special.']['no'], $catArray)) {
+			} else if (
+				is_array($tableConf['special.']) &&
+				(
+					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tableConf['special.']['no']) :
+					t3lib_div::testInt($tableConf['special.']['no'])
+				) &&
+				in_array($tableConf['special.']['no'], $catArray)
+			) {
 				$cat = '0';	// no products shall be shown
 			} else {
 				$cat = implode(',',$catArray);

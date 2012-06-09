@@ -57,13 +57,66 @@ if (TYPO3_MODE=="BE" || $loadTcaAdditions == TRUE) {
 				'max' => '15'
 			)
 		),
+		'tt_products_business_partner' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_business_partner',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_business_partner.I.0', '0'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_business_partner.I.1', '1'),
+				),
+				'size' => 1,
+				'maxitems' => 1,
+			)
+		),
+		'tt_products_organisation_form' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array (
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.A1', 'A1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.A2', 'A2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.A3', 'A3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.BH', 'BH'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.E1', 'E1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.E2', 'E2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.E3', 'E3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.E4', 'E4'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G1', 'G1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G2', 'G2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G3', 'G3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G4', 'G4'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G5', 'G5'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G6', 'G6'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.G7', 'G7'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.K2', 'K2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.K3', 'K3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.KG', 'KG'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.KO', 'KO'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.O1', 'O1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.P', 'P'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.S1', 'S1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.S2', 'S2'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.S3', 'S3'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.U', 'U'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.V1', 'V1'),
+					Array('LLL:EXT:' . TT_PRODUCTS_EXTkey . '/locallang_db.xml:fe_users.tt_products_organisation_form.Z1', 'Z1'),
+				),
+				'size' => 1,
+				'maxitems' => 1,
+			)
+		),
+
 	);
 
 	t3lib_div::loadTCA('fe_users');
 
 	t3lib_extMgm::addTCAcolumns('fe_users',$tempColumns,1);
-	t3lib_extMgm::addToAllTCAtypes('fe_users','tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1,tt_products_vat;;;;1-1-1');
+	t3lib_extMgm::addToAllTCAtypes('fe_users','tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1,tt_products_vat;;;;1-1-1,tt_products_business_partner;;;;1-1-1,tt_products_organisation_form;;;;1-1-1');
 }
+
 
 if (!$loadTcaAdditions) {
 
@@ -445,6 +498,7 @@ if (!$loadTcaAdditions) {
 
 	t3lib_extMgm::addToInsertRecords('tt_products');
 	t3lib_extMgm::addToInsertRecords('tt_products_articles');
+	t3lib_extMgm::addToInsertRecords('tt_products_articles_language');
 	t3lib_extMgm::addToInsertRecords('tt_products_cat');
 	t3lib_extMgm::addToInsertRecords('tt_products_cat_language');
 	t3lib_extMgm::addToInsertRecords('tt_products_emails');
@@ -456,6 +510,7 @@ if (!$loadTcaAdditions) {
 
 	t3lib_extMgm::allowTableOnStandardPages('tt_products');
 	t3lib_extMgm::allowTableOnStandardPages('tt_products_articles');
+	t3lib_extMgm::allowTableOnStandardPages('tt_products_articles_language');
 	t3lib_extMgm::allowTableOnStandardPages('tt_products_cat');
 	t3lib_extMgm::allowTableOnStandardPages('tt_products_cat_language');
 	t3lib_extMgm::allowTableOnStandardPages('tt_products_graduated_price');

@@ -91,7 +91,7 @@ class tx_ttproducts_menucat_view extends tx_ttproducts_catlist_view_base {
 			$countArray = array();
 			$countArray[0] = 0;
 			$countArray[1] = 0;
-			$catConf = $categoryTable->getTableConf();
+			$catConf = $categoryTable->getTableConf($theCode);
 			$menu = $this->conf['CSS.'][$functablename.'.']['menu'];
 			$menu = ($menu ? $menu : $categoryTableViewObj->getPivar().$depth);
 			$fill = '';
@@ -108,7 +108,6 @@ class tx_ttproducts_menucat_view extends tx_ttproducts_catlist_view_base {
 				$viewCatTagArray,
 				$parentArray
 			);
-
 			while ($depth > 0 && $iCount < 500)	{
 				$iCount++;
 				$css = 'class="w'.$iCount.'"';

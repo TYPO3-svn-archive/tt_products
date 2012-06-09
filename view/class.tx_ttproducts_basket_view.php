@@ -163,12 +163,12 @@ class tx_ttproducts_basket_view {
 
 		$out = '';
 		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-
 		$creditpointsObj = &t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
-
 		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+
 		$funcTablename = $basket->getFuncTablename();
 		$itemTableView = &$tablesObj->get($funcTablename, true);
 		$itemTable = &$itemTableView->getModelObj();
@@ -388,7 +388,7 @@ class tx_ttproducts_basket_view {
 							$prodVariantItem,
 							$markerArray,
 							$catTitle,
-							$this->config['limitImage'],
+							1,
 							'basketImage',
 							$articleViewTagArray,
 							$tmp=array(),
@@ -441,7 +441,6 @@ class tx_ttproducts_basket_view {
 						$TSFE->renderCharset
 					);
 // 					$row['price'] = $actItem['priceTax'];
-// TODO 2.8.0
 
 					$priceViewObj->getItemMarkerArray(
 						$funcTablename,
@@ -482,6 +481,7 @@ class tx_ttproducts_basket_view {
 					}
 					$markerArray['###PRICE_TOTAL_TOTUNITS_NO_TAX###'] = $priceViewObj->priceFormat($pricecredits_total_totunits_no_tax);
 					$markerArray['###PRICE_TOTAL_TOTUNITS_TAX###'] = $priceViewObj->priceFormat($pricecredits_total_totunits_tax);
+
 					$sum_pricecredits_total_totunits_no_tax += $pricecredits_total_totunits_no_tax;
 					$sum_price_total_totunits_no_tax += $pricecredits_total_totunits_no_tax;
 					$sum_pricecreditpoints_total_totunits += $pricecredits_total_totunits_no_tax;
@@ -577,25 +577,49 @@ class tx_ttproducts_basket_view {
 			$markerArray = array_merge($markerArray,$basketMarkerArray);
 
 			$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-			// $wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'.htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->urlObj->getLinkParams())).'">','</a>');
 
-			$tmpLinkParam = $this->urlObj->getLinkParams(
-				'',
-				array(),
-				TRUE,
-				TRUE,
-				''
+// 			$tmpLinkParam = $this->urlObj->getLinkParams(
+// 				'',
+// 				array(),
+// 				TRUE,
+// 				TRUE,
+// 				''
+// 			);
+// 			$wrappedSubpartArray['###LINK_BASKET###'] = array(
+// 				'<a href="' . htmlspecialchars(
+// 					$this->pibase->pi_getPageLink(
+// 						$pid,
+// 						'',
+// 						$tmpLinkParam
+// 					)
+// 				) . '">',
+// 				'</a>'
+// 			);
+
+// ANFANG Korrektur
+			$conf = array('useCacheHash' => FALSE);
+			$url = tx_div2007_alpha5::getTypoLink_URL_fh003(
+				$this->pibase->cObj,
+				$pid,
+				$this->urlObj->getLinkParams(
+					'',
+					array(),
+					TRUE,
+					TRUE,
+					''
+				),
+				$target = '',
+				$conf
 			);
-			$wrappedSubpartArray['###LINK_BASKET###'] = array(
-				'<a href="' . htmlspecialchars(
-					$this->pibase->pi_getPageLink(
-						$pid,
-						'',
-						$tmpLinkParam
-					)
-				) . '">',
-				'</a>'
+			$htmlUrl = htmlspecialchars(
+				$url,
+				ENT_NOQUOTES,
+				$GLOBALS['TSFE']->renderCharset
 			);
+
+			$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'. $htmlUrl .'">','</a>');
+// ENDE Korrektur
+
 			$activityArray = tx_ttproducts_model_activity::getActivityArray();
 			if (is_array($activityArray))	{
 				$activity = '';
@@ -618,7 +642,6 @@ class tx_ttproducts_basket_view {
 			$basketUrl = htmlspecialchars(tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->urlObj->getLinkParams('', array(), TRUE, TRUE, ''),'',''));
 
 			$markerArray['###SHIPPING_SELECTOR###'] = $paymentshippingObj->generateRadioSelect($theCode, 'shipping', $basket->calculatedArray, $basketUrl);
-
 			$imageCode = $this->pibase->cObj->IMAGE($basket->basketExtra['shipping.']['image.']);
 			if ($theCode == 'EMAIL') {
 				tx_div2007_alpha5::fixImageCodeAbsRefPrefix($imageCode);
@@ -649,11 +672,7 @@ class tx_ttproducts_basket_view {
 			$markerArray['###TRANSACT_CODE###'] = htmlspecialchars(t3lib_div::_GP('transact'));
 
 				// Fill the Currency Symbol or not
-			if ($this->conf['showcurSymbol']) {
-				$markerArray['###CUR_SYM###'] = ' '.$this->conf['currencySymbol'];
-			} else {
-				$markerArray['###CUR_SYM###'] = '';
-			}
+			$markerArray['###CUR_SYM###'] = ' '.$this->conf['currencySymbol'];
 
 			$markerArray['###PRICE_TAX_DISCOUNT###'] = $markerArray['###PRICE_DISCOUNT_TAX###'] = $priceViewObj->priceFormat($basket->calculatedArray['price0Tax']['goodstotal']-$basket->calculatedArray['priceTax']['goodstotal']);
 			$markerArray['###PRICE_VAT###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceTax']['goodstotal']-$basket->calculatedArray['priceNoTax']['goodstotal']);
@@ -670,7 +689,7 @@ class tx_ttproducts_basket_view {
 			$markerArray =  $this->urlObj->addURLMarkers(0, $markerArray);
 			$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();
 			$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
-			$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha::getLL($this->pibase, $taxInclExcl) : '');
+			$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha5::getLL_fh002($langObj, $taxInclExcl) : '');
 
 			if ($subpartMarker != '###BASKET_OVERVIEW_TEMPLATE###') {
 
@@ -718,6 +737,8 @@ class tx_ttproducts_basket_view {
 			$amountCreditpoints = $TSFE->fe_user->user['tt_products_creditpoints']+$creditpointsGifts;
 			$markerArray['###AMOUNT_CREDITPOINTS###'] = htmlspecialchars($amountCreditpoints);
 
+// #### start
+
 			$pricefactor = doubleval($this->conf['creditpoints.']['priceprod']);
  			$autoCreditpointsTotal = $creditpointsObj->getBasketTotal();
  			$markerArray['###AUTOCREDITPOINTS_TOTAL###'] = number_format($autoCreditpointsTotal, '0');
@@ -728,6 +749,8 @@ class tx_ttproducts_basket_view {
 			// maximum1 amount of creditpoint to change is amount on account minus amount already spended in the credit-shop
 
 			$creditpoints = $autoCreditpointsTotal + $sum_pricecreditpoints_total_totunits * tx_ttproducts_creditpoints_div::getCreditPoints($sum_pricecreditpoints_total_totunits, $this->conf['creditpoints.']);
+
+// #### ENDE
 
 			// maximum1 amount of creditpoint to change is amount on account minus amount already spended in the credit-shop
 			$max1_creditpoints = $TSFE->fe_user->user['tt_products_creditpoints'] + $creditpointsGifts;
@@ -764,7 +787,6 @@ class tx_ttproducts_basket_view {
 				}
 
 				$markerArray['###AMOUNT_CREDITPOINTS_QTY###'] = htmlspecialchars($basket->recs['tt_products']['creditpoints']);
-
 				$subpartArray['###SUB_CREDITPOINTS_DISCOUNT_EMPTY###'] = '';
 				$markerArray['###CREDIT_DISCOUNT###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceTax']['creditpoints']);
 			}
@@ -809,11 +831,32 @@ class tx_ttproducts_basket_view {
 			$markerArray['###CREDITPOINTS_SAVED###'] = number_format($creditpoints,'0');
 			$agb_url = array();
 			$pidagb = intval($this->conf['PIDagb']);
+			$addQueryString = array();
+			$singleExcludeList = $this->urlObj->getSingleExcludeList('');
+
 			if ($TSFE->type)	{
 				$addQueryString['type'] = $TSFE->type;
 			}
 			$wrappedSubpartArray['###LINK_AGB###'] = array(
-				'<a href="'. $this->pibase->pi_getPageLink($pidagb,'',$this->urlObj->getLinkParams('', $addQueryString, TRUE, TRUE, '')) .'" target="'.$this->conf['AGBtarget'].'">',
+				'<a href="'. $this->pibase->pi_getPageLink($pidagb,'',$this->urlObj->getLinkParams($singleExcludeList, $addQueryString, TRUE, TRUE, '')) .'" target="'.$this->conf['AGBtarget'].'">',
+				'</a>'
+			);
+
+			$pidRevocation = intval($this->conf['PIDrevocation']);
+			$wrappedSubpartArray['###LINK_REVOCATION###'] = array(
+				'<a href="' . htmlspecialchars(
+					$this->pibase->pi_getPageLink(
+						$pidRevocation,
+						'',
+						$this->urlObj->getLinkParams(
+							$singleExcludeList,
+							$addQueryString,
+							TRUE,
+							TRUE,
+							''
+						)
+					)
+				) . '" target="' . $this->conf['AGBtarget'] . '">',
 				'</a>'
 			);
 
@@ -831,7 +874,9 @@ class tx_ttproducts_basket_view {
 			$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceTax']['total']-$basket->calculatedArray['priceNoTax']['total']);
 
 			$markerArray['###PRICE_TOTAL_TAX_WITHOUT_PAYMENT###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceTax']['total']-$basket->calculatedArray['priceTax']['payment']);
+
 			$markerArray['###PRICE_TOTAL_NO_TAX_WITHOUT_PAYMENT###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceNoTax']['total']-$basket->calculatedArray['priceNoTax']['payment']);
+
 			$markerArray['###PRICE_VOUCHERTOTAL_TAX###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceTax']['vouchertotal']);
 			$markerArray['###PRICE_VOUCHERTOTAL_NO_TAX###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceNoTax']['vouchertotal']);
 			$markerArray['###HIDDENFIELDS###'] = $hiddenFields;

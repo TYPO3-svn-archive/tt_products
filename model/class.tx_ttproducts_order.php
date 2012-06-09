@@ -76,7 +76,11 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 
 				if ($this->conf['advanceOrderNumberWithInteger']) {
 					$rndParts = explode(',',$this->conf['advanceOrderNumberWithInteger']);
-					$advanceUid = $prevUid+t3lib_div::intInRange(rand(intval($rndParts[0]),intval($rndParts[1])),1);
+					$randomValue = rand(intval($rndParts[0]), intval($rndParts[1]));
+					$advanceUid = $prevUid +
+						(
+							class_exists('t3lib_utility_Math') ? t3lib_utility_Math::forceIntegerInRange($randomValue, 1) : t3lib_div::intInRange($randomValue, 1)
+						);
 				} else {
 					$advanceUid = $prevUid + 1;
 				}
@@ -94,7 +98,8 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 				$insertFields['uid'] = intval($advanceUid);
 			}
 
-			$TYPO3_DB->exec_INSERTquery('sys_products_orders', $insertFields);
+
+		$TYPO3_DB->exec_INSERTquery('sys_products_orders', $insertFields);
 			$newId = $TYPO3_DB->sql_insert_id();
 		}
 
@@ -220,19 +225,19 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 			$dateArray = t3lib_div::trimExplode ('-', $deliveryInfo['date_of_birth']);
 
 			if (
-				t3lib_div::testInt($dateArray[0]) &&
-				t3lib_div::testInt($dateArray[1]) &&
-				t3lib_div::testInt($dateArray[2])
+				class_exists('t3lib_utility_Math') ?
+					(
+						t3lib_utility_Math::canBeInterpretedAsInteger($dateArray[0]) &&
+						t3lib_utility_Math::canBeInterpretedAsInteger($dateArray[1]) &&
+						t3lib_utility_Math::canBeInterpretedAsInteger($dateArray[2])
+					) :
+					(
+						t3lib_div::testInt($dateArray[0]) &&
+						t3lib_div::testInt($dateArray[1]) &&
+						t3lib_div::testInt($dateArray[2])
+					)
 			) {
-				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
-
-					// prepare for handling dates before 1970
-					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
-					$dateBirth = $adodbTime->adodb_mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
-				} else {
-					$dateBirth = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
-				}
+				$dateBirth = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
 			}
 		}
 
@@ -253,6 +258,9 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 		$fieldsArray['email'] = $deliveryInfo['email'];
 		$fieldsArray['email_notify'] = $email_notify;
 
+		$fieldsArray['business_partner'] = $deliveryInfo['tt_products_business_partner'];
+		$fieldsArray['organisation_form'] = $deliveryInfo['tt_products_organisation_form'];
+
 			// can be changed after order is set.
 		$fieldsArray['payment'] = $payment;
 		$fieldsArray['shipping'] = $shipping;
@@ -267,37 +275,32 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 		$fieldsArray['radio1'] = $deliveryInfo['radio1'];
 
 		$giftServiceArticleArray = array();
-		foreach ($this->basket->basketExt as $tmpUid => $tmpSubArr)	{
-			if (is_array($tmpSubArr))	{
-				foreach ($tmpSubArr as $tmpKey => $tmpSubSubArr)	{
-					if (
-						substr($tmpKey,-1) == '.' &&
-						isset($tmpSubSubArr['additional']) &&
-						is_array($tmpSubSubArr['additional'])
-					)	{
-							$variant = substr($tmpKey,0,-1);
-							$row = $this->basket->get($tmpUid, $variant);
-							if ($tmpSubSubArr['additional']['giftservice'] == 1)	{
-								$giftServiceArticleArray[] = $row['title'];
-							}
+		if (isset($this->basket->basketExt) && is_array($this->basket->basketExt)) {
+			foreach ($this->basket->basketExt as $tmpUid => $tmpSubArr)	{
+				if (is_array($tmpSubArr))	{
+					foreach ($tmpSubArr as $tmpKey => $tmpSubSubArr)	{
+						if (
+							substr($tmpKey,-1) == '.' &&
+							isset($tmpSubSubArr['additional']) &&
+							is_array($tmpSubSubArr['additional'])
+						)	{
+								$variant = substr($tmpKey,0,-1);
+								$row = $this->basket->get($tmpUid, $variant);
+								if ($tmpSubSubArr['additional']['giftservice'] == 1)	{
+									$giftServiceArticleArray[] = $row['title'];
+								}
+						}
 					}
 				}
 			}
-		}
+ 		}
+
 		$fieldsArray['giftservice'] = $deliveryInfo['giftservice'].'||'.implode(',',$giftServiceArticleArray);
 		$fieldsArray['foundby'] = $deliveryInfo['foundby'];
 		$fieldsArray['client_ip'] = t3lib_div::getIndpEnv('REMOTE_ADDR');
 		$fieldsArray['cc_uid'] = $cardUid;
 		$fieldsArray['ac_uid'] = $accountUid;
 		$fieldsArray['giftcode'] = $this->basket->recs['tt_products']['giftcode'];
-
-/*
-		//<-- MKL 2004.09.21
-		$fieldsArray['company']=$this->personInfo['company'];
-		$fieldsArray['vat_id']=$this->personInfo['vat_id'];
-		$fieldsArray['country_code']=$this->personInfo['country_code'];
-		//--> MKL 2004.09.21
-*/
 
 /* Added Els: update fe_user with amount of creditpoints and subtract creditpoints used in order*/
 		$fieldsArrayFeUsers = array();
@@ -336,6 +339,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 			if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 				$uid_voucher = $row['uid'];
 			}
+
 			$TYPO3_DB->sql_free_result($res);
 			if (($uid_voucher != '') && ($address->infoArray['delivery']['feusers_uid'] > 0) && ($address->infoArray['delivery']['feusers_uid'] != $uid_voucher) ) {
 				$fieldsArrayFeUsers['tt_products_vouchercode'] = $this->basket->recs['tt_products']['vouchercode'];
@@ -395,7 +399,6 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 	} //putRecord
 
 
-
 	/**
 	 * Creates M-M relations for the products with tt_products and maybe also the tt_products_articles table.
 	 * Isn't really used yet, but later will be used to display stock-status by looking up how many items are
@@ -427,30 +430,32 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 		$where='sys_products_orders_uid='.$orderUid;
 		$res = $TYPO3_DB->exec_DELETEquery('sys_products_orders_mm_tt_products',$where);
 
-		// loop over all items in the basket indexed by a sorting text
-		foreach ($itemArray as $sort=>$actItemArray) {
-			foreach ($actItemArray as $k1=>$actItem) {
-				$row = &$actItem['rec'];
-				$pid = intval($row['pid']);
-				if (!isset($this->basket->getPidListObj()->pageArray[$pid]))	{
-					// product belongs to another basket
-					continue;
-				}
-
-				$insertFields = array (
-					'sys_products_orders_uid' => intval($orderUid),
-					'sys_products_orders_qty' => intval($actItem['count']),
-					'tt_products_uid' => intval($actItem['rec']['uid'])
-				);
-
-				if ($this->conf['useArticles'] == 1) {
-					// get the article uid with these colors, sizes and gradings
-					$row = $productTable->getArticleRow ($actItem['rec'], $theCode);
-					if ($row) {
-						$insertFields['tt_products_articles_uid'] = intval($row['uid']);
+		if (isset($itemArray) && is_array($itemArray)) {
+			// loop over all items in the basket indexed by a sorting text
+			foreach ($itemArray as $sort=>$actItemArray) {
+				foreach ($actItemArray as $k1=>$actItem) {
+					$row = &$actItem['rec'];
+					$pid = intval($row['pid']);
+					if (!isset($this->basket->getPidListObj()->pageArray[$pid]))	{
+						// product belongs to another basket
+						continue;
 					}
+
+					$insertFields = array (
+						'sys_products_orders_uid' => intval($orderUid),
+						'sys_products_orders_qty' => intval($actItem['count']),
+						'tt_products_uid' => intval($actItem['rec']['uid'])
+					);
+
+					if ($this->conf['useArticles'] == 1) {
+						// get the article uid with these colors, sizes and gradings
+						$row = $productTable->getArticleRow ($actItem['rec'], $theCode);
+						if ($row) {
+							$insertFields['tt_products_articles_uid'] = intval($row['uid']);
+						}
+					}
+					$TYPO3_DB->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
 				}
-				$TYPO3_DB->exec_INSERTquery('sys_products_orders_mm_tt_products', $insertFields);
 			}
 		}
 	}

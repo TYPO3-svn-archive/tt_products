@@ -90,7 +90,10 @@ class tx_ttproducts_graduated_price {
 				$uidWhere = $this->mm_table.'.product_uid ';
 				if (is_array($uid))	{
 					foreach ($uid as $v)	{
-						if (!t3lib_div::testInt($v))	{
+						if (
+							class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($v) :
+							!t3lib_div::testInt($v)
+						) {
 							return 'ERROR: not integer '.$v;
 						}
 					}

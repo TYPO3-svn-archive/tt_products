@@ -38,7 +38,7 @@
  */
 class tx_ttproducts_form_div {
 
-	function createSelect (&$pibase, &$valueArray, $name, $selectedKey, $bSelectTags=true, $bTranslateText=true, $allowedArray = array(), $type = 'select') {
+	function createSelect (&$langObj, &$valueArray, $name, $selectedKey, $bSelectTags=true, $bTranslateText=true, $allowedArray = array(), $type = 'select') {
 		global $TYPO3_DB, $TSFE;
 
 		if (is_array($valueArray))	{
@@ -54,7 +54,7 @@ class tx_ttproducts_form_div {
 				}
 				if ($bTranslateText)	{
 					$tmp = tx_div2007_alpha::sL_fh001($selectValue);
-					$text = tx_div2007_alpha::getLL($pibase, $tmp);
+					$text = tx_div2007_alpha5::getLL_fh002($langObj, $tmp);
 				} else {
 					$text = '';
 				}
@@ -64,6 +64,7 @@ class tx_ttproducts_form_div {
 					}
 					$text = $selectValue;
 				}
+
 				if (!count($allowedArray) || in_array($selectKey, $allowedArray))	{
 					$nameText = htmlentities(trim($text),ENT_QUOTES,$TSFE->renderCharset);
 					$valueText = htmlentities($selectKey,ENT_QUOTES,$TSFE->renderCharset);

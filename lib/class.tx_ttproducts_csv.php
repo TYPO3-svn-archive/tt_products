@@ -86,7 +86,7 @@ class tx_ttproducts_csv {
 			$csvlineperson = '';
 			$csvlinedelivery = '';
 
-			$infoFields = explode(',','feusers_uid,name,cnum,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country,agb');
+			$infoFields = explode(',','feusers_uid,name,cnum,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country,agb,business_partner,organisation_form');
 			foreach($infoFields as $fName) {
 				if ($csvlinehead != '') {
 					$csvlinehead .= ';';
@@ -184,7 +184,8 @@ class tx_ttproducts_csv {
 
 			fclose($csvfile);
 		} else {
-			$message = tx_div2007_alpha::getLL($this->pibase,'no_csv_creation');
+			$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+			$message = tx_div2007_alpha5::getLL_fh002($langObj,'no_csv_creation');
 			$messageArr =  explode('|', $message);
 			$error_message=$messageArr[0] . $csvfilepath . $messageArr[1];
 		}

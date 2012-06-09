@@ -112,6 +112,7 @@ class tx_ttproducts_single_view {
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$subpartmarkerObj = &t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
+		$theCode = 'SINGLE';
 
 		$itemTableArray = array();
 		$itemTableArray['product'] = &$tablesObj->get('tt_products');
@@ -253,17 +254,22 @@ class tx_ttproducts_single_view {
 			// set the title of the single view
 			switch ($this->conf['substitutePagetitle']) {
 				case 1:
-					$TSFE->page['title'] = $row['title'];
+					$titleStr = $row['title'];
 					break;
 				case 2:
-					$TSFE->page['title'] = $row['subtitle'] ? $row['subtitle'] : $row['title'];
+					$titleStr = $row['subtitle'] ? $row['subtitle'] : $row['title'];
 					break;
 				case 12:
-					$TSFE->page['title'] = $row['title'] . ' / ' . $row['subtitle'];
+					$titleStr = $row['title'] . ' / ' . $row['subtitle'];
 					break;
 				case 21:
-					$TSFE->page['title'] = $row['subtitle'] . ' / ' . $row['title'];
+					$titleStr = $row['subtitle'] . ' / ' . $row['title'];
 					break;
+			}
+			if (isset($titleStr)) {
+				$GLOBALS['TSFE']->page['title'] = $titleStr;
+				// set pagetitle for indexed search to the tt_products title
+				$GLOBALS['TSFE']->indexedDocTitle = $titleStr;
 			}
 
 				// Fill marker arrays
@@ -482,8 +488,7 @@ class tx_ttproducts_single_view {
 					true,
 					$TSFE->renderCharset
 				);
-
-				$itemTableViewArray ['article']->getItemSubpartArrays (
+				$itemTableViewArray['article']->getItemSubpartArrays (
 					$itemFrameWork,
 					$row,
 					$subPartArray,
@@ -763,9 +768,7 @@ class tx_ttproducts_single_view {
 			$jsMarkerArray = array();
 			$this->javaScriptMarker->getMarkerArray($jsMarkerArray, $markerArray);
 			$markerArray = array_merge($categoryMarkerArray, $jsMarkerArray, $markerArray);
-
 			$markerArray['###HIDDENFIELDS###'] = $hiddenText; // TODO
-
 				// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
 

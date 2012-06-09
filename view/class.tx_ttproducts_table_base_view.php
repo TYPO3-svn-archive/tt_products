@@ -168,14 +168,16 @@ abstract class tx_ttproducts_table_base_view	{
 	)	{
 		global $TSFE;
 
-		if (is_array($row))	{
+		$rowMarkerArray = array();
+
+		if (is_array($row) && $row['uid'])	{
 			$functablename = $this->getModelObj()->getFuncTablename();
 			$marker = $prefix.$this->marker;
 			$extTableName = str_replace('_','-',$functablename);
 			$extId = $extTableName.'-'.str_replace('_','-',strtolower($theCode));
 			$id = $extId.'-'.$row['uid'];
-			$markerArray['###'.$marker.'_ID###'] = $id;
-			$markerArray['###'.$marker.'_NAME###'] = $extName.'-'.$row['uid'];
+			$rowMarkerArray['###'.$marker.'_ID###'] = $id;
+			$rowMarkerArray['###'.$marker.'_NAME###'] = $extName.'-'.$row['uid'];
 			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 			$tableconf = $cnf->getTableConf($functablename,$theCode);
 			$tabledesc = $cnf->getTableDesc($functablename);
@@ -183,12 +185,12 @@ abstract class tx_ttproducts_table_base_view	{
 			foreach ($row as $field => $value)	{
 				$viewField = $field;
 				$bSkip = FALSE;
-				$theMarkerArray = &$markerArray;
+				$theMarkerArray = &$rowMarkerArray;
 				$fieldId = $id.'-'.$viewField;
 				$markerKey = $marker.'_'.strtoupper($viewField);
 
 				if (isset($tagArray[$markerKey]))	{
-					$markerArray['###'.$markerKey.'_ID###'] = $fieldId;
+					$rowMarkerArray['###'.$markerKey.'_ID###'] = $fieldId;
 				}
 
 				if (is_array($variantFieldArray) && is_array($variantMarkerArray) && in_array($field, $variantFieldArray))	{
@@ -197,9 +199,9 @@ abstract class tx_ttproducts_table_base_view	{
 				} else {
 					$className = $this->getfieldClass($field);
 				}
+
 				if ($className)	{
 					$fieldViewObj = $this->getObj($className);
-
 					$modifiedValue =
 						$fieldViewObj->getItemMarkerArray	(
 							$functablename,
@@ -242,7 +244,26 @@ abstract class tx_ttproducts_table_base_view	{
 					$theMarkerArray['###'.$markerKey.'###'] = $value;
 				}
 			}
+		} else {
+			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$tablename = $this->getModelObj()->getTablename();
+			$tmpMarkerArray = array();
+			$tmpMarkerArray[] = $marker;
+
+			if (isset($tagArray) && is_array($tagArray))	{
+				foreach ($tagArray as $theTag => $v)	{
+					foreach ($tmpMarkerArray as $theMarker)	{
+						if (strpos($theTag,$theMarker) === 0)	{
+							$rowMarkerArray['###' . $theTag . '###'] = '';
+						}
+					}
+					if (!isset($rowMarkerArray['###' . $theTag . '###']) && strpos($theTag,$markerKey) === 0)	{
+// Todo
+					}
+				}
+			}
 		}
+		$markerArray = array_merge($markerArray, $rowMarkerArray);
 	}
 }
 

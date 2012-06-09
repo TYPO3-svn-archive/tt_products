@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
@@ -46,7 +46,8 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 	var $image;
 
 
-	function getWrappedSubpartArray(&$subpartArray, &$wrappedSubpartArray, $funcTablename)	{
+
+	function getWrappedSubpartArray(&$subpartArray, &$wrappedSubpartArray)	{
 		global $TSFE;
 
 		if ($TSFE->fe_user->user)	{
@@ -83,29 +84,55 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 	function getItemMarkerArray (&$row, &$markerArray, $bSelect, $type)	{
 		global $TCA;
 
+		$fieldOutputArray = array();
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$modelObj = $this->getModelObj();
+		$selectInfoFields = $modelObj->getSelectInfoFields();
+
 		if ($bSelect)	{
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-			$typeSalutationText =
-				tx_ttproducts_form_div::createSelect (
-					$this->langObj,
-					$TCA['sys_products_orders']['columns']['salutation']['config']['items'],
-					'recs['.$type.'][salutation]',
-					(is_array($row) ? $row['salutation'] : ''),
-					true,
-					true,
-					array()
-				);
-		} else if (is_numeric($row['salutation'])) {
-			$salutation = $TCA['sys_products_orders']['columns']['salutation']['config']['items'][$row['salutation']];
-			$tmp = tx_div2007_alpha::sL_fh001($salutation[0]);
-			$typeSalutationText = htmlspecialchars(tx_div2007_alpha::getLL($this->langObj, $tmp));
+			foreach ($selectInfoFields as $field) {
+				$tablename = $modelObj->getTCATableFromField($field);
+
+				$fieldOutputArray[$field] =
+					tx_ttproducts_form_div::createSelect (
+						$langObj,
+						$TCA[$tablename]['columns'][$field]['config']['items'],
+						'recs['.$type.']['.$field.']',
+						(is_array($row) ? $row[$field] : ''),
+						true,
+						true,
+						array()
+					);
+			}
 		} else {
-			$typeSalutationText = '';
+			foreach ($selectInfoFields as $field) {
+				$tablename = $modelObj->getTCATableFromField($field);
+				$itemConfig = $TCA[$tablename]['columns'][$field]['config']['items'];
+
+				if ($row[$field] != '' && isset($itemConfig) && is_array($itemConfig)) {
+
+					$tcaValue = '';
+					foreach ($itemConfig as $subItemConfig) {
+						if (isset($subItemConfig) && is_array($subItemConfig) && $subItemConfig['1'] == $row[$field]) {
+							$tcaValue = $subItemConfig['0'];
+							break;
+						}
+					}
+
+					$tmp = tx_div2007_alpha::sL_fh001($tcaValue);
+					$fieldOutputArray[$field] = htmlspecialchars(tx_div2007_alpha5::getLL_fh002($langObj, $tmp));
+				} else {
+					$fieldOutputArray[$field] = '';
+				}
+			}
 		}
-		$markerArray['###'.($type=='personinfo' ? 'PERSON' : 'DELIVERY').'_SALUTATION###'] = $typeSalutationText;
 
+		foreach ($selectInfoFields as $field) {
+			$markerkey = '###' . ($type=='personinfo' ? 'PERSON' : 'DELIVERY') . '_'. strtoupper($field) . '###';
+			$markerArray[$markerkey] = $fieldOutputArray[$field];
+		}
 	} // getMarkerArray
-
 }
 
 

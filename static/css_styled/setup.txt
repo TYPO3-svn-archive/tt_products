@@ -20,6 +20,7 @@ plugin.tt_products {
   defaultImageDir = uploads/pics/
   wrapInBaseClass = 1
 
+
   limit = {$plugin.tt_products.limit}
   limitImage = {$plugin.tt_products.limitImage}
   limitImageSingle = {$plugin.tt_products.limitImageSingle}
@@ -66,7 +67,7 @@ plugin.tt_products {
   listcatImage.file.maxH = {$plugin.tt_products.maxH_listcat}
   listcatImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_listcat}
 
-  image.wrap = | <BR>
+  image.wrap = | <br />
 
   noImageAvailable = {$plugin.tt_products.file.noImageAvailable}
   datasheetIcon {
@@ -118,6 +119,7 @@ plugin.tt_products {
   listViewOnSearch = {$plugin.tt_products.listViewOnSearch}
 
   PIDagb = {$plugin.tt_products.PIDagb}
+  PIDrevocation = {$plugin.tt_products.PIDrevocation}
   PIDinfo = {$plugin.tt_products.PIDinfo}
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
   PIDpayment = {$plugin.tt_products.PIDpayment}
@@ -417,12 +419,27 @@ plugin.tt_products {
 
   marks {
    BASKET_MINI_HEADER = Warenkorb
+   BASKET_INTO = in den Warenkorb
+   BASKET_INTO_ID = basketInto
   }
+
   shopAdmin = BE
   control.ALL.param {
     use = backPID
   }
+
+  orderEmail {
+       10000.suffix = shop
+       10000.from = customer
+       10002.suffix = customer
+       10002.from = shop
+  }
+
 }
+
+[globalVar = GP:ttp_basket != '']
+plugin.tt_products = USER_INT
+[global]
 
 
 ## This enables the record item to display product items

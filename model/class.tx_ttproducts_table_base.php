@@ -127,7 +127,17 @@ abstract class tx_ttproducts_table_base	{
 
 		$tableObj = &$this->getTableObj();
 		$alias = $this->getAlias() . $aliasPostfix;
-		if (t3lib_div::testInt($uid) && isset($this->dataArray[$uid]) && is_array($this->dataArray[$uid]) && !$where_clause && !$fields)	{
+
+		if (
+			(
+				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
+				t3lib_div::testInt($uid)
+			) &&
+			isset($this->dataArray[$uid]) &&
+			is_array($this->dataArray[$uid]) &&
+			!$where_clause &&
+			!$fields
+		)	{
 			if (!$pid || ($pid && $this->dataArray[$uid]['pid'] == $pid))	{
 				$rc = $this->dataArray[$uid];
 			} else {
@@ -189,7 +199,11 @@ abstract class tx_ttproducts_table_base	{
 				}
 
 				$TYPO3_DB->sql_free_result($res);
-				if (t3lib_div::testInt($uid))	{
+
+				if (
+					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
+					t3lib_div::testInt($uid)
+				) {
 					reset($rc);
 					$rc = current ($rc);
 				}

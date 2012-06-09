@@ -189,7 +189,7 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 
 		parent::getItemMarkerArray($row, $markerArray, $variantFieldArray, $variantMarkerArray, $tagArray, $theCode, $bHtml, $charset, $prefix, $imageRenderObj);
 
-/*		$priceViewObj->getItemMarkerArray($functablename, 'price', $row, $this->getMarker(), $markerArray, $tagArray, $theCode, $fieldId);*/
+// 		$markerArray = array_merge($markerArray, $variantMarkerArray);
 
 			// Get image
 		if (isset($row['delivery']))	{
@@ -200,23 +200,23 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 
 		$markerArray['###'.$this->marker.'_TAX###'] = (!empty($row['tax'])) ? $row['tax'] : $this->conf['TAXpercentage'];
 		$markerArray['###CUR_SYM###'] = ' '.($this->conf['currencySymbol'] ? ($charset ? htmlentities($this->conf['currencySymbol'],ENT_QUOTES,$charset) : $this->conf['currencySymbol']) : '');
+
 		$priceNo = intval($this->config['priceNoReseller']);
+
 		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
 
-		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha::getLL($this->langObj, $taxInclExcl) : '');
+		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha5::getLL_fh002($this->langObj, $taxInclExcl) : '');
 
 		$markerArray['###'.$priceMarkerPrefix.'DIRECTCOST_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['directcost'],1,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
 		$markerArray['###'.$priceMarkerPrefix.'DIRECTCOST_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['directcost'],0,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
 
-// ToDo:
 		$markerArray['###USER_DISCOUNT_PERCENT###'] = $TSFE->fe_user->user['tt_products_discount'];
 		$markerArray['###USER_DISCOUNT_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceNoTax']-$oldPriceNoTax, $taxInclExcl));
 		$markerArray['###USER_DISCOUNT_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceTax']-$oldPriceTax, $taxInclExcl));
 		$markerArray['###USER_DISCOUNT2_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($price2-$oldPriceNoTax, $taxInclExcl));
 		$markerArray['###USER_DISCOUNT2_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($price2NoTax-$oldPriceTax, $taxInclExcl));
-
 
 		$cObjectMarkerArray = array();
 
@@ -235,8 +235,8 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 			foreach ($row as $field => $value)	{
 				$markerKey = '###'.$this->getMarker().'_'.strtoupper($field).'###';
 				if (is_array($tableconf['field.'][$field.'.']))	{
-					if (isset($cObjectMarkerArray[$markerKey]))	{
-						$value = $cObjectMarkerArray[$markerKey];
+					if (isset($markerArray[$markerKey]))	{
+						$value = $markerArray[$markerKey];
 					}
 					$tableconf['field.'][$field.'.']['value'] = $value;
 					$fieldContent = $this->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field.'.'],TT_PRODUCTS_EXTkey);

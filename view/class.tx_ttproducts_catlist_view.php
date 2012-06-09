@@ -65,7 +65,6 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 			$subCategoryMarkers
 		);
 
-
 		$content='';
 		$out='';
 		$bFinished = false;
@@ -73,7 +72,9 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$catTableObj = &$tablesObj->get($functablename);
 
-		if (!count($error_code))	{
+		if (count($error_code)) {
+			// nothing
+		} else if (count($categoryArray)) {
 			$count = 0;
 			$depth = 1;
 			$countArray = array();
@@ -96,7 +97,7 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 			$iCount = 0;
 			$tSubParts = $this->subpartmarkerObj->getTemplateSubParts($templateCode, $subCategoryMarkers);
 			foreach ($tSubParts as $marker => $area)	{
-				$this->getFrameWork ($t[$marker], $templateCode, $area.$templateSuffix);
+				$this->getFrameWork($t[$marker], $templateCode, $area.$templateSuffix);
 			}
 
 			foreach ($catArray[$depth] as $k => $actCategory)	{
@@ -115,6 +116,7 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 					$row
 				);
 				$childArray = $row['child_category'];
+
 				if (is_array($childArray))	{
 					foreach ($subCategoryMarkers as $depth => $subCategoryMarker)	{
 						if ($depth == 1)	{
@@ -146,7 +148,6 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 						}
 					}
 				} else {
-
 					foreach ($subCategoryMarkers as $depth => $subCategoryMarker)	{
 						$markerArray['###'.$subCategoryMarker.'###'] = '';
 					}
@@ -170,6 +171,14 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 			$subpartArray['###CATEGORY_SINGLE###'] = $out;
 			$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'], $markerArray, $subpartArray, $wrappedSubpartArray);
 			$content = $out;
+		} else {
+			$contentEmpty = $this->pibase->cObj->getSubpart($templateCode, $this->subpartmarkerObj->spMarker('###' . $templateArea . $templateSuffix . '_EMPTY###'), $error_code);
+		}
+
+		if ($contentEmpty != '') {
+
+			$globalMarkerArray = $markerObj->getGlobalMarkerArray();
+			$content = $this->pibase->cObj->substituteMarkerArray($contentEmpty, $globalMarkerArray);
 		}
 
 		return $content;
@@ -181,7 +190,7 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 	 * Fills in the markerArray with data for a category
 	 *
 	 */
-	public function getMarkerArray(
+	public function getMarkerArray (
 		$functablename,
 		&$markerArray,
 		&$linkOutArray,

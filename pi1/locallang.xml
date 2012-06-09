@@ -10,7 +10,7 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="tt_products">Shop Plugin:</label>
+			<label index="tt_products">Shop Plugin</label>
 			<label index="open_bill">Click here to open the bill</label>
 			<label index="open_delivery">Click here to open the delivery sheet</label>
 			<label index="invalid_email">Invalid E-mail address |! Please re-enter.</label>
@@ -19,7 +19,7 @@
 			<label index="accept_AGB">You have to accept the general trading conditions to proceed.</label>
 			<label index="additional_single">buy this product</label>
 			<label index="additional_gift_service">wrap product by gift service</label>
-			<label index="wrong_parameter">Wrong parameters. GET/POST var 'tt_products[|]' is missing or item with uid = | found on allowed pages | .</label>
+			<label index="wrong_parameter">Wrong parameters. GET/POST var 'tt_products[|]' is missing or no item with uid = | found on allowed pages (|) .</label>
 			<label index="no_csv_creation">Warning: Cannot create CSV file '|' for this order!</label>
 			<label index="wrong_code">Wrong display mode or code '|'.</label>
 			<label index="instock_warning">Warning: | no. | runs out of stock.</label>
@@ -31,6 +31,10 @@
 			<label index="missing_telephone">telephone number</label>
 			<label index="missing_email">email address</label>
 			<label index="missing_zip">zip code</label>
+			<label index="error_reference_id">ERROR: reference ID could not be generated.</label>
+			<label index="error_transaction_details">ERROR: Setting details of transaction failed.</label>
+			<label index="error_relay_url">ERROR: No relay URL given!</label>
+			<label index="error_find_payment_method">ERROR: Could not find provider object for payment method '%s'.</label>
 			<label index="tax_included">VAT incl. price</label>
 			<label index="tax_excluded">w/o VAT</label>
 			<label index="tax_zero">without taxes</label>
@@ -51,7 +55,7 @@
 			<label index="accept_AGB">Sie haben unsere AGB nicht akzeptiert.</label>
 			<label index="additional_single">Produkt kaufen</label>
 			<label index="additional_gift_service">Verpacke Produkt mit Geschenk Service</label>
-			<label index="wrong_parameter">Falscher Parameter. GET/POST var 'tt_products[|]' wurde nicht angegeben oder kein Element mit uid = | auf den erlaubten Seiten | gefunden.</label>
+			<label index="wrong_parameter">Falscher Parameter. GET/POST var 'tt_products[|]' wurde nicht angegeben oder kein Element mit uid = | auf den erlaubten Seiten (|) gefunden.</label>
 			<label index="no_csv_creation">Warnung: Für diese Bestellung kann keine CSV Datei '|' erzeugt werden!</label>
 			<label index="wrong_code">Falscher Anzeigetyp oder CODE '|'.</label>
 			<label index="instock_warning">Warnung: | Nr. | ist bald nicht mehr auf Lager.</label>
@@ -64,6 +68,10 @@
 			<label index="missing_name">Ihren Namen</label>
 			<label index="missing_telephone">die Telefonnummer</label>
 			<label index="missing_zip">die Postleitzahl</label>
+			<label index="error_reference_id">ERROR: Es konnte keine Referenz ID erzeugt werden.</label>
+			<label index="error_transaction_details">ERROR: Das Setzen der Details der Transaktion hat fehlgeschlagen.</label>
+			<label index="error_relay_url">ERROR: Es ist keine Weiterleitungs-URL angegeben worden!</label>
+			<label index="error_find_payment_method">ERROR: Kein Provider Objekt für die Bezahlmethode '%s'.</label>
 			<label index="article">Artikel</label>
 			<label index="tax_included">inkl. MwSt.</label>
 			<label index="tax_excluded">exkl. MwSt.</label>

@@ -83,6 +83,22 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 	} // init
 
 
+	function getSelectInfoFields() {
+		$result = array('salutation', 'tt_products_business_partner', 'tt_products_organisation_form');
+
+		return $result;
+	}
+
+
+	function getTCATableFromField ($field) {
+		$result = 'fe_users';
+		if ($field == 'salutation') {
+			$result = 'sys_products_orders';
+		}
+		return $result;
+	}
+
+
 	public function get ($uid) {
 		global $TYPO3_DB;
 
@@ -130,15 +146,7 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 				$timeTemp = $infoObj->infoArray['billing']['date_of_birth'];
 				$bAge = TRUE;
 			} else if ($TSFE->fe_user->user)	{
-				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
-
-					// prepare for handling dates before 1970
-					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
-					$timeTemp = $adodbTime->adodb_date('d-m-Y', $TSFE->fe_user->user['date_of_birth']);
-				} else {
-					$timeTemp = date('d-m-Y', ($TSFE->fe_user->user['date_of_birth']));
-				}
+				$timeTemp = date('d-m-Y', ($TSFE->fe_user->user['date_of_birth']));
 				$bAge = TRUE;
 			} else {
 				$bAge = FALSE;

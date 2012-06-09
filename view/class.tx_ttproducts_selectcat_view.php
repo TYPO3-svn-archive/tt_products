@@ -82,6 +82,10 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 		if (!count($error_code)) 	{
 			$count = 0;
 			$depth = 1;
+			if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
+				$bSeparated = true;
+			}
+
 	/*		$catArray = array();
 			$catArray [(int) $depth] = &$rootArray;*/
 			$menu = $this->conf['CSS.'][$functablename.'.']['menu'];
@@ -150,9 +154,6 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 			$markerArray = $this->urlObj->addURLMarkers($this->conf['PIDlistDisplay'],$markerArray);
 			$this->urlObj->getWrappedSubpartArray($wrappedSubpartArray);
 			$subpartArray['###CATEGORY_SINGLE###'] = $out;
-			if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
-				$bSeparated = true;
-			}
 
 			if ($bSeparated)	{
 				$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);

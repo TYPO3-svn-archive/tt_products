@@ -286,44 +286,38 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		return $hasAdditional;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$cat: ...
-	 * @param	[type]		$pid_list: ...
-	 * @return	[type]		...
-	 */
-	function addWhereCat ($cat, $pid_list)	{
+	public function addWhereCat ($catObject, $theCode, $cat, $pid_list, $bLeadingOperator=TRUE) {
 		$bOpenBracket = FALSE;
 		$where = '';
 
 			// Call all addWhere hooks for categories at the end of this method
 		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
 			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+				$hookObj=&t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addWhereCat')) {
-					$whereNew = $hookObj->addWhereCat($this, $cat, $where, $operator, $pid_list);
-					$operator = ($operator ? $operator : 'OR');
-					$where .= ($whereNew ? ' '.$operator.' '.$whereNew : '');
+					$whereNew = $hookObj->addWhereCat($this, $catObject, $cat, $where, $operator, $pid_list, $catObject->getDepth($theCode));
+					if ($bLeadingOperator) {
+						$operator = ($operator ? $operator : 'OR');
+						$where .= ($whereNew ? ' '.$operator.' '.$whereNew : '');
+					} else {
+						$where .= $whereNew;
+					}
 				}
 			}
-		} else if($cat || $cat=='0') {
+		} else if($cat || $cat == '0') {
 			$cat = implode(',',t3lib_div::intExplode(',', $cat));
-			$where = ' AND ( category IN ('.$cat.') )';
+			$where = 'category IN ('.$cat.')';
+
+			if ($bLeadingOperator) {
+				$where = ' AND ( ' . $where . ')';
+			}
 		}
 
 		return $where;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$cat: ...
-	 * @param	[type]		$selectConf: ...
-	 * @return	[type]		...
-	 */
-	function addselectConfCat ($cat, &$selectConf)	{
 
+	public function addselectConfCat ($catObject, $cat, &$selectConf) {
 		$tableNameArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
@@ -331,11 +325,13 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
 				$hookObj= &t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addselectConfCat')) {
-					$tableNameArray[] = $hookObj->addselectConfCat($this, $cat, $selectConf);
+					$newTablenames = $hookObj->addselectConfCat($this, $catObject, $cat, $selectConf,$catObject->getDepth());
+					if ($newTablenames != '') {
+						$tableNameArray[] = $newTablenames;
+					}
 				}
 			}
 		}
-
 		return implode(',', $tableNameArray);
 	}
 

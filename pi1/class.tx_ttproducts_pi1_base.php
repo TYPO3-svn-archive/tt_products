@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2011 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2007-2012 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -43,7 +43,7 @@
  *
  */
 
-require_once (PATH_BE_div2007.'class.tx_div2007_alpha.php');
+require_once (PATH_BE_div2007 . 'class.tx_div2007_alpha5.php');
 require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_main.php');
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
@@ -72,14 +72,15 @@ class tx_ttproducts_pi1_base extends tslib_pibase {
 			$this->conf = &$conf;
 			$config = array();
 			$mainObj = &t3lib_div::getUserObj('&tx_ttproducts_main');	// fetch and store it as persistent object
-			$bDoProcessing = $mainObj->init ($this, $content, $conf, $config);
+			$errorCode = array();
+			$bDoProcessing = $mainObj->init ($this, $content, $conf, $config, $errorCode);
 
 			if ($bDoProcessing)	{
 				$content = &$mainObj->run($content);
 			}
 		} else {
-			tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/pi1/locallang.xml');
-			$content = tx_div2007_alpha::getLL($this,'no_template').' plugin.tt_products.templateFile';
+			tx_div2007_alpha5::loadLL_fh002($this, 'EXT:' . TT_PRODUCTS_EXTkey . '/pi1/locallang.xml');
+			$content = tx_div2007_alpha5::getLL_fh002($this,'no_template').' plugin.tt_products.templateFile';
 		}
 		return $content;
 	}

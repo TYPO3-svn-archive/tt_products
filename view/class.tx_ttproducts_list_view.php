@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2010 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -224,7 +224,12 @@ class tx_ttproducts_list_view {
 		$rc = '';
 		if (is_array($displayConf[$type]))	{
 			foreach ($displayConf[$type] as $k => $val)	{
-				if (t3lib_div::testInt($k) && $depth >= $k)	{
+				if (
+					(
+						class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k) :
+						t3lib_div::testInt($k)
+					) && $depth >= $k
+				) {
 					$rc = $val;
 				} else {
 					break;
@@ -414,7 +419,7 @@ class tx_ttproducts_list_view {
 
 		if ($whereAddress == '') {	// do not mix address with category filter
 			if ($allowedItems == '')	{
-				$whereCat = $itemTable->addWhereCat($cat, $this->pidListObj->getPidlist());
+				$whereCat = $itemTable->addWhereCat($categoryTable, $theCode, $cat, $this->pidListObj->getPidlist(),TRUE);
 			}
 
 			if ($whereCat == '' && $allowedItems == '')	{
@@ -440,18 +445,11 @@ class tx_ttproducts_list_view {
 			$formNameSetup = $this->conf['form.'][$theCode.'.']['data.']['name'];
 		}
 		$formName = ($formNameSetup ? $formNameSetup : $formName);
-		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
 		if ($allowedItems || $allowedItems == '0')	{
 			$allowedItemArray = array();
 			$tempArray = t3lib_div::trimExplode(',',$allowedItems);
-			if ($typoVersion < 4000000)	{
-				foreach ($tempArray as $k => $value)	{
-					$allowedItemArray[$k] = $TYPO3_DB->fullQuoteStr($value,$itemTable->getTableObj()->name);
-				}
-			} else {
-				$allowedItemArray = $TYPO3_DB->fullQuoteArray($tempArray,$itemTable->getTableObj()->name);
-			}
+			$allowedItemArray = $TYPO3_DB->cleanIntArray($tempArray);
 			$where .= ' AND uid IN ('.implode(',',$allowedItemArray).')';
 		}
 
@@ -533,7 +531,12 @@ class tx_ttproducts_list_view {
 			$begin_at = $this->pibase->piVars['begin_at'];
 			$begin_at = ($begin_at ? $begin_at : t3lib_div::_GP('begin_at'));
 		}
-		$begin_at = t3lib_div::intInRange($begin_at,0,100000);
+		$begin_at = (
+			class_exists('t3lib_utility_Math') ?
+			t3lib_utility_Math::forceIntegerInRange($begin_at, 0, 100000) :
+			t3lib_div::intInRange($begin_at, 0, 100000)
+		);
+
 		if ($theCode == 'SINGLE')	{
 			$begin_at = ''; // no page browser in single view for related products
 		}
@@ -602,7 +605,13 @@ class tx_ttproducts_list_view {
 			$productsCount = $row[0];
 
 				// range check to current productsCount
-			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount) ? ($productsCount >= $this->config['limit'] ? $productsCount - $this->config['limit'] : $productsCount) : $begin_at,0);
+
+			$begin_at_start = (($begin_at >= $productsCount) ? ($productsCount >= $this->config['limit'] ? $productsCount - $this->config['limit'] : $productsCount) : $begin_at);
+			$begin_at = (
+				class_exists('t3lib_utility_Math') ?
+					t3lib_utility_Math::forceIntegerInRange($begin_at_start, 0) :
+					t3lib_div::intInRange($begin_at_start, 0)
+			);
 
 			$displayConf = array();
 				// Get products count
@@ -726,7 +735,6 @@ class tx_ttproducts_list_view {
 				$viewCatTagArray,
 				$catParentArray
 			);
-
 			$catTitle = '';
 			$catTableConf = $cnf->getTableConf($categoryTable->getTableObj()->getName(), $theCode);
 
@@ -884,7 +892,13 @@ class tx_ttproducts_list_view {
 						reset($catLineArray);
 
 						$confDisplayColumns = $this->getDisplayInfo($displayConf, 'columns', $depth, !count($childCatArray));
-						$displayColumns = (t3lib_div::testInt($confDisplayColumns) ? $confDisplayColumns : $displayColumns);
+						$displayColumns = (
+							(
+								class_exists('t3lib_utility_Math') ?
+									t3lib_utility_Math::canBeInterpretedAsInteger($confDisplayColumns) :
+									t3lib_div::testInt($confDisplayColumns)
+							) ? $confDisplayColumns : $displayColumns
+						);
 
 						if (count($childCatArray))	{
 							$linkCat = next($catLineArray);
@@ -956,6 +970,7 @@ class tx_ttproducts_list_view {
 								1,
 								''
 							);
+
 							if ($t['categoryFrameWork'])	{
 								$categoryOut = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $categoryMarkerArray);
 							}
@@ -1199,13 +1214,21 @@ class tx_ttproducts_list_view {
 						}
 						$tableRowOpen = 1;
 					}
+
+					$itemSingleWrapArray = t3lib_div::trimExplode('|', $cssConf['itemSingleWrap']);
+					if ($itemSingleWrapArray[0]) {
+						$temp .= str_replace('###UNEVEN###', $evenUneven, $itemSingleWrapArray[0]);
+					}
+
 					$markerArray['###ITEM_SINGLE_PRE_HTML###'] = $temp;
-					$temp='';
+
+					$temp = $itemSingleWrapArray[1];
 
 					if (!$displayColumns || $iColCount == $displayColumns) {
-						$temp = $itemRowWrapArray[1];
+						$temp .= $itemRowWrapArray[1];
 						$tableRowOpen = 0;
 					}
+
 					$markerArray['###ITEM_SINGLE_POST_HTML###'] = $temp;
 					$pid = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
 					$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->urlObj->getLinkParams('', array(), TRUE, TRUE, $itemTableView->getPivar()))); //$this->getLinkUrl($this->conf['PIDmemo']);
@@ -1365,11 +1388,11 @@ class tx_ttproducts_list_view {
 				$addQueryString['cat'] = $cat;
 			}
 
-			$backPID = $this->pibase->piVars['backPID'];
-			$pid = ( $backPID ? $backPID : $TSFE->id);
-			$linkUrl = $this->pibase->pi_getPageLink($pid, '', $this->urlObj->getLinkParams('', array(), TRUE, TRUE, $itemTableView->getPivar()));
-			$linkUrl = htmlspecialchars($linkUrl);
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>',array('useCacheHash' => TRUE));
+// 			$backPID = $this->pibase->piVars['backPID'];
+// 			$pid = ( $backPID ? $backPID : $TSFE->id);
+// 			$linkUrl = $this->pibase->pi_getPageLink($pid, '', $this->urlObj->getLinkParams('', array(), TRUE, TRUE, $itemTableView->getPivar()));
+// 			$linkUrl = htmlspecialchars($linkUrl);
+// 			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>',array('useCacheHash' => TRUE));
 
 			if ($sword) 	{
 				$addQueryString['sword'] = $sword;

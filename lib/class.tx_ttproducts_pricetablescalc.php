@@ -81,8 +81,8 @@ class tx_ttproducts_pricetablescalc extends tx_ttproducts_pricecalc_base {
 							$priceProduct = $priceFormula['formula'];
 						}
 					}
-					if ($priceProduct > $itemArray [$sort][$k2][$type])	{
-						$itemArray [$sort][$k2][$type] = $priceProduct;
+					if ($priceProduct > $itemArray[$sort][$k2][$type])	{
+						$itemArray[$sort][$k2][$type] = $priceProduct;
 					}
 					$priceReduction[$row['uid']] = 1;
 				}

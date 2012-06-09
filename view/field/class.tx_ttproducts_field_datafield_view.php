@@ -97,8 +97,7 @@ class tx_ttproducts_field_datafield_view extends tx_ttproducts_field_base_view {
 		);
 	}
 
-
-	function &getItemSubpartArrays (
+	public function &getItemSubpartArrays (
 		&$templateCode,
 		$markerKey,
 		$functablename,
@@ -108,9 +107,9 @@ class tx_ttproducts_field_datafield_view extends tx_ttproducts_field_base_view {
 		&$subpartArray,
 		&$wrappedSubpartArray,
 		&$tagArray,
-		$theCode='',
-		$id='1'
-	)	{
+		$theCode = '',
+		$id = '1'
+	) {
 		$this->getRepeatedSubpartArrays (
 			$subpartArray,
 			$wrappedSubpartArray,

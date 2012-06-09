@@ -249,14 +249,24 @@ abstract class tx_ttproducts_catlist_view_base {
 						}
 					}
 					$rootCat = $currentCat;
-					if (t3lib_div::testInt($rootCat))	{
+					if (
+						class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($rootCat) :
+						t3lib_div::testInt($rootCat)
+					) {
 						$allowedCatArray[] = $rootCat;
 					}
 					$allowedCats = implode (',', $allowedCatArray);
 					$excludeCat = $rootCat;
 				} else if ($tableConf['onlyChildsOfCurrent'])	{
-
-					$relatedArray = $categoryTable->getRelated($rootCat, $currentCat, $this->pidListObj->getPidlist(), $orderBy);	// read only related categories
+					$pids = $this->pidListObj->getPidlist();
+					if ($rootCat == '') {
+						$rootCat = $categoryTable->getAllChildCats($pids, $orderBy, ''); // +++ neu
+					}
+					$relatedArray = $categoryTable->getRelated($rootCat, $currentCat, $pids, $orderBy);	// read only related categories
+				} else if ($tableConf['rootChildsOfCurrent']) { // +++ neu
+					$pids = $this->pidListObj->getPidlist();
+					$rootCat = $categoryTable->getAllChildCats($pids, $orderBy, $currentCat);
+					$relatedArray = $categoryTable->getRelated($rootCat, 0, $pids, $orderBy);	// read only related categories
 				} else {
 					// read in all categories
 					$categoryTable->get('0', $this->pidListObj->getPidlist(),TRUE,'','','',FALSE,'',$orderBy);	// read all categories

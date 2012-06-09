@@ -134,7 +134,6 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 		$modelObj = &$this->getModelObj ();
 
 		parent::getItemMarkerArray($item, $markerArray, $catTitle, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $theCode, $id, '', $linkWrap, $bHtml, $charset);
-
 		$datafieldViewObj = $this->getFieldObj('datasheet');
 		if (isset($datafieldViewObj) && is_object($datafieldViewObj))	{
 			$datafieldViewObj->getItemMarkerArray($modelObj->getTablename(), 'datasheet', $row, $this->marker, $markerArray, $tagArray, $theCode, $id, $tmp, FALSE,'','', 'datasheetIcon');

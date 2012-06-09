@@ -101,13 +101,14 @@ class tx_ttproducts_activity_finalize {
 		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+
 		$instockTableArray = '';
 		$empty = '';
 		$recipientsArray = array();
 		$recipientsArray['customer'] = array();
 		$emailTemplateArray = array();
 		$emailTemplateArray['customer'] = 'EMAIL_PLAINTEXT_TEMPLATE';
-	//	$emailTemplateArray['shop'] = 'EMAIL_PLAINTEXT_TEMPLATE_SHOP';
 		if ($recipientsArray['radio1'])	{
 			$emailTemplateArray['radio1'] = 'EMAIL_PLAINTEXT_TEMPLATE_RADIO1';
 		}
@@ -122,11 +123,12 @@ class tx_ttproducts_activity_finalize {
 			'email' => $customerEmail,
 			'name' => $address->infoArray['billing']['name']
 		);
+
 		$fromArray = $defaultFromArray;
 		$recipientsArray['customer'][] = $customerEmail;
 		$recipientsArray['shop'] = $tablesObj->get('tt_products_cat')->getEmail($basket->itemArray);
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
-
+### START
 		if (isset($this->conf['orderEmail.']) && is_array($this->conf['orderEmail.']))	{
 			foreach ($this->conf['orderEmail.'] as $k => $emailConfig) {
 				$suffix = $emailConfig['suffix'];
@@ -153,6 +155,8 @@ class tx_ttproducts_activity_finalize {
 				}
 			}
 		}
+### ENDE
+
 		$markerArray = array_merge($mainMarkerArray,$markerObj->getGlobalMarkerArray());
 		$markerArray['###CUSTOMER_RECIPIENTS_EMAIL###'] = implode(',', $recipientsArray['customer']);
 
@@ -345,15 +349,14 @@ class tx_ttproducts_activity_finalize {
 			if ($plainMessageArray['shop'] && $this->conf['orderEmail_order2'])	{
 				$recipientsArray['customer'] = array_merge($recipientsArray['customer'], $recipientsArray['shop']);
 			}
+
 			$HTMLmailContent = '';
 			$markerArray = array_merge($mainMarkerArray,$markerObj->getGlobalMarkerArray());
 
 			if ($plainMessageArray['customer'] || $this->conf['orderEmail_htmlmail'])	{	// If there is plain text content - which is required!!
-				if ($this->conf['orderEmail_htmlmail'])	{
-					include_once (PATH_t3lib.'class.t3lib_htmlmail.php');
-					$cls = t3lib_div::makeInstanceClassName('t3lib_htmlmail');
-				}
-				if (class_exists($cls) && $this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
+
+
+				if ($this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell=$this->pibase->cObj->getSubpart($templateCode,'###EMAIL_HTML_SHELL###');
 					$HTMLmailContent=$this->pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$customerEmailHTML);
 					$HTMLmailContent=
@@ -399,10 +402,11 @@ class tx_ttproducts_activity_finalize {
 						);
 					}
 				}
-
+### START
 				foreach ($recipientsArray as $type => $recipientTypeArray) {
 					if ($type != 'customer' && $type != 'radio1' && is_array($recipientTypeArray))	{
 						foreach ($recipientTypeArray as $key => $recipient) {
+
 							// $headers variable removed everywhere!
 							tx_ttproducts_email_div::send_mail(
 								$recipient,
@@ -417,6 +421,7 @@ class tx_ttproducts_activity_finalize {
 						}
 					}
 				}
+### ENDE
 
 				if ($plainMessageArray['radio1'] && is_array($recipientsArray['radio1']))	{
 					foreach ($recipientsArray['radio1'] as $key => $recipient) {
@@ -436,11 +441,11 @@ class tx_ttproducts_activity_finalize {
 				if (is_array($instockTableArray) && $this->conf['warningInStockLimit'])	{
 					$tableDescArray = array ('tt_products' => 'product', 'tt_products_articles' => 'article');
 					foreach ($instockTableArray as $tablename => $instockArray)	{
-						$tableDesc = tx_div2007_alpha::getLL($this->pibase, $tableDescArray[$tablename]);
+						$tableDesc = tx_div2007_alpha5::getLL_fh002($langObj, $tableDescArray[$tablename]);
 						foreach ($instockArray as $instockTmp => $count)	{
 							$uidItemnrTitle = t3lib_div::trimExplode(',', $instockTmp);
 							if ($count <= $this->conf['warningInStockLimit'])	{
-								$messageArr =  explode('|', $message = tx_div2007_alpha::getLL($this->pibase,'instock_warning'));
+								$messageArr =  explode('|', $message = tx_div2007_alpha5::getLL_fh002($langObj, 'instock_warning'));
 								$subject = $messageArr[0].$tableDesc.' "'.$uidItemnrTitle[2].'"'.$messageArr[1].$uidItemnrTitle[1].$messageArr[2];
 								foreach ($recipientsArray['shop'] as $key => $recipient) {
 									// $headers variable removed everywhere!
@@ -478,6 +483,7 @@ class tx_ttproducts_activity_finalize {
 				}
 			}
 		}
+
 		$orderObj->clearUid();
 	} // doProcessing
 }

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -96,7 +96,7 @@ class tx_ttproducts_info_view {
 			}
 		}
 
-		$this->feuserfields = 'name,cnum,first_name,last_name,username,email,telephone,title,salutation,address,telephone,fax,email,company,city,zip,state,country,country_code,tt_products_vat,date_of_birth';
+		$this->feuserfields = 'name,cnum,first_name,last_name,username,email,telephone,title,salutation,address,telephone,fax,email,company,city,zip,state,country,country_code,tt_products_vat,date_of_birth,tt_products_business_partner,tt_products_organisation_form';
 		$this->creditpointfields = 'tt_products_creditpoints,tt_products_vouchercode';
 		// if feuserextrafields is loaded use also these extra fields
 		if (t3lib_extMgm::isLoaded('feuserextrafields')) {
@@ -115,6 +115,7 @@ class tx_ttproducts_info_view {
 				}
 			}
 		}
+
 		$requiredInfoFields = $this->getRequiredInfoFields();
 		$checkField = '';
 		$possibleCheckFieldArray = array('name', 'last_name', 'email', 'telephone');
@@ -155,7 +156,6 @@ class tx_ttproducts_info_view {
 			}
 
 			$bFixCountries = self::fixCountries($this->infoArray);
-
 			if (
 				!$bFixCountries &&
 				$this->infoArray['delivery'][$checkField] &&
@@ -165,8 +165,10 @@ class tx_ttproducts_info_view {
 			}
 		}
 		if (isset($this->infoArray) && is_array($this->infoArray) && is_array($this->infoArray['delivery']) && !$this->infoArray['delivery'][$checkField])	{
-			unset ($this->infoArray['delivery']['country_code']);
-			unset ($this->infoArray['delivery']['salutation']);
+			unset($this->infoArray['delivery']['country_code']);
+			unset($this->infoArray['delivery']['salutation']);
+			unset($this->infoArray['delivery']['tt_products_business_partner']);
+			unset($this->infoArray['delivery']['tt_products_organisation_form']);
 		}
 
 		if (
@@ -206,21 +208,15 @@ class tx_ttproducts_info_view {
 
 			$dateBirth = $this->infoArray['billing']['date_of_birth'];
 			$tmpPos =  strpos($dateBirth,'-');
-			if (!$dateBirth || $tmpPos === FALSE || $tmpPos == 0)	{
-				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
 
-					// prepare for handling dates before 1970
-					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
-					$this->infoArray['billing']['date_of_birth'] = $adodbTime->adodb_date('d-m-Y', $TSFE->fe_user->user['date_of_birth']);
-				} else {
-					$this->infoArray['billing']['date_of_birth'] = date( 'd-m-Y', ($TSFE->fe_user->user['date_of_birth']));
-				}
+			if (!$dateBirth || $tmpPos === FALSE || $tmpPos == 0)	{
+				$this->infoArray['billing']['date_of_birth'] = date( 'd-m-Y', ($TSFE->fe_user->user['date_of_birth']));
 			}
 
 			unset ($this->infoArray['billing']['error']);
 			$this->overwriteMode = 1;
 		}
+
 		if ($bProductsPayment && !$_REQUEST['recs']['personinfo']['agb'])	{
 			$this->infoArray['billing']['agb'] = FALSE;
 		}
@@ -241,7 +237,6 @@ class tx_ttproducts_info_view {
 			$infoArray['delivery']['country_code'] = $infoArray['billing']['country_code'];
 			$rc = TRUE;
 		}
-
 		return $rc;
 	}
 
@@ -272,11 +267,16 @@ class tx_ttproducts_info_view {
 		if ($bMissingField || $this->overwriteMode && !$this->bDeliveryAddress) {
 			$fieldArray = t3lib_div::trimExplode(',',$this->feuserfields);
 
-			foreach($fieldArray as $k => $fName)	{
+			foreach($fieldArray as $k => $fName) {
 				if (
 					isset($this->infoArray['billing'][$fName]) &&
-					($this->infoArray['delivery'][$fName] == '')
-				)	{
+					(
+						$this->infoArray['delivery'][$fName] == '' ||
+						(
+							$this->infoArray['delivery'][$fName] == '0' && !trim($this->infoArray['delivery']['address'])
+						)
+					)
+				) {
 					$this->infoArray['delivery'][$fName] = $this->infoArray['billing'][$fName];
 				}
 			}
@@ -310,9 +310,11 @@ class tx_ttproducts_info_view {
 	function checkRequired ($type='')	{
 
 		$requiredInfoFields = $this->getRequiredInfoFields();
+
 		if ($requiredInfoFields)	{
 			$bBillingTo = true;
 			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
+
 			foreach($infoFields as $k => $fName)	{
 				$bBillingTo &= !empty($this->infoArray['billing'][$fName]);
 			}
@@ -323,6 +325,7 @@ class tx_ttproducts_info_view {
 				}
 			}
 		}
+
 		return $rc;
 	} // checkRequired
 
@@ -385,14 +388,18 @@ class tx_ttproducts_info_view {
 		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$infoFields = t3lib_div::trimExplode(',',$this->feuserfields); // Fields...
+		$orderAddressViewObj = &$tablesObj->get('fe_users',true);
+		$orderAddressObj = $orderAddressViewObj->getModelObj();
+		$selectInfoFields = $orderAddressObj->getSelectInfoFields();
+		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
 
-		foreach ($infoFields as $k => $fName)	{
-			$fieldMarker = strtoupper($fName);
-			if ($fName != 'salutation')	{
-				$markerArray['###PERSON_'.$fieldMarker.'###'] =
-				$TSFE->csConv($this->infoArray['billing'][$fName],$TSFE->metaCharset);
-				$markerArray['###DELIVERY_'.$fieldMarker.'###'] =
-				$TSFE->csConv($this->infoArray['delivery'][$fName],$TSFE->metaCharset);
+		foreach ($infoFields as $k => $fName) {
+			if (!in_array($fName, $selectInfoFields)) {
+				$fieldMarker = strtoupper($fName);
+				$markerArray['###PERSON_' . $fieldMarker . '###'] =
+					$TSFE->csConv($this->infoArray['billing'][$fName], $TSFE->metaCharset);
+				$markerArray['###DELIVERY_' . $fieldMarker . '###'] =
+					$TSFE->csConv($this->infoArray['delivery'][$fName], $TSFE->metaCharset);
 			}
 		}
 
@@ -415,7 +422,6 @@ class tx_ttproducts_info_view {
 					$markerArray['###PERSON_COUNTRY_FIRST_HIDDEN###'] = '<input type="hidden" name="recs[personinfo][country_code]" size="3" value="'.current(array_keys($countryArray)).'">';
 					$markerArray['###PERSON_COUNTRY###'] =
 						$this->staticInfo->getStaticInfoName('COUNTRIES', $countryCodeArray['billing'],'','');
-
 					$markerArray['###DELIVERY_COUNTRY_CODE###'] =
 						$this->staticInfo->buildStaticInfoSelector('COUNTRIES', 'recs[delivery][country_code]', '', $countryCodeArray['delivery'], '', 0, '', '', $whereCountries);
 					$markerArray['###DELIVERY_COUNTRY_FIRST###'] = $markerArray['###PERSON_COUNTRY_FIRST###'];
@@ -441,7 +447,6 @@ class tx_ttproducts_info_view {
 		$markerArray['###PERSON_ADDRESS_DISPLAY###'] = nl2br($markerArray['###PERSON_ADDRESS###']);
 		$markerArray['###DELIVERY_ADDRESS_DISPLAY###'] = nl2br($markerArray['###DELIVERY_ADDRESS###']);
 
-		$orderAddressViewObj = &$tablesObj->get('fe_users',true);
 		$orderAddressViewObj->getItemMarkerArray($this->infoArray['billing'], $markerArray, $bSelectSalutation,'personinfo');
 		$orderAddressViewObj->getItemMarkerArray($this->infoArray['delivery'], $markerArray, $bSelectSalutation,'delivery');
 
@@ -459,6 +464,7 @@ class tx_ttproducts_info_view {
 			// Desired delivery date.
 		$markerArray['###DELIVERY_DESIRED_DATE###'] = $this->infoArray['delivery']['desired_date'];
 		$markerArray['###DELIVERY_STORE_SELECT###'] = '';
+
 		if ($this->bDeliveryAddress)	{
 			$addressObj = &$tablesObj->get('address',FALSE);
 			$tablename = $addressObj->getTablename();
@@ -527,13 +533,14 @@ class tx_ttproducts_info_view {
 		$foundbyKey = $this->infoArray['delivery']['foundby'];
 		if (is_array($valueArray[$foundbyKey]))	{
 			$tmp = tx_div2007_alpha::sL_fh001($valueArray[$foundbyKey][0]);
-			$text = tx_div2007_alpha::getLL($this->pibase,$tmp);
+			$text = tx_div2007_alpha5::getLL_fh002($langObj, $tmp);
 		}
 
 		$markerArray['###DELIVERY_FOUNDBY###'] = $text;
 		$markerArray['###DELIVERY_FOUNDBY_SELECTOR###'] = $foundbyText;
 		$markerArray['###DELIVERY_FOUNDBY_OTHERS###'] = $this->infoArray['delivery']['foundby_others'];
 	} // getMarkerArray
+
 }
 
 
