@@ -57,6 +57,24 @@ class tx_ttproducts_url_view {
  		$this->config = &$cnf->config;
 	}
 
+	public function getSingleExcludeList ($excludeList) {
+		$excludeListArray = t3lib_div::trimExplode(',', $excludeList);
+		$singleExcludeListArray =
+			array(
+				'article',
+				'product',
+				'variants',
+				'dam'
+			);
+		$singleExcludeListArray = array_merge($excludeListArray, $singleExcludeListArray);
+
+		if (!$singleExcludeListArray[0]) {
+			unset($singleExcludeListArray[0]);
+		}
+		$singleExcludeList = implode(',', $singleExcludeListArray);
+		return $singleExcludeList;
+	}
+
 	/**
 	 * [Describe function...]
 	 *
