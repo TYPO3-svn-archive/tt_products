@@ -233,7 +233,7 @@ class tx_ttproducts_basket {
 			// Call all changeBasket hooks
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['changeBasket'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'changeBasket')) {
 					$hookObj->changeBasket($this, $basketExtRaw, $extVars, $paramProduct, $uid, $sameGiftData, $identGiftnumber);
 				}
@@ -487,7 +487,7 @@ class tx_ttproducts_basket {
 			return;
 		}
 
-		$cnfObj = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnfObj = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$funcTablename = 'tt_products';
 		$itemTableConf = $cnfObj->getTableConf($funcTablename, 'BASKET');
@@ -828,7 +828,7 @@ class tx_ttproducts_basket {
 		global $TSFE;
 
 		$pricefactor = doubleval($this->conf['creditpoints.']['priceprod']);
-		$creditpointsObj = &t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
+		$creditpointsObj = t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
 		$autoCreditpointsTotal = $creditpointsObj->getBasketTotal();
 		if ($autoCreditpointsTotal > 0)	{
 			$creditpoints = $autoCreditpointsTotal;

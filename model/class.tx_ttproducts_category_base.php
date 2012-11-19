@@ -146,7 +146,7 @@ class tx_ttproducts_category_base {
 				// Call all addWhere hooks for categories at the end of this method
 			if ($hookVar && is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
 				foreach($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
-					$hookObj= &t3lib_div::getUserObj($classRef);
+					$hookObj= t3lib_div::getUserObj($classRef);
 					if (method_exists($hookObj, 'init')) {
 						$hookObj->init($this->parentField);
 					}
@@ -177,7 +177,7 @@ class tx_ttproducts_category_base {
 			// Call all addWhere hooks for categories at the end of this method
 		if ($hookVar && is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
 			foreach ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'init')) {
 					$hookObj->init($this->parentField);
 				}
@@ -204,7 +204,7 @@ class tx_ttproducts_category_base {
 			// Call all addWhere hooks for categories at the end of this method
 		if ($hookVar && is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'init')) {
 					$hookObj->init($this->parentField);
 				}

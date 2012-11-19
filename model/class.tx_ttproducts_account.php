@@ -196,7 +196,7 @@ class tx_ttproducts_account {
 	 */
 	function checkRequired ()	{
 		$rc = '';
-		$bankObj = &t3lib_div::getUserObj('&tx_ttproducts_bank_de');
+		$bankObj = t3lib_div::getUserObj('&tx_ttproducts_bank_de');
 		$bankObj->init();
 
 		foreach ($this->fieldArray as $k => $field)	{

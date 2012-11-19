@@ -154,12 +154,13 @@ class tx_ttproducts_basket_view {
 		global $TYPO3_DB, $TYPO3_CONF_VARS;
 
 		$out = '';
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		if (!$templateCode)	{
 			$templateCode = &$this->templateCode;
 		}
 
-		$creditpointsObj = &t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
+		$creditpointsObj = t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
 
 			// Getting subparts from the template code.
 		$t=array();
@@ -172,6 +173,7 @@ class tx_ttproducts_basket_view {
 			$this->error_code[2] = $this->conf['templateFile'];
 			return '';
 		}
+
 		if ($t['basketFrameWork'])	{
 			if (!$bHtml)	{
 				$t['basketFrameWork'] = html_entity_decode($t['basketFrameWork'],ENT_QUOTES,$TSFE->renderCharset);
@@ -294,7 +296,7 @@ class tx_ttproducts_basket_view {
 
 					if (!is_object($basketItemView))	{
 						include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
-						$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
+						$basketItemView = t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 						$basketItemView->init($this->pibase, $this->tt_products_cat, $this->basket->basketExt, $this->tx_dam, $this->tx_dam_cat);
 					}
 
@@ -553,7 +555,7 @@ class tx_ttproducts_basket_view {
 
 			$taxFromShipping = $this->paymentshipping->getReplaceTaxPercentage();
 			$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
-			$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
+			$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha5::getLL_fh002($langObj, $taxInclExcl) : '');
 
 			if ($TSFE->fe_user->user['tt_products_vouchercode'] == '') {
 				$subpartArray['###SUB_VOUCHERCODE###'] = '';
@@ -783,12 +785,13 @@ class tx_ttproducts_basket_view {
 				// Call all getItemMarkerArrays hooks at the end of this method
 			if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'])) {
 				foreach ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['getBasketView'] as $classRef) {
-					$hookObj= &t3lib_div::getUserObj($classRef);
+					$hookObj= t3lib_div::getUserObj($classRef);
 					if (method_exists($hookObj, 'getItemMarkerArrays')) {
 						$hookObj->getItemMarkerArrays($this, $templateCode, $code, $markerArray,$subpartArray,$wrappedSubpartArray, $code, $mainMarkerArray, $count);
 					}
 				}
 			}
+
 			$this->paymentshipping->getSubpartArray($subpartArray, $markerArray, $t['basketFrameWork']);
 			$this->basket->fe_users->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray, $this->viewTable->conftablename);
 

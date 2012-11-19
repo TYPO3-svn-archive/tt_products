@@ -485,8 +485,8 @@ class tx_ttproducts_list_view {
 			$row = $TYPO3_DB->sql_fetch_row($res);
 			$productsCount = $row[0];
 
-			$begin_at_start = (($begin_at >= $productsCount) ? ($productsCount >= $this->config['limit'] ? $productsCount - $this->config['limit'] : $productsCount) : $begin_at);
 				// range check to current productsCount
+			$begin_at_start = (($begin_at >= $productsCount) ? ($productsCount >= $this->config['limit'] ? $productsCount - $this->config['limit'] : $productsCount) : $begin_at);
 			$begin_at = (
 				class_exists('t3lib_utility_Math') ?
 				t3lib_utility_Math::forceIntegerInRange($begin_at_start, 0) :
@@ -879,7 +879,7 @@ class tx_ttproducts_list_view {
 					}
 
 					if (isset($row['datasheet']))	{
-						$datasheetView = &t3lib_div::getUserObj('&tx_ttproducts_field_datafield_view');
+						$datasheetView = t3lib_div::getUserObj('&tx_ttproducts_field_datafield_view');
 						$datasheetView->getItemSubpartArrays($productsConf, $row, $wrappedSubpartArray, $markerArray, $this->pibase->cObj);
 					}
 					if (count($mergeRow))	{
@@ -890,7 +890,7 @@ class tx_ttproducts_list_view {
 					$item = $this->basket->getItem($row, $variant);
 					$markerArray = array();
 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
-					$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
+					$basketItemView = t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 					$basketItemView->init($this->pibase, $this->tt_products_cat, $this->basket->basketExt, $this->tx_dam, $this->tx_dam_cat);
 
 					$basketItemView->getItemMarkerArray($itemTable, $item, $markerArray, $theCode, $iCount);

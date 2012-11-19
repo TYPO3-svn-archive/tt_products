@@ -303,7 +303,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 */
 	function getParamDefault ($theCode, $cat)	{
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		if (!$cat)	{
 			if ($this->table->name == 'tt_products_cat')	{

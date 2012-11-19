@@ -315,7 +315,7 @@ class tx_ttproducts_paymentshipping {
 							global $TYPO3_CONF_VARS;
 							include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_'.$this->pibase->tableArray[$tableName].'.php');
 							$viewTagArray = array();
-							$itemTable = &t3lib_div::getUserObj('tx_ttproducts_'.$this->pibase->tableArray[$tableName]);
+							$itemTable = t3lib_div::getUserObj('tx_ttproducts_'.$this->pibase->tableArray[$tableName]);
 							$itemTable->init($this->pibase, $this->cnf, $this->pibase->LLkey, $tableName);
 							$markerFieldArray = array();
 							$parentArray = array();

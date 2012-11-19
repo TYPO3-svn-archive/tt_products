@@ -198,15 +198,7 @@ class tx_ttproducts_info {
 			$tmpPos =  strpos($dateBirth,'-');
 			if (!$dateBirth || $tmpPos === FALSE || $tmpPos == 0)	{
 
-				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
-
-					// prepare for handling dates before 1970
-					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
-					$this->infoArray['billing']['date_of_birth'] = $adodbTime->adodb_date('d-m-Y', $TSFE->fe_user->user['date_of_birth']);
-				} else {
-					$this->infoArray['billing']['date_of_birth'] = date( 'd-m-Y', ($TSFE->fe_user->user['date_of_birth']));
-				}
+				$this->infoArray['billing']['date_of_birth'] = date( 'd-m-Y', ($TSFE->fe_user->user['date_of_birth']));
 			}
 		}
 		if ($bProductsPayment && !$_REQUEST['recs']['personinfo']['agb'])	{
@@ -325,7 +317,7 @@ class tx_ttproducts_info {
 		global $TCA, $TSFE;
 		global $TYPO3_CONF_VARS;
 
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		$infoFields = t3lib_div::trimExplode(',',$this->feuserfields); // Fields...
 		reset($infoFields);

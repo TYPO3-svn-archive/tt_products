@@ -158,7 +158,7 @@ class tx_ttproducts_email_div {
 	/**
 	 * Send notification email for tracking
 	 */
-	function sendNotifyEmail(&$pibase, &$conf, &$order, $recipient, $v, $tracking, $orderRow, $templateCode, $templateMarker, $sendername='', $senderemail='') {
+	function sendNotifyEmail($pibase, &$conf, $order, $recipient, $v, $tracking, $orderRow, $templateCode, $templateMarker, $sendername='', $senderemail='') {
 		global $TSFE;
 
 			// initialize order data.

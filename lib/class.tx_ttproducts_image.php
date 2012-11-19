@@ -353,7 +353,7 @@ class tx_ttproducts_image {
 				$bUseImage = true;
 			}
 			if (t3lib_extMgm::isLoaded('dam') && $bUseImage && $bImages) {
-				$damObj = &t3lib_div::getUserObj('tx_dam');
+				$damObj = t3lib_div::getUserObj('tx_dam');
 				if(method_exists($damObj,'meta_getDataForFile')) {
 					$damTableConf = $this->cnf->getTableConf('tx_dam', $theCode);
 					$fieldList = 'uid,pid,tstamp,crdate,active,media_type,title,category,index_type,file_mime_type,file_mime_subtype,

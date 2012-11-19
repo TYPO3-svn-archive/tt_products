@@ -67,24 +67,24 @@ class tx_ttproducts_control {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init (&$pibase, &$cnf, &$templateCode, &$basket, &$tt_products, &$tt_products_articles, &$tt_products_cat, &$fe_users, &$price, &$paymentshipping, &$error_code)  {
+	function init ($pibase, $cnf, $templateCode, $basket, $tt_products, $tt_products_articles, $tt_products_cat, $fe_users, $price, $paymentshipping, &$error_code)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$this->pibase = &$pibase;
+		$this->pibase = $pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
-		$this->templateCode = &$templateCode;
-		$this->basket = &$basket;
+		$this->templateCode = $templateCode;
+		$this->basket = $basket;
 
-		$this->tt_products = &$tt_products;
-		$this->tt_products_articles = &$tt_products_articles;
-		$this->tt_products_cat = &$tt_products_cat;
-		$this->fe_users = &$fe_users;
-		$this->price = &$price;
-		$this->paymentshipping = &$paymentshipping;
+		$this->tt_products = $tt_products;
+		$this->tt_products_articles = $tt_products_articles;
+		$this->tt_products_cat = $tt_products_cat;
+		$this->fe_users = $fe_users;
+		$this->price = $price;
+		$this->paymentshipping = $paymentshipping;
 
-		$this->viewTable = &$basket->viewTable;
+		$this->viewTable = $basket->viewTable;
 		$this->error_code = &$error_code;
 
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
@@ -175,17 +175,17 @@ class tx_ttproducts_control {
 	 * @param	object		$basketView: tx_ttproducts_basket_view
 	 * @return	string		out: content of payment script
 	 */
-	public function &processPayment ($orderUid, $cardRow, $pidArray, $currentPaymentActivity, &$bFinalize, &$errorMessage)	{
+	public function processPayment ($orderUid, $cardRow, $pidArray, $currentPaymentActivity, &$bFinalize, &$errorMessage)	{
 		global $TSFE;
 
 		$content = '';
 		include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-		$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
+		$basketView = t3lib_div::getUserObj('tx_ttproducts_basket_view');
 		$basketView->init ($this->basket, $this->templateCode, $this->error_code);
 
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
 		$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		if ($handleScript)	{
 
@@ -195,7 +195,7 @@ class tx_ttproducts_control {
 			require_once(t3lib_extMgm::extPath($handleLib) . 'lib/class.tx_' . $handleLib . '_api.php');
 		// Get references to the concerning baskets
 			$calculatedArray = $this->basket->getCalculatedArray();
-			$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
+			$infoObj = t3lib_div::getUserObj('&tx_ttproducts_info');
 			$addQueryString = array();
 			$excludeList = '';
 			$linkParams = $this->marker->getLinkParams($excludeList,$addQueryString,TRUE);
@@ -249,7 +249,7 @@ class tx_ttproducts_control {
 
 			if (version_compare($paymentlibVersion, '0.2.1', '>=') && version_compare($paymentlibVersion, '0.4.0', '<') && version_compare($phpVersion, '5.0.0', '>='))	{
 				if ($gatewayExtName != '' && t3lib_extMgm::isLoaded($gatewayExtName))	{
-					$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
+					$infoObj = t3lib_div::getUserObj('&tx_ttproducts_info');
 
 					// Payment Library
 					require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
@@ -301,6 +301,7 @@ class tx_ttproducts_control {
 				$pidArray[$pidType] = $this->conf[$pidType];
 			}
 		}
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		$update = t3lib_div::_POST('products_update');
 		$payment = t3lib_div::_POST('products_payment');
@@ -378,7 +379,7 @@ class tx_ttproducts_control {
 			$this->activityArray = $codeActivityArray;
 		}
 
-		$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
+		$infoObj = t3lib_div::getUserObj('&tx_ttproducts_info');
 		$infoObj->init($this->pibase, $this->cnf, $this->basket->recs, $this->fe_users, $this->paymentshipping, $activityArray['products_payment']);
 		if ($infoObj->checkRequired('billing')=='')	{
 			$infoObj->mapPersonIntoDelivery();
@@ -490,7 +491,7 @@ class tx_ttproducts_control {
 										include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 
 											// order
-										$order = &t3lib_div::getUserObj('tx_ttproducts_order');
+										$order = t3lib_div::getUserObj('tx_ttproducts_order');
 										$order->init(
 											$this->pibase,
 											$this->cnf,
@@ -543,7 +544,7 @@ class tx_ttproducts_control {
 									// basket view
 									if (!is_object($basketView))	{
 										include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
+										$basketView = t3lib_div::getUserObj('tx_ttproducts_basket_view');
 										$basketView->init ($this->basket, $this->templateCode, $this->error_code);
 									}
 									if ($this->conf['paymentActivity'] == 'payment' || $this->conf['paymentActivity'] == 'verify')	{
@@ -573,12 +574,12 @@ class tx_ttproducts_control {
 									$overwriteMarkerArray = array();
 									if ($pidagb && !$_REQUEST['recs']['personinfo']['agb'] &&  !$infoObj->infoArray['billing']['agb'] && !t3lib_div::_GET('products_payment')) {
 										 // so AGB has not been accepted
-										$label = $this->pibase->pi_getLL('accept_AGB');
+										$label = tx_div2007_alpha5::getLL_fh002($langObj, 'accept_AGB');
 										$addQueryString['agb']=0;
 									} else if ($cardRequired)	{
-										$label = '*'.$this->pibase->pi_getLL($cardObj->tablename.'.'.$cardRequired).'*';
+										$label = '*' . tx_div2007_alpha5::getLL_fh002($langObj, $cardObj->tablename . '.' . $cardRequired) . '*';
 									} else if ($accountRequired)	{
-										$label = '*'.$this->pibase->pi_getLL($account->tablename).': '.$this->pibase->pi_getLL($account->tablename.'.'.$accountRequired).'*';
+										$label = '*' . tx_div2007_alpha5::getLL_fh002($langObj, $account->tablename) . ': ' .  tx_div2007_alpha5::getLL_fh002($langObj, $account->tablename . '.' . $accountRequired) . '*';
 									} else if ($paymentErrorMsg)	{
 										$label = $paymentErrorMsg;
 									} else {
@@ -612,7 +613,7 @@ class tx_ttproducts_control {
 									if (!is_object($order))	{
 										include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 
-										$order = &t3lib_div::getUserObj('tx_ttproducts_order');
+										$order = t3lib_div::getUserObj('tx_ttproducts_order');
 										$order->init(
 											$this->pibase,
 											$this->cnf,
@@ -626,7 +627,7 @@ class tx_ttproducts_control {
 									// basket view
 									if (!is_object($basketView))	{
 										include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-										$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
+										$basketView = t3lib_div::getUserObj('tx_ttproducts_basket_view');
 										$basketView->init ($this->basket, $this->templateCode, $this->error_code);
 									}
 									$paymentContent = '';
@@ -663,7 +664,7 @@ class tx_ttproducts_control {
 									if (!is_object($order)) {
 										include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 										// order
-										$order = &t3lib_div::getUserObj('tx_ttproducts_order');
+										$order = t3lib_div::getUserObj('tx_ttproducts_order');
 										$order->init(
 											$this->pibase,
 											$this->cnf,
@@ -726,7 +727,7 @@ class tx_ttproducts_control {
 						// basket view
 						if (!is_object($basketView))	{
 							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-							$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
+							$basketView = t3lib_div::getUserObj('tx_ttproducts_basket_view');
 							$basketView->init ($this->basket, $this->templateCode, $this->error_code);
 						}
 						$content .= $basketView->getView($empty, 'BASKET', $infoObj, $this->activityArray['products_info'], FALSE, TRUE, '###'.$basket_tmpl.'###',$mainMarkerArray);
@@ -748,7 +749,7 @@ class tx_ttproducts_control {
 							include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 
 								// order
-							$order = &t3lib_div::getUserObj('tx_ttproducts_order');
+							$order = t3lib_div::getUserObj('tx_ttproducts_order');
 							$order->init(
 								$this->pibase,
 								$this->cnf,
@@ -763,7 +764,7 @@ class tx_ttproducts_control {
 
 						if (!is_object($basketView))	{
 							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-							$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
+							$basketView = t3lib_div::getUserObj('tx_ttproducts_basket_view');
 							$basketView->init ($this->basket, $this->templateCode, $this->error_code);
 						}
 
@@ -792,7 +793,9 @@ class tx_ttproducts_control {
 						include_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_finalize.php');
 							// order finalization
 						$activityFinalize = t3lib_div::makeInstance('tx_ttproducts_activity_finalize');
+
 						$activityFinalize->init($this->pibase, $this->cnf, $this->basket, $this->tt_products, $this->tt_products_cat, $this->fe_users, $order, $mainMarkerArray);
+
 						$activityFinalize->doProcessing(
 							$this->templateCode,
 							$basketView,
@@ -804,6 +807,7 @@ class tx_ttproducts_control {
 							$infoObj,
 							$mainMarkerArray
 						);
+
 								// Important: 	 MUST come after the call of prodObj->getView, because this function, getView, calculates the order! And that information is used in the finalize-function
 						$contentTmp = $orderConfirmationHTML;
 
@@ -834,7 +838,7 @@ class tx_ttproducts_control {
 		$basketMarkerArray = array();
 		if (!is_object($basketView))	{
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
-			$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view');
+			$basketView = t3lib_div::getUserObj('tx_ttproducts_basket_view');
 			$basketView->init($this->basket, $this->templateCode, $this->error_code);
 		}
 

@@ -62,19 +62,19 @@ class tx_ttproducts_activity_finalize {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init (&$pibase, &$cnf, &$basket, $tt_products,  &$tt_products_cat, &$fe_users, &$order)  {
+	function init ($pibase, &$cnf, $basket, $tt_products,  $tt_products_cat, $fe_users, $order)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$this->pibase = &$pibase;
+		$this->pibase = $pibase;
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
-		$this->basket = &$basket;
-		$this->tt_products = &$tt_products;
-		$this->tt_products_cat = &$tt_products_cat;
-		$this->fe_users = &$fe_users;
-		$this->order = &$order;
+		$this->basket = $basket;
+		$this->tt_products = $tt_products;
+		$this->tt_products_cat = $tt_products_cat;
+		$this->fe_users = $fe_users;
+		$this->order = $order;
 
 		if (intval($this->conf['alwaysInStock'])) {
 			$this->alwaysInStock = 1;
@@ -98,8 +98,8 @@ class tx_ttproducts_activity_finalize {
 	 */
 	function doProcessing (
 		$templateCode,
-		&$basketView,
-		&$viewTable,
+		$basketView,
+		$viewTable,
 		&$price,
 		$orderUid,
 		&$orderConfirmationHTML,
@@ -113,7 +113,8 @@ class tx_ttproducts_activity_finalize {
 
 		$instockTableArray = '';
 		$empty='';
-		$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
+		$infoObj = t3lib_div::getUserObj('&tx_ttproducts_info');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 		$recipientsArray = array();
 		$recipientsArray['customer'] = array();
 		$customerEmail = ($this->conf['orderEmail_toDelivery'] && $address->infoArray['delivery']['email'] || !$address->infoArray['billing']['email'] ? $address->infoArray['delivery']['email'] : $address->infoArray['billing']['email']); // former: deliveryInfo
@@ -125,6 +126,7 @@ class tx_ttproducts_activity_finalize {
 		$markerArray = array_merge($mainMarkerArray,$this->pibase->globalMarkerArray);
 		$markerArray['###CUSTOMER_RECIPIENTS_EMAIL###'] = implode(',', $recipientsArray['customer']);
 		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
+
 		$apostrophe = $this->conf['orderEmail_apostrophe'];
 
 		// Move the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
@@ -233,7 +235,7 @@ class tx_ttproducts_activity_finalize {
 			$address
 		);
 
-		$creditpointsObj = &t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
+		$creditpointsObj = t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
 		$creditpointsObj->pay();
 
 		// any gift orders in the extended basket?
@@ -382,11 +384,11 @@ class tx_ttproducts_activity_finalize {
 				if (is_array($instockTableArray) && $this->conf['warningInStockLimit'])	{
 					$tableDescArray = array ('tt_products' => 'product', 'tt_products_articles' => 'article');
 					foreach ($instockTableArray as $tablename => $instockArray)	{
-						$tableDesc = $this->pibase->pi_getLL($tableDescArray[$tablename]);
+						$tableDesc = tx_div2007_alpha5::getLL_fh002($langObj, $tableDescArray[$tablename]);
 						foreach ($instockArray as $instockTmp => $count)	{
 							$uidItemnrTitle = t3lib_div::trimExplode(',', $instockTmp);
 							if ($count <= $this->conf['warningInStockLimit'])	{
-								$messageArr =  explode('|', $message = $this->pibase->pi_getLL('instock_warning'));
+								$messageArr =  explode('|', $message = tx_div2007_alpha5::getLL_fh002($langObj, 'instock_warning'));
 								$subject = $messageArr[0].$tableDesc.' "'.$uidItemnrTitle[2].'"'.$messageArr[1].$uidItemnrTitle[1].$messageArr[2];
 								foreach ($recipientsArray['shop'] as $key => $recipient) {
 									// $headers variable removed everywhere!
@@ -418,7 +420,7 @@ class tx_ttproducts_activity_finalize {
 			// Call all finalizeOrder hooks
 		if (is_array($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
 			foreach($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'finalizeOrder')) {
 					$hookObj->finalizeOrder($this, $address, $templateCode, $basketView, $viewTable, $price, $orderUid, $orderConfirmationHTML, $error_message);
 				}

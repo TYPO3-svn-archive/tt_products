@@ -66,13 +66,13 @@ class tx_ttproducts_order_view {
 		$this->basket = &$basket;
 		$this->paymentshipping = &$paymentshipping;
 
-		$info = &t3lib_div::getUserObj('tx_ttproducts_info');
+		$info = t3lib_div::getUserObj('tx_ttproducts_info');
 		$info->init($pibase, $cnf, $formerBasket, $fe_users, $this->paymentshipping, FALSE);
 
 		include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 
 			// order
-		$this->order = &t3lib_div::getUserObj('tx_ttproducts_order');
+		$this->order = t3lib_div::getUserObj('tx_ttproducts_order');
 		$this->order->init(
 			$this->pibase,
 			$this->cnf,

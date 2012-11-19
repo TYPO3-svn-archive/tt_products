@@ -336,6 +336,8 @@ class tx_ttproducts_single_view {
 			} else {
 				$excludeList = $itemTableArray[$this->type]->getPivar();
 			}
+
+
 			$this->marker->getSearchParams($addQueryString);
 			$this->marker->addQueryStringParam($addQueryString, 'sword', FALSE);
 
@@ -393,7 +395,7 @@ class tx_ttproducts_single_view {
 			);
 
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
-			$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
+			$basketItemView = t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 			$basketItemView->init(
 				$this->pibase,
 				$this->tt_products_cat,
@@ -642,7 +644,7 @@ class tx_ttproducts_single_view {
 			$markerArray = array_merge ($categoryMarkerArray, $basketMarkerArray, $jsMarkerArray, $markerArray);
 
 			if (isset($row['datasheet']))	{
-				$datasheetView = &t3lib_div::getUserObj('&tx_ttproducts_field_datafield_view');
+				$datasheetView = t3lib_div::getUserObj('&tx_ttproducts_field_datafield_view');
 				$datasheetView->getItemSubpartArrays($itemTableConf[$this->type], $row, $wrappedSubpartArray, $markerArray, $this->pibase->cObj);
 			}
 

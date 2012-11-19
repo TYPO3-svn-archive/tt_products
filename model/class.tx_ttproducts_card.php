@@ -255,7 +255,7 @@ class tx_ttproducts_card {
 		global $TYPO3_CONF_VARS;
 
 		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		$ccNumberArray = array();
 		$ccTypeTextSelected = '';

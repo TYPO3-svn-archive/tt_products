@@ -268,6 +268,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 
 	function &getTemplateCode ($theCode) {
 		$templateCode = '';
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 		$templateFile = $this->cnf->getTemplateFile($theCode);
 		if ($templateFile) {
 			// template file is fetched. The whole template file from which the various subpart are extracted.
@@ -279,7 +280,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 				$tmplText = $theCode.'.';
 			}
 			$tmplText .= 'templateFile';
-			$this->errorMessage .= $this->pi_getLL('no_template').' plugin.tt_products.'.$tmplText.' = ';
+			$this->errorMessage .= tx_div2007_alpha5::getLL_fh002($langObj, 'no_template') . ' plugin.tt_products.' . $tmplText . ' = ';
 			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '""');
 		} else {
 				// Substitute Global Marker Array
@@ -446,9 +447,9 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 							}
 						} else {
 							if ($this->pageAsCategory)	{
-								$categoryTable = &$this->page;
+								$categoryTable = $this->page;
 							} else {
-								$categoryTable = &$this->tt_products_cat;
+								$categoryTable = $this->tt_products_cat;
 							}
 						}
 
@@ -591,6 +592,10 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			$content = '<p><b>'.$this->errorMessage.'</b></p>';
 		}
 		$rc = ($bRunAjax || !intval($this->conf['wrapInBaseClass']) ? $content : $this->pi_wrapInBaseClass($content));
+
+		if (!$this->conf['defaultSetup']) {
+			$rc .= '<h>Error: The default tt_products setup is missing.</h>';
+		}
 		return $rc;
 	}
 
@@ -642,8 +647,8 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		}
 		$dblangfile = 'locallang_db.xml';
 
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
-		$pLangObj = &$this;
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
+		$pLangObj = $this;
 		$langObj->init($pLangObj, $this->cObj, $this->conf, 'pi1/class.tx_ttproducts_pi1.php');
 
 		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXTkey . '/' . $dblangfile);
@@ -733,7 +738,9 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			}
 
 			if (
-				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tmp) : t3lib_div::testInt($tmp)
+				class_exists('t3lib_utility_Math') ?
+					t3lib_utility_Math::canBeInterpretedAsInteger($tmp) :
+					t3lib_div::testInt($tmp)
 			) {
 				$this->tt_product_single['product'] = $tmp;
 			}
@@ -753,7 +760,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 		}
 
 			// basket
-		$this->basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$this->basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$this->initTables();
 
 		$this->marker = t3lib_div::makeInstance('tx_ttproducts_marker');
@@ -953,7 +960,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
 
 				// order
-			$order = &t3lib_div::getUserObj('tx_ttproducts_order');
+			$order = t3lib_div::getUserObj('tx_ttproducts_order');
 			$order->init(
 				$this->pibase,
 				$this->cnf,
@@ -1062,7 +1069,7 @@ class tx_ttproducts_pi1 extends tslib_pibase {
 	*/
 	function getExternalCObject ($mConfKey)	{
 		if ($this->conf[$mConfKey] && $this->conf[$mConfKey.'.'])	{
-			$this->cObj->regObj = &$this;
+			$this->cObj->regObj = $this;
 			return $this->cObj->cObjGetSingle($this->conf[$mConfKey],$this->conf[$mConfKey.'.'],'/'.$mConfKey.'/').'';
 		}
 	}

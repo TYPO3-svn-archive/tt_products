@@ -1,3 +1,8 @@
+2012-11-19 Franz Holzinger <franz@ttproducts.de>
+	* add the autoloader file ext_autoload.php
+	* add a check for the tt_products default setup and show an error message when it is missing
+	* do not use references on objects
+
 2011-12-28 Franz Holzinger <franz@ttproducts.de>
 	* Fix bug with missing images in HTML email
 	* remove deprecated t3lib_div::makeInstanceClassName

@@ -73,14 +73,14 @@ class tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init (&$pibase, &$cnf, $tablename, &$tt_content, &$paymentshipping, $useArticles)  {
+	function init ($pibase, $cnf, $tablename, $tt_content, $paymentshipping, $useArticles)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$this->pibase = &$pibase;
-		$this->cnf = &$cnf;
+		$this->pibase = $pibase;
+		$this->cnf = $cnf;
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
-		$this->tt_content = &$tt_content;
+		$this->tt_content = $tt_content;
 		$this->conftablename = $tablename;
 		$this->tableconf = $this->cnf->getTableConf($tablename);
 		$this->tabledesc = $this->cnf->getTableDesc($tablename);
@@ -102,7 +102,7 @@ class tx_ttproducts_article_base {
 	} // init
 
 
-	function &getTableObj ()	{
+	function getTableObj ()	{
 		return $this->table;
 	}
 
@@ -139,7 +139,7 @@ class tx_ttproducts_article_base {
 	}
 
 
-	function &getItemSubpartArrays ($templateCode, &$row, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $theCode='', $id='1')	{
+	function getItemSubpartArrays ($templateCode, &$row, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $theCode='', $id='1')	{
 		global $TCA;
 
 		foreach ($row as $field => $value)	{
@@ -183,6 +183,7 @@ class tx_ttproducts_article_base {
 		if (!$this->marker)
 			return array();
 		$row = &$item['rec'];
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 			// Get image
 		$this->image->getItemMarkerArray($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, '', $linkWrap);
@@ -224,7 +225,7 @@ class tx_ttproducts_article_base {
 
 		$taxFromShipping = $this->paymentshipping->getReplaceTaxPercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
-		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? $this->pibase->pi_getLL($taxInclExcl) : '');
+		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha5::getLL_fh002($langObj, $taxInclExcl) : '');
 		$markerArray['###PRICE_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat($item['priceTax'], $taxInclExcl));
 		$price2 = $this->pibase->price->printPrice($this->pibase->price->priceFormat($this->pibase->price->getPrice($row['price2'],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
 		$markerArray['###PRICE2_TAX###'] = $price2;
@@ -313,7 +314,7 @@ class tx_ttproducts_article_base {
 			// Call all getItemMarkerArray hooks at the end of this method
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getItemMarkerArray')) {
 					$hookObj->getItemMarkerArray($this, $markerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $code, $id, $linkWrap);
 				}
@@ -371,7 +372,7 @@ class tx_ttproducts_article_base {
 		$where = ($where ? $where : '1=1 ').$this->table->enableFields();
 
 		// Fetching the products
-		$res = $this->table->exec_SELECTquery('*', $where, $TYPO3_DB->stripOrderBy($orderBy));
+		$res = $this->table->exec_SELECTquery('*', $where, '', $TYPO3_DB->stripOrderBy($orderBy));
 		$translateFields = $this->cnf->getTranslationFields($this->tableconf);
 
 		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{

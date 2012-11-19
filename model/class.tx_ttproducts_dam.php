@@ -83,7 +83,7 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		if ($this->tableconf['requiredFields'])	{
 			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
-		}	
+		}
 
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$this->table->setRequiredFieldArray($requiredListArray);
@@ -104,7 +104,7 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
 		if (!$rc) {
-			$this->table->enableFields();		
+			$this->table->enableFields();
 			$res = $this->table->exec_SELECTquery('*','uid = '.intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$rc = $this->dataArray[$uid] = $row;
@@ -115,11 +115,11 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 
 	function &getWhereArray ($where) {
 		global $TYPO3_DB;
-		
+
 		$rowArray = array();
-		$this->table->enableFields();		
+		$this->table->enableFields();
 		$res = $this->table->exec_SELECTquery('*',$where);
-		
+
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 			$uid = intval($row[uid]);
 			$this->dataArray[$uid] = $row;	// remember for later queries
@@ -137,7 +137,7 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 			// Call all addWhere hooks for categories at the end of this method
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['DAMCategory'])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey]['DAMCategory'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addWhereCat')) {
 					$whereNew = $hookObj->addWhereCat($this, $cat, $where, $operator, $pid_list, $this->mm_table);
 					$operator = ($operator ? $operator : 'OR');
@@ -170,9 +170,9 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		global $TSFE, $TYPO3_CONF_VARS;
 		$row = &$item['rec'];
 
-			// Get image	
+			// Get image
 		$this->image->getItemMarkerArray ($row, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, $prefix, $linkWrap);
-		
+
 		foreach ($row as $field => $value)	{
 			if (!is_array($row[$field]))	{
 				$markerArray['###'.$this->marker.'_'.strtoupper($field).'###'] = htmlentities($row[$field],ENT_QUOTES,$TSFE->renderCharset);
@@ -182,7 +182,7 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 			// Call all getItemMarkerArray hooks at the end of this method
 		if (is_array ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
 			foreach  ($TYPO3_CONF_VARS['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getItemMarkerArray')) {
 					$hookObj->getItemMarkerArray ($this, $markerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $code, $id, $linkWrap);
 				}
@@ -193,17 +193,17 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 
 	/**
 	 * Returns true if the item has the $check value checked
-	 * 
+	 *
 	 */
 	function hasAdditional(&$row, $check)  {
 		$hasAdditional = false;
-		return $hasAdditional; 
+		return $hasAdditional;
 	}
 
 
 	/**
 	 * Sets the markers for DAM specific FORM fields
-	 * 
+	 *
 	 */
 	function setFormMarkerArray($uid, &$markerArray)  {
 		$markerArray['###DAM_FIELD_NAME###'] = 'ttp_basket[dam]';

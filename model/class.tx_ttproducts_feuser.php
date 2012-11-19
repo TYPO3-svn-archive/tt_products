@@ -116,21 +116,13 @@ class tx_ttproducts_feuser {
 
 		if (isset($this->conf['conf.'][$funcTablename.'.']['ALL.']['fe_users.']['date_of_birth.']['period.']['y']))	{
 			$year = $this->conf['conf.'][$funcTablename.'.']['ALL.']['fe_users.']['date_of_birth.']['period.']['y'];
-			$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info');
+			$infoObj = t3lib_div::getUserObj('&tx_ttproducts_info');
 
 			if ($infoObj->infoArray['billing']['date_of_birth'])	{
 				$timeTemp = $infoObj->infoArray['billing']['date_of_birth'];
 				$bAge = TRUE;
 			} else if ($TSFE->fe_user->user)	{
-				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
-
-					// prepare for handling dates before 1970
-					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
-					$timeTemp = $adodbTime->adodb_date('d-m-Y', $TSFE->fe_user->user['date_of_birth']);
-				} else {
-					$timeTemp = date('d-m-Y', ($TSFE->fe_user->user['date_of_birth']));
-				}
+				$timeTemp = date('d-m-Y', ($TSFE->fe_user->user['date_of_birth']));
 				$bAge = TRUE;
 			} else {
 				$bAge = FALSE;
@@ -210,7 +202,7 @@ class tx_ttproducts_feuser {
 		global $TCA;
 		global $TYPO3_CONF_VARS;
 
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		if ($bSelect)	{
 
