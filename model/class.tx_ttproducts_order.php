@@ -40,9 +40,9 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 	var $basket;
 
 
-	function init (&$pibase, $functablename) {
+	function init ($pibase, $functablename) {
 		parent::init($pibase, $functablename);
-		$this->basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$this->basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 	}
 
 
@@ -122,8 +122,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 	// an new orderUid has been created always because also payment systems can be used which do not accept a duplicate order id
 
 		$orderUid = intval($this->basket->order['orderUid']);
-		$res = $TYPO3_DB->exec_SELECTquery('uid', 'sys_products_orders', 'uid='.intval($orderUid).' AND deleted AND NOT status');	// Checks if record exists, is marked deleted (all blank orders are deleted by default) and is not finished.
-//		$res = $TYPO3_DB->exec_SELECTquery('uid', 'sys_products_orders', 'uid='.intval($orderUid).' AND hidden=1 AND NOT status');	// Checks if record exists, is marked hidden (all blank orders are hidden by default) and is not finished.
+		$res = $TYPO3_DB->exec_SELECTquery('uid', 'sys_products_orders', 'uid='.intval($orderUid).' AND hidden=1 AND NOT status');	// Checks if record exists, is marked hidden (all blank orders are hidden by default) and is not finished.
 		if (!$TYPO3_DB->sql_num_rows($res) || $this->conf['alwaysAdvanceOrderNumber'])	{
 			$orderUid = $this->create();
 			$this->basket->order['orderUid'] = $orderUid;
@@ -411,16 +410,16 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 	function createMM ($orderUid, &$itemArray)	{
 		global $TYPO3_DB;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		if ($this->conf['useArticles'] != 2) {
-			$productTable = &$tablesObj->get('tt_products', FALSE);
+			$productTable = $tablesObj->get('tt_products', FALSE);
 			$productTablename = $productTable->getTablename();
 		} else {
 			$productTablename = '';
 		}
 
 		if ($this->conf['useArticles'] > 0) {
-			$articleTable = &$tablesObj->get('tt_products_articles', FALSE);
+			$articleTable = $tablesObj->get('tt_products_articles', FALSE);
 			$articleTablename = $articleTable->getTablename();
 		} else {
 			$articleTablename = '';
@@ -469,8 +468,8 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 	 */
 	function setData ($orderUid, &$orderHTML, $status) {
 
-		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 		$voucherObj = $tablesObj->get('voucher');
 		if ($status == 1)	{
@@ -478,18 +477,18 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 		}
 
 		// get credit card info
-		$card = &$tablesObj->get('sys_products_cards');
+		$card = $tablesObj->get('sys_products_cards');
 		$cardUid = $card->getUid();
 
 		// get bank account info
-		$account = &$tablesObj->get('sys_products_accounts');
+		$account = $tablesObj->get('sys_products_accounts');
 		$accountUid = $account->getUid();
 
 		// get bank account info
-		$account = &$tablesObj->get('sys_products_accounts');
+		$account = $tablesObj->get('sys_products_accounts');
 		$accountUid = $account->getUid();
 
-		$address = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
+		$address = t3lib_div::getUserObj('&tx_ttproducts_info_view');
 		$rc = $this->putRecord(
 			$orderUid,
 			$address->infoArray['delivery'],
@@ -507,9 +506,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 
 		$this->createMM($orderUid, $basket->itemArray);
 	}
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_order.php'])	{

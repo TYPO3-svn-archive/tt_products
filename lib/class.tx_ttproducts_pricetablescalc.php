@@ -66,7 +66,7 @@ class tx_ttproducts_pricetablescalc extends tx_ttproducts_pricecalc_base {
 			return;
 		}
 
-		$graduatedPriceObj = &t3lib_div::getUserObj('&tx_ttproducts_graduated_price');
+		$graduatedPriceObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price');
 
 		// loop over all items in the basket indexed by sort string
 		foreach ($itemArray as $sort => $actItemArray) {

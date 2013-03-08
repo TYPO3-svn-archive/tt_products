@@ -57,8 +57,8 @@ class tx_ttproducts_tracking {
 	function init(&$cObj) {
 		global $TSFE;
 
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 	}
@@ -100,8 +100,8 @@ class tx_ttproducts_tracking {
 	function getTrackingInformation($orderRow, $templateCode, $trackingCode, $updateCode, &$orderRecord, $admin) {
 		global $TSFE, $TYPO3_DB;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$orderObj = &$tablesObj->get('sys_products_orders');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$orderObj = $tablesObj->get('sys_products_orders');
 
 		if ($orderRow['uid'])	{
 				// Initialize update of status...
@@ -133,7 +133,7 @@ class tx_ttproducts_tracking {
 							$recipient .= ','.$orderRow['email'];
 						}
 						$templateMarker = 'TRACKING_EMAILNOTIFY_TEMPLATE';
-						$feusersObj = &$tablesObj->get('fe_users', TRUE);
+						$feusersObj = $tablesObj->get('fe_users', TRUE);
 						tx_ttproducts_email_div::sendNotifyEmail($this->cObj, $this->conf, $feusersObj, $orderObj->getNumber($orderRow['uid']), $recipient, $status_log_element, t3lib_div::_GP('tracking'), $orderRow, $templateCode, $templateMarker);
 						$status_log[] = $status_log_element;
 						$update=1;
@@ -237,7 +237,7 @@ class tx_ttproducts_tracking {
 					}
 				}
 			}
-			$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+			$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 
 				// Get unprocessed orders.
 			$res = $TYPO3_DB->exec_SELECTquery('uid,name,tracking_code,amount,status', 'sys_products_orders', 'NOT deleted AND status!=0 AND status<100', '', 'crdate');
@@ -258,9 +258,9 @@ class tx_ttproducts_tracking {
 		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
 		$markerArray['###TRACKING_NUMBER###'] =  $trackingCode;
 		$markerArray['###UPDATE_CODE###'] = $updateCode;
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tracking'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tracking'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['tracking'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['tracking'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getTrackingInformation')) {
 					$hookObj->getTrackingInformation ($this, $orderRow, $templateCode, $trackingCode, $updateCode, $orderRecord, $admin, $content, $markerArray,$subpartArray);
 				}

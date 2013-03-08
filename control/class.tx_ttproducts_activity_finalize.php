@@ -59,9 +59,9 @@ class tx_ttproducts_activity_finalize {
 	 * @param	object		$$pibase: object derived from tslib_pibase
 	 * @return	void
 	 */
-	function init (&$pibase)  {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init ($pibase)  {
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
@@ -94,14 +94,14 @@ class tx_ttproducts_activity_finalize {
 	 * @param	object		$address: tx_ttproducts_info_view
 	 * @return	void
 	 */
-	function doProcessing ($templateCode, &$basketView, $funcTablename, $orderUid, &$orderConfirmationHTML, &$error_message, &$address, $mainMarkerArray)	{
+	function doProcessing ($templateCode, $basketView, $funcTablename, $orderUid, &$orderConfirmationHTML, &$error_message, &$address, $mainMarkerArray)	{
 		global $TSFE;
 		global $TYPO3_DB;
 
-		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		$instockTableArray = '';
 		$empty = '';
@@ -168,7 +168,7 @@ class tx_ttproducts_activity_finalize {
 			$recipientsArray['radio1'][] = $this->conf['orderEmail_radio.']['1.'][$address->infoArray['delivery']['radio1']];
 		}
 		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
-		$orderObj = &$tablesObj->get('sys_products_orders');
+		$orderObj = $tablesObj->get('sys_products_orders');
 		$apostrophe = $this->conf['orderEmail_apostrophe'];
 
 		// Move the user creation in front so that when we create the order we have a fe_userid so that the order lists work.
@@ -243,7 +243,7 @@ class tx_ttproducts_activity_finalize {
 		}
 
 		$orderObj->setData($orderUid, $orderConfirmationHTML, 1);
-		$creditpointsObj = &t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
+		$creditpointsObj = t3lib_div::getUserObj('&tx_ttproducts_field_creditpoints');
 		$creditpointsObj->pay();
 
 		// any gift orders in the extended basket?
@@ -261,7 +261,7 @@ class tx_ttproducts_activity_finalize {
 		// $orderRecord = $this->getRecord($orderUid);  needed?
 
 		if (!$this->alwaysInStock) {
-			$viewTable = &$tablesObj->get($funcTablename);
+			$viewTable = $tablesObj->get($funcTablename);
 			$instockTableArray =
 				$viewTable->reduceInStockItems(
 					$basket->itemArray,
@@ -273,7 +273,7 @@ class tx_ttproducts_activity_finalize {
 		$addcsv = '';
 		// Generate CSV for each order
 		if ($this->conf['generateCSV'])	{
-			$account = &$tablesObj->get('sys_products_accounts');
+			$account = $tablesObj->get('sys_products_accounts');
 			$accountUid = $account->getUid();
 
 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_csv.php');
@@ -475,9 +475,9 @@ class tx_ttproducts_activity_finalize {
 		}
 
 			// Call all finalizeOrder hooks
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['finalizeOrder'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['finalizeOrder'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['finalizeOrder'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'finalizeOrder')) {
 					$hookObj->finalizeOrder($this, $address, $templateCode, $basketView, $funcTablename, $orderUid, $orderConfirmationHTML, $error_message);
 				}

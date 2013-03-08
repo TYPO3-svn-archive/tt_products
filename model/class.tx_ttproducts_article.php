@@ -57,10 +57,10 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	 * @param	[type]		$tablename: ...
 	 * @return	[type]		...
 	 */
-	function init(&$cObj, $tablename)  {
+	function init($cObj, $tablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$conftablename = 'tt_products_articles';
 		parent::init($cObj, $conftablename);
 		$tablename = ($tablename ? $tablename : $conftablename);
@@ -111,7 +111,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	 * @param	[type]		$where: ...
 	 * @return	[type]		...
 	 */
-	function &getWhereArray ($where) {
+	function getWhereArray ($where) {
 		global $TYPO3_DB;
 		$rowArray = array();
 		$enableWhere = $this->getTableObj()->enableFields();
@@ -155,7 +155,7 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	 * @param	[type]		$row: ...
 	 * @return	[type]		...
 	 */
-	function &getProductRow($row)	{
+	function getProductRow($row)	{
 		$rc = $this->tt_products->get($row['uid_product']);
 		return $rc;
 	}

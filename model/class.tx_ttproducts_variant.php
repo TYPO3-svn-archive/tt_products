@@ -59,12 +59,12 @@ class tx_ttproducts_variant implements tx_ttproducts_variant_int {
 	 * @param	[type]		$useArticles: ...
 	 * @return	[type]		...
 	 */
-	function init(&$itemTable, $tablename, $useArticles)  {
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($itemTable, $tablename, $useArticles)  {
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$tmpArray = $cnf->getTableDesc($tablename);
 		$this->conf = (is_array($tmpArray) && is_array($tmpArray['variant.']) ? $tmpArray['variant.'] : array());
-		$this->itemTable = &$itemTable;
+		$this->itemTable = $itemTable;
 		$this->useArticles = $useArticles;
 		$this->bSelectableArray = array();
 		$firstVariantArray = array();

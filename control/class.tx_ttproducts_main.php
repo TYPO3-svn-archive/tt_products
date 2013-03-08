@@ -46,7 +46,7 @@ require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
 
 
 require_once (PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_ttproducts . 'cache/class.tx_ttproducts_cache.php');
+require_once (PATH_BE_ttproducts . 'cache/class.tx_ttproducts_cache.php');
 
 require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_base_view.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_tables.php');
@@ -146,7 +146,7 @@ class tx_ttproducts_main {
 	 * @param	[type]		$config: ...
 	 * @return	bool		if true processing should be done
 	 */
-	function init (&$pibase, &$content, &$conf, &$config, &$error_code) {
+	function init ($pibase, &$content, &$conf, &$config, &$error_code, $bRunAjax = FALSE) {
 		global $TSFE;
 
 		if ($conf['no_cache'] && $this->convertToUserInt()) {
@@ -156,17 +156,17 @@ class tx_ttproducts_main {
 			return FALSE;
 		}
 
-		$cacheObj = &t3lib_div::getUserObj('tx_ttproducts_cache');
-		$this->pibase = &$pibase;
-		$this->cObj = &$pibase->cObj;
+		$cacheObj = t3lib_div::getUserObj('tx_ttproducts_cache');
+		$this->pibase = $pibase;
+		$this->cObj = $pibase->cObj;
 		$this->conf = &$conf;
 		$this->config = &$config;
 		$this->piVars = &$pibase->piVars;
 		$config['LLkey'] = $pibase->LLkey;
 
 			// basket
-		$this->basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$eInfo = tx_div2007_alpha::getExtensionInfo_fh001(TT_PRODUCTS_EXTkey);
+		$this->basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$eInfo = tx_div2007_alpha::getExtensionInfo_fh001(TT_PRODUCTS_EXT);
 
 		$this->conf['version'] = $eInfo['version'];
 		// Save the original flexform in case if we need it later as USER_INT
@@ -181,7 +181,7 @@ class tx_ttproducts_main {
 				$conf['defaultCode'],
 				$this->cObj->data['pi_flexform'],
 				'display_mode',
-				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
+				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['useFlexforms']
 			);
 		$this->codeArray = t3lib_div::trimExplode(',', $config['code'],1);
 
@@ -216,27 +216,29 @@ class tx_ttproducts_main {
 		}
 
 			// initialise AJAX at the beginning because the AJAX functions can set piVars
-		if (t3lib_extMgm::isLoaded('taxajax')) {
+		if (!$bRunAjax && t3lib_extMgm::isLoaded('taxajax')) {
 			include_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_ajax.php');
 			$this->ajax = t3lib_div::makeInstance('tx_ttproducts_ajax');
 			$this->ajax->init();
 			$this->ajax->main($conf['ajaxDebug']);
 
 			if (in_array('LISTARTICLES', $this->codeArray))	{
-				$this->ajax->taxajax->registerFunction(array(TT_PRODUCTS_EXTkey.'_showArticle',$this,'showArticle'));
+				$this->ajax->taxajax->registerFunction(array(TT_PRODUCTS_EXT.'_showArticle',$this,'showArticle'));
 			}
 		}
 
-		// ### central initialization ###
-		t3lib_div::requireOnce(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');
-		$db = t3lib_div::getUserObj('&tx_ttproducts_db');
-		$result = $db->init($conf, $config, $this->ajax, $pibase, $error_code); // this initializes tx_ttproducts_config inside of creator
+		if (!$bRunAjax) {
+			// ### central initialization ###
+			t3lib_div::requireOnce(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');
+			$db = t3lib_div::getUserObj('&tx_ttproducts_db');
+			$result = $db->init($conf, $config, $this->ajax, $pibase, $error_code); // this initializes tx_ttproducts_config inside of creator
+		}
 
 		if (!$result) {
 			return FALSE;
 		}
 
-		if (t3lib_extMgm::isLoaded('taxajax')) {
+		if (!$bRunAjax && t3lib_extMgm::isLoaded('taxajax')) {
 			if($_POST['xajax']){
 				global $trans;
 				$trans = $this;
@@ -258,7 +260,7 @@ class tx_ttproducts_main {
 		if ($this->conf['TAXmode'] == '' ||  $this->conf['TAXmode'] == '{$plugin.tt_products.TAXmode}')	{
 			$this->conf['TAXmode'] == 1;
 		}
-		$this->pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'];
+		$this->pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['pageAsCategory'];
 		// get template suffix string
 		$this->templateSuffix = $this->pibase->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template_suffix');
 		$this->templateSuffix = strtoupper($this->templateSuffix);
@@ -356,26 +358,26 @@ class tx_ttproducts_main {
 			}
 		}
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$cnf->init(
 			$conf,
 			$config
 		);
 
-		$urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
+		$urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
 		$urlObj->init($this->pibase);
 
 			// image
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image');
 		$imageObj->init($this->pibase->cObj, $this->pibase);
 
 			// image view
-		$imageViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 		$imageViewObj->init($this->pibase, $imageObj);
 
 			// get all extending TCAs
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']))	{
-			tx_div2007_alpha::loadTcaAdditions_fh001($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['extendingTCA']);
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['extendingTCA']))	{
+			tx_div2007_alpha::loadTcaAdditions_fh001($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['extendingTCA']);
 		}
 
 		if ($this->conf['templateStyle'] == 'css-styled')	{
@@ -387,14 +389,14 @@ class tx_ttproducts_main {
 		}
 
 			// price
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
 		$priceObj->init(
 			$this->pibase->cObj,
 			$this->conf
 		);
 
 			// price
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 		$priceViewObj->init(
 			$this->pibase,
 			$this->pibase->cObj,
@@ -402,17 +404,17 @@ class tx_ttproducts_main {
 		);
 
 			// graduated price
-		$graduatedPriceObj = &t3lib_div::getUserObj('&tx_ttproducts_graduated_price');
+		$graduatedPriceObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price');
 		$graduatedPriceObj->init($this->conf['table.']['tt_products_graduated_price'], $this->conf['table.']['tt_products_mm_graduated_price']);
 
-		$graduatedPriceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
+		$graduatedPriceViewObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
 		$graduatedPriceViewObj->init($this->pibase, $graduatedPriceObj);
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$tablesObj->init($this->pibase);
 
 			// paymentshipping
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$paymentshippingObj->init(
 			$this->pibase->cObj
 		);
@@ -424,7 +426,7 @@ class tx_ttproducts_main {
 // 			$loadTablesArray[] = 'tx_dam';
 // 			$loadTablesArray[] = 'tx_dam_cat';
 // 		}
-		$this->javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
+		$this->javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
 
 			// JavaScript
 		$this->javaScriptObj->init(
@@ -432,18 +434,18 @@ class tx_ttproducts_main {
 			$this->ajax
 		);
 
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$markerObj->init(
 			$this->cObj
 		);
 
 			// basket view
-		$this->control = &t3lib_div::makeInstance('tx_ttproducts_control');
+		$this->control = t3lib_div::makeInstance('tx_ttproducts_control');
 
 			// This cObject may be used to call a function which manipulates the shopping basket based on settings in an external order system. The output is included in the top of the order (HTML) on the basket-page.
 		$this->externalCObject = tx_div2007_alpha::getExternalCObject_fh001($this->pibase, 'externalProcessing');
 
-		$subpartmarkerObj = &t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
+		$subpartmarkerObj = t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
 		$subpartmarkerObj->init($this->cObj);
 
 		return TRUE;
@@ -455,14 +457,14 @@ class tx_ttproducts_main {
 	 * @param	string		$content
 	 * @return	string		content for output
 	 */
-	function &run ($content='')	{
+	function &run ($content = '', $bRunAjax = FALSE) {
 		global $TSFE;
 
 		$bStoreBasket = TRUE;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$orderObj = &$tablesObj->get('sys_products_orders');
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$orderObj = $tablesObj->get('sys_products_orders');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		if (!count($this->codeArray) && !$bRunAjax)	{
 			$this->codeArray = array('HELP');
@@ -485,7 +487,7 @@ class tx_ttproducts_main {
 			$updateMode = 0;
 		}
 
-		if (isset($this->conf['basket.']) && $this->conf['basket.']['store']=='0' || count($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW' && !$this->conf['basket.']['store'])	{
+		if (isset($this->conf['basket.']) && $this->conf['basket.']['store'] == '0' || count($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW' && !$this->conf['basket.']['store'])	{
 			$bStoreBasket = FALSE;
 		}
 
@@ -510,6 +512,9 @@ class tx_ttproducts_main {
 			$this->basket->getCalculatedBasket(); // get the basket->itemArray
 			$this->basket->getCalculatedSums();
 			$this->templateCode=$this->getTemplateCode('BASKET');
+
+			$functablename = 'tt_products';
+			tx_ttproducts_control_memo::process($functablename, $this->pibase->piVars, $this->conf);
 
 			$this->control->init (
 				$this->pibase,
@@ -683,6 +688,7 @@ class tx_ttproducts_main {
 						$this->pibase,
 						$this->config['pid_list'],
 						$this->pid,
+						$this->conf,
 						$this->conf['useArticles']
 					);
 					$contentTmp=$this->memoView->printView($this->templateCode, $error_code);
@@ -722,7 +728,7 @@ class tx_ttproducts_main {
 					);
 					$tableInfoArray = array('SINGLECAT' => 'tt_products_cat', 'SINGLEDAMCAT' => 'tx_dam_cat', 'SINGLEAD' => 'address');
 					$functablename = $tableInfoArray[$theCode];
-					$tableObj = &$tablesObj->get($functablename);
+					$tableObj = $tablesObj->get($functablename);
 					$uid = $this->pibase->piVars[$tableObj->getPivar()];
 
 					if ($uid)	{
@@ -747,7 +753,40 @@ class tx_ttproducts_main {
 			if ($error_code[0]) {
 				$messageArr = array();
 				$i = 0;
+
+				$errorConf = array();
+				if (isset($this->conf['error.'])) {
+					$errorConf = $this->conf['error.'];
+					$urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
+				}
+
 				foreach ($error_code as $key => $indice) {
+
+					if (
+						isset($errorConf[$indice . '.']) &&
+						isset($errorConf[$indice . '.']['redirect.']) &&
+						isset($errorConf[$indice . '.']['redirect.']['pid'])
+					) {
+
+						$pid = $errorConf[$indice . '.']['redirect.']['pid'];
+						$url = tx_div2007_alpha::getTypoLink_URL_fh002(
+							$this->cObj,
+							$pid,
+							$urlObj->getLinkParams(
+								'product,article,dam',
+								'',
+								TRUE,
+								FALSE
+							),
+							'',
+							array()
+						);
+
+						if ($url != '') {
+							t3lib_utility_http::redirect($url);
+						}
+					}
+
 					if ($key == 0) {
 						$messageArr = explode('|', $message = tx_div2007_alpha5::getLL_fh002($langObj, $indice));
 						$contentTmp .= '<b>'.tx_div2007_alpha5::getLL_fh002($langObj, 'tt_products').': '.$messageArr[0].'</b>';
@@ -757,13 +796,12 @@ class tx_ttproducts_main {
 					$i++;
 				}
 				$error_code = array();
-				// $contentTmp.=$messageArr[0].intval($this->uid) .$messageArr[1];
 			}
 
 			if ($contentTmp == 'error') {
-					$fileName = 'EXT:'.TT_PRODUCTS_EXTkey.'/template/products_help.tmpl';
+					$fileName = 'EXT:'.TT_PRODUCTS_EXT.'/template/products_help.tmpl';
 					$helpTemplate = $this->cObj->fileResource($fileName);
-					$content .= tx_div2007_alpha::displayHelpPage_fh001($this->pibase,$helpTemplate,TT_PRODUCTS_EXTkey, $this->errorMessage, $theCode);
+					$content .= tx_div2007_alpha::displayHelpPage_fh001($this->pibase,$helpTemplate,TT_PRODUCTS_EXT, $this->errorMessage, $theCode);
 
 					unset($this->errorMessage);
 					break; // while
@@ -785,6 +823,10 @@ class tx_ttproducts_main {
 			} else {
 				$rc = $content;
 			}
+		}
+
+		if (!$this->conf['defaultSetup'])	{
+			$rc .= '<h>Error: The default tt_products setup is missing.</h>';
 		}
 
 		return $rc;
@@ -823,9 +865,9 @@ class tx_ttproducts_main {
 	 */
 	function &getTemplateCode ($theCode) {
 		$templateCode = '';
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$templateFile = $cnf->getTemplateFile($theCode);
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		if ($templateFile) {
 			// template file is fetched. The whole template file from which the various subpart are extracted.
@@ -837,10 +879,10 @@ class tx_ttproducts_main {
 				$tmplText = $theCode.'.';
 			}
 			$tmplText .= 'templateFile';
-			$this->errorMessage .= tx_div2007_alpha5::getLL_fh002($langObj, 'no_template') . ' plugin.' . TT_PRODUCTS_EXTkey . '.' . $tmplText . ' = ';
+			$this->errorMessage .= tx_div2007_alpha5::getLL_fh002($langObj, 'no_template') . ' plugin.' . TT_PRODUCTS_EXT . '.' . $tmplText . ' = ';
 			$this->errorMessage .= ($this->conf['templateFile'] ? "'".$this->conf['templateFile']."'" : '""');
 		} else {
-			$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+			$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 
 				// Substitute Global Marker Array
 			$templateCode = $this->cObj->substituteMarkerArrayCached($templateCode, $markerObj->getGlobalMarkerArray());
@@ -877,17 +919,17 @@ class tx_ttproducts_main {
 	function products_tracking ($theCode)	{ // t3lib_div::_GP('tracking')
 		global $TSFE;
 
-		$urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
+		$urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
 		$updateCode = '';
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-		$subpartmarkerObj = &t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
+		$subpartmarkerObj = t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
 
 		$trackingCode = t3lib_div::_GP('tracking');
 		$admin = $this->shopAdmin($updateCode);
 		$msgSubpart = '';
 		if ($trackingCode || $admin)	{	// Tracking number must be set
-			$orderObj = &$tablesObj->get('sys_products_orders');
+			$orderObj = $tablesObj->get('sys_products_orders');
 			$orderRow = $orderObj->getRecord('',$trackingCode);
 			if (is_array($orderRow) || $admin)	{	// If order is associated with tracking id.
 				if (!is_array($orderRow)) {
@@ -925,7 +967,7 @@ class tx_ttproducts_main {
 						);
 						break;
 					default:
-						debug('error in '.TT_PRODUCTS_EXTkey.' calling function products_tracking with $theCode = "'.$theCode.'"');
+						debug('error in '.TT_PRODUCTS_EXT.' calling function products_tracking with $theCode = "'.$theCode.'"');
 				}
 			} else {	// ... else output error page
 				$msgSubpart = '###TRACKING_WRONG_NUMBER###';
@@ -979,7 +1021,7 @@ class tx_ttproducts_main {
 			}
 		}
 		$tagId = ($tagId ? $tagId : 'ArticleId');
-		$content = $this->run('',true);
+		$content = $this->run('', TRUE);
 
 		$objResponse->addAssign($tagId,'innerHTML', $content);
 		$rc = $objResponse->getXML();

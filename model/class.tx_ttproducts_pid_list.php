@@ -48,8 +48,8 @@ class tx_ttproducts_pid_list {
 	 * @param	[type]		$$cObj: ...
 	 * @return	[type]		...
 	 */
-	function init(&$cObj)	{
-		$this->cObj = &$cObj;
+	function init($cObj)	{
+		$this->cObj = $cObj;
 	} // init
 
 

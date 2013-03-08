@@ -49,15 +49,15 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 
 
 	// returns the products list view
-	function &printView($functablename, &$templateCode, $theCode, &$error_code, $templateArea = 'ITEM_CATEGORY_SELECT_TEMPLATE', $pageAsCategory, $templateSuffix = '') {
+	function printView($functablename, &$templateCode, $theCode, &$error_code, $templateArea = 'ITEM_CATEGORY_SELECT_TEMPLATE', $pageAsCategory, $templateSuffix = '') {
 		global $TSFE, $TCA;
 		$content='';
 		$out='';
 		$where='';
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$categoryTableView = &$tablesObj->get($functablename,1);
-		$categoryTable = &$categoryTableView->getModelObj();
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$categoryTableView = $tablesObj->get($functablename,1);
+		$categoryTable = $categoryTableView->getModelObj();
 
 		$bSeparated = false;
 		$t = array();
@@ -86,8 +86,7 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 				$bSeparated = true;
 			}
 
-	/*		$catArray = array();
-			$catArray [(int) $depth] = &$rootArray;*/
+
 			$menu = $this->conf['CSS.'][$functablename.'.']['menu'];
 			$menu = ($menu ? $menu : $categoryTableView->piVar.$depth);
 			$fill = '';
@@ -165,7 +164,7 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 					$parentFieldArray = array('parent_category');
 				}
 				$piVar = $categoryTableView->piVar;
-				$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
+				$javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
 				$javaScriptObj->set('selectcat', array($categoryArray), 1+$count, $piVar, $parentFieldArray, array($catid), array(), 'clickShow');
 
 				for ($i = 2; $i <= 1+$count; ++$i)	{

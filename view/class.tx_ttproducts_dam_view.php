@@ -87,7 +87,7 @@ class tx_ttproducts_dam_view extends tx_ttproducts_article_base_view {
 		global $TSFE;
 
 		$row = &$item['rec'];
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 			// Get image
 		$imageObj->getItemMarkerArrayEnhanced ($this->getModelObj()->getFuncTablename(), $row, $this->marker, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, $prefix, $linkWrap);
@@ -110,7 +110,6 @@ class tx_ttproducts_dam_view extends tx_ttproducts_article_base_view {
 		$markerArray['###DAM_FIELD_NAME###'] = 'ttp_basket[dam]';
 		$markerArray['###DAM_UID###'] = intval($uid);
 	}
-
 }
 
 

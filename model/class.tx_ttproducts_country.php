@@ -54,10 +54,10 @@ class tx_ttproducts_country extends tx_ttproducts_table_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init(&$pibase, $functablename)	{
+	function init($pibase, $functablename)	{
 		parent::init($pibase, $functablename);
 		$tablename = $this->getTablename();
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tablename = ($tablename ? $tablename : 'pages');
 		$this->tableconf = $cnf->getTableConf('static_countries');
 		$this->getTableObj()->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid'));

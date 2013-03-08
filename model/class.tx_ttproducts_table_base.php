@@ -83,15 +83,15 @@ abstract class tx_ttproducts_table_base	{
 	}
 
 
-	public function init (&$cObj, $functablename)	{
+	public function init ($cObj, $functablename)	{
 
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
-		$this->tableObj = &t3lib_div::makeInstance('tx_table_db');
+		$this->tableObj = t3lib_div::makeInstance('tx_table_db');
 
 		$this->setFuncTablename($functablename);
 		$tablename = $cnf->getTableName($functablename);
@@ -125,7 +125,7 @@ abstract class tx_ttproducts_table_base	{
 	function get ($uid='0',$pid=0,$bStore=TRUE,$where_clause='',$limit='',$fields='',$bCount=FALSE,$groupBy='',$orderBy='') {
 		global $TYPO3_DB;
 
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$alias = $this->getAlias() . $aliasPostfix;
 
 		if (
@@ -225,6 +225,18 @@ abstract class tx_ttproducts_table_base	{
 
 
 	/**
+	 * Returns the label of the record, Usage in the following format:
+	 *
+	 * @param	array		$row: current record
+	 * @return	string		Label of the record
+	 */
+	public function getLabel ($row) {
+
+		return $row['title'];
+	}
+
+
+	/**
 	 * [Describe function...]
 	 *
 	 * @return	[type]		...
@@ -240,8 +252,8 @@ abstract class tx_ttproducts_table_base	{
 	 * @param	[type]		$$cObj: ...
 	 * @return	[type]		...
 	 */
-	function setCobj (&$cObj)	{
-		$this->cObj = &$cObj;
+	function setCobj ($cObj)	{
+		$this->cObj = $cObj;
 	}
 
 
@@ -260,7 +272,7 @@ abstract class tx_ttproducts_table_base	{
 
 
 	public function getAlias ()	{
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		return $tableObj->getAlias();
 	}
 
@@ -318,7 +330,7 @@ abstract class tx_ttproducts_table_base	{
 				$addRequiredFields = $tableConf['language.']['field.'];
 				$this->getTableObj()->addRequiredFieldArray($addRequiredFields);
 			}
-			$tableObj = &$this->getTableObj();
+			$tableObj = $this->getTableObj();
 			if ($this->bUseLanguageTable($tableConf))	{
 				$tableObj->setLanguage($this->config['LLkey']);
 				$tableObj->setLangName($tableConf['language.']['table']);
@@ -373,9 +385,9 @@ abstract class tx_ttproducts_table_base	{
 		if (!$theCode)	{
 			$theCode = $this->theCode;
 		}
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
-		$rc = &$cnf->getTableConf($this->getFuncTablename(), $theCode);
+		$rc = $cnf->getTableConf($this->getFuncTablename(), $theCode);
 		return $rc;
 	}
 
@@ -408,7 +420,7 @@ abstract class tx_ttproducts_table_base	{
 	}
 
 
-	public function &getTableObj ()	{
+	public function getTableObj ()	{
 		return $this->tableObj;
 	}
 }

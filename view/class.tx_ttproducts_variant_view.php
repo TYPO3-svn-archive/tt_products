@@ -48,10 +48,10 @@ class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 	public $langObj;
 
 
-	public function init(&$langObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->cObj = &$langObj->cObj;
-		$this->modelObj = &$modelObj;
+	public function init($langObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->cObj = $langObj->cObj;
+		$this->modelObj = $modelObj;
 	}
 
 	/**

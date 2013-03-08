@@ -50,19 +50,19 @@ class tx_ttproducts_cat_view {
 	var $pidListObj;
 	var $cOjb;
 
-	function init(&$pibase, $pid, $pid_list, $recursive) {
-		$this->pibase = &$pibase;
-		$this->cObj = &$pibase->cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($pibase, $pid, $pid_list, $recursive) {
+		$this->pibase = $pibase;
+		$this->cObj = $pibase->cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
 		$this->pid = $pid;
 		$this->subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
 		$this->subpartmarkerObj->init($this->cObj);
-		$this->urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
+		$this->urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
 
-		$this->pidListObj = &t3lib_div::getUserObj('tx_ttproducts_pid_list');
+		$this->pidListObj = t3lib_div::getUserObj('tx_ttproducts_pid_list');
 		$this->pidListObj->init($this->cObj);
 		$this->pidListObj->applyRecursive($recursive, $pid_list, TRUE);
 		$this->pidListObj->setPageArray();
@@ -73,15 +73,15 @@ class tx_ttproducts_cat_view {
 
 
 	// returns the single view
-	function &printView(&$templateCode, $functablename, $uid, $theCode, &$error_code, $templateSuffix = '') {
+	function printView(&$templateCode, $functablename, $uid, $theCode, &$error_code, $templateSuffix = '') {
 		global $TSFE, $TCA, $TYPO3_DB;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$tableViewObj = $tablesObj->get($functablename, TRUE);
 		$tableObj = $tableViewObj->getModelObj();
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
-		$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		if ($this->config['displayCurrentRecord'])	{
 			$row = $this->cObj->data;
@@ -102,8 +102,6 @@ class tx_ttproducts_cat_view {
 		}
 
 		if ($row) {
-			// $this->uid = intval ($row['uid']); // store the uid for later usage here
-
 			$markerArray = array();
 			$subpartArray = array();
 			$wrappedSubpartArray = array();
@@ -192,7 +190,7 @@ class tx_ttproducts_cat_view {
 				$viewCatTable->getSubpartArrays($this->urlObj, $catRow, $subpartArray, $wrappedSubpartArray, $viewTagArray, $catListPid, 'LINK_PARENT1_CATEGORY');
 			}
 
-			$pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'];
+			$pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['pageAsCategory'];
 
 			$tableViewObj->getMarkerArray (
 				$markerArray,
@@ -252,7 +250,6 @@ class tx_ttproducts_cat_view {
 
 			$queryprev = '';
 			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->pidListObj->getPidlist().')'. $tableObj->getTableObj()->enableFields();
-			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
 			$resprev = $tableObj->getTableObj()->exec_SELECTquery('*', $queryprev, '', $TYPO3_DB->stripOrderBy($prevOrderby));
 
 			if ($rowprev = $TYPO3_DB->sql_fetch_assoc($resprev) )	{
@@ -269,7 +266,6 @@ class tx_ttproducts_cat_view {
 			$TYPO3_DB->sql_free_result($resprev);
 
 			$querynext = $queryNextPrefix.' AND pid IN ('.$this->pidListObj->getPidlist().')'. $wherestock . $tableObj->getTableObj()->enableFields();
-			// $resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
 			$resnext = $tableObj->getTableObj()->exec_SELECTquery('*', $querynext, '', $TYPO3_DB->stripOrderBy($nextOrderby));
 
 			if ($rownext = $TYPO3_DB->sql_fetch_assoc($resnext) )	{

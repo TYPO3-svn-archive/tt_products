@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2013 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -69,9 +69,9 @@ class tx_ttproducts_single_view {
 
 	function init (&$pibase, $uidArray, $extVars,
 			$pid, $useArticles, $pid_list, $recursive) {
-		$this->pibase = &$pibase;
-		$this->cObj = &$pibase->cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->pibase = $pibase;
+		$this->cObj = $pibase->cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
@@ -93,8 +93,8 @@ class tx_ttproducts_single_view {
 		$this->variants = $extVars;
 		$this->pid = $pid;
 		$this->useArticles = $useArticles;
-		$this->urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
-		$this->pidListObj = &t3lib_div::getUserObj('tx_ttproducts_pid_list');
+		$this->urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
+		$this->pidListObj = t3lib_div::getUserObj('tx_ttproducts_pid_list');
 		$this->pidListObj->init($this->cObj);
 		$this->pidListObj->applyRecursive($recursive, $pid_list, TRUE);
 		$this->pidListObj->setPageArray();
@@ -107,28 +107,28 @@ class tx_ttproducts_single_view {
 	function &printView (&$templateCode, &$error_code, $pageAsCategory, $templateSuffix = '') {
 		global $TSFE, $TCA, $TYPO3_DB;
 
-		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$subpartmarkerObj = &t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$subpartmarkerObj = t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
 		$theCode = 'SINGLE';
 
 		$itemTableArray = array();
-		$itemTableArray['product'] = &$tablesObj->get('tt_products');
-		$itemTableArray['article'] = &$tablesObj->get('tt_products_articles');
+		$itemTableArray['product'] = $tablesObj->get('tt_products');
+		$itemTableArray['article'] = $tablesObj->get('tt_products_articles');
 		$itemTableViewArray = array();
-		$itemTableViewArray['product'] = &$tablesObj->get('tt_products', true);
-		$itemTableViewArray['article'] = &$tablesObj->get('tt_products_articles', true);
+		$itemTableViewArray['product'] = $tablesObj->get('tt_products', true);
+		$itemTableViewArray['article'] = $tablesObj->get('tt_products_articles', true);
 		if (t3lib_extMgm::isLoaded('dam'))	{
-			$itemTableArray['dam'] = &$tablesObj->get('tx_dam');
-			$itemTableViewArray['dam'] = &$tablesObj->get('tx_dam', true);
+			$itemTableArray['dam'] = $tablesObj->get('tx_dam');
+			$itemTableViewArray['dam'] = $tablesObj->get('tx_dam', true);
 		}
 		$rowArray = array('product' => array(), 'article' => array(), 'dam' => array());
 		$itemTableConf = $rowArray;
 		$itemTableLangFields = $rowArray;
 		$content = '';
-		$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
+		$javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
 
 		if ($this->config['displayCurrentRecord'] && $this->type == 'product' && !$this->useArticles)	{
 			$rowArray[$this->type] = $this->cObj->data;
@@ -137,7 +137,6 @@ class tx_ttproducts_single_view {
 			$rowArray[$this->type] = $itemTableArray[$this->type]->get($this->uid, 0, TRUE, $where);
 			$itemTableConf[$this->type] = $cnf->getTableConf($itemTableArray[$this->type]->getFuncTablename(), 'SINGLE');
 			$itemTableLangFields[$this->type] = $cnf->getTranslationFields($itemTableConf[$this->type]);
-			// TODO: $itemImageFields[$this->type] = $cnf->getImageFields($itemTableConf[$this->type]);
 
 			if ($this->type == 'product' || $this->type == 'dam')	{
 				if ($this->variants) {
@@ -197,7 +196,7 @@ class tx_ttproducts_single_view {
 			$itemFrameWork = $this->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###'.$subPartMarker.'###'));
 			$tablesObj->get('fe_users', true)->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray, $itemTableArray ['product']->getFuncTablename());
 			if (!$itemFrameWork) {
-				$mainObj = &t3lib_div::getUserObj('&tx_ttproducts_main');
+				$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');
 				$error_code[0] = 'no_subtemplate';
 				$error_code[1] = $itemFrameTemplate;
 				$error_code[2] = $mainObj->templateFile;
@@ -290,20 +289,20 @@ class tx_ttproducts_single_view {
 			// get categories
 			if (!$pageAsCategory || $pageAsCategory == 1)	{
 				if ($this->type == 'product' || $this->type == 'article')	{
-					$viewCatTable = &$tablesObj->get('tt_products_cat');
-					$viewCatViewTable = &$tablesObj->get('tt_products_cat', true);
+					$viewCatTable = $tablesObj->get('tt_products_cat');
+					$viewCatViewTable = $tablesObj->get('tt_products_cat', true);
 				} else if ($this->type == 'dam') {
-					$viewCatTable = &$tablesObj->get('tx_dam_cat');
-					$viewCatViewTable = &$tablesObj->get('tx_dam_cat', true);
+					$viewCatTable = $tablesObj->get('tx_dam_cat');
+					$viewCatViewTable = $tablesObj->get('tx_dam_cat', true);
 				}
 			} else {
-				$viewCatTable = &$pageObj;
+				$viewCatTable = $pageObj;
 				$viewCatViewTable = $tablesObj->get('pages', true);
 			}
 
 			if ($this->type == 'product')	{
-				$viewTextTable = &$tablesObj->get('tt_products_texts');
-				$viewTextViewTable = &$tablesObj->get('tt_products_texts',TRUE);
+				$viewTextTable = $tablesObj->get('tt_products_texts');
+				$viewTextViewTable = $tablesObj->get('tt_products_texts',TRUE);
 				$textTagArray = $viewTextViewTable->getTagMarkerArray($viewTagArray, $itemTableArray['product']->marker);
 				$itemArray = $viewTextTable->getChildUidArray($this->uid, $textTagArray, 'tt_products');
 				$viewTextViewTable->getItemMarkerArray($itemArray, $markerArray, $itemTableArray['product']->marker, $textTagArray);
@@ -373,7 +372,14 @@ class tx_ttproducts_single_view {
 			if ($viewTagArray['LINK_ITEM'])	{
 				$addQueryString = array();
 
-				if ((($linkPid == $TSFE->id && !$bUseBackPid) || ($bUseBackPid && $linkPid != $TSFE->id)) && $this->conf['NoSingleViewOnList'])	{
+				if (
+					(
+						(
+							$linkPid == $TSFE->id && !$bUseBackPid
+						)
+					) &&
+					$this->conf['NoSingleViewOnList']
+				) {
 					// if the page remains the same then the product parameter will still be needed
 					$excludeList = '';
 				} else {
@@ -385,6 +391,7 @@ class tx_ttproducts_single_view {
 				}
 
 				$queryString = $this->urlObj->getLinkParams($excludeList, $addQueryString, TRUE, FALSE, $viewCatViewTable->getPivar());
+
 				$linkUrl = tx_div2007_alpha::getPageLink_fh002($this->cObj,$linkPid,'',$queryString, array('useCacheHash' => TRUE));
 				$linkUrl = htmlspecialchars($linkUrl);
 				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="' . $linkUrl . '">','</a>');
@@ -422,7 +429,7 @@ class tx_ttproducts_single_view {
 
 			if ($this->type == 'product' || $this->type == 'article')	{
 				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
-				$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
+				$basketItemView = t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 				$basketItemView->init($this->pibase, $basketObj->basketExt);
 				$basketItemView->getItemMarkerArray (
 					$itemTableArray[$this->type]->getFuncTablename(),

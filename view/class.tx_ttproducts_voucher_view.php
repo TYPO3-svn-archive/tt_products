@@ -59,7 +59,7 @@ class tx_ttproducts_voucher_view extends tx_ttproducts_table_base_view {
 		&$wrappedSubpartArray,
 		$charset=''
 	)	{
-		$modelObj = &$this->getModelObj();
+		$modelObj = $this->getModelObj();
 		$subpartArray['###SUB_VOUCHERCODE###'] = '';
 
 		if ($modelObj->getValid())	{
@@ -85,8 +85,8 @@ class tx_ttproducts_voucher_view extends tx_ttproducts_table_base_view {
 	function getMarkerArray (
 		&$markerArray
 	)	{
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
-		$modelObj = &$this->getModelObj();
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$modelObj = $this->getModelObj();
 		$markerArray['###INSERT_VOUCHERCODE###'] = 'recs[tt_products][vouchercode]';
 
 		$voucherCode = $modelObj->getCode();

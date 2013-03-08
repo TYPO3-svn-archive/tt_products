@@ -85,7 +85,7 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 		global $TCA;
 
 		$fieldOutputArray = array();
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 		$modelObj = $this->getModelObj();
 		$selectInfoFields = $modelObj->getSelectInfoFields();
 

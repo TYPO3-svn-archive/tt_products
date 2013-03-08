@@ -79,12 +79,12 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	public function init (&$langObj, &$cObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	public function init ($langObj, $cObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
-		$this->modelObj = &$modelObj;
+		$this->modelObj = $modelObj;
 		$this->bHasBeenInitialised = true;
 	} // init
 
@@ -92,7 +92,7 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 		return !$this->bHasBeenInitialised;
 	}
 
-	public function &getModelObj ()	{
+	public function getModelObj ()	{
 		return $this->modelObj;
 	}
 
@@ -136,10 +136,10 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	public function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $imageRenderObj='')	{
 
 		$priceArray = array();
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$prodTable = &$tablesObj->get($functablename, TRUE);
-		$modelObj = &$this->getModelObj();
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$prodTable = $tablesObj->get($functablename, TRUE);
+		$modelObj = $this->getModelObj();
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$markerProd = $prodTable->getMarker();
 		$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && ($taxFromShipping == 0) ? 'tax_zero' : 'tax_included');

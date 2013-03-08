@@ -60,18 +60,18 @@ class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 	 */
 	public function getMarkerArray (&$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $theCode, $id, $prefix, $linkWrap='')	{
 
-		$modelObj = &$this->getModelObj();
+		$modelObj = $this->getModelObj();
 		$row = ($category ? $modelObj->get($category) : array ('title' => '', 'pid' => $pid));
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$functablename = $modelObj->getFuncTablename();
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 			// Get image
 		$imageObj->getItemMarkerArray($functablename, 'image', $row, $this->marker, $markerArray, $viewCatTagArray, $theCode, $id, $tmp, TRUE, '', $prefix, $imageRenderObj);
 
 		$pageCatTitle = '';
 		if ($pageAsCategory == 1) {
-			$pageObj = &$tablesObj->get('pages');
+			$pageObj = $tablesObj->get('pages');
 			$pageTmp = $pageObj->get($pid);
 			$pageCatTitle = $pageTmp['title'];
 		}

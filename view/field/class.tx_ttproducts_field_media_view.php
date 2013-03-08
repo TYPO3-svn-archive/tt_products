@@ -145,7 +145,7 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 		$markerArray['###'.$markerKey.'_PATH###'] = $dirname;
 
 		if (count($imageArray))	{
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 			$tableConf = $cnf->getTableConf($functablename, $theCode);
 
 			if (is_array($tableConf))	{
@@ -194,7 +194,7 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 					$bUseImage = true;
 				}
 				if (t3lib_extMgm::isLoaded('dam') && $bUseImage && $bImages) {
-					$damObj = &t3lib_div::getUserObj('tx_dam');
+					$damObj = t3lib_div::getUserObj('tx_dam');
 					if(method_exists($damObj,'meta_getDataForFile')) {
 						$fieldList = 'uid,pid,tstamp,crdate,active,media_type,title,category,index_type,file_mime_type,file_mime_subtype,
 							file_type,file_type_version,file_name,file_path,file_size,file_mtime,file_inode,file_ctime,file_hash,file_status,
@@ -218,8 +218,10 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 				}
 				$this->cObj->alternativeData = ($meta ? $meta : $imageRow);
 				$imageConf['params'] = preg_replace('/\s+/',' ',$imageConf['params']);
+
 				$this->replaceMarkerArray($markerArray, $imageConf, $this->cObj->alternativeData);
 				$tmpImgCode = $this->getImageCode($imageConf, $theCode);
+
 				if ($tmpImgCode != '')	{
 					$imgCodeArray[$key] .= $tmpImgCode;
 				}
@@ -254,9 +256,9 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 
 		$imageRow = $row;
 		$bImages = false;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableConf = $cnf->getTableConf($functablename, $theCode);
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 			// Get image
 		$theImgDAM = array();
@@ -407,6 +409,7 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 			$theImgDAM,
 			$specialConf
 		);
+
 		$actImgCode = current($theImgCode);
 		$markerArray['###'.$markerKey.'###'] = $actImgCode ? $actImgCode : ''; // for compatibility only
 		$c = 1;
@@ -508,7 +511,7 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 		if ($bHtml) {
 
 			$mediaMarkerKeyArray = array();
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 			$tableConf = $cnf->getTableConf($functablename, $theCode);
 
 			foreach ($tagArray as $value => $k1)	{

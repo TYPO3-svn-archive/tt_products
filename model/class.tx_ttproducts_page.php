@@ -57,15 +57,15 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * @param	[type]		$tablename: ...
 	 * @return	[type]		...
 	 */
-	function init(&$pibase, $tablename)	{
+	function init($pibase, $tablename)	{
 		global $TYPO3_DB;
 
 		parent::init($pibase, $tablename);
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tablename = ($tablename ? $tablename : 'pages');
 		$this->tableconf = $cnf->getTableConf('pages');
-		$this->pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'];
+		$this->pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['pageAsCategory'];
 
 //		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'sorting'=> 'sorting',
 // 			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime'));
@@ -111,24 +111,6 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		}
 	} // init
 
-//	function get ($uid,$pid=0) {
-//		global $TYPO3_DB, $TSFE;
-//		$bMultple = (strstr($uid, ',') ? true : false);
-//
-//		$rc = $this->dataArray[$uid];
-//		if (!$rc && !$bMultple && isset($uid)) {
-//			$sql = t3lib_div::makeInstance('tx_table_db_access');
-//			$sql->prepareFields($this->getTableObj(), 'select', implode(',', $this->getTableObj()->requiredFieldArray));
-//			$sql->prepareWhereFields ($this->getTableObj(), 'uid', '=', intval($uid));
-//			$this->getTableObj()->enableFields();
-//			// Fetching the category
-//		 	$res = $sql->exec_SELECTquery();
-//		 	$row = $TYPO3_DB->sql_fetch_assoc($res);
-//		 	$rc = $this->dataArray[$row['uid']] = $row;
-//		}
-//		return $rc;
-//	}
-
 	/**
 	 * [Describe function...]
 	 *
@@ -165,7 +147,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * @return	[type]		...
 	 */
 	function getRootCat ()	{
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$rc = $cnf->config['rootPageID'];
 		return $rc;
 	}

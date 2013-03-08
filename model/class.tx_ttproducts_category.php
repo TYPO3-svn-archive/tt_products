@@ -55,16 +55,16 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 * @param	string		$functablename: ...
 	 * @return	void
 	 */
-	function init (&$cObj, $functablename)	{
+	function init ($cObj, $functablename)	{
 		global $TYPO3_DB;
 
 		$tablename = ($tablename ? $tablename : $functablename);
 
 		parent::init($pibase, $functablename);
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->tableconf = $cnf->getTableConf($functablename);
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$tablename = $this->getTablename();
 		$tableObj->setTCAFieldArray($tablename);
@@ -126,7 +126,6 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		if ($this->parentField != '') {
 			$where = $this->parentField . '=' . intval($category);
 			$rowArray = $this->get('', $pid, FALSE, $where, '', 'uid', FALSE, '', $orderBy);
-debug ($rowArray, 'getAllChildCats $rowArray');
 		}
 
 		$resultArray = array();
@@ -137,8 +136,6 @@ debug ($rowArray, 'getAllChildCats $rowArray');
 			}
 			$result = implode (',', $resultArray);
 		}
-
-debug ($result, 'getAllChildCats ENDE $result');
 
 		return $result;
 	}
@@ -157,7 +154,7 @@ debug ($result, 'getAllChildCats ENDE $result');
 		$bRootfound = false;
 		$rc = array();
 		if ($uid)	{
-			$tableObj = &$this->getTableObj();
+			$tableObj = $this->getTableObj();
 			$rc = $rowArray = $this->get($uid.' ', $pid, false);
 			$orderBy = $this->tableconf['orderBy'];
 			$uidArray = t3lib_div::trimExplode (',', $uid);
@@ -215,7 +212,7 @@ debug ($result, 'getAllChildCats ENDE $result');
 
 		$relatedArray = array();
 		$uidArray = $rootArray = t3lib_div::trimExplode(',', $rootUids);
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$rootLine = $this->getRootline($uidArray, $currentCat, $pid);
 
 		foreach ($rootLine as $k => $row)	{
@@ -270,7 +267,7 @@ debug ($result, 'getAllChildCats ENDE $result');
 	function getRowFromTitle ($title)	{
 		$rc = $this->titleArray[$title];
 		if (is_array($rc))	{
-			$tableObj = &$this->getTableObj();
+			$tableObj = $this->getTableObj();
 
 			$where = '1=1 '.$tableObj->enableFields();
 			$where .= ' AND title='.$TYPO3_DB->fullQuoteStr($title,$tableObj->name);
@@ -329,7 +326,7 @@ debug ($result, 'getAllChildCats ENDE $result');
 	 */
 	function getParamDefault ($theCode, $cat)	{
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		if (!$cat)	{
 			if ($this->getFuncTablename() == 'tt_products_cat')	{
@@ -490,9 +487,9 @@ debug ($result, 'getAllChildCats ENDE $result');
 
 	// returns the delivery email addresses from the basket`s item array with the category number as index
 	function getEmail (&$itemArray) {
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$emailArray = array();
-		$emailObj = &$tablesObj->get('tt_products_emails');
+		$emailObj = $tablesObj->get('tt_products_emails');
 
 		// loop over all items in the basket indexed by page and a sorting text
 		foreach ($itemArray as $sort=>$actItemArray) {

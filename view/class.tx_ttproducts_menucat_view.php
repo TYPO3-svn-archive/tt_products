@@ -46,9 +46,9 @@ class tx_ttproducts_menucat_view extends tx_ttproducts_catlist_view_base {
 	var $htmlTagElement = 'li';	// HTML tag element
 
 	// returns the products list view
-	function &printView(
+	function printView(
 		$functablename,
-		&$templateCode,
+		$templateCode,
 		$theCode,
 		&$error_code,
 		$templateArea = 'ITEM_CATLIST_TEMPLATE',
@@ -76,11 +76,11 @@ class tx_ttproducts_menucat_view extends tx_ttproducts_catlist_view_base {
 		);
 
 		if (!count($error_code))	{
-			$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-			$categoryTableViewObj = &$tablesObj->get($functablename,TRUE);
-			$categoryTable = &$categoryTableViewObj->getModelObj();
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$categoryTableViewObj = $tablesObj->get($functablename,TRUE);
+			$categoryTable = $categoryTableViewObj->getModelObj();
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 			$content='';
 			$out='';
@@ -126,7 +126,7 @@ class tx_ttproducts_menucat_view extends tx_ttproducts_catlist_view_base {
 					if ($pageAsCategory > 0)	{
 						$pid = $row['pid'];
 					} else {
-						$pageObj = &$tablesObj->get('pages');
+						$pageObj = $tablesObj->get('pages');
 						$pid = $pageObj->getPID(
 							$this->conf['PIDlistDisplay'],
 							$this->conf['PIDlistDisplay.'],

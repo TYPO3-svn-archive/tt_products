@@ -277,7 +277,6 @@ CREATE TABLE tt_products_articles_language (
 	subtitle varchar(80) DEFAULT '' NOT NULL,
 	article_uid int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
-	note2 text NOT NULL,
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );

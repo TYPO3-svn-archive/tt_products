@@ -67,7 +67,7 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	 * @param	[type]		$priceConf: ...
 	 * @return	[type]		...
 	 */
-	function init(&$cObj, &$priceConf)	{
+	function init($cObj, &$priceConf)	{
 		$this->priceConf = &$priceConf;
 
 		if (!isset($this->priceConf['TAXincluded']))	{
@@ -242,7 +242,7 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 
 		$taxFactor = 1 + $taxpercentage / 100;
 
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		if (isset($paymentshippingObj) && is_object($paymentshippingObj))	{
 			$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();	// if set then this has a tax which will override the tax of the products
 		}

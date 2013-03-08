@@ -57,17 +57,17 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 	var $mm_table = ''; // only set if a mm table is used
 
 
-	function init(&$langObj, &$modelObj)	{
+	function init($langObj, $modelObj)	{
 		parent::init($langObj, $modelObj);
 
 		if ($modelObj->type == 'product')	{
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_view.php');
 
-			$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant_view');
+			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_view');
 		} else {
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_dummy_view.php');
 
-			$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
+			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
 		}
 		$this->variant->init($langObj, $modelObj->variant);
 	}
@@ -164,11 +164,11 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		)	{
 		global $TSFE, $TCA;
 
-		$modelObj = &$this->getModelObj();
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$modelObj = $this->getModelObj();
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 		$tableconf = $modelObj->getTableConf($theCode);
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 		if (!$this->marker)	{
 			return array();
@@ -184,7 +184,7 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		if (is_array($tableconf['functions.']) && isset($tableconf['functions.']['htmlentities']))	{
 			$htmlentitiesArray = t3lib_div::trimExplode(',', $tableconf['functions.']['htmlentities']);
 		}
-		$fieldId = TT_PRODUCTS_EXTkey.'_'.strtolower($theCode).'_id_'.$id;
+		$fieldId = TT_PRODUCTS_EXT.'_'.strtolower($theCode).'_id_'.$id;
 		$functablename = $modelObj->getFunctablename();
 
 		parent::getItemMarkerArray($row, $markerArray, $variantFieldArray, $variantMarkerArray, $tagArray, $theCode, $bHtml, $charset, $prefix, $imageRenderObj);
@@ -203,7 +203,7 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 
 		$priceNo = intval($this->config['priceNoReseller']);
 
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
 
@@ -221,9 +221,9 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		$cObjectMarkerArray = array();
 
 			// Call all getItemMarkerArray hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$this->marker])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$this->marker] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getItemMarkerArray')) {
 					$hookObj->getItemMarkerArray($this, $markerArray, $cObjectMarkerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $theCode, $id, $linkWrap);
 				}
@@ -239,7 +239,7 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 						$value = $markerArray[$markerKey];
 					}
 					$tableconf['field.'][$field.'.']['value'] = $value;
-					$fieldContent = $this->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field.'.'],TT_PRODUCTS_EXTkey);
+					$fieldContent = $this->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field.'.'],TT_PRODUCTS_EXT);
 					$cObjectMarkerArray[$markerKey] = $this->cObj->substituteMarkerArray($fieldContent,$fieldMarkerArray);
 				}
 			}

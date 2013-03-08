@@ -41,20 +41,20 @@ class tx_ttproducts_graduated_price_view {
 	public $modelObj;
 	public $langObj;
 
-	public function init(&$langObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->modelObj = &$modelObj;
+	public function init($langObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->modelObj = $modelObj;
 	}
 
 	private function getFormulaMarkerArray($row, $priceFormula, &$markerArray, $suffix='')	{
 		global $TCA;
 
 		if (isset($priceFormula) && is_array($priceFormula))	{
-			$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
-			$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+			$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
+			$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 			foreach ($priceFormula as $field => $value)	{
 				$keyMarker = '###'.$this->marker.'_'.strtoupper($field).$suffix.'###';
-				if (strpos($TCA[$this->modelObj->conftablename]['interface']['showRecordFieldList'], $field) == FALSE)	{
+				if (strpos($TCA[$this->modelObj->conftablename]['interface']['showRecordFieldList'], $field) === FALSE)	{
 					$value = '';
 				}
 				$markerArray[$keyMarker] = $value;
@@ -94,7 +94,7 @@ class tx_ttproducts_graduated_price_view {
 
 	public function &getItemSubpartArrays (&$templateCode, &$row, $fieldname, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $theCode='', $id='1')	{
 
-		$subpartmarkerObj = &t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
+		$subpartmarkerObj = t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
 		$t = array();
 		$t['listFrameWork'] = $this->langObj->cObj->getSubpart($templateCode,'###GRADPRICE_FORMULA_ITEMS###');
 		$t['itemFrameWork'] = $this->langObj->cObj->getSubpart($t['listFrameWork'],'###ITEM_FORMULA###');
@@ -122,9 +122,6 @@ class tx_ttproducts_graduated_price_view {
 		} else {
 			$subpartArray['###GRADPRICE_FORMULA_ITEMS###'] = '';
 		}
-
-//  ###GRADPRICE_PRICE_TAX###. ###GRADPRICE_PRICE_NO_TAX### ###GRADPRICE_PRICE_ONLY_TAX###
-//  ###GRADPRICE_FORMULA1_PRICE_NO_TAX###  ###GRADPRICE_FORMULA1_PRICE_TAX###
 	}
 
 

@@ -13,6 +13,7 @@ plugin.tt_products = USER
 plugin.tt_products {
   userFunc = tx_ttproducts_pi1->main
   templateFile = {$plugin.tt_products.file.templateFile}
+  defaultSetup = 1
   templateStyle = old-style
   pid_list = {$plugin.tt_products.pid_list}
   code.field = select_key
@@ -263,6 +264,8 @@ plugin.tt_products {
   whereGiftService = {$plugin.tt_products.whereGiftService}
 
   form.SEARCH.name = ShopSearchForm
+
+  memo.allow = fe_users,session
 
   # table settings
   # attention: Do not change the tt_products fields if you don't know what you do

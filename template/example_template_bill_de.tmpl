@@ -1292,7 +1292,8 @@ Exact same features as BASKET_TEMPLATE
     <td valign=top colspan=3>###GW1B### <strong>Gesamtbetrag in EURO:</strong>
       ###GW1E###</td>
     <td valign=top align=right colspan=2 nowrap>###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b>
-      <br>
+  	<br>(###VAT### ###P_CURRENCY### ###PRICE_TOTAL_ONLY_TAX###)
+    <br>
       (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)<br>
       ###GW1E###</td>
      ###MESSAGE_PAYMENT_SCRIPT###  <!-- bei Bezahlskripten das verwenden -->
@@ -1303,7 +1304,7 @@ Exact same features as BASKET_TEMPLATE
 <table width="100%"><tr>
 <td><input type="Submit" name="products_update" value="zur&uuml;ck zum Warenkorb">
 <input type="hidden" name="products_cmd" value="cardno" /></td>
-<td align="right"><input type="Submit" name="products_finalize" value="Bestellung abschlie&szlig;en!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### (auch PayPal)###GW1E###</td>
+<td align="right"><input type="Submit" name="products_finalize" value="Zahlungspflichtig bestellen" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### (auch PayPal)###GW1E###</td>
 </tr></table>
 </form>
 <br>
@@ -1670,7 +1671,7 @@ If the minimum price in basket has not been reached this subpart is displayed on
 If the basket is empty this subpart is displayed
 -->
 <br>
-###GW1B###<B>Es m�ssen mindestens Waren f�r 250 Euro gekauft werden.</B>###GW1E###
+###GW1B###<B>Es müssen mindestens Waren für 250 Euro gekauft werden.</B>###GW1E###
 <!-- ###BASKET_TEMPLATE_MINPRICE_ERROR### end -->
 
 

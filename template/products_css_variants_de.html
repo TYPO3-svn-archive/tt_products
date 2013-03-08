@@ -929,7 +929,7 @@ Exact same features as BASKET_TEMPLATE
       ###GW1B### Sie best&auml;tigen hiermit, dass Sie
       die AGB des Testshop - Online Vertriebs gelesen haben und diese akzeptieren.
       ###GW1E###
-      <input type="checkbox" name="recs[personinfo][agb]" value="###PERSON_AGB###" />
+      <input type="checkbox" name="recs[personinfo][agb]" ###PERSON_AGB### />
        ###GW1B###<!--###LINK_AGB###-->Die Allgemeinen Gesch&auml;ftsbedingungen <!--###LINK_AGB###--> erkenne ich hiermit an.###GW1E###
     </div>
     <!--<div align="center">-->
@@ -1182,7 +1182,7 @@ Exact same features as BASKET_TEMPLATE
   </div>
   <div class="PRICE_TOTAL_BASKET_PAYMENT_TEMPLATE7" style="white-space:nowrap;">
      ###GW1B###  EUR ###PRICE_TOTAL_TAX###
-
+	(###VAT### ###P_CURRENCY### ###PRICE_TOTAL_ONLY_TAX###)
      (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###) ###GW1E###
   </div>
   <div class="SUBMIT_BASKET_PAYMENT_TEMPLATE7">
@@ -1190,7 +1190,7 @@ Exact same features as BASKET_TEMPLATE
   <form method="post" action="###FORM_URL###" name="###FORM_NAME###" class="paymentForm">
   <input type="submit" name="products_update" value="zur&uuml;ck zum Warenkorb">
   <input type="hidden" name="products_cmd" value="cardno" />
-  <input type="submit" name="products_finalize" value="Bestellung abschlie&szlig;en!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### <!--(auch PayPal)-->###GW1E###
+  <input type="submit" name="products_finalize" value="Zahlungspflichtig bestellen" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### <!--(auch PayPal)-->###GW1E###
  </div>
 </div>
 ###HIDDENFIELDS###

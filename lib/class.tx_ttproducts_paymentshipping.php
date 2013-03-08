@@ -48,19 +48,16 @@ class tx_ttproducts_paymentshipping {
 	var $priceObj;	// price functions
 	var $typeArray = array('shipping','payment');
 
-	function init (&$cObj)	{
+	function init ($cObj)	{
 		global $TSFE;
 
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
-		$this->basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-// 		$this->config['TAXincluded'] = ($this->conf['TAXincluded'] ? $this->conf['TAXincluded'] : $this->pibase->conf['TAXincluded']);
-// 		$this->config['TAXpercentage'] = ($this->conf['TAXpercentage'] ? $this->conf['TAXpercentage'] : $this->pibase->conf['TAXpercentage']);
-
-		$this->priceObj = &t3lib_div::getUserObj('tx_ttproducts_field_price');	// new independant price object
+		$this->basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$this->priceObj = t3lib_div::getUserObj('tx_ttproducts_field_price');	// new independant price object
 	}
 
 
@@ -73,7 +70,7 @@ class tx_ttproducts_paymentshipping {
 	function setBasketExtras (&$basketRec) {
 		global $TSFE;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 			// shipping
 		if ($this->conf['shipping.']) {
@@ -180,7 +177,7 @@ class tx_ttproducts_paymentshipping {
 	 */
 	function getSubpartArrays (&$markerArray, &$subpartArray, &$wrappedSubpartArray, &$framework)	{
 
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$shipKeyArray = $this->basket->basketExtra['shipping'];
 
 		if (!is_array($shipKeyArray))	{
@@ -199,7 +196,7 @@ class tx_ttproducts_paymentshipping {
 			$subpartArray['###MESSAGE_SHIPPING_NE_'.$shipKey.'###'] = '';
 		}
 
-		$tagArray = &$markerObj->getAllMarkers($framework);
+		$tagArray = $markerObj->getAllMarkers($framework);
 
 		foreach($this->typeArray as $k => $type)	{
 			$marker = strtoupper($type);
@@ -301,7 +298,7 @@ class tx_ttproducts_paymentshipping {
 			$type = 0;
 		}
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$active = $this->basket->basketExtra[$pskey];
 		$activeArray = is_array($active) ? $active : array($active);
 		$confArr = $this->cleanConfArr($this->conf[$pskey.'.']);
@@ -341,7 +338,7 @@ class tx_ttproducts_paymentshipping {
 							if (is_object($itemTable))	{
 								$markerFieldArray = array();
 								$parentArray = array();
-								$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+								$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 								$fieldsArray = $markerObj->getMarkerFields(
 									$item['title'],
 									$itemTable->getTableObj()->tableFieldArray,
@@ -408,7 +405,7 @@ class tx_ttproducts_paymentshipping {
 		}
 
 		if (strstr($actTitle, '###'))	{
-			$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+			$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 			$markerArray = array();
 			$viewTagArray = array();
 			$parentArray = array();
@@ -563,10 +560,6 @@ class tx_ttproducts_paymentshipping {
 			// $actItemArray = all items array
 			foreach ($actItemArray as $k2=>$actItem) {
 				$row = &$actItem['rec'];
-/*				if ($row['shipping'])	{
-					$priceShippingTax += $this->priceObj->getPrice($row['shipping'],true,$taxpercentage,$taxIncluded,true);
-					$priceShippingNoTax += $this->priceObj->getPrice($row['shipping'],false,$taxpercentage,$taxIncluded,true);
-				}*/
 				if ($row['bulkily'])	{
 					$value = floatval($this->basket->basketExtra['shipping.']['bulkilyAddition']) * $actItem['count'];
 					$tax = floatval($this->basket->basketExtra['shipping.']['bulkilyFeeTax']);
@@ -597,7 +590,7 @@ class tx_ttproducts_paymentshipping {
 		$confArr = $this->basket->basketExtra[$pskey.'.']['price.'];
 		$confArr = ($confArr ? $confArr : $this->basket->basketExtra[$pskey.'.']['priceTax.']);
 		$taxpercentage = doubleVal($this->conf[$pskey.'.']['TAXpercentage']);
-// 		$taxFrom = $this->getReplaceTaxPercentage();
+
 		$this->priceObj->init($this->cObj, $this->conf[$pskey.'.'], 0);
 		if ($confArr) {
 			$this->getConfiguredPrice($taxpercentage, $confArr, $countTotal, $priceTotalTax, $priceTax, $priceNoTax);
@@ -611,9 +604,6 @@ class tx_ttproducts_paymentshipping {
 			}
 			$priceTax += $priceTaxAdd;
 			$priceNoTaxAdd = doubleVal($this->basket->basketExtra[$pskey.'.']['priceNoTax']);
-// 			if (isset($taxFrom) && is_double($taxFrom))	{
-// 				$taxpercentage = $taxFrom;
-// 			}
 
 			if (!$priceNoTaxAdd) {
 				$priceNoTaxAdd = $this->priceObj->getPrice($priceTaxAdd,false,$taxpercentage,true,true);
@@ -724,7 +714,7 @@ class tx_ttproducts_paymentshipping {
 	 * @param	[type]		$infoViewObj: ...
 	 * @return	[type]		...
 	 */
-	function includeHandleScript ($handleScript, &$confScript, $activity, &$bFinalize, &$pibase, &$infoViewObj)	{
+	function includeHandleScript ($handleScript, &$confScript, $activity, &$bFinalize, $pibase, $infoViewObj)	{
 		$content = '';
 		include($handleScript);
 		return $content;
@@ -846,8 +836,8 @@ class tx_ttproducts_paymentshipping {
 	public function getHandleLib ($request)	{ // getGatewayRequestExt
 
 		$rc = FALSE;
-		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$payConf = &$basketObj->basketExtra['payment.'];
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$payConf = $basketObj->basketExtra['payment.'];
 
 		if (is_array($payConf))	{
 			$handleLib = $payConf['handleLib'];

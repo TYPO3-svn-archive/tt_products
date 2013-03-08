@@ -46,8 +46,8 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	var $asterisk = '********';
 
 
-	function init (&$pibase, $functablename) {
-		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+	function init ($pibase, $functablename) {
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$formerBasket = $basketObj->recs;
 		$bIsAllowed = $basketObj->basketExtra['payment.']['accounts'];
 
@@ -163,6 +163,16 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	}
 
 	/**
+	 * Returns the label of the record, Usage in the following format:
+	 *
+	 * @param	array		$row: current record
+	 * @return	string		Label of the record
+	 */
+	public function getLabel ($row) {
+		return $row['owner_name'] . ':' . $row['ac_number'] . ':' . $row['bic'];
+	}
+
+	/**
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
 	 *
@@ -199,7 +209,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	 */
 	function checkRequired ()	{
 		$rc = '';
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 		if (t3lib_extMgm::isLoaded('static_info_tables_banks_de')) {
 

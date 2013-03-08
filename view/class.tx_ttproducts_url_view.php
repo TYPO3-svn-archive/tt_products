@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2007-2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -50,9 +50,9 @@ class tx_ttproducts_url_view {
 	 * @param	array		array urls which should be overridden with marker key as index
 	 * @return	void
 	 */
-	function init (&$pibase)	{
- 		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init ($pibase)	{
+ 		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
  		$this->conf = &$cnf->conf;
  		$this->config = &$cnf->config;
 	}
@@ -123,24 +123,36 @@ class tx_ttproducts_url_view {
 			// Add's URL-markers to the $markerArray and returns it
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
 		$pidFormUrl = ($pidNext ? $pidNext : $pidBasket);
-		if ($pidFormUrl != $TSFE->id && $bExcludeSingleVar)	{
-			$newExcludeListArray = array('tx_ttproducts_pi1[article]', 'tx_ttproducts_pi1[product]');
-			$excludeListArray = t3lib_div::trimExplode(',', $excludeList);
-			$excludeListArray = array_merge ($excludeListArray, $newExcludeListArray);
-			if (!$excludeListArray[0])	{
-				unset ($excludeListArray[0]);
-			}
-			$excludeList = implode(',', $excludeListArray);
-		}
-		$bUseBackPid = ($bUseBackPid && $pidNext != $TSFE->id);
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
-		$markerArray['###FORM_URL###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
 
+		$singleExcludeList = $this->getSingleExcludeList($excludeList);
+
+		$bUseBackPid = ($bUseBackPid && $pidNext != $TSFE->id);
+		$urlExcludeList = $excludeList;
+		if ($pidFormUrl != $TSFE->id && $bExcludeSingleVar) {
+			$urlExcludeList = $singleExcludeList;
+		}
+
+		$url = tx_div2007_alpha5::getTypoLink_URL_fh003(
+			$this->pibase->cObj,
+			$pidFormUrl,
+			$this->getLinkParams(
+				$urlExcludeList,
+				$addQueryString,
+				TRUE,
+				$bUseBackPid
+			),
+			$target,
+			$conf
+		);
+
+		$markerArray['###FORM_URL###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
 		$commandArray = array('basket', 'info', 'payment', 'finalize', 'thanks', 'memo', 'tracking', 'billing', 'delivery', 'memo', 'search', 'agb');
 
 		foreach ($commandArray as $command) {
+
 			$pid = ($this->conf['PID' . $command] ? $this->conf['PID' . $command] : $pidBasket);
-			$url = tx_div2007_alpha::getTypoLink_URL_fh002(
+
+			$url = tx_div2007_alpha5::getTypoLink_URL_fh003(
 				$this->pibase->cObj,
 				$pid,
 				$this->getLinkParams(
@@ -152,6 +164,7 @@ class tx_ttproducts_url_view {
 				$target,
 				$conf
 			);
+
 			$markerArray['###FORM_URL_' . strtoupper($command) . '###'] =
 				htmlspecialchars(
 					$url,
@@ -168,9 +181,9 @@ class tx_ttproducts_url_view {
 			}
 		}
 			// Call all addURLMarkers hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addURLMarkers'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addURLMarkers'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addURLMarkers')) {
 					$hookObj->addURLMarkers($this->pibase,$pidNext,$markerArray,$addQueryString,$excludeList,$bUseBackPid,$bExcludeSingleVar);
 				}
@@ -213,7 +226,6 @@ class tx_ttproducts_url_view {
 	function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true,$piVarSingle='product',$piVarCat='cat') {
 		global $TSFE;
 
-		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 		$queryString=array();
 		if ($bUseBackPid)	{
 			if ($bUsePrefix && !$addQueryString[$this->pibase->prefixId.'[backPID]'])	{
@@ -270,14 +282,15 @@ class tx_ttproducts_url_view {
 		}
 
 			// Call all getLinkParams hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['getLinkParams'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['getLinkParams'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getLinkParams')) {
 					$hookObj->getLinkParams($this,$queryString,$excludeList,$addQueryString,$bUsePrefix,$bUseBackPid,$piVarCat);
 				}
 			}
 		}
+
 		return $queryString;
 	}
 }

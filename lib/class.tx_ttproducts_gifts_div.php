@@ -45,7 +45,7 @@ class tx_ttproducts_gifts_div {
  * @return	array		all gift numbers for this product
  */
 	function getGiftNumbers($uid, $variant)	{
-		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$giftArray = array();
 
 		if ($basket->basketExt['gift']) {
@@ -71,7 +71,7 @@ class tx_ttproducts_gifts_div {
 	 */
 	function addGiftMarkers($markerArray, $giftnumber, $code='LISTGIFTS', $id='1')	{
 
-		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$markerArray['###GIFTNO###'] = $giftnumber;
 		$markerArray['###GIFT_PERSON_NAME###'] = $basket->basketExt['gift'][$giftnumber]['personname'];
 		$markerArray['###GIFT_PERSON_EMAIL###'] = $basket->basketExt['gift'][$giftnumber]['personemail'];
@@ -79,7 +79,7 @@ class tx_ttproducts_gifts_div {
 		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $basket->basketExt['gift'][$giftnumber]['deliveryemail'];
 		$markerArray['###GIFT_NOTE###'] = $basket->basketExt['gift'][$giftnumber]['note'];
 		//
-		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXTkey.'_'.strtolower($code).'_id_'.$id;
+		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXT.'_'.strtolower($code).'_id_'.$id;
 		// here again, because this is here in ITEM_LIST view
 		//	  $markerArray['###FIELD_QTY###'] =  '';
 
@@ -105,8 +105,8 @@ class tx_ttproducts_gifts_div {
 		global $TYPO3_DB;
 		$rc = '';
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$productObj = &$tablesObj->get('tt_products');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$productObj = $tablesObj->get('tt_products');
 		foreach ($giftBasket as $giftnumber => $rec) {
 			$amount = 0;
 			foreach ($rec['item'] as $productid => $product) {

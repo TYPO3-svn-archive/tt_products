@@ -44,7 +44,7 @@ require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php
 class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 
 	// returns the products list view
-	public function &printView($functablename, &$templateCode, $theCode, &$error_code, $templateArea = 'ITEM_CATLIST_TEMPLATE', $pageAsCategory, $templateSuffix = '') {
+	public function printView($functablename, &$templateCode, $theCode, &$error_code, $templateArea = 'ITEM_CATLIST_TEMPLATE', $pageAsCategory, $templateSuffix = '') {
 		global $TSFE, $TCA;
 
 		$t = array();
@@ -68,9 +68,9 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 		$content='';
 		$out='';
 		$bFinished = false;
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$catTableObj = &$tablesObj->get($functablename);
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$catTableObj = $tablesObj->get($functablename);
 
 		if (count($error_code)) {
 			// nothing
@@ -204,10 +204,10 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 		$css = 'class="w'.$iCount.'"';
 		$css = ($actCategory == $currentCat ? 'class="act"' : $css);
 		// $pid = $row['pid'];
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$pageObj = &$tablesObj->get('pages');
-		$categoryTableViewObj = &$tablesObj->get($functablename,TRUE);
-		$categoryTable = &$categoryTableViewObj->getModelObj();
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$pageObj = $tablesObj->get('pages');
+		$categoryTableViewObj = $tablesObj->get($functablename,TRUE);
+		$categoryTable = $categoryTableViewObj->getModelObj();
 		$pid = $pageObj->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $row);
 		$addQueryString = array($categoryTableViewObj->getPivar() => $actCategory);
 		$linkUrl = $this->pibase->pi_linkTP_keepPIvars_url($addQueryString,1,1,$pid);

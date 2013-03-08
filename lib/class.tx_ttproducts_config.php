@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2007 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
@@ -82,30 +82,30 @@ class tx_ttproducts_config {
 		return $this->conf['table.'][$functablename];
 	}
 
-	public function &getSpecialConf ($type, $tablename='', $theCode='')	{
+	public function &getSpecialConf ($type, $tablename='', $theCode='') {
 		$specialConf = array();
 
-		if (is_array($this->conf[$type.'.']))	{
+		if (is_array($this->conf[$type . '.'])) {
 
-			if ($tablename != '' && is_array($this->conf[$type.'.'][$tablename.'.']))	{
-				if (is_array($this->conf[$type.'.'][$tablename.'.']['ALL.']))	{
-					$specialConf = $this->conf[$type.'.'][$tablename.'.']['ALL.'];
+			if ($tablename != '' && is_array($this->conf[$type . '.'][$tablename . '.'])) {
+				if (is_array($this->conf[$type . '.'][$tablename . '.']['ALL.'])) {
+					$specialConf = $this->conf[$type . '.'][$tablename . '.']['ALL.'];
 				}
 				if ($theCode &&
-					is_array($this->conf[$type.'.'][$tablename.'.'][$theCode.'.']))	{
-					$tempConf = $this->conf[$type.'.'][$tablename.'.'][$theCode.'.'];
-					$specialConf = array_merge($specialConf, $tempConf);
+					is_array($this->conf[$type . '.'][$tablename . '.'][$theCode . '.'])) {
+					$tempConf = $this->conf[$type . '.'][$tablename . '.'][$theCode . '.'];
+					$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
 				}
-				if ($specialConf['orderBy'] == '{$plugin.'.TT_PRODUCTS_EXTkey.'.orderBy}')	{
+				if ($specialConf['orderBy'] == '{$plugin.'.TT_PRODUCTS_EXT.'.orderBy}') {
 					$specialConf['orderBy'] = '';
 				}
 			} else {
-				if (is_array($this->conf[$type.'.']['ALL.']))	{
-					$specialConf = $this->conf[$type.'.']['ALL.'];
+				if (is_array($this->conf[$type . '.']['ALL.'])) {
+					$specialConf = $this->conf[$type . '.']['ALL.'];
 				}
 				if ($theCode &&
-					is_array($this->conf[$type.'.'][$theCode.'.']))	{
-					$tempConf = $this->conf[$type.'.'][$theCode.'.'];
+					is_array($this->conf[$type . '.'][$theCode . '.'])) {
+					$tempConf = $this->conf[$type . '.'][$theCode . '.'];
 					$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
 				}
 			}
@@ -185,6 +185,27 @@ class tx_ttproducts_config {
 		return $retArray;
 	}
 
+	public function getColumnFields ($tableConf) {
+		$retArray = array();
+
+		$generateArray = array('generateColumn');
+		foreach ($generateArray as $k => $generate) {
+			if (is_array($tableConf) && is_array($tableConf[$generate . '.'])) {
+				$genPartArray = $tableConf[$generate . '.'];
+				if ($genPartArray['type'] == 'tablefields') {
+					$fieldArray = $genPartArray['field.'];
+
+					if (is_array($fieldArray)) {
+						foreach ($fieldArray as $field => $value) {
+							$retArray[$field] = $value;
+						}
+					}
+				}
+			}
+		}
+		return $retArray;
+	}
+
 	public function getAJAXConf ()	{
 		$rc = array();
 		if (isset($this->conf['ajax.']) && is_array($this->conf['ajax.']['conf.']))	{
@@ -207,22 +228,6 @@ class tx_ttproducts_config {
 	public function mergeAJAX ($ajaxconf)	{
 		global $TYPO3_DB;
 
-//		if (is_array($ajaxconf) && isset($this->conf['ajax.']) && is_array($this->conf['ajax.']['conf.']))	{
-//			foreach ($ajaxconf as $k => $v){
-//				$newVal = $this->conf['ajax.']['conf.'][$k];
-//				if (isset($newVal))	{
-//					if (is_array($newVal))	{
-//						if ($k == 'TSFE.')	{
-//							$TSFE->config['config'] = array_merge ($TSFE->config['config'], $newVal);
-//						} else {
-//							$this->conf[$k] = array_merge($this->conf[$k], $newVal);
-//						}
-//					} else {
-//						$this->conf[$k] = $newVal;
-//					}
-//				}
-//			}
-//		}
 	}
 }
 

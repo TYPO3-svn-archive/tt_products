@@ -56,9 +56,7 @@ class tx_ttproducts_ajax {
 		global $TSFE;
 
 		include_once(PATH_BE_taxajax.'class.tx_taxajax.php');
-		$this->taxajax = &t3lib_div::makeInstance('tx_taxajax');
-/*		$charset = $TSFE->renderCharset;
-		$this->taxajax->setCharEncoding($charset);*/
+		$this->taxajax = t3lib_div::makeInstance('tx_taxajax');
 		$this->taxajax->setCharEncoding('utf-8');
 	}
 
@@ -125,7 +123,7 @@ class tx_ttproducts_ajax {
 		} else {
 			$nextDelimiter = '?';
 		}
-		$reqURI .= $nextDelimiter.'no_cache=1&eID='.TT_PRODUCTS_EXTkey.$param;
+		$reqURI .= $nextDelimiter.'no_cache=1&eID='.TT_PRODUCTS_EXT.$param;
 		// $reqURI = htmlspecialchars ($reqURI,ENT_QUOTES,$charset);  ==> funktioniert mit einigen Browsern nicht!
 		// $reqURI = tx_ttproducts_javascript::jsspecialchars($reqURI);
 		$this->taxajax->setRequestURI($reqURI);

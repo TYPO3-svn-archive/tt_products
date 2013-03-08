@@ -73,7 +73,7 @@ class tx_ttproducts_page_view extends tx_ttproducts_category_base_view {
 		global $TSFE;
 
 		$row = $this->modelObj->get($pid);
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 			// Get image
 		$imageObj->getItemMarkerArrayEnhanced ($this->modelObj->getFuncTablename(), $row, $this->marker, $markerArray, $pid, $imageNum, $imageRenderObj, $viewCatTagArray, $theCode, $id, $prefix, $linkWrap);

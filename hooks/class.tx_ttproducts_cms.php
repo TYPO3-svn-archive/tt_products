@@ -42,7 +42,7 @@
 require_once(PATH_BE_div2007.'hooks/class.tx_div2007_hooks_cms.php');
 
 class tx_ttproducts_cms extends tx_div2007_hooks_cms {
-	public $extKey=TT_PRODUCTS_EXTkey;
+	public $extKey=TT_PRODUCTS_EXT;
 
 }
 

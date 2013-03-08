@@ -54,25 +54,25 @@ class tx_ttproducts_csv {
 	 * @param	[type]		$accountUid: ...
 	 * @return	[type]		...
 	 */
-	function init (&$pibase, &$itemArray, &$calculatedArray, $accountUid)	{
+	function init ($pibase, $itemArray, $calculatedArray, $accountUid)	{
 		global $TYPO3_DB;
- 		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+ 		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
- 		$this->conf = &$cnf->conf;
- 		$this->calculatedArray = &$calculatedArray;
- 		$this->itemArray = &$itemArray;
+ 		$this->conf = $cnf->conf;
+ 		$this->calculatedArray = $calculatedArray;
+ 		$this->itemArray = $itemArray;
  		$this->accountUid = $accountUid;
 	} // init
 
-	function create ($functablename, &$address, $csvorderuid, &$csvfilepath, &$error_message) {
+	function create ($functablename, $address, $csvorderuid, &$csvfilepath, &$error_message) {
 
-		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$orderObj = &$tablesObj->get('sys_products_orders');
-		$accountObj = &$tablesObj->get('sys_products_accounts');
-		$itemTable = &$tablesObj->get($functablename, FALSE);
+		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$orderObj = $tablesObj->get('sys_products_orders');
+		$accountObj = $tablesObj->get('sys_products_accounts');
+		$itemTable = $tablesObj->get($functablename, FALSE);
 
 		$csvfilepath = trim($csvfilepath);
 		if ($csvfilepath{strlen($csvfilepath)-1} != '/') {
@@ -184,7 +184,7 @@ class tx_ttproducts_csv {
 
 			fclose($csvfile);
 		} else {
-			$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+			$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 			$message = tx_div2007_alpha5::getLL_fh002($langObj,'no_csv_creation');
 			$messageArr =  explode('|', $message);
 			$error_message=$messageArr[0] . $csvfilepath . $messageArr[1];

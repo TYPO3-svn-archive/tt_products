@@ -73,16 +73,16 @@ class tx_ttproducts_control {
 	 * @param	array		out: $$error_code: contains error indices
 	 * @return	void
 	 */
-	function init (&$pibase, $funcTablename, &$templateCode, $bUseArtcles, &$error_code)  {
+	function init ($pibase, $funcTablename, $templateCode, $bUseArtcles, &$error_code)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$this->pibase = &$pibase;
-		$this->cObj = &$pibase->cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->pibase = $pibase;
+		$this->cObj = $pibase->cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 		$this->templateCode = &$templateCode;
-		$this->basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$this->basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$this->funcTablename = $funcTablename;
 		$this->bUseArtcles = $bUseArtcles;
 		$this->error_code = &$error_code;
@@ -105,8 +105,8 @@ class tx_ttproducts_control {
 	protected function getOrderUid ()	{
 		$rc = FALSE;
 		if (count($this->basket->itemArray))	{
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-			$orderObj = &$tablesObj->get('sys_products_orders');
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$orderObj = $tablesObj->get('sys_products_orders');
 			$orderUid = $orderObj->getUid();
 			if (!$orderUid)	{
 				$orderUid = $orderObj->getBlankUid();
@@ -192,15 +192,15 @@ class tx_ttproducts_control {
 		global $TSFE;
 
 		$content = '';
-		$basketView = &t3lib_div::getUserObj('&tx_ttproducts_basket_view');
+		$basketView = t3lib_div::getUserObj('&tx_ttproducts_basket_view');
 		$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
 		$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$infoViewObj = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$infoViewObj = t3lib_div::getUserObj('&tx_ttproducts_info_view');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		if ($handleScript)	{
-			$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+			$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 			$content = $paymentshippingObj->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $this->conf['paymentActivity'], $bFinalize, $this->pibase, $infoViewObj);
 		} else if (strpos($handleLib,'transactor') !== FALSE && t3lib_extMgm::isLoaded($handleLib))	{
 				// Payment Transactor
@@ -212,11 +212,11 @@ class tx_ttproducts_control {
 			$linkParams = $this->urlObj->getLinkParams($excludeList,$addQueryString,TRUE);
 
 			$markerArray = array();
-			tx_transactor_api::init($this->pibase, $this->cObj, $this->conf);
+			tx_transactor_api::init($langObj, $this->cObj, $this->conf);
 			$content = tx_transactor_api::includeHandleLib(
 				$handleLib,
 				$this->basket->basketExtra['payment.']['handleLib.'],
-				TT_PRODUCTS_EXTkey,
+				TT_PRODUCTS_EXT,
 				$this->basket->getItemArray(),
 				$calculatedArray,
 				$this->basket->recs['delivery']['note'],
@@ -229,6 +229,7 @@ class tx_ttproducts_control {
 				$orderUid,
 				$cardRow,
 				$bFinalize,
+				$bFinalVerify,
 				$markerArray,
 				$templateFilename,
 				$localTemplateCode,
@@ -260,7 +261,7 @@ class tx_ttproducts_control {
 
 			if (version_compare($paymentlibVersion, '0.2.1', '>=') && version_compare($paymentlibVersion, '0.4.0', '<') && version_compare($phpVersion, '5.0.0', '>='))	{
 				if ($gatewayExtName != '' && t3lib_extMgm::isLoaded($gatewayExtName))	{
-					$infoViewObj = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
+					$infoViewObj = t3lib_div::getUserObj('&tx_ttproducts_info_view');
 
 					// Payment Library
 					require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentlib.php');
@@ -304,9 +305,9 @@ class tx_ttproducts_control {
 		$empty = '';
 		$activityArray = array();
 		$bBasketEmpty = FALSE;
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$basketView = &t3lib_div::getUserObj('&tx_ttproducts_basket_view');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$basketView = t3lib_div::getUserObj('&tx_ttproducts_basket_view');
 		$basketView->init (
 			$this->pibase,
 			$this->urlArray,
@@ -333,7 +334,7 @@ class tx_ttproducts_control {
 		);
 		$update = t3lib_div::_POST('products_update');
 		$payment = t3lib_div::_POST('products_payment');
-		$gpVars = t3lib_div::_GP(TT_PRODUCTS_EXTkey);
+		$gpVars = t3lib_div::_GP(TT_PRODUCTS_EXT);
 
 		if (!$update && !$payment && isset($gpVars) && is_array($gpVars) && isset($gpVars['activity']) && is_array($gpVars['activity']))	{
 			$changedActivity = key($gpVars['activity']);
@@ -398,7 +399,7 @@ class tx_ttproducts_control {
 			$this->activityArray = $codeActivityArray;
 		}
 
-		$infoViewObj = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
+		$infoViewObj = t3lib_div::getUserObj('&tx_ttproducts_info_view');
 		$infoViewObj->init(
 			$this->pibase,
 			$this->basket->recs,
@@ -420,15 +421,15 @@ class tx_ttproducts_control {
 
 				if ($this->activityArray['products_info'] || $this->activityArray['products_payment'] || $this->activityArray['products_customized_payment'] || $this->activityArray['products_verify'] || $this->activityArray['products_finalize'])	{
 					// get credit card info
-					$cardViewObj = &$tablesObj->get('sys_products_cards',TRUE);
-					$cardObj = &$cardViewObj->getModelObj();
+					$cardViewObj = $tablesObj->get('sys_products_cards',TRUE);
+					$cardObj = $cardViewObj->getModelObj();
 					$cardUid = $cardObj->getUid();
 					$cardRow = $cardObj->get($cardUid);
 					$cardViewObj->getItemMarkerArray($mainMarkerArray);
 
 					// get bank account info
-					$accountViewObj = &$tablesObj->get('sys_products_accounts',TRUE);
-					$accountObj = &$accountViewObj->getModelObj();
+					$accountViewObj = $tablesObj->get('sys_products_accounts',TRUE);
+					$accountObj = $accountViewObj->getModelObj();
 					$accountViewObj->getItemMarkerArray($mainMarkerArray);
 				}
 
@@ -490,7 +491,7 @@ class tx_ttproducts_control {
 								$pidagb = intval($this->conf['PIDagb']);
 								$checkRequired = $infoViewObj->checkRequired();
 								$checkAllowed = $infoViewObj->checkAllowed();
-								$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+								$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 								if ($paymentshippingObj->useCreditcard ())	{
 									$cardRequired = $cardObj->checkRequired();
 								}
@@ -509,7 +510,7 @@ class tx_ttproducts_control {
 										$referenceId = tx_transactor_api::getReferenceUid(
 											$handleLib,
 											$this->basket->basketExtra['payment.']['handleLib.'],
-											TT_PRODUCTS_EXTkey,
+											TT_PRODUCTS_EXT,
 											$orderUid
 										);
 
@@ -520,7 +521,7 @@ class tx_ttproducts_control {
 											$referenceId,
 											$this->basket->basketExtra['payment.']['handleLib'],
 											$this->basket->basketExtra['payment.']['handleLib.'],
-											TT_PRODUCTS_EXTkey,
+											TT_PRODUCTS_EXT,
 											$this->basket->getCalculatedArray(),
 											$this->conf['paymentActivity'],
 											$pidArray,
@@ -597,10 +598,12 @@ class tx_ttproducts_control {
 												$addParams = $this->urlObj->getLinkParams('',$srfeuserParams,TRUE);
 												$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($editPID,'',$addParams);
 											}
-										} else {
+										}
+
+										if (!$label) {
 											$tmpArray = t3lib_div::trimExplode('|', tx_div2007_alpha5::getLL_fh002($langObj, 'missing'));
 											$label = tx_div2007_alpha5::getLL_fh002($langObj, 'missing_' . $checkRequired);
-											if ($label)	{
+											if ($label) {
 												$label = $tmpArray[0] . ' ' . $label . ' ' . $tmpArray[1];
 											} else {
 												$label = 'field: '.$checkRequired;
@@ -637,7 +640,7 @@ class tx_ttproducts_control {
 								}
 							break;
 							case 'products_finalize':
-								$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+								$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 
 								$handleLib = $paymentshippingObj->getHandleLib('request');
 								if ($handleLib == '')	{
@@ -719,7 +722,7 @@ class tx_ttproducts_control {
 					if ($checkRequired == '' && $checkAllowed == '')	{
 						tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase);	// TODO
 						$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
-						$orderObj = &$tablesObj->get('sys_products_orders');
+						$orderObj = $tablesObj->get('sys_products_orders');
 						$orderUid = $this->getOrderUid();
 
 						if (trim($this->conf['paymentActivity']) == 'finalize')	{

@@ -39,15 +39,23 @@
  *
  */
 
-require_once(PATH_BE_div2007.'hooks/class.tx_div2007_hooks_cms.php');
 
 class tx_ttproducts_hooks_fe {
 
-	public function resetAdresses (&$params, &$pObj)	{
+	public function login_confirmed ($params, $pObj) {
+
+		$conf = $GLOBALS['TSFE']->tmpl->setup['plugin.'][TT_PRODUCTS_EXT . '.'];
+
+		tx_ttproducts_control_memo::copySession2Feuser($params, $pObj, $conf);
+		$this->resetAdresses($params, $pObj);
+	}
+
+
+	public function resetAdresses ($params, $pObj) {
 		global $TSFE;
 
 		$recs = $TSFE->fe_user->getKey('ses','recs');
-		if (isset($recs) && is_array($recs))	{
+		if (isset($recs) && is_array($recs)) {
 			unset($recs['personinfo']);
 			unset($recs['delivery']);
 			$TSFE->fe_user->setKey('ses','recs',$recs);

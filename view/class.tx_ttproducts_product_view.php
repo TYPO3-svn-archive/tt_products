@@ -84,7 +84,7 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 			$bGiftService
 		);
 
-		$modelObj = &$this->getModelObj();
+		$modelObj = $this->getModelObj();
 		$datafieldViewObj = $this->getFieldObj('datasheet');
 		$datafieldViewObj->getItemSubpartArrays(
 				$templateCode,
@@ -130,8 +130,8 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$modelObj = &$this->getModelObj ();
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$modelObj = $this->getModelObj ();
 
 		parent::getItemMarkerArray($item, $markerArray, $catTitle, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $theCode, $id, '', $linkWrap, $bHtml, $charset);
 		$datafieldViewObj = $this->getFieldObj('datasheet');
@@ -151,10 +151,10 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 
 		if ($theCode == 'SINGLE')	{
 			if ($row['note_uid']) {
-				$pageObj = &$tablesObj->get('pages');
+				$pageObj = $tablesObj->get('pages');
 
 				$notePageArray = $pageObj->getNotes ($row['uid']);
-				$confObj = &t3lib_div::getUserObj('&tx_ttproducts_config');
+				$confObj = t3lib_div::getUserObj('&tx_ttproducts_config');
 				$contentConf = $confObj->getTableConf('tt_content', $code);
 
 				foreach ($notePageArray as $k => $pid)	{

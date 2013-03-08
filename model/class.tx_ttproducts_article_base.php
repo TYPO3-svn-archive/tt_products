@@ -61,21 +61,21 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	public function init (&$cObj, $functablename)	{
+	public function init ($cObj, $functablename)	{
 		parent::init($cObj, $functablename);
 		$tablename = $this->getTablename();
 		$useArticles = $this->conf['useArticles'];
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->tabledesc = $cnf->getTableDesc($functablename);
 		if ($this->type == 'product')	{
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant.php');
 
-			$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant');
+			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant');
 			$this->variant->init($this, $tablename, $useArticles);
 		} else {
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant_dummy.php');
 
-			$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant_dummy');
+			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy');
 		}
 
 			// image
@@ -94,7 +94,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	function reduceInStock($uid, $count)	{
 		global $TYPO3_DB;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$instockField = $cnf->getTableDesc($this->getTableObj()->name, 'inStock');
 		$instockField = ($instockField ? $instockField : 'inStock');
 
@@ -204,7 +204,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	function getWhere ($where, $theCode = '', $orderBy = '') {
 		global $TYPO3_DB;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableconf = $cnf->getTableConf($this->getFuncTablename(), $theCode);
 		$rc = array();
 
@@ -240,7 +240,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 
 	function getNeededUrlParams($conftablename, $theCode)	{
 		$rc = '';
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableconf = $cnf->getTableConf($conftablename, $theCode);
 		if (is_array($tableconf) && $tableconf['urlparams'])	{
 			$rc = $tableconf['urlparams'];

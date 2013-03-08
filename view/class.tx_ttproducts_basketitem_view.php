@@ -40,7 +40,6 @@ class tx_ttproducts_basketitem_view {
 	var $tt_products_cat; // element of class tx_table_db
 	var $conf;
 	var $config;
-	var $price;
 	var $basketExt; 	// basket
 	var $basketVar = 'ttp_basket';
 	var $pibase; // reference to object of pibase
@@ -54,12 +53,11 @@ class tx_ttproducts_basketitem_view {
 	 * @param	[type]		$basketExt: ...
 	 * @return	void
 	 */
-	function init(&$pibase, &$basketExt)	{
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($pibase, &$basketExt)	{
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
  		$this->conf = &$cnf->conf;
  		$this->config = &$cnf->config;
-		$this->price = &$price;
 		$this->basketExt = &$basketExt;
 	} // init
 
@@ -93,9 +91,9 @@ class tx_ttproducts_basketitem_view {
 	)	{
 		global $TCA, $TSFE;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
-		$viewTable = &$tablesObj->get($functablename);
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
+		$viewTable = $tablesObj->get($functablename);
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
 		$extArray = $row['ext'];
@@ -114,7 +112,7 @@ class tx_ttproducts_basketitem_view {
 		$markerArray['###FIELD_QTY###'] = $quantity ? $quantity : '';
 		$markerArray['###FIELD_ID###'] = $jsTableName.'-'.strtolower($theCode).'-id-'.$id;
 
-		$priceFieldObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$priceFieldObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 		$fieldIdTax = $id.'tax';
 		$markerArray['###PRICE_TAX###'] = $priceFieldObj->printPrice($priceFieldObj->priceFormat($item['priceTax'], $taxInclExcl));
 		$markerArray['###PRICE_NO_TAX###'] = $priceFieldObj->printPrice($priceFieldObj->priceFormat($item['priceNoTax'], $taxInclExcl));

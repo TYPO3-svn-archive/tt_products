@@ -56,7 +56,7 @@ class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_
 
 
 	public function &getItemSubpartArrays (
-		&$templateCode,
+		$templateCode,
 		$markerKey,
 		$functablename,
 		&$row,
@@ -94,7 +94,7 @@ class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_
 	 */
 	function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $imageRenderObj='')	{
 
-		$priceTablesViewObj = &t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
+		$priceTablesViewObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
 		$priceTablesViewObj->getItemMarkerArray ($row, $markerArray, $tagArray);
 	}
 }

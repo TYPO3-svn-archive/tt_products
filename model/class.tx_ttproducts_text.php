@@ -52,13 +52,13 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init (&$cObj, $functablename='tt_products_texts')  {
+	function init ($cObj, $functablename='tt_products_texts')  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($cObj, $functablename);
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableconf = $cnf->getTableConf($functablename,$theCode);
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 
 		$tablename = $cnf->getTableName($functablename);
 		$tableObj->setTCAFieldArray($tablename, 'texts');
@@ -109,18 +109,10 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 			$tags = implode(',',$tagMarkerArray);
 			$tagWhere = ' AND marker IN ('.$tags.')';
 		}
-		$where = 'parentid = '.intval($uid).' AND parenttable='.$TYPO3_DB->fullQuoteStr($parenttable, $this->getTableObj()->name).$tagWhere.$this->getTableObj()->enableFields();
+		$where_clause = 'parentid = '.intval($uid).' AND parenttable='.$TYPO3_DB->fullQuoteStr($parenttable, $this->getTableObj()->name).$tagWhere.$this->getTableObj()->enableFields();
 
 		$rcArray = $this->get('', '', FALSE, $where_clause);
 
-/*
-
-		$res = $this->getTableObj()->exec_SELECTquery('*', $where);
-
-
-		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-			$rcArray[] = $row;
-		}*/
 		return $rcArray;
 	}
 }

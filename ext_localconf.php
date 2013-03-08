@@ -7,16 +7,20 @@ if (!defined ('TT_PRODUCTS_EXTkey')) {
 	define('TT_PRODUCTS_EXTkey',$_EXTKEY);
 }
 
+if (!defined ('TT_PRODUCTS_EXT')) {
+	define('TT_PRODUCTS_EXT', $_EXTKEY);
+}
+
 if (!defined ('PATH_BE_ttproducts')) {
-	define('PATH_BE_ttproducts', t3lib_extMgm::extPath(TT_PRODUCTS_EXTkey));
+	define('PATH_BE_ttproducts', t3lib_extMgm::extPath(TT_PRODUCTS_EXT));
 }
 
 if (!defined ('PATH_BE_ttproducts_rel')) {
-	define('PATH_BE_ttproducts_rel', t3lib_extMgm::extRelPath(TT_PRODUCTS_EXTkey));
+	define('PATH_BE_ttproducts_rel', t3lib_extMgm::extRelPath(TT_PRODUCTS_EXT));
 }
 
 if (!defined ('PATH_FE_ttproducts_rel')) {
-	define('PATH_FE_ttproducts_rel', t3lib_extMgm::siteRelPath(TT_PRODUCTS_EXTkey));
+	define('PATH_FE_ttproducts_rel', t3lib_extMgm::siteRelPath(TT_PRODUCTS_EXT));
 }
 
 if (!defined ('PATH_ttproducts_icon_table_rel')) {
@@ -75,31 +79,31 @@ if (t3lib_extMgm::isLoaded(TAXAJAX_EXTkey)) {
 	if (!defined ('PATH_BE_taxajax')) {
 		define('PATH_BE_taxajax', t3lib_extMgm::extPath(TAXAJAX_EXTkey));
 	}
-	$GLOBALS['TYPO3_CONF_VARS'] ['FE']['eID_include'][TT_PRODUCTS_EXTkey] =  'EXT:'.TT_PRODUCTS_EXTkey.'/eid/class.tx_ttproducts_eid.php' ;
+	$GLOBALS['TYPO3_CONF_VARS'] ['FE']['eID_include'][TT_PRODUCTS_EXT] =  'EXT:'.TT_PRODUCTS_EXT.'/eid/class.tx_ttproducts_eid.php' ;
 }
 
 t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products=1');
 t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products_cat=1');
 t3lib_extMgm::addUserTSConfig('options.saveDocNew.tt_products_articles=1');
 
-if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]))	{
-	$tmpArray = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey];
+if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]))	{
+	$tmpArray = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT];
 } else {
 	unset($tmpArray);
 }
 
 if (isset($_EXTCONF) && is_array($_EXTCONF))	{
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey] = $_EXTCONF;
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT] = $_EXTCONF;
 
 	if (isset($tmpArray) && is_array($tmpArray))	{
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey] = array_merge($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey], $tmpArray);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT] = array_merge($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT], $tmpArray);
 	}
 } else if (!isset($tmpArray)) {
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey] = array();
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT] = array();
 }
 
-if (!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'])) {
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms'] = '1';
+if (!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['useFlexforms'])) {
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['useFlexforms'] = '1';
 }
 
 
@@ -184,25 +188,23 @@ if (!defined($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTabl
 }
 
 if (isset($_EXTCONF['where.']) && is_array($_EXTCONF['where.']))	{
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['where.'] = $_EXTCONF['where.'];
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['where.'] = $_EXTCONF['where.'];
 }
 
 if (
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['useFlexforms']
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['useFlexforms']
 )	{
 	// replace the output of the former CODE field with the flexform
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][5][] = 'EXT:'.TT_PRODUCTS_EXTkey.'/hooks/class.tx_ttproducts_cms.php:&tx_ttproducts_cms->pmDrawItem';
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][5][] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_cms.php:&tx_ttproducts_cms->pmDrawItem';
 }
 
 
 if (TYPO3_MODE=='FE')	{ // hooks for FE extensions
 
-	if (t3lib_extMgm::isLoaded('felogin')) {
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['login_confirmed'][TT_PRODUCTS_EXTkey] = 'EXT:'.TT_PRODUCTS_EXTkey.'/hooks/class.tx_ttproducts_hooks_fe.php:&tx_ttproducts_hooks_fe->resetAdresses';
-	}
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['login_confirmed'][TT_PRODUCTS_EXT] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_fe.php:&tx_ttproducts_hooks_fe->login_confirmed';
 
 	// add the table enhancements to the FE
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['extendingTCA'][] = TT_PRODUCTS_EXTkey;
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['extendingTCA'][] = TT_PRODUCTS_EXT;
 }
 
   // Extending TypoScript from static template uid=43 to set up userdefined tag:
@@ -250,8 +252,8 @@ if ($typoVersion < '4006000') {
 } else {
 	// add missing setup for the tt_content "list_type = 5" which is used by tt_products
 	$addLine = 'tt_content.list.20.5 = < plugin.tt_products';
-	t3lib_extMgm::addTypoScript(TT_PRODUCTS_EXTkey, 'setup', '
-	# Setting ' . TT_PRODUCTS_EXTkey . ' plugin TypoScript
+	t3lib_extMgm::addTypoScript(TT_PRODUCTS_EXT, 'setup', '
+	# Setting ' . TT_PRODUCTS_EXT . ' plugin TypoScript
 	' . $addLine . '
 	', 43);
 }

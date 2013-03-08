@@ -42,7 +42,7 @@
 
 
 interface tx_ttproducts_variant_int {
-	public function init(&$itemTable, $tablename, $useArticles);
+	public function init($itemTable, $tablename, $useArticles);
 	public function modifyRowFromVariant (&$row, $variant);
 	public function getVariantFromRow (&$row);
 	public function getVariantFromRawRow (&$row);

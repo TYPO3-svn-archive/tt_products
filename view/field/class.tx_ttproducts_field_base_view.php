@@ -51,10 +51,10 @@ abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view
 	var $langObj;
 
 
-	public function init(&$langObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->modelObj = &$modelObj;
-		$this->cObj = &$modelObj->cObj;
+	public function init($langObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->modelObj = $modelObj;
+		$this->cObj = $modelObj->cObj;
 		$this->conf = &$modelObj->conf;
 		$this->config = &$modelObj->config;
 
@@ -67,7 +67,7 @@ abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view
 	}
 
 
-	public function &getModelObj ()	{
+	public function getModelObj ()	{
 		return $this->modelObj;
 	}
 
@@ -121,7 +121,7 @@ abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view
 	)	{
 		$result = FALSE;
 		$newContent = '';
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$upperField = strtoupper($fieldname);
 		$templateAreaList = $markerKey . '_' . $upperField . '_LIST';
 

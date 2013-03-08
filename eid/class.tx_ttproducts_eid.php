@@ -149,7 +149,7 @@ $TT->pull();
 // ******************************************************
 $TSFE->getConfigArray();
 
-$conf = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXTkey.'.'];
+$conf = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXT.'.'];
 $config = array();
 $config['LLkey'] = '';
 
@@ -160,10 +160,10 @@ require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');
 
 
 // Make instance:
-$ajax = &t3lib_div::makeInstance('tx_ttproducts_ajax');
+$ajax = t3lib_div::makeInstance('tx_ttproducts_ajax');
 $ajax->init();
 
-$SOBE = &t3lib_div::makeInstance('tx_ttproducts_db');
+$SOBE = t3lib_div::makeInstance('tx_ttproducts_db');
 $SOBE->init($conf, $config, $ajax);
 if($_POST['xajax']){
 	global $trans;

@@ -52,11 +52,11 @@ class tx_ttproducts_bank_de extends tx_ttproducts_table_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init (&$cObj, $functablename)  {
+	function init ($cObj, $functablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($cObj, $functablename);
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$tableObj->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 'starttime'=>'starttime', 'endtime'=>'endtime'));
 

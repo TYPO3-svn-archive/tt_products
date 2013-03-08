@@ -44,9 +44,9 @@ class tx_ttproducts_javascript_marker {
 	var $marker = 'JAVASCRIPT';
 
 
-	function init(&$pibase) {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($pibase) {
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
@@ -70,8 +70,8 @@ class tx_ttproducts_javascript_marker {
 
 		if (is_array($this->conf['javaScript.']))	{
 
-			$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
-	
+			$javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
+
 			$jsItemMarkerArray = array();
 			foreach ($itemMarkerArray as $marker => $value)	{
 				$jsItemMarkerArray[$marker] = $javaScriptObj->jsspecialchars($value);

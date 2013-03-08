@@ -49,7 +49,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 	 * @param	[type]		$modelObj: ...
 	 * @return	[type]		...
 	 */
-	function init(&$langObj, &$modelObj)	{
+	function init($langObj, $modelObj)	{
 		parent::init($langObj, $modelObj);
 
 		if ($this->conf['noImageAvailable'] == '{$plugin.tt_products.file.noImageAvailable}')	{
@@ -65,7 +65,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 
 
 	/**
-	 * deprecated +++
+	 * deprecated
 	 * This function must be replaced by getItemMarkerArray and getMediaMarkerArray
 	 *
 	 * Template marker substitution
@@ -94,9 +94,9 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 
 		$imageRow = $row;
 		$bImages = false;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableConf = $cnf->getTableConf($functablename, $theCode);
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 			// Get image
 		$theImgDAM = array();
@@ -240,7 +240,6 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 		reset ($theImgCode);
 		$actImgCode = current($theImgCode);
 		$markerArray['###'.$marker.'_IMAGE###'] = $actImgCode ? $actImgCode : ''; // for compatibility only
-// +++ $markerKey = $this->marker.'_'.strtoupper($field).'_ID';
 
 		$c = 1;
 		$countArray = array();

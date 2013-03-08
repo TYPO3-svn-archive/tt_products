@@ -50,9 +50,9 @@ class tx_ttproducts_subpartmarker {
 	 * @param	array		array urls which should be overridden with marker key as index
 	 * @return	void
 	 */
-	function init(&$cObj)	{
- 		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($cObj)	{
+ 		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
  		$this->conf = &$cnf->conf;
 	}
@@ -90,6 +90,7 @@ class tx_ttproducts_subpartmarker {
 		}
 		return $rc;
 	} // getTemplate
+
 
 }
 

@@ -58,7 +58,7 @@ require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_price_vie
 
 
 class tx_ttproducts_db {
-	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
+	var $extKey = TT_PRODUCTS_EXT;	// The extension key.
 	var $conf;				// configuration from template
 	var $config;
 	var $ajax;
@@ -73,35 +73,39 @@ class tx_ttproducts_db {
 	 * @param	object	$ajax: tx_ttproducts_ajax
 	 * @return	void
 	 */
-	public function init (&$conf, &$config, &$ajax, &$pObj, &$error_code) {
+	public function init (&$conf, &$config, $ajax, $pObj, &$error_code) {
 		$this->conf = &$conf;
 		$this->ajax = &$ajax;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		if (is_object($pObj)) {
+			$this->cObj = $pObj->cObj;
+		} else {
+			$this->cObj = t3lib_div::makeInstance('tslib_cObj');	// Local cObj.
+			$this->cObj->start(array());
+		}
+
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$cnf->init(
 			$conf,
 			$config
 		);
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$tablesObj->init($this);
 
 		$dblangfile = 'locallang_db.xml';
 
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
-		$pLangObj = &$this;
-		$langObj->init($this->cObj, $this->conf);
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
+		$pLangObj = $this;
+		$langObj->init($pLangObj, $this->cObj, $this->conf, 'pi1/class.tx_ttproducts_pi1.php');
 
-		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXTkey . '/' . $dblangfile);
-		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXTkey . '/pi1/locallang.xml');
+		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXT . '/' . $dblangfile);
+		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXT . '/pi1/locallang.xml');
 
 		if (isset($ajax) && is_object($ajax)) {
 
-			$ajax->taxajax->registerFunction(array(TT_PRODUCTS_EXTkey.'_fetchRow',&$this,'fetchRow'));
+			$ajax->taxajax->registerFunction(array(TT_PRODUCTS_EXT.'_fetchRow', $this, 'fetchRow'));
 		}
-
-		$this->cObj = t3lib_div::makeInstance('tslib_cObj');	// Local cObj.
-		$this->cObj->start(array());
 
 		return TRUE;
 	}
@@ -139,10 +143,10 @@ class tx_ttproducts_db {
 		$rowArray = array();
 		$variantArray = array();
 		$theCode = 'ALL';
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 			// price
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
 		$priceObj->init(
 			$this->cObj,
 			$cnf->conf
@@ -240,16 +244,16 @@ class tx_ttproducts_db {
 	function &generateResponse ($view, &$rowArray, &$variantArray)	{
 		global $TSFE;
 
-		$csConvObj = &$TSFE->csConvObj;
+		$csConvObj = $TSFE->csConvObj;
 		$theCode = strtoupper($view);
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image');
-		$imageViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image');
+		$imageViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 		$imageObj->init($this->cObj);
 		$imageViewObj->init($langObj, $imageObj);
 
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
 			// price
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 		$priceViewObj->init(
 			$langObj,
 			$this->cObj,
@@ -258,7 +262,7 @@ class tx_ttproducts_db {
 
 		$priceFieldArray = $priceObj->getPriceFieldArray();
 		$tableObjArray = array();
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$objResponse = new tx_taxajax_response($this->ajax->taxajax->getCharEncoding(), TRUE);
 
 		foreach ($rowArray as $functablename => $row)	{ // tt-products-list-1-size
@@ -346,7 +350,7 @@ class tx_ttproducts_db {
 			}
 		}
 
-		$rc = &$objResponse->getXML();
+		$rc = $objResponse->getXML();
 		return $rc;
 	}
 }

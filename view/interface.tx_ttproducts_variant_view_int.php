@@ -41,7 +41,7 @@
 
 interface tx_ttproducts_variant_view_int {
 
-	public function init(&$langObj, &$modelObj);
+	public function init($langObj, $modelObj);
 	public function getVariantSubpartMarkerArray (&$subpartArray, &$markerArray, &$row, &$tempContent, $useSelects, &$conf, $bHasAdditional, $bGiftService);
 	public function removeEmptyMarkerSubpartArray (&$markerArray, &$subpartArray, &$row, &$conf, $bHasAdditional, $bGiftService);
 

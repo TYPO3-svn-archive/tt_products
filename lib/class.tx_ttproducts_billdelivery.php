@@ -61,11 +61,11 @@ class tx_ttproducts_billdelivery {
 	 * @param	[type]		$type: ...
 	 * @return	void
 	 */
-	function init (&$pibase, $type) {
+	function init ($pibase, $type) {
 		global $TSFE;
 
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 		$this->type = $type;
@@ -94,11 +94,11 @@ class tx_ttproducts_billdelivery {
 		*/
 		global $TSFE;
 
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
-		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 			// initialize order data.
 		$orderData = unserialize($orderRow['orderData']);
@@ -153,7 +153,7 @@ class tx_ttproducts_billdelivery {
 		$itemsOut='';
 		$out='';
 
-		$itemViewTable = &$tablesObj->get('tt_products', TRUE);
+		$itemViewTable = $tablesObj->get('tt_products', TRUE);
 		$itemTable = $itemViewTable->getModelObj();
 		$viewTagArray = array();
 		$parentArray = array();
@@ -257,7 +257,7 @@ class tx_ttproducts_billdelivery {
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['billing'][$fName];
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['delivery'][$fName];
 		}
-		$staticInfo = &t3lib_div::getUserObj('&tx_staticinfotables_pi1');
+		$staticInfo = t3lib_div::getUserObj('&tx_staticinfotables_pi1');
 		$staticInfo->init();
 
 		if (isset($orderData['billing']['country_code'])) {
@@ -309,7 +309,7 @@ class tx_ttproducts_billdelivery {
 			// Desired delivery date.
 		$markerArray['###DELIVERY_DESIRED_DATE###'] = $orderData['delivery']['desired_date'];
 		$markerArray['###DELIVERY_DATE_OF_BIRTH###'] = $orderData['delivery']['date_of_birth'];
-		$orderObj = &$tablesObj->get('sys_products_orders');
+		$orderObj = $tablesObj->get('sys_products_orders');
 		$markerArray['###ORDER_UID###'] = $orderObj->getNumber($orderRow['uid']);
 		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
 

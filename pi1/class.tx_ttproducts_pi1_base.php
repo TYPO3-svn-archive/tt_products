@@ -52,7 +52,7 @@ require_once(PATH_tslib.'class.tslib_pibase.php');
 class tx_ttproducts_pi1_base extends tslib_pibase {
 	var $prefixId = 'tt_products';	// Same as class name
 	var $scriptRelPath = 'pi1/class.tx_ttproducts_pi1.php';	// Path to this script relative to the extension dir.
-	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
+	var $extKey = TT_PRODUCTS_EXT;	// The extension key.
 	var $bRunAjax = false;			// overrride this
 
 
@@ -71,17 +71,19 @@ class tx_ttproducts_pi1_base extends tslib_pibase {
 			$this->pi_setPiVarDefaults();
 			$this->conf = &$conf;
 			$config = array();
-			$mainObj = &t3lib_div::getUserObj('&tx_ttproducts_main');	// fetch and store it as persistent object
+			$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');	// fetch and store it as persistent object
 			$errorCode = array();
 			$bDoProcessing = $mainObj->init ($this, $content, $conf, $config, $errorCode);
 
 			if ($bDoProcessing)	{
-				$content = &$mainObj->run($content);
+				$content = $mainObj->run($content);
 			}
 		} else {
-			tx_div2007_alpha5::loadLL_fh002($this, 'EXT:' . TT_PRODUCTS_EXTkey . '/pi1/locallang.xml');
+			tx_div2007_alpha5::loadLL_fh002($this, 'EXT:' . TT_PRODUCTS_EXT . '/pi1/locallang.xml');
 			$content = tx_div2007_alpha5::getLL_fh002($this,'no_template').' plugin.tt_products.templateFile';
 		}
+debug ($content, 'main ENDE $content');
+
 		return $content;
 	}
 

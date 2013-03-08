@@ -51,10 +51,10 @@ abstract class tx_ttproducts_table_base_view	{
 	public $langObj;
 	public $marker;		// must be overridden
 
-	public function init (&$langObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->modelObj = &$modelObj;
-		$this->cObj = &$langObj->cObj;
+	public function init ($langObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->modelObj = $modelObj;
+		$this->cObj = $langObj->cObj;
 		$this->conf = &$modelObj->conf;
 		$this->config = &$modelObj->config;
 
@@ -67,6 +67,14 @@ abstract class tx_ttproducts_table_base_view	{
 
 	public function needsInit ()	{
 		return !$this->bHasBeenInitialised;
+	}
+
+	public function setCObj ($cObj) {
+		$this->cObj = $cObj;
+	}
+
+	public function getCObj () {
+		return $this->cObj;
 	}
 
 	public function &getModelObj ()	{
@@ -105,10 +113,10 @@ abstract class tx_ttproducts_table_base_view	{
 		$classNameView = $className.'_view';
 
 		include_once (PATH_BE_ttproducts.'view/field/class.'.$classNameView.'.php');
-		$fieldViewObj = &t3lib_div::getUserObj('&'.$classNameView);	// fetch and store it as persistent object
+		$fieldViewObj = t3lib_div::getUserObj('&'.$classNameView);	// fetch and store it as persistent object
 		if ($fieldViewObj->needsInit())	{
 			include_once (PATH_BE_ttproducts.'model/field/class.'.$className.'.php');
-			$fieldObj = &t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
+			$fieldObj = t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
 			if ($fieldObj->needsInit())	{
 				$fieldObj->init($this->cObj);
 			}
@@ -127,7 +135,7 @@ abstract class tx_ttproducts_table_base_view	{
 		global $TCA;
 
 		if (is_array($row))	{
-			$modelObj = &$this->getModelObj();
+			$modelObj = $this->getModelObj();
 			$tableConf = $modelObj->getTableConf($theCode);
 
 			foreach ($row as $field => $value)	{
@@ -178,7 +186,7 @@ abstract class tx_ttproducts_table_base_view	{
 			$id = $extId.'-'.$row['uid'];
 			$rowMarkerArray['###'.$marker.'_ID###'] = $id;
 			$rowMarkerArray['###'.$marker.'_NAME###'] = $extName.'-'.$row['uid'];
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 			$tableconf = $cnf->getTableConf($functablename,$theCode);
 			$tabledesc = $cnf->getTableDesc($functablename);
 
@@ -233,7 +241,7 @@ abstract class tx_ttproducts_table_base_view	{
 					}
 				}
 
-				if (!$bSkip)	{
+				if (!$bSkip) {
 					$tableName = $this->conf['table.'][$functablename];
 					$fieldConf = $TCA[$tableName]['columns'][$field];
 					if (is_array($fieldConf))	{
@@ -245,7 +253,7 @@ abstract class tx_ttproducts_table_base_view	{
 				}
 			}
 		} else {
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 			$tablename = $this->getModelObj()->getTablename();
 			$tmpMarkerArray = array();
 			$tmpMarkerArray[] = $marker;

@@ -52,7 +52,7 @@ class tx_ttproducts_variant_dummy implements tx_ttproducts_variant_int {
 	 * @param	[type]		$useArticles: ...
 	 * @return	[type]		...
 	 */
-	function init(&$itemTable, $tablename, $useArticles)  {
+	function init($itemTable, $tablename, $useArticles)  {
 
 	} // init
 

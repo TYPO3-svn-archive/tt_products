@@ -55,15 +55,15 @@ abstract class tx_ttproducts_catlist_view_base {
 	var $htmlPartsMarkers = array('###ITEM_SINGLE_PRE_HTML###', '###ITEM_SINGLE_POST_HTML###');
 
 
-	public function init (&$pibase, &$pid_list, $recursive, $pid) {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	public function init ($pibase, $pid_list, $recursive, $pid) {
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 		$this->pid = $pid;
 
-		$this->urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
-		$this->pidListObj = &t3lib_div::getUserObj('tx_ttproducts_pid_list');
+		$this->urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
+		$this->pidListObj = t3lib_div::getUserObj('tx_ttproducts_pid_list');
 		$this->pidListObj->init($this->pibase->cObj);
 		$this->pidListObj->applyRecursive($recursive, $pid_list, TRUE);
 		$this->pidListObj->setPageArray();
@@ -88,7 +88,7 @@ abstract class tx_ttproducts_catlist_view_base {
 	}
 
 
-	public function &getIsParentArray ($cat, &$categoryArray)	{
+	public function getIsParentArray ($cat, &$categoryArray)	{
 		$isParentArray = array();
 
 		if ($cat)	{
@@ -169,12 +169,12 @@ abstract class tx_ttproducts_catlist_view_base {
 		$mode = '';
 		$this->getFrameWork($t, $templateCode, $templateArea.$templateSuffix);
 		$bUseFilter = FALSE;
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$categoryTableView = &$tablesObj->get($functablename,1);
-		$categoryTable = &$categoryTableView->getModelObj();
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$categoryTableView = $tablesObj->get($functablename,1);
+		$categoryTable = $categoryTableView->getModelObj();
 		$categoryTable->clear();
 		$categoryTable->initCodeConf($theCode);
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableConf = $cnf->getTableConf($functablename, $theCode);
 		$orderBy = $TYPO3_DB->stripOrderBy($tableConf['orderBy']);
 
@@ -260,10 +260,10 @@ abstract class tx_ttproducts_catlist_view_base {
 				} else if ($tableConf['onlyChildsOfCurrent'])	{
 					$pids = $this->pidListObj->getPidlist();
 					if ($rootCat == '') {
-						$rootCat = $categoryTable->getAllChildCats($pids, $orderBy, ''); // +++ neu
+						$rootCat = $categoryTable->getAllChildCats($pids, $orderBy, '');
 					}
 					$relatedArray = $categoryTable->getRelated($rootCat, $currentCat, $pids, $orderBy);	// read only related categories
-				} else if ($tableConf['rootChildsOfCurrent']) { // +++ neu
+				} else if ($tableConf['rootChildsOfCurrent']) {
 					$pids = $this->pidListObj->getPidlist();
 					$rootCat = $categoryTable->getAllChildCats($pids, $orderBy, $currentCat);
 					$relatedArray = $categoryTable->getRelated($rootCat, 0, $pids, $orderBy);	// read only related categories

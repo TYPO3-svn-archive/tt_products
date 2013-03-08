@@ -45,8 +45,8 @@ class tx_ttproducts_field_creditpoints {
 
 	public function getBasketTotal ()	{
 		$rc = 0;
-		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$itemArray = &$basketObj->getItemArray();
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$itemArray = $basketObj->getItemArray();
 
 		if (count($itemArray))	{
 			$creditpointsTotal = 0;
@@ -73,8 +73,6 @@ class tx_ttproducts_field_creditpoints {
 
 		$rc = FALSE;
 		if ($TSFE->loginUser)	{
-//			$whereGeneral = '(fe_users_uid="'.$TSFE->fe_user->user['uid'].'" OR fe_users_uid=0) ';
-
 			$creditpointsTotal = $this->getBasketTotal();
 
 			if ($creditpointsTotal)	{

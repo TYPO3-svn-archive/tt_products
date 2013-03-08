@@ -57,11 +57,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init (&$cObj, $functablename='tt_products')  {
+	function init ($cObj, $functablename='tt_products')  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($cObj, $functablename);
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $cnf->conf['orderBy'];
@@ -70,7 +70,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			 $tableConfig['orderBy'] = $this->tableconf['orderBy'];
 		}
 
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$tableObj->setConfig($tableConfig);
 		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
 
@@ -123,7 +123,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$rowArray = $this->articleArray[$uid];
 
 		if (!$rowArray && $uid) {
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 			$tt_products_articles = $tablesObj->get('tt_products_articles');
 			$tmpWhere = 'uid_product=\''.intval($uid).'\''. ($where ? ' AND '.$where : '');
 			$rowArray = $tt_products_articles->getWhereArray($tmpWhere);
@@ -144,7 +144,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	function &getArticleRow ($row, $theCode) {
 		global $TYPO3_DB;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$firstRow = $this->variant->getFirstVariantRow($row);
 		$fieldArray = $this->variant->getFieldArray();
 		$whereArray = array();
@@ -236,8 +236,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	function &reduceInStockItems (&$itemArray, $useArticles)	{
 		global $TYPO3_DB, $TCA;
 		$instockTableArray = array();
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 		$instockField = $cnf->getTableDesc($this->getTableObj()->name, 'inStock');
 		$instockField = ($instockField ? $instockField : 'inStock');
@@ -249,7 +249,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 					foreach ($actItemArray as $k1=>$actItem) {
 						$row = $this->getArticleRow ($actItem['rec'], $theCode);
 						if ($row)	{
-							$tt_products_articles = &$tablesObj->get('tt_products_articles');
+							$tt_products_articles = $tablesObj->get('tt_products_articles');
 							$tt_products_articles->reduceInStock($row['uid'], $actItem['count']);
 							$instockTableArray['tt_products_articles'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row[$instockField] - $actItem['count']);
 						}
@@ -291,9 +291,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$where = '';
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
-				$hookObj=&t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'] as $classRef) {
+				$hookObj = t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addWhereCat')) {
 					$whereNew = $hookObj->addWhereCat($this, $catObject, $cat, $where, $operator, $pid_list, $catObject->getDepth($theCode));
 					if ($bLeadingOperator) {
@@ -321,9 +321,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$tableNameArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addselectConfCat')) {
 					$newTablenames = $hookObj->addselectConfCat($this, $catObject, $cat, $selectConf,$catObject->getDepth());
 					if ($newTablenames != '') {
@@ -345,9 +345,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$uidArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getPageUidsCat')) {
 					$hookObj->getPageUidsCat($this, $cat, $uidArray);
 				}

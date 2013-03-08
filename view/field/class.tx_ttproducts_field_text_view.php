@@ -41,8 +41,8 @@ class tx_ttproducts_field_text_view extends tx_ttproducts_field_base_view {
 	function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $imageRenderObj='')	{
 
 		$htmlentitiesArray = array();
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tableconf = $cnf->getTableConf($functablename);
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tableconf = $cnf->getTableConf($functablename, $theCode);
 
 		if (is_array($tableconf['functions.']) && isset($tableconf['functions.']['htmlentities']))	{
 			$htmlentitiesArray = t3lib_div::trimExplode(',', $tableconf['functions.']['htmlentities']);
@@ -51,10 +51,17 @@ class tx_ttproducts_field_text_view extends tx_ttproducts_field_base_view {
 		$value = $this->getModelObj()->getFieldValue($row, $fieldname);
 
 		if ($bHtml && $charset != '' && in_array($fieldname, $htmlentitiesArray))	{
-			if ($theCode != 'EMAIL' || $this->conf['orderEmail_htmlmail'])	{
-				$value = ($this->conf['nl2brNote'] ? nl2br($value) : $value);
+			$bConvertNewlines = $this->conf['nl2brNote'];
+			if (
+				$bConvertNewlines &&
+				(
+					$theCode != 'EMAIL' || $this->conf['orderEmail_htmlmail']
+				)
+			) {
+				$value = nl2br($value);
+			} else {
+				$value = htmlentities($value, ENT_QUOTES, $charset);
 			}
-			$value = htmlentities($value,ENT_QUOTES,$charset);
 		}
 
 		return $value;

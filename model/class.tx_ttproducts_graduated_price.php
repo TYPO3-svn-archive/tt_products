@@ -57,7 +57,7 @@ class tx_ttproducts_graduated_price {
 	function init($tablename, $mmtablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;

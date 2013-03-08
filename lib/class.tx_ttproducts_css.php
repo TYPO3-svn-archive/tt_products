@@ -46,21 +46,19 @@ class tx_ttproducts_css {
 	 * @param	[type]		$$pibase: ...
 	 * @return	[type]		...
 	 */
-	function init(&$pibase)	{
+	function init($pibase)	{
 		global $TYPO3_DB;
-		$this->pibase = &$pibase;
+		$this->pibase = $pibase;
 		$this->conf = &$this->getConf();
 	} // init
 
 
 	function &getConf ($tablename='', $theCode='ALL')	{
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$cssConf = $cnf->getSpecialConf('CSS', $tablename, $theCode);
 		return $cssConf;
 	}
-
-
 }
 
 

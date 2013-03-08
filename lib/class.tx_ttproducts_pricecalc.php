@@ -42,11 +42,13 @@
 
 
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_base.php');
+require_once (PATH_BE_ttproducts . 'lib/class.tx_ttproducts_sql.php');
 
 
 class tx_ttproducts_pricecalc extends tx_ttproducts_pricecalc_base {
 
 	function getCalculatedData(&$itemArray, &$conf, $type, &$priceReduction, $priceTotalTax) {
+		$sql = t3lib_div::getUserObj('tx_ttproducts_sql');
 
 		if (!$itemArray || !count($itemArray)) {
 			return;
@@ -66,6 +68,12 @@ class tx_ttproducts_pricecalc extends tx_ttproducts_pricecalc_base {
 			foreach ($itemArray as $sort=>$actItemArray) {
 				foreach ($actItemArray as $k2=>$actItem) {
 					$row = $actItem['rec'];
+
+					if (is_array($priceCalcTemp['sql.']))    {
+						if (!($bIsValid = $sql->isValid($row, $priceCalcTemp['sql.']['where'])))    {
+							continue;
+						}
+					}
 
 					// has a price reduction already been calculated before ?
 					if ($priceReduction[$row['uid']] == 1) {

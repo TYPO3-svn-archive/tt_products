@@ -67,12 +67,12 @@ class tx_ttproducts_info_view {
 	 * @param	[type]		$bProductsPayment: ...
 	 * @return	[type]		...
 	 */
-	function init (&$pibase, $formerBasket, $bProductsPayment)  {
+	function init ($pibase, $formerBasket, $bProductsPayment)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
@@ -290,7 +290,7 @@ class tx_ttproducts_info_view {
 	 * @return	[type]		...
 	 */
 	function getRequiredInfoFields ()	{
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$rc = '';
 		$requiredInfoFields = trim($this->conf['requiredInfoFields']);
 		$addRequiredInfoFields = $paymentshippingObj->getAddRequiredInfoFields();
@@ -340,7 +340,7 @@ class tx_ttproducts_info_view {
 
 		$where = $this->getWhereAllowed();
 		if ($where && $this->conf['useStaticInfoCountry'] && is_object($this->staticInfo))	{
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 			$countryObj = $tablesObj->get('static_countries');
 			if (is_object($countryObj))	{
 				$type = ($this->bDeliveryAddress ? 'billing' : 'delivery');
@@ -363,7 +363,7 @@ class tx_ttproducts_info_view {
 		$where = '';
 
 		if (is_object($this->staticInfo))	{
-			$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+			$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 			$where = $paymentshippingObj->getWhere('static_countries');
 		}
 		return $where;
@@ -385,13 +385,13 @@ class tx_ttproducts_info_view {
 	function getItemMarkerArray (&$markerArray, $bSelectSalutation)	{
 		global $TCA, $TSFE;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$infoFields = t3lib_div::trimExplode(',',$this->feuserfields); // Fields...
-		$orderAddressViewObj = &$tablesObj->get('fe_users',true);
+		$orderAddressViewObj = $tablesObj->get('fe_users',true);
 		$orderAddressObj = $orderAddressViewObj->getModelObj();
 		$selectInfoFields = $orderAddressObj->getSelectInfoFields();
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		foreach ($infoFields as $k => $fName) {
 			if (!in_array($fName, $selectInfoFields)) {
@@ -466,7 +466,7 @@ class tx_ttproducts_info_view {
 		$markerArray['###DELIVERY_STORE_SELECT###'] = '';
 
 		if ($this->bDeliveryAddress)	{
-			$addressObj = &$tablesObj->get('address',FALSE);
+			$addressObj = $tablesObj->get('address',FALSE);
 			$tablename = $addressObj->getTablename();
 			$tableconf = $cnf->getTableConf('address', 'INFO');
 			$orderBy = $tableconf['orderBy'];

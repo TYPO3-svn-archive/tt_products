@@ -76,10 +76,10 @@ class tx_ttproducts_tables	{
 	var $conf;
 
 
-	function init (&$pibase)	{
+	function init ($pibase)	{
 
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
@@ -105,7 +105,7 @@ class tx_ttproducts_tables	{
 	 * @param	[type]		$bView: ...
 	 * @return	[type]		...
 	 */
-	function &get ($functablename, $bView=false)	{
+	function get ($functablename, $bView=false)	{
 		$classNameArray = array();
 		$tableObjArray = array();
 
@@ -115,14 +115,14 @@ class tx_ttproducts_tables	{
 		}
 
 		if (!$classNameArray['model'] || $bView && !$classNameArray['view'])	{
-			debug('Error in '.TT_PRODUCTS_EXTkey.'. No class found after calling function tx_ttproducts_tables::get with parameters "'.$functablename.'", '.$bView.'.');
+			debug('Error in '.TT_PRODUCTS_EXT.'. No class found after calling function tx_ttproducts_tables::get with parameters "'.$functablename.'", '.$bView.'.');
 			return 'ERROR';
 		}
 
 		foreach ($classNameArray as $k => $className)	{
 			if ($className != 'skip')	{
 				include_once (PATH_BE_ttproducts.$k.'/class.'.$className.'.php');
-				$tableObj[$k] = &t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
+				$tableObj[$k] = t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
 			}
 		}
 

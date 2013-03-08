@@ -53,9 +53,9 @@ class tx_ttproducts_marker {
 	 * @param	array		array urls which should be overridden with marker key as index
 	 * @return	void
 	 */
-	function init (&$cObj, $urlArray=array())	{
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init ($cObj, $urlArray=array())	{
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
@@ -96,7 +96,7 @@ class tx_ttproducts_marker {
 		}
 
 		$pidMarkerArray = array('agb','basket','info','finalize','payment',
-			'thanks','itemDisplay','listDisplay','search','storeRoot',
+			'thanks','itemDisplay','listDisplay','revocation','search','storeRoot',
 			'memo','tracking','billing','delivery'
 		);
 		foreach ($pidMarkerArray as $k => $function)	{
@@ -129,9 +129,9 @@ class tx_ttproducts_marker {
 		}
 
 			// Call all addURLMarkers hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addGlobalMarkers'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addGlobalMarkers'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addGlobalMarkers')) {
 					$hookObj->addGlobalMarkers($markerArray);
 				}
@@ -216,6 +216,7 @@ class tx_ttproducts_marker {
 			}
 			$tagArray = $retTagArray;
 		}
+		$parentArray = array_unique($parentArray);
 		sort($parentArray);
 		if (is_array($addCheckArray))	{
 			foreach ($addCheckArray as $marker => $field)	{
