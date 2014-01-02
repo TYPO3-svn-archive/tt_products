@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<description>German texts for the markers, originally created by POB EDV-Systeme, (c) 2009, usable with the ttp.htm Template</description>
+		<type>module</type>
+		<csh_table></csh_table>
+		<fileId>EXT:tt_products/marker/de.locallang.xml</fileId>
+		<labelContext type="array">
+		</labelContext>
+	</meta>
+	<data type="array">
+		<languageKey index="de" type="array">
+			<label index="memo_dam_goto">Gehe zur DAM Memo Liste.</label>
+			<label index="basket_goto">Gehe zum Warenkorb.</label>
+			<label index="basket_into">In den Warenkorb.</label>
+			<label index="basket_into_input_type">abschicken</label>
+			<label index="basket_mini_empty">Warenkorb ist leer</label>
+			<label index="basket_mini_item">Artikel</label>
+			<label index="basket_mini_notax">ohne MwSt:</label>
+			<label index="basket_mini_tax">incl. MwSt:</label>
+			<label index="basket_mini_header">Warenkorb:</label>
+			<label index="basket_empty">Ihr Warenkorb ist leer!</label>
+			<label index="basket_billing_address">Rechnungsanschrift</label>
+			<label index="basket_billing_address_input">Bitte geben Sie hier Ihre Adresse an.</label>
+			<label index="basket_billing_address_input_delivery">Sie können auch eine alternative Lieferadresse angeben.</label>
+			<label index="basket_delivery_address">Lieferanschrift</label>
+			<label index="basket_info_text"> Hinweis: Felder mit * sind Pflichtfelder. Ihre Daten werden nicht an Dritte weitergegeben! </label>
+			<label index="basket_cnum">Kundennummer</label>
+			<label index="basket_name">Name</label>
+			<label index="basket_first_name">Vorname</label>
+			<label index="basket_last_name">Nachname</label>
+			<label index="basket_title">Anrede</label>
+			<label index="basket_company">Firma</label>
+			<label index="basket_address">Adresse</label>
+			<label index="basket_date_of_birth">Date of birth</label>
+			<label index="basket_zip">PLZ</label>
+			<label index="basket_city">Stadt</label>
+			<label index="basket_country">Land</label>
+			<label index="basket_phone">Telefon</label>
+			<label index="basket_email">Email</label>
+			<label index="basket_zip_city">PLZ / Stadt</label>
+			<label index="basket_fe_username">Username</label>
+			<label index="basket_fe_user_id">User ID</label>
+			<label index="basket_update_cart">Warenkorb aktualisieren</label>
+			<label index="basket_empty_cart">Warenkorb löschen</label>
+			<label index="basket_checkout">zur Bestellung</label>
+			<label index="basket_back_to_cart">zurück zum Warenkorb</label>
+			<label index="basket_place_order">Bestellung abschließen</label>
+			<label index="basket_enter_vat_id">Ihre gültige USt-IdNr. hier eingeben:</label>
+			<label index="basket_vat_id">USt-IdNr.</label>
+			<label index="basket_header_item">Artikel</label>
+			<label index="basket_header_quantity">Menge</label>
+			<label index="basket_header_price">Preis</label>
+			<label index="basket_header_total">Summe</label>
+			<label index="basket_shipping_handling">Versand und Verpackung:</label>
+			<label index="basket_payment_checkout">zur Kasse</label>
+			<label index="basket_payment_select">Zahlungsweise:</label>
+			<label index="basket_payment">Zahlungsweise:</label>
+			<label index="basket_payment_total">Gesamtbetrag:</label>
+			<label index="basket_payment_invoice">Rechnungsbetrag:</label>
+			<label index="basket_payment_memo">Nachricht:</label>
+			<label index="basket_payment_shipping_date">gewünschtes Lieferdatum:</label>
+			<label index="basket_payment_comment">Kommentar:</label>
+			<label index="basket_payment_email_comment">(An diese Email-Adresse wird die Bestätigung Ihrer Bestellung geschickt!)</label>
+			<label index="basket_payment_add_comment">Hier können Sie Ihrer Bestellung einen Kommentar hinzufügen:</label>
+			<label index="basket_payment_select_payment">Bitte wählen Sie den Versand- und Zahlungsmodus aus.</label>
+			<label index="basket_right_of_revocation">Widerrufsbelehrung</label>
+			<label index="basket_salutation">Anrede</label>
+			<label index="basket_shipping_price">Versandart:</label>
+			<label index="basket_terms_ack">Sie bestätigen hiermit, dass Sie die AGB und die Widerrufsbelehrung gelesen haben und diese akzeptieren.</label>
+			<label index="basket_terms">"Die Allgemeinen Geschäftsbedingungen und die Widerrufsbelehrung"</label>
+			<label index="basket_terms_read">habe ich gelesen und erkenne sie hiermit an.</label>
+			<label index="basket_required_message_error">Fehler bei der Eingabe</label>
+			<label index="basket_required_message_missing">Sie haben nicht alle erforderlichen Felder mit Ihren Adressinformationen ausgefüllt, oder die AGB nicht akzeptiert!</label>
+			<label index="basket_required_message_fix">Bitte korrigieren sie Ihre Angaben!</label>
+			<label index="basket_required_button_fix">Angaben korrigieren</label>
+			<label index="basket_delete_item">Zum Löschen eines Artikels bitte nur bei der Bestellmenge "0" eintragen und unten auf Warenkorb aktualisieren klicken!</label>
+			<label index="basket_change_item">Wenn sie die Bestellmenge ändern wollen, einfach bei Anzahl die gewünschte Menge eintragen und unten auf Warenkorb aktualisieren klicken!</label>
+			<label index="basket_shipping_information">Wenn Ihre Bestellung zu einer anderen Adresse geliefert werden soll, so geben Sie hier bitte die vollständige Lieferadresse an.</label>
+
+			<label index="vat">MwSt:</label>
+			<label index="no_vat">netto:</label>
+			<label index="incl_vat">incl. MwSt</label>
+			<label index="plus">zzgl.</label>
+			<label index="shipping">Versand</label>
+
+			<label index="p_currency">EUR</label>
+			<label index="p_color">Farbe:</label>
+			<label index="p_color2">Farbe2:</label>
+			<label index="p_color3">Farbe3:</label>
+			<label index="p_color4">Farbe4:</label>
+			<label index="p_color5">Farbe5:</label>
+			<label index="p_size">Größe:</label>
+			<label index="p_width">Breite:</label>
+			<label index="p_height">Höhe:</label>
+			<label index="p_gradings">Ausführung:</label>
+			<label index="p_description">Beschreibung:</label>
+			<label index="p_material">Material:</label>
+			<label index="p_quality">Qualität:</label>
+			<label index="p_datasheet">Datenblatt:</label>
+			<label index="p_www">Hersteller Webseite:</label>
+			<label index="p_email">e-Mail Anfrage zum Artikel</label>
+			<label index="p_email_body">Ich habe folgenden Artikel gesehen:</label>
+			<label index="p_email_subject">e-Mail Anfrage zum Artikel:</label>
+			<label index="p_email_question">Meine Fragen:</label>
+			<label index="p_is_single">Einzelprodukt, das nur einmal gewählt werden kann.</label>
+			<label index="p_related">verwandte Produkte</label>
+
+			<label index="list_buy_now">in den Warenkorb</label>
+			<label index="list_detail">Produktdetails</label>
+			<label index="list_next_page">nächste Seite</label>
+			<label index="list_prev_page">vorherige Seite</label>
+			<label index="list_back_to_list">zurück zur Liste</label>
+			<label index="list_item_number">Artikel Nr.</label>
+			<label index="list_item_price">Preis:</label>
+			<label index="list_item_quantity">Menge:</label>
+			<label index="list_item_notfound">Direkt in dieser Kategorie sind keine Produkte. Bitte wählen Sie eine Unterkategorie.</label>
+
+			<label index="search_item_notfound">Es wurden keine Artikel gefunden.</label>
+			<label index="search_button">Suchen</label>
+			<label index="p_memo_not_logged_in">Sie sind nicht am System angemeldet.</label>
+
+			<label index="sellers_salutation">Mit freundlichen Grüßen,</label>
+			<label index="sellers_company">Firma</label>
+			<label index="sellers_name">Name des Verkäufers</label>
+			<label index="sellers_address">Straße des Verkäufers</label>
+			<label index="sellers_city">Postleitzahl und Stadt des Verkäufers</label>
+			<label index="sellers_country">Land des Verkäufers</label>
+			<label index="sellers_phone">Telefon des Verkäufers</label>
+			<label index="sellers_fax">Faxnummer des Verkäufers</label>
+			<label index="sellers_hrb">Handelsregister Teil B (AG, GmbH)</label>
+			<label index="sellers_executive">Geschäftsführer Name</label>
+			<label index="sellers_vat_id">USt-ID des Verkäufers</label>
+
+			<label index="order_confirmation">Bestellbestätigung</label>
+			<label index="order_confirmation_thanks">Vielen Dank für Ihre Bestellung!</label>
+			<label index="order_confirmation_complete">Ihre Bestellung ist nun abgeschlossen und hat folgende Bestellnummer:</label>
+			<label index="order_confirmation_email">Die Bestellbestätigung wird an folgende Emailadresse geschickt:</label>
+			<label index="order_confirmation_payment">Zahlungsart:</label>
+			<label index="order_confirmation_10">Nach Absprache</label>
+			<label index="order_confirmation_10_text">Bitte setzen Sie sich mit uns in Verbindung</label>
+			<label index="order_confirmation_20">Vorkasse:</label>
+			<label index="order_confirmation_20_text">Bitte überweisen Sie den Rechnungsbetrag auf folgendes Konto:</label>
+			<label index="order_confirmation_20_owner">Kontoinhaber: </label>
+			<label index="order_confirmation_20_account">Kontonummer: </label>
+			<label index="order_confirmation_20_bank_no">BLZ: </label>
+			<label index="order_confirmation_20_bank">Bank: </label>
+			<label index="order_confirmation_20_bic">BIC: </label>
+			<label index="order_confirmation_20_iban">IBAN: </label>
+			<label index="order_confirmation_30">Nachnahme:</label>
+			<label index="order_confirmation_30_text">Die Ware wird Ihnen direkt zugesandt. Sie bezahlen die Ware bei Erhalt.</label>
+			<label index="order_confirmation_40">Rechnung:</label>
+			<label index="order_confirmation_40_text">Die bestellte Ware wird Ihnen auf Rechnung zugesandt.</label>
+			<label index="order_confirmation_50">Barzahlung:</label>
+			<label index="order_confirmation_50_text">Wir akzeptieren nur Barzahlung bei Abholung!</label>
+			<label index="order_confirmation_delivery_order_status">Liefer- und Bestellstatus:</label>
+			<label index="order_confirmation_goods_remain">Die Ware bleibt bis zur vollständigen Bezahlung unser Eigentum.</label>
+			<label index="order_confirmation_date_of_order">Ihr Bestelldatum:</label>
+			<label index="order_confirmation_view_status_with_code">Sie können Ihren Bestellstatus jederzeit mittels Ihres Bestellstatus-Codes überprüfen:</label>
+			<label index="order_confirmation_check_order_status">Bestellstatus überprüfen!</label>
+			<label index="order_confirmation_order_status">BESTELLSTATUS:</label>
+			<label index="order_confirmation_status_address">Sie können den Status Ihrer Bestellung an dieser Adresse einsehen:</label>
+			<label index="order_confirmation_your_order">Ihre Bestellung:</label>
+
+			<label index="order_confirmation_order_uid">Bitte Ihre Bestellnummer unbedingt angeben:</label>
+
+			<label index="order_status_wrong_number">Der Bestellstatus-Code existiert nicht! Bitte stellen Sie die Richtigkeit sicher und versuchen es noch einmal!</label>
+			<label index="order_status_view">Bestellstatus einsehen</label>
+
+			<label index="tracking_status_bill">Ihre Rechnungs #:</label>
+			<label index="tracking_status_order">Ihre Bestellung #:</label>
+			<label index="tracking_status_status">hat folgenden Status</label>
+			<label index="tracking_status_status_text">(siehe letzte Zeile für aktuellsten Stand)</label>
+			<label index="tracking_status_data">Zusätzliche Daten für die Statusänderung:</label>
+			<label index="tracking_status_date">Datum/Zeit:</label>
+			<label index="tracking_status_code">Code:</label>
+			<label index="tracking_status_action">Aktion:</label>
+			<label index="tracking_status_comment">Kommentar:</label>
+			<label index="tracking_status_choose_order">Bestellung wählen</label>
+			<label index="tracking_status_choose_order_button">auswählen</label>
+			<label index="tracking_status_change">Bestellstatus ändern</label>
+			<label index="tracking_status_change_button">Bestellstatus hinzufügen</label>
+			<label index="tracking_status_order_comment">Kommentar zum neuen Bestellstatus</label>
+			<label index="tracking_status_password">Passwort:</label>
+			<label index="tracking_status_password_button">Passwort eingeben</label>
+			<label index="tracking_status_email">Email-Benachrichtigung:</label>
+			<label index="tracking_status_email_text">Wenn Sie sich über den Status Ihrer Bestellung informieren lassen wollen sobald sich der Status geändert hat, dann überprüfen Sie bitte folgendes:</label>
+			<label index="tracking_status_email_checkbox">Nachricht über Ablauf des Bestellvorgangs erhalten.</label>
+			<label index="tracking_status_email_button">Aktualisieren</label>
+			<label index="tracking_status_message">Nachricht an SHOP:</label>
+			<label index="tracking_status_message_text">Hier können Sie uns eine Nachricht bezüglich Ihrer Bestellung schicken.</label>
+			<label index="tracking_status_message_subject">Betreff auswählen:</label>
+			<label index="tracking_status_message_1">Bestellung vom Kunden abgeschickt</label>
+			<label index="tracking_status_message_2">Bestellung vom Shop erhalten und angenommen</label>
+			<label index="tracking_status_message_10">Warten auf Warenlieferung eines Dritten</label>
+			<label index="tracking_status_message_11">Warten auf Bezahlung vom Kunden</label>
+			<label index="tracking_status_message_12">Bestellung wird für den Versand vorbereitet</label>
+			<label index="tracking_status_message_13">Bestellung wurde bezahlt</label>
+			<label index="tracking_status_message_20">Waren an Kunden geliefert</label>
+			<label index="tracking_status_message_21">Geschenkgutscheine an Kunden geliefert</label>
+			<label index="tracking_status_message_30">Andere Meldung vom Shop</label>
+			<label index="tracking_status_message_31">Eine Rechnung ist erstellt worden</label>
+			<label index="tracking_status_message_32">Eine Rechnung ist verschickt worden.</label>
+			<label index="tracking_status_message_33">Diese Bestellung gilt als steuerfrei.</label>
+			<label index="tracking_status_message_50">Kunde wünscht die Stornierung der Bestellung</label>
+			<label index="tracking_status_message_51">Nachricht von Kunde an den Shop</label>
+			<label index="tracking_status_message_52">Kunde wünscht Rechnung inkl.Steuer</label>
+			<label index="tracking_status_message_53">Kunde wünscht steuerfreie Rechnung</label>
+			<label index="tracking_status_message_60">Sende Geschenkgutein Nachricht an den Empfänger</label>
+			<label index="tracking_status_message_100">Bestellung versendet</label>
+			<label index="tracking_status_message_101">Bestellung geschlossen</label>
+			<label index="tracking_status_message_200">Bestellung storniert</label>
+			<label index="tracking_status_message_subject_comment">Bemerkung:</label>
+			<label index="tracking_status_message_button">Nachricht senden</label>
+			<label index="tracking_status_order_original">Bestellbestätigung - Original:</label>
+			<label index="tracking_status_number">Bestellstatus-Code eingeben:</label>
+			<label index="tracking_status_number_button">Status sehen</label>
+
+			<label index="tracking_email_status_label">Bestellstatus </label>
+			<label index="tracking_email_status">Status:</label>
+			<label index="tracking_email_time">Zeit:</label>
+			<label index="tracking_email_info">BESTELLINFORMATION</label>
+			<label index="tracking_email_comment">Bemerkung:</label>
+			<label index="tracking_email_status_view">Klicken Sie um Ihre Daten jetzt einzusehen:</label>
+			<label index="tracking_email_status_changed">Der Status Ihrer Bestellung wurde geändert:</label>
+			<label index="tracking_email_view_information">Mit Ihrem Bestellstatus-Code können Sie jederzeit den Bestellstatus einsehen und evtl. Bestellinformationen ändern:</label>
+
+			<label index="new_user_name">Ihr Benutzername lautet:</label>
+			<label index="new_user_password">Ihr Passwort lautet:</label>
+			<label index="new_user_access_data">Ihre Zugangsdaten bei </label>
+			<label index="new_user_welcome">Wir freuen uns, Sie bei uns als neuen Kunden begrüßen zu dürfen.</label>
+			<label index="new_user_login">In zukünftigen Bestellungen können Sie sich mit Ihrem Benutzernamen und Ihrem Passwort anmelden, um zu bestellen.</label>
+			<label index="new_user_keep_email">Bitte bewahren Sie diese E-Mail gut auf.</label>
+        </languageKey>
+	</data>
+</T3locallang>
