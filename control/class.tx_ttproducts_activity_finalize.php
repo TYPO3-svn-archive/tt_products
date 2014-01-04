@@ -129,6 +129,7 @@ class tx_ttproducts_activity_finalize {
 		$recipientsArray['shop'] = $tablesObj->get('tt_products_cat')->getEmail($basket->itemArray);
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
 ### START
+
 		if (isset($this->conf['orderEmail.']) && is_array($this->conf['orderEmail.']))	{
 			foreach ($this->conf['orderEmail.'] as $k => $emailConfig) {
 				$suffix = $emailConfig['suffix'];
@@ -167,7 +168,7 @@ class tx_ttproducts_activity_finalize {
 		)	{
 			$recipientsArray['radio1'][] = $this->conf['orderEmail_radio.']['1.'][$address->infoArray['delivery']['radio1']];
 		}
-		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML,$markerArray);
+		$orderConfirmationHTML = $this->pibase->cObj->substituteMarkerArray($orderConfirmationHTML, $markerArray);
 		$orderObj = $tablesObj->get('sys_products_orders');
 		$apostrophe = $this->conf['orderEmail_apostrophe'];
 
@@ -177,7 +178,7 @@ class tx_ttproducts_activity_finalize {
 			$pid = ($this->conf['PIDuserFolder'] ? $this->conf['PIDuserFolder'] : ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id));
 			$pid = intval($pid);
 			$username = strtolower(trim($address->infoArray['billing']['email']));
-			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username='.$TYPO3_DB->fullQuoteStr($username, 'fe_users').' AND pid='. $pid.' AND deleted=0');
+			$res = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'username='.$TYPO3_DB->fullQuoteStr($username, 'fe_users') . ' AND pid=' . $pid . ' AND deleted=0');
 			$num_rows = $TYPO3_DB->sql_num_rows($res);
 			$TYPO3_DB->sql_free_result($res);
 
@@ -217,7 +218,7 @@ class tx_ttproducts_activity_finalize {
 				if (count($address->infoArray['billing']['email'])) {
 					$emailContent=trim($basketView->getView($empty, 'EMAIL', $address, false, false, false, '###EMAIL_NEWUSER_TEMPLATE###', $markerObj->getGlobalMarkerArray()));
 					if ($emailContent) {
-						$parts = explode(chr(10),$emailContent,2);
+						$parts = explode(chr(10), $emailContent, 2);
 						$subject=trim($parts[0]);
 						$plain_message = trim($parts[1]);
 						tx_ttproducts_email_div::send_mail(
@@ -233,7 +234,7 @@ class tx_ttproducts_activity_finalize {
 				$res = $TYPO3_DB->exec_SELECTquery(
 					'uid',
 					'fe_users',
-					'username='.$TYPO3_DB->fullQuoteStr($username,'fe_users') .
+					'username='.$TYPO3_DB->fullQuoteStr($username, 'fe_users') .
 						' AND pid='. $pid.' AND deleted=0');
 				while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 			 		 $address->infoArray['billing']['feusers_uid'] = intval($row['uid']);
@@ -276,7 +277,7 @@ class tx_ttproducts_activity_finalize {
 			$account = $tablesObj->get('sys_products_accounts');
 			$accountUid = $account->getUid();
 
-			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_csv.php');
+			include_once (PATH_BE_ttproducts . 'lib/class.tx_ttproducts_csv.php');
 			$csv = t3lib_div::makeInstance('tx_ttproducts_csv');
 			$csv->init(
 				$this->pibase,
@@ -326,15 +327,15 @@ class tx_ttproducts_activity_finalize {
 			}
 
 			foreach ($emailTemplateArray as $key => $emailTemplate) {
-				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, false, true, $this->conf['orderEmail_htmlmail'], '###'.$emailTemplate.'###', $mainMarkerArray));
+				$emailContentArray[$key] = trim($basketView->getView($empty, 'EMAIL', $address, false, true, $this->conf['orderEmail_htmlmail'], '###' . $emailTemplate . '###', $mainMarkerArray));
 				if ($emailContentArray[$key]) {	// If there is plain text content - which is required!!
-					$parts = preg_split('/[\n\r]+/',$emailContentArray[$key],2);	// First line is subject
+					$parts = preg_split('/[\n\r]+/', $emailContentArray[$key], 2);	// First line is subject
 					$subjectArray[$key] = trim($parts[0]);
 					$plainMessageArray[$key]=trim($parts[1]);
 					if (empty($plainMessageArray[$key])) {	// the user did not use the subject field
 						$plainMessageArray[$key] = $subjectArray[$key];
 					}
-					$plainMessageArray[$key] = $this->pibase->cObj->substituteMarkerArrayCached($plainMessageArray[$key],$markerArray);
+					$plainMessageArray[$key] = $this->pibase->cObj->substituteMarkerArrayCached($plainMessageArray[$key], $markerArray);
 					if (empty($subjectArray[$key])) {
 						$subjectArray[$key] = $this->conf['orderEmail_subject'];
 					}
@@ -351,15 +352,15 @@ class tx_ttproducts_activity_finalize {
 			}
 
 			$HTMLmailContent = '';
-			$markerArray = array_merge($mainMarkerArray,$markerObj->getGlobalMarkerArray());
+			$markerArray = array_merge($mainMarkerArray, $markerObj->getGlobalMarkerArray());
 
 			if ($plainMessageArray['customer'] || $this->conf['orderEmail_htmlmail'])	{	// If there is plain text content - which is required!!
 
 
 				if ($this->conf['orderEmail_htmlmail'])	{	// If htmlmail lib is included, then generate a nice HTML-email
-					$HTMLmailShell=$this->pibase->cObj->getSubpart($templateCode,'###EMAIL_HTML_SHELL###');
-					$HTMLmailContent=$this->pibase->cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$customerEmailHTML);
-					$HTMLmailContent=
+					$HTMLmailShell = $this->pibase->cObj->getSubpart($templateCode, '###EMAIL_HTML_SHELL###');
+					$HTMLmailContent = $this->pibase->cObj->substituteMarker($HTMLmailShell, '###HTML_BODY###', $customerEmailHTML);
+					$HTMLmailContent =
 						$this->pibase->cObj->substituteMarkerArray(
 							$HTMLmailContent,
 							$markerArray
@@ -368,20 +369,18 @@ class tx_ttproducts_activity_finalize {
 						// Remove image tags to the products:
 					if ($this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix'])	{
 
-						t3lib_div::requireOnce(PATH_t3lib . 'class.t3lib_parsehtml.php');
-
-						$parser = t3lib_div::makeInstance('t3lib_parsehtml');
-						$htmlMailParts = t3lib_parsehtml::splitTags('img', $HTMLmailContent);
+						$parser = tx_div2007_core::newHtmlParser();
+						$htmlMailParts = $parser->splitTags('img', $HTMLmailContent);
 
 						foreach($htmlMailParts as $kkk => $vvv)	{
 							if ($kkk%2)	{
 								list($attrib) = $parser->get_tag_attributes($vvv);
-								if (t3lib_div::isFirstPartOfStr($attrib['src'],$this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix']))	{
-									$htmlMailParts[$kkk]='';
+								if (t3lib_div::isFirstPartOfStr($attrib['src'], $this->conf['orderEmail_htmlmail.']['removeImagesWithPrefix']))	{
+									$htmlMailParts[$kkk] = '';
 								}
 							}
 						}
-						$HTMLmailContent=implode('',$htmlMailParts);
+						$HTMLmailContent=implode('', $htmlMailParts);
 					}
 				} else {	// ... else just plain text...
 					// nothing to initialize
@@ -446,7 +445,7 @@ class tx_ttproducts_activity_finalize {
 							$uidItemnrTitle = t3lib_div::trimExplode(',', $instockTmp);
 							if ($count <= $this->conf['warningInStockLimit'])	{
 								$messageArr =  explode('|', $message = tx_div2007_alpha5::getLL_fh002($langObj, 'instock_warning'));
-								$subject = $messageArr[0].$tableDesc.' "'.$uidItemnrTitle[2].'"'.$messageArr[1].$uidItemnrTitle[1].$messageArr[2];
+								$subject = $messageArr[0] . $tableDesc . ' "' . $uidItemnrTitle[2] . '"' . $messageArr[1] . $uidItemnrTitle[1] . $messageArr[2];
 								foreach ($recipientsArray['shop'] as $key => $recipient) {
 									// $headers variable removed everywhere!
 									tx_ttproducts_email_div::send_mail(

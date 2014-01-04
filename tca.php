@@ -830,7 +830,7 @@ $TCA['tt_products_language'] = Array (
 			)
 		),
 		'note' => Array (
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -839,7 +839,7 @@ $TCA['tt_products_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note2' => Array (
-			'label' => '2:',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -1153,7 +1153,7 @@ $TCA['tt_products_cat'] = Array (
 		),
 		'note' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -1162,7 +1162,7 @@ $TCA['tt_products_cat'] = Array (
 		),
 		'note2' => Array (
 			'exclude' => 1,
-			'label' => '2:',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -1313,7 +1313,7 @@ $TCA['tt_products_cat_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note' => Array (
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -1322,7 +1322,7 @@ $TCA['tt_products_cat_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note2' => Array (
-			'label' => '2',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -1466,7 +1466,7 @@ $TCA['tt_products_articles'] = Array (
 		),
 		'note' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -1475,7 +1475,7 @@ $TCA['tt_products_articles'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note2' => Array (
-			'label' => '2',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -1742,7 +1742,7 @@ $TCA['tt_products_articles_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note' => Array (
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -1751,7 +1751,7 @@ $TCA['tt_products_articles_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note2' => Array (
-			'label' => '2',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -2052,7 +2052,7 @@ $TCA['tt_products_texts_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note' => Array (
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.note',
+			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -2439,8 +2439,8 @@ $TCA['sys_products_orders'] = Array (
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXT.'/locallang_db.xml:sys_products_orders.tracking_code',
 			'config' => Array (
 				'type' => 'input',
-				'size' => '20',
-				'max' => '32',
+				'size' => '32',
+				'max' => '64',
 			)
 		),
 		'status' => Array (

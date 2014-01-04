@@ -39,7 +39,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'view/field/interface.tx_ttproducts_field_view_int.php');
+// require_once (PATH_BE_ttproducts.'view/field/interface.tx_ttproducts_field_view_int.php');
 
 
 abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view_int	{
@@ -127,12 +127,6 @@ abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view
 
 		$t = array();
 		$t['listFrameWork'] = $this->cObj->getSubpart($templateCode, '###' . $templateAreaList . '###');
-// 			$t['listFrameWork'] = $this->cObj->substituteMarkerArrayCached(
-// 				$t['listFrameWork'],
-// 				$markerArray,
-// 				$subpartArray,
-// 				$wrappedSubpartArray
-// 			);
 
 		$templateAreaSingle = $markerKey . '_' . $upperField . '_SINGLE';
 		$t['singleFrameWork'] = $this->cObj->getSubpart($t['listFrameWork'], '###' . $templateAreaSingle . '###');

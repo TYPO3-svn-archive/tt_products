@@ -45,13 +45,13 @@ class tx_ttproducts_javascript {
 	var $copyright;
 
 
-	function init(&$pibase, &$ajax) {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($pibase, $ajax) {
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
-		$this->ajax = &$ajax;
+		$this->ajax = $ajax;
 		$this->bAjaxAdded = false;
 		$this->bCopyrightShown = false;
 		$this->copyright = '
@@ -62,7 +62,7 @@ class tx_ttproducts_javascript {
 *
 *  Copyright notice
 *
-*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2013 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  Released under GNU/GPL (http://typo3.com/License.1625.0.html)
@@ -108,7 +108,7 @@ class tx_ttproducts_javascript {
 		$bDirectHTML = false;
 		$code = '';
 		$bError = false;
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 		$message = tx_div2007_alpha5::getLL_fh002($langObj, 'invalid_email');
 		$emailArr =  explode('|', $message);
 
@@ -173,7 +173,7 @@ class tx_ttproducts_javascript {
 			case 'selectcat':
 				if (is_array($params))	{
 					$funcs = count ($params);
-					$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+					$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 					$ajaxConf = $cnf->getAJAXConf();
 					if (is_array($ajaxConf))	{

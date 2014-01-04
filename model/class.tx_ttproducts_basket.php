@@ -44,13 +44,6 @@
  */
 
 
-require_once(PATH_t3lib.'class.t3lib_div.php');
-require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc.php');
-require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricetablescalc.php');
-require_once(PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_graduated_price.php');
-include_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_creditpoints.php');
-
-
 class tx_ttproducts_basket {
 	public $pibase; // reference to object of pibase
 	public $conf;
@@ -203,8 +196,7 @@ class tx_ttproducts_basket {
 			// while(list($uid,$basketItem) = each($basketExtRaw)) {
 			foreach ($basketExtRaw as $uid => $basketItem)	{
 				if (
-					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
-					t3lib_div::testInt($uid)
+					tx_div2007_core::testInt($uid)
 				) {
 					$variant = $viewTableObj->variant->getVariantFromRawRow($basketItem);
 					$oldcount = $this->basketExt[$uid][$variant];
@@ -219,10 +211,6 @@ class tx_ttproducts_basket {
 						reset ($basketItem['quantity']);
 						$basketItem['quantity'] = current($basketItem['quantity']);
 					}
-
-// 					if ($this->conf['quantityIsFloat'])	{
-// 						$this->basketExt[$uid][$variant] = $quantity;
-// 					}
 
 					if (!$updateMode) {
 						if (!isset($basketItem['quantity']))	{
@@ -325,10 +313,7 @@ class tx_ttproducts_basket {
 							$tmpCount > 0 &&
 							(
 								$this->conf['quantityIsFloat'] ||
-								(
-									class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tmpCount) :
-									t3lib_div::testInt($tmpCount)
-								)
+								tx_div2007_core::testInt($tmpCount)
 							)
 						) {
 							$basketExtNew[$tmpUid][$tmpExtVar] = $this->basketExt[$tmpUid][$tmpExtVar];
@@ -409,12 +394,7 @@ class tx_ttproducts_basket {
 			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 			$viewTableObj = $tablesObj->get('tt_products');
 			$row = $viewTableObj->get($uid);
-			$count =
-				(
-					class_exists('t3lib_utility_Math') ?
-						t3lib_utility_Math::forceIntegerInRange($quantity, 0, $row['inStock'], 0) :
-						t3lib_div::intInRange($quantity, 0, $row['inStock'], 0)
-				);
+			$count = tx_div2007_core::intInRange($quantity, 0, $row['inStock'], 0);
 		} elseif ($this->conf['quantityIsFloat'])	{
 			$count = (float) $quantity;
 			if ($count < 0)	{
@@ -424,12 +404,7 @@ class tx_ttproducts_basket {
 				$count = $this->conf['basketMaxQuantity'];
 			}
 		} else {
-			$count =
-				(
-					class_exists('t3lib_utility_Math') ?
-						t3lib_utility_Math::forceIntegerInRange($quantity, 0, $this->conf['basketMaxQuantity'], 0) :
-						t3lib_div::intInRange($quantity, 0, $this->conf['basketMaxQuantity'], 0)
-				);
+			$count = tx_div2007_core::intInRange($quantity, 0, $this->conf['basketMaxQuantity'], 0);
 		}
 		return $count;
 	}
@@ -507,8 +482,8 @@ class tx_ttproducts_basket {
 		$where = 'uid IN ('.implode(',',$uidArr).') AND pid IN ('. $this->pidListObj->getPidlist().')'.$viewTableObj->getTableObj()->enableFields();
 		$orderBy = $viewTableObj->getTableObj()->transformOrderby($itemTableConf['orderBy']);
 
-
 		$rcArray = $viewTableObj->getWhere($where, 'BASKET', $orderBy);
+
 		$productsArray = array();
 		$this->extTableItemArray = array();
 
@@ -583,7 +558,6 @@ class tx_ttproducts_basket {
 		$this->calculatedArray = array(); // this array is usede for all calculated things
 		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
 		$maxTax = 0;
-
 		foreach ($productsArray as $k1 => $row)	{
 			$uid = $row['uid'];
 			$tax = $row['tax'];
@@ -797,8 +771,8 @@ class tx_ttproducts_basket {
 					// $this->calculatedArray['priceTax']['total'] += $priceTax;
 				}
 
-				$this->calculatedArray['priceTax']['handling'] = $priceObj->getModePrice($this->conf['TAXmode'],$this->calculatedArray['priceNoTax']['handling'],TRUE,$shippingTax,FALSE,FALSE);
-				$this->calculatedArray['priceTax']['shipping'] = $priceObj->getModePrice($this->conf['TAXmode'],$this->calculatedArray['priceNoTax']['shipping'],TRUE,$shippingTax,FALSE,FALSE);
+				$this->calculatedArray['priceTax']['handling'] = $priceObj->getModePrice($this->conf['TAXmode'], $this->calculatedArray['priceNoTax']['handling'], TRUE, $shippingTax, FALSE, FALSE);
+				$this->calculatedArray['priceTax']['shipping'] = $priceObj->getModePrice($this->conf['TAXmode'], $this->calculatedArray['priceNoTax']['shipping'], TRUE, $shippingTax, FALSE, FALSE);
 			}
 		}
 		$paymentTax = $this->paymentshippingObj->getTaxPercentage('payment');
@@ -879,114 +853,118 @@ class tx_ttproducts_basket {
 	public function &getItem ($row, $fetchMode, $funcTablename='') {
 		global $TSFE;
 
+		$item = array();
 		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
 		$discount = $TSFE->fe_user->user['tt_products_discount'];
 
 		if (!$funcTablename)	{
 			$funcTablename = $this->getFuncTablename();
 		}
-		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$viewTableObj = $tablesObj->get($funcTablename);
-		$count = 0;
-		$tax = $row['tax'];
-		$priceRow = array();
-		$priceRow['price'] = $priceObj->getDiscountPrice($row['price'], $discount);
-		$priceRow['price2'] = $row['price2'];
-		$priceRow['tax'] = $row['tax'];
-		$priceRow['unit_factor'] = $row['unit_factor'];
-		$priceRow['weight'] = $row['weight'];
-		$priceRow['inStock'] = $row['inStock'];
 
-		if ($fetchMode == 'useExt')	{
-			$variant = $viewTableObj->variant->getVariantFromRow($row);
+		if ($funcTablename == 'tt_products') {
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$viewTableObj = $tablesObj->get($funcTablename);
+			$count = 0;
+			$tax = $row['tax'];
+			$priceRow = array();
+			$priceRow['price'] = $priceObj->getDiscountPrice($row['price'], $discount);
+			$priceRow['price2'] = $row['price2'];
+			$priceRow['tax'] = $row['tax'];
+			$priceRow['unit_factor'] = $row['unit_factor'];
+			$priceRow['weight'] = $row['weight'];
+			$priceRow['inStock'] = $row['inStock'];
 
-			if (
-				in_array($this->useArticles, array(1,3)) &&
-				$funcTablename == 'tt_products' &&
-				isset($row['ext']['tt_products_articles']) &&
-				is_array($row['ext']['tt_products_articles'])
-			) {
-				$articleObj = $tablesObj->get('tt_products_articles');
-				reset($row['ext']['tt_products_articles']);
-				$articleInfo = current ($row['ext']['tt_products_articles']);
-				$articleUid = $articleInfo['uid'];
+			if ($fetchMode == 'useExt')	{
+				$variant = $viewTableObj->variant->getVariantFromRow($row);
 
-				if (isset($articleUid))	{
-					$articleRow = $articleObj->get($articleUid);
-					$articleRow['price'] = $priceObj->getDiscountPrice($articleRow['price'], $discount);
+				if (
+					in_array($this->useArticles, array(1, 3)) &&
+					$funcTablename == 'tt_products' &&
+					isset($row['ext']['tt_products_articles']) &&
+					is_array($row['ext']['tt_products_articles'])
+				) {
+					$articleObj = $tablesObj->get('tt_products_articles');
+					reset($row['ext']['tt_products_articles']);
+					$articleInfo = current ($row['ext']['tt_products_articles']);
+					$articleUid = $articleInfo['uid'];
 
-					$articleObj->mergeAttributeFields($priceRow, $articleRow, FALSE,TRUE);
+					if (isset($articleUid))	{
+						$articleRow = $articleObj->get($articleUid);
+						$articleRow['price'] = $priceObj->getDiscountPrice($articleRow['price'], $discount);
+
+						$articleObj->mergeAttributeFields($priceRow, $articleRow, FALSE,TRUE);
+					}
+
+					if ($articleRow)	{
+						$priceRow['weight'] = ($articleRow['weight'] ? $articleRow['weight'] : $row['weight']);
+						$priceRow['inStock'] = $articleRow['inStock'];
+					}
 				}
-
-				if ($articleRow)	{
-					$priceRow['weight'] = ($articleRow['weight'] ? $articleRow['weight'] : $row['weight']);
-					$priceRow['inStock'] = $articleRow['inStock'];
-				}
+			} else if ($fetchMode == 'rawRow') {
+				$variant = $viewTableObj->variant->getVariantFromRawRow($row);
+			} else if ($fetchMode == 'firstVariant') {
+				$variant = $viewTableObj->variant->getVariantFromProductRow($row, 0);
 			}
-		} else if ($fetchMode == 'rawRow') {
-			$variant = $viewTableObj->variant->getVariantFromRawRow($row);
-		} else if ($fetchMode == 'firstVariant') {
-			$variant = $viewTableObj->variant->getVariantFromProductRow($row, 0);
-		}
-		$extArray = $row['ext'];
-		if (is_array($extArray['tx_dam']))	{
-			reset ($extArray['tx_dam']);
-			$firstDam = current($extArray['tx_dam']);
-			$extUid = $firstDam['uid'];
-			$tableVariant = $viewTableObj->variant->getTableUid('tx_dam', $extUid);
-			$variant .= $tableVariant;
-		}
+			$extArray = $row['ext'];
+			if (is_array($extArray['tx_dam']))	{
+				reset ($extArray['tx_dam']);
+				$firstDam = current($extArray['tx_dam']);
+				$extUid = $firstDam['uid'];
+				$tableVariant = $viewTableObj->variant->getTableUid('tx_dam', $extUid);
+				$variant .= $tableVariant;
+			}
 
-		if (isset($this->basketExt[$row['uid']]) && is_array($this->basketExt[$row['uid']]) && isset($this->basketExt[$row['uid']][$variant]))	{
-			$count = $this->basketExt[$row['uid']][$variant];
-		}
-		if (!$count && is_array($this->giftServiceRow) && $row['uid'] == $this->giftServiceRow['uid'])	{
-			$count = 1;
-		}
+			if (isset($this->basketExt[$row['uid']]) && is_array($this->basketExt[$row['uid']]) && isset($this->basketExt[$row['uid']][$variant]))	{
+				$count = $this->basketExt[$row['uid']][$variant];
+			}
+			if (!$count && is_array($this->giftServiceRow) && $row['uid'] == $this->giftServiceRow['uid'])	{
+				$count = 1;
+			}
 
-		if ($count > $priceRow['inStock'] && !$this->conf['alwaysInStock'])	{
-			$count = $priceRow['inStock'];
-		}
-		if (!$this->conf['quantityIsFloat'])	{
-			$count = intval($count);
-		}
-		$priceTax = $priceObj->getResellerPrice($priceRow,1);
-		$priceNoTax = $priceObj->getResellerPrice($priceRow,0);
-		if ($priceNoTax > $priceTax)	{
-			$priceNoTax = $priceTax;
-		}
-		$price0Tax = $priceObj->getResellerPrice($priceRow,1,0);
-		$price0NoTax = $priceObj->getResellerPrice($priceRow,0,0);
-		$price2Tax = $priceObj->getPrice($priceRow['price2'],1,$tax,$this->conf['TAXincluded']);
-		$price2NoTax = $priceObj->getPrice($priceRow['price2'],0,$tax,$this->conf['TAXincluded']);
-		$priceUnitNoTax = $priceObj->getPrice(($priceRow['unit_factor'] > 0 ? ($priceNoTax / $priceRow['unit_factor']) : 0),FALSE,$priceRow['tax'],FALSE);
-		$priceUnitTax = $priceObj->getPrice($priceUnitNoTax,TRUE,$row['tax'],FALSE);
-		$priceWeightNoTax = $priceObj->getPrice(($priceRow['weight'] > 0 ? ($priceNoTax / $priceRow['weight']) : 0),FALSE,$priceRow['tax'],FALSE);
-		$priceWeightTax = $priceObj->getPrice($priceWeightNoTax,TRUE,$priceRow['tax'],FALSE);
-		$item = array (
-			'calcprice' => 0,
-			'count' => $count,
-			'priceTax' => $priceTax,
-			'priceNoTax' => $priceNoTax,
-			'priceUnitTax' => $priceUnitTax,
-			'priceUnitNoTax' => $priceUnitNoTax,
-			'priceWeightUnitNoTax' => $priceWeightNoTax,
-			'priceWeightUnitTax' => $priceWeightTax,
-			'price0Tax' => $price0Tax,
-			'price0NoTax' => $price0NoTax,
-			'price2Tax' => $price2Tax,
-			'price2NoTax' => $price2NoTax,
-			'totalTax' => 0,
-			'totalNoTax' => 0,
-			'rec' => $row,
-			'weight' => $priceRow['weight'],
-			'inStock' => $priceRow['inStock'],
-		);
+			if ($count > $priceRow['inStock'] && !$this->conf['alwaysInStock'])	{
+				$count = $priceRow['inStock'];
+			}
+			if (!$this->conf['quantityIsFloat'])	{
+				$count = intval($count);
+			}
+			$priceTax = $priceObj->getResellerPrice($priceRow, 1);
+			$priceNoTax = $priceObj->getResellerPrice($priceRow, 0);
+			if ($priceNoTax > $priceTax)	{
+				$priceNoTax = $priceTax;
+			}
+			$price0Tax = $priceObj->getResellerPrice($priceRow, 1, 0);
+			$price0NoTax = $priceObj->getResellerPrice($priceRow, 0, 0);
+			$price2Tax = $priceObj->getPrice($priceRow['price2'], 1, $tax, $this->conf['TAXincluded']);
+			$price2NoTax = $priceObj->getPrice($priceRow['price2'], 0, $tax, $this->conf['TAXincluded']);
+			$priceUnitNoTax = $priceObj->getPrice(($priceRow['unit_factor'] > 0 ? ($priceNoTax / $priceRow['unit_factor']) : 0), FALSE, $priceRow['tax'], FALSE);
+			$priceUnitTax = $priceObj->getPrice($priceUnitNoTax, TRUE, $row['tax'], FALSE);
+			$priceWeightNoTax = $priceObj->getPrice(($priceRow['weight'] > 0 ? ($priceNoTax / $priceRow['weight']) : 0), FALSE, $priceRow['tax'], FALSE);
+			$priceWeightTax = $priceObj->getPrice($priceWeightNoTax, TRUE, $priceRow['tax'], FALSE);
+			$item = array (
+				'calcprice' => 0,
+				'count' => $count,
+				'priceTax' => $priceTax,
+				'priceNoTax' => $priceNoTax,
+				'priceUnitTax' => $priceUnitTax,
+				'priceUnitNoTax' => $priceUnitNoTax,
+				'priceWeightUnitNoTax' => $priceWeightNoTax,
+				'priceWeightUnitTax' => $priceWeightTax,
+				'price0Tax' => $price0Tax,
+				'price0NoTax' => $price0NoTax,
+				'price2Tax' => $price2Tax,
+				'price2NoTax' => $price2NoTax,
+				'totalTax' => 0,
+				'totalNoTax' => 0,
+				'rec' => $row,
+				'weight' => $priceRow['weight'],
+				'inStock' => $priceRow['inStock'],
+			);
 
-		if ($this->conf['TAXmode'] == '2')	{
-			$taxFieldArray = array('priceTax', 'priceNoTax', 'price0Tax', 'price0NoTax', 'price2Tax', 'price2NoTax');
-			foreach ($taxFieldArray as $k => $field)	{
-				$item[$field] = round($item[$field], 2);
+			if ($this->conf['TAXmode'] == '2')	{
+				$taxFieldArray = array('priceTax', 'priceNoTax', 'price0Tax', 'price0NoTax', 'price2Tax', 'price2NoTax');
+				foreach ($taxFieldArray as $k => $field)	{
+					$item[$field] = round($item[$field], 2);
+				}
 			}
 		}
 
@@ -1038,10 +1016,8 @@ class tx_ttproducts_basket {
 }
 
 
-
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_basket.php'])	{
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_basket.php']);
 }
-
 
 ?>

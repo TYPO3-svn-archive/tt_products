@@ -60,6 +60,7 @@ return array(
 	'tx_ttproducts_page' => $extensionPath . 'model/class.tx_ttproducts_page.php',
 	'tx_ttproducts_pid_list' => $extensionPath . 'model/class.tx_ttproducts_pid_list.php',
 	'tx_ttproducts_product' => $extensionPath . 'model/class.tx_ttproducts_product.php',
+	'tx_ttproducts_static_info' => $extensionPath . 'model/class.tx_ttproducts_static_info.php',
 	'tx_ttproducts_table_base' => $extensionPath . 'model/class.tx_ttproducts_table_base.php',
 	'tx_ttproducts_table_label' => $extensionPath . 'model/class.tx_ttproducts_table_label.php',
 	'tx_ttproducts_text' => $extensionPath . 'model/class.tx_ttproducts_text.php',

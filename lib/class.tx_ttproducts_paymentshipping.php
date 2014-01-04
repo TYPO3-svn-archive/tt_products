@@ -180,6 +180,27 @@ class tx_ttproducts_paymentshipping {
 		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$shipKeyArray = $this->basket->basketExtra['shipping'];
 
+
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$conf = $cnf->getConf();
+		$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
+
+		if (strpos($handleLib, 'transactor') !== FALSE && t3lib_extMgm::isLoaded($handleLib)) {
+
+			$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
+				// Payment Transactor
+			tx_transactor_api::init($langObj, '', $conf);
+
+			tx_transactor_api::getItemMarkerSubpartArrays(
+				$this->basket->basketExtra['payment.']['handleLib.'],
+				$subpartArray,
+				$wrappedSubpartArray
+			);
+		} else {	// markers for the missing payment transactor extension
+			$wrappedSubpartArray['###MESSAGE_PAYMENT_TRANSACTOR_NO###'] = '';
+			$subpartArray['###MESSAGE_PAYMENT_TRANSACTOR_YES###'] = '';
+		}
+
 		if (!is_array($shipKeyArray))	{
 			$shipKeyArray = array($shipKeyArray);
 		}
@@ -201,13 +222,12 @@ class tx_ttproducts_paymentshipping {
 		foreach($this->typeArray as $k => $type)	{
 			$marker = strtoupper($type);
 			$tmpMarkerPrefix = 'MESSAGE_'.$marker;
+			$markerPrefix = 'MESSAGE_' . $marker;
 
 			if (isset($this->conf[$type.'.']) && is_array($this->conf[$type.'.']))	{
 				foreach($this->conf[$type.'.'] as $k2 => $confRow)	{
 					if (
-						class_exists('t3lib_utility_Math') ?
-							!t3lib_utility_Math::canBeInterpretedAsInteger(substr($k2,0,-1)) :
-							!t3lib_div::testInt(substr($k2,0,-1))
+						!tx_div2007_core::testInt(substr($k2, 0, -1))
 					) {
 						continue;
 					}
@@ -224,18 +244,23 @@ class tx_ttproducts_paymentshipping {
 					}
 				}
 			}
+;
 			foreach($tagArray as $k3 => $v3)	{
 				if (strpos($k3, $tmpMarkerPrefix) === 0 && !isset($subpartArray['###' . $k3 . '###']))	{
-
-					if (strpos($k3,'_NE_') !== FALSE)	{
+					if (strpos($k3, '_NE_') !== FALSE) {
 						$wrappedSubpartArray['###' . $k3 . '###'] = '';
-						$tmpSubpartArray[$type] = $this->cObj->getSubpart($framework,'###' . $k3 . '###');
-						$subpartArray['###'.$tmpMarkerPrefix.'###'] .= $this->cObj->substituteMarkerArrayCached($tmpSubpartArray[$type],$markerArray);
+						$tmpSubpartArray[$type] = $this->cObj->getSubpart($framework, '###' . $k3 . '###');
+						$psMessageArray[$type] .=
+							 $this->cObj->substituteMarkerArrayCached(
+								$tmpSubpartArray[$type],
+								$markerArray
+							);
 					} else if (!isset($wrappedSubpartArray['###' . $k3 . '###'])) {
 						$subpartArray['###' . $k3 . '###'] = '';
 					}
 				}
 			}
+			$subpartArray['###' . $markerPrefix . '###'] = $psMessageArray[$type];
 		}
 	}
 
@@ -292,8 +317,7 @@ class tx_ttproducts_paymentshipping {
 		}
 
 		if (
-			class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($type) :
-			!t3lib_div::testInt($type)
+			!tx_div2007_core::testInt($type)
 		) {
 			$type = 0;
 		}
@@ -438,10 +462,7 @@ class tx_ttproducts_paymentshipping {
 			reset($confArr);
 			while(list($key,$val)=each($confArr))	{
 				if (
-					(
-						class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($key) :
-						!t3lib_div::testInt($key)
-					) &&
+					!tx_div2007_core::testInt($key) &&
 					intval($key) &&
 					is_array($val) &&
 					(!$checkShow || $val['show'] || !isset($val['show']))
@@ -482,10 +503,8 @@ class tx_ttproducts_paymentshipping {
 			if ($confArr['type'] == 'count') {
 				foreach ($confArr as $k1 => $price1)	{
 					if (
-						(
-							class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k1) :
-							t3lib_div::testInt($k1)
-						) && $countTotal >= $k1
+						tx_div2007_core::testInt($k1) &&
+						$countTotal >= $k1
 					) {
 						$priceNew = $price1;
 						break;
@@ -494,10 +513,9 @@ class tx_ttproducts_paymentshipping {
 			} else if ($confArr['type'] == 'weight') {
 				foreach ($confArr as $k1 => $price1)	{
 					if (
-						(
-							class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k1) :
-							t3lib_div::testInt($k1)
-						) && $this->basket->calculatedArray['weight'] * 1000 >= $k1) {
+						tx_div2007_core::testInt($k1) &&
+						$this->basket->calculatedArray['weight'] * 1000 >= $k1
+					) {
 						$priceNew = $price1;
 						break;
 					}
@@ -505,10 +523,8 @@ class tx_ttproducts_paymentshipping {
 			} else if ($confArr['type'] == 'price') {
 				foreach ($confArr as $k1 => $price1)	{
 					if (
-						(
-							class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k1) :
-							t3lib_div::testInt($k1)
-						) && $priceTotalTax >= $k1
+						tx_div2007_core::testInt($k1) &&
+						$priceTotalTax >= $k1
 					) {
 						$priceNew = $price1;
 						break;
@@ -526,8 +542,14 @@ class tx_ttproducts_paymentshipping {
 				}
 				include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_discountprice.php');
 				$discountPrice = t3lib_div::makeInstance('tx_ttproducts_discountprice');
-				$priceReduction = 0;
+				$priceReduction = array();
 				$discountPrice->getCalculatedData($this->basket->itemArray, $shippingcalc, 'shipping', $priceReduction, $priceTotalTax);
+
+				if (count($priceReduction)) {
+					foreach ($priceReduction as $discountPriceValue) {
+						$priceNew += $discountPriceValue;
+					}
+				}
 			}
 
 			// compare the price to the min. price
@@ -541,8 +563,8 @@ class tx_ttproducts_paymentshipping {
 				$priceTax = $priceNoTax = 0;
 			}
 			$taxIncluded = $this->priceObj->getTaxIncluded();
-			$priceTax += $this->priceObj->getPrice($priceNew,1,$tax,$taxIncluded,true);
-			$priceNoTax += $this->priceObj->getPrice($priceNew,0,$tax,$taxIncluded,true);
+			$priceTax += $this->priceObj->getPrice($priceNew, 1, $tax, $taxIncluded, true);
+			$priceNoTax += $this->priceObj->getPrice($priceNew, 0, $tax, $taxIncluded, true);
 		}
 	}
 
@@ -674,14 +696,14 @@ class tx_ttproducts_paymentshipping {
 		$weigthFactor = doubleVal($this->basket->basketExtra['shipping.']['priceFactWeight']);
 		if($weigthFactor > 0) {
 			$priceShipping = $this->basket->calculatedArray['weight'] * $weigthFactor;
-			$priceShippingTax += $this->priceObj->getPrice($priceShipping,true,$taxpercentage,$taxIncluded,true);
-			$priceShippingNoTax += $this->priceObj->getPrice($priceShipping,false,$taxpercentage,$taxIncluded,true);
+			$priceShippingTax += $this->priceObj->getPrice($priceShipping, true, $taxpercentage, $taxIncluded, true);
+			$priceShippingNoTax += $this->priceObj->getPrice($priceShipping, false, $taxpercentage, $taxIncluded, true);
 		}
 		$countFactor = doubleVal($this->basket->basketExtra['shipping.']['priceFactCount']);
 		if($countFactor > 0) {
 			$priceShipping = $countTotal * $countFactor;
-			$priceShippingTax += $this->priceObj->getPrice($priceShipping,true,$taxpercentage,$taxIncluded,true);
-			$priceShippingNoTax += $this->priceObj->getPrice($priceShipping,false,$taxpercentage,$taxIncluded,true);
+			$priceShippingTax += $this->priceObj->getPrice($priceShipping, true, $taxpercentage, $taxIncluded, true);
+			$priceShippingNoTax += $this->priceObj->getPrice($priceShipping, false, $taxpercentage, $taxIncluded, true);
 		}
 
 		$this->getSpecialPrices('shipping', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
@@ -695,8 +717,8 @@ class tx_ttproducts_paymentshipping {
 		$perc = doubleVal($this->basket->basketExtra['payment.']['percentOfTotalShipping']);
 		if ($perc)  {
 			$payment = ($this->basket->calculatedArray['priceTax']['goodstotal'] + $this->basket->calculatedArray['priceTax']['shipping'] ) * doubleVal($perc);
-			$pricePaymentTax += $this->priceObj->getPrice($payment,true,$taxpercentage,$taxIncluded,true);
-			$pricePaymentNoTax += $this->priceObj->getPrice($payment,false,$taxpercentage,$taxIncluded,true);
+			$pricePaymentTax += $this->priceObj->getPrice($payment, true, $taxpercentage, $taxIncluded, true);
+			$pricePaymentNoTax += $this->priceObj->getPrice($payment, false, $taxpercentage, $taxIncluded, true);
 		}
 		$this->getSpecialPrices('payment', $taxpercentage, $pricePaymentTax, $pricePaymentNoTax);
 		$this->getPrices('payment', $taxpercentage, $countTotal, $priceTotalTax, $pricePaymentTax, $pricePaymentNoTax);

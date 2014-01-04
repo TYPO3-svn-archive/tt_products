@@ -69,7 +69,7 @@ Weiterentwicklungen zum Shop k&ouml;nnen Sie unter <a href="http://ttproducts.de
 		<!-- ###ITEM_CATEGORY### end -->
 		<!-- ###ITEM_LIST### begin -->
 			<tr><td colspan="3">
-			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+			<form method="post" action="###FORM_URL###" name="ProductList">
 
         <table bordercolor="#003399" cellspacing="1" border="1">
           <tr>
@@ -96,7 +96,7 @@ Weiterentwicklungen zum Shop k&ouml;nnen Sie unter <a href="http://ttproducts.de
             <!-- ###display_variant5_isNotSingle### -->
             ###PRODUCT_DELIVERY###
             ###GW1B### St&uuml;ckzahl: ###GW1E### <input size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-            <input type="image" name="addtomemo" src="###PATH_FE_REL###/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tt_products[addmemo]=###PRODUCT_UID###';" title="Add to memo">
+            <input type="image" name="addtomemo" src="###PATH_FE_REL###/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('ProductList')[0].action='###FORM_MEMO###&amp;tt_products%5Baddmemo%5D=###PRODUCT_UID###';" title="Add to memo">
             <!-- ###display_variant5_isNotSingle### --> <p> </td>
           ###ITEM_SINGLE_POST_HTML###
           <!-- ###ITEM_SINGLE### end -->

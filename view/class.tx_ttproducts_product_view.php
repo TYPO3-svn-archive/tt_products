@@ -39,7 +39,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_article_base_view.php');
+// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_article_base_view.php');
 
 
 class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
@@ -205,9 +205,9 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 		}
 
 		if ($row['special_preparation'])	{
-			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = $this->cObj->substituteMarkerArray($this->conf['specialPreparation'], $markerArray);
+			$markerArray['###' . $this->marker . '_SPECIAL_PREP###'] = $this->cObj->substituteMarkerArray($this->conf['specialPreparation'], $markerArray);
 		} else	{
-			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = '';
+			$markerArray['###' . $this->marker . '_SPECIAL_PREP###'] = '';
 		}
 	} // getItemMarkerArray
 }

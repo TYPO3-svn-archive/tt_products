@@ -72,7 +72,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 				$acArray = array();
 			}
 			$acArray['ac_uid'] = $this->create ($acArray['ac_uid'], $this->acArray);
-			$TSFE->fe_user->setKey('ses','ac',$acArray);
+			$TSFE->fe_user->setKey('ses', 'ac', $acArray);
 			$this->acArray['ac_number'] = $this->asterisk;
 		}
 	}
@@ -112,7 +112,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 			}
 
 			if ($uid)	{
-				$TYPO3_DB->exec_UPDATEquery($this->tablename,'uid='.$uid,$newFields);
+				$TYPO3_DB->exec_UPDATEquery($this->tablename,'uid=' . $uid, $newFields);
 				$newId = $uid;
 			} else {
 				$TYPO3_DB->exec_INSERTquery($this->tablename, $newFields);

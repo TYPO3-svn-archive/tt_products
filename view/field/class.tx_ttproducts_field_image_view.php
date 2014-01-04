@@ -39,7 +39,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_media_view.php');
+// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_media_view.php');
 
 
 class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
@@ -139,7 +139,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 					$fieldconfParent['generateImage'] = $tempConf['field.'];
 					$where_clause = $conftable.'.'.$foreignfield .'='. $imageRow[$localfield];
 					$where_clause .= $this->cObj->enableFields($conftable);
-					$res = $TYPO3_DB->exec_SELECTquery('*',$conftable,$where_clause,'',$foreignfield,1);
+					$res = $TYPO3_DB->exec_SELECTquery('*', $conftable, $where_clause, '', $foreignfield, 1);
 						// only first found row will be used
 					$imageRow = $TYPO3_DB->sql_fetch_assoc($res);
 				}
@@ -294,7 +294,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 			foreach ($theImgCode as $imageName => $imgValue)	{
 				$nameArray = t3lib_div::trimExplode(':', $imageName);
 				$suffix = ($nameArray[1] ? ':'.$nameArray[1] : '');
-				$tagkey = $this->getMarkerkey($imageMarkerArray, 'PRODUCT_IMAGE', $imageName).strtoupper($suffix);
+				$tagkey = $this->getMarkerkey($imageMarkerArray, 'PRODUCT_IMAGE', $imageName) . strtoupper($suffix);
 				if (isset($tagArray[$tagkey]))	{
 					$markerArray['###'.$tagkey.'###'] = $imgValue;
 				}

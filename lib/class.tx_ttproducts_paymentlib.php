@@ -406,11 +406,6 @@ class tx_ttproducts_paymentlib {
 			}
 		}
 
-		if ($bUseStaticInfo)	{
-			$path = t3lib_extMgm::extPath('static_info_tables');
-			include_once($path.'class.tx_staticinfotables_div.php');
-		}
-
 		// Get references to the concerning baskets
 		$shopBasket = $this->basket;
 
@@ -478,7 +473,7 @@ class tx_ttproducts_paymentlib {
 			// record which is found will be returned. If there is no record at all, the codes will be returned untouched
 
 			if ($bUseStaticInfo)	{
-				$countryArray = tx_staticinfotables_div::fetchCountries($addrArr[$key]['country'], $addrArr[$key]['countryISO2'], $addrArr[$key]['countryISO3'], $addrArr[$key]['countryISONr']);
+				$countryArray = tx_div2007_staticinfotables::fetchCountries($addrArr[$key]['country'], $addrArr[$key]['countryISO2'], $addrArr[$key]['countryISO3'], $addrArr[$key]['countryISONr']);
 				$countryRow = $countryArray[0];
 
 				if (count($countryRow))	{

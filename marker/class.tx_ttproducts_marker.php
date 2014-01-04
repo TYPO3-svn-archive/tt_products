@@ -82,9 +82,9 @@ class tx_ttproducts_marker {
 
 			// globally substituted markers, fonts and colors.
 		$splitMark = md5(microtime());
-		list($markerArray['###GW1B###' ],$markerArray['###GW1E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap1.']));
-		list($markerArray['###GW2B###'],$markerArray['###GW2E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap2.']));
-		list($markerArray['###GW3B###'],$markerArray['###GW3E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap3.']));
+		list($markerArray['###GW1B###' ],$markerArray['###GW1E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap1.']));
+		list($markerArray['###GW2B###'],$markerArray['###GW2E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap2.']));
+		list($markerArray['###GW3B###'],$markerArray['###GW3E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap3.']));
 		$markerArray['###GC1###'] = $this->cObj->stdWrap($this->conf['color1'], $this->conf['color1.']);
 		$markerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'], $this->conf['color2.']);
 		$markerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'], $this->conf['color3.']);

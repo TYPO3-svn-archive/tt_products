@@ -148,7 +148,7 @@ class tx_ttproducts_cat_view {
 			}
 
 			if ($viewTagArray['LINK_ITEM'])	{
-				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $this->pibase->pi_getPageLink($linkPid,'',$this->urlObj->getLinkParams('',$addQueryString,TRUE,$bUseBackPid,'product',$tableViewObj->piVar),array('useCacheHash' => true)) .'">','</a>');
+				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. htmlspecialchars($this->pibase->pi_getPageLink($linkPid,'',$this->urlObj->getLinkParams('',$addQueryString,TRUE,$bUseBackPid,'product',$tableViewObj->piVar),array('useCacheHash' => true))) .'">','</a>');
 			}
 			if ($viewCatTagArray['LINK_CATEGORY'])	{
 				$catListPid = $pageObj->getPID(
@@ -259,7 +259,7 @@ class tx_ttproducts_cat_view {
 				if ($bUseBackPid) 	{
 					$addQueryString ['backPID'] = $backPID;
 				}
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->urlObj->getLinkParams('',$addQueryString,TRUE,$bUseBackPid,'product',''),array('useCacheHash' => true)) .'">','</a>');
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'', htmlspecialchars($this->urlObj->getLinkParams('',$addQueryString,TRUE,$bUseBackPid,'product',''),array('useCacheHash' => true))) .'">','</a>');
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
@@ -278,7 +278,7 @@ class tx_ttproducts_cat_view {
 					$addQueryString [$viewCatTable->getPivar()] = $linkCat;
 				}
 
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'',$this->urlObj->getLinkParams('', $addQueryString,TRUE,$bUseBackPid,'product',''),array('useCacheHash' => true)) .'">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="'. htmlspecialchars($this->pibase->pi_getPageLink($TSFE->id,'',$this->urlObj->getLinkParams('', $addQueryString,TRUE,$bUseBackPid,'product',''),array('useCacheHash' => true))) .'">','</a>');
 			} else {
 				$subpartArray['###LINK_NEXT_SINGLE###'] = '';
 			}

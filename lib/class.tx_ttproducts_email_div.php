@@ -69,12 +69,20 @@ class tx_ttproducts_email_div {
 	) {
 		global $TYPO3_CONF_VARS;
 
+		$typoVersion = tx_div2007_core::getTypoVersion();
+
 		if (
-			isset($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
-			is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
-			isset($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) &&
-			is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) &&
-			array_search('t3lib_mail_SwiftMailerAdapter', $TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) !== FALSE
+			$typoVersion >= 4007000 ||
+			(
+				isset($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
+				is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']) &&
+				isset($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) &&
+				is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) &&
+				(
+					array_search('t3lib_mail_SwiftMailerAdapter', $TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) !== FALSE ||
+					array_search('TYPO3\CMS\Core\Mail\SwiftMailerAdapter', $TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery']) !== FALSE
+				)
+			)
 		) {
 			if (!is_array($toEMail)) {
 				$emailArray = t3lib_div::trimExplode(',', $toEMail);
@@ -84,8 +92,7 @@ class tx_ttproducts_email_div {
 				}
 			}
 
-			/** @var $mail t3lib_mail_Message */
-			$mailMessage = t3lib_div::makeInstance('t3lib_mail_Message');
+			$mailMessage = tx_div2007_core::newMailMessage();
 			$mailMessage->setTo($toEMail)
 				->setFrom(array($fromEMail => $fromName))
 				->setSubject($subject)
@@ -127,7 +134,7 @@ class tx_ttproducts_email_div {
 			$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
 			$Typo3_htmlmail->start();
 			$Typo3_htmlmail->mailer = 'TYPO3 HTMLMail';
-			// $Typo3_htmlmail->useBase64(); +++ TODO
+			// $Typo3_htmlmail->useBase64(); TODO
 			$message = html_entity_decode($message);
 			if ($Typo3_htmlmail->linebreak == chr(10))	{
 				$message = str_replace(chr(13).chr(10),$Typo3_htmlmail->linebreak,$message);
@@ -264,8 +271,6 @@ class tx_ttproducts_email_div {
 	function sendGiftEmail($cObj,&$conf,$recipient,$comment,$giftRow,$templateCode,$templateMarker, $bHtmlMail=false)	{
 		global $TSFE;
 
-		$infoViewObj = t3lib_div::getUserObj('&tx_ttproducts_info_view');
-
 		$sendername = ($giftRow['personname'] ? $giftRow['personname'] : $conf['orderEmail_fromName']);
 		$senderemail = ($giftRow['personemail'] ? $giftRow['personemail'] : $conf['orderEmail_from']);
 		$recipients = $recipient;
@@ -287,7 +292,7 @@ class tx_ttproducts_email_div {
 				$emailContent = $cObj->substituteMarkerArrayCached($plain_message, $markerArray);
 
 				$recipients = implode($recipients,',');
-				if (class_exists($cls) && $bHtmlMail) {	// If htmlmail lib is included, then generate a nice HTML-email
+				if ($bHtmlMail) {	// If htmlmail lib is included, then generate a nice HTML-email
 					$HTMLmailShell = $cObj->getSubpart($this->templateCode,'###EMAIL_HTML_SHELL###');
 					$HTMLmailContent = $cObj->substituteMarker($HTMLmailShell,'###HTML_BODY###',$emailContent);
 					$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
@@ -296,12 +301,10 @@ class tx_ttproducts_email_div {
 					self::send_mail($recipients,  $subject, $emailContent, $HTMLmailContent, $senderemail, $sendername, $conf['GiftAttachment']);
 				} else {		// ... else just plain text...
 					self::send_mail($recipients, $subject, $emailContent, $tmp='',$senderemail, $sendername, $conf['GiftAttachment']);
-					self::send_mail($conf['orderEmail_to'], $subject, $emailContent, $tmp='', $infoViewObj->infoArray['billing']['email'], $infoViewObj->infoArray['billing']['name'], $conf['GiftAttachment']);
 				}
 			}
 		}
 	}
 }
-
 
 ?>

@@ -39,9 +39,9 @@
  *
  */
 
-
+/*
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');*/
 
 
 
@@ -158,10 +158,10 @@ class tx_ttproducts_order_view {
 			$markerArray['###CALC_DATE###'] = date('d M Y');
 			$subpartArray['###ORDER_LIST###'] = $orderlistc;
 			$subpartArray['###ORDER_NOROWS###'] = '';
-		 	$content= $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+		 	$content= $this->pibase->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		} else {
 			$TYPO3_DB->sql_free_result($res);
-			$norows=$this->pibase->cObj->getSubpart($content,'###ORDER_NOROWS###');
+			$norows=$this->pibase->cObj->getSubpart($content, '###ORDER_NOROWS###');
 			$content = $norows;
 		} // else of if ($GLOBALS['TYPO3_DB']->sql_num_rows($res))
 

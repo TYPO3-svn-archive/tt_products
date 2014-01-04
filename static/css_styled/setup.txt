@@ -269,14 +269,18 @@ plugin.tt_products {
 
   form.SEARCH.name = ShopSearchForm
 
+  basket.store = 1
+
   memo.allow = fe_users,session
 
   # table settings
   # attention: Do not change the tt_products fields if you don't know what you do
-  table.address = tx_party_addresses
-  table.address {
-    name = last_name
-  }
+  table.address = fe_users
+
+#  table.address = tx_party_addresses
+#  table.address {
+#    name = last_name
+#  }
 
   table.tt_products = tt_products
   table.tt_products {
@@ -441,6 +445,10 @@ plugin.tt_products {
 }
 
 [globalVar = GP:ttp_basket != '']
+plugin.tt_products = USER_INT
+[global]
+
+[globalVar = GP:tt_products|sword != '']
 plugin.tt_products = USER_INT
 [global]
 

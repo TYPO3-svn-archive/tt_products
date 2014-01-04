@@ -40,9 +40,6 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'model/field/interface.tx_ttproducts_field_int.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentshipping.php');
-
 
 class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	private $bHasBeenInitialised = false;
@@ -227,14 +224,6 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 			$taxpercentage = doubleval($this->priceConf['TAXpercentage']);
 		}
 
-// 		if ($price > 0)	{
-// 			if (doubleval($taxpercentage) == 0 && !$bEnableTaxZero)	{
-// 				$taxpercentage = doubleval($this->priceConf['TAXpercentage']);
-// 			}
-// 		} else {
-// 			$taxpercentage = 0;
-// 		}
-
 //		Buch 'Der TYPO3 Webshop'
 // 		if (doubleval($taxpercentage) == -1)  {
 // 			$taxpercentage = 0;
@@ -248,7 +237,6 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 		}
 
 		if (isset($taxFromShipping) && is_double($taxFromShipping))	{
-//			$bUseTaxFromShopping = true;
 			$newtaxFactor = 1 + $taxFromShipping / 100;
 			// we need the net price in order to apply another tax
 			if ($taxIncluded)	{
@@ -267,8 +255,7 @@ class tx_ttproducts_field_price implements tx_ttproducts_field_int {
 	function getResellerPrice($row, $tax=1, $priceNo='')	{
 		$returnPrice = 0;
 		if (
-			class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($priceNo) :
-			!t3lib_div::testInt($priceNo)
+			!tx_div2007_core::testInt($priceNo)
 		) {
 				// get reseller group number
 			$priceNo = intval($this->priceConf['priceNoReseller']);

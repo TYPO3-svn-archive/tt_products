@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
 class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_view {
 	var $dataArray = array(); // array of read in products
@@ -70,7 +70,7 @@ class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_
 	) {
 		global $TCA;
 
-		$priceTablesViewObj = &t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
+		$priceTablesViewObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
 		$priceTablesViewObj->getItemSubpartArrays($templateCode, $row, $fieldname, $subpartArray, $wrappedSubpartArray, $tagArray, $theCode, $id);
 	}
 

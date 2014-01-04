@@ -63,7 +63,7 @@ abstract class tx_ttproducts_category_base_view extends tx_ttproducts_table_base
 	public function &getSubpartArrays ($urlmarkerObj, $row, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $pid, $linkMarker)	{
 		$addQueryString = array();
 		$addQueryString[$this->piVar] = $row['uid'];
-		$wrappedSubpartArray['###'.$linkMarker.'###'] = array('<a href="'.  tx_div2007_alpha::getPageLink_fh001($this->langObj, $pid,'',$urlmarkerObj->getLinkParams('',$addQueryString,true,FALSE,'product',$this->piVar),array('useCacheHash' => true)) .'">','</a>');
+		$wrappedSubpartArray['###'.$linkMarker.'###'] = array('<a href="'.  htmlspecialchars(tx_div2007_alpha::getPageLink_fh001($this->langObj, $pid,'',$urlmarkerObj->getLinkParams('',$addQueryString,true,FALSE,'product',$this->piVar),array('useCacheHash' => true))) .'">','</a>');
 	}
 
 	/**

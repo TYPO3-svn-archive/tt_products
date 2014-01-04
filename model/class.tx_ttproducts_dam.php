@@ -39,7 +39,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
+// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 
 class tx_ttproducts_dam extends tx_ttproducts_article_base {
@@ -90,7 +90,7 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 			$productTable = $tablesObj->get('tt_products', FALSE);
 
 			$additional = $productTable->getFlexQuery ('isImage',1);
-			$rowArray = $productTable->getWhere ('additional REGEXP \''.$additional.'\'');
+			$rowArray = $productTable->getWhere ('additional REGEXP \'' . $additional . '\'');
 
 			$rcArray = array_keys($rowArray);
 		}
@@ -108,7 +108,7 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 
 		$rowArray = array();
 		$this->getTableObj()->enableFields();
-		$res = $this->getTableObj()->exec_SELECTquery('*',$where);
+		$res = $this->getTableObj()->exec_SELECTquery('*', $where);
 
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 			$uid = intval($row[uid]);

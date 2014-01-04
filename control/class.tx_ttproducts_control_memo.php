@@ -47,6 +47,16 @@ class tx_ttproducts_control_memo {
 		'tx_dam' => 'memodam'
 	);
 	static protected $memoItemArray = array();
+	static protected $controlVars = array(
+		'addmemo',
+		'delmemo',
+		'upmemo',
+		'downmemo'
+	);
+
+	static public function getControlVars () {
+		return self::$controlVars;
+	}
 
 	static public function getMemoTableFieldArray () {
 		return self::$memoTableFieldArray;
@@ -89,39 +99,38 @@ class tx_ttproducts_control_memo {
 		self::loadMemo($functablename, $conf);
 
 		$memoItems = self::getMemoItems($functablename);
-
-		if ($piVars['addmemo']) {
-			$addMemo = explode(',', $piVars['addmemo']);
-		}
-
-		if ($piVars['delmemo']) {
-			$delMemo = explode(',', $piVars['delmemo']);
+		$controlVars = self::getControlVars();
+		$memoArray = array();
+		foreach ($controlVars as $controlVar) {
+			if ($piVars[$controlVar]) {
+				$memoArray[$controlVar] = explode(',', $piVars[$controlVar]);
+			}
 		}
 
 		if (isset($piVars['memo']) && is_array($piVars['memo'])) {
-			if (!isset($addMemo)) {
-				$addMemo = array();
+			if (!isset($memoArray['addmemo'])) {
+				$memoArray['addmemo'] = array();
 			}
-			if (!isset($delMemo)) {
-				$delMemo = array();
+			if (!isset($memoArray['delmemo'])) {
+				$memoArray['delmemo'] = array();
 			}
 
 			foreach ($piVars['memo'] as $k => $v) {
-				if (t3lib_div::testInt($k) && $k != '' && $v) {
-					$addMemo[] = intval($k);
+				if (tx_div2007_core::testInt($k) && $k != '' && $v) {
+					$memoArray['addmemo'][] = intval($k);
 				} else if ($k == 'uids') {
 					$uidArray = explode(',', $v);
 					foreach ($uidArray as $uid) {
-						if (t3lib_div::testInt($uid) && $uid != '' && in_array($uid, $memoItems)) {
-							$delMemo[] = $uid;
+						if (tx_div2007_core::testInt($uid) && $uid != '' && in_array($uid, $memoItems)) {
+							$memoArray['delmemo'][] = $uid;
 						}
 					}
 				}
 			}
 		}
 
-		if (isset($addMemo) && is_array($addMemo)) {
-			foreach ($addMemo as $addMemoSingle) {
+		if (isset($memoArray['addmemo']) && is_array($memoArray['addmemo'])) {
+			foreach ($memoArray['addmemo'] as $addMemoSingle) {
 				if (!in_array($addMemoSingle, $memoItems)) {
 					$uid = intval($addMemoSingle);
 					if ($uid) {
@@ -132,11 +141,38 @@ class tx_ttproducts_control_memo {
 			}
 		}
 
-		if ($delMemo) {
-			foreach ($delMemo as $delMemoSingle) {
+		if (isset($memoArray['delmemo']) && is_array($memoArray['delmemo'])) {
+			foreach ($memoArray['delmemo'] as $delMemoSingle) {
 				$val = intval($delMemoSingle);
 				if (in_array($val, $memoItems)) {
 					unset($memoItems[array_search($val, $memoItems)]);
+					$bMemoChanged = TRUE;
+				}
+			}
+		}
+
+		if (isset($memoArray['upmemo']) && is_array($memoArray['upmemo'])) {
+			foreach ($memoArray['upmemo'] as $memoSingle) {
+				$val = intval($memoSingle);
+				$key = array_search($val, $memoItems);
+				if ($key !== FALSE && $key > 0) {
+					$formerValue = $memoItems[$key - 1];
+					$memoItems[$key - 1] = $val;
+					$memoItems[$key] = $formerValue;
+					$bMemoChanged = TRUE;
+				}
+			}
+		}
+
+		if (isset($memoArray['downmemo']) && is_array($memoArray['downmemo'])) {
+			$maxKey = count($memoItems) - 1;
+			foreach ($memoArray['downmemo'] as $memoSingle) {
+				$val = intval($memoSingle);
+				$key = array_search($val, $memoItems);
+				if ($key !== FALSE && $key < $maxKey) {
+					$formerValue = $memoItems[$key + 1];
+					$memoItems[$key + 1] = $val;
+					$memoItems[$key] = $formerValue;
 					$bMemoChanged = TRUE;
 				}
 			}
@@ -171,6 +207,7 @@ class tx_ttproducts_control_memo {
 				$v = explode(',', $v);
 			}
 		}
+
 		self::$memoItemArray[$functablename] = $v;
 	}
 
@@ -194,10 +231,10 @@ class tx_ttproducts_control_memo {
 	static public function readFeUserMemoItems ($functablename) {
 		$result = '';
 		$tableArray = self::getMemoTableFieldArray();
-		$field = $tableArray[$functablename];
+		$feuserField = self::getMemoField($functablename, TRUE);
 
-		if ($GLOBALS['TSFE']->fe_user->user[$field]) {
-			$result = explode(',', $GLOBALS['TSFE']->fe_user->user[$field]);
+		if ($GLOBALS['TSFE']->fe_user->user[$feuserField]) {
+			$result = explode(',', $GLOBALS['TSFE']->fe_user->user[$feuserField]);
 		}
 
 		return $result;
@@ -206,7 +243,6 @@ class tx_ttproducts_control_memo {
 	static public function loadMemo ($functablename, $conf) {
 		$memoItems = '';
 		$bFeuser = self::bUseFeuser($conf);
-		$theField = self::getMemoField($functablename, $bFeuser);
 
 		if (self::bUseFeuser($conf)) {
 

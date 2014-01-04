@@ -78,17 +78,17 @@ class tx_ttproducts_cache {
 
 	// Todo. See http://wiki.typo3.org/Caching_framework
     protected function getCachedMagic () {
-        $cacheIdentifier = $this->calculateCacheIdentifier();
+		$cacheIdentifier = $this->calculateCacheIdentifier();
 
         // If $entry is null, it hasn't been cached. Calculate the value and store it in the cache:
-        if (is_null($entry = $GLOBALS['typo3CacheManager']->getCache('myCache')->get($cacheIdentifier))) {
-            $entry = $this->calculateMagic();
+		if (is_null($entry = $GLOBALS['typo3CacheManager']->getCache('myCache')->get($cacheIdentifier))) {
+				$entry = $this->calculateMagic();
 
-            // [calculate lifetime and assigned tags]
+				// [calculate lifetime and assigned tags]
 
-            // Save value in cache
-            $GLOBALS['typo3CacheManager']->getCache('myCache')->set($cacheIdentifier, $entry, $tags, $lifetime);
-        }
+				// Save value in cache
+				$GLOBALS['typo3CacheManager']->getCache('myCache')->set($cacheIdentifier, $entry, $tags, $lifetime);
+			}
         return $entry;
 	}
 }

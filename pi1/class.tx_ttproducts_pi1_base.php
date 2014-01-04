@@ -82,7 +82,6 @@ class tx_ttproducts_pi1_base extends tslib_pibase {
 			tx_div2007_alpha5::loadLL_fh002($this, 'EXT:' . TT_PRODUCTS_EXT . '/pi1/locallang.xml');
 			$content = tx_div2007_alpha5::getLL_fh002($this,'no_template').' plugin.tt_products.templateFile';
 		}
-debug ($content, 'main ENDE $content');
 
 		return $content;
 	}

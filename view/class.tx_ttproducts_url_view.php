@@ -93,12 +93,12 @@ class tx_ttproducts_url_view {
 	 * @param	[type]		$css_current: ...
 	 * @return	[type]		...
 	 */
-	function getWrappedSubpartArray (&$wrappedSubpartArray,$addQueryString=array(),$css_current='')	{
+	function getWrappedSubpartArray (&$wrappedSubpartArray, $addQueryString = array(), $css_current = '')	{
 		global $TSFE;
 
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$pageLink = $this->pibase->pi_getPageLink($pidBasket,'',$this->getLinkParams('',$addQueryString,true)) ;
-		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'. $pageLink .'"'.$css_current.'>','</a>');
+		$pageLink = $this->pibase->pi_getPageLink($pidBasket, '', $this->getLinkParams('', $addQueryString, true)) ;
+		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="' . htmlspecialchars($pageLink) .'"' . $css_current . '>', '</a>');
 	}
 
 	/**
@@ -111,7 +111,7 @@ class tx_ttproducts_url_view {
 	 * @param	[type]		$bExcludeSingleVar: ...
 	 * @return	[type]		...
 	 */
-	function addURLMarkers ($pidNext,$markerArray,$addQueryString=array(),$excludeList='',$bUseBackPid=TRUE,$bExcludeSingleVar=TRUE)	{
+	function addURLMarkers ($pidNext, $markerArray, $addQueryString = array(), $excludeList = '', $bUseBackPid = TRUE, $bExcludeSingleVar = TRUE)	{
 		global $TSFE;
 
 		$charset = $TSFE->renderCharset;
@@ -223,7 +223,7 @@ class tx_ttproducts_url_view {
 	 * @param	[type]		$piVarCat: ...
 	 * @return	[type]		...
 	 */
-	function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=false,$bUseBackPid=true,$piVarSingle='product',$piVarCat='cat') {
+	function getLinkParams ($excludeList = '', $addQueryString = array(), $bUsePrefix = false, $bUseBackPid = true, $piVarSingle = 'product', $piVarCat = 'cat') {
 		global $TSFE;
 
 		$queryString=array();
@@ -257,13 +257,13 @@ class tx_ttproducts_url_view {
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'sword', $bUsePrefix);
 
-		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
-		if (!$temp)	{
-			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
-		}
-		if ($temp) {
-			$queryString['sword'] = $temp;
-		}
+// 		$sword = t3lib_div::_GP('sword') ? t3lib_div::_GP('sword') : '';
+// 		if (!$sword) {
+// 			$sword = t3lib_div::_GP('swords') ? t3lib_div::_GP('swords') : '';
+// 		}
+// 		if ($sword) {
+// 			$queryString['sword'] = rawurlencode(rawurldecode($sword));
+// 		}
 
 		foreach($queryString as $key => $val)	{
 			if ($val=='' || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
@@ -286,7 +286,7 @@ class tx_ttproducts_url_view {
 			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['getLinkParams'] as $classRef) {
 				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getLinkParams')) {
-					$hookObj->getLinkParams($this,$queryString,$excludeList,$addQueryString,$bUsePrefix,$bUseBackPid,$piVarCat);
+					$hookObj->getLinkParams($this, $queryString, $excludeList, $addQueryString, $bUsePrefix, $bUseBackPid, $piVarCat);
 				}
 			}
 		}

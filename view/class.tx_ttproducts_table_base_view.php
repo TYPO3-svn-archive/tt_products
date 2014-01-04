@@ -38,7 +38,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_base_view.php');
+// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_base_view.php');
 
 
 abstract class tx_ttproducts_table_base_view	{
@@ -265,7 +265,7 @@ abstract class tx_ttproducts_table_base_view	{
 							$rowMarkerArray['###' . $theTag . '###'] = '';
 						}
 					}
-					if (!isset($rowMarkerArray['###' . $theTag . '###']) && strpos($theTag,$markerKey) === 0)	{
+					if (!isset($rowMarkerArray['###' . $theTag . '###']) && strpos($theTag, $markerKey) === 0)	{
 // Todo
 					}
 				}

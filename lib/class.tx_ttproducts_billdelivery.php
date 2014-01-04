@@ -127,11 +127,11 @@ class tx_ttproducts_billdelivery {
 			// Getting subparts from the template code.
 		$t=array();
 			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
-		$t['orderFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$this->subpartmarkerObj->spMarker($subpartMarker));
+		$t['orderFrameWork'] = $this->pibase->cObj->getSubpart($templateCode, $this->subpartmarkerObj->spMarker($subpartMarker));
 
-		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_CATEGORY###');
-		$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'],'###ITEM_LIST###');
-		$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
+		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'], '###ITEM_CATEGORY###');
+		$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'], '###ITEM_LIST###');
+		$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'], '###ITEM_SINGLE###');
 
 		$categoryQty = array();
 	//	  $categoryPrice = array();
@@ -224,14 +224,14 @@ class tx_ttproducts_billdelivery {
 
 						$markerArray['###PRICE_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($actItem['priceTax'], $taxInclExcl));
 						$markerArray['###PRICE_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($actItem['priceNoTax'], $taxInclExcl));
-						$markerArray['###PRICE_ONLY_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($actItem['priceTax']-$actItem['priceNoTax']));
+						$markerArray['###PRICE_ONLY_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($actItem['priceTax'] - $actItem['priceNoTax']));
 
 						$markerArray['###FIELD_QTY###'] = $actItem['count'];
 						$markerArray['###PRICE_TOTAL_TAX###'] = $priceViewObj->priceFormat($actItem['totalTax']);
 						$markerArray['###PRICE_TOTAL_NO_TAX###'] = $priceViewObj->priceFormat($actItem['totalNoTax']);
-						$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $priceViewObj->priceFormat($actItem['totalTax']-$actItem['totalNoTax']);
+						$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $priceViewObj->priceFormat($actItem['totalTax'] - $actItem['totalNoTax']);
 
-						$itemsOut = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,array(),$wrappedSubpartArray);
+						$itemsOut = $this->pibase->cObj->substituteMarkerArrayCached($t['item'], $markerArray,array(), $wrappedSubpartArray);
 						if ($itemsOut) {
 							$out2 =$this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
 							$out .= $out2;
@@ -257,8 +257,8 @@ class tx_ttproducts_billdelivery {
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['billing'][$fName];
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['delivery'][$fName];
 		}
-		$staticInfo = t3lib_div::getUserObj('&tx_staticinfotables_pi1');
-		$staticInfo->init();
+		tx_ttproducts_static_info::init();
+		$staticInfo = tx_ttproducts_static_info::getStaticInfo();
 
 		if (isset($orderData['billing']['country_code'])) {
 			$markerArray['###PERSON_COUNTRY###'] =

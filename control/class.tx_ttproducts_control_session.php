@@ -97,8 +97,9 @@ class tx_ttproducts_control_session {
 					unset($allSessionData[$extKey][$key]);
 				}
 			} else {
-				$typo3Version = class_exists('t3lib_utility_VersionNumber') ? t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version) : t3lib_div::int_from_ver(TYPO3_version);
-				if ($typo3Version < 4007000) {
+				$className = tx_div2007_core::getTypoVersion();
+
+				if ($typoVersion < 4007000) {
 					foreach ($keys as $key) {
 						if ($data[$key] == '__UNSET') {
 							unset($data[$key]);

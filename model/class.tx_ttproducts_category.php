@@ -38,9 +38,9 @@
  *
  *
  */
-
+/*
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
+require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');*/
 
 
 class tx_ttproducts_category extends tx_ttproducts_category_base {
@@ -207,7 +207,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 * @param	integer		$pid: page id
 	 * @return	array		related uid array
 	 */
-	function &getRelated ($rootUids,$currentCat,$pid=0, $orderBy='') {
+	function &getRelated ($rootUids, $currentCat, $pid = 0, $orderBy = '') {
 		global $TYPO3_DB;
 
 		$relatedArray = array();
@@ -224,21 +224,20 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		foreach ($uidArray as $uid)	{
 
 			if (
-				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
-				t3lib_div::testInt($uid)
+				tx_div2007_core::testInt($uid)
 			) {
-				$row = $this->get($uid, $pid, in_array($uid, $rootArray),'','','',FALSE,'',$orderBy);
+				$row = $this->get($uid, $pid, in_array($uid, $rootArray), '', '', '', FALSE, '', $orderBy);
 				$relatedArray[$uid] = $row;
 
 				if (isset($rootLine[$uid]))	{
 					if ($this->parentField)	{
-						$where = $this->parentField.'='.intval($uid);
+						$where = $this->parentField . '=' . intval($uid);
 					} else {
 						$where = '1=1';
 					}
-					$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
+					$where .= ($pid ? ' AND pid IN (' . $pid . ')' : '');
 					$where .= $tableObj->enableFields();
-					$res = $tableObj->exec_SELECTquery('*',$where,'',$TYPO3_DB->stripOrderBy($orderBy));
+					$res = $tableObj->exec_SELECTquery('*', $where,'', $TYPO3_DB->stripOrderBy($orderBy));
 
 					while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 
@@ -270,8 +269,8 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			$tableObj = $this->getTableObj();
 
 			$where = '1=1 '.$tableObj->enableFields();
-			$where .= ' AND title='.$TYPO3_DB->fullQuoteStr($title,$tableObj->name);
-			$res = $tableObj->exec_SELECTquery('*',$where);
+			$where .= ' AND title='.$TYPO3_DB->fullQuoteStr($title, $tableObj->name);
+			$res = $tableObj->exec_SELECTquery('*', $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$TYPO3_DB->sql_free_result($res);
 			$rc = $this->titleArray[$title] = $row;
@@ -344,10 +343,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			if (
 				is_array($tableConf['special.']) &&
 				(
-					(
-						class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tableConf['special.']['all']) :
-						t3lib_div::testInt($tableConf['special.']['all'])
-					) &&
+					tx_div2007_core::testInt($tableConf['special.']['all']) &&
 					in_array($tableConf['special.']['all'], $catArray) ||
 					$tableConf['special.']['all'] == 'all'
 				)
@@ -355,10 +351,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 				$cat = '';	// no filter shall be used
 			} else if (
 				is_array($tableConf['special.']) &&
-				(
-					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tableConf['special.']['no']) :
-					t3lib_div::testInt($tableConf['special.']['no'])
-				) &&
+				tx_div2007_core::testInt($tableConf['special.']['no']) &&
 				in_array($tableConf['special.']['no'], $catArray)
 			) {
 				$cat = '0';	// no products shall be shown
@@ -423,7 +416,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	 * @param	[type]		$allowedCats: ...
 	 * @return	[type]		...
 	 */
-	function &getRelationArray ($excludeCats='',$rootUids='',$allowedCats='') {
+	function &getRelationArray ($excludeCats = '', $rootUids = '', $allowedCats = '') {
 		$relationArray = array();
 		$rootArray = t3lib_div::trimExplode(',', $rootUids);
 		$catArray = t3lib_div::trimExplode(',', $allowedCats);

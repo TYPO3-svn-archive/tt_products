@@ -250,8 +250,7 @@ abstract class tx_ttproducts_catlist_view_base {
 					}
 					$rootCat = $currentCat;
 					if (
-						class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($rootCat) :
-						t3lib_div::testInt($rootCat)
+						tx_div2007_core::testInt($rootCat)
 					) {
 						$allowedCatArray[] = $rootCat;
 					}

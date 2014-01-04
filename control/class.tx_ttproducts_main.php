@@ -229,7 +229,6 @@ class tx_ttproducts_main {
 
 		if (!$bRunAjax) {
 			// ### central initialization ###
-			t3lib_div::requireOnce(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');
 			$db = t3lib_div::getUserObj('&tx_ttproducts_db');
 			$result = $db->init($conf, $config, $this->ajax, $pibase, $error_code); // this initializes tx_ttproducts_config inside of creator
 		}
@@ -266,27 +265,12 @@ class tx_ttproducts_main {
 		$this->templateSuffix = strtoupper($this->templateSuffix);
 		$this->templateSuffix = ($this->templateSuffix ? '_'.$this->templateSuffix : '');
 		$config['limit'] = $this->conf['limit'] ? $this->conf['limit'] : 50;
-		$config['limitImage'] =
-			(
-				class_exists('t3lib_utility_Math') ?
-					t3lib_utility_Math::forceIntegerInRange($this->conf['limitImage'], 0, 50, 1) :
-					t3lib_div::intInRange($this->conf['limitImage'], 0, 50)
-			);
+		$config['limitImage'] = tx_div2007_core::intInRange($this->conf['limitImage'], 0, 50, 1);
 		$config['limitImage'] = $config['limitImage'] ? $config['limitImage'] : 1;
-		$config['limitImageSingle'] =
-			(
-				class_exists('t3lib_utility_Math') ?
-					t3lib_utility_Math::forceIntegerInRange($this->conf['limitImageSingle'], 0, 50) :
-					t3lib_div::intInRange($this->conf['limitImageSingle'], 0, 50)
-			);
+		$config['limitImageSingle'] = tx_div2007_core::intInRange($this->conf['limitImageSingle'], 0, 50, 1);
 		$config['limitImageSingle'] = $config['limitImageSingle'] ? $config['limitImageSingle'] : 1;
 		$recursive = ($this->cObj->data['recursive'] ? $this->cObj->data['recursive']: $this->conf['recursive']);
-		$config['recursive'] =
-			(
-				class_exists('t3lib_utility_Math') ?
-					t3lib_utility_Math::forceIntegerInRange($recursive, 0, 100) :
-					t3lib_div::intInRange($recursive, 0, 100)
-			);
+		$config['recursive'] = tx_div2007_core::intInRange($recursive, 0, 100);
 
 		if ($this->conf['PIDstoreRoot'])	{
 			$config['storeRootPid'] = $this->conf['PIDstoreRoot'];
@@ -300,12 +284,7 @@ class tx_ttproducts_main {
 		}
 
 		if ($this->conf['priceNoReseller']) {
-			$config['priceNoReseller'] =
-				(
-					class_exists('t3lib_utility_Math') ?
-						t3lib_utility_Math::forceIntegerInRange($this->conf['priceNoReseller'], 2, 10) :
-						t3lib_div::intInRange($this->conf['priceNoReseller'], 2, 10)
-				);
+			$config['priceNoReseller'] = tx_div2007_core::intInRange($this->conf['priceNoReseller'], 2, 10);
 		}
 
 		if ($this->conf['pid_list'] == '{$plugin.tt_products.pid_list}')	{
@@ -337,22 +316,19 @@ class tx_ttproducts_main {
 			}
 
 			if (
-				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tmp) :
-				t3lib_div::testInt($tmp)
+				tx_div2007_core::testInt($tmp)
 			) {
-				$this->tt_product_single['product'] = $tmp;
+				$this->tt_product_single['product'] = intval($tmp);
 			}
 			$tmp = ($this->piVars['article'] ? $this->piVars['article'] : '');
 			if (
-				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tmp) :
-				t3lib_div::testInt($tmp)
+				tx_div2007_core::testInt($tmp)
 			) {
 				$this->tt_product_single['article'] = $tmp;
 			}
 			$tmp = ($this->piVars['dam'] ? $this->piVars['dam'] : '');
 			if (
-				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($tmp) :
-				t3lib_div::testInt($tmp)
+				tx_div2007_core::testInt($tmp)
 			) {
 				$this->tt_product_single['dam'] = $tmp;
 			}
@@ -377,11 +353,11 @@ class tx_ttproducts_main {
 
 			// get all extending TCAs
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['extendingTCA']))	{
-			tx_div2007_alpha::loadTcaAdditions_fh001($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['extendingTCA']);
+				tx_div2007_alpha::loadTcaAdditions_fh001($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['extendingTCA']);
 		}
 
 		if ($this->conf['templateStyle'] == 'css-styled')	{
-			include_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_css.php');
+			include_once(PATH_BE_ttproducts . 'lib/class.tx_ttproducts_css.php');
 			$this->css = t3lib_div::makeInstance('tx_ttproducts_css');
 			$this->css->init(
 				$this->pibase
@@ -421,11 +397,6 @@ class tx_ttproducts_main {
 
 		$classRef = '&tx_ttproducts_paymentshipping';
 
-// 		$loadTablesArray = array('tt_products', 'tt_products_articles', 'tt_content', 'fe_users');
-// 		if (t3lib_extMgm::isLoaded('dam') || $this->piVars['dam']) {
-// 			$loadTablesArray[] = 'tx_dam';
-// 			$loadTablesArray[] = 'tx_dam_cat';
-// 		}
 		$this->javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
 
 			// JavaScript
@@ -587,7 +558,6 @@ class tx_ttproducts_main {
 						'MENUDAMCAT' => 'ITEM_DAMCATMENU_TEMPLATE',
 						'MENUAD' => 'ITEM_ADDRESS_MENU_TEMPLATE',
 					);
-					t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.tx_ttproducts_catlist_view.php');
 					if (substr($theCode,-2,2) == 'AD')	{
 						$tablename = '';
 						$functablename = 'address';
@@ -628,7 +598,6 @@ class tx_ttproducts_main {
 						} else if (substr($theCode,0, 4) == 'MENU') {
 							$categoryClass = 'tx_ttproducts_menucat_view';
 						}
-						t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.' . $categoryClass . '.php');
 
 							// category view
 						$categoryView = t3lib_div::makeInstance($categoryClass);
@@ -666,21 +635,18 @@ class tx_ttproducts_main {
 					if ($this->convertToUserInt()) {
 						return '';
 					}
-					t3lib_div::requireOnce(PATH_BE_ttproducts . 'lib/class.tx_ttproducts_billdelivery.php');
 					$contentTmp=$this->products_tracking($theCode);
 				break;
 				case 'TRACKING':
 					if ($this->convertToUserInt()) {
 						return '';
 					}
-					t3lib_div::requireOnce(PATH_BE_ttproducts . 'lib/class.tx_ttproducts_tracking.php');
 					$contentTmp=$this->products_tracking($theCode);
 				break;
 				case 'MEMO':
 					if ($this->convertToUserInt()) {
 						return '';
 					}
-					t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.tx_ttproducts_memo_view.php');
 
 						// memo view: has to be called always because it reads parameters from the list
 					$this->memoView = t3lib_div::makeInstance('tx_ttproducts_memo_view');
@@ -697,7 +663,6 @@ class tx_ttproducts_main {
 					if ($this->convertToUserInt()) {
 						return '';
 					}
-					t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.tx_ttproducts_currency_view.php');
 						// currency view
 					$currencyView = t3lib_div::makeInstance('tx_ttproducts_currency_view');
 					$currencyView->init($this->pibase);
@@ -708,7 +673,6 @@ class tx_ttproducts_main {
 					if ($this->convertToUserInt()) {
 						return '';
 					}
-					t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.tx_ttproducts_order_view.php');
 
 						// order view
 					$orderView = t3lib_div::makeInstance('tx_ttproducts_order_view');
@@ -718,7 +682,6 @@ class tx_ttproducts_main {
 				case 'SINGLECAT':
 				case 'SINGLEDAMCAT':
 				case 'SINGLEAD':
-					t3lib_div::requireOnce (PATH_BE_ttproducts.'view/class.tx_ttproducts_cat_view.php');
 					$catView = t3lib_div::makeInstance('tx_ttproducts_cat_view');
 					$catView->init(
 						$this->pibase,
@@ -728,7 +691,7 @@ class tx_ttproducts_main {
 					);
 					$tableInfoArray = array('SINGLECAT' => 'tt_products_cat', 'SINGLEDAMCAT' => 'tx_dam_cat', 'SINGLEAD' => 'address');
 					$functablename = $tableInfoArray[$theCode];
-					$tableObj = $tablesObj->get($functablename);
+					$tableObj = $tablesObj->get($functablename, TRUE);
 					$uid = $this->pibase->piVars[$tableObj->getPivar()];
 
 					if ($uid)	{
@@ -801,12 +764,12 @@ class tx_ttproducts_main {
 			if ($contentTmp == 'error') {
 					$fileName = 'EXT:'.TT_PRODUCTS_EXT.'/template/products_help.tmpl';
 					$helpTemplate = $this->cObj->fileResource($fileName);
-					$content .= tx_div2007_alpha::displayHelpPage_fh001($this->pibase,$helpTemplate,TT_PRODUCTS_EXT, $this->errorMessage, $theCode);
+					$content .= tx_div2007_alpha::displayHelpPage_fh001($this->pibase, $helpTemplate, TT_PRODUCTS_EXT, $this->errorMessage, $theCode);
 
 					unset($this->errorMessage);
 					break; // while
 			} else {
-				$content .= tx_div2007_alpha::wrapContentCode_fh003($contentTmp,$theCode,$this->pibase->prefixId,$this->cObj->data['uid']);
+				$content .= tx_div2007_alpha::wrapContentCode_fh003($contentTmp, $theCode, $this->pibase->prefixId, $this->cObj->data['uid']);
 			}
 		}
 
@@ -819,7 +782,7 @@ class tx_ttproducts_main {
 		} else {
 			$content = $this->pibase->pi_wrapInBaseClass($content);
 			if (is_object($this->css) && ($this->css->conf['file']))	{
-				$rc = '<style type="text/css">'.$this->cObj->fileResource($this->css->conf['file']).'</style>'.chr(13).$content;
+				$rc = '<style type="text/css">' . $this->cObj->fileResource($this->css->conf['file']) . '</style>' . chr(13) . $content;
 			} else {
 				$rc = $content;
 			}
@@ -922,7 +885,7 @@ class tx_ttproducts_main {
 		$urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
 		$updateCode = '';
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
-		include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
+// 		include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
 		$subpartmarkerObj = t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
 
 		$trackingCode = t3lib_div::_GP('tracking');
@@ -984,7 +947,7 @@ class tx_ttproducts_main {
 		}
 
 		$markerArray = array();
-		$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink($TSFE->id,'',$urlObj->getLinkParams('',array(),true)) ; // $this->getLinkUrl();	// Add FORM_URL to globalMarkerArray, linking to self.
+		$markerArray['###FORM_URL###'] = $this->pibase->pi_getPageLink($TSFE->id, '', $urlObj->getLinkParams('', array(), true)) ; // $this->getLinkUrl();	// Add FORM_URL to globalMarkerArray, linking to self.
 		$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 
 		return $content;
@@ -1113,7 +1076,6 @@ class tx_ttproducts_main {
 				$this->templateSuffix
 			);
 		} else {
-			t3lib_div::requireOnce(PATH_BE_ttproducts . 'view/class.tx_ttproducts_list_view.php');
 
 	// page where to go usually
 			$pid = ($this->conf['PIDbasket'] && $this->conf['clickIntoBasket'] ? $this->conf['PIDbasket'] : $TSFE->id);

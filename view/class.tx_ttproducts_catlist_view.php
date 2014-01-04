@@ -39,7 +39,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php');
+// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php');
 
 class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 
@@ -211,7 +211,7 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 		$pid = $pageObj->getPID($this->conf['PIDlistDisplay'], $this->conf['PIDlistDisplay.'], $row);
 		$addQueryString = array($categoryTableViewObj->getPivar() => $actCategory);
 		$linkUrl = $this->pibase->pi_linkTP_keepPIvars_url($addQueryString,1,1,$pid);
-		$linkOutArray = array('<a href="'. $linkUrl .'"'.$css.'>','</a>');
+		$linkOutArray = array('<a href="' . htmlspecialchars($linkUrl) . '" ' . $css . '>', '</a>');
 		$linkOut = $linkOutArray[0].$row['title'].$linkOutArray[1];
 		$categoryTableViewObj->getMarkerArray (
 			$markerArray,
@@ -227,7 +227,7 @@ class tx_ttproducts_catlist_view extends tx_ttproducts_catlist_view_base {
 			''
 		);
 		$markerArray['###LIST_LINK###'] = $linkOut;
-		$markerArray['###LIST_LINK_URL###'] = $linkUrl;
+		$markerArray['###LIST_LINK_URL###'] = htmlspecialchars($linkUrl);
 	}
 }
 

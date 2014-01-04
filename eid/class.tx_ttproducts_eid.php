@@ -164,7 +164,9 @@ $ajax = t3lib_div::makeInstance('tx_ttproducts_ajax');
 $ajax->init();
 
 $SOBE = t3lib_div::makeInstance('tx_ttproducts_db');
-$SOBE->init($conf, $config, $ajax);
+$errorCode = '';
+$SOBE->init($conf, $config, $ajax, $tmp = '', $errorCode);
+
 if($_POST['xajax']){
 	global $trans;
 	$trans = $this;

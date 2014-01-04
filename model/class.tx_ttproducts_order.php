@@ -79,7 +79,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 					$randomValue = rand(intval($rndParts[0]), intval($rndParts[1]));
 					$advanceUid = $prevUid +
 						(
-							class_exists('t3lib_utility_Math') ? t3lib_utility_Math::forceIntegerInRange($randomValue, 1) : t3lib_div::intInRange($randomValue, 1)
+							tx_div2007_core::intInRange($randomValue, 1)
 						);
 				} else {
 					$advanceUid = $prevUid + 1;
@@ -127,8 +127,8 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 			$orderUid = $this->create();
 			$this->basket->order['orderUid'] = $orderUid;
 			$this->basket->order['orderDate'] = time();
-			$this->basket->order['orderTrackingNo'] = $this->getNumber($orderUid).'-'.strtolower(substr(md5(uniqid(time())),0,6));
-			$TSFE->fe_user->setKey('ses','order',$this->basket->order);
+			$this->basket->order['orderTrackingNo'] = $this->getNumber($orderUid) . '-' . strtolower(substr(md5(uniqid(time())), 0, 6));
+			$TSFE->fe_user->setKey('ses', 'order', $this->basket->order);
 		}
 		$TYPO3_DB->sql_free_result($res);
 		return $orderUid;
@@ -145,7 +145,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 		global $TSFE;
 
 		$this->basket->order['orderUid'] = '';
-		$TSFE->fe_user->setKey('ses','order',array());
+		$TSFE->fe_user->setKey('ses', 'order', array());
 	}
 
 
@@ -159,7 +159,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 	 */
 	function getRecord ($orderUid,$tracking='')	{
 		global $TYPO3_DB;
-		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders', ($tracking ? 'tracking_code='.$TYPO3_DB->fullQuoteStr($tracking, 'sys_products_orders') : 'uid='.intval($orderUid)).' AND NOT deleted');
+		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders', ($tracking ? 'tracking_code=' . $TYPO3_DB->fullQuoteStr($tracking, 'sys_products_orders') : 'uid=' . intval($orderUid)) . ' AND NOT deleted');
 		$rc = $TYPO3_DB->sql_fetch_assoc($res);
 		$TYPO3_DB->sql_free_result($res);
 		return $rc;
@@ -174,7 +174,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 	 * @return	[type]		...
 	 */
 	function getNumber ($orderUid)	{
-		$orderNumberPrefix = substr($this->conf['orderNumberPrefix'],0,15);
+		$orderNumberPrefix = substr($this->conf['orderNumberPrefix'], 0, 30);
 		if ($orderNumberPrefix[0] == '%')
 			$orderNumberPrefix = date(substr($orderNumberPrefix, 1));
 		return $orderNumberPrefix.$orderUid;
@@ -221,20 +221,12 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 			// Fix delivery address
 
 		if ($deliveryInfo['date_of_birth'])	{
-			$dateArray = t3lib_div::trimExplode ('-', $deliveryInfo['date_of_birth']);
+			$dateArray = t3lib_div::trimExplode('-', $deliveryInfo['date_of_birth']);
 
 			if (
-				class_exists('t3lib_utility_Math') ?
-					(
-						t3lib_utility_Math::canBeInterpretedAsInteger($dateArray[0]) &&
-						t3lib_utility_Math::canBeInterpretedAsInteger($dateArray[1]) &&
-						t3lib_utility_Math::canBeInterpretedAsInteger($dateArray[2])
-					) :
-					(
-						t3lib_div::testInt($dateArray[0]) &&
-						t3lib_div::testInt($dateArray[1]) &&
-						t3lib_div::testInt($dateArray[2])
-					)
+				tx_div2007_core::testInt($dateArray[0]) &&
+				tx_div2007_core::testInt($dateArray[1]) &&
+				tx_div2007_core::testInt($dateArray[2])
 			) {
 				$dateBirth = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
 			}
@@ -294,7 +286,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 			}
  		}
 
-		$fieldsArray['giftservice'] = $deliveryInfo['giftservice'].'||'.implode(',',$giftServiceArticleArray);
+		$fieldsArray['giftservice'] = $deliveryInfo['giftservice'] . '||' . implode(',', $giftServiceArticleArray);
 		$fieldsArray['foundby'] = $deliveryInfo['foundby'];
 		$fieldsArray['client_ip'] = t3lib_div::getIndpEnv('REMOTE_ADDR');
 		$fieldsArray['cc_uid'] = $cardUid;

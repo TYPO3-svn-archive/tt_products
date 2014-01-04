@@ -8,8 +8,6 @@ addressTable =
 imageFolder = uploads/pics
   # cat=basic/enable; type=string; label=Order tables by sorting: Enter a comma separated list of tt_products table names where the items should be listed by sorting in the backend
 orderBySortingTables =
-  # cat=basic/enable; type=boolean; label=Use patch 1822: Automatically activated in TYPO3 >= 4.4. Otherwise you need to apply the patch for bug #1822 from bugs.typo3.org or install the extension patch1822 to have an advanced page module.
-usePatch1822 =
   # cat=basic/enable; type=string; label=category where: Foreign table where for the selection of categories. See TSConfig for more info.
 where.category =
   # cat=basic/enable; type=string; label=tt_products exclude: exclude these fields from the table tt_products.
@@ -24,4 +22,12 @@ exclude.tt_products_cat_language
 exclude.tt_products_articles =
   # cat=basic/enable; type=string; label=tt_products_articles_language exclude: exclude these fields from the table tt_products_articles_language.
 exclude.tt_products_articles_language =
+  # cat=basic/enable; type=string; label=tt_products_texts exclude: exclude these fields from the table tt_products_texts.
+exclude.tt_products_texts =
+  # cat=basic/enable; type=string; label=tt_products_texts_language exclude: exclude these fields from the table tt_products_texts_language.
+exclude.tt_products_texts_language =
+  # cat=cache/enable; type=boolean; label=Cache for Backend: Click here if you want to activate the backend cache for tt_products tables.
+cache.backend = 0
+  # cat=cache/enable; type=string; label=Cache Options for Server: Enter the cache options for the server.
+cache.options.servers =
 

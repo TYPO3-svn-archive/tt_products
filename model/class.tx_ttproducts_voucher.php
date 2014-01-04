@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
+// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 
 

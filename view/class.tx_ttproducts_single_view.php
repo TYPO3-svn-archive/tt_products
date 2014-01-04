@@ -42,11 +42,11 @@
  *
  */
 
-
+/*
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_javascript_marker.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
+require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');*/
 
 
 class tx_ttproducts_single_view {
@@ -245,9 +245,9 @@ class tx_ttproducts_single_view {
 			}
 
 			if (count($giftNumberArray)) {
-				$personDataFrameWork = $this->cObj->getSubpart($itemFrameWork,'###PERSON_DATA###');
+				$personDataFrameWork = $this->cObj->getSubpart($itemFrameWork, '###PERSON_DATA###');
 				// the itemFramework is a smaller part here
-				$itemFrameWork = $this->cObj->getSubpart($itemFrameWork,'###PRODUCT_DATA###');
+				$itemFrameWork = $this->cObj->getSubpart($itemFrameWork, '###PRODUCT_DATA###');
 			}
 
 			// set the title of the single view
@@ -392,7 +392,7 @@ class tx_ttproducts_single_view {
 
 				$queryString = $this->urlObj->getLinkParams($excludeList, $addQueryString, TRUE, FALSE, $viewCatViewTable->getPivar());
 
-				$linkUrl = tx_div2007_alpha::getPageLink_fh002($this->cObj,$linkPid,'',$queryString, array('useCacheHash' => TRUE));
+				$linkUrl = tx_div2007_alpha::getPageLink_fh002($this->cObj, $linkPid, '', $queryString, array('useCacheHash' => TRUE));
 				$linkUrl = htmlspecialchars($linkUrl);
 				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="' . $linkUrl . '">','</a>');
 			}
@@ -538,7 +538,7 @@ class tx_ttproducts_single_view {
 			if ($bUseBackPid && $backPID)	{
 				$addQueryString['backPID'] = $backPID;
 			}
-			$markerArray = $this->urlObj->addURLMarkers($pid, $markerArray, $addQueryString,'',$bUseBackPid); // Applied it here also...
+			$markerArray = $this->urlObj->addURLMarkers($pid, $markerArray, $addQueryString, '', $bUseBackPid); // Applied it here also...
 			$queryPrevPrefix = '';
 			$queryNextPrefix = '';
 			$prevOrderby = '';
@@ -547,8 +547,8 @@ class tx_ttproducts_single_view {
 
 			if ($this->conf['orderByItemNumberSg']) {
 				$itemnumberField = $itemTableArray[$this->type]->fields['itemnumber'];
-				$queryPrevPrefix = $itemnumberField.' < '.$TYPO3_DB->fullQuoteStr($origRow[$itemnumberField],$tablename);
-				$queryNextPrefix = $itemnumberField.' > '.$TYPO3_DB->fullQuoteStr($origRow[$itemnumberField],$tablename);
+				$queryPrevPrefix = $itemnumberField.' < ' . $TYPO3_DB->fullQuoteStr($origRow[$itemnumberField], $tablename);
+				$queryNextPrefix = $itemnumberField.' > ' . $TYPO3_DB->fullQuoteStr($origRow[$itemnumberField], $tablename);
 				$prevOrderby = $itemnumberField.' DESC';
 				$nextOrderby = $itemnumberField.' ASC';
 				$bDefaultOrder = FALSE;
@@ -569,11 +569,11 @@ class tx_ttproducts_single_view {
 						foreach($orderByFieldArray as $i => $orderByFieldLine)	{
 							$bIsDesc = (stripos($orderByFieldLine,'DESC') !== FALSE);
 							$bIsLast = ($i == $count - 1);
-							$orderByField = str_ireplace('ASC','',$orderByFieldLine);
-							$orderByField = trim(str_ireplace('DESC','',$orderByField));
+							$orderByField = str_ireplace('ASC', '', $orderByFieldLine);
+							$orderByField = trim(str_ireplace('DESC', '', $orderByField));
 							$comparatorPrev = ($bIsDesc ? '>' : '<');
 							$comparatorNext = ($bIsDesc ? '<' : '>');
-							$comparand = $TYPO3_DB->fullQuoteStr($origRow[$orderByField],$tablename);
+							$comparand = $TYPO3_DB->fullQuoteStr($origRow[$orderByField], $tablename);
 
 							$newPrevPrevix = $orderByField . ' '. $comparatorPrev . ' ' . $comparand;
 							$newNextPrevix = $orderByField . ' ' . $comparatorNext . ' ' . $comparand;
@@ -592,16 +592,16 @@ class tx_ttproducts_single_view {
 								$queryNextPrefixArray[] = $newNextPrevix;
 							}
 						}
-						$queryNextPrefix = '(' . implode(' AND ',$queryNextPrefixArray) . (count($queryNextPrefixArray) > 0 ? ' OR ' : '') . $lastNextPrevix . ')';
-						$queryPrevPrefix = '(' . implode(' AND ',$queryPrevPrefixArray) . (count($queryNextPrefixArray) > 0 ? ' OR ' : '') . $lastPrevPrevix . ')';
+						$queryNextPrefix = '(' . implode(' AND ', $queryNextPrefixArray) . (count($queryNextPrefixArray) > 0 ? ' OR ' : '') . $lastNextPrevix . ')';
+						$queryPrevPrefix = '(' . implode(' AND ', $queryPrevPrefixArray) . (count($queryNextPrefixArray) > 0 ? ' OR ' : '') . $lastPrevPrevix . ')';
 						$prevOrderby =  implode(',', $prevOrderbyArray);
 						$nextOrderby =  implode(',', $nextOrderbyArray);
 					}
 				}
 			}
 			if ($bDefaultOrder)	{
-				$queryPrevPrefix = 'uid < '.intval($this->uid);
-				$queryNextPrefix = 'uid > '.intval($this->uid);
+				$queryPrevPrefix = 'uid < ' . intval($this->uid);
+				$queryNextPrefix = 'uid > ' . intval($this->uid);
 
 				$prevOrderby = 'uid DESC';
 				$nextOrderby = 'uid ASC';
@@ -612,7 +612,7 @@ class tx_ttproducts_single_view {
 			if (is_array($itemTableConf[$this->type]['filter.']) && is_array($itemTableConf[$this->type]['filter.']['regexp.']))	{
 				if (is_array($itemTableConf[$this->type]['filter.']['regexp.']['field.']))	{
 					foreach ($itemTableConf[$this->type]['filter.']['field.'] as $field => $value)	{
-						$whereFilter .= ' AND ' . $field . ' REGEXP ' . $TYPO3_DB->fullQuoteStr($value,$tablename);
+						$whereFilter .= ' AND ' . $field . ' REGEXP ' . $TYPO3_DB->fullQuoteStr($value, $tablename);
 					}
 				}
 			}
@@ -634,7 +634,7 @@ class tx_ttproducts_single_view {
 				} else if ($cat)	{
 					$addQueryString[$viewCatViewTable->getPivar()] = $cat;
 				}
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###'] = array('<a href="'. tx_div2007_alpha::getPageLink_fh002($this->cObj,$TSFE->id,'',$this->urlObj->getLinkParams('',$addQueryString,true,$bUseBackPid,$viewCatViewTable->getPivar()),array('useCacheHash' => true)) . '">','</a>');
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###'] = array('<a href="'. htmlspecialchars(tx_div2007_alpha::getPageLink_fh002($this->cObj, $TSFE->id, '', $this->urlObj->getLinkParams('', $addQueryString, true, $bUseBackPid, $viewCatViewTable->getPivar()), array('useCacheHash' => true))) . '">','</a>');
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
@@ -653,7 +653,7 @@ class tx_ttproducts_single_view {
 					$addQueryString[$viewCatViewTable->getPivar()] = $cat;
 				}
 
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="' . tx_div2007_alpha::getPageLink_fh002($this->cObj,$TSFE->id,'',$this->urlObj->getLinkParams('', $addQueryString,true,$bUseBackPid,$viewCatViewTable->getPivar()),array('useCacheHash' => true)) . '">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="' . htmlspecialchars(tx_div2007_alpha::getPageLink_fh002($this->cObj,$TSFE->id,'',$this->urlObj->getLinkParams('', $addQueryString,true,$bUseBackPid,$viewCatViewTable->getPivar()),array('useCacheHash' => true))) . '">','</a>');
 			} else {
 				$subpartArray['###LINK_NEXT_SINGLE###'] = '';
 			}
@@ -665,8 +665,8 @@ class tx_ttproducts_single_view {
 					$subpartArray,
 					$row,
 					$this->conf,
-					$itemTableArray[$this->type]->hasAdditional($row,'isSingle'),
-					!$itemTableArray[$this->type]->hasAdditional($row,'noGiftService')
+					$itemTableArray[$this->type]->hasAdditional($row, 'isSingle'),
+					!$itemTableArray[$this->type]->hasAdditional($row, 'noGiftService')
 				);
 			}
 			$damext = array('tx_dam' =>
@@ -777,7 +777,7 @@ class tx_ttproducts_single_view {
 			$markerArray = array_merge($categoryMarkerArray, $jsMarkerArray, $markerArray);
 			$markerArray['###HIDDENFIELDS###'] = $hiddenText; // TODO
 				// Substitute
-			$content = $this->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
+			$content = $this->cObj->substituteMarkerArrayCached($itemFrameWork, $markerArray, $subpartArray, $wrappedSubpartArray);
 
 			if ($personDataFrameWork) {
 				$subpartArray = array();
@@ -792,7 +792,7 @@ class tx_ttproducts_single_view {
 					$markerArray = $this->urlObj->addURLMarkers($backPID,$markerArray, $addQueryString); // Applied it here also...
 					$markerArray['###FIELD_NAME###'] = 'ttp_gift[item]['.$row['uid'].']['.$this->variants.']'; // here again, because this is here in ITEM_LIST view
 					$markerArray['###FIELD_QTY###'] = $basketObj->basketExt['gift'][$giftnumber]['item'][$row['uid']][$this->variants];
-					$content .= $this->cObj->substituteMarkerArrayCached($personDataFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
+					$content .= $this->cObj->substituteMarkerArrayCached($personDataFrameWork, $markerArray, $subpartArray, $wrappedSubpartArray);
 				}
 				$javaScriptObj->set('email');  // other JavaScript checks can come here
 			}

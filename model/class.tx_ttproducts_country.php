@@ -40,7 +40,7 @@
  */
 
 
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 
 
 class tx_ttproducts_country extends tx_ttproducts_table_base {
@@ -57,7 +57,7 @@ class tx_ttproducts_country extends tx_ttproducts_table_base {
 	function init($pibase, $functablename)	{
 		parent::init($pibase, $functablename);
 		$tablename = $this->getTablename();
-		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = tx_div2007_core::getUserObj('&tx_ttproducts_config');
 		$tablename = ($tablename ? $tablename : 'pages');
 		$this->tableconf = $cnf->getTableConf('static_countries');
 		$this->getTableObj()->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid'));
@@ -68,7 +68,7 @@ class tx_ttproducts_country extends tx_ttproducts_table_base {
 			$tmp = $this->tableconf['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
 		}
-		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
+		$requiredListArray = tx_div2007_core::trimExplode(',', $requiredFields);
 		$this->getTableObj()->setRequiredFieldArray($requiredListArray);
 
 		if (is_array($this->tableconf['generatePath.']) &&
@@ -101,7 +101,7 @@ class tx_ttproducts_country extends tx_ttproducts_table_base {
 				$whereString .= ' AND '.$where;
 			}
 
-			$whereString .= ' '.$this->getTableObj()->enableFields();
+			$whereString .= ' ' . $this->getTableObj()->enableFields();
 			$fields = ($fields ? $fields : '*');
 			// Fetching the products
 			$res = $this->getTableObj()->exec_SELECTquery($fields, $whereString);
@@ -135,10 +135,10 @@ class tx_ttproducts_country extends tx_ttproducts_table_base {
 	function getItemMarkerArray (&$row, &$markerArray, &$fieldsArray)	{
 		global $TSFE;
 
-		$markerTable = implode('',t3lib_div::trimExplode('_',$this->getTableObj()->name));
+		$markerTable = implode('',tx_div2007_core::trimExplode('_',$this->getTableObj()->name));
 
 		foreach ($fieldsArray as $k => $field)	{
-			$markerArray['###'.strtoupper($markerTable.'_'.$field).'###'] = htmlentities($row [$field],ENT_QUOTES,$TSFE->renderCharset);
+			$markerArray['###' . strtoupper($markerTable . '_' . $field) . '###'] = htmlentities($row [$field], ENT_QUOTES, $TSFE->renderCharset);
 		}
 	}
 

@@ -154,13 +154,13 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 
 			if ($uid)	{
 				$where_clause = 'uid='.$uid;
-				$res = $TYPO3_DB->exec_SELECTquery('*',$tablename,$where_clause);
+				$res = $TYPO3_DB->exec_SELECTquery('*', $tablename, $where_clause);
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
 				$TYPO3_DB->sql_free_result($res);
 				for ($i = 1; $i <= 4; ++$i)	{
-					$tmpOldPart = substr($row['cc_number'],($i-1) * 4, 4);
-					if (strcmp($ccArray['cc_number_'.$i],$this->asteriskArray[$this->sizeArray['cc_number_'.$i]]) == 0)	{
-						$ccArray['cc_number_'.$i] = $tmpOldPart;
+					$tmpOldPart = substr($row['cc_number'], ($i-1) * 4, 4);
+					if (strcmp($ccArray['cc_number_' . $i], $this->asteriskArray[$this->sizeArray['cc_number_' . $i]]) == 0)	{
+						$ccArray['cc_number_' . $i] = $tmpOldPart;
 					}
 				}
 				$fieldArray = array('cc_type', 'owner_name', 'cvv2');
@@ -191,7 +191,7 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 				$endtime = mktime ($timeArray['hour'], $timeArray['minute'], $timeArray['second'], $timeArray['month'], $timeArray['day'], $timeArray['year']);
 				$newFields['endtime'] = $endtime;
 
-				$TYPO3_DB->exec_UPDATEquery($tablename,$where_clause,$newFields);
+				$TYPO3_DB->exec_UPDATEquery($tablename, $where_clause, $newFields);
 				$newId = $uid;
 			} else {
 				$TYPO3_DB->exec_INSERTquery($tablename, $newFields);
@@ -257,8 +257,7 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 			if (
 				!$testVal &&
 				(
-					class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($testVal) :
-					!t3lib_div::testInt($testVal)
+					!tx_div2007_core::testInt($testVal)
 				)
 			) {
 				$rc = $field;

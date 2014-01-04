@@ -36,7 +36,7 @@ If the basket is empty this subpart is displayed
 	This subpart is used to display the regular list of products. It's also used by search-results.
 -->
 <h1>Shop System f&uuml;r TYPO3</h1>
-<p> Willkommen bei der Verwendung des tt_products Shop Systems für TYPO3. Wenn Sie selber ein Shop einrichten, sollten Sie sich das Tutorial
+<p> Willkommen bei der Verwendung des tt_products Shop Systems f&uuml;r TYPO3. Wenn Sie selber ein Shop einrichten, sollten Sie sich das Tutorial
 auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop System</a> ansehen. Es gibt dort auch ein Forum, um Fragen zu stellen.
 </p>
 <br>
@@ -65,7 +65,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 		<!-- ###ITEM_CATEGORY### end -->
 		<!-- ###ITEM_LIST### begin -->
 			<tr><td colspan="3">
-			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+			<form method="post" action="###FORM_URL###" name="ProductList">
 
         <table bordercolor="#003399" cellspacing="1" border="1">
           <tr>
@@ -92,7 +92,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
             <!-- ###display_variant5_isNotSingle### -->
             ###PRODUCT_DELIVERY###
             ###GW1B### St&uuml;ckzahl: ###GW1E### <input size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###" id="###FIELD_ID###">
-            <input type="image" name="addtomemo" src="###PATH_FE_REL###res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[addmemo]=###PRODUCT_UID###';" title="Add to memo">
+            <input type="image" name="addtomemo" src="###PATH_FE_REL###res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('ProductList')[0].action='###FORM_MEMO###&amp;tt_products%5Baddmemo%5D=###PRODUCT_UID###';" title="Add to memo">
             <!-- ###display_variant5_isNotSingle### --> <p> </td>
           ###ITEM_SINGLE_POST_HTML###
           <!-- ###ITEM_SINGLE### end -->
@@ -459,7 +459,7 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
                                         ###GW2B### Anzahl: ###GW2E###<BR><input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
                                 </td>
                                 <td style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="order" src="typo3/ext/tt_products/res/icons/fe/minibasket1.gif" value="in den Warenkorb" onClick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></td>
-				<td style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="remove" src="typo3/ext/tt_products/res/icons/fe/delmemo.png" value="von der Merkliste streichen" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tx_ttproducts_pi1[delmemo]=###PRODUCT_ID###';"></td>
+				<td style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="remove" src="typo3/ext/tt_products/res/icons/fe/delmemo.png" value="von der Merkliste streichen" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tt_products[delmemo]=###PRODUCT_ID###';"></td>
                         </tr>
                         </form>
                         <!-- ###ITEM_SINGLE### end -->
@@ -491,6 +491,17 @@ auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop
 ###GW1B###<B>Sie sind nicht am System angemeldet.</B>###GW1E###
 <!-- ###MEMO_NOT_LOGGED_IN### end -->
 
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>MEMO_EMPTY</h3>
+<em>Subpart displayed when trying to view the memo but the logged in frontend user hasn't stored any memo yet.</em><br>
+<br>
+<br>
+
+<!-- ###MEMO_EMPTY### begin -->
+###GW1B###<B>Sie haben keine Produkte vorgemerkt.</B>###GW1E###
+<!-- ###MEMO_EMPTY### end -->
 
 
 

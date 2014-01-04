@@ -151,8 +151,8 @@ class tx_ttproducts_pid_list {
 			while(list(,$val) = each($pid_list_arr))	{
 				$pid_list .= $val.','.$this->cObj->getTreeList($val,$recursive);
 			}
-			$pid_list = preg_replace('/,$/','',$pid_list);
-			$pid_list_arr = explode(',',$pid_list);
+			$pid_list = preg_replace('/,$/', '', $pid_list);
+			$pid_list_arr = explode(',', $pid_list);
 			$pid_list_arr = array_unique ($pid_list_arr);
 			$pid_list = implode(',', $pid_list_arr);
 		}

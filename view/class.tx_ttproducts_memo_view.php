@@ -56,7 +56,6 @@ class tx_ttproducts_memo_view {
 		$this->pid = $pid;
 		$this->conf = $conf;
 		$this->useArticles = $useArticles;
-// 		$fe_user_uid = $TSFE->fe_user->user['uid'];
 		$this->memoItems = array();
 
 		if (
@@ -80,8 +79,6 @@ class tx_ttproducts_memo_view {
 		global $TSFE;
 
 		$content = '';
-
-// 		$fe_user_uid = $TSFE->fe_user->user['uid'];
 
 		if (
 			tx_ttproducts_control_memo::bUseFeuser($this->conf) ||
@@ -121,7 +118,7 @@ class tx_ttproducts_memo_view {
 					$this->pibase->cObj
 				);
 
-				$content = $this->pibase->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###MEMO_EMPTY###'));
+				$content = $this->pibase->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###MEMO_EMPTY###'));
 			}
 		} else if (tx_ttproducts_control_memo::bIsAllowed('fe_users', $this->conf)) {
 			include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
@@ -136,13 +133,10 @@ class tx_ttproducts_memo_view {
 
 		return $content;
 	}
-
 }
-
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']);
 }
-
 
 ?>

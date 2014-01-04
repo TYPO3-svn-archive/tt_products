@@ -39,8 +39,8 @@
  *
  */
 
-
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
+/*
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');*/
 
 
 class tx_ttproducts_article extends tx_ttproducts_article_base {
@@ -84,14 +84,14 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 	} // init
 
 
-	function get($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
+	function get($uid = 0, $pid = 0, $bStore = true, $where_clause = '', $limit = '', $fields = '', $bCount = FALSE) {
 		global $TYPO3_DB;
 
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
-			$where = '1=1 '.$this->getTableObj()->enableFields().' AND uid = '.intval($uid);
+			$where = '1=1 '.$this->getTableObj()->enableFields().' AND uid = ' . intval($uid);
 			if ($where_clause)	{
-				$where .= ' '.$where_clause;
+				$where .= ' ' . $where_clause;
 			}
 			// Fetching the articles
 			$res = $this->getTableObj()->exec_SELECTquery('*', $where);
@@ -115,9 +115,9 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		global $TYPO3_DB;
 		$rowArray = array();
 		$enableWhere = $this->getTableObj()->enableFields();
-		$where = ($where ? $where.' '.$enableWhere : '1=1 '.$enableWhere);
+		$where = ($where ? $where.' '.$enableWhere : '1=1 ' . $enableWhere);
 
-		$res = $this->getTableObj()->exec_SELECTquery('*',$where);
+		$res = $this->getTableObj()->exec_SELECTquery('*', $where);
 		$variantFieldArray = $this->variant->getFieldArray();
 
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{

@@ -39,7 +39,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php');
+// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php');
 
 class tx_ttproducts_menucat_view extends tx_ttproducts_catlist_view_base {
 	var $htmlTagMain = 'ul';	// main HTML tag
@@ -135,7 +135,7 @@ class tx_ttproducts_menucat_view extends tx_ttproducts_catlist_view_base {
 					}
 					$addQueryString = array($categoryTableViewObj->getPivar() => $actCategory);
 					$tempUrl = $this->pibase->pi_linkTP_keepPIvars_url($addQueryString, 1, 1, $pid);
-					$linkOutArray = array('<a href="'. $tempUrl .'"'.$css.'>','</a>');
+					$linkOutArray = array('<a href="'. htmlspecialchars($tempUrl) .'"'.$css.'>','</a>');
 
 					$linkOut = $linkOutArray[0].htmlentities($row['title'],ENT_QUOTES,$TSFE->renderCharset).$linkOutArray[1];
 					$markerArray = array();

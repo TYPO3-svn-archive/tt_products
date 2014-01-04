@@ -2,6 +2,8 @@
 if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
 $_EXTCONF = unserialize($_EXTCONF);    // unserializing the configuration so we can use it here:
+$typoVersion = tx_div2007_core::getTypoVersion();
+
 
 if (!defined ('TT_PRODUCTS_EXTkey')) {
 	define('TT_PRODUCTS_EXTkey',$_EXTKEY);
@@ -218,22 +220,66 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tce']['formevals']['tx_double6'] = 'E
 
 // support for new Caching Framework
 
+$optionsArray = array();
+$backendCache = 't3lib_cache_backend_NullBackend';
 
 // Register cache 'tt_products_cache'
-if (!is_array($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache'])) {
-    $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache'] = array();
+if (
+	isset($_EXTCONF['cache.']) &&
+	$_EXTCONF['cache.']['backend'] &&
+	!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache'])
+) {
+	if (
+		isset($_EXTCONF['cache.']['options.']) &&
+		$_EXTCONF['cache.']['options.']['servers'] != ''
+	) {
+		$optionsArray['servers'] = array($_EXTCONF['cache.']['options.']['servers']);
+	}
+
+	if (
+		extension_loaded('memcache') &&
+		isset($optionsArray['servers']) &&
+		is_array($optionsArray['servers'])
+	) {
+		$backendCache = 't3lib_cache_backend_MemcachedBackend';
+	} else if (extension_loaded('apc') || extension_loaded('apcu')) {
+		$backendCache = 't3lib_cache_backend_ApcBackend';
+	} else if (extension_loaded('redis')) {
+		$backendCache = 't3lib_cache_backend_RedisBackend';
+	}
 }
+
+if (!isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache'])) {
+	$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache'] = array();
+}
+
 // Define string frontend as default frontend, this must be set with TYPO3 4.5 and below
 // and overrides the default variable frontend of 4.6
 if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['frontend'])) {
     $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['frontend'] = 't3lib_cache_frontend_StringFrontend';
 }
 
+if ($typoVersion >= '4006000') {
 
-$typoVersion = class_exists('t3lib_utility_VersionNumber') ? t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version) : t3lib_div::int_from_ver(TYPO3_version);
+	if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'])) {
+		$TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'] = $backendCache;
+	}
+
+	if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options'])) {
+		$TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options'] = $optionsArray;
+	}
+}
+
+
+if (t3lib_extMgm::isLoaded('searchbox')) {
+	t3lib_extMgm::addPItoST43($_EXTKEY, 'pi_search/class.tx_ttproducts_pi_search.php', '_pi_search', 'list_type', 1 );
+}
+
+t3lib_extMgm::addPItoST43($_EXTKEY, 'pi_int/class.tx_ttproducts_pi_int.php', '_pi_int', 'list_type', 1 );
 
 if ($typoVersion < '4006000') {
-	t3lib_extMgm::addPItoST43($_EXTKEY,'pi1/class.tx_ttproducts_pi1.php','_pi1','list_type',1 );
+
+	t3lib_extMgm::addPItoST43($_EXTKEY, 'pi1/class.tx_ttproducts_pi1.php', '_pi1', 'list_type', 1);
 
 	// Define database backend as backend for 4.5 and below (default in 4.6)
 	if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'])) {
@@ -249,6 +295,8 @@ if ($typoVersion < '4006000') {
 	if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options']['tagsTable'])) {
         $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options']['tagsTable'] = 'tt_products_cache_tags';
     }
+
+	t3lib_cache::initializeCachingFramework();
 } else {
 	// add missing setup for the tt_content "list_type = 5" which is used by tt_products
 	$addLine = 'tt_content.list.20.5 = < plugin.tt_products';
@@ -256,6 +304,24 @@ if ($typoVersion < '4006000') {
 	# Setting ' . TT_PRODUCTS_EXT . ' plugin TypoScript
 	' . $addLine . '
 	', 43);
+}
+
+
+if (
+	isset($GLOBALS['typo3CacheFactory']) &&
+	is_object($GLOBALS['typo3CacheFactory']) &&
+	($typoVersion >= '4006000' || TYPO3_UseCachingFramework)
+) {
+    // register the cache in BE so it will be cleared with "clear all caches"
+    try {
+        $GLOBALS['typo3CacheFactory']->create(
+            'tt_products_cache',
+            $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache']['frontend'],
+            $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'],
+            $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options']);
+    } catch (t3lib_cache_exception_DuplicateIdentifier $e) {
+        // do nothing, a tt_products_cache cache already exists
+    }
 }
 
 

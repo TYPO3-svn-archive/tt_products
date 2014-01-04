@@ -157,20 +157,20 @@ class tx_ttproducts_tracking {
 
 							// Deletes any M-M relations between the tt_products table and the order.
 							// In the future this should maybe also automatically count down the stock number of the product records. Else it doesn't make sense.
-						$TYPO3_DB->exec_DELETEquery('sys_products_orders_mm_tt_products', 'sys_products_orders_uid='.intval($orderRow['uid']));
+						$TYPO3_DB->exec_DELETEquery('sys_products_orders_mm_tt_products', 'sys_products_orders_uid=' . intval($orderRow['uid']));
 					}
 				}
 			}
 
 			if (count($fieldsArray))	{		// If any items in the field array, save them
 				$fieldsArray['tstamp'] = time();
-				$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderRow['uid']), $fieldsArray);
+				$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid=' . intval($orderRow['uid']), $fieldsArray);
 				$orderRow = $orderObj->getRecord($orderRow['uid']);
 			}
 		}
 
 			// Getting the template stuff and initialize order data.
-		$content=$this->cObj->getSubpart($templateCode,'###TRACKING_DISPLAY_INFO###');
+		$content=$this->cObj->getSubpart($templateCode, '###TRACKING_DISPLAY_INFO###');
 		$status_log = unserialize($orderRow['status_log']);
 		$orderData = unserialize($orderRow['orderData']);
 		$orderPayed = false;
@@ -194,21 +194,21 @@ class tx_ttproducts_tracking {
 			$subpartArray=Array();
 			$subpartArray['###STATUS_CODE_60###']= '';
 
-			$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+			$content = $this->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		}
 
 			// Status:
-		$STATUS_ITEM=$this->cObj->getSubpart($content,'###STATUS_ITEM###');
-		$STATUS_ITEM_c='';
+		$STATUS_ITEM = $this->cObj->getSubpart($content, '###STATUS_ITEM###');
+		$STATUS_ITEM_c = '';
 		if (is_array($status_log))  {
 			reset($status_log);
 
 			while(list($k,$v)=each($status_log))	{
 				$markerArray=Array();
-				$markerArray['###ORDER_STATUS_TIME###']=$this->cObj->stdWrap($v['time'],$this->conf['statusDate_stdWrap.']);
-				$markerArray['###ORDER_STATUS###']=$v['status'];
-				$markerArray['###ORDER_STATUS_INFO###']=$v['info'];
-				$markerArray['###ORDER_STATUS_COMMENT###']=nl2br($v['comment']);
+				$markerArray['###ORDER_STATUS_TIME###'] = $this->cObj->stdWrap($v['time'], $this->conf['statusDate_stdWrap.']);
+				$markerArray['###ORDER_STATUS###'] = $v['status'];
+				$markerArray['###ORDER_STATUS_INFO###'] = $v['info'];
+				$markerArray['###ORDER_STATUS_COMMENT###'] = nl2br($v['comment']);
 
 				$STATUS_ITEM_c.=$this->cObj->substituteMarkerArrayCached($STATUS_ITEM, $markerArray);
 			}
@@ -233,7 +233,7 @@ class tx_ttproducts_tracking {
 				reset($this->conf['statusCodes.']);
 				while(list($k,$v)=each($this->conf['statusCodes.']))  {
 					if ($k!=1)  {
-						$markerArray['###STATUS_OPTIONS###'].='<option value="'.$k.'">'.htmlspecialchars($k.': '.$v).'</option>';
+						$markerArray['###STATUS_OPTIONS###'].='<option value="' . $k . '">' . htmlspecialchars($k . ': ' . $v) . '</option>';
 					}
 				}
 			}
@@ -245,7 +245,7 @@ class tx_ttproducts_tracking {
 				$markerArray['###OTHER_ORDERS_OPTIONS###'] .=
 					'<option value="'.$row['tracking_code'].'">'.
 					htmlspecialchars($orderObj->getNumber($row['uid']).': '.
-					$row['name'].' ('.$priceViewObj->priceFormat($row['amount']).' '.$this->conf['currencySymbol'].') /' .$row['status']).'</option>';
+					$row['name'].' ('.$priceViewObj->priceFormat($row['amount']) . ' ' . $this->conf['currencySymbol'] . ') /' . $row['status']) . '</option>';
 			}
 			$TYPO3_DB->sql_free_result($res);
 		}
@@ -255,7 +255,7 @@ class tx_ttproducts_tracking {
 		$markerArray['###FIELD_EMAIL_NOTIFY###'] = $orderRow['email_notify'] ? ' checked' : '';
 		$markerArray['###FIELD_EMAIL###'] = $orderRow['email'];
 		$markerArray['###ORDER_UID###'] = $orderObj->getNumber($orderRow['uid']);
-		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
+		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($orderRow['crdate'], $this->conf['orderDate_stdWrap.']);
 		$markerArray['###TRACKING_NUMBER###'] =  $trackingCode;
 		$markerArray['###UPDATE_CODE###'] = $updateCode;
 		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['tracking'])) {

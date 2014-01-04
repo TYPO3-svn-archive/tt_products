@@ -39,7 +39,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_base.php');
+// require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_base.php');
 
 
 abstract class tx_ttproducts_table_base	{
@@ -122,17 +122,14 @@ abstract class tx_ttproducts_table_base	{
 	* @package TYPO3
 	* @subpackage tt_products
 	*/
-	function get ($uid='0',$pid=0,$bStore=TRUE,$where_clause='',$limit='',$fields='',$bCount=FALSE,$groupBy='',$orderBy='') {
+	function get ($uid = '0', $pid = 0, $bStore = TRUE, $where_clause = '', $limit = '', $fields = '', $bCount = FALSE, $groupBy = '', $orderBy = '') {
 		global $TYPO3_DB;
 
 		$tableObj = $this->getTableObj();
 		$alias = $this->getAlias() . $aliasPostfix;
 
 		if (
-			(
-				class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
-				t3lib_div::testInt($uid)
-			) &&
+			tx_div2007_core::testInt($uid) &&
 			isset($this->dataArray[$uid]) &&
 			is_array($this->dataArray[$uid]) &&
 			!$where_clause &&
@@ -201,8 +198,7 @@ abstract class tx_ttproducts_table_base	{
 				$TYPO3_DB->sql_free_result($res);
 
 				if (
-					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
-					t3lib_div::testInt($uid)
+					tx_div2007_core::testInt($uid)
 				) {
 					reset($rc);
 					$rc = current ($rc);
@@ -334,7 +330,7 @@ abstract class tx_ttproducts_table_base	{
 			if ($this->bUseLanguageTable($tableConf))	{
 				$tableObj->setLanguage($this->config['LLkey']);
 				$tableObj->setLangName($tableConf['language.']['table']);
-				$tableObj->setTCAFieldArray($tableObj->getLangName(), $tableObj->getAlias().'lang', FALSE);
+				$tableObj->setTCAFieldArray($tableObj->getLangName(), $tableObj->getAlias() . 'lang', FALSE);
 			}
 			if ($tableConf['language.'] && $tableConf['language.']['type'] == 'csv')	{
 				$tableObj->initLanguageFile($tableConf['language.']['file']);

@@ -544,14 +544,14 @@ if (!$loadTcaAdditions) {
 		$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = PATH_BE_ttproducts.'class.tx_ttproducts_wizicon.php';
 	}
 
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products','EXT:'.TT_PRODUCTS_EXT.'/locallang_csh_ttprod.php');
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products_cat','EXT:'.TT_PRODUCTS_EXT.'/locallang_csh_ttprodc.php');
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products_articles','EXT:'.TT_PRODUCTS_EXT.'/locallang_csh_ttproda.php');
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products_emails','EXT:'.TT_PRODUCTS_EXT.'/locallang_csh_ttprode.php');
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products_texts','EXT:'.TT_PRODUCTS_EXT.'/locallang_csh_ttprodt.php');
-	t3lib_extMgm::addLLrefForTCAdescr('sys_products_accounts','EXT:'.TT_PRODUCTS_EXT.'/locallang_csh_ttprodac.php');
-	t3lib_extMgm::addLLrefForTCAdescr('sys_products_cards','EXT:'.TT_PRODUCTS_EXT.'/locallang_csh_ttprodca.php');
-	t3lib_extMgm::addLLrefForTCAdescr('sys_products_orders','EXT:'.TT_PRODUCTS_EXT.'/locallang_csh_ttprodo.php');
+	t3lib_extMgm::addLLrefForTCAdescr('tt_products', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprod.php');
+	t3lib_extMgm::addLLrefForTCAdescr('tt_products_cat', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodc.php');
+	t3lib_extMgm::addLLrefForTCAdescr('tt_products_articles','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttproda.php');
+	t3lib_extMgm::addLLrefForTCAdescr('tt_products_emails','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprode.php');
+	t3lib_extMgm::addLLrefForTCAdescr('tt_products_texts','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodt.php');
+	t3lib_extMgm::addLLrefForTCAdescr('sys_products_accounts','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodac.php');
+	t3lib_extMgm::addLLrefForTCAdescr('sys_products_cards','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodca.php');
+	t3lib_extMgm::addLLrefForTCAdescr('sys_products_orders','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodo.php');
 
 	$productsTableArray = array('tt_products', 'tt_products_language', 'tt_products_related_products_products_mm', 'tt_products_accessory_products_products_mm', 'tt_products_products_dam_mm', 'tt_products_products_note_pages_mm', 'tt_products_cat', 'tt_products_cat_language', 'tt_products_articles', 'tt_products_articles_language', 'tt_products_gifts', 'tt_products_gifts_articles_mm', 'tt_products_emails', 'tt_products_texts', 'tt_products_texts_language', 'tt_products_mm_graduated_price', 'tt_products_graduated_price', 'sys_products_accounts', 'sys_products_cards', 'sys_products_orders', 'sys_products_orders_mm_tt_products', 'fe_users', 'pages_language_overlay');
 

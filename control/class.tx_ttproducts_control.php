@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2013 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -102,20 +102,29 @@ class tx_ttproducts_control {
 	} // init
 
 
-	protected function getOrderUid ()	{
-		$rc = FALSE;
-		if (count($this->basket->itemArray))	{
+	protected function getOrderUid () {
+		global $TSFE;
+
+		$result = FALSE;
+		$orderUid = 0;
+		$orderArray = $TSFE->fe_user->getKey('ses','order');
+
+		if (isset($orderArray['orderUid'])) {
+			$orderUid = $orderArray['orderUid'];
+			$result = $orderUid;
+		}
+
+		if (!$orderUid && count($this->basket->itemArray)) {
 			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 			$orderObj = $tablesObj->get('sys_products_orders');
 			$orderUid = $orderObj->getUid();
 			if (!$orderUid)	{
 				$orderUid = $orderObj->getBlankUid();
 			}
-			$rc = $orderUid;
+			$result = $orderUid;
 		}
-		return $rc;
+		return $result;
 	}
-
 
 	/**
 	 * returns the activities in the order in which they have to be processed
@@ -209,7 +218,7 @@ class tx_ttproducts_control {
 			$calculatedArray = $this->basket->getCalculatedArray();
 			$addQueryString = array();
 			$excludeList = '';
-			$linkParams = $this->urlObj->getLinkParams($excludeList,$addQueryString,TRUE);
+			$linkParams = $this->urlObj->getLinkParams($excludeList, $addQueryString, TRUE);
 
 			$markerArray = array();
 			tx_transactor_api::init($langObj, $this->cObj, $this->conf);
@@ -409,13 +418,16 @@ class tx_ttproducts_control {
 		if ($infoViewObj->checkRequired('billing')=='')	{
 			$infoViewObj->mapPersonIntoDelivery();
 		}
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+
+		$mainMarkerArray = $markerObj->getGlobalMarkerArray();
+		$mainMarkerArray['###ERROR_DETAILS###'] = '';
 
 		if (count($this->basket->itemArray) && count($this->activityArray))	{	// If there is content in the shopping basket, we are going display some basket code
 				// prepare action
 			$basket_tmpl = '';
 			if (count($this->activityArray)) {
 				// $this->basket->getCalculatedBasket();  // all the basket calculation is done in this function once and not multiple times here
-				$mainMarkerArray=array();
 				$mainMarkerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject.'';  // adding extra preprocessing CObject
 				$bFinalize = FALSE; // no finalization must be called.
 
@@ -598,6 +610,19 @@ class tx_ttproducts_control {
 												$addParams = $this->urlObj->getLinkParams('',$srfeuserParams,TRUE);
 												$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($editPID,'',$addParams);
 											}
+										} else if (t3lib_extMgm::isLoaded('agency')) {
+											$check = ($checkRequired ? $checkRequired: $checkAllowed);
+											$label = $TSFE->sL('LLL:EXT:agency/pi/locallang.xml:missing_' . $check);
+											$editPID = $TSFE->tmpl->setup['plugin.']['tx_agency.']['editPID'];
+
+											if ($TSFE->loginUser && $editPID) {
+												$addParams = array ('products_payment' => 1);
+												$addParams = $this->urlObj->getLinkParams('',$addParams,TRUE);
+												$agencyBackUrl = $this->pibase->pi_getPageLink($TSFE->id,'',$addParams);
+												$agencyParams = array('agency[backURL]' => $agencyBackUrl);
+												$addParams = $this->urlObj->getLinkParams('',$agencyParams,TRUE);
+												$markerArray['###FORM_URL_INFO###'] = $this->pibase->pi_getPageLink($editPID,'',$addParams);
+											}
 										}
 
 										if (!$label) {
@@ -611,7 +636,7 @@ class tx_ttproducts_control {
 										}
 									}
 									$markerArray = $this->urlObj->addURLMarkers(0, array(),$addQueryString);
-									$markerArray['###ERROR_DETAILS###'] = $label;
+									$markerArray['###ERROR_DETAILS###'] = $mainMarkerArray['###ERROR_DETAILS###'] = $label;
 									$markerArray = array_merge($markerArray, $overwriteMarkerArray);
 									$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 								}
@@ -631,6 +656,7 @@ class tx_ttproducts_control {
 											$bFinalize,
 											$errorMessage
 										);
+
 									if ($errorMessage != '')	{
 										$mainMarkerArray['###MESSAGE_PAYMENT_SCRIPT###'] = $errorMessage;
 									}
@@ -661,15 +687,14 @@ class tx_ttproducts_control {
 
 									if($bFinalize == FALSE ){
 										$label = $errorMessage;
-										$content = $this->cObj->getSubpart($this->templateCode,$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+										$content = $this->cObj->getSubpart($this->templateCode, $this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 										$markerArray = $this->urlObj->addURLMarkers(0, $markerArray,$addQueryString);
-										$markerArray['###ERROR_DETAILS###'] = $label;
+										$markerArray['###ERROR_DETAILS###'] = $mainMarkerArray['###ERROR_DETAILS###'] = $label;
 										$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 									}
 								} else {
 									$bFinalize = TRUE;
 								}
-								// ############## Florian Strauß  #############
 							break;
 							default:
 								// nothing yet
@@ -747,7 +772,7 @@ class tx_ttproducts_control {
 						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $infoViewObj, FALSE, FALSE, TRUE, '###'.$tmpl.'###', $mainMarkerArray);
 
-						include_once(PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_finalize.php');
+// 						include_once(PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_finalize.php');
 
 							// order finalization
 						$activityFinalize = t3lib_div::makeInstance('tx_ttproducts_activity_finalize');
@@ -800,13 +825,20 @@ class tx_ttproducts_control {
 						// Empties the shopping basket!
 						$this->basket->clearBasket();
 					} else {	// If not all required info-fields are filled in, this is shown instead:
+						$label = '';
+						if ($checkRequired) {
+							$label = $checkRequired;
+						} else {
+							$label = $checkAllowed;
+						}
+						$mainMarkerArray['###ERROR_DETAILS###'] = $label;
 						$content .= $this->cObj->getSubpart(
 							$this->templateCode,
 							$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###')
 						);
 						$content = $this->cObj->substituteMarkerArray(
 							$content,
-							$this->urlObj->addURLMarkers(0, array())
+							$this->urlObj->addURLMarkers(0, $mainMarkerArray)
 						);
 					}
 				}
@@ -833,19 +865,17 @@ class tx_ttproducts_control {
 			}
 			$basketMarkerArray = $basketView->getMarkerArray();
 		}
-		$markerArray = $basketMarkerArray;
+		$markerArray = array_merge($basketMarkerArray, $mainMarkerArray);
 		$markerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject;	// adding extra preprocessing CObject
 		$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 
 		return $content;
-	} //
-
+	}
 }
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_control.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_control.php']);
 }
-
 
 ?>

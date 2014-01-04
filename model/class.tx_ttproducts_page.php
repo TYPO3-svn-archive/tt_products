@@ -39,11 +39,6 @@
  */
 
 
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
-require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
-
-
 class tx_ttproducts_page extends tx_ttproducts_category_base {
 	var $noteArray = array(); 	// array of pages with notes
 	var $piVar = 'pid';
@@ -66,9 +61,6 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 		$tablename = ($tablename ? $tablename : 'pages');
 		$this->tableconf = $cnf->getTableConf('pages');
 		$this->pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['pageAsCategory'];
-
-//		$this->table->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'hidden'=>'hidden', 'sorting'=> 'sorting',
-// 			'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime'));
 
 		$requiredFields = 'uid,pid,title,subtitle,media,shortcut';
 		if ($this->tableconf['requiredFields'])	{
@@ -123,7 +115,7 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * @param	[type]		$bCount: ...
 	 * @return	[type]		...
 	 */
-	function get ($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
+	function get ($uid = 0, $pid = 0, $bStore = true, $where_clause = '', $limit = '', $fields = '', $bCount = FALSE) {
 		global $TYPO3_DB;
 
 		$bMultple = (strstr($uid, ',') ? true : false);
@@ -217,7 +209,6 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 	 * @return	[type]		...
 	 */
 	function getParamDefault ($theCode, $piVars)	{
-//		$pid = $this->pibase->piVars[$this->piVar];
 		$pid = $piVars[$this->piVar];
 		$pid = ($pid ? $pid : $this->conf['defaultPageID']);
 		if ($pid)	{
@@ -337,11 +328,8 @@ class tx_ttproducts_page extends tx_ttproducts_category_base {
 }
 
 
-
-
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_page.php'])	{
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_page.php']);
 }
-
 
 ?>

@@ -287,10 +287,7 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 		foreach ($categoryArray as $uid => $row)	{
 
 			if (
-				(
-					class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($uid) :
-					t3lib_div::testInt($uid)
-				) &&
+				tx_div2007_core::testInt($uid) &&
 				(!$row['parent_category'] || in_array($uid, $rootCatArray))
 			) {
 				$rootArray[] = $uid;
@@ -334,7 +331,7 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 	 * @param	[type]		$allowedCats: ...
 	 * @return	[type]		...
 	 */
-	function &getRelationArray ($excludeCats='',$rootUids='',$allowedCats='')	{
+	function &getRelationArray ($excludeCats = '', $rootUids = '', $allowedCats = '')	{
 		$relationArray = array();
 		return $relationArray;
 	}

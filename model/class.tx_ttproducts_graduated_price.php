@@ -85,21 +85,20 @@ class tx_ttproducts_graduated_price {
 			}
 		}
 		if (!$rc) {
-			$where = '1=1 '.$this->tableObj->enableFields();
+			$where = '1=1 ' . $this->tableObj->enableFields();
 			if ($uid)	{
-				$uidWhere = $this->mm_table.'.product_uid ';
+				$uidWhere = $this->mm_table .'.product_uid ';
 				if (is_array($uid))	{
 					foreach ($uid as $v)	{
 						if (
-							class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($v) :
-							!t3lib_div::testInt($v)
+							!tx_div2007_core::testInt($v)
 						) {
 							return 'ERROR: not integer '.$v;
 						}
 					}
-					$uidWhere .= 'IN ('.implode(',',$uid).')';
+					$uidWhere .= 'IN (' . implode(',', $uid) . ')';
 				} else {
-					$uidWhere .= '='.intval($uid);
+					$uidWhere .= '=' . intval($uid);
 				}
 				$where .= ' AND '.$uidWhere;
 			}

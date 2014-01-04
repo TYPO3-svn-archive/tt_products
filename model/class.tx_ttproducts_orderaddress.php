@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
 
 class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
@@ -73,7 +73,7 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 
 		$this->getTableObj()->setTCAFieldArray($tablename);
 		$this->fields['payment'] = ($this->tableconf['payment'] ? $this->tableconf['payment'] : '');
-		$requiredFields = 'uid,pid,email'.($this->fields['payment'] ? ','.$this->fields['payment'] : '');
+		$requiredFields = 'uid,pid,email' . ($this->fields['payment'] ? ','.$this->fields['payment'] : '');
 		if (is_array($this->tableconf['ALL.']))	{
 			$tmp = $this->tableconf['ALL.']['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);

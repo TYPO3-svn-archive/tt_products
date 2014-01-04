@@ -43,12 +43,12 @@
  *
  */
 
-
+/*
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_activity.php');
 require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
+require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');*/
 
 
 class tx_ttproducts_basket_view {
@@ -94,7 +94,7 @@ class tx_ttproducts_basket_view {
 				$label = $priceViewObj->priceFormat($basket->calculatedArray['priceNoTax']['sametaxtotal'][$taxstr]);
 				$markerArray['###PRICE_TAXRATE_GOODSTOTAL'.($k+1).'###'] = $label;
 				$label = $priceViewObj->priceFormat($basket->calculatedArray['priceNoTax']['sametaxtotal'][$taxstr] * ($taxrate/100));
-				$markerArray['###PRICE_TAXRATE_ONLY_TAX'.($k+1).'###'] = $label;
+				$markerArray['###PRICE_TAXRATE_ONLY_TAX' . ($k + 1) . '###'] = $label;
 			}
 		}
 
@@ -194,7 +194,7 @@ class tx_ttproducts_basket_view {
 		$feuserWrappedSubpartArray = array();
 		$feUsersViewObj = $tablesObj->get('fe_users', true);
 		$feUsersViewObj->getWrappedSubpartArray($feuserSubpartArray, $feuserWrappedSubpartArray, $funcTablename);
-		$tempContent = $this->pibase->cObj->getSubpart($templateCode,$this->subpartmarkerObj->spMarker($subpartMarker));
+		$tempContent = $this->pibase->cObj->getSubpart($templateCode, $this->subpartmarkerObj->spMarker($subpartMarker));
 		$markerArray = array();
 
 		if (isset($mainMarkerArray) && is_array($mainMarkerArray))	{

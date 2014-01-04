@@ -39,9 +39,6 @@
  *
  */
 
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
-
 
 class tx_ttproducts_address extends tx_ttproducts_category_base {
 	var $dataArray = array(); // array of read in categories
@@ -110,7 +107,7 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 	 * @param	[type]		$allowedCats: ...
 	 * @return	[type]		...
 	 */
-	function &getRelationArray ($excludeCats='',$rootUids='',$allowedCats='') {
+	function &getRelationArray ($excludeCats = '', $rootUids = '', $allowedCats = '') {
 		$relationArray = array();
 		$rootArray = t3lib_div::trimExplode(',', $rootUids);
 

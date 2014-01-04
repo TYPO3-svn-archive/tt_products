@@ -39,9 +39,9 @@
  *
  */
 
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_datafield_view.php');
+// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_datafield_view.php');
 
 
 abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
@@ -102,7 +102,7 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 			$uid = intval($uid);
 			$fieldsArray = array();
 			$fieldsArray[$instockField] = $instockField.'-'.$count;
-			$res = $TYPO3_DB->exec_UPDATEquery($this->getTableObj()->name,'uid=\''.$uid.'\'', $fieldsArray,$instockField);
+			$res = $TYPO3_DB->exec_UPDATEquery($this->getTableObj()->name, 'uid=\'' . $uid . '\'', $fieldsArray, $instockField);
 		}
 	}
 

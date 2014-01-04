@@ -38,9 +38,9 @@
  *
  *
  */
-
+/*
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
-require_once(PATH_BE_div2007.'class.tx_div2007_ff.php');
+require_once(PATH_BE_div2007.'class.tx_div2007_ff.php');*/
 
 
 
@@ -125,7 +125,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		if (!$rowArray && $uid) {
 			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 			$tt_products_articles = $tablesObj->get('tt_products_articles');
-			$tmpWhere = 'uid_product=\''.intval($uid).'\''. ($where ? ' AND '.$where : '');
+			$tmpWhere = 'uid_product=\''.intval($uid) . '\'' . ($where ? ' AND ' . $where : '');
 			$rowArray = $tt_products_articles->getWhereArray($tmpWhere);
 			if (!$where)	{
 				$this->articleArray[$uid] = $rowArray;
@@ -251,7 +251,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 						if ($row)	{
 							$tt_products_articles = $tablesObj->get('tt_products_articles');
 							$tt_products_articles->reduceInStock($row['uid'], $actItem['count']);
-							$instockTableArray['tt_products_articles'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row[$instockField] - $actItem['count']);
+							$instockTableArray['tt_products_articles'][$row['uid'] . ',' . $row['itemnumber'] . ',' . $row['title']] = intval($row[$instockField] - $actItem['count']);
 						}
 					}
 				}
@@ -262,7 +262,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 					$row = $actItem['rec'];
 					if (!$this->hasAdditional($row,'alwaysInStock')) {
 						$this->reduceInStock($row['uid'], $actItem['count']);
-						$instockTableArray['tt_products'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row[$instockField] - $actItem['count']);
+						$instockTableArray['tt_products'][$row['uid'] . ',' . $row['itemnumber'] . ',' . $row['title']] = intval($row[$instockField] - $actItem['count']);
 					}
 				}
 			}

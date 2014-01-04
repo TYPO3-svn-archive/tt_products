@@ -37,8 +37,6 @@
  * @author	Renè Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <franz@ttproducts.de>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
- * @author	Milosz Klosowicz <typo3@miklobit.com>
- * @author	Els Verberne <verberne@bendoo.nl>
  * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products

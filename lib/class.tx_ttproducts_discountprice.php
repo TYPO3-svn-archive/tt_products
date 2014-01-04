@@ -138,15 +138,14 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 										if ($k3 == 'type')	{
 											// nothing
 										} else if (
-											class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k3) :
-											t3lib_div::testInt($k3)
+											tx_div2007_core::testInt($k3)
 										) {
 											$count3 = intval($k3);
 											if ($priceCalcCount >= $count3)	{
 
 												switch ($prodType) 	{
 													case 'percent':
-														$countedItems[$k1][] = array ('sort' => $sort, 'item' => $k2, 'active' => TRUE, 'price' );
+														$countedItems[$k1][] = array ('sort' => $sort, 'item' => $k2, 'active' => TRUE, 'price' => '' );
 
 														foreach ($countedItems[$k1] as $k4 => $countedItemsRow)	{
 															$item = &$itemArray[$countedItemsRow['sort']][$countedItemsRow['item']];
@@ -165,14 +164,13 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 														$prodValue = $v3;
 
 														if (
-															(
-																class_exists('t3lib_utility_Math') ? !t3lib_utility_Math::canBeInterpretedAsInteger($lastprodValue) :
-																!t3lib_div::testInt($lastprodValue)
-															) || $lastprodValue != $prodValue
+															!tx_div2007_core::testInt($lastprodValue) ||
+															$lastprodValue != $prodValue
 														) {
 															if (!$bCollected)	{
-																$countedItems[$k1][] = array ('sort' => $sort, 'item' => $k2, 'active' => FALSE, 'price' );
+																$countedItems[$k1][] = array ('sort' => $sort, 'item' => $k2, 'active' => FALSE, 'price' => '');
 															}
+
 															$bCollected = TRUE;
 															if (!$bConditionActive)	{
 																foreach ($countedItems[$k1] as $k4 => $countItemArray)	{
@@ -205,8 +203,7 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 								$prodValue = 0;
 								foreach ($prodConf as $k3 => $prodv)	{
 									if (
-										class_exists('t3lib_utility_Math') ? t3lib_utility_Math::canBeInterpretedAsInteger($k3) :
-										t3lib_div::testInt($k3)
+										tx_div2007_core::testInt($k3)
 									) {
 										if ($priceTotalTax >= $k3)	{
 											if (!$prodValue || $prodValue < $prodv)	{
@@ -236,13 +233,16 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 			if ($additive == 0) {
 				switch ($calctype)	{
 					case 'count':
+
 						if (is_array($countedItems[$k1]))	{
 							foreach ($countedItems[$k1] as $k2 => $countedItemsRow)	{
+
 								if ($countedItemsRow['active'] === TRUE)	{
 									$item = &$itemArray[$countedItemsRow['sort']][$countedItemsRow['item']];
 									$row = &$item['rec'];
 									$item[$type] = $countedItemsRow['price'];
-									$priceReduction[$row['uid']] = 1; // remember the reduction in order not to calculate another price with $priceCalc
+
+									$priceReduction[$row['uid']] = $countedItemsRow['price']; // remember the reduction in order not to calculate another price with $priceCalc
 								}
 							}
 						}
@@ -269,7 +269,7 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 							continue;
 						}
 
-						if ($countedItems[$k1] === NULL || $countedItems [$k1]['active'] === FALSE) {
+						if ($countedItems[$k1] === NULL) {
 							continue;
 						}
 						krsort($priceCalcTemp['prod.']);
@@ -280,12 +280,15 @@ class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 									// store the discount price in all calculated items from before
 									if (is_array($countedItems[$k1]))	{
 										foreach ($countedItems[$k1] as $k3 => $v3) {
+											if ($v3['active'] == FALSE) {
+												continue;
+											}
 											foreach ($itemArray [$v3['sort']] as $k1=>$actItem) {
 												$row = &$actItem['rec'];
 											//	if ($calctype == 'calcprice')	{
 												$itemArray [$v3['sort']][$k1] [$type] = $price2;
 											//	}
-												$priceReduction[$row['uid']] = 1; // remember the reduction in order not to calculate another price with $priceCalc later
+												$priceReduction[$row['uid']] = $price2; // remember the reduction in order not to calculate another price with $priceCalc later
 											}
 										}
 									}
