@@ -180,7 +180,6 @@ class tx_ttproducts_paymentshipping {
 		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$shipKeyArray = $this->basket->basketExtra['shipping'];
 
-
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$conf = $cnf->getConf();
 		$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
@@ -244,23 +243,19 @@ class tx_ttproducts_paymentshipping {
 					}
 				}
 			}
-;
+
 			foreach($tagArray as $k3 => $v3)	{
 				if (strpos($k3, $tmpMarkerPrefix) === 0 && !isset($subpartArray['###' . $k3 . '###']))	{
-					if (strpos($k3, '_NE_') !== FALSE) {
+
+					if (strpos($k3, '_NE_') !== FALSE)	{
 						$wrappedSubpartArray['###' . $k3 . '###'] = '';
 						$tmpSubpartArray[$type] = $this->cObj->getSubpart($framework, '###' . $k3 . '###');
-						$psMessageArray[$type] .=
-							 $this->cObj->substituteMarkerArrayCached(
-								$tmpSubpartArray[$type],
-								$markerArray
-							);
+						$subpartArray['###'.$tmpMarkerPrefix.'###'] .= $this->cObj->substituteMarkerArrayCached($tmpSubpartArray[$type], $markerArray);
 					} else if (!isset($wrappedSubpartArray['###' . $k3 . '###'])) {
 						$subpartArray['###' . $k3 . '###'] = '';
 					}
 				}
 			}
-			$subpartArray['###' . $markerPrefix . '###'] = $psMessageArray[$type];
 		}
 	}
 

@@ -1,3 +1,7 @@
+2014-03-15 Franz Holzinger <franz@ttproducts.de>
+	* fix markers for payment / shipping
+	* remove labels for other languages
+
 2014-01-04 Franz Holzinger <franz@ttproducts.de>
 	* support for extension agency which is a fork of sr_feuser_register
 	* support for TYPO3 6.2

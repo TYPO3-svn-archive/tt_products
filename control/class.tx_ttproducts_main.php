@@ -184,7 +184,6 @@ class tx_ttproducts_main {
 				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['useFlexforms']
 			);
 		$this->codeArray = t3lib_div::trimExplode(',', $config['code'],1);
-
 		$required_pivars = $this->pibase->pi_getFFvalue($this->cObj->data['pi_flexform'], 'required_pivars');
 		$requiredArray = t3lib_div::trimExplode(',', $required_pivars);
 		$bDoProcessing = TRUE;

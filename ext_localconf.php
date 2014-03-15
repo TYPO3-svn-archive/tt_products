@@ -314,11 +314,15 @@ if (
 ) {
     // register the cache in BE so it will be cleared with "clear all caches"
     try {
-        $GLOBALS['typo3CacheFactory']->create(
-            'tt_products_cache',
-            $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache']['frontend'],
-            $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'],
-            $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options']);
+		$cacheName = 'tt_products_cache';
+		if (!$GLOBALS['typo3CacheManager']->hasCache($cacheName)) {
+			$GLOBALS['typo3CacheFactory']->create(
+				'tt_products_cache',
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'][$cacheName]['frontend'],
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'][$cacheName]['backend'],
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'][$cacheName]['options']
+			);
+		}
     } catch (t3lib_cache_exception_DuplicateIdentifier $e) {
         // do nothing, a tt_products_cache cache already exists
     }

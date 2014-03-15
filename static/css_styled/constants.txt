@@ -195,9 +195,9 @@ plugin.tt_products {
    defaultArticleID =
     # cat=plugin.products//; type=eint+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
   defaultProductID =
-    # cat=plugin.products//; type=eint+; label=default category ID: ID of the default category that will be shown in the list view when no tx_ttproducts_pi1[cat] parameter is given
+    # cat=plugin.products//; type=eint+; label=default category ID: ID of the default category that will be shown in the list view when no tt_products[cat] parameter is given
   defaultCategoryID =
-    # cat=plugin.products//; type=eint+; label=default DAM category ID: ID of the default DAM category that will be shown in the list view when no tx_ttproducts_pi1[damcat] parameter is given
+    # cat=plugin.products//; type=eint+; label=default DAM category ID: ID of the default DAM category that will be shown in the list view when no tt_products[damcat] parameter is given
   defaultDAMCategoryID =
     # cat=plugin.products//; type=eint+; label=root category ID: The upper most category ID from where you want to start to list categories.
   rootCategoryID =

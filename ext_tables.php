@@ -113,8 +113,8 @@ if (TYPO3_MODE=="BE" || $loadTcaAdditions == TRUE) {
 
 	t3lib_div::loadTCA('fe_users');
 
-	t3lib_extMgm::addTCAcolumns('fe_users',$tempColumns,1);
-	t3lib_extMgm::addToAllTCAtypes('fe_users','tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1,tt_products_vat;;;;1-1-1,tt_products_business_partner;;;;1-1-1,tt_products_organisation_form;;;;1-1-1');
+	t3lib_extMgm::addTCAcolumns('fe_users', $tempColumns);
+	t3lib_extMgm::addToAllTCAtypes('fe_users', 'tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1,tt_products_vat;;;;1-1-1,tt_products_business_partner;;;;1-1-1,tt_products_organisation_form;;;;1-1-1');
 }
 
 

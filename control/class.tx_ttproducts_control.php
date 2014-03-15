@@ -582,6 +582,7 @@ class tx_ttproducts_control {
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$infoViewObj->infoArray['billing']['error'] = 1;
 									$content .= $this->cObj->getSubpart($this->templateCode,$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+
 									$addQueryString = array();
 									$overwriteMarkerArray = array();
 									$label = '';
@@ -639,6 +640,7 @@ class tx_ttproducts_control {
 									$markerArray['###ERROR_DETAILS###'] = $mainMarkerArray['###ERROR_DETAILS###'] = $label;
 									$markerArray = array_merge($markerArray, $overwriteMarkerArray);
 									$content = $this->cObj->substituteMarkerArray($content, $markerArray);
+
 								}
 							break;
 							// a special step after payment and before finalization needed for some payment systems
@@ -688,9 +690,11 @@ class tx_ttproducts_control {
 									if($bFinalize == FALSE ){
 										$label = $errorMessage;
 										$content = $this->cObj->getSubpart($this->templateCode, $this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+
 										$markerArray = $this->urlObj->addURLMarkers(0, $markerArray,$addQueryString);
 										$markerArray['###ERROR_DETAILS###'] = $mainMarkerArray['###ERROR_DETAILS###'] = $label;
 										$content = $this->cObj->substituteMarkerArray($content, $markerArray);
+
 									}
 								} else {
 									$bFinalize = TRUE;
@@ -732,6 +736,7 @@ class tx_ttproducts_control {
 							'###'.$basket_tmpl.'###',
 							$mainMarkerArray
 						);
+
 						$bFinalize = FALSE;
 
 						// stop here as soon as the first basket content has been drawn
@@ -771,7 +776,6 @@ class tx_ttproducts_control {
 						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $infoViewObj, FALSE, FALSE, TRUE, '###'.$tmpl.'###', $mainMarkerArray);
-
 // 						include_once(PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_finalize.php');
 
 							// order finalization
@@ -822,6 +826,7 @@ class tx_ttproducts_control {
 							'###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###'
 						);
 
+
 						// Empties the shopping basket!
 						$this->basket->clearBasket();
 					} else {	// If not all required info-fields are filled in, this is shown instead:
@@ -836,6 +841,7 @@ class tx_ttproducts_control {
 							$this->templateCode,
 							$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###')
 						);
+
 						$content = $this->cObj->substituteMarkerArray(
 							$content,
 							$this->urlObj->addURLMarkers(0, $mainMarkerArray)
@@ -867,6 +873,7 @@ class tx_ttproducts_control {
 		}
 		$markerArray = array_merge($basketMarkerArray, $mainMarkerArray);
 		$markerArray['###EXTERNAL_COBJECT###'] = $this->pibase->externalCObject;	// adding extra preprocessing CObject
+
 		$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 
 		return $content;

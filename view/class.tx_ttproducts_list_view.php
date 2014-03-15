@@ -809,7 +809,6 @@ class tx_ttproducts_list_view {
 			if ($queryParts === FALSE)	{
 				return 'ERROR in tt_products';
 			}
-
 			$res = $itemTable->getTableObj()->exec_SELECT_queryArray($queryParts);
 			$itemArray=array();
 			$iCount = 0;

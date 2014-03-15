@@ -189,7 +189,7 @@ class tx_ttproducts_basket_view {
 		}
 
 			// Getting subparts from the template code.
-		$t=array();
+		$t = array();
 		$feuserSubpartArray = array();
 		$feuserWrappedSubpartArray = array();
 		$feUsersViewObj = $tablesObj->get('fe_users', true);
@@ -203,7 +203,7 @@ class tx_ttproducts_basket_view {
 			// add Global Marker Array
 		$globalMarkerArray = &$markerObj->getGlobalMarkerArray();
 		$markerArray = array_merge($markerArray, $globalMarkerArray);
-		$t['basketFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$feuserSubpartArray,$feuserWrappedSubpartArray);
+		$t['basketFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached($tempContent, $markerArray, $feuserSubpartArray, $feuserWrappedSubpartArray);
 		$subpartEmptyArray = array('###EMAIL_PLAINTEXT_TEMPLATE_SHOP###', '###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE###');
 
 		if (!$t['basketFrameWork'] && !in_array($subpartMarker, $subpartEmptyArray)) {
