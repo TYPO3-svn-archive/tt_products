@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
 class tx_ttproducts_field_graduated_price extends tx_ttproducts_field_base {
 

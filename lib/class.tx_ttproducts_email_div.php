@@ -39,9 +39,9 @@
  *
  */
 
-
+/*
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_orderaddress.php');
-require_once(PATH_BE_div2007 . 'class.tx_div2007_alpha5.php');
+require_once(PATH_BE_div2007 . 'class.tx_div2007_alpha5.php');*/
 
 class tx_ttproducts_email_div {
 

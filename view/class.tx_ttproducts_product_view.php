@@ -146,7 +146,7 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 		$markerArray['###BULKILY_WARNING###'] = $row['bulkily'] ? $this->conf['bulkilyWarning'] : '';
 
 		if ($this->conf['itemMarkerArrayFunc'])	{
-			$markerArray = tx_div2007_alpha::userProcess_fh001($this, $this->conf, 'itemMarkerArrayFunc', $markerArray);
+			$markerArray = tx_div2007_alpha5::userProcess_fh002($this, $this->conf, 'itemMarkerArrayFunc', $markerArray);
 		}
 
 		if ($theCode == 'SINGLE')	{
@@ -184,7 +184,7 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 									// Extension CSS styled content
 								if (t3lib_extMgm::isLoaded('css_styled_content')) {
 									$markerArray['###'.$index.'###'] =
-										$this->pibase->pi_RTEcssText($contentEl[$fieldName]);
+										tx_div2007_alpha5::RTEcssText($this->cObj, $contentEl[$fieldName]);
 								} else if (is_array($this->conf['parseFunc.']))	{
 									$markerArray['###'.$index.'###'] =
 										$this->cObj->parseFunc($contentEl[$fieldName],$this->conf['parseFunc.']);

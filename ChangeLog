@@ -1,3 +1,6 @@
+2014-05-03 Franz Holzinger <franz@ttproducts.de>
+	* support for TYPO3 6.2
+
 2014-03-15 Franz Holzinger <franz@ttproducts.de>
 	* fix markers for payment / shipping
 	* remove labels for other languages

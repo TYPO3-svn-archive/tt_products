@@ -392,7 +392,7 @@ class tx_ttproducts_single_view {
 
 				$queryString = $this->urlObj->getLinkParams($excludeList, $addQueryString, TRUE, FALSE, $viewCatViewTable->getPivar());
 
-				$linkUrl = tx_div2007_alpha::getPageLink_fh002($this->cObj, $linkPid, '', $queryString, array('useCacheHash' => TRUE));
+				$linkUrl = tx_div2007_alpha5::getPageLink_fh003($this->cObj, $linkPid, '', $queryString, array('useCacheHash' => TRUE));
 				$linkUrl = htmlspecialchars($linkUrl);
 				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="' . $linkUrl . '">','</a>');
 			}
@@ -527,7 +527,7 @@ class tx_ttproducts_single_view {
 
 			$markerArray['###FORM_NAME###'] = $forminfoArray['###FORM_NAME###'];
 			$pidMemo = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
-			$markerArray['###FORM_MEMO###'] = htmlspecialchars(tx_div2007_alpha::getPageLink_fh002($this->cObj,$pidMemo,'',$this->urlObj->getLinkParams('', array(), TRUE)));
+			$markerArray['###FORM_MEMO###'] = htmlspecialchars(tx_div2007_alpha5::getPageLink_fh003($this->cObj,$pidMemo,'',$this->urlObj->getLinkParams('', array(), TRUE)));
 
 			//$markerArray['###FORM_URL###']=$this->formUrl.'&tt_products='.$this->uid ;
 			$addQueryString = array();
@@ -634,7 +634,7 @@ class tx_ttproducts_single_view {
 				} else if ($cat)	{
 					$addQueryString[$viewCatViewTable->getPivar()] = $cat;
 				}
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###'] = array('<a href="'. htmlspecialchars(tx_div2007_alpha::getPageLink_fh002($this->cObj, $TSFE->id, '', $this->urlObj->getLinkParams('', $addQueryString, true, $bUseBackPid, $viewCatViewTable->getPivar()), array('useCacheHash' => true))) . '">','</a>');
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###'] = array('<a href="'. htmlspecialchars(tx_div2007_alpha5::getPageLink_fh003($this->cObj, $TSFE->id, '', $this->urlObj->getLinkParams('', $addQueryString, true, $bUseBackPid, $viewCatViewTable->getPivar()), array('useCacheHash' => true))) . '">','</a>');
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
@@ -653,7 +653,7 @@ class tx_ttproducts_single_view {
 					$addQueryString[$viewCatViewTable->getPivar()] = $cat;
 				}
 
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="' . htmlspecialchars(tx_div2007_alpha::getPageLink_fh002($this->cObj,$TSFE->id,'',$this->urlObj->getLinkParams('', $addQueryString,true,$bUseBackPid,$viewCatViewTable->getPivar()),array('useCacheHash' => true))) . '">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="' . htmlspecialchars(tx_div2007_alpha5::getPageLink_fh003($this->cObj,$TSFE->id,'',$this->urlObj->getLinkParams('', $addQueryString,true,$bUseBackPid,$viewCatViewTable->getPivar()),array('useCacheHash' => true))) . '">','</a>');
 			} else {
 				$subpartArray['###LINK_NEXT_SINGLE###'] = '';
 			}

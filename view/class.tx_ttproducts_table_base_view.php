@@ -197,8 +197,8 @@ abstract class tx_ttproducts_table_base_view	{
 				$fieldId = $id.'-'.$viewField;
 				$markerKey = $marker.'_'.strtoupper($viewField);
 
-				if (isset($tagArray[$markerKey]))	{
-					$rowMarkerArray['###'.$markerKey.'_ID###'] = $fieldId;
+				if (isset($tagArray[$markerKey . '_ID']))	{
+					$rowMarkerArray['###' . $markerKey . '_ID###'] = $fieldId;
 				}
 
 				if (is_array($variantFieldArray) && is_array($variantMarkerArray) && in_array($field, $variantFieldArray))	{

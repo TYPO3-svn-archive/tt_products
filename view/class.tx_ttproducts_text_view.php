@@ -78,7 +78,7 @@ class tx_ttproducts_text_view extends tx_ttproducts_table_base_view {
 
 					// Extension CSS styled content
 				if (t3lib_extMgm::isLoaded('css_styled_content')) {
-					$value = tx_div2007_alpha::RTEcssText($this->getCObj(), $value);
+					$value = tx_div2007_alpha5::RTEcssText($this->getCObj(), $value);
 				} else if (is_array($this->conf['parseFunc.'])) {
 					$value = $this->getCObj()->parseFunc($value, $this->conf['parseFunc.']);
 				}

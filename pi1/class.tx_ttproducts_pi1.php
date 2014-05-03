@@ -47,7 +47,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts . 'pi1/class.tx_ttproducts_pi1_base.php');
+// require_once (PATH_BE_ttproducts . 'pi1/class.tx_ttproducts_pi1_base.php');
 
 
 class tx_ttproducts_pi1 extends tx_ttproducts_pi1_base {

@@ -638,7 +638,7 @@ class tx_ttproducts_basket_view {
 			$markerArray['###PRICE_SHIPPING_NO_TAX###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceNoTax']['shipping']);
 			$markerArray['###PRICE_SHIPPING_ONLY_TAX###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceTax']['shipping']-$basket->calculatedArray['priceNoTax']['shipping']);
 
-			$basketUrl = htmlspecialchars(tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->urlObj->getLinkParams('', array(), TRUE, TRUE, ''),'',''));
+			$basketUrl = htmlspecialchars(tx_div2007_alpha5::getTypoLink_URL_fh003($this->pibase->cObj,$pid,$this->urlObj->getLinkParams('', array(), TRUE, TRUE, ''),'',''));
 
 			$markerArray['###SHIPPING_SELECTOR###'] = $paymentshippingObj->generateRadioSelect($theCode, 'shipping', $basket->calculatedArray, $basketUrl);
 			$imageCode = $this->pibase->cObj->IMAGE($basket->basketExtra['shipping.']['image.']);

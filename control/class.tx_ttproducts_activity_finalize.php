@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
+// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
 
 
 class tx_ttproducts_activity_finalize {
@@ -468,9 +468,9 @@ class tx_ttproducts_activity_finalize {
 
 			// This cObject may be used to call a function which clears settings in an external order system.
 			// The output is NOT included anywhere
-		tx_div2007_alpha::getExternalCObject_fh001($this->pibase, 'externalFinalizing');
+		tx_div2007_alpha5::getExternalCObject_fh003($this->pibase, 'externalFinalizing');
 		if ($this->conf['externalOrderProcessFunc'])    {
-			tx_div2007_alpha::userProcess_fh001($this->pibase, $this->conf, 'externalOrderProcessFunc', $basket);
+			tx_div2007_alpha5::userProcess_fh002($this->pibase, $this->conf, 'externalOrderProcessFunc', $basket);
 		}
 
 			// Call all finalizeOrder hooks

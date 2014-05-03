@@ -39,12 +39,12 @@
  *
  */
 
-
+/*
 require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_activity.php');
 require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_info_view.php');
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
 require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');
+require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');*/
 
 
 class tx_ttproducts_control {
@@ -260,7 +260,7 @@ class tx_ttproducts_control {
 			}
 		} else if (strpos($handleLib,'paymentlib') !== FALSE && t3lib_extMgm::isLoaded($handleLib)) {
 
-			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001($handleLib);
+			$eInfo = tx_div2007_alpha5::getExtensionInfo_fh003($handleLib);
 			$paymentlibVersion = $eInfo['version'];
 			$phpVersion = phpversion();
 
@@ -463,7 +463,7 @@ class tx_ttproducts_control {
 								}
 							break;
 							case 'products_overview':
-								tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase);	// TODO
+								tx_div2007_alpha5::load_noLinkExtCobj_fh002($this->pibase);	// TODO
 								$basket_tmpl = 'BASKET_OVERVIEW_TEMPLATE';
 							break;
 							case 'products_redeem_gift': 	// this shall never be the only activity
@@ -493,13 +493,13 @@ class tx_ttproducts_control {
 							break;
 							case 'products_info':
 								// if (!$this->activityArray['products_payment'] && !$this->activityArray['products_finalize']) {
-								tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase); // TODO
+								tx_div2007_alpha5::load_noLinkExtCobj_fh002($this->pibase); // TODO
 								$basket_tmpl = 'BASKET_INFO_TEMPLATE';
 								// }
 							break;
 							case 'products_payment':
 								$orderUid = $this->getOrderUid();
-								tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase);	// TODO
+								tx_div2007_alpha5::load_noLinkExtCobj_fh002($this->pibase);	// TODO
 								$pidagb = intval($this->conf['PIDagb']);
 								$checkRequired = $infoViewObj->checkRequired();
 								$checkAllowed = $infoViewObj->checkAllowed();
@@ -750,7 +750,7 @@ class tx_ttproducts_control {
 					$checkAllowed = $infoViewObj->checkAllowed();
 
 					if ($checkRequired == '' && $checkAllowed == '')	{
-						tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase);	// TODO
+						tx_div2007_alpha5::load_noLinkExtCobj_fh002($this->pibase);	// TODO
 						$handleScript = $TSFE->tmpl->getFileName($this->basket->basketExtra['payment.']['handleScript']);
 						$orderObj = $tablesObj->get('sys_products_orders');
 						$orderUid = $this->getOrderUid();
@@ -858,7 +858,7 @@ class tx_ttproducts_control {
 		$basketMarkerArray = array();
 		if ($bBasketEmpty)	{
 			if ($this->activityArray['products_overview']) {
-				tx_div2007_alpha::load_noLinkExtCobj_fh001($this->pibase);	//
+				tx_div2007_alpha5::load_noLinkExtCobj_fh002($this->pibase);	//
 				$content .= $this->cObj->getSubpart(
 					$this->templateCode,
 					$this->subpartmarkerObj->spMarker('###BASKET_OVERVIEW_EMPTY###')

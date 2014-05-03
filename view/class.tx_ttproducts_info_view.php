@@ -394,7 +394,7 @@ class tx_ttproducts_info_view {
 			$countryCodeArray['delivery'] = ($this->infoArray['delivery']['country_code'] ? $this->infoArray['delivery']['country_code'] : $TSFE->fe_user->user['static_info_country']);
 
 			if (t3lib_extMgm::isLoaded('static_info_tables')) {
-				$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
+				$eInfo = tx_div2007_alpha5::getExtensionInfo_fh003('static_info_tables');
 				$sitVersion = $eInfo['version'];
 
 				if (version_compare($sitVersion, '2.0.1', '>='))	{
@@ -517,7 +517,7 @@ class tx_ttproducts_info_view {
 
 		$foundbyKey = $this->infoArray['delivery']['foundby'];
 		if (is_array($valueArray[$foundbyKey]))	{
-			$tmp = tx_div2007_alpha::sL_fh001($valueArray[$foundbyKey][0]);
+			$tmp = tx_div2007_alpha5::sL_fh002($valueArray[$foundbyKey][0]);
 			$text = tx_div2007_alpha5::getLL_fh002($langObj, $tmp);
 		}
 

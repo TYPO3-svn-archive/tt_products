@@ -38,7 +38,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'model/int.tx_ttproducts_variant_int.php');
+// require_once (PATH_BE_ttproducts.'model/int.tx_ttproducts_variant_int.php');
 
 
 class tx_ttproducts_variant_dummy implements tx_ttproducts_variant_int {

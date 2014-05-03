@@ -87,7 +87,7 @@ class tx_ttproducts_card_view extends tx_ttproducts_table_base_view {
 		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $this->ccArray['cc_type'];
 		if (isset($this->ccArray['cc_type']))	{
 			$tmp = $TCA[$tablename]['columns']['cc_type']['config']['items'][$this->ccArray['cc_type']]['0'];
-			$tmp = tx_div2007_alpha::sL_fh001($tmp);
+			$tmp = tx_div2007_alpha5::sL_fh002($tmp);
 			$ccTypeTextSelected = tx_div2007_alpha5::getLL_fh002($this->langObj, $tmp);
 		}
 		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $ccTypeTextSelected;

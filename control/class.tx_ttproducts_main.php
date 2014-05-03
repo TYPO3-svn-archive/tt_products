@@ -39,7 +39,7 @@
  *
  */
 
-
+/*
 require_once(PATH_BE_div2007.'class.tx_div2007_ff.php');
 require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
 require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
@@ -70,7 +70,7 @@ require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_image_vie
 require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_single_view.php');
 require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_price_view.php');
 require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_graduated_price_view.php');
+require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_graduated_price_view.php');*/
 
 
 
@@ -166,7 +166,7 @@ class tx_ttproducts_main {
 
 			// basket
 		$this->basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$eInfo = tx_div2007_alpha::getExtensionInfo_fh001(TT_PRODUCTS_EXT);
+		$eInfo = tx_div2007_alpha5::getExtensionInfo_fh003(TT_PRODUCTS_EXT);
 
 		$this->conf['version'] = $eInfo['version'];
 		// Save the original flexform in case if we need it later as USER_INT
@@ -174,7 +174,7 @@ class tx_ttproducts_main {
 		$this->pibase->pi_initPIflexForm();
 
 		$config['code'] =
-			tx_div2007_alpha::getSetupOrFFvalue_fh003(
+			tx_div2007_alpha5::getSetupOrFFvalue_fh002(
 				$this->cObj,
 	 			$conf['code'],
 	 			$conf['code.'],
@@ -183,6 +183,7 @@ class tx_ttproducts_main {
 				'display_mode',
 				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['useFlexforms']
 			);
+
 		$this->codeArray = t3lib_div::trimExplode(',', $config['code'],1);
 		$required_pivars = $this->pibase->pi_getFFvalue($this->cObj->data['pi_flexform'], 'required_pivars');
 		$requiredArray = t3lib_div::trimExplode(',', $required_pivars);
@@ -216,7 +217,7 @@ class tx_ttproducts_main {
 
 			// initialise AJAX at the beginning because the AJAX functions can set piVars
 		if (!$bRunAjax && t3lib_extMgm::isLoaded('taxajax')) {
-			include_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_ajax.php');
+// 			include_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_ajax.php');
 			$this->ajax = t3lib_div::makeInstance('tx_ttproducts_ajax');
 			$this->ajax->init();
 			$this->ajax->main($conf['ajaxDebug']);
@@ -352,11 +353,11 @@ class tx_ttproducts_main {
 
 			// get all extending TCAs
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['extendingTCA']))	{
-				tx_div2007_alpha::loadTcaAdditions_fh001($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['extendingTCA']);
+				tx_div2007_alpha5::loadTcaAdditions_fh002($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['extendingTCA']);
 		}
 
 		if ($this->conf['templateStyle'] == 'css-styled')	{
-			include_once(PATH_BE_ttproducts . 'lib/class.tx_ttproducts_css.php');
+// 			include_once(PATH_BE_ttproducts . 'lib/class.tx_ttproducts_css.php');
 			$this->css = t3lib_div::makeInstance('tx_ttproducts_css');
 			$this->css->init(
 				$this->pibase
@@ -413,7 +414,7 @@ class tx_ttproducts_main {
 		$this->control = t3lib_div::makeInstance('tx_ttproducts_control');
 
 			// This cObject may be used to call a function which manipulates the shopping basket based on settings in an external order system. The output is included in the top of the order (HTML) on the basket-page.
-		$this->externalCObject = tx_div2007_alpha::getExternalCObject_fh001($this->pibase, 'externalProcessing');
+		$this->externalCObject = tx_div2007_alpha5::load_noLinkExtCobj_fh002($this->pibase, 'externalProcessing');
 
 		$subpartmarkerObj = t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
 		$subpartmarkerObj->init($this->cObj);
@@ -435,7 +436,6 @@ class tx_ttproducts_main {
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$orderObj = $tablesObj->get('sys_products_orders');
 		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
-
 		if (!count($this->codeArray) && !$bRunAjax)	{
 			$this->codeArray = array('HELP');
 		}
@@ -731,7 +731,7 @@ class tx_ttproducts_main {
 					) {
 
 						$pid = $errorConf[$indice . '.']['redirect.']['pid'];
-						$url = tx_div2007_alpha::getTypoLink_URL_fh002(
+						$url = tx_div2007_alpha5::getTypoLink_URL_fh003(
 							$this->cObj,
 							$pid,
 							$urlObj->getLinkParams(
@@ -763,12 +763,12 @@ class tx_ttproducts_main {
 			if ($contentTmp == 'error') {
 					$fileName = 'EXT:'.TT_PRODUCTS_EXT.'/template/products_help.tmpl';
 					$helpTemplate = $this->cObj->fileResource($fileName);
-					$content .= tx_div2007_alpha::displayHelpPage_fh001($this->pibase, $helpTemplate, TT_PRODUCTS_EXT, $this->errorMessage, $theCode);
+					$content .= tx_div2007_alpha5::displayHelpPage_fh003($langObj, $this->cObj, $helpTemplate, TT_PRODUCTS_EXT, $this->errorMessage, $theCode);
 
 					unset($this->errorMessage);
 					break; // while
 			} else {
-				$content .= tx_div2007_alpha::wrapContentCode_fh003($contentTmp, $theCode, $this->pibase->prefixId, $this->cObj->data['uid']);
+				$content .= tx_div2007_alpha5::wrapContentCode_fh004($contentTmp, $theCode, $this->pibase->prefixId, $this->cObj->data['uid']);
 			}
 		}
 

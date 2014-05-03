@@ -37,7 +37,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_language.php');
+// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_language.php');
 
 
 class tx_ttproducts_paymentlib {
@@ -302,7 +302,7 @@ class tx_ttproducts_paymentlib {
 		$addQueryString = array();
 		$excludeList = '';
 		$target = '';
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->urlObj->getLinkParams($excludeList,$addQueryString,TRUE),$target,$conf);
+		$url = tx_div2007_alpha5::getTypoLink_URL_fh003($this->pibase->cObj,$pid,$this->urlObj->getLinkParams($excludeList,$addQueryString,TRUE),$target,$conf);
 		return $url;
 	}
 
@@ -399,7 +399,7 @@ class tx_ttproducts_paymentlib {
 
 		$bUseStaticInfo = FALSE;
 		if (t3lib_extMgm::isLoaded('static_info_tables'))	{
-			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
+			$eInfo = tx_div2007_alpha5::getExtensionInfo_fh003('static_info_tables');
 			$sitVersion = $eInfo['version'];
 			if (version_compare($sitVersion, '2.0.5', '>='))	{
 				$bUseStaticInfo = TRUE;
