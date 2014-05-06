@@ -325,8 +325,6 @@ class tx_ttproducts_paymentshipping {
 		$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
 		$selectedText = ($bUseXHTML ? 'selected="selected"' : 'selected');
 
-		// tx_div2007_alpha::getPageLink_fh001(&$pibase, $id
-
 		$submitCode = 'this.form.action=\''.$basketUrl.'\';this.form.submit();';
 
 		$template = (
@@ -785,7 +783,7 @@ class tx_ttproducts_paymentshipping {
 			switch ($tablename) {
 				case 'static_countries':
 					if (t3lib_extMgm::isLoaded('static_info_tables')) {
-						$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
+						$eInfo = tx_div2007_alpha5::getExtensionInfo_fh003('static_info_tables');
 						$sitVersion = $eInfo['version'];
 					}
 					if (version_compare($sitVersion, '2.0.1', '>='))	{

@@ -41,20 +41,20 @@
  */
 
 
-require_once (PATH_t3lib.'class.t3lib_stdgraphic.php');
-require_once (PATH_tslib.'class.tslib_content.php');
-require_once (PATH_tslib.'class.tslib_gifbuilder.php');
-
-require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
-require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
-
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_language.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_config.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_tables.php');
-require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_image.php');
-require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_price.php');
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_image_view.php');
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_price_view.php');
+// require_once (PATH_t3lib.'class.t3lib_stdgraphic.php');
+// require_once (PATH_tslib.'class.tslib_content.php');
+// require_once (PATH_tslib.'class.tslib_gifbuilder.php');
+//
+// require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
+// require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
+//
+// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_language.php');
+// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_config.php');
+// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_tables.php');
+// require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_image.php');
+// require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_price.php');
+// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_image_view.php');
+// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_price_view.php');
 
 
 class tx_ttproducts_db {
@@ -290,7 +290,7 @@ class tx_ttproducts_db {
 
 							// Extension CSS styled content
 						if (t3lib_extMgm::isLoaded('css_styled_content')) {
-							$v = tx_div2007_alpha::RTEcssText($this->cObj, $v);
+							$v = tx_div2007_alpha5::RTEcssText($this->cObj, $v);
 						} else if (is_array($this->conf['parseFunc.']))	{
 							$v = $this->cObj->parseFunc($v,$this->conf['parseFunc.']);
 						}
@@ -299,10 +299,10 @@ class tx_ttproducts_db {
 
 				if (!in_array($field, $variantArray))	{
 					$tagId = $jsTableName.'-'.$view.'-'.$uid.'-'.$field;
-					switch ($field)	{
+					switch ($field) {
 						case 'image': // $this->cObj
 							$imageRenderObj = 'image';
-							if ($theCode == 'LIST')	{
+							if ($theCode == 'LIST' || $theCode == 'SEARCH') {
 								$imageRenderObj = 'listImage';
 							}
 							$imageArray = $imageObj->getImageArray($row, 'image');

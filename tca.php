@@ -72,8 +72,8 @@ $TCA['tt_products'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -676,8 +676,8 @@ $TCA['tt_products'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -756,8 +756,8 @@ $TCA['tt_products_language'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12 ,31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -981,8 +981,8 @@ $TCA['tt_products_graduated_price'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -1113,8 +1113,8 @@ $TCA['tt_products_cat'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -1286,8 +1286,8 @@ $TCA['tt_products_cat_language'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -1396,8 +1396,8 @@ $TCA['tt_products_articles'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -1687,8 +1687,8 @@ $TCA['tt_products_articles_language'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -1811,8 +1811,8 @@ $TCA['tt_products_emails'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12 ,31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -2036,8 +2036,8 @@ $TCA['tt_products_texts_language'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),
@@ -2157,8 +2157,8 @@ $TCA['sys_products_cards'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
-					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
 		),

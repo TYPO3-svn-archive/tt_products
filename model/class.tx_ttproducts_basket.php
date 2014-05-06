@@ -115,8 +115,8 @@ class tx_ttproducts_basket {
 		$this->setFuncTablename ($funcTablename);
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$viewTableObj = $tablesObj->get($funcTablename);
-		$tmpBasketExt = $TSFE->fe_user->getKey('ses','basketExt');
-		$this->order = $TSFE->fe_user->getKey('ses','order');
+		$tmpBasketExt = $TSFE->fe_user->getKey('ses', 'basketExt');
+		$this->order = $TSFE->fe_user->getKey('ses', 'order');
 
 		if (is_array($tmpBasketExt)) {
 			$this->basketExt = $tmpBasketExt;
@@ -218,7 +218,7 @@ class tx_ttproducts_basket {
 						}
 
 						$quantity = 0;
-						$quantity = $priceObj->toNumber($this->conf['quantityIsFloat'],$basketItem['quantity']);
+						$quantity = $priceObj->toNumber($this->conf['quantityIsFloat'], $basketItem['quantity']);
 
 						$count = $this->getMaxCount ($quantity, $uid);
 						if ($count >= 0) {
@@ -250,7 +250,7 @@ class tx_ttproducts_basket {
 						}
 					} else {
 						foreach($basketItem as $md5 => $quantity) {
-							$quantity = $priceObj->toNumber($this->conf['quantityIsFloat'],$quantity);
+							$quantity = $priceObj->toNumber($this->conf['quantityIsFloat'], $quantity);
 
 							if (is_array($this->basketExt[$uid]) && $md5 != 'additional')	{
 								foreach($this->basketExt[$uid] as $variant => $tmp) {
@@ -335,9 +335,9 @@ class tx_ttproducts_basket {
 
 			if ($bStoreBasket)	{
 				if (is_array($this->basketExt) && count($this->basketExt))	{
-					$TSFE->fe_user->setKey('ses','basketExt',$this->basketExt);
+					$TSFE->fe_user->setKey('ses', 'basketExt',$this->basketExt);
 				} else {
-					$TSFE->fe_user->setKey('ses','basketExt',array());
+					$TSFE->fe_user->setKey('ses', 'basketExt',array());
 				}
 				$TSFE->fe_user->storeSessionData(); // The basket shall not get lost when coming back from external scripts
 			}
@@ -433,17 +433,17 @@ class tx_ttproducts_basket {
 		if ($this->conf['debug'] != '1' || $bForce)	{
 			// TODO: delete only records from relevant pages
 				// Empties the shopping basket!
-			$TSFE->fe_user->setKey('ses','recs',$this->getClearBasketRecord());
-			$TSFE->fe_user->setKey('ses','basketExt',array());
+			$TSFE->fe_user->setKey('ses', 'recs', $this->getClearBasketRecord());
+			$TSFE->fe_user->setKey('ses', 'basketExt', array());
 			unset($this->itemArray);
 			unset($this->basketExt);
 			unset($this->order);
 		}
 
-		$TSFE->fe_user->setKey('ses','ac',array());
-		$TSFE->fe_user->setKey('ses','cc',array());
-		$TSFE->fe_user->setKey('ses','cp',array());
-		$TSFE->fe_user->setKey('ses','vo',array());
+		$TSFE->fe_user->setKey('ses', 'ac', array());
+		$TSFE->fe_user->setKey('ses', 'cc', array());
+		$TSFE->fe_user->setKey('ses', 'cp', array());
+		$TSFE->fe_user->setKey('ses', 'vo', array());
 	} // clearBasket
 
 
@@ -479,7 +479,7 @@ class tx_ttproducts_basket {
 		$cnfObj = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$itemTableConf = $cnfObj->getTableConf($funcTablename, 'BASKET');
 		$viewTableObj = $tablesObj->get($funcTablename);
-		$where = 'uid IN ('.implode(',',$uidArr).') AND pid IN ('. $this->pidListObj->getPidlist().')'.$viewTableObj->getTableObj()->enableFields();
+		$where = 'uid IN ('.implode(',', $uidArr) . ') AND pid IN (' . $this->pidListObj->getPidlist() . ')' . $viewTableObj->getTableObj()->enableFields();
 		$orderBy = $viewTableObj->getTableObj()->transformOrderby($itemTableConf['orderBy']);
 
 		$rcArray = $viewTableObj->getWhere($where, 'BASKET', $orderBy);
@@ -497,7 +497,7 @@ class tx_ttproducts_basket {
 			// only the basket items for the pages belonging to this shop shall be used here
 			if ($isValidPage)	{
 				foreach ($this->basketExt[$uid] as $bextVarLine => $bRow)	{
-					if (substr($bextVarLine,-1) == '.')	{
+					if (substr($bextVarLine, -1) == '.')	{
 						// this is an additional array which is no basket item
 						if ($this->conf['whereGiftService'])	{
 							$bAddGiftService = TRUE;
@@ -664,8 +664,8 @@ class tx_ttproducts_basket {
 
 					// has the price been calculated before take it if it gets cheaper now
 					if (($actItem['calcprice'] > 0) && ($actItem['calcprice'] < $actItem['priceTax'])) {
-						$this->itemArray[$sort][$k1]['priceTax'] = $priceObj->getModePrice($this->conf['TAXmode'],$actItem['calcprice'],TRUE,$tax,$this->conf['TAXincluded']);
-						$this->itemArray[$sort][$k1]['priceNoTax'] = $priceObj->getModePrice($this->conf['TAXmode'],$actItem['calcprice'],FALSE,$tax,$this->conf['TAXincluded']);
+						$this->itemArray[$sort][$k1]['priceTax'] = $priceObj->getModePrice($this->conf['TAXmode'], $actItem['calcprice'], TRUE, $tax, $this->conf['TAXincluded']);
+						$this->itemArray[$sort][$k1]['priceNoTax'] = $priceObj->getModePrice($this->conf['TAXmode'], $actItem['calcprice'], FALSE, $tax, $this->conf['TAXincluded']);
 					}
 
 					//  multiplicate it with the count :
@@ -682,9 +682,9 @@ class tx_ttproducts_basket {
 
 					if ($this->conf['TAXmode'] == '1')	{
 
-						$taxstr = strval(number_format($tax,2)); // needed for floating point taxes as in Swizzerland
-						$this->itemArray[$sort][$k1]['totalTax'] = $priceObj->getPrice($this->itemArray[$sort][$k1]['totalNoTax'],TRUE,$tax,FALSE);
-						$this->itemArray[$sort][$k1]['total0Tax'] = $priceObj->getPrice($this->itemArray[$sort][$k1]['total0NoTax'],TRUE,$tax,FALSE);
+						$taxstr = strval(number_format($tax, 2)); // needed for floating point taxes as in Swizzerland
+						$this->itemArray[$sort][$k1]['totalTax'] = $priceObj->getPrice($this->itemArray[$sort][$k1]['totalNoTax'], TRUE, $tax, FALSE);
+						$this->itemArray[$sort][$k1]['total0Tax'] = $priceObj->getPrice($this->itemArray[$sort][$k1]['total0NoTax'], TRUE, $tax, FALSE);
 						$this->calculatedArray['priceNoTax']['goodssametaxtotal'][$taxstr] +=  $this->itemArray[$sort][$k1]['totalNoTax'];
 						$this->calculatedArray['price2NoTax']['goodssametaxtotal'][$taxstr] += $this->itemArray[$sort][$k1]['total2NoTax'];
 
@@ -704,25 +704,25 @@ class tx_ttproducts_basket {
 						$this->calculatedArray['price2Tax']['goodstotal']	+= $price2Tax * $count;
 
 						$value = $row['handling'];
-						$this->calculatedArray['priceTax']['handling'] += $priceObj->getModePrice($this->conf['TAXmode'],$value,TRUE,$shippingTax,$this->conf['TAXincluded'],TRUE);
+						$this->calculatedArray['priceTax']['handling'] += $priceObj->getModePrice($this->conf['TAXmode'], $value, TRUE, $shippingTax, $this->conf['TAXincluded'], TRUE);
 						$value = $row['shipping'];
-						$this->calculatedArray['priceTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'],$value,TRUE,$shippingTax,$this->conf['TAXincluded'],TRUE);
+						$this->calculatedArray['priceTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'], $value, TRUE, $shippingTax, $this->conf['TAXincluded'], TRUE);
 
 						$value = $row['shipping2'];
 						if ($count > 1)	{
-							$this->calculatedArray['priceTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'],$value*($count-1),TRUE,$shippingTax,$this->conf['TAXincluded'],TRUE);
+							$this->calculatedArray['priceTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'], $value*($count - 1), TRUE, $shippingTax, $this->conf['TAXincluded'], TRUE);
 						}
 					}
 
 					$value = $row['handling'];
-					$this->calculatedArray['priceNoTax']['handling'] += $priceObj->getModePrice($this->conf['TAXmode'],$value,FALSE,$shippingTax,$this->conf['TAXincluded'],TRUE);
+					$this->calculatedArray['priceNoTax']['handling'] += $priceObj->getModePrice($this->conf['TAXmode'], $value, FALSE, $shippingTax, $this->conf['TAXincluded'], TRUE);
 
 					$value = $row['shipping'];
-					$this->calculatedArray['priceNoTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'],$value,FALSE,$shippingTax,$this->conf['TAXincluded'],TRUE);
+					$this->calculatedArray['priceNoTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'], $value, FALSE, $shippingTax, $this->conf['TAXincluded'], TRUE);
 
 					$value = $row['shipping2'];
 					if ($count > 1)	{
-						$this->calculatedArray['priceNoTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'],$value*($count-1),FALSE,$shippingTax,$this->conf['TAXincluded'],TRUE);
+						$this->calculatedArray['priceNoTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'], $value * ($count - 1), FALSE, $shippingTax, $this->conf['TAXincluded'], TRUE);
 					}
 				}
 			}
@@ -733,8 +733,8 @@ class tx_ttproducts_basket {
 				if ($row['bulkily'])	{
 					$value = floatval($this->conf['bulkilyAddition']) * $this->basketExt[$row['uid']][$viewTableObj->variant->getVariantFromRow($row)];
 					$tax = ($bulkilyFeeTax != '' ? $bulkilyFeeTax : $shippingTax);
-					$this->calculatedArray['priceTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'],$value,TRUE,$tax,$this->conf['TAXincluded'],TRUE);
-					$this->calculatedArray['priceNoTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'],$value,FALSE,$tax,$this->conf['TAXincluded'],TRUE);
+					$this->calculatedArray['priceTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'], $value, TRUE, $tax, $this->conf['TAXincluded'], TRUE);
+					$this->calculatedArray['priceNoTax']['shipping'] += $priceObj->getModePrice($this->conf['TAXmode'], $value, FALSE, $tax, $this->conf['TAXincluded'], TRUE);
 				}
 			}
 
@@ -745,7 +745,7 @@ class tx_ttproducts_basket {
 					$priceTax = 0;
 
 					foreach ($this->calculatedArray[$keyNoTax]['goodssametaxtotal'] as $tax => $value)	{
-						$newPriceTax = $priceObj->getModePrice($this->conf['TAXmode'],$value,TRUE,$tax,FALSE);
+						$newPriceTax = $priceObj->getModePrice($this->conf['TAXmode'], $value, TRUE, $tax, FALSE);
 						$priceTax += $newPriceTax;
 
 					}
@@ -761,7 +761,7 @@ class tx_ttproducts_basket {
 					foreach ($this->calculatedArray[$keyNoTax]['goodssametaxtotal'] as $tax => $catArray)	{
 						if (is_array($catArray))	{
 							foreach ($catArray as $cat => $value)	{
-								$newPriceTax = $priceObj->getModePrice($this->conf['TAXmode'],$value,TRUE,$tax,FALSE);
+								$newPriceTax = $priceObj->getModePrice($this->conf['TAXmode'], $value, TRUE, $tax, FALSE);
 								$priceTax += $newPriceTax;
 								$priceTaxArray [$cat] = $newPriceTax;
 							}

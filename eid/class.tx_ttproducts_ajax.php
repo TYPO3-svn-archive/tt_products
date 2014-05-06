@@ -55,7 +55,7 @@ class tx_ttproducts_ajax {
 	function init()	{
 		global $TSFE;
 
-		include_once(PATH_BE_taxajax.'class.tx_taxajax.php');
+// 		include_once(PATH_BE_taxajax.'class.tx_taxajax.php');
 		$this->taxajax = t3lib_div::makeInstance('tx_taxajax');
 		$this->taxajax->setCharEncoding('utf-8');
 	}

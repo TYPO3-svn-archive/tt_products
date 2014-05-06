@@ -154,9 +154,9 @@ $config = array();
 $config['LLkey'] = '';
 
 // tt_products specific parts
-
+/*
 require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_ajax.php');
-require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');
+require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');*/
 
 
 // Make instance:
