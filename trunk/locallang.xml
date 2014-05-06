@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<description>plugin description</description>
+		<type>module</type>
+		<csh_table></csh_table>
+		<fileId>EXT:tt_products/locallang.xml</fileId>
+		<labelContext type="array">
+			<label index="plugins_title"></label>
+			<label index="plugins_description"></label>
+			<label index="m_default"></label>
+			<label index="m_ext"></label>
+			<label index="m_variants"></label>
+		</labelContext>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="plugins_title">Shop System</label>
+			<label index="plugins_description">Add a shopping system plugin to the page. This makes it possible to sell products in multiple languages.</label>
+			<label index="m_default">default</label>
+			<label index="m_ext">extended</label>
+			<label index="m_variants">variants</label>
+		</languageKey>
+	</data>
+</T3locallang>

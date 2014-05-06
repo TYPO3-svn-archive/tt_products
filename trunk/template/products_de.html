@@ -1,0 +1,2062 @@
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/tr/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<TITLE>Shop-Template</TITLE>
+</head>
+
+<body>
+
+<br><br><hr><br><br><br>
+<h3>ERROR_TEMPLATE</h3>
+<em><br>
+<br>
+<br>
+If a general internal error has occurred<br>
+</em>
+<!-- ERROR_TEMPLATE begin
+If the basket is empty this subpart is displayed
+-->
+<br>
+###GW1B###<B>Es ist ein interner Fehler aufgetreten. &Uuml;berprüfen Sie die Einstellungen.</B>###GW1E###
+<!-- ERROR_TEMPLATE end -->
+
+
+<br><br><br><br><hr><br><br>
+
+<br><br><br><br><hr><br><br><br>
+<h3>ITEM_LIST_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of products. It's also used by search-results.</em><br>
+<br>
+<br>
+
+
+<!-- ###ITEM_LIST_TEMPLATE### begin
+	This subpart is used to display the regular list of products. It's also used by search-results.
+-->
+<h1>Shop System f&uuml;r TYPO3</h1>
+<p> Willkommen bei der Verwendung des tt_products Shop Systems f&uuml;r TYPO3. Wenn Sie selber ein Shop einrichten, sollten Sie sich das Tutorial
+auf <a href="http://jambage.com/index.php?id=170">tt_products - Open Source Shop System</a> ansehen. Es gibt dort auch ein Forum, um Fragen zu stellen.
+</p>
+<br>
+<table border="0" cellspacing="0" cellpadding="1" width=1>
+	<tr>
+		<!-- ###FE_GROUP_1_TEMPLATE### begin -->
+		<td>Du bist eingeloggt! </td>
+		<!-- ###FE_GROUP_1_TEMPLATE### end -->
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td><!-- ###LINK_BROWSE### begin -->
+			[ ###BROWSE_LINKS### ]
+			<!-- ###LINK_BROWSE### end-->
+		</td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+	<tr>
+		<td colspan="3" align="center" bgcolor="###GC2###">###GW2B###<b>bananaGUARDs - Auswahl:</b>###GW2E###</td>
+	</tr>
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+		<!-- ###ITEM_CATEGORY### begin -->
+			<tr>
+				<td colspan=4><br>###GW1B###<font size=3><strong>###CATEGORY_TITLE###</strong></font> ###GW1E###
+				<br>
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<tr><td colspan="3">
+			<form method="post" action="###FORM_URL###" name="ProductList">
+
+        <table bordercolor="#003399" cellspacing="1" border="1">
+          <tr>
+            <td><img src="clear.gif" width="150" height="1"></td>
+            <td><img src="clear.gif" width="150" height="1"></td>
+            <td><img src="clear.gif" width="150" height="1"></td>
+          </tr>
+          <!-- ###ITEM_SINGLE### begin-->
+          ###ITEM_SINGLE_PRE_HTML###
+          <td height="150" bgcolor="###GC1###" valign="bottom" align="center">
+            <!--###LINK_ITEM###-->
+            ###GW1B###<b><h2 id="###PRODUCT_TITLE_ID###">###PRODUCT_TITLE###</h2></b>###GW1E###
+            <!--###LINK_ITEM###-->
+            <br>
+            ###PRODUCT_IMAGE1### <br>
+		  <!-- ###display_variant2### -->
+		  ###GW2B### Size: ###GW2E### <select id="###PRODUCT_SIZE_ID###" style="font-size: 10px"
+		  name="###FIELD_SIZE_NAME###" rows="1" onchange="###PRODUCT_SIZE_FUNCTION1###">###PRODUCT_SIZE###</select><br>
+		  <!-- ###display_variant2### -->
+            <!-- ###display_variant5_isSingle### -->
+            Einzelprodukt, das nur einmal gew&auml;hlt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###
+            <!-- ###display_variant5_isSingle### -->
+	<nobr>###GW1B### Preis:###GW1E### <strong><p id="###PRICE_TAX_ID###">###PRICE_TAX### &euro;</p><BR>
+            <!-- ###display_variant5_isNotSingle### -->
+            ###PRODUCT_DELIVERY###
+            ###GW1B### St&uuml;ckzahl: ###GW1E### <input size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###" id="###FIELD_ID###">
+            <input type="image" name="addtomemo" src="###PATH_FE_REL###res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('ProductList')[0].action='###FORM_MEMO###&amp;tt_products%5Baddmemo%5D=###PRODUCT_UID###';" title="Add to memo">
+            <!-- ###display_variant5_isNotSingle### --> <p> </td>
+          ###ITEM_SINGLE_POST_HTML###
+          <!-- ###ITEM_SINGLE### end -->
+          <tr>
+            <td colspan="3" align="CENTER"> <input type="Submit" name="order2" value="In den Warenkorb"></td>
+          </tr>
+          <tr>
+            <td colspan="3" align="CENTER">
+            <input type="button" name="warenkorb" value="zum Warenkorb" onclick="self.location.href='index.php?id=###PID_BASKET###'"></td>
+          </tr>
+        </table>
+			</form>
+			</td></tr>
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td></td>
+		<td></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+</table>
+<p>
+<br>
+<!-- ###ITEM_LIST_TEMPLATE### end -->
+
+
+<br><br><br><br></p>
+<hr><br><br><br>
+<h3>ARTICLE_LIST_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of articles.</em><br>
+<br>
+<br>
+
+<!-- ###ARTICLE_LIST_TEMPLATE### begin
+	This subpart is used to display the regular list of articles.
+-->
+
+
+<table border="0" cellspacing="0" cellpadding="1" width=1 id="table1">
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td></td>
+		<td></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>N&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+	<tr>
+		<td><img src="clear.gif" width=100 height=1></td>
+		<td><img src="clear.gif" width=5 height=1></td>
+		<td><img src="clear.gif" width=300 height=1></td>
+		<td><img src="clear.gif" width=100 height=1></td>
+	</tr>
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+		<!-- ###ITEM_CATEGORY### begin -->
+			<tr>
+				<td colspan=4><br>###GW1B###<font size=3><strong>###CATEGORY_TITLE###</strong></font> ###GW1E###
+				<br>
+
+				</td>
+			</tr>
+		<!-- ###ITEM_CATEGORY### end -->
+		<!-- ###ITEM_LIST### begin -->
+			<tr>
+				<td colspan=4><img src="clear.gif" width=1 height=6></td>
+			</tr>
+			<!-- ###ITEM_SINGLE### begin-->
+			<tr>
+			<td colspan=4>
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME###0">
+			<table border="0" cellspacing="0" cellpadding="1" width=1 id="table2">
+				<tr>
+					<td><img src="clear.gif" width=100 height=1></td>
+					<td><img src="clear.gif" width=5 height=1></td>
+					<td><img src="clear.gif" width=300 height=1></td>
+					<td><img src="clear.gif" width=100 height=1></td>
+				</tr>
+				<tr>
+					<td colspan=4><img src="clear.gif" width=1 height=6></td>
+				</tr>
+				<tr>
+					<td colspan=4 bgcolor="###GC1###"><!--###LINK_ITEM###-->###GW1B###<b>###ARTICLE_TITLE###</b>###GW1E###<!--###LINK_ITEM###--></td>
+				</tr>
+					<td valign=top>###ARTICLE_IMAGE###</td>
+					<td></td>
+					<td valign=top>###GW2B######ARTICLE_NOTE######GW2E###<br />
+						<!-- ###display_variant1### -->
+						###GW2B###Farbe: ###ARTICLE_COLOR######GW2E###<br>
+		    			###GW2B###Gr&ouml;&szlig;e: ###ARTICLE_SIZE######GW2E###<br>
+		  <!-- ###display_variant2### -->
+			###ITEM_SINGLE_POST_HTML###
+          <!-- ###ITEM_SINGLE### end -->
+					</td>
+					<td valign=top nowrap align=right>###GW2B###
+					</td>
+				</tr>
+			</table>
+			</form>
+			</td>
+			</tr>
+			<!-- ###ITEM_SINGLE### end -->
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td></td>
+		<td></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>N&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+</table>
+<br>
+<!-- ###ARTICLE_LIST_TEMPLATE### end -->
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>ITEM_SINGLE_DISPLAY</h3>
+<em>This subpart is used to display single products.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_SINGLE_DISPLAY### begin
+	This subpart is used to display single products.
+-->
+<table border="0" cellspacing="0" cellpadding="1" width="100%">
+	<tr>
+		<td align="left"><!--###LINK_PREV_SINGLE###-->###GW2B###&lt;&lt; voriger Artikel###GW2E###<!--###LINK_PREV_SINGLE###--></td>
+		<td align="right"><!--###LINK_NEXT_SINGLE###-->###GW2B###n&auml;chster Artikel &gt;&gt;###GW2E###<!--###LINK_NEXT_SINGLE###--></td>
+	</tr>
+</table>
+
+<table border="0" cellspacing="0" cellpadding="1" width=1>
+<form method="post" name="###FORM_NAME###" action="###FORM_URL###">
+	<tr>
+		<td><img src="clear.gif" width="100" height="1"></td>
+		<td><img src="clear.gif" width="5" height="1"></td>
+		<td><img src="clear.gif" width="300" height="1"></td>
+	</tr>
+	<tr>
+		<td colspan=3><img src="clear.gif" width="1" height="6"></td>
+	</tr>
+	<tr>
+		<td colspan=3 bgcolor="###GC1###"><!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b><br>###PRODUCT_SUBTITLE######GW1E###<!--###LINK_ITEM###--></td>
+	</tr>
+	<tr>
+		<td valign=top>###PRODUCT_IMAGE###</td>
+		<td></td>
+		<td valign=top>
+			###GW1B###
+
+				<B>Info:</B><br>
+				###PRODUCT_NOTE###<br>
+
+				<B>###PRODUCT_NOTE_UID_1_title###</B><br>
+			 	###PRODUCT_NOTE_UID_1_1_TEXT_bodytext###
+
+				###PRODUCT_NOTE2###<br>
+				Artikel-Nr. ###PRODUCT_ITEMNUMBER###
+			###GW1E###<br>
+
+                        ###GW1B###<B>Preis:</b> <strong> <font color=red>###PRICE_TAX###
+					EUR</font></strong>###GW1E######GW2B###<strong><font color=red> </font></strong>incl. MwSt,&nbsp; zzgl.
+					<b><a href="13.html">Versand</a></b>###GW2E### <br />
+						###GW2B###(Netto: ###PRICE_NO_TAX###) (MwSt:
+					###PRICE_ONLY_TAX###)###GW2E###<br>
+
+			<!-- ###display_variant1### -->
+			<br>
+			###GW2B###Farbe: ###GW2E### <select style="font-size: 10px"
+  			name="###FIELD_COLOR_NAME###" rows="1">###PRODUCT_COLOR###</select><br>
+    		<!-- ###display_variant1### -->
+
+			<!-- ###display_variant2### -->
+		    <br>
+		    ###GW2B###Gr&ouml;&szlig;e: ###GW2E### <select style="font-size: 10px"
+		    name="###FIELD_SIZE_NAME###" rows="1">###PRODUCT_SIZE###</select><br>
+		    <!-- ###display_variant2### -->
+
+		<br>
+
+		<!-- ###display_PRODUCT_WWW### -->
+		###GW1B###<B><A href="###PRODUCT_WWW###" target="_blank">###PRODUCT_WWW###</A></B>###GW1E###<br>
+            <!-- ###display_PRODUCT_WWW### -->
+
+		<br>
+		###GW2B### Menge: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+				<input type="Submit" name="order" value="in den Warenkorb" onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
+				</nobr>
+
+
+
+					<!-- ###PRODUCT_LINK_DATASHEET### begin --> ###ICON_DATASHEET### <!-- ###PRODUCT_LINK_DATASHEET### end --> <br>
+
+
+			###GW1B###<a href="mailto:###SHOPADMIN_EMAIL###?subject=Frage zum Artikel: ###PRODUCT_ITEMNUMBER###&body=Ich habe folgenden Artikel gesehen: ###PRODUCT_TITLE### %0AMeine Fragen: "><B>Fragen zum Artikel</B></a>###GW1E###  <br>
+
+
+
+                ###PRODUCT_RELATED_UID###
+			###BULKILY_WARNING###<br>
+			</td>
+	</tr>
+</form>
+</table>
+<br>
+<br>
+
+###GW2B###
+<!--###LINK_ITEM###-->
+<b><- zur&uuml;ck zur Liste</b>
+<!--###LINK_ITEM###-->
+###GW2E###
+
+
+<!-- ###ITEM_SINGLE_DISPLAY### end -->
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>ITEM_LIST_RELATED_TEMPLATE</h3>
+<em>This subpart is used to display the regular list of related products. to the one in the single view.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_LIST_RELATED_TEMPLATE### begin
+	This subpart is used to display the regular list of products. It's also used by search-results.
+-->
+<br>
+###GW1B###<b><font size="4">Zu diesem Artikel passende Produkte</font></b>###GW1E###
+
+
+<table border="0" cellspacing="0" cellpadding="1" width=1>
+	<tr>
+		<!-- ###FE_GROUP_1_TEMPLATE### begin -->
+		<td>&nbsp;</td>
+		<!-- ###FE_GROUP_1_TEMPLATE### end -->
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td><!-- ###LINK_BROWSE### begin -->
+			[ ###BROWSE_LINKS### ]
+			<!-- ###LINK_BROWSE### end-->
+		</td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+		<!-- ###ITEM_CATEGORY### begin -->
+		<tr>
+				<td colspan=4><br>###GW1B###<font size=3><strong>###CATEGORY_TITLE###</strong></font> ###GW1E###
+				<br>
+				</td>
+			</tr>
+
+		 <!-- ###ITEM_CATEGORY### end -->
+
+		<!-- ###ITEM_LIST### begin -->
+			<tr><td colspan="3">
+			<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+
+        <table bordercolor="#003399" cellspacing="1" border="0" width="450">
+          <!-- ###ITEM_SINGLE### begin-->
+          <tr>
+            <td height="1" valign="bottom" width="450" colspan="3" bgcolor="###GC1###">
+				###ITEM_SINGLE_PRE_HTML###
+
+            <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###<!--###LINK_ITEM###--></b>###GW1E###<!--###LINK_ITEM###-->
+			</td>
+            </tr>
+            <td valign="top" width="50">
+            ###PRODUCT_IMAGE###<p> </td>
+            <td></td>
+            <td valign="top" width="370">
+            ###GW1B######PRODUCT_NOTE######GW1E### <br>
+
+                        ###GW1B###<B>Preis:</b> <strong> <font color=red>###PRICE_TAX###
+					EUR</font></strong>###GW1E######GW2B###<strong><font color=red> </font></strong>incl. MwSt,&nbsp; zzgl.
+					<b><a href="19.html">Versand</a></b>###GW2E### <br />
+						###GW2B###(Netto: ###PRICE_NO_TAX###) (MwSt:
+					###PRICE_ONLY_TAX###)###GW2E###<br>
+		  <!-- ###display_variant1### -->
+		  ###GW2B###Farbe: ###GW2E###
+			<select style="font-size: 10px"
+		  name="###FIELD_COLOR_NAME###0" rows="1">###PRODUCT_COLOR###</select><br>
+		  <!-- ###display_variant1### -->
+		  <!-- ###display_variant2### -->
+		  ###GW2B###Gr&ouml;&szlig;e: ###GW2E###
+			<select style="font-size: 10px"
+		  name="###FIELD_SIZE_NAME###0" rows="1">###PRODUCT_SIZE###</select><br>
+		  <!-- ###display_variant2### -->
+
+            <!-- ###display_variant5_isSingle### -->
+            Einzelprodukt, das nur einmal gew&auml;hlt werden kann. ###PRODUCT_ADDITIONAL_SINGLE###<br>
+
+            <!-- ###display_variant5_isSingle### -->
+            <!-- ###display_variant5_isNotSingle### -->
+            ###GW1B### Menge: ###GW1E###
+			<input size="8" maxlength="10" type="text" name="###FIELD_NAME###1" value="###FIELD_QTY###">&nbsp;
+            <input type="Submit" name="order2" value="In den Warenkorb"></td>
+            <!-- ###display_variant5_isNotSingle### -->
+          ###ITEM_SINGLE_POST_HTML###
+          <!-- ###ITEM_SINGLE### end -->
+
+        </table>
+			</form>
+			</td></tr>
+		<!-- ###ITEM_LIST### end -->
+	<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+	<tr>
+		<td><!--###LINK_PREV###-->###GW2B###<div align="left"><b>vorherige Seite</b></div>###GW2E###<!--###LINK_PREV###--></td>
+		<td></td>
+		<td></td>
+		<td><!--###LINK_NEXT###-->###GW2B###<div align="right"><b>n&auml;chste Seite</b></div>###GW2E###<!--###LINK_NEXT###--></td>
+	</tr>
+</table>
+<table width="163">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<br>
+<!-- ###ITEM_LIST_RELATED_TEMPLATE### end -->
+
+
+
+<!-- ###MEMO_TEMPLATE### begin
+        This subpart is used to display the regular list of products. It's also used by search-results.
+-->
+<table border="0" cellspacing="0" cellpadding="1" width="545">
+        <tr>
+                <td colspan="5" align="center">
+                        <b>
+                        <!--###LINK_PREV###-->###GW2B###&lt;&lt;###GW2E###<!--###LINK_PREV###-->
+                        <!--###LINK_BROWSE###-->###BROWSE_LINKS###<!--###LINK_BROWSE###-->
+                        <!--###LINK_NEXT###-->###GW2B###&gt;&gt;###GW2E###<!--###LINK_NEXT###-->
+                        </b>
+                </td>
+        </tr>
+        <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+                <!-- ###ITEM_CATEGORY### begin -->
+                <tr>
+                        <td class="TITLE" width="80"></td>
+                        <td class="TITLE" width="320">Artikel</td>
+                        <td class="TITLE" width="65">Preis</td>
+                        <td class="TITLE" width="80"></td>
+			<td class="TITLE" width="20"></td>
+                </tr>
+                <!-- ###ITEM_CATEGORY### end -->
+                <!-- ###ITEM_LIST### begin -->
+                        <!-- ###ITEM_SINGLE### begin-->
+                        <form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+                        <tr>
+                                <td align="center" height="80" style="border-top: 1px dotted #3F4F73;"><!--###LINK_ITEM###-->###PRODUCT_IMAGE###<!--###LINK_ITEM###--></td>
+                                <td style="border-top: 1px dotted #3F4F73;">
+                                        <!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###--><BR>###GW2B######PRODUCT_SUBTITLE######GW2E###<BR>
+                                        ###PRODUCT_NOTE###<BR>
+                                        <!-- ###display_variant2### -->
+                                        <select name="###FIELD_SIZE_NAME###" rows="1">
+                                        ###PRODUCT_SIZE###</select>
+                                        <!-- ###display_variant2### -->
+                                        <!-- ###display_variant1### -->
+                                        <select name="###FIELD_COLOR_NAME###" rows="1">
+                                        ###PRODUCT_COLOR###</select>
+                                        <!-- ###display_variant1### -->
+                                </td>
+                                <td style="border-top: 1px dotted #3F4F73;">
+                                        ###GW1B###<strong>###PRICE_TAX### &euro;###GW1E###<BR>
+                                        ###GW2B### Anzahl: ###GW2E###<BR><input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
+                                </td>
+                                <td style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="order" src="typo3/ext/tt_products/res/icons/fe/minibasket1.gif" value="in den Warenkorb" onClick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};"></td>
+				<td style="padding: 2px 2px 2px 2px; border-top: 1px dotted #3F4F73;"><input type="image" name="remove" src="typo3/ext/tt_products/res/icons/fe/delmemo.png" value="von der Merkliste streichen" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tt_products[delmemo]=###PRODUCT_ID###';"></td>
+                        </tr>
+                        </form>
+                        <!-- ###ITEM_SINGLE### end -->
+                <!-- ###ITEM_LIST### end -->
+        <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+        <tr>
+                <td colspan="5" align="center">
+                        <b>
+                        <!--###LINK_PREV###-->###GW2B###&lt;&lt;###GW2E###<!--###LINK_PREV###-->
+                        <!-- ###LINK_BROWSE### begin -->###BROWSE_LINKS###<!-- ###LINK_BROWSE### end-->
+                        <!--###LINK_NEXT###-->###GW2B###&gt;&gt;###GW2E###<!--###LINK_NEXT###-->
+                        </b>
+                </td>
+        </tr>
+</table>
+<BR>
+<!-- ###MEMO_TEMPLATE### end -->
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>MEMO_NOT_LOGGED_IN</h3>
+<em>Subpart displayed when trying to view the memo without being logged in as frontend user.</em><br>
+<br>
+<br>
+
+<!-- ###MEMO_NOT_LOGGED_IN### begin -->
+###GW1B###<B>Sie sind nicht am System angemeldet.</B>###GW1E###
+<!-- ###MEMO_NOT_LOGGED_IN### end -->
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>MEMO_EMPTY</h3>
+<em>Subpart displayed when trying to view the memo but the logged in frontend user hasn't stored any memo yet.</em><br>
+<br>
+<br>
+
+<!-- ###MEMO_EMPTY### begin -->
+###GW1B###<B>Sie haben keine Produkte vorgemerkt.</B>###GW1E###
+<!-- ###MEMO_EMPTY### end -->
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>ITEM_SEARCH</h3>
+<em>Subpart for the search-form.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_SEARCH### begin
+Subpart for the search-form
+-->
+<form method="post" action="###FORM_URL###">
+<input size="30" maxlength="100" type="text" name="sword" value="###SWORD###">
+<input type="submit" name="order" value="suchen">
+</form>
+<!-- ###ITEM_SEARCH### end -->
+
+
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>ITEM_SEARCH_EMPTY</h3>
+<em>Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.</em><br>
+<br>
+<br>
+
+<!-- ###ITEM_SEARCH_EMPTY### begin
+Subpart displayed if the search was empty. If the search was successfull, the ITEM_LIST_TEMPLATE in the top is used.
+-->
+###GW1B###<B>Es wurden keine Artikel gefunden.</B>###GW1E###
+<!-- ###ITEM_SEARCH_EMPTY### end -->
+
+
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>BASKET_TEMPLATE</h3>
+<em>
+Subpart used to display the content of the shopping basket.<br>
+The product list part has the exact same features as the regular LIST_ITEM_TEMPLATE subpart.<br>
+In addition there's a number of fields used for delivery and payment information.<br>
+</em><br>
+
+
+<!-- ###BASKET_TEMPLATE###
+Subpart used to display the content of the shopping basket.
+The product list part has the exact same features as the regular LIST_ITEM_TEMPLATE subpart.
+In addition there's a number of fields used for delivery and payment information.
+-->
+###EXTERNAL_COBJECT###
+<form method="post" action="###FORM_URL###">
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse: collapse" bordercolor="#111111">
+<tr>
+<td><img src="clear.gif" width="100" height="1"></td>
+<td><img src="clear.gif" width="5" height="1"></td>
+<td><img src="clear.gif" width="110" height="1"></td>
+<td colspan=3><img src="clear.gif" width="100" height="1"></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>tt_products:</b>###GW2E###</td>
+<td bgcolor="###GC2###">###GW2B###<b> EP: </b>###GW2E###</td>
+<td bgcolor="###GC2###">###GW2B###<b>Anzahl:</b>###GW2E###</td>
+<td align=center bgcolor="###GC2###">
+<p align="right">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+</tr>
+<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+<!-- ###ITEM_CATEGORY### begin -->
+<tr>
+<td colspan=6><br>###CATEGORY_TITLE###<br>
+</td>
+</tr>
+<!-- ###ITEM_CATEGORY### end -->
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
+<tr>
+<td colspan=6><img src="clear.gif" width="1" height="6"></td>
+</tr>
+<tr>
+
+<td valign=top style="border-bottom-style: solid; border-bottom-width: 1">
+<!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###-->
+<br>
+###PRODUCT_IMAGE###</td>
+<td colspan="2" style="border-bottom-style: solid; border-bottom-width: 1">
+		<!-- ###display_variant1### -->
+		###GW2B###<font size="1">Farbe: ###PRODUCT_COLOR###</font>###GW2E###<br>
+		<!-- ###display_variant1### -->
+
+		<!-- ###display_variant2### -->
+		  ###GW1B###<font size="1">Gr&ouml;&szlig;e: ###PRODUCT_SIZE###<br>
+		</font>###GW1E###<br>
+		<!-- ###display_variant2### -->###GW1B###<font size="1">###BULKILY_WARNING###</font>###GW1E###</td>
+<td valign=top style="border-bottom-style: solid; border-bottom-width: 1">###GW1B### ###PRICE_TAX######GW1E###</td>
+<td valign=top style="border-bottom-style: solid; border-bottom-width: 1">
+<p align="center"> <input size="2" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###"> </td>
+<td valign=top align=right style="border-bottom-style: solid; border-bottom-width: 1">###GW1B### <b>###PRICE_TOTAL_TAX###</b> <br>(Netto: EUR ###PRICE_TOTAL_NO_TAX###)###GW1E###</td>
+</tr>
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+<tr>
+<td colspan=6><img src="clear.gif" width="1" height="10"></td>
+</tr>
+
+
+<tr>
+<td colspan=6>###GW1B###Zum l&ouml;schen eines Artikels bitte nur bei der
+Bestellmenge &quot;<b>0</b>&quot; eintragen und unten auf &quot;<b>Warenkorb aktualisieren</b>&quot;
+klicken.###GW1E###<br>
+###GW1B###Wenn sie die Bestellmenge &auml;ndern wollen, einfach bei &quot;<b>Anzahl</b>&quot; die
+gew&uuml;nschte Menge eintragen und unten auf &quot;<b>Warenkorb aktualisieren</b>&quot;
+klicken.###GW1E###<br>
+<br>
+###GW1B###Bitte w&auml;hlen Sie den Versand- und Zahlungsmodus aus. <br>
+<font color="#FF0000">Bei Versand ins Ausland bitte die Versandgeb&uuml;hren
+anfragen!</font>###GW1E###<br>
+&nbsp;</td>
+</tr>
+
+
+<tr>
+      <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Versand und Verpackung:</b>###GW2E###</td>
+      <td colspan=2></td>
+
+</tr>
+
+<tr>
+<td colspan=6><img src="clear.gif" width="1" height="6"></td>
+</tr>
+
+
+<tr>
+<td colspan=5>
+###GW1B###Pauschale: <b>###SHIPPING_TITLE###</B>###GW1E###<br><br>
+
+<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="0" cellspacing="0"><tr>
+            <td valign="middle">###GW1B######SHIPPING_SELECTOR######GW1E###</td>
+</tr></table>
+
+</td>
+      <td valign=top align=right>###GW1B### <b>###PRICE_SHIPPING_TAX###</b>
+         <br>(###PRICE_SHIPPING_NO_TAX###)
+        ###GW1E###</td>
+</tr>
+
+<tr>
+<td colspan=6><img src="clear.gif" width="1" height="10"></td>
+</tr>
+
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Zahlungsweise:</b>###GW2E###</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width="1" height="6"></td>
+</tr>
+<tr>
+<td colspan=5>
+###GW1B###
+
+###PAYMENT_SELECTOR###
+
+###GW1E###
+
+###GW2B###
+<!-- ###MESSAGE_PAYMENT###
+This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
+-->
+<!-- ###MESSAGE_PAYMENT_11### -->
+<br><B>Du&nbsp; MasterCard 5,75% af transaktionsbelübet i gebyr. .</b><br>
+<!-- ###MESSAGE_PAYMENT_11### -->
+<!-- ###MESSAGE_PAYMENT_12### -->
+<br>
+<B>Du VISA 5,75% af transaktionsbelübet i gebyr. Db her.</b><br>
+<!-- ###MESSAGE_PAYMENT_12### -->
+<!-- ###MESSAGE_PAYMENT_13### -->
+<br>
+<B>Du Diners Club 5,75% af transaktionsbelübet i gebyr.  er.</b><br>
+<!-- ###MESSAGE_PAYMENT_13### -->
+<!-- ###MESSAGE_PAYMENT### -->
+###GW2E###
+
+</td>
+<td valign=top align=right>###GW1B###
+<b>###PRICE_PAYMENT_TAX###</b><br>
+ (###PRICE_PAYMENT_NO_TAX###) ###GW1E###</td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width="1" height="10"></td>
+</tr>
+
+
+<tr>
+<td colspan=6 bgcolor="###GC2###">###GW2B###<b>Gesamtbetrag:</b>###GW2E###</td>
+</tr>
+<tr>
+<td valign=top colspan=5></td>
+<td valign=top align=right nowrap>###GW1B###(Netto: EUR ###PRICE_TOTAL_NO_TAX###)###GW1E###<br> ###GW1B###(MwSt: EUR ###PRICE_TOTAL_ONLY_TAX###)  ###GW1E###<br>
+###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b>###GW1E###</td>
+</tr>
+</table><br>
+<table width="100%"><tr>
+<td>
+<!-- ###MESSAGE_MINPRICE_ERROR### -->
+Es m&uuml;ssen Produkte im Gesamtwert von mindestens 250 Euro eingekauft werden.
+###PRICE_GOODSTOTAL_TAX### sind zu wenig.
+<!-- ###MESSAGE_MINPRICE_ERROR### -->
+<!-- ###MESSAGE_MINPRICE### -->
+Ihre Bestellung wird bearbeitet werden.
+<!-- ###MESSAGE_MINPRICE### -->
+<input type="hidden" name="mode_update" value="1">
+<input type="Submit" name="products_update" value="Warenkorb aktualisieren">
+<input type="Submit" name="products_clear_basket" value="Warenkorb l&ouml;schen"></td>
+<td align="right">
+<input type="submit" name="products_info" value="zur Kasse" onclick="this.form.action='###FORM_URL_INFO###';"></td>
+</tr>
+</table>
+</form>
+<br>
+<!-- ###BASKET_TEMPLATE### end -->
+
+
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>BASKET_INFO_TEMPLATE</h3>
+<em>
+Subpart used if the GPvar "products_info" was set. This is normally used to let people enter address information separately from the real basket.<br>
+Exact same features as BASKET_TEMPLATE<br>
+</em><br>
+
+<!-- ###BASKET_INFO_TEMPLATE### begin
+Subpart used if the GPvar "products_info" was set. This is normally used to let people enter address information separately from the real basket
+Exact same features as BASKET_TEMPLATE
+-->
+<form method="post" action="###FORM_URL###" name="###FORM_NAME###" id="registrationForm">
+<table border="0" cellspacing="0" width="100%">
+<tr>
+<td><img src="clear.gif" width="100" height="1"></td>
+<td><img src="clear.gif" width="5" height="1"></td>
+<td><img src="clear.gif" width="110" height="1"></td>
+<td colspan=3><img src="clear.gif" width="100" height="1"></td>
+</tr>
+<tr>
+<td colspan=4 bgcolor="###GC2###">###GW2B###<b>Rechnungsanschrift:</b>###GW2E###</td>
+</tr>
+<tr>
+      <td colspan=4>
+        <!-- ###BILLING_ADDRESS### start -->
+        ###GW1B### Geben Sie Ihre Postanschrift in diesem Formular an. Der angegebene
+        Name und die Adresse werde auf der Rechnung der Bestellung erscheinen.
+        Sie k&ouml;nnen auch alternativ eine abweichende Lieferadresse in den unteren
+        Feldern angeben. ###GW1E### <br>
+<br>
+<table>
+<tr>
+<td>###GW1B###<strong>Anrede:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_SALUTATION######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Name: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][name]" size="30" value="###PERSON_NAME###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Adresse: </strong>*###GW1E###</td>
+<td><textarea cols=30 rows=5 name="recs[personinfo][address]" wrap="off">###PERSON_ADDRESS###</textarea></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>PLZ: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][zip]" size="5" value="###PERSON_ZIP###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Stadt: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][city]" size="50" value="###PERSON_CITY###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Land: </strong>*###GW1E###</td>
+<td>
+<input type="text" name="recs[personinfo][country]" size="50" value="###PERSON_COUNTRY###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Telefon: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][telephone]" size="25" value="###PERSON_TELEPHONE###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Email: </strong>*###GW1E###</td>
+<td><input type="text" name="recs[personinfo][email]" size="60" value="###PERSON_EMAIL###"></td>
+</tr>
+</table><br>
+
+###GW1B###
+<em>Hinweis: Felder mit * sind Pflichtfelder.<br>Ihre Daten werden nicht an Dritte weitergegeben!</em>
+###GW1E###
+<!-- ###BILLING_ADDRESS### end-->
+
+
+<!-- ###BILLING_ADDRESS_LOGIN### start
+If this part is not empty then this will be used instead of BILLING_ADDRESS if there is a FE-login user.
+-->
+<br>
+<table>
+<tr>
+<td>###GW1B###<strong>Name:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_NAME######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Postanschrift:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_ADDRESS_DISPLAY######GW1E###</td>
+</tr>
+<tr>
+<tr>
+<td>###GW1B###<strong>PLZ:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_ZIP######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Stadt:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_CITY######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Land:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_COUNTRY######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Telefon:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_TELEPHONE######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Email:</strong>###GW1E###</td>
+<td>###GW1B######PERSON_EMAIL######GW1E###</td>
+</tr>
+</table>
+<!-- ###BILLING_ADDRESS_LOGIN### end-->
+</td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width="1" height="10"></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Alternativ Lieferadresse:</b>###GW2E###</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=3>
+###GW1B###
+Wenn Ihre Bestellung zu einer anderen Anschrift geliefert werden soll, so geben Sie hier bitte die vollst&auml;ndige Adresse an.
+###GW1E###
+<br>
+<br>
+
+<table>
+<tr>
+<td>###GW1B###<strong>Anrede:</strong>###GW1E###</td>
+<td>###GW1B######DELIVERY_SALUTATION######GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Kontaktperson:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][name]" size="30" value="###DELIVERY_NAME###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Adresse:</strong>###GW1E###</td>
+<td><textarea cols=30 rows=5 name="recs[delivery][address]" wrap="off">###DELIVERY_ADDRESS###</textarea></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>PLZ:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][zip]" size="5" value="###DELIVERY_ZIP###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Stadt:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][city]" size="50" value="###DELIVERY_CITY###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Land:</strong>###GW1E###</td>
+<td>
+<input type="text" name="recs[delivery][country]" size="50" value="###DELIVERY_COUNTRY###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Telefon:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][telephone]" size="25" value="###DELIVERY_TELEPHONE###"></td>
+</tr>
+<tr>
+<td>###GW1B###<strong>Email:</strong>###GW1E###</td>
+<td><input type="text" name="recs[delivery][email]" size="60" value="###DELIVERY_EMAIL###"></td>
+</tr>
+</table>
+</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=6><img src="clear.gif" width="1" height="10"></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Bemerkung:</b>###GW2E###</td>
+<td colspan=3></td>
+</tr>
+<tr>
+<td colspan=3>
+###GW1B###Gew&uuml;nschtes Lieferdatum###GW1E###
+</td>
+</tr>
+<tr>
+<td>
+<input name="recs[delivery][desired_date]" value="###DELIVERY_DESIRED_DATE###" size="20"></td>
+</tr>
+<tr>
+<td colspan=3>
+###GW1B###
+Hier k&ouml;nnen Sie Ihrer Bestellung einen Kommentar hinzuf&uuml;gen:
+###GW1E###
+<br>
+<br>
+
+<table>
+<tr>
+<td>###GW1B###Kommentar:###GW1E###</td>
+<td><textarea cols=30 rows=5 name="recs[delivery][note]">###DELIVERY_NOTE###</textarea></td>
+</tr>
+<tr>
+<td colspan=3>
+<br>
+              <br>
+</table>
+
+</td>
+
+      <td colspan=3 valign="BOTTOM">###GW1B### Sie best&auml;tigen hiermit, dass Sie
+        die AGB und die Widerrufsbelehrung unseres Online Shops gelesen haben und diese akzeptieren.
+        ###GW1E### </td>
+</tr>
+<tr>
+<td colspan="3">###GW1B###<!--###LINK_AGB###-->&quot;<b>Die Allgemeinen
+Gesch&auml;ftsbedingungen und die Widerrufsbelehrung</b><!--###LINK_AGB###-->" <br>
+habe ich gelesen und erkenne sie hiermit an.:
+<input type="checkbox" name="recs[personinfo][agb]" ###PERSON_AGB### />###GW1E### </td>
+<td colspan="3"></td>
+</tr>
+</table>
+<br>
+<table width="100%"><tr>
+
+<td><input type="Submit" name="products_update" value="zur&uuml;ck zum Warenkorb"></td>
+<td align="right">
+<input type="submit" name="products_payment" value="zur Bestellung" onclick="document.forms[0].action='index.php?id=###PID_BASKET###;">
+<input type="hidden" name="products_cmd" value="cardno" />
+</td>
+</tr></table>
+</form>
+<br>
+<!-- ###BASKET_INFO_TEMPLATE### end -->
+
+
+<!-- ###BASKET_OVERVIEW_TEMPLATE### begin -->
+  <div class="shop_minibasket">
+     <div class="shop_minibasket_image"><!--###LINK_BASKET###-->###IMAGE_BASKET###<!--###LINK_BASKET###--></div>
+    <p><!--###LINK_BASKET###-->###NUMBER_GOODSTOTAL### Artikel (###PRICE_GOODSTOTAL_TAX###
+	&#8364;)<!--###LINK_BASKET###--></p>
+<!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
+
+
+<!-- ###BASKET_OVERVIEW_EMPTY### begin -->
+  <p>ist noch leer...</p>
+<!-- ###BASKET_OVERVIEW_EMPTY### end -->
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>BASKET_PAYMENT_TEMPLATE</h3>
+<em>
+Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.<br>
+Exact same features as BASKET_TEMPLATE<br>
+</em><br>
+<br>
+<br>
+<!-- ###BASKET_PAYMENT_TEMPLATE### begin
+Subpart used if the GPvar "products_payment" was set. This displays the final information about the order before the payment is initiated.
+Exact same features as BASKET_TEMPLATE
+-->
+###EXTERNAL_COBJECT###
+<table border="0" cellspacing="0" cellpadding="1" width=1>
+  <tr>
+    <td><img src="clear.gif" width="100" height="1"></td>
+    <!--
+<td><img src="clear.gif" width="5" height="1"></td>
+-->
+    <td><img src="clear.gif" width=165 height=1></td>
+    <td colspan=2><img src="clear.gif" width="70" height="1"></td>
+  </tr>
+  <tr>
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>tt_products:</b>###GW2E###</td>
+    <!-- <td bgcolor="###GC2###">###GW2B###<b>Preis: </b>
+###GW2E###
+</td>
+-->
+    <td bgcolor="###GC2###">###GW2B###<b>Menge:</b>###GW2E###</td>
+    <td bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+  </tr>
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+  <!-- ###ITEM_CATEGORY### begin -->
+  <tr>
+    <td colspan=5><br>
+      ###CATEGORY_TITLE###<br> </td>
+  </tr>
+  <!-- ###ITEM_CATEGORY### end -->
+  <!-- ###ITEM_LIST### begin -->
+  <!-- ###ITEM_SINGLE### begin-->
+  <tr>
+    <td colspan=5><img src="clear.gif" width="1" height="6"></td>
+  </tr>
+  <tr>
+    <td valign=top colspan=3> ###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E### </td>
+    <!--
+<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
+-->
+    <td valign=top align=center>###GW1B### ###FIELD_QTY### ###GW1E###</td>
+    <td valign=top align=right>###GW1B###<b>###PRICE_TOTAL_TAX###</b>###GW1E###
+      <!--
+<b>###PRICE_TOTAL_TAX###</b>
+-->
+      <!--
+<br>(###PRICE_TOTAL_NO_TAX###) ###GW1E###
+-->
+    </td>
+  </tr>
+  <!-- ###ITEM_SINGLE### end -->
+  <!-- ###ITEM_LIST### end -->
+  <!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+  <tr>
+    <td colspan=><img src="clear.gif" width="1" height="10"></td>
+  </tr>
+  <tr>
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Rechnungsanschrift:</b>###GW2E###</td>
+    <td colspan=2></td>
+  </tr>
+  <tr>
+    <td colspan=3> <table border=0>
+		<tr>
+		  <td>###GW1B###Anrede:###GW1E###</td>
+		  <td>###GW1B###<strong>###PERSON_SALUTATION###</strong>###GW1E###</td>
+		</tr>
+        <tr>
+          <td>###GW1B###Name:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###</td>
+        </tr>
+        <tr>
+          <td>###GW1B###Adresse:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+        </tr>
+        <tr>
+          <td>###GW1B###PLZ Stadt:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_ZIP### ###PERSON_CITY###</strong>###GW1E###</td>
+        </tr>
+        <tr>
+          <td>###GW1B###Land:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_COUNTRY###</strong>###GW1E###</td>
+        </tr>
+        <tr>
+          <td>###GW1B###Telefon:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###</td>
+        </tr>
+        <tr>
+          <td valign="TOP">###GW1B###Email:###GW1E###</td>
+          <td>###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E### ###GW2B###<br>
+            (An diese Email-Adresse wird die Best&auml;tigung Ihrer Bestellung geschickt!)###GW2E###<br>
+          </td>
+        </tr>
+      </table></td>
+    <td colspan=2></td>
+  </tr>
+  <tr>
+    <td colspan=5><img src="clear.gif" width="1" height="10"></td>
+  </tr>
+  <tr>
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Lieferanschrift:</b>###GW2E###</td>
+    <td colspan=2></td>
+  </tr>
+  <tr>
+    <td colspan=3>
+      <table border=0>
+	<tr>
+	  <td>###GW1B###Anrede:###GW1E###</td>
+	  <td>###GW1B###<strong>###DELIVERY_SALUTATION###</strong>###GW1E###</td>
+	</tr>
+	<tr>
+	<td>###GW1B###Kontaktperson:###GW1E###</td>
+	<td>###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###</td>
+	</tr>
+	<tr>
+	<td>###GW1B###Postadresse:###GW1E###</td>
+	<td>###GW1B###<strong>###DELIVERY_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+	</tr>
+	<tr>
+	  <td>###GW1B###PLZ Stadt:###GW1E###</td>
+	  <td>###GW1B###<strong>###DELIVERY_ZIP### ###DELIVERY_CITY###</strong>###GW1E###</td>
+	</tr>
+	<tr>
+	  <td>###GW1B###Land:###GW1E###</td>
+	  <td>###GW1B###<strong>###DELIVERY_COUNTRY###</strong>###GW1E###</td>
+	</tr>
+	<tr>
+	<td>###GW1B###Telefon:###GW1E###</td>
+	<td>###GW1B###<strong>###DELIVERY_TELEPHONE###</strong>###GW1E###</td>
+	</tr>
+        <tr>
+          <td valign="TOP">###GW1B###Email:###GW1E###</td>
+          <td>###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E###<br>
+          </td>
+        </tr>
+      </table></td>
+    <td colspan=2></td>
+  </tr>
+  <tr>
+    <td colspan=5><img src="clear.gif" width="1" height="10"></td>
+  </tr>
+  <tr>
+    <td colspan=3> <table>
+        <tr>
+          <td>###GW1B###gew&uuml;nschtes Lieferdatum:###GW1E###</td>
+          <td>###GW1B###<strong>###DELIVERY_DESIRED_DATE###</strong>###GW1E###</td>
+        </tr>
+      </table></td>
+    <td colspan=2></td>
+  </tr>
+  <tr>
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Bemerkungen:</b>###GW2E###</td>
+    <td colspan=2></td>
+  </tr>
+  <tr>
+    <td colspan=3> <table>
+        <tr>
+          <td>###GW1B###Kommentar:###GW1E###</td>
+          <td>###GW1B###<strong>###DELIVERY_NOTE_DISPLAY###</strong>###GW1E###</td>
+        </tr>
+      </table></td>
+    <td colspan=2></td>
+  </tr>
+  <tr>
+    <td colspan=5><img src="clear.gif" width="1" height="10"></td>
+  </tr>
+  <tr>
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Versand und Verpackung:</b>###GW2E###</td>
+    <td colspan=2></td>
+  </tr>
+    <td colspan=3>###GW1B###Pauschale: <b>###SHIPPING_TITLE###</B>###GW1E###<br></td>
+    <td valign=top align=right colspan=2>###GW1B###<b>###PRICE_SHIPPING_TAX### (###PRICE_SHIPPING_NO_TAX###)</b>###GW1E###</td>
+  </tr>
+  <tr>
+    <td colspan=5 height="12"><img src="clear.gif" width="1" height="10"></td>
+  </tr>
+  <tr>
+    <td colspan=3 bgcolor="###GC2###">###GW2B###<b>Zahlungsweise:</b>###GW2E###</td>
+    <td valign=top align=right colspan=3>&nbsp;</td>
+  </tr>
+  <tr>
+    <td valign=top colspan=3> ###GW1B######PAYMENT_IMAGE### ###PAYMENT_TITLE###
+      ###GW1E###</td>
+    <td valign=top align=right colspan=3>###GW1B### <b>###PRICE_PAYMENT_TAX###</b>
+      <!-- (###PRICE_PAYMENT_NO_TAX###)<br>
+-->
+      ###GW1E###</td>
+  </tr>
+  <tr>
+    <td colspan=5><img src="clear.gif" width="1" height="10"></td>
+  </tr>
+  <tr>
+    <td colspan=5 bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+  </tr>
+  <tr>
+    <td valign=top colspan=3>###GW1B### <strong>Gesamtbetrag in EURO:</strong>
+      ###GW1E###</td>
+    <td valign=top align=right colspan=2 nowrap>###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b>
+      <br>
+      (Netto: EUR ###PRICE_TOTAL_NO_TAX###)<br>
+      ###GW1E###</td>
+  </tr>
+</table>
+<br>
+<form method="post" action="###FORM_URL###" name="###FORM_NAME###" id="paymentForm">
+<table width="100%"><tr>
+<td><input type="Submit" name="products_update" value="zur&uuml;ck zum Warenkorb">
+<input type="hidden" name="products_cmd" value="cardno" /></td>
+<td align="right"><input type="Submit" name="products_finalize" value="Bestellung abschlie&szlig;en!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### ###GW1E###</td>
+</tr></table>
+</form>
+<br>
+<!-- ###BASKET_PAYMENT_TEMPLATE### end -->
+
+
+
+
+
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE</h3>
+<em>
+Wie BASKET_ORDERCONFIRMATION_TEMPLATE, aber wird nicht in der Datenbank gespeichert. Hier kann Code f&uuml;r externe Systeme eingef&uuml;gt werden, der nicht mit angezeigt werden darf, wenn die Seite im Trackingmodus nochmal dargestellt wird.
+</em><br>
+<br>
+<br>
+<!-- ###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE### begin -->
+
+<!-- ###BASKET_ORDERCONFIRMATION_NOSAVE_TEMPLATE### end -->
+
+
+
+
+
+<!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### begin
+Subpart used if the order is finalized and this is thus the confirmation shown.
+-->
+<table border="0" cellspacing="0" cellpadding="1" width=1>
+<tr>
+<td><img src="clear.gif" width="100" height="1"></td>
+<td><img src="clear.gif" width="5" height="1"></td>
+<td><img src="clear.gif" width="165" height="1"></td>
+<td colspan=4><img src="clear.gif" width="200" height="1"></td>
+</tr>
+
+
+<tr>
+    <td colspan=7> <p>###GW1B###<b>Bestellbest&auml;tigung:</b><br>
+        Vielen Dank f&uuml;r Ihre Bestellung!<br>
+        Ihre Bestellung ist nun abgeschlossen und hat folgende Nummer:<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<B>###ORDER_UID###</B> <br>
+        <br>
+		<br>
+        Die Bestellbest&auml;tigung wird auch an die Emailadresse ###CUSTOMER_RECIPIENTS_EMAIL###
+        geschickt. <br></p>
+	<p><font color=red><em><strong>Zahlungsart:</strong></em></font></p>
+        <!-- ###MESSAGE_PAYMENT###
+	This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
+-->
+
+        <!-- ###MESSAGE_PAYMENT_10### begin
+Message for payment method 10, Vorkasse
+-->
+      <p><font color=red><strong>Vorkasse:</strong><br>
+        Bitte &uuml;berweisen Sie den Rechnungsbetrag auf folgendes Konto:<br>
+		</font><br>
+        Franz Holzinger<p>Pax-Bank K&ouml;ln http://www.pax-bank.de<br />
+	Konto Nr. 31779014<br />
+	BLZ 37060193<br />
+	BIC GENODED1PAX<br />
+	IBAN DE03 3706 0193 0031 7790 14<br />
+	<p>
+        <br />
+        <p><font color=red><br>
+        Betreff: Ihre Bestellnummer ###ORDER_UID### unbedingt angeben! </font></p>
+	<!-- ###MESSAGE_PAYMENT_10### end -->
+
+        <!-- ###MESSAGE_PAYMENT_20### begin
+Message for payment method 20, Nachnahme
+-->
+      <p><font color=red><strong>Nachnahme:</strong><br>
+        Die Ware wird Ihnen direkt zugesandt.<br>
+        Sie bezahlen die Ware bei Erhalt.
+      </font>
+        <br></p>
+        <!-- ###MESSAGE_PAYMENT_20### end -->
+
+	<!-- ###MESSAGE_PAYMENT_30### begin
+Message for payment method 30, Rechnung
+-->
+		<p><font color=red><strong>Rechnung:</strong></font><br>
+		Die bestellte Ware wird Ihnen auf Rechnung zugesandt.
+		<br>
+		<!-- ###MESSAGE_PAYMENT_30### end -->
+
+        <!-- ###MESSAGE_PAYMENT_40### begin
+Message for payment method 40, Abholung
+-->
+      <p><font color=red><strong>Barzahlung:</strong><br>
+        Wir akzeptieren nur Barzahlung bei Abholung!<br>
+		</font><br>
+
+	<p><font color=red><br>
+        Ihre Bestellnummer ###ORDER_UID### unbedingt angeben! </font></p>
+	<!-- ###MESSAGE_PAYMENT_40### end -->
+
+
+        <!-- ###MESSAGE_PAYMENT_50### begin
+Message for payment method 50, nach Absprache
+-->
+      <p><font color=red><strong>Nach Absprache:</strong><br>
+        Bitte setzen Sie sich mit uns in Verbindung / Please contact us:<br>
+		</font><br>
+        Franz Holzinger<font face="Arial" color="#666666"><p style="MARGIN: 0px">
+	<font face="Arial" color="black" size="2">Meister Gerhard Str. 9 </font></p>
+	<p style="MARGIN: 0px"><font face="Arial" color="black" size="2">50674 K&ouml;ln
+	</font></p>
+	<p style="MARGIN: 0px"><font face="Arial" color="black" size="2">0221
+	7592169</font></p>
+	</font>
+	<p>&nbsp;<p><br />
+	<br>
+	<p><font color=red><br>
+        Betreff: Ihre Bestellnummer ###ORDER_UID### unbedingt angeben! </font></p>
+	<!-- ###MESSAGE_PAYMENT_50### end -->
+
+
+	<!-- ###MESSAGE_PAYMENT### -->
+   <br>
+        <b>Liefer- und Bestellstatus</b><br>
+        Die Ware bleibt bis zur vollst&auml;ndigen Bezahlung unser Eigentum.<br>
+        Ihr Bestelldatum: ###ORDER_DATE###.<br>
+        <br>
+        Sie k&ouml;nnen Ihren Bestellstatus jederzeit mittels Ihres Bestellstatus-Codes: <strong>###ORDER_TRACKING_NO###</strong> nachvollziehen. <br>
+        Klicken Sie hier <a href="index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###"><strong>
+        um den Status jetzt zu sehen.</strong></a> <br>
+        <br>
+        <br>
+        ###GW1E### ###EXTERNAL_COBJECT### </p>
+      </td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>tt_products:</b>###GW2E###</td>
+<td bgcolor="###GC2###">###GW2B###<b><!-- Preis: --></b>###GW2E###</td>
+<td bgcolor="###GC2###" colspan="2">###GW2B###<b>Menge:&nbsp; </b>###GW2E###
+###GW2B###<b>EP:</b>###GW2E###</td>
+<td bgcolor="###GC2###">
+<p align="right">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+</tr>
+<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
+<!-- ###ITEM_CATEGORY### begin -->
+<tr>
+<td colspan=7><br>###CATEGORY_TITLE###<br>
+</td>
+</tr>
+<!-- ###ITEM_CATEGORY### end -->
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
+<tr>
+<td colspan=7><img src="clear.gif" width="1" height="6"></td>
+</tr>
+<tr>
+<td valign=top>###PRODUCT_IMAGE###</td>
+<td></td>
+<td valign=top>
+###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
+
+<br>
+<!-- ###display_variant1### -->
+###GW2B###<font size="1">Farbe: ###PRODUCT_COLOR###</font>###GW2E###<br>
+<!-- ###display_variant1### -->
+<!-- ###display_variant2### -->
+###GW1B###<font size="1">Gr&ouml;&szlig;e: ###PRODUCT_SIZE###</font>###GW1E###<br>
+<!-- ###display_variant2### -->
+###GW1B###<font size="1">Art.-Nr. ###PRODUCT_ITEMNUMBER###</font>###GW1E###</td>
+<td valign=top><!--###GW1B### ###PRICE_TAX### ###GW1E###--></td>
+<td valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</td>
+<td valign=top> ###GW1B###&nbsp; ###PRICE_TAX### ###GW1E###&nbsp; </td>
+<td valign=top align=right>###GW1B###<b> ###PRICE_TOTAL_TAX###</b> ###GW1E### <b><!--###PRICE_TOTAL_TAX###--></b><br></td>
+</tr>
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+<tr>
+<td colspan=7><img src="clear.gif" width="1" height="10"></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Rechnungsanschrift:</b>###GW2E###</td>
+<td colspan=4></td>
+</tr>
+<tr>
+<td colspan=3>
+<table cellspacing=3>
+<tr>
+  <td>###GW1B###Anrede:###GW1E###</td>
+  <td>###GW1B###<strong>###PERSON_SALUTATION###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Name/Firma:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_NAME###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Postadresse:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###PLZ Stadt:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_ZIP### ###PERSON_CITY###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Land:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_COUNTRY###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Telefon:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_TELEPHONE###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Email:###GW1E###</td>
+<td>###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E###</td>
+</tr>
+
+<!-- ###FE_USER_SECTION### begin -->
+<tr>
+<td>###GW1B###Username:###GW1E###</td>
+<td>###GW1B###<strong>###FE_USER_USERNAME###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###User ID:###GW1E###</td>
+<td>###GW1B###<strong>###FE_USER_UID###</strong>###GW1E###</td>
+</tr>
+<!-- ###FE_USER_SECTION### end -->
+
+</table>
+</td>
+<td colspan=4></td>
+</tr>
+<tr>
+<td colspan=7><img src="clear.gif" width="1" height="10"></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Lieferadresse:</b>###GW2E###</td>
+<td colspan=4></td>
+</tr>
+<tr>
+<td colspan=3>
+<table>
+<tr>
+<td>###GW1B###Postadresse:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_ADDRESS_DISPLAY###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Kontaktperson:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_NAME###</strong>###GW1E###</td>
+</tr>
+<tr>
+  <td>###GW1B###Anrede:###GW1E###</td>
+  <td>###GW1B###<strong>###DELIVERY_SALUTATION###</strong>###GW1E###</td>
+</tr>
+<tr>
+  <td>###GW1B###PLZ Stadt:###GW1E###</td>
+  <td>###GW1B###<strong>###DELIVERY_ZIP### ###DELIVERY_CITY###</strong>###GW1E###</td>
+</tr>
+<tr>
+  <td>###GW1B###Land:###GW1E###</td>
+  <td>###GW1B###<strong>###DELIVERY_COUNTRY###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Telefon:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_TELEPHONE###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Email:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_EMAIL###</strong>###GW1E###</td>
+</tr>
+</table>
+</td>
+<td colspan=4></td>
+</tr>
+<tr>
+<td colspan=7><img src="clear.gif" width="1" height="10"></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Nachricht:</b>###GW2E###</td>
+<td colspan=4></td>
+</tr>
+<tr>
+<td colspan=3>
+<table>
+<tr>
+<td>###GW1B###gew&uuml;nschtes Lieferdatum:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_DESIRED_DATE###</strong>###GW1E###</td>
+</tr>
+<tr>
+<td>###GW1B###Kommentar:###GW1E###</td>
+<td>###GW1B###<strong>###DELIVERY_NOTE_DISPLAY###</strong>###GW1E###</td>
+</tr>
+</table>
+</td>
+<td colspan=4></td>
+</tr>
+<tr>
+<td colspan=7><img src="clear.gif" width="1" height="10"></td>
+</tr>
+<tr>
+<td colspan=3 bgcolor="###GC2###">###GW2B###<b>Versand und Verpackung:</b>###GW2E###</td>
+    <td valign=top align=right colspan=4>###GW1B###<b>###PRICE_SHIPPING_TAX###</b>###GW1E###</td>
+</tr>
+<tr>
+<td valign=top colspan=3>###GW1B###
+<strong>Zahlungsweise / Geb&uuml;hren:</strong><br>
+###PAYMENT_IMAGE### ###PAYMENT_TITLE###
+###GW1E###</td>
+
+<td valign=top align=right colspan=4>###GW1B###
+<b>###PRICE_PAYMENT_TAX###</b><br>
+<!-- (###PRICE_PAYMENT_NO_TAX###)<br>
+-->
+
+###GW1E###</td>
+</tr>
+<tr>
+<td colspan=7><img src="clear.gif" width="1" height="10"></td>
+</tr>
+<tr>
+<td colspan=7 bgcolor="###GC2###">###GW2B###<b>Gesamt:</b>###GW2E###</td>
+</tr>
+<tr>
+<td valign=top colspan=3>###GW1B###
+<strong>Gesamtpreis:</strong>
+###GW1E###</td>
+
+<td valign=top align=right colspan=4>###GW1B###
+<b>EUR ###PRICE_TOTAL_TAX###</b><br>
+ ###GW1B###(Netto: EUR&nbsp; ###PRICE_TOTAL_NO_TAX###)###GW1E###<br>
+
+###GW1B###(MwSt: EUR ###PRICE_TOTAL_ONLY_TAX###)###GW1E###</td>
+</tr>
+<tr>
+    <td colspan=7> <p>###GW1B### <br>
+        <br>
+        Mit freundlichen Gr&uuml;&szlig;en:
+	<p>Franz Holzinger<br />
+	<font face="Arial" color="#666666">
+	<p style="MARGIN: 0px"><font face="Arial" color="black" size="2">Meister
+	Gerhard Str. 9 </font></p>
+	<p style="MARGIN: 0px"><font face="Arial" color="black" size="2">50674 K&ouml;ln
+	</font></p>
+	<p style="MARGIN: 0px"><font face="Arial" color="black" size="2">0221
+	7592169</font></p>
+	</font>
+	<p><br>
+    <br>
+	<br>
+        ###GW1E###
+      </td>
+</tr>
+</table>
+<br>
+<br>
+<!-- ###BASKET_ORDERCONFIRMATION_TEMPLATE### end -->
+
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>BASKET_TEMPLATE_EMPTY</h3>
+<em><br>
+<br>
+<br>
+If the basket is empty this subpart is displayed<br>
+</em>
+<!-- ###BASKET_TEMPLATE_EMPTY### begin
+If the basket is empty this subpart is displayed
+-->
+<br>
+###GW1B###<B>Ihr Warenkorb ist noch leer.</B>###GW1E###
+<!-- ###BASKET_TEMPLATE_EMPTY### end -->
+
+
+
+
+
+
+<h3>BASKET_REQUIRED_INFO_MISSING</h3>
+<em>
+If payment is initiated but the required information fields are not filled in correctly, this happens.<br>
+</em><br>
+<br>
+<br>
+<!-- ###BASKET_REQUIRED_INFO_MISSING### begin
+If payment is initiated but the required information fields are not filled in correctly, this happens
+-->
+###GW1B###Fehler bei der Eingabe###GW1E###<br>
+###GW1B###<B><font color="#FF0000">Sie haben nicht alle erforderlichen Felder mit Ihren Adressinformationen ausgef&uuml;llt,
+		oder die AGB nicht akzeptiert!</font><br>
+		Bitte gehen Sie zur&uuml;ck zum Aktualisieren!</B>###GW1E###
+<form method="post" action="###FORM_URL###">
+<input type="Submit" name="products_info" value="Adressdaten eingeben" onclick="document.forms[0].action='###FORM_URL_INFO###';">
+</form>
+<!-- ###BASKET_REQUIRED_INFO_MISSING### end -->
+
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>TRACKING_DISPLAY_INFO</h3>
+<em>
+Displays the view of the order status by tracking codes.<br>
+</em><br>
+<br>
+<br>
+<!-- ###TRACKING_DISPLAY_INFO### begin
+Displays the view of the order status by tracking codes.
+-->
+###GW1B###
+<B>Ihre Bestellung (###ORDER_UID###) hat folgenden Status:</B><br>
+(siehe letzte Zeile f&uuml;r aktuellsten Stand)<br>
+<br>
+
+<table border=1 cellpadding=0 cellspacing=4>
+<tr>
+<td>###GW1B### <strong>Datum/Zeit:</strong> ###GW1E###</td>
+<td>###GW1B### <strong>Code:</strong> ###GW1E###</td>
+<td>###GW1B### <strong>Aktion:</strong> ###GW1E###</td>
+<td>###GW1B### <strong>Kommentar:</strong> ###GW1E###</td>
+</tr>
+<!-- ###STATUS_ITEM### begin
+This part is repeated for each order status item and finally this part in the template code is substituted with the accumulated code for all order status actions.
+-->
+<tr>
+<td nowrap valign=top>###GW1B### ###ORDER_STATUS_TIME###  ###GW1E###</td>
+<td valign=top>###GW1B### ###ORDER_STATUS###  ###GW1E###</td>
+<td nowrap valign=top>###GW1B### ###ORDER_STATUS_INFO###  ###GW1E###</td>
+<td valign=top>###GW1B### ###ORDER_STATUS_COMMENT###  ###GW1E###</td>
+</tr>
+<!-- ###STATUS_ITEM### end -->
+</table>
+<br>
+
+    <!-- ###ADMIN_CONTROL### begin -->
+        	<div class="admin_control">
+	            <!-- ###ADMIN_CONTROL_OK### begin -->
+
+					<div class="admin_control_switch_order">
+	                    <b><!--Switch to another order--></b><form method="post" action="###FORM_URL###">
+                         <fieldset>
+	                            <legend>Bestellung w&auml;hlen</legend>
+	                            <input type="submit" name="submit" value="Bestellung ausw&auml;hlen" /><div>
+	                            <select name="tracking" size="5">
+	                                ###OTHER_ORDERS_OPTIONS###
+	                            </select>
+	                            <input type="hidden" name="update_code" value="###UPDATE_CODE###" />
+	                        </div>
+	                    </form>
+
+ 					</fieldset>
+
+               	<div class="admin_control_ok">
+	                    <form method="post" action="###FORM_URL###">
+	                        <fieldset>
+	                            <legend>Bestellstatus &auml;ndern</legend>
+	                            <align="center">
+	                            <input type="submit" name="submit" value="Bestellstatus hinzuf&uuml;gen" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	                            <b>Kommentar zum neuen Bestellstatus</b> <br>
+	                            <select name="orderRecord[status][]" id="orderRecord_status" size="8" multiple="multiple">
+	                                ###STATUS_OPTIONS###
+	                            </select><textarea cols="25" rows="8" name="orderRecord[status_comment]" id="orderRecord_status_comment"></textarea><br />
+	                            &nbsp;</fieldset>
+
+	                        <div class="form_control">
+	                            <input type="hidden" name="tracking" value="###TRACKING_NUMBER###" />
+	                            <input type="hidden" name="update_code" value="###UPDATE_CODE###" />
+	                           </div>
+	                    </form>
+                    </div>
+
+
+                    </div>
+	            <!-- ###ADMIN_CONTROL_OK### end -->
+
+	            <!-- ###ADMIN_CONTROL_DENY### begin -->
+                	<div class="admin_control_deny">
+	                    <form method="post" action="###FORM_URL###">
+	                        <div>
+	                            <label for="password"><strong>Passwort: </strong></label>
+	                                <input type="password" size="40" name="update_code" id="password" value="###UPDATE_CODE###" />&nbsp;
+	                            <input type="submit" name="submit" value="Passwort eingeben" />
+	                            <input type="hidden" name="tracking" value="###TRACKING_NUMBER###" />
+	                        </div>
+	                    </form>
+                    </div>
+	            <!-- ###ADMIN_CONTROL_DENY### end -->
+        </div>
+	    <!-- ###ADMIN_CONTROL### end -->
+
+
+<strong>Email-Benachrichtigung:</strong><br>
+Wenn Sie sich &uuml;ber den Status Ihrer Bestellung informieren lassen wollen (###FIELD_EMAIL###) sobald sich der Status ge&auml;ndert hat, dann &uuml;berpr&uuml;fen Sie bitte folgendes:<br>
+<form method="post" action="###FORM_URL###" name="statusInform">
+
+<input type="hidden" name="orderRecord[email_notify]" value="0">
+<input type="checkbox" name="orderRecord[email_notify]" value="1"###FIELD_EMAIL_NOTIFY###>Nachricht &uuml;ber Ablauf des Bestellvorgangs erhalten.<br>
+<input type="text" size=40 name="orderRecord[email]" value="###FIELD_EMAIL###">
+<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
+
+<input type="Submit" name="submit" value="Aktualisieren">
+</form>
+<br><br>
+
+
+<strong>Nachricht an ttproducts.de:</strong><br>
+Hier k&ouml;nnen Sie uns eine Nachricht bez&uuml;glich Ihrer Bestellung schicken.<form method="post" action="###FORM_URL###"  name="sendNote">
+<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
+###GW1B###Betreff ausw&auml;hlen:###GW1B###<br>
+<select name="orderRecord[status][]" size="1">
+    <option value="51">Nachricht von Kunde an ttproducts.de</option>
+    <option value="50">Kunde w&uuml;nscht die Stornierung der Bestellung</option>
+  </select>
+<br>
+  ###GW1B###Bemerkung:###GW1B###<br>
+<textarea cols="40" rows="5" name="orderRecord[status_comment]"></textarea><br>
+<input type="Submit" name="submit" value="Nachricht senden">
+</form>
+-->
+<br>
+<br>
+<B>Bestellbest&auml;tigung - Original:</B><br><br>
+###GW1E###
+<hr>
+<br>
+
+###ORDER_HTML_OUTPUT###
+<!-- ###TRACKING_DISPLAY_INFO### end -->
+
+
+
+
+
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>TRACKING_ENTER_NUMBER</h3>
+<em>
+Displays form for entering the tracking number.<br>
+</em><br>
+<br>
+<br>
+<!-- ###TRACKING_ENTER_NUMBER### begin
+Displays form for entering the tracking number.
+-->
+###GW1B###<B>Bestellstatus-Code eingeben:</B>###GW1E###<br>
+<form method="post" action="###FORM_URL###">
+<input type="text" name="tracking" size="20"><br>
+<input type="Submit" name="submit" value="Status sehen">
+</form>
+
+<!-- ###ADMIN_CONTROL### begin -->
+<table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
+<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
+###GW1B### <strong>Shop ADMIN:</strong><br>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+<form method="post" action="###FORM_URL###">
+###GW1B###Code:###GW1B###<br>
+<input type="password" size=40 name="update_code" value="">
+<input type="Submit" name="submit" value="Code eingeben">
+</form>
+<!-- ###ADMIN_CONTROL_DENY### begin -->
+</td></tr></table>
+</td></tr>
+</table><br>
+<!-- ###ADMIN_CONTROL### end -->
+
+
+
+<!-- ###TRACKING_ENTER_NUMBER### end -->
+
+
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>TRACKING_WRONG_NUMBER</h3>
+<em>
+Displays error message if no tracking code.<br>
+</em><br>
+<br>
+<br>
+<!-- ###TRACKING_WRONG_NUMBER### begin
+Displays error message if no tracking code.
+-->
+###GW1B###<B>Der Bestellstatus-Code existiert nicht! Bitte stellen Sie die Richtigkeit sicher und versuchen es noch einmal!</B>###GW1E###<br>
+
+<form method="post" action="###FORM_URL###">
+<input type="text" name="tracking" size="20"><br>
+<input type="Submit" name="submit" value="Bestellstatus einsehen">
+</form>
+
+<!-- ###TRACKING_WRONG_NUMBER### end -->
+
+
+
+
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>TRACKING_EMAILNOTIFY_TEMPLATE</h3>
+<em>
+Subpart used as template for the notify emails.<br>
+First line is used as subject for the mail.<br>
+</em><br>
+<br>
+<br>
+<pre><!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### begin
+Subpart used as template for the notify emails
+First line is used as subject for the mail.
+-->
+
+ttproducts.de Bestellstatus (####ORDER_UID###)
+
+BESTELLINFORMATION (####ORDER_UID###):
+Der Status Ihrer Bestellung wurde geändert:
+
+Zeit: ###ORDER_STATUS_TIME###
+Status: ###ORDER_STATUS_INFO###
+
+Bemerkung:
+###ORDER_STATUS_COMMENT###
+
+
+BESTELLSTATUS:
+Auf Ihren Wunsch hin, erhalten Sie diese E-mail bzgl. Ihrer Bestellung bei ttproducts.de. Mit Ihrem Bestellstatus-Code können Sie jederzeit den Bestellstatus einsehen und evtl. Bestellinformationen ändern:
+###ORDER_TRACKING_NO###
+
+Klicken Sie um Ihre Daten jetzt einzusehen:
+http://###DOMAIN###/index.php?id=###PID_TRACKING###&tracking=###ORDER_TRACKING_NO###
+
+
+Franz Holzinger
+
+Meister Gerhard Str. 9
+
+50674 Köln
+
+0221 7592169
+
+<!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
+</pre>
+
+<br>
+<br><br><br><hr><br><br><br>
+<h3>EMAIL_PLAINTEXT_TEMPLATE</h3>
+<em>
+Subpart used as template for the order-emails.<br>
+First line is used as subject for the mail.<br>
+</em><br>
+<br>
+<br>
+<pre><!-- ###EMAIL_PLAINTEXT_TEMPLATE### begin
+Subpart used as template for the order-emails
+First line is used as subject for the mail.
+-->
+Bestellung ####ORDER_UID###
+
+Bestellung ####ORDER_UID###
+
+Bestellbestätigung:
+Ihre Bestellung ist abgeschlossen und hat die Nummer ###ORDER_UID###.
+Verweisen Sie bitte bei jedem Kontakt mit uns auf diese Bestellnummer.
+
+BESTELLSTATUS:
+Sie können den Status Ihrer Bestellung an dieser Adresse einsehen:
+http://###DOMAIN###/index.php?id=###PID_TRACKING###&tracking=###ORDER_TRACKING_NO###
+
+Ihre Bestellung:
+1) ARTIKEL:
+<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
+###PRODUCT_TITLE###
+Anzahl: ###FIELD_QTY###
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
+2) RECHNUNGSADRESSE:
+###PERSON_SALUTATION###
+###PERSON_NAME###
+###PERSON_ADDRESS###
+Telefon: ###PERSON_TELEPHONE###
+Email: ###PERSON_EMAIL###
+3) LIEFERADRESSE:
+###DELIVERY_ADDRESS###
+###DELIVERY_ZIP###  ###DELIVERY_CITY###
+
+###DELIVERY_COUNTRY###
+
+###DELIVERY_SALUTATION###
+att. ###DELIVERY_NAME###
+Telefon: ###DELIVERY_TELEPHONE###
+Email: ###DELIVERY_EMAIL###
+4) GEWÜNSCHTER LIEFERTERMIN:
+###DELIVERY_DESIRED_DATE###
+5) BEMERKUNG:
+###DELIVERY_NOTE###
+6) VERSAND UND VERPACKUNG:
+Preis: ###PRICE_SHIPPING_TAX### EUR (###PRICE_SHIPPING_NO_TAX### EUR)
+7) ZAHLUNGSWEISE:
+###PAYMENT_TITLE###
+Preis: ###PRICE_PAYMENT_TAX### EUR
+
+GESAMT: ________________________ EUR ###PRICE_TOTAL_TAX### (ohne MWSt. EUR ###PRICE_TOTAL_NO_TAX###)
+
+Herzlichen Dank für Ihre Bestellung!
+Mit freundlichen Grüßen
+
+Franz Holzinger
+
+Meister Gerhard Str. 9
+
+50674 Köln
+
+0221 7592169
+<!-- ###EMAIL_PLAINTEXT_TEMPLATE### end -->
+</pre>
+
+
+
+
+
+
+<br><br><br><br><hr><br><br><br>
+<h3>EMAIL_NEWUSER_TEMPLATE</h3>
+<br>
+<br>
+<pre><!-- ###EMAIL_NEWUSER_TEMPLATE### begin -->
+
+Ihre Zugangsdaten bei www.ttproducts.de
+
+Wir freuen uns, Sie bei uns als neuen Kunden begrüßen zu dürfen.
+
+Ihr Benutzername lautet: ###USERNAME###
+Ihr Passwort lautet: ###PASSWORD###
+
+In zukünftigen Bestellungen können Sie sich mit Ihrem Benutzernamen und
+Ihrem Passwort anmelden, um zu bestellen.
+Bitte bewahren Sie diese E-Mail gut auf.
+
+Mit freundlichen Grüßen,
+Franz Holzinger
+
+Meister Gerhard Str. 9
+
+50674 Köln
+
+0221 7592169
+<!-- ###EMAIL_NEWUSER_TEMPLATE### end -->
+
+
+
+
+
+
+<!-- ###EMAIL_HTML_SHELL### begin -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+
+<STYLE TYPE="text/css">
+<!--
+
+		select  {  font-family: Verdana, Arial, Helvetica; font-size: 10px }
+		textarea  {  font-family: Verdana, Arial, Helvetica; font-size: 10px}
+		input   {  font-family: Verdana, Arial, Helvetica; font-size: 10px }
+
+-->
+</STYLE>
+<title>my-twinparts: Bezahlung / Versand</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="generator" content="Microsoft FrontPage 12.0">
+
+<script language="javascript">
+<!--
+	browserName = navigator.appName;
+	browserVer = parseInt(navigator.appVersion);
+	var msie4 = (browserName == "Microsoft Internet Explorer" && browserVer >= 4);
+	if ((browserName == "Netscape" && browserVer >= 3) || msie4) {version = "n3";} else {version = "n2";}
+
+	function openPic(url,winName,winParams)	{
+		var theWindow = window.open(url,winName,winParams);
+		if (theWindow)	{theWindow.focus();}
+	}
+	function blurLink(theObject)	{
+		if (msie4)	{
+			theObject.blur();
+		}
+	}
+
+
+// End Hiding Script -->
+</script>
+
+</head>
+<BODY bgColor="#FBF9F7" link="black" vlink="black" alink="black" leftmargin="10" topmargin="10" marginwidth="10" marginheight="10">
+
+###HTML_BODY###
+
+</body></html>
+
+<!-- ###EMAIL_HTML_SHELL### end -->
+
+
+
+
+
+
+<!-- ###DELIVERY_TEMPLATE### start -->
+
+
+<table border="0" cellspacing="0" cellpadding="1" width=672>
+
+        IBAN: DE97702501500010714475<br>
+        SWIFT-BIC: BYLADEM1KMS<br>
+        ###GW1E### </p></td>
+  </tr>
+
+
+
+</table>
+
+
+<!-- ###DELIVERY_TEMPLATE### end -->
+
+
+<!-- ###ITEM_CATLIST_TEMPLATE### begin
+	This subpart is used to display the regular list of categories.
+-->
+	<!-- ###CATEGORY_SINGLE### begin-->
+		###ITEM_SINGLE_PRE_HTML###
+		<!--###LINK_CATEGORY### begin-->
+			###LIST_LINK###
+		<!--###LINK_CATEGORY### end-->
+		###ITEM_SINGLE_POST_HTML###
+	<!-- ###CATEGORY_SINGLE### end-->
+
+	<!-- ###CATEGORY_SINGLE_2### begin-->
+	<!-- ###CATEGORY_SINGLE_2### end-->
+
+	<!-- ###CATEGORY_SINGLE_3### begin-->
+	<!-- ###CATEGORY_SINGLE_3### end-->
+
+	<!-- ###CATEGORY_SINGLE_4### begin-->
+	<!-- ###CATEGORY_SINGLE_4### end-->
+
+	<div id="ArticleId">&nbsp;</div>
+
+<!-- ###ITEM_CATLIST_TEMPLATE### end -->
+
+
+<!-- ###ITEM_CATLIST_TEMPLATE_UL### begin
+	This subpart is used to display the regular list of categories.
+-->
+	<!-- ###CATEGORY_SINGLE### begin-->
+		###ITEM_SINGLE_PRE_HTML###
+		<!--###LINK_CATEGORY### begin-->
+			###LIST_LINK###
+		<!--###LINK_CATEGORY### end-->
+		###ITEM_SINGLE_POST_HTML###</div>
+	 </b>
+	<!-- ###CATEGORY_SINGLE### end-->
+
+<!-- ###ITEM_CATLIST_TEMPLATE_UL### end -->

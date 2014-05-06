@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<description>texts for the scripts</description>
+		<type>module</type>
+		<csh_table></csh_table>
+		<fileId>EXT:tt_products/pi1/locallang.xml</fileId>
+		<labelContext type="array">
+		</labelContext>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tt_products">Shop Plugin</label>
+			<label index="open_bill">Click here to open the bill</label>
+			<label index="open_delivery">Click here to open the delivery sheet</label>
+			<label index="invalid_email">Invalid E-mail address |! Please re-enter.</label>
+			<label index="no_template">The shop template file has not been found. Check your template setup about</label>
+			<label index="no_subtemplate">The part | or the template file | has not been found.</label>
+			<label index="accept_AGB">You have to accept the general trading conditions to proceed.</label>
+			<label index="additional_single">buy this product</label>
+			<label index="additional_gift_service">wrap product by gift service</label>
+			<label index="wrong_parameter">Wrong parameters. GET/POST var 'tt_products[|]' is missing or no item with uid = | found on allowed pages (|) .</label>
+			<label index="no_csv_creation">Warning: Cannot create CSV file '|' for this order!</label>
+			<label index="wrong_code">Wrong display mode or code '|'.</label>
+			<label index="instock_warning">Warning: | no. | runs out of stock.</label>
+			<label index="product">product</label>
+			<label index="article">article</label>
+			<label index="missing">Please enter the | .</label>
+			<label index="missing_address">street with housenumber</label>
+			<label index="missing_city">town</label>
+			<label index="missing_telephone">telephone number</label>
+			<label index="missing_email">email address</label>
+			<label index="missing_zip">zip code</label>
+			<label index="error_reference_id">ERROR: reference ID could not be generated.</label>
+			<label index="error_transaction_details">ERROR: Setting details of transaction failed.</label>
+			<label index="error_relay_url">ERROR: No relay URL given!</label>
+			<label index="error_find_payment_method">ERROR: Could not find provider object for payment method '%s'.</label>
+			<label index="tax_included">VAT incl. price</label>
+			<label index="tax_excluded">w/o VAT</label>
+			<label index="tax_zero">without taxes</label>
+			<label index="extension_missing">The extension '|' has not been installed.</label>
+			<label index="setup_missing">Setup for | is missing.</label>
+			<label index="voucher_invalid">The voucher code | is not accepted.</label>
+			<label index="internal_error">Internal error no. | in tt_products (|).</label>
+			<label index="article_markers_unsubstituted">No substitution of article markers | . You must set useArticles (at the moment |) to another value to use articles.</label>
+		</languageKey>
+	</data>
+</T3locallang>
