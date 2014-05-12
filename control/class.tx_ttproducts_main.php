@@ -1104,7 +1104,8 @@ class tx_ttproducts_main {
 				$functablename = 'tt_products';
 			}
 
-			$allowedItems = '';
+			$allowedItems = tx_div2007_ff::get($this->cObj->data['pi_flexform'], 'productSelection');
+
 			$bAllPages = false;
 			$templateArea = $templateArea.$this->templateSuffix;
 			$content = $listView->printView(

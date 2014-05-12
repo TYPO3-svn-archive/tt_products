@@ -239,6 +239,7 @@
 			<label index="tt_content.pi1_flexform.required_pivars.6">Address</label>
 			<label index="tt_content.pi1_flexform.required_pivars.7">Language</label>
 			<label index="tt_content.pi1_flexform.required_pivars.8">Search</label>
+			<label index="tt_content.pi1_flexform.product_selection">Product selection</label>
 			<label index="tt_content.pi1_flexform.template_suffix">Template suffix</label>
 		</languageKey>
 	</data>

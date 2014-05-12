@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2011 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2014 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -77,8 +77,18 @@ class tx_ttproducts_info_view {
 		$this->config = &$cnf->config;
 
 		$this->infoArray = array();
-		$this->infoArray['billing'] = $formerBasket['personinfo'];
-		$this->infoArray['delivery'] = $formerBasket['delivery'];
+
+		if (isset($formerBasket) && is_array($formerBasket)) {
+			$this->infoArray['billing'] = $formerBasket['personinfo'];
+			$this->infoArray['delivery'] = $formerBasket['delivery'];
+		}
+		if (!$this->infoArray['billing']) {
+			$this->infoArray['billing'] = array();
+		}
+		if (!$this->infoArray['delivery']) {
+			$this->infoArray['delivery'] = array();
+		}
+
 		$shippingType = $paymentshippingObj->get('shipping', 'type');
 		if ($shippingType == 'pick_store')	{
 			$this->bDeliveryAddress = TRUE;
@@ -236,7 +246,10 @@ class tx_ttproducts_info_view {
 
 		if (!$this->bDeliveryAddress)	{
 			foreach ($requiredInfoFieldArray as $field)	{
-				if (!trim($this->infoArray['delivery'][$field]))	{
+				if (
+					is_array($this->infoArray['delivery']) &&
+					!trim($this->infoArray['delivery'][$field])
+				) {
 					$bMissingField = TRUE;
 					break;
 				}
@@ -252,7 +265,8 @@ class tx_ttproducts_info_view {
 					(
 						$this->infoArray['delivery'][$fName] == '' ||
 						(
-							$this->infoArray['delivery'][$fName] == '0' && !trim($this->infoArray['delivery']['address'])
+							$this->infoArray['delivery'][$fName] == '0' &&
+							!trim($this->infoArray['delivery']['address'])
 						)
 					)
 				) {
@@ -298,7 +312,18 @@ class tx_ttproducts_info_view {
 				$bBillingTo &= !empty($this->infoArray['billing'][$fName]);
 			}
 			foreach($infoFields as $k => $fName)	{
-				if (trim($this->infoArray['billing'][$fName]) == '' || ($type != 'billing') && trim($this->infoArray['delivery'][$fName]) == '' && $bBillingTo)	{
+				if (
+					(
+						is_array($this->infoArray['billing']) &&
+						trim($this->infoArray['billing'][$fName]) == ''
+					) ||
+					(
+						$type != 'billing' &&
+						$bBillingTo &&
+						is_array($this->infoArray['delivery']) &&
+						trim($this->infoArray['delivery'][$fName]) == ''
+					)
+				) {
 					$rc = $fName;
 					break;
 				}

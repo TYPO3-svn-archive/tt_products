@@ -58,7 +58,7 @@
 						<numindex index="12">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.12</numindex>
 							<numindex index="1">PAYMENT</numindex>
-						</numindex>	
+						</numindex>
 						<numindex index="13">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.13</numindex>
 							<numindex index="1">FINALIZE</numindex>
@@ -94,7 +94,7 @@
 						<numindex index="21">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.22</numindex>
 							<numindex index="1">SELECTCAT</numindex>
-						</numindex> 
+						</numindex>
 						<numindex index="22">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.27</numindex>
 							<numindex index="1">MENUCAT</numindex>
@@ -106,7 +106,7 @@
 						<numindex index="24">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.21</numindex>
 							<numindex index="1">LISTARTICLES</numindex>
-						</numindex> 
+						</numindex>
 						<numindex index="25">
 							<numindex index="0">LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.display_mode.23</numindex>
 							<numindex index="1">LISTDAM</numindex>
@@ -150,6 +150,20 @@
 				</config>
 			</TCEforms>
 	      </display_mode>
+	      <productSelection>
+			<TCEforms>
+				<label>LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.product_selection</label>
+				<config>
+					<type>group</type>
+					<internal_type>db</internal_type>
+					<allowed>tt_products</allowed>
+					<size>10</size>
+					<maxitems>30</maxitems>
+					<minitems>0</minitems>
+					<show_thumbs>1</show_thumbs>
+				</config>
+			</TCEforms>
+	      </productSelection>
 	      <template_suffix>
 			<TCEforms>
 				<label>LLL:EXT:tt_products/locallang_db.xml:tt_content.pi1_flexform.template_suffix</label>
