@@ -39,7 +39,6 @@
  *
  */
 
-// require_once (PATH_BE_ttproducts.'view/field/interface.tx_ttproducts_field_view_int.php');
 
 class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	public $langObj;

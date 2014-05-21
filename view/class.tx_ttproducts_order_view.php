@@ -39,10 +39,6 @@
  *
  */
 
-/*
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');*/
-
 
 
 class tx_ttproducts_order_view {

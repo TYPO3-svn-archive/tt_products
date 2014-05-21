@@ -45,17 +45,6 @@ define ('DQT', '"');
 define ('QT', "'");
 
 
-// *********************
-// Libraries included
-// *********************
-$TT->push('Include Frontend libraries','');
-    require_once(PATH_tslib.'class.tslib_fe.php');
-    require_once(PATH_t3lib.'class.t3lib_page.php');
-    require_once(PATH_t3lib.'class.t3lib_userauth.php');
-    require_once(PATH_tslib.'class.tslib_feuserauth.php');
-    require_once(PATH_t3lib.'class.t3lib_tstemplate.php');
-    require_once(PATH_t3lib.'class.t3lib_cs.php');
-$TT->pull();
 
 // ***********************************
 // Create $TSFE object (TSFE = TypoScript Front End)
@@ -85,13 +74,6 @@ if ($TSFE->RDCT)    {
 	$TSFE->sendRedirect();
 }
 
-// *******************
-// output compression
-// *******************
-if ($GLOBALS['TYPO3_CONF_VARS']['FE']['compressionLevel'])    {
-    ob_start();
-    require_once(PATH_t3lib.'class.gzip_encode.php');
-}
 
 // *********
 // FE_USER
@@ -152,11 +134,6 @@ $TSFE->getConfigArray();
 $conf = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXT.'.'];
 $config = array();
 $config['LLkey'] = '';
-
-// tt_products specific parts
-/*
-require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_ajax.php');
-require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');*/
 
 
 // Make instance:

@@ -40,8 +40,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
-
 
 class tx_ttproducts_activity_finalize {
 	var $pibase; // reference to object of pibase

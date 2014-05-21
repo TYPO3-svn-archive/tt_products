@@ -39,38 +39,6 @@
  *
  */
 
-/*
-require_once(PATH_BE_div2007.'class.tx_div2007_ff.php');
-require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
-require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
-
-
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
-require_once (PATH_BE_ttproducts . 'cache/class.tx_ttproducts_cache.php');
-
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_base_view.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_tables.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_pid_list.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_basket.php');
-require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_control.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_config.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
-require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_javascript.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_gifts_div.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_paymentshipping.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricetablescalc.php');
-
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_price.php');
-require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_image.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_graduated_price.php');
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_image_view.php');
-
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_single_view.php');
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_price_view.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_graduated_price_view.php');*/
 
 
 

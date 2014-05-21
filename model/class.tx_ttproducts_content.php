@@ -39,9 +39,6 @@
  *
  */
 
-/*
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');*/
 
 
 class tx_ttproducts_content extends tx_ttproducts_table_base {

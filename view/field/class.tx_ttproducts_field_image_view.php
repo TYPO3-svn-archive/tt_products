@@ -39,9 +39,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_media_view.php');
-
-
 class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 
 	/**

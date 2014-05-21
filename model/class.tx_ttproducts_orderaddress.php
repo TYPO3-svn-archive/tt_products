@@ -40,8 +40,6 @@
  */
 
 
-// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
-
 
 class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 	var $dataArray; // array of read in frontend users

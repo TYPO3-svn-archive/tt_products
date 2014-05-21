@@ -40,10 +40,6 @@
  *
  */
 
-// require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_javascript_marker.php');
-// require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
-
 
 class tx_ttproducts_list_view {
 	var $pibase; // reference to object of pibase

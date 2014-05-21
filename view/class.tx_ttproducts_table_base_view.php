@@ -38,8 +38,6 @@
  *
  */
 
-// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_base_view.php');
-
 
 abstract class tx_ttproducts_table_base_view	{
 	private $bHasBeenInitialised = false;

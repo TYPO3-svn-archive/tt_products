@@ -39,7 +39,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_base.php');
 
 
 abstract class tx_ttproducts_table_base	{

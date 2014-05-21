@@ -39,9 +39,6 @@
  *
  */
 
-
-// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php');
-
 class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 
 	var $htmlTagMain = 'select';	// main HTML tag

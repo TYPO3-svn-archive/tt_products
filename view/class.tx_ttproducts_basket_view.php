@@ -43,13 +43,6 @@
  *
  */
 
-/*
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_activity.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_creditpoints_div.php');
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');*/
-
 
 class tx_ttproducts_basket_view {
 	var $pibase; // reference to object of pibase

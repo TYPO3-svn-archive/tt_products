@@ -39,8 +39,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php');
-
 class tx_ttproducts_menucat_view extends tx_ttproducts_catlist_view_base {
 	var $htmlTagMain = 'ul';	// main HTML tag
 	var $htmlTagElement = 'li';	// HTML tag element

@@ -39,8 +39,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'model/int.tx_ttproducts_variant_int.php');
-
 
 class tx_ttproducts_variant implements tx_ttproducts_variant_int {
 	var $conf;	// reduced local conf

@@ -39,8 +39,6 @@
  *
  */
 
-// require_once (PATH_BE_ttproducts.'view/interface.tx_ttproducts_variant_view_int.php');
-
 
 class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 	public $modelObj;

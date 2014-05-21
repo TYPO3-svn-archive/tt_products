@@ -39,11 +39,6 @@
  *
  */
 
-/*
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_view.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_dummy_view.php');*/
-
 
 abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_view {
 	var $dataArray = array(); // array of read in products

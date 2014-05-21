@@ -40,9 +40,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
-
-
 
 class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 	var $amount;

@@ -40,8 +40,6 @@
  */
 
 
-// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
-
 class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_view {
 	var $dataArray = array(); // array of read in products
 	var $mmArray = array();

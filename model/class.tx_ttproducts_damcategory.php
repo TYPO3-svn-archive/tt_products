@@ -39,7 +39,6 @@
  *
  */
 
-// require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category.php');
 
 
 class tx_ttproducts_damcategory extends tx_ttproducts_category {

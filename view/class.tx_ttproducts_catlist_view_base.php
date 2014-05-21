@@ -38,9 +38,7 @@
  *
  *
  */
-/*
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');*/
+
 
 
 abstract class tx_ttproducts_catlist_view_base {

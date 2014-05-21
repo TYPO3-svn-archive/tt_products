@@ -43,12 +43,6 @@
  *
  */
 
-// require_once (PATH_BE_div2007 . 'class.tx_div2007_alpha5.php');
-// require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_main.php');
-
-// require_once(PATH_tslib.'class.tslib_pibase.php');
-
-
 class tx_ttproducts_pi1_base extends tslib_pibase {
 	var $prefixId = 'tt_products';	// Same as class name
 	var $scriptRelPath = 'pi1/class.tx_ttproducts_pi1.php';	// Path to this script relative to the extension dir.

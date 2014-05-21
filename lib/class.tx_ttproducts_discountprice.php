@@ -39,11 +39,6 @@
  *
  */
 
-/*
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_base.php');
-require_once(PATH_BE_ttproducts.'lib/class.tx_ttproducts_sql.php');
-*/
-
 
 class tx_ttproducts_discountprice extends tx_ttproducts_pricecalc_base {
 

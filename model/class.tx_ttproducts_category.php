@@ -38,9 +38,6 @@
  *
  *
  */
-/*
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');*/
 
 
 class tx_ttproducts_category extends tx_ttproducts_category_base {

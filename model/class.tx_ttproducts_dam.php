@@ -39,8 +39,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
-
 
 class tx_ttproducts_dam extends tx_ttproducts_article_base {
 	var $dataArray; // array of read in categories

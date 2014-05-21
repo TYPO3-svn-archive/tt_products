@@ -39,9 +39,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'model/field/interface.tx_ttproducts_field_int.php');
-
-
 abstract class tx_ttproducts_field_base implements tx_ttproducts_field_int {
 	private $bHasBeenInitialised = false;
 	var $cObj;

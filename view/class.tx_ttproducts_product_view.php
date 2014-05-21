@@ -39,9 +39,6 @@
  *
  */
 
-// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_article_base_view.php');
-
-
 class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 	public $relatedArray = array(); // array of related products
 	public $marker = 'PRODUCT';

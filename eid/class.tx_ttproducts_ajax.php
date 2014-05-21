@@ -40,8 +40,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_javascript.php');
-
 
 class tx_ttproducts_ajax {
 	var $taxajax;	// xajax object

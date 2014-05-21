@@ -39,9 +39,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_table_base.php');
-// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_table_base_view.php');
-
 
 class tx_ttproducts_tables	{
 	var $tableArray = array();

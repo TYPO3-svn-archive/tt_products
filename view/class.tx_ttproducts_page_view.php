@@ -40,9 +40,6 @@
 
 
 
-// require_once(PATH_BE_ttproducts.'view/class.tx_ttproducts_category_base_view.php');
-
-
 class tx_ttproducts_page_view extends tx_ttproducts_category_base_view {
 	var $noteArray = array(); 	// array of pages with notes
 	var $piVar = 'pid';

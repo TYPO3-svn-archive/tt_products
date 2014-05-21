@@ -40,8 +40,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_base.php');
-
 class tx_ttproducts_pricetablescalc extends tx_ttproducts_pricecalc_base {
 	var $conftablename = 'tt_products_graduated_price';
 

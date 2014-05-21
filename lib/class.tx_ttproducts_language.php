@@ -39,8 +39,6 @@
 
 
 
-// require_once(PATH_BE_div2007.'class.tx_div2007_alpha_language_base.php');
-
 
 class tx_ttproducts_language extends tx_div2007_alpha_language_base {
 	public function init ($pObj, $cObj, &$conf, $scriptRelPath)	{

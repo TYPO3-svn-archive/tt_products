@@ -40,9 +40,6 @@
  */
 
 
-// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-
-
 class tx_ttproducts_info_view {
 	var $pibase; // reference to object of pibase
 	var $conf;

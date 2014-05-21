@@ -39,9 +39,6 @@
  *
  */
 
-/*
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');*/
-
 
 class tx_ttproducts_article extends tx_ttproducts_article_base {
 	var $fields = array();

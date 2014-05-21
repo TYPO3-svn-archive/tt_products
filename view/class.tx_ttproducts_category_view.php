@@ -40,8 +40,6 @@
  */
 
 
-// require_once(PATH_BE_ttproducts.'view/class.tx_ttproducts_category_base_view.php');
-
 
 class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 	public $piVar = 'cat';

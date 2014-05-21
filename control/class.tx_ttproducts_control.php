@@ -39,13 +39,6 @@
  *
  */
 
-/*
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_activity.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_info_view.php');
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basket_view.php');*/
-
 
 class tx_ttproducts_control {
 	var $pibase; // reference to object of pibase
@@ -213,7 +206,6 @@ class tx_ttproducts_control {
 			$content = $paymentshippingObj->includeHandleScript($handleScript, $this->basket->basketExtra['payment.']['handleScript.'], $this->conf['paymentActivity'], $bFinalize, $this->pibase, $infoViewObj);
 		} else if (strpos($handleLib,'transactor') !== FALSE && t3lib_extMgm::isLoaded($handleLib))	{
 				// Payment Transactor
-			require_once(t3lib_extMgm::extPath($handleLib) . 'lib/class.tx_' . $handleLib . '_api.php');
 		// Get references to the concerning baskets
 			$calculatedArray = $this->basket->getCalculatedArray();
 			$addQueryString = array();
@@ -517,7 +509,6 @@ class tx_ttproducts_control {
 
 									if (strpos($handleLib,'transactor') !== FALSE)	{
 										// Payment Transactor
-										require_once(t3lib_extMgm::extPath($handleLib) . 'lib/class.tx_' . $handleLib . '_api.php');
 										tx_transactor_api::init($this->pibase, $this->cObj, $this->conf);
 										$referenceId = tx_transactor_api::getReferenceUid(
 											$handleLib,

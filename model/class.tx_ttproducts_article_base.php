@@ -39,9 +39,6 @@
  *
  */
 
-// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
-
-// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_datafield_view.php');
 
 
 abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {

@@ -37,7 +37,6 @@
  *
  */
 
-// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_language.php');
 
 
 class tx_ttproducts_paymentlib {
