@@ -121,7 +121,13 @@ class tx_ttproducts_ajax {
 		} else {
 			$nextDelimiter = '?';
 		}
+
+		$pos = strpos($reqURI, '&cHash=');
+		if ($pos !== FALSE) {
+			$reqURI = substr($reqURI, 0, $pos);
+		}
 		$reqURI .= $nextDelimiter.'no_cache=1&eID='.TT_PRODUCTS_EXT.$param;
+
 		// $reqURI = htmlspecialchars ($reqURI,ENT_QUOTES,$charset);  ==> funktioniert mit einigen Browsern nicht!
 		// $reqURI = tx_ttproducts_javascript::jsspecialchars($reqURI);
 		$this->taxajax->setRequestURI($reqURI);

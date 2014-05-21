@@ -244,6 +244,8 @@ class tx_ttproducts_db {
 			$priceObj
 		);
 
+		$typoVersion = tx_div2007_core::getTypoVersion();
+
 		$priceFieldArray = $priceObj->getPriceFieldArray();
 		$tableObjArray = array();
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
@@ -267,7 +269,10 @@ class tx_ttproducts_db {
 
 				if (($field == 'title') || ($field == 'subtitle') || ($field == 'note') || ($field == 'note2'))	{
 					// $v = htmlentities($v,ENT_QUOTES,$charset);
-					$v = $csConvObj->conv($v, $TSFE->renderCharset, $this->ajax->taxajax->getCharEncoding());
+
+					if ($typoVersion < '6000000') {
+						$v = $csConvObj->conv($v, $TSFE->renderCharset, $this->ajax->taxajax->getCharEncoding());
+					}
 
 					if (($field == 'note') || ($field == 'note2'))	{
 						$v = ($this->conf['nl2brNote'] ? nl2br($v) : $v);

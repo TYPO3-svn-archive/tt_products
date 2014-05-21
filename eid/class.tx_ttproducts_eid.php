@@ -131,6 +131,21 @@ $TT->pull();
 // ******************************************************
 $TSFE->getConfigArray();
 
+
+$typoVersion = tx_div2007_core::getTypoVersion();
+
+if ($typoVersion >= '6000000') {
+	// Initialize admin panel since simulation settings are required here:
+	$callingClassName3 = '\\TYPO3\\CMS\\Core\\Core\\Bootstrap';
+	$bootStrap = call_user_func($callingClassName3 . '::getInstance');
+	if ($TSFE->isBackendUserLoggedIn()) {
+		$BE_USER->initializeAdminPanel();
+		$bootStrap->loadExtensionTables(TRUE);
+	} else {
+		$bootStrap->loadCachedTca();
+	}
+}
+
 $conf = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXT.'.'];
 $config = array();
 $config['LLkey'] = '';
