@@ -449,7 +449,7 @@ class tx_ttproducts_main {
 		if (!$this->errorMessage) {
 			$this->basket->getCalculatedBasket(); // get the basket->itemArray
 			$this->basket->getCalculatedSums();
-			$this->templateCode=$this->getTemplateCode('BASKET');
+			$this->templateCode = $this->getTemplateCode('BASKET');
 
 			$functablename = 'tt_products';
 			tx_ttproducts_control_memo::process($functablename, $this->pibase->piVars, $this->conf);

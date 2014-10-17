@@ -61,7 +61,7 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 		);
 
 		// Add Language File
-		$this->addLanguageFile(t3lib_div::getFileAbsFileName('EXT:tt_products/widgets/labels.xml'));
+		$this->addLanguageFile(t3lib_div::getFileAbsFileName('EXT:tt_products/widgets/locallang.xml'));
 
 		// Set the Default config
 		$this->setDefaultConfig($config);

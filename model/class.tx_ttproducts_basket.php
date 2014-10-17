@@ -896,7 +896,7 @@ class tx_ttproducts_basket {
 					}
 
 					if ($articleRow)	{
-						$priceRow['weight'] = ($articleRow['weight'] ? $articleRow['weight'] : $row['weight']);
+						$priceRow['weight'] = (round($articleRow['weight'], 16) ? $articleRow['weight'] : $row['weight']);
 						$priceRow['inStock'] = $articleRow['inStock'];
 					}
 				}

@@ -156,7 +156,7 @@ class tx_ttproducts_basketitem_view {
 					$prodTmpRow = explode(';', $variantRow);
 
 					if ($bSelect && $variantRow && $prodTmpRow[0])	{
-						include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
+// 						include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 
 						$prodTranslatedRow = $prodTmpRow;
 						$viewTable->getTableObj()->substituteMarkerArray($prodTranslatedRow);

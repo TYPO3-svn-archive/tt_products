@@ -85,8 +85,6 @@ class tx_ttproducts_memo_view {
 			tx_ttproducts_control_memo::bUseSession($this->conf)
 		) {
 			if ($this->memoItems) {
-				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
-
 				// List all products:
 				$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
 				$listView->init (
@@ -111,8 +109,6 @@ class tx_ttproducts_memo_view {
 					array()
 				);
 			} else {
-				include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-
 				$subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
 				$subpartmarkerObj->init(
 					$this->pibase->cObj
@@ -121,8 +117,6 @@ class tx_ttproducts_memo_view {
 				$content = $this->pibase->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###MEMO_EMPTY###'));
 			}
 		} else if (tx_ttproducts_control_memo::bIsAllowed('fe_users', $this->conf)) {
-			include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-
 			$subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
 			$subpartmarkerObj->init(
 				$this->pibase->cObj

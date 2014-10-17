@@ -62,7 +62,7 @@ class tx_ttproducts_control_memo {
 		return self::$memoTableFieldArray;
 	}
 
-	static private function bIsAllowed ($type, $conf) {
+	static public function bIsAllowed ($type, $conf) {
 		$result = FALSE;
 
 		if (

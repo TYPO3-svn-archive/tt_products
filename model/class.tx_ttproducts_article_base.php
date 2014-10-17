@@ -65,12 +65,12 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->tabledesc = $cnf->getTableDesc($functablename);
 		if ($this->type == 'product')	{
-			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant.php');
+// 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant.php');
 
 			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant');
 			$this->variant->init($this, $tablename, $useArticles);
 		} else {
-			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant_dummy.php');
+// 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant_dummy.php');
 
 			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy');
 		}
@@ -257,8 +257,8 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	function mergeAttributeFields(&$targetRow, &$sourceRow, $bKeepNotEmpty = TRUE)	{
 
 		$fieldArray = array();
-		$fieldArray['data'] = array('title', 'subtitle', 'itemnumber', 'image', 'weight', 'inStock');
-		$fieldArray['number'] = array('price', 'price2', 'directcost');
+		$fieldArray['data'] = array('title', 'subtitle', 'itemnumber', 'image', 'note', 'note2');
+		$fieldArray['number'] = array('price', 'price2', 'directcost', 'weight', 'inStock');
 
 		foreach ($fieldArray as $type => $fieldTypeArray)	{
 			foreach ($fieldTypeArray as $k => $field)	{
@@ -269,20 +269,19 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 
 					if ($type == 'number') {
 						if($bKeepNotEmpty)	{
-							if (!floatval($targetRow[$field]))	{
+							if (!round($targetRow[$field], 16)) {
 								$targetRow[$field] = $value;
 							}
 						} else { // $bKeepNotEmpty == FALSE
 							$targetRow[$field] = $value;
 						}
 					} else if ($type == 'data')	{
-
 						if($bKeepNotEmpty)	{
-							if (!$targetRow[$field])	{
+							if (empty($targetRow[$field])) {
 								$targetRow[$field] = $value;
 							}
 						} else { // $bKeepNotEmpty == FALSE
-							if (!$targetRow[$field] || $sourceRow[$field] != '')	{
+							if (empty($targetRow[$field]) || !empty($value)) {
 								$targetRow[$field] = $value;
 							}
 						}

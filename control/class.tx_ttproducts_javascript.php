@@ -424,7 +424,7 @@ class tx_ttproducts_javascript {
 			case 'xajax':
 				// XAJAX part
 				if (!$this->bAjaxAdded && is_object($this->ajax) && is_object($this->ajax->taxajax))	{
-					$code = $this->ajax->taxajax->getJavascript(t3lib_extMgm::siteRelPath(TAXAJAX_EXTkey));
+					$code = $this->ajax->taxajax->getJavascript(t3lib_extMgm::siteRelPath(TAXAJAX_EXT));
 					$this->bXajaxAdded = true;
 				}
 				$bDirectHTML = true;

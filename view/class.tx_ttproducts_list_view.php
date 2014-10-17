@@ -1121,7 +1121,7 @@ class tx_ttproducts_list_view {
 						);
 					}
 
-					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
+// 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 					$basketItemView = t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 					$basketItemView->init($this->pibase, $basketObj->basketExt);
 					$basketItemView->getItemMarkerArray (

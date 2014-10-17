@@ -422,7 +422,7 @@ class tx_ttproducts_single_view {
 			}
 
 			if ($this->type == 'product' || $this->type == 'article')	{
-				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
+// 				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
 				$basketItemView = t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 				$basketItemView->init($this->pibase, $basketObj->basketExt);
 				$basketItemView->getItemMarkerArray (
@@ -726,7 +726,7 @@ class tx_ttproducts_single_view {
 
 						if (count($relatedIds))	{
 							// List all products:
-							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
+// 							include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
 							if (!is_object($listView))	{
 
 								$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');

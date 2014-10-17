@@ -69,17 +69,17 @@ if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
 	define('TT_PRODUCTS_DIV_DLOG', '0');	// for development error logging
 }
 
-if (!defined ('TAXAJAX_EXTkey')) {
-	define('TAXAJAX_EXTkey','taxajax');
+if (!defined ('TAXAJAX_EXT')) {
+	define('TAXAJAX_EXT','taxajax');
 }
 
 if (!defined ('DAM_EXTkey')) {
 	define('DAM_EXTkey','dam');
 }
 
-if (t3lib_extMgm::isLoaded(TAXAJAX_EXTkey)) {
+if (t3lib_extMgm::isLoaded(TAXAJAX_EXT)) {
 	if (!defined ('PATH_BE_taxajax')) {
-		define('PATH_BE_taxajax', t3lib_extMgm::extPath(TAXAJAX_EXTkey));
+		define('PATH_BE_taxajax', t3lib_extMgm::extPath(TAXAJAX_EXT));
 	}
 	$GLOBALS['TYPO3_CONF_VARS'] ['FE']['eID_include'][TT_PRODUCTS_EXT] =  'EXT:'.TT_PRODUCTS_EXT.'/eid/class.tx_ttproducts_eid.php' ;
 }

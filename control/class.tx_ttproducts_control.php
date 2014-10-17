@@ -572,7 +572,7 @@ class tx_ttproducts_control {
 									}
 								} else {	// If not all required info-fields are filled in, this is shown instead:
 									$infoViewObj->infoArray['billing']['error'] = 1;
-									$content .= $this->cObj->getSubpart($this->templateCode,$this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
+									$content .= $this->cObj->getSubpart($this->templateCode, $this->subpartmarkerObj->spMarker('###BASKET_REQUIRED_INFO_MISSING###'));
 
 									$addQueryString = array();
 									$overwriteMarkerArray = array();
@@ -767,7 +767,6 @@ class tx_ttproducts_control {
 						// Added Els4: to get the orderconfirmation template as html email and the thanks template as thanks page
 						$tmpl = 'BASKET_ORDERCONFIRMATION_TEMPLATE';
 						$orderConfirmationHTML = $basketView->getView($empty, 'BASKET', $infoViewObj, FALSE, FALSE, TRUE, '###'.$tmpl.'###', $mainMarkerArray);
-// 						include_once(PATH_BE_ttproducts.'control/class.tx_ttproducts_activity_finalize.php');
 
 							// order finalization
 						$activityFinalize = t3lib_div::makeInstance('tx_ttproducts_activity_finalize');

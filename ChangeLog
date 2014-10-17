@@ -1,3 +1,7 @@
+2014-10-17 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: category single view
+	* bug fix: do not overwrite the weight of products with a zero from an article
+
 2014-05-21 Franz Holzinger <franz@ttproducts.de>
 	* bug fix: support for TYPO3 6.2 with Ajax and eID
 

@@ -116,8 +116,18 @@ class tx_ttproducts_cat_view {
 			// Add the template suffix
 			$subPartMarker = substr($subPartMarker, 0, -3).$templateSuffix.'###';
 			$itemFrameWork = $this->cObj->getSubpart($templateCode,$this->subpartmarkerObj->spMarker($subPartMarker));
+
+			if (!$itemFrameWork) {
+				$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');
+				$error_code[0] = 'no_subtemplate';
+				$error_code[1] = $subPartMarker;
+				$error_code[2] = $mainObj->templateFile;
+				return '';
+			}
+
 			$tablesObj->get('fe_users',TRUE)->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
 			$itemFrameWork = $this->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
+
 			$markerFieldArray = array();
 			$viewTagArray = array();
 			$parentArray = array();
@@ -194,7 +204,6 @@ class tx_ttproducts_cat_view {
 
 			$tableViewObj->getMarkerArray (
 				$markerArray,
-				'',
 				$uid,
 				$row['pid'],
 				10,
@@ -203,7 +212,6 @@ class tx_ttproducts_cat_view {
 				array(),
 				$pageAsCategory,
 				$theCode,
-				$basketObj->getBasketExtra(),
 				'',
 				'',
 				''
@@ -259,7 +267,28 @@ class tx_ttproducts_cat_view {
 				if ($bUseBackPid) 	{
 					$addQueryString ['backPID'] = $backPID;
 				}
-				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array('<a href="'. $this->pibase->pi_getPageLink($TSFE->id,'', htmlspecialchars($this->urlObj->getLinkParams('',$addQueryString,TRUE,$bUseBackPid,'product',''),array('useCacheHash' => true))) .'">','</a>');
+
+				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array(
+					'<a href="' .
+					htmlspecialchars(
+						$this->pibase->pi_getPageLink(
+							$TSFE->id,
+							'',
+							$this->urlObj->getLinkParams(
+								'',
+								$addQueryString,
+								TRUE,
+								$bUseBackPid,
+								'product',
+								''
+							),
+							array(
+								'useCacheHash' => TRUE
+							)
+						)
+					). '">',
+					'</a>');
+
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
@@ -278,7 +307,24 @@ class tx_ttproducts_cat_view {
 					$addQueryString [$viewCatTable->getPivar()] = $linkCat;
 				}
 
-				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array('<a href="'. htmlspecialchars($this->pibase->pi_getPageLink($TSFE->id,'',$this->urlObj->getLinkParams('', $addQueryString,TRUE,$bUseBackPid,'product',''),array('useCacheHash' => true))) .'">','</a>');
+				$wrappedSubpartArray['###LINK_NEXT_SINGLE###'] = array(
+					'<a href="' .
+						htmlspecialchars(
+							$this->pibase->pi_getPageLink(
+								$TSFE->id,
+								'',
+								$this->urlObj->getLinkParams(
+									'',
+									$addQueryString,
+									TRUE,
+									$bUseBackPid,
+									'product',
+									''
+								),
+								array('useCacheHash' => TRUE)
+							)
+						) . '">',
+					'</a>');
 			} else {
 				$subpartArray['###LINK_NEXT_SINGLE###'] = '';
 			}
