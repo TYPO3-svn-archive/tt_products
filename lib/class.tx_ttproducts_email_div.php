@@ -68,6 +68,10 @@ class tx_ttproducts_email_div {
 
 		$typoVersion = tx_div2007_core::getTypoVersion();
 
+		if ($toEMail == '' || $fromEMail == '' || $html == '') {
+			return FALSE;
+		}
+
 		if (
 			$typoVersion >= 4007000 ||
 			(
@@ -88,7 +92,6 @@ class tx_ttproducts_email_div {
 					$toEMail[] = $email;
 				}
 			}
-
 			$mailMessage = tx_div2007_core::newMailMessage();
 			$mailMessage->setTo($toEMail)
 				->setFrom(array($fromEMail => $fromName))

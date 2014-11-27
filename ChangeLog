@@ -1,5 +1,6 @@
 2014-11-27 Franz Holzinger <franz@ttproducts.de>
 	* restore the foreign languages in the locallang.xml files - see issue #60678
+	* bug fix: do not send an email if one of the email addresses is empty
 
 2014-10-17 Franz Holzinger <franz@ttproducts.de>
 	* bug fix: category single view
