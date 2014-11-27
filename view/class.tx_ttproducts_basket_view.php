@@ -895,7 +895,6 @@ class tx_ttproducts_basket_view {
 					$subpartArray,
 					$wrappedSubpartArray
 				);
-
 		}
 
 		return $out;

@@ -14,7 +14,7 @@ $LOCAL_LANG = Array (
 	),
 	'de' => Array (
 		'.description' => 'Produktkategorien',
-		'.details' => 'Die Kategorien werden im Shop System nur dann verwendet, wenn das Shop auch dafür konfiguriert worden ist.',
+		'.details' => 'Die Kategorien werden im Shop System nur dann verwendet, wenn der Shop auch dafür konfiguriert worden ist.',
 	),
 	'no' => Array (
 		'.description' => 'Kategorier for innebygde butikkprodukter.',
@@ -40,7 +40,7 @@ $LOCAL_LANG = Array (
 	),
 	'fi' => Array (
 		'.description' => 'Tuotteiden kategoriat.',
-		'.details' => 'Kategorioita käytetään vain, jos tuotteet on konfiguroitu käyttämään niitä.',		
+		'.details' => 'Kategorioita käytetään vain, jos tuotteet on konfiguroitu käyttämään niitä.',
 	),
 	'tr' => Array (
 	),

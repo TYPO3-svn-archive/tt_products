@@ -44,5 +44,93 @@
 			<label index="internal_error">Internal error no. | in tt_products (|).</label>
 			<label index="article_markers_unsubstituted">No substitution of article markers | . You must set useArticles (at the moment |) to another value to use articles.</label>
 		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="open_bill">zum Öffnen der Rechnung hier klicken</label>
+			<label index="open_delivery">zum Öffnen des Lieferscheins hier klicken</label>
+			<label index="invalid_email">Ungültige E-mail Addresse |! Bitte neu eingeben.</label>
+			<label index="no_template">Die Shop-Template Datei wurde nicht gefunden. Überprüfen Sie im Template Setup:</label>
+			<label index="no_subtemplate">Der Bereich | wurde in der Template Datei | nicht gefunden.</label>
+			<label index="accept_AGB">Sie haben unsere AGB nicht akzeptiert.</label>
+			<label index="additional_single">Produkt kaufen</label>
+			<label index="additional_gift_service">Verpacke Produkt mit Geschenk Service</label>
+			<label index="wrong_parameter">Falscher Parameter. GET/POST var 'tt_products[|]' wurde nicht angegeben oder kein Element mit uid = | auf den erlaubten Seiten (|) gefunden.</label>
+			<label index="no_csv_creation">Warnung: Für diese Bestellung kann keine CSV Datei '|' erzeugt werden!</label>
+			<label index="wrong_code">Falscher Anzeigetyp oder CODE '|'.</label>
+			<label index="instock_warning">Warnung: | Nr. | ist bald nicht mehr auf Lager.</label>
+			<label index="product">Produkt</label>
+			<label index="article">Artikel</label>
+			<label index="missing">Bitte geben Sie | ein.</label>
+			<label index="missing_address">die Straße mit Hausnummer</label>
+			<label index="missing_city">die Stadt</label>
+			<label index="missing_email">die Email-Adresse</label>
+			<label index="missing_name">Ihren Namen</label>
+			<label index="missing_telephone">die Telefonnummer</label>
+			<label index="missing_zip">die Postleitzahl</label>
+			<label index="error_reference_id">ERROR: Es konnte keine Referenz ID erzeugt werden.</label>
+			<label index="error_transaction_details">ERROR: Das Setzen der Details der Transaktion hat fehlgeschlagen.</label>
+			<label index="error_relay_url">ERROR: Es ist keine Weiterleitungs-URL angegeben worden!</label>
+			<label index="error_find_payment_method">ERROR: Kein Provider Objekt für die Bezahlmethode '%s'.</label>
+			<label index="article">Artikel</label>
+			<label index="tax_included">inkl. MwSt.</label>
+			<label index="tax_excluded">exkl. MwSt.</label>
+			<label index="tax_zero">ohne MwSt.</label>
+			<label index="extension_missing">Die Extension '|' wurde nicht installiert.</label>
+			<label index="setup_missing">Setup für | fehlt.</label>
+			<label index="voucher_invalid">Der Gutschein | wird nicht akzeptiert.</label>
+			<label index="internal_error">Interner Fehler Nr. | in tt_products (|).</label>
+			<label index="article_markers_unsubstituted">Keine Ersetzung der Artikel Marker | . Um das zu aktivieren, muss useArticles (derzeit |) anders gesetzt werden. </label>
+		</languageKey>
+		<languageKey index="no" type="array">
+			<label index="open_bill">Klikk her for å åpne kvitteringen</label>
+			<label index="open_delivery">Klikk her for å åpne pakkseddelen</label>
+			<label index="invalid_email">Ugyldig epost-adresse. Vennligst skriv den inn på nytt.</label>
+			<label index="no_template">Ingen mal ble funnet for butikken. Sjekk oppsettet.</label>
+			<label index="accept_AGB">Du må akseptere kjøpebetingelsene for å fortsette.</label>
+		</languageKey>
+		<languageKey index="it" type="array">
+			<label index="open_bill">Clicca qui per vedere il conto</label>
+			<label index="open_delivery">Clicca qui per vedere l'ordine</label>
+			<label index="invalid_email">Indirizzo E-mail | invalido! Reinseriscilo.</label>
+			<label index="no_template">SHOP TEMPLATE NON TROVATO! controlla la configurazione</label>
+			<label index="accept_AGB">Devi accettare le condizioni generali per procedere.</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="open_bill">Cliquez ici pour ouvrir la facture</label>
+			<label index="open_delivery">Cliquez ici pour ouvrir le bordereau de livraison</label>
+			<label index="invalid_email">E-mail | non valide! réessayez svp.</label>
+			<label index="no_template">Impossible de trouver le gabarit du magasin. Vérifiez votre configuration</label>
+			<label index="no_subtemplate">La partie | ou le fichier gabarit | n'a pas été trouvé</label>
+			<label index="accept_AGB">Vous devez accepter les conditions de ventes pour continuer</label>
+			<label index="additional_no">sans</label>
+			<label index="additional_yes">avec</label>
+			<label index="wrong_parameter">Mauvais paramètres, GET/POST var 'tt_products[|]' inexistante ou pas de produit correspondant à l'uid = | trouvé sur les pages | .</label>
+			<label index="no_csv_creation">Alerte: Impossible de créer le fichier CSV  '|' pour cette commande!</label>
+		</languageKey>
+		<languageKey index="nl" type="array">
+			<label index="tt_products">Winkel Plugin:</label>
+			<label index="open_bill">Klik hier om de factuur te openen</label>
+			<label index="open_delivery">Klik hier om het aflever-formulier te openen</label>
+			<label index="invalid_email">Ongeldig e-mail adres |! Voer opnieuw in.</label>
+			<label index="no_template">Het winkel sjabloon-bestand is niet gevonden. Check de instellingen van</label>
+			<label index="no_subtemplate">Het onderdeel | of het sjabloon | is niet gevonden.</label>
+			<label index="accept_AGB">Je dient de algemene voorwaarden te accepteren voordat je verder kunt.</label>
+			<label index="additional_single">koop dit product</label>
+			<label index="wrong_parameter">Verkeerde parameters, GET/POST var 'tt_products[|]' ontbreekt of er is geen product met uid = | gevonden.</label>
+			<label index="no_csv_creation">Waarschuwing: kan geen CSV bestand creëren '|' voor deze order!</label>
+			<label index="wrong_code">Verkeerde display modus of code '|'.</label>
+		</languageKey>
+		<languageKey index="fi" type="array">
+			<label index="tt_products">Ostoskori lisäohjelma:</label>
+			<label index="open_bill">Avaa lasku tästä</label>
+			<label index="open_delivery">Avaa kotiinlähetyslomake tästä</label>
+			<label index="invalid_email">Virheellinen s-postiosoite |! Ole hyvä ja anna uusi.</label>
+			<label index="no_template">Ostosohjelman mallinnetta ei löydy. Tarkista asetukset.</label>
+			<label index="no_subtemplate">Mallinteen osaa | tai mallinnetiedostoa | ei löydy.</label>
+			<label index="accept_AGB">Sinun täytyy hyväksyä yleiset kuljetusehdot voidaksesi jatkaa.</label>
+			<label index="additional_single">osta tämä tuote</label>
+			<label index="wrong_parameter">Väärät parametrit, GET/POST-parametrit puuttuvat 'tt_products[|]'-taulusta tai tuotetta, jonka uid = | ei löydy.</label>
+			<label index="no_csv_creation">Varoitus: Tälle tilaukselle ei voi luoda CSV-tiedostoa '|'!</label>
+			<label index="wrong_code">Väärä näyttömoodi tai koodi '|'.</label>
+		</languageKey>
 	</data>
 </T3locallang>
