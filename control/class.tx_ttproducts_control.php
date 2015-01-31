@@ -400,14 +400,18 @@ class tx_ttproducts_control {
 			$this->activityArray = $codeActivityArray;
 		}
 
+		$fixCountry = ($this->activityArray['products_basket'] || $this->activityArray['products_info'] || $this->activityArray['products_payment'] || $this->activityArray['products_verify'] || $this->activityArray['products_finalize'] || $this->activityArray['products_customized_payment']);
+
+
 		$infoViewObj = t3lib_div::getUserObj('&tx_ttproducts_info_view');
 		$infoViewObj->init(
 			$this->pibase,
 			$this->basket->recs,
-			$activityArray['products_payment']
+			$activityArray['products_payment'],
+			$fixCountry
 		);
 
-		if ($infoViewObj->checkRequired('billing')=='')	{
+		if ($fixCountry && $infoViewObj->checkRequired('billing')=='')	{
 			$infoViewObj->mapPersonIntoDelivery();
 		}
 		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');

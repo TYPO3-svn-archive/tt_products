@@ -63,7 +63,7 @@ class tx_ttproducts_info_view {
 	 * @param	[type]		$bProductsPayment: ...
 	 * @return	[type]		...
 	 */
-	function init ($pibase, $formerBasket, $bProductsPayment)  {
+	function init ($pibase, $formerBasket, $bProductsPayment, $fixCountry)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		$this->pibase = $pibase;
@@ -141,7 +141,9 @@ class tx_ttproducts_info_view {
 				$this->infoArray['delivery']['country'] = $staticInfo->getStaticInfoName('COUNTRIES', $this->infoArray['delivery']['country_code'],'','');
 			}
 
-			$bFixCountries = self::fixCountries($this->infoArray);
+			if ($fixCountry) {
+				$bFixCountries = self::fixCountries($this->infoArray);
+			}
 			if (
 				!$bFixCountries &&
 				$this->infoArray['delivery'][$checkField] &&

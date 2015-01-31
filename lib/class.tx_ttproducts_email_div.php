@@ -58,8 +58,8 @@ class tx_ttproducts_email_div {
 	function send_mail (
 		$toEMail,
 		$subject,
-		&$message,
-		&$html,
+		$message,
+		$html,
 		$fromEMail,
 		$fromName,
 		$attachment=''
@@ -68,7 +68,7 @@ class tx_ttproducts_email_div {
 
 		$typoVersion = tx_div2007_core::getTypoVersion();
 
-		if ($toEMail == '' || $fromEMail == '' || $html == '') {
+		if ($toEMail == '' || $fromEMail == '' || ($html == '' && $message == '')) {
 			return FALSE;
 		}
 
@@ -98,13 +98,6 @@ class tx_ttproducts_email_div {
 				->setSubject($subject)
 				->setBody($html, 'text/html', $GLOBALS['TSFE']->renderCharset)
 				->addPart($message, 'text/plain', $GLOBALS['TSFE']->renderCharset);
-
-/*
-			if ($html != '') {
-				$mailMessage->setBody($html, 'text/html', 'iso-8859-1');
-			} else if ($message != '') {
-				$mailMessage->addPart($message, 'text/plain', 'iso-8859-1');
-			}*/
 
 			if (isset($attachment)) {
 				if (is_array($attachment)) {

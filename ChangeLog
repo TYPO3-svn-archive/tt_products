@@ -1,3 +1,9 @@
+2015-01-31 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: send plain text emails
+	* do not automatically change the delivery fields with plugins outside of the basket
+	* support for the extension db_list 0.2.0 for multiple texts and its better translation backend
+	* db_list 0.2.0 makes texts translatable at the alternative product level
+
 2014-11-27 Franz Holzinger <franz@ttproducts.de>
 	* restore the foreign languages in the locallang.xml files - see issue #60678
 	* bug fix: do not send an email if one of the email addresses is empty

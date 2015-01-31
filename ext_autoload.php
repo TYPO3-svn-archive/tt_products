@@ -16,6 +16,7 @@ return array(
 	'tx_ttproducts_ajax' => $extensionPath . 'eid/class.tx_ttproducts_ajax.php',
 	'tx_ttproducts_db' => $extensionPath . 'eid/class.tx_ttproducts_db.php',
 	'tx_ttproducts_cms' => $extensionPath . 'hooks/class.tx_ttproducts_cms.php',
+	'tx_ttproducts_hooks_be' => $extensionPath . 'hooks/class.tx_ttproducts_hooks_be.php',
 	'tx_ttproducts_hooks_fe' => $extensionPath . 'hooks/class.tx_ttproducts_hooks_fe.php',
 	'tx_ttproducts_billdelivery' => $extensionPath . 'lib/class.tx_ttproducts_billdelivery.php',
 	'tx_ttproducts_config' => $extensionPath . 'lib/class.tx_ttproducts_config.php',

@@ -91,6 +91,7 @@ CREATE TABLE tt_products_language (
 	subtitle mediumtext NOT NULL,
 	itemnumber varchar(40) DEFAULT '' NOT NULL,
 	prod_uid int(11) DEFAULT '0' NOT NULL,
+	text_uid int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
 	note2 text NOT NULL,
 	unit varchar(20) DEFAULT '' NOT NULL,
@@ -388,6 +389,9 @@ CREATE TABLE tt_products_texts_language (
 	text_uid int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	note text NOT NULL,
+	parentid int(11) DEFAULT '0' NOT NULL,
+	parenttable varchar(30) DEFAULT '' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );

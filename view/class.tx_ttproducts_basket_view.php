@@ -570,25 +570,6 @@ class tx_ttproducts_basket_view {
 
 			$pid = ( $this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
 
-// 			$tmpLinkParam = $this->urlObj->getLinkParams(
-// 				'',
-// 				array(),
-// 				TRUE,
-// 				TRUE,
-// 				''
-// 			);
-// 			$wrappedSubpartArray['###LINK_BASKET###'] = array(
-// 				'<a href="' . htmlspecialchars(
-// 					$this->pibase->pi_getPageLink(
-// 						$pid,
-// 						'',
-// 						$tmpLinkParam
-// 					)
-// 				) . '">',
-// 				'</a>'
-// 			);
-
-// ANFANG Korrektur
 			$conf = array('useCacheHash' => FALSE);
 			$url = tx_div2007_alpha5::getTypoLink_URL_fh003(
 				$this->pibase->cObj,
@@ -610,7 +591,6 @@ class tx_ttproducts_basket_view {
 			);
 
 			$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'. $htmlUrl .'">','</a>');
-// ENDE Korrektur
 
 			$activityArray = tx_ttproducts_model_activity::getActivityArray();
 			if (is_array($activityArray))	{
@@ -729,8 +709,6 @@ class tx_ttproducts_basket_view {
 			$amountCreditpoints = $TSFE->fe_user->user['tt_products_creditpoints']+$creditpointsGifts;
 			$markerArray['###AMOUNT_CREDITPOINTS###'] = htmlspecialchars($amountCreditpoints);
 
-// #### start
-
 			$pricefactor = doubleval($this->conf['creditpoints.']['priceprod']);
  			$autoCreditpointsTotal = $creditpointsObj->getBasketTotal();
  			$markerArray['###AUTOCREDITPOINTS_TOTAL###'] = number_format($autoCreditpointsTotal, '0');
@@ -741,8 +719,6 @@ class tx_ttproducts_basket_view {
 			// maximum1 amount of creditpoint to change is amount on account minus amount already spended in the credit-shop
 
 			$creditpoints = $autoCreditpointsTotal + $sum_pricecreditpoints_total_totunits * tx_ttproducts_creditpoints_div::getCreditPoints($sum_pricecreditpoints_total_totunits, $this->conf['creditpoints.']);
-
-// #### ENDE
 
 			// maximum1 amount of creditpoint to change is amount on account minus amount already spended in the credit-shop
 			$max1_creditpoints = $TSFE->fe_user->user['tt_products_creditpoints'] + $creditpointsGifts;

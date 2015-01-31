@@ -126,7 +126,6 @@ class tx_ttproducts_activity_finalize {
 		$recipientsArray['customer'][] = $customerEmail;
 		$recipientsArray['shop'] = $tablesObj->get('tt_products_cat')->getEmail($basket->itemArray);
 		$recipientsArray['shop'][] = $this->conf['orderEmail_to'];
-### START
 
 		if (isset($this->conf['orderEmail.']) && is_array($this->conf['orderEmail.']))	{
 			foreach ($this->conf['orderEmail.'] as $k => $emailConfig) {
@@ -154,7 +153,6 @@ class tx_ttproducts_activity_finalize {
 				}
 			}
 		}
-### ENDE
 
 		$markerArray = array_merge($mainMarkerArray,$markerObj->getGlobalMarkerArray());
 		$markerArray['###CUSTOMER_RECIPIENTS_EMAIL###'] = implode(',', $recipientsArray['customer']);
@@ -399,26 +397,26 @@ class tx_ttproducts_activity_finalize {
 						);
 					}
 				}
-### START
+
 				foreach ($recipientsArray as $type => $recipientTypeArray) {
 					if ($type != 'customer' && $type != 'radio1' && is_array($recipientTypeArray))	{
 						foreach ($recipientTypeArray as $key => $recipient) {
-
-							// $headers variable removed everywhere!
-							tx_ttproducts_email_div::send_mail(
-								$recipient,
-								$apostrophe . $subjectArray[$type] . $apostrophe,
-								$plainMessageArray[$type],
-								$HTMLmailContent,
-								$fromArray[$type]['email'],
-								$fromArray[$type]['name'],
-								$addcsv,
-								$this->conf['orderEmail_bcc']
-							);
+							if (isset($subjectArray[$type])) {
+								// $headers variable removed everywhere!
+								tx_ttproducts_email_div::send_mail(
+									$recipient,
+									$apostrophe . $subjectArray[$type] . $apostrophe,
+									$plainMessageArray[$type],
+									$HTMLmailContent,
+									$fromArray[$type]['email'],
+									$fromArray[$type]['name'],
+									$addcsv,
+									$this->conf['orderEmail_bcc']
+								);
+							}
 						}
 					}
 				}
-### ENDE
 
 				if ($plainMessageArray['radio1'] && is_array($recipientsArray['radio1']))	{
 					foreach ($recipientsArray['radio1'] as $key => $recipient) {

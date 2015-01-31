@@ -73,6 +73,7 @@
 			<label index="tt_products_language">Products (alternative language)</label>
 			<label index="tt_products_language.prod_uid">Product record</label>
 			<label index="tt_products_language.sys_language_uid">Language</label>
+			<label index="tt_products_language.text_uid">Additional texts:</label>
 			<label index="tt_products_language.datasheet">Datasheet</label>
 			<label index="tt_products_cat">Product category</label>
 			<label index="tt_products_cat.email_uid">Confirmation email</label>
@@ -91,6 +92,8 @@
 			<label index="tt_products_texts_language">Product texts (alternative language)</label>
 			<label index="tt_products_texts_language.text_uid">Parent text</label>
 			<label index="tt_products_texts_language.sys_language_uid">Language</label>
+			<label index="tt_products_texts_language.parentid">Parent product (alternative language)</label>
+			<label index="tt_products_texts_language.parenttable">Parent table</label>
 			<label index="tt_products_mm_graduated_price">Relation products to gradutated prices</label>
 			<label index="tt_products_mm_graduated_price.product_uid">Product using it.</label>
 			<label index="tt_products_mm_graduated_price.graduated_price_uid">Price formula.</label>

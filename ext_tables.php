@@ -297,6 +297,8 @@ if (!$loadTcaAdditions) {
 		'ctrl' => array (
 			'title' => 'LLL:EXT:'.TT_PRODUCTS_EXT.'/locallang_db.xml:tt_products_texts',
 			'label' => 'title',
+			'label_alt' => 'marker',
+			'label_alt_force' => '1',
 			'default_sortby' => 'ORDER BY title',
 			'tstamp' => 'tstamp',
 			'delete' => 'deleted',
@@ -311,6 +313,7 @@ if (!$loadTcaAdditions) {
 	//		'sortby' => 'sorting',
 			'iconfile' => PATH_ttproducts_icon_table_rel.'tt_products_texts.gif',
 			'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
+			'transForeignTable' => 'tt_products_texts_language',
 			'searchFields' => 'title,marker,note',
 		),
 		'feInterface' => array (
@@ -541,7 +544,7 @@ if (!$loadTcaAdditions) {
 	//t3lib_extMgm::addToInsertRecords('tt_products');
 
 	if (TYPO3_MODE=='BE')	{
-		$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = PATH_BE_ttproducts.'class.tx_ttproducts_wizicon.php';
+		$GLOBALS['TBE_MODULES_EXT']['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = PATH_BE_ttproducts.'class.tx_ttproducts_wizicon.php';
 	}
 
 	t3lib_extMgm::addLLrefForTCAdescr('tt_products', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprod.php');

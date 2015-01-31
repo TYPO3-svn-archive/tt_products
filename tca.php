@@ -708,7 +708,7 @@ $TCA['tt_products'] = Array (
 $TCA['tt_products_language'] = Array (
 	'ctrl' => $TCA['tt_products_language']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,prod_uid,title,subtitle,unit,note,note2,datasheet,www'
+		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,prod_uid,title,subtitle,unit,note,note2,text_uid,datasheet,www'
 	),
 	'feInterface' => $TCA['tt_products_language']['feInterface'],
 	'columns' => Array (
@@ -862,6 +862,19 @@ $TCA['tt_products_language'] = Array (
 				'minitems' => '0'
 			)
 		),
+		'text_uid' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_language.text_uid',
+			'config' => Array (
+				'type' => 'inline',
+				'foreign_table' => 'tt_products_texts_language',
+				'foreign_field' => 'parentid',
+				'foreign_table_field' => 'parenttable',
+				'foreign_unique' => 'parentid',
+				'maxitems' => 20,
+				'behaviour' => array('localizationMode' => 'select'), // vorher keep
+			),
+		),
 		'www' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.www',
@@ -890,7 +903,7 @@ $TCA['tt_products_language'] = Array (
 		),
 	),
 	'types' => Array (
-		'1' => Array('showitem' => 'sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, prod_uid,title;;2;;3-3-3, unit, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], image;;;;4-4-4,datasheet')
+		'1' => Array('showitem' => 'sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, prod_uid,title;;2;;3-3-3, unit, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], text_uid;;;;1-1-1, image;;;;4-4-4,datasheet')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime,endtime,fe_group'),
@@ -2060,24 +2073,50 @@ $TCA['tt_products_texts_language'] = Array (
 			),
 			'l10n_mode' => 'prefixLangTitle',
 		),
-		'text_uid' => Array (
+		'text_uid' => array (
 			'exclude' => 0,
-			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXT.'/locallang_db.xml:tt_products_texts_language.text_uid',
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_texts_language.text_uid',
+			'config' => array (
+				'type' => 'select',
+				'allowed' => 'tt_products_texts',
+				'foreign_table' => 'tt_products_texts',
+				'itemsProcFunc' => 'tx_ttproducts_hooks_be->extendedItemList',
+				'foreign_table_where' => 'AND tt_products_texts.pid IN (###CURRENT_PID###,###STORAGE_PID###) ORDER BY tt_products_texts.marker',
+				'size' => 1,
+				'minitems' => 1, // FHO
+				'maxitems' => 1,
+			),
+		),
+		'parentid' => Array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_texts_language.parentid',
 			'config' => Array (
 				'type' => 'group',
 				'internal_type' => 'db',
-				'allowed' => 'tt_products_texts',
-				'foreign_table' => 'tt_products_texts',
-				'foreign_table_where' => 'AND tt_products_texts.pid IN (###CURRENT_PID###,###STORAGE_PID###) ORDER BY tt_products_texts.uid',
+				'allowed' => 'tt_products_language',
+				'prepend_tname' => FALSE,
+				'foreign_table_where' => 'AND tt_products_language.pid IN (###CURRENT_PID###,###STORAGE_PID###) ORDER BY tt_products_language.title',
 				'size' => 1,
 				'minitems' => 0,
 				'maxitems' => 1,
+				'db' => 'passthrough'
 			),
+		),
+		'parenttable' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_texts_language.parenttable',
+			'config' => Array (
+				'type' => 'select',
+				'items' => Array(
+					Array('tt_products_language', 'tt_products_language')
+				),
+				'db' => 'passthrough'
+			)
 		),
 	),
 	'types' => Array (
 		'0' => Array('showitem' => '
-		sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, text_uid;;;;2-2-2, title, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], parenttable')
+		sys_language_uid;;;;1-1-1, l18n_diffsource, hidden;;1, text_uid;;;;2-2-2, title, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], parentid;;;;2-2-2, parenttable')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group')
