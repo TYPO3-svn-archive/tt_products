@@ -5,6 +5,7 @@
 	* allow addRequiredInfoFields also for shipping
 	* use htmlspecialchars for PERSON and DELIVERY markers because of some special characters
 	* bug fix: The fe_users field static_info_country is not NULL and it is only available if agency or sr_feuser_register has been installed.
+	* bug fix: pid_list did wrongly change pids
 
 2015-01-31 Franz Holzinger <franz@ttproducts.de>
 	* bug fix: send plain text emails

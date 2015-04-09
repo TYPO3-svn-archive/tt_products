@@ -127,37 +127,47 @@ class tx_ttproducts_pid_list {
 	 * @param	[type]		$bStore: ...
 	 * @return	[type]		...
 	 */
-	function applyRecursive($recursive, &$pids, $bStore=FALSE)	{
+	public function applyRecursive ($recursive, &$pids, $bStore = FALSE) {
 		global $TSFE;
 
-		if ($pids)	{
-			if ($bStore)	{
-				$this->pid_list = $pids;
-				$pid_list = &$this->pid_list;
-			} else {
-				$pid_list = &$pids;
-			}
+		$cObj = t3lib_div::getUserObj('&tx_div2007_cobj');
+
+		if ($pids != '') {
+			$pid_list = &$pids;
 		} else {
-			$pid_list = &$this->pid_list;
+			$pid_list = $this->pid_list;
 		}
+
 		if (!$pid_list) {
 			$pid_list = $TSFE->id;
 		}
-		if ($recursive)	{		// get pid-list if recursivity is enabled
+
+		if ($recursive) {		// get pid-list if recursivity is enabled
 			$recursive = intval($recursive);
 			$this->recursive = $recursive;
-			$pid_list_arr = explode(',',$pid_list);
-			$pid_list = '';
-			while(list(,$val) = each($pid_list_arr))	{
-				$pid_list .= $val.','.$this->cObj->getTreeList($val,$recursive);
-			}
-			$pid_list = preg_replace('/,$/', '', $pid_list);
 			$pid_list_arr = explode(',', $pid_list);
-			$pid_list_arr = array_unique ($pid_list_arr);
+			$pid_list = '';
+			reset($pid_list_arr);
+			$pidSubArray = array();
+			foreach ($pid_list_arr as $val) {
+				$pidSub = $cObj->getTreeList($val, $recursive);
+				if ($pidSub != '') {
+					$pidSubArray[] = $pidSub;
+				}
+			}
+
+			$pidSubList = implode(',', $pidSubArray);
+			$pidSubList = preg_replace('/,$/', '', $pidSubList);
+			$pidSubArray = explode(',', $pidSubList);
+			$pid_list_arr = array_merge($pid_list_arr, $pidSubArray);
+			$pid_list_arr = array_unique($pid_list_arr);
 			$pid_list = implode(',', $pid_list_arr);
 		}
-	}
 
+		if ($bStore) {
+			$this->pid_list = $pid_list;
+		}
+	}
 }
 
 
