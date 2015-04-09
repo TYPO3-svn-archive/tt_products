@@ -60,6 +60,9 @@ class tx_ttproducts_paymentshipping {
 		$this->priceObj = t3lib_div::getUserObj('tx_ttproducts_field_price');	// new independant price object
 	}
 
+	public function getTypeArray () {
+		return $this->typeArray;
+	}
 
 	/**
 	 * Setting shipping, payment methods
@@ -795,18 +798,22 @@ class tx_ttproducts_paymentshipping {
 		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getAddRequiredInfoFields ()	{
-		$rc = '';
-		$tmp = $this->basket->basketExtra['payment.']['addRequiredInfoFields'];
-		if ($tmp != '')	{
-			$rc = trim($tmp);
+	public function getAddRequiredInfoFields () {
+		$resultArray = array();
+		$typeArray = $this->getTypeArray();
+		foreach ($typeArray as $type) {
+			if (
+				isset($this->basket->basketExtra[$type . '.']) &&
+				is_array($this->basket->basketExtra[$type . '.'])
+			) {
+				$tmp = $this->basket->basketExtra[$type . '.']['addRequiredInfoFields'];
+				if ($tmp != '') {
+					$resultArray[] = trim($tmp);
+				}
+			}
 		}
-		return $rc;
+		$result = implode(',', $resultArray);
+		return $result;
 	}
 
 	function get ($pskey, $setup)	{

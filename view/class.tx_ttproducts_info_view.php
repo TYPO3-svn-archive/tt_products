@@ -388,7 +388,7 @@ class tx_ttproducts_info_view {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$markerArray, $bSelectSalutation)	{
+	function getItemMarkerArray (&$markerArray, $bHtml, $bSelectSalutation)	{
 		global $TCA, $TSFE;
 
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
@@ -403,10 +403,17 @@ class tx_ttproducts_info_view {
 		foreach ($infoFields as $k => $fName) {
 			if (!in_array($fName, $selectInfoFields)) {
 				$fieldMarker = strtoupper($fName);
-				$markerArray['###PERSON_' . $fieldMarker . '###'] =
-					$TSFE->csConv($this->infoArray['billing'][$fName], $TSFE->metaCharset);
-				$markerArray['###DELIVERY_' . $fieldMarker . '###'] =
-					$TSFE->csConv($this->infoArray['delivery'][$fName], $TSFE->metaCharset);
+				if ($bHtml) {
+					$markerArray['###PERSON_' . $fieldMarker . '###'] =
+					htmlspecialchars($this->infoArray['billing'][$fName]);
+					$markerArray['###DELIVERY_' . $fieldMarker . '###'] =
+					htmlspecialchars($this->infoArray['delivery'][$fName]);
+				} else {
+					$markerArray['###PERSON_' . $fieldMarker . '###'] =
+					$this->infoArray['billing'][$fName];
+					$markerArray['###DELIVERY_' . $fieldMarker . '###'] =
+					$this->infoArray['delivery'][$fName];
+				}
 			}
 		}
 
@@ -479,7 +486,6 @@ class tx_ttproducts_info_view {
 				$tableconf = $cnf->getTableConf('address', 'INFO');
 				$orderBy = $tableconf['orderBy'];
 				$addressArray = $addressObj->get('',0,FALSE,'','','',FALSE,'',$orderBy);
-
 				if (isset($this->conf['UIDstore']))	{
 					$uidStoreArray = t3lib_div::trimExplode(',',$this->conf['UIDstore']);
 					if (is_array($uidStoreArray))	{
@@ -501,7 +507,7 @@ class tx_ttproducts_info_view {
 								}
 							}
 						}
-						include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
+// 						include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 						$markerArray['###DELIVERY_STORE_SELECT###'] =
 							tx_ttproducts_form_div::createSelect($this->pibase, $valueArray, 'recs[delivery][store]', $actUidStore);
 

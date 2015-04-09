@@ -90,7 +90,7 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 		$selectInfoFields = $modelObj->getSelectInfoFields();
 
 		if ($bSelect)	{
-			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
+// 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 			foreach ($selectInfoFields as $field) {
 				$tablename = $modelObj->getTCATableFromField($field);
 

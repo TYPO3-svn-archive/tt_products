@@ -1,3 +1,11 @@
+2015-04-09 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: do not show duplicated basket content
+	* add all XML files from tt_products 2.11.0
+	* use htmlspecialchars instead of htmlentities in form generation
+	* allow addRequiredInfoFields also for shipping
+	* use htmlspecialchars for PERSON and DELIVERY markers because of some special characters
+	* bug fix: The fe_users field static_info_country is not NULL and it is only available if agency or sr_feuser_register has been installed.
+
 2015-01-31 Franz Holzinger <franz@ttproducts.de>
 	* bug fix: send plain text emails
 	* do not automatically change the delivery fields with plugins outside of the basket

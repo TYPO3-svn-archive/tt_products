@@ -201,8 +201,15 @@ class tx_ttproducts_activity_finalize {
 					}
 				}
 
-				if ($this->conf['useStaticInfoCountry'])	{
-					$insertFields['static_info_country'] = $address->infoArray['billing']['country_code'];
+				if (
+					t3lib_extMgm::isLoaded('agency') ||
+					t3lib_extMgm::isLoaded('sr_feuser_register')
+				) {
+					if ($this->conf['useStaticInfoCountry'] && isset($address->infoArray['billing']['country_code'])) {
+						$insertFields['static_info_country'] = $address->infoArray['billing']['country_code'];
+					} else {
+						$insertFields['static_info_country'] = '';
+					}
 				}
 
 				if($address->infoArray['billing']['date_of_birth'])	{

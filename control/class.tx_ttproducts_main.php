@@ -463,6 +463,8 @@ class tx_ttproducts_main {
 			);
 			$content .= $this->control->doProcessing($this->codeArray, $this->errorMessage);
 		}
+		$contentBasket = $content;
+		$content = '';
 
 		foreach($this->codeArray as $theCode)	{
 
@@ -592,8 +594,8 @@ class tx_ttproducts_main {
 					if ($this->convertToUserInt()) {
 						return '';
 					}
-					$contentTmp = $content;
-					$content = '';
+					$contentTmp = $contentBasket;
+					$contentBasket = '';
 						// nothing here any more. This work is done in the control processing before
 						// This line is necessary because some activities might have overriden these CODEs
 				break;

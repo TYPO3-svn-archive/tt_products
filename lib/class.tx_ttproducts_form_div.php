@@ -41,6 +41,8 @@ class tx_ttproducts_form_div {
 	function createSelect (&$langObj, &$valueArray, $name, $selectedKey, $bSelectTags=true, $bTranslateText=true, $allowedArray = array(), $type = 'select') {
 		global $TYPO3_DB, $TSFE;
 
+		$flags = ENT_QUOTES;
+
 		if (is_array($valueArray))	{
 			$totaltext = '';
 
@@ -66,8 +68,8 @@ class tx_ttproducts_form_div {
 				}
 
 				if (!count($allowedArray) || in_array($selectKey, $allowedArray))	{
-					$nameText = htmlentities(trim($text),ENT_QUOTES,$TSFE->renderCharset);
-					$valueText = htmlentities($selectKey,ENT_QUOTES,$TSFE->renderCharset);
+					$nameText = trim($text);
+					$valueText = $selectKey;
 					$selectedText = '';
 					if ($selectKey == $selectedKey)	{
 						switch ($type)	{
@@ -81,10 +83,10 @@ class tx_ttproducts_form_div {
 					}
 					switch ($type)	{
 						case 'select':
-							$totaltext .= '<option value="'.$valueText.'"'.$selectedText.'>'.$nameText.'</option>';
+							$totaltext .= '<option value="' . $valueText . '"' . htmlspecialchars($selectedText, $flags) . '>' . $nameText . '</option>';
 							break;
 						case 'radio':
-							$totaltext .= '<input type="radio" name="'.$name.'" value="'.$valueText.'" '.$selectedText.'> '.$nameText;
+							$totaltext .= '<input type="radio" name="' . $name . '" value="' . htmlspecialchars($valueText, $flags) . '" ' . $selectedText . '> ' . $nameText;
 							break;
 					}
 				}

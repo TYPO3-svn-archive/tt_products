@@ -301,9 +301,9 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 					$fieldconfParent['generateImage'] = $tempConf['field.'];
 					$where_clause = $conftable.'.'.$foreignfield .'='. $imageRow[$localfield];
 					$where_clause .= $this->cObj->enableFields($conftable);
-					$res = $TYPO3_DB->exec_SELECTquery('*',$conftable,$where_clause,'',$foreignfield,1);
+					$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*',$conftable,$where_clause,'',$foreignfield,1);
 						// only first found row will be used
-					$imageRow = $TYPO3_DB->sql_fetch_assoc($res);
+					$imageRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 				}
 			}
 

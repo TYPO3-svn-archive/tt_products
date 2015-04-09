@@ -833,7 +833,7 @@ class tx_ttproducts_basket_view {
 				$subpartArray['###FE_USER_SECTION###'] = '';
 			}
 			if (is_object($infoObj))	{
-				$infoObj->getItemMarkerArray ($markerArray, $bSelectSalutation);
+				$infoObj->getItemMarkerArray ($markerArray, $bHtml, $bSelectSalutation);
 			}
 
 			$markerArray['###PRICE_TOTAL_TAX###'] = $priceViewObj->priceFormat($basket->calculatedArray['priceTax']['total']);
@@ -854,7 +854,7 @@ class tx_ttproducts_basket_view {
 				foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['getBasketView'] as $classRef) {
 					$hookObj= t3lib_div::getUserObj($classRef);
 					if (method_exists($hookObj, 'getItemMarkerArrays')) {
-						$hookObj->getItemMarkerArrays($this, $templateCode, $theCode, $markerArray,$subpartArray,$wrappedSubpartArray, $theCode, $mainMarkerArray, $count);
+						$hookObj->getItemMarkerArrays($this, $templateCode, $theCode, $markerArray,$subpartArray, $wrappedSubpartArray, $theCode, $mainMarkerArray, $count);
 					}
 				}
 			}
