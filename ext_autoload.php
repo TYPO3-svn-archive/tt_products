@@ -80,6 +80,8 @@ return array(
 	'tx_ttproducts_field_price' => $extensionPath . 'model/field/class.tx_ttproducts_field_price.php',
 	'tx_ttproducts_field_text' => $extensionPath . 'model/field/class.tx_ttproducts_field_text.php',
 	'tx_ttproducts_field_int' => $extensionPath . 'model/field/interface.tx_ttproducts_field_int.php',
+	'tx_ttproducts_modfunc1' => $extensionPath . 'modfunc1/class.tx_ttproducts_modfunc1.php',
+	'tx_ttproducts_modfunc2' => $extensionPath . 'modfunc2/class.tx_ttproducts_modfunc2.php',
 	'tx_ttproducts_pi1' => $extensionPath . 'pi1/class.tx_ttproducts_pi1.php',
 	'tx_ttproducts_pi1_base' => $extensionPath . 'pi1/class.tx_ttproducts_pi1_base.php',
 	'tx_ttproducts_account_view' => $extensionPath . 'view/class.tx_ttproducts_account_view.php',

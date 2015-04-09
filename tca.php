@@ -36,8 +36,8 @@ if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['where.']) && 
 // ******************************************************************
 // This is the standard TypoScript products table, tt_products
 // ******************************************************************
-$TCA['tt_products'] = Array (
-	'ctrl' => $TCA['tt_products']['ctrl'],
+$GLOBALS['TCA']['tt_products'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,accessory_uid,related_uid,itemnumber,ean,price,price2,creditpoints,graduated_price_uid,note,note2,note_uid,category,address,inStock,tax,weight,usebydate,bulkily,offer,highlight,directcost,color,color2,color3,size,size2,size3,description,gradings,material,quality,additional,unit,unit_factor,www,datasheet,special_preparation,image,hidden,sellstarttime,sellendtime,shipping,shipping2,handling,dam_uid'
 	),
@@ -705,12 +705,12 @@ $TCA['tt_products'] = Array (
 // ******************************************************************
 // This is the language overlay for the products table, tt_products
 // ******************************************************************
-$TCA['tt_products_language'] = Array (
-	'ctrl' => $TCA['tt_products_language']['ctrl'],
+$GLOBALS['TCA']['tt_products_language'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_language']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,prod_uid,title,subtitle,unit,note,note2,text_uid,datasheet,www'
 	),
-	'feInterface' => $TCA['tt_products_language']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_language']['feInterface'],
 	'columns' => Array (
 		'sys_language_uid' => Array (
 			'exclude' => 1,
@@ -821,6 +821,7 @@ $TCA['tt_products_language'] = Array (
 			)
 		),
 		'unit' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXT.'/locallang_db.xml:tt_products.unit',
 			'config' => Array (
 				'type' => 'input',
@@ -830,6 +831,7 @@ $TCA['tt_products_language'] = Array (
 			)
 		),
 		'note' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
@@ -839,6 +841,7 @@ $TCA['tt_products_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note2' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
@@ -858,7 +861,7 @@ $TCA['tt_products_language'] = Array (
 				'uploadfolder' => 'uploads/tx_ttproducts/datasheet',
 				'show_thumbs' => '1',
 				'size' => '1',
-				'maxitems' => '1',
+				'maxitems' => '20',
 				'minitems' => '0'
 			)
 		),
@@ -916,12 +919,12 @@ $TCA['tt_products_language'] = Array (
 // ******************************************************************
 // products to graduated price relation table, tt_products_mm_graduated_price
 // ******************************************************************
-$TCA['tt_products_mm_graduated_price'] = Array (
-	'ctrl' => $TCA['tt_products_mm_graduated_price']['ctrl'],
+$GLOBALS['TCA']['tt_products_mm_graduated_price'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_mm_graduated_price']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'product_uid,graduated_price_uid'
 	),
-	'feInterface' => $TCA['tt_products_mm_graduated_price']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_mm_graduated_price']['feInterface'],
 	'columns' => Array (
 		'product_uid' => Array (
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXT.'/locallang_db.xml:tt_products_mm_graduated_price.product_uid',
@@ -957,12 +960,12 @@ $TCA['tt_products_mm_graduated_price'] = Array (
 // ******************************************************************
 // graduated price calculation table, tt_products_graduated_price
 // ******************************************************************
-$TCA['tt_products_graduated_price'] = Array (
-	'ctrl' => $TCA['tt_products_graduated_price']['ctrl'],
+$GLOBALS['TCA']['tt_products_graduated_price'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_graduated_price']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'title, formula, startamount, note, parentid'
 	),
-	'feInterface' => $TCA['tt_products_graduated_price']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_graduated_price']['feInterface'],
 	'columns' => Array (
 		'hidden' => Array (
 			'exclude' => 1,
@@ -1067,12 +1070,12 @@ $TCA['tt_products_graduated_price'] = Array (
 // ******************************************************************
 // This is the standard TypoScript products category table, tt_products_cat
 // ******************************************************************
-$TCA['tt_products_cat'] = Array (
-	'ctrl' => $TCA['tt_products_cat']['ctrl'],
+$GLOBALS['TCA']['tt_products_cat'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_cat']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title, subtitle, note, note2, image, email_uid'
 	),
-	'feInterface' => $TCA['tt_products_cat']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_cat']['feInterface'],
 	'columns' => Array (
 		'hidden' => Array (
 			'exclude' => 1,
@@ -1226,12 +1229,12 @@ $TCA['tt_products_cat'] = Array (
 // ******************************************************************
 // This is the language overlay for  products category table, tt_products_cat
 // ******************************************************************
-$TCA['tt_products_cat_language'] = Array (
-	'ctrl' => $TCA['tt_products_cat_language']['ctrl'],
+$GLOBALS['TCA']['tt_products_cat_language'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_cat_language']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'sys_language_uid,l18n_diffsource,hidden,starttime,endtime,fe_group,title,subtitle,note,note2,cat_uid'
 	),
-	'feInterface' => $TCA['tt_products_cat_language']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_cat_language']['feInterface'],
 	'columns' => Array (
 		'sys_language_uid' => Array (
 			'exclude' => 1,
@@ -1326,6 +1329,7 @@ $TCA['tt_products_cat_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
@@ -1335,6 +1339,7 @@ $TCA['tt_products_cat_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note2' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
@@ -1371,12 +1376,12 @@ $TCA['tt_products_cat_language'] = Array (
 // ******************************************************************
 // These are the articles for some of the products where variants exist
 // ******************************************************************
-$TCA['tt_products_articles'] = Array (
-	'ctrl' => $TCA['tt_products_articles']['ctrl'],
+$GLOBALS['TCA']['tt_products_articles'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_articles']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,itemnumber,price,price2,weight,inStock,color,color2,color3,size,size2,size3,description,gradings,material,quality,note,note2,image,uid_product'
 	),
-	'feInterface' => $TCA['tt_products_articles']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_articles']['feInterface'],
 	'columns' => Array (
 		'hidden' => Array (
 			'exclude' => 1,
@@ -1488,6 +1493,7 @@ $TCA['tt_products_articles'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note2' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
@@ -1649,12 +1655,12 @@ $TCA['tt_products_articles'] = Array (
 // ******************************************************************
 // This is the language overlay for the articles table, tt_products_articles
 // ******************************************************************
-$TCA['tt_products_articles_language'] = Array (
-	'ctrl' => $TCA['tt_products_articles_language']['ctrl'],
+$GLOBALS['TCA']['tt_products_articles_language'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_articles_language']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,fe_group,article_uid,title,subtitle,note,note2'
 	),
-	'feInterface' => $TCA['tt_products_articles_language']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_articles_language']['feInterface'],
 	'columns' => Array (
 		'sys_language_uid' => Array (
 			'exclude' => 1,
@@ -1755,6 +1761,7 @@ $TCA['tt_products_articles_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note',
 			'config' => Array (
 				'type' => 'text',
@@ -1764,6 +1771,7 @@ $TCA['tt_products_articles_language'] = Array (
 			'l10n_mode' => 'prefixLangTitle',
 		),
 		'note2' => Array (
+			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_products/locallang_db.xml:tt_products.note2',
 			'config' => Array (
 				'type' => 'text',
@@ -1786,12 +1794,12 @@ $TCA['tt_products_articles_language'] = Array (
 // ******************************************************************
 // These are the email addresses which are used for sending notification emails
 // ******************************************************************
-$TCA['tt_products_emails'] = Array (
-	'ctrl' => $TCA['tt_products_emails']['ctrl'],
+$GLOBALS['TCA']['tt_products_emails'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_emails']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'name,email,hidden,starttime,endtime,fe_group'
 	),
-	'feInterface' => $TCA['tt_products_emails']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_emails']['feInterface'],
 	'columns' => Array (
 		'hidden' => Array (
 			'exclude' => 1,
@@ -1876,12 +1884,12 @@ $TCA['tt_products_emails'] = Array (
 // ******************************************************************
 // This is the standard TypoScript products texts table, tt_products_texts
 // ******************************************************************
-$TCA['tt_products_texts'] = Array (
-	'ctrl' => $TCA['tt_products_texts']['ctrl'],
+$GLOBALS['TCA']['tt_products_texts'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_texts']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'hidden,title,marker,note'
 	),
-	'feInterface' => $TCA['tt_products_texts']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_texts']['feInterface'],
 	'columns' => Array (
 		'hidden' => Array (
 			'exclude' => 1,
@@ -1998,12 +2006,12 @@ $TCA['tt_products_texts'] = Array (
 // ******************************************************************
 // This is the language overlay for  products texts table, tt_products_texts
 // ******************************************************************
-$TCA['tt_products_texts_language'] = Array (
-	'ctrl' => $TCA['tt_products_texts_language']['ctrl'],
+$GLOBALS['TCA']['tt_products_texts_language'] = Array (
+	'ctrl' => $GLOBALS['TCA']['tt_products_texts_language']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'sys_language_uid,hidden,starttime,endtime,fe_group,title,marker,note'
 	),
-	'feInterface' => $TCA['tt_products_texts_language']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['tt_products_texts_language']['feInterface'],
 	'columns' => Array (
 		'sys_language_uid' => Array (
 			'exclude' => 1,
@@ -2129,12 +2137,12 @@ $TCA['tt_products_texts_language'] = Array (
 // ******************************************************************
 // These are the bank account data used for orders
 // ******************************************************************
-$TCA['sys_products_accounts'] = Array (
-	'ctrl' => $TCA['sys_products_accounts']['ctrl'],
+$GLOBALS['TCA']['sys_products_accounts'] = Array (
+	'ctrl' => $GLOBALS['TCA']['sys_products_accounts']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'ac_number,owner_name,bic'
 	),
-	'feInterface' => $TCA['sys_products_accounts']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['sys_products_accounts']['feInterface'],
 	'columns' => Array (
 		'ac_number' => Array (
 			'exclude' => 0,
@@ -2178,12 +2186,12 @@ $TCA['sys_products_accounts'] = Array (
 // ******************************************************************
 // These are the credit cards data used for orders
 // ******************************************************************
-$TCA['sys_products_cards'] = Array (
-	'ctrl' => $TCA['sys_products_cards']['ctrl'],
+$GLOBALS['TCA']['sys_products_cards'] = Array (
+	'ctrl' => $GLOBALS['TCA']['sys_products_cards']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'cc_number,owner_name,cc_type,cvv2,endtime'
 	),
-	'feInterface' => $TCA['sys_products_cards']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['sys_products_cards']['feInterface'],
 	'columns' => Array (
 		'endtime' => Array (
 			'exclude' => 1,
@@ -2260,12 +2268,12 @@ $TCA['sys_products_cards'] = Array (
 // *****************************************************************
 // These are the orders
 // ******************************************************************
-$TCA['sys_products_orders'] = Array (
-	'ctrl' => $TCA['sys_products_orders']['ctrl'],
+$GLOBALS['TCA']['sys_products_orders'] = Array (
+	'ctrl' => $GLOBALS['TCA']['sys_products_orders']['ctrl'],
 	'interface' => Array (
 		'showRecordFieldList' => 'hidden,name,first_name,last_name,salutation,address,zip,city,country,telephone,email,fax,business_partner,organisation_form,payment,shipping,amount,email_notify,tracking_code,status,agb,feusers_id,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,giftservice,cc_uid,ac_uid,date_of_birth,radio1'
 	),
-	'feInterface' => $TCA['sys_products_orders']['feInterface'],
+	'feInterface' => $GLOBALS['TCA']['sys_products_orders']['feInterface'],
 	'columns' => Array (
 		'hidden' => Array (
 			'exclude' => 1,
@@ -2690,18 +2698,18 @@ if (isset($excludeArray) && is_array($excludeArray)) {
 		$excludeFieldArray = t3lib_div::trimExplode(',', $excludeFields, 1);
 
 		if (
-			isset($TCA[$tablename]) &&
+			isset($GLOBALS['TCA'][$tablename]) &&
 			isset($excludeFieldArray) &&
 			is_array($excludeFieldArray) &&
 			count($excludeFieldArray)
 		) {
-			$tmpArray = explode(',', $TCA[$tablename]['interface']['showRecordFieldList']);
+			$tmpArray = explode(',', $GLOBALS['TCA'][$tablename]['interface']['showRecordFieldList']);
 			$tmpArray = array_diff($tmpArray, $excludeFieldArray);
-			$TCA[$tablename]['interface']['showRecordFieldList'] = implode(',', $tmpArray);
+			$GLOBALS['TCA'][$tablename]['interface']['showRecordFieldList'] = implode(',', $tmpArray);
 
 			foreach ($excludeFieldArray as $excludeField) {
-				if (isset($TCA[$tablename]['columns'][$excludeField])) {
-					unset($TCA[$tablename]['columns'][$excludeField]);
+				if (isset($GLOBALS['TCA'][$tablename]['columns'][$excludeField])) {
+					unset($GLOBALS['TCA'][$tablename]['columns'][$excludeField]);
 				}
 			}
 
@@ -2709,10 +2717,10 @@ if (isset($excludeArray) && is_array($excludeArray)) {
 
 			foreach ($conigTypeArray as $configType) {
 				if (
-					isset($TCA[$tablename][$configType])
-					&& is_array($TCA[$tablename][$configType])
+					isset($GLOBALS['TCA'][$tablename][$configType])
+					&& is_array($GLOBALS['TCA'][$tablename][$configType])
 				) {
-					foreach ($TCA[$tablename][$configType] as $k => $config) {
+					foreach ($GLOBALS['TCA'][$tablename][$configType] as $k => $config) {
 						if (isset($config) && is_array($config)) {
 							$showItemArray = explode(',', $config['showitem']);
 							if (isset($showItemArray) && is_array($showItemArray)) {
@@ -2730,7 +2738,7 @@ if (isset($excludeArray) && is_array($excludeArray)) {
 										}
 									}
 								}
-								$TCA[$tablename][$configType][$k]['showitem'] = implode(',', $showItemArray);
+								$GLOBALS['TCA'][$tablename][$configType][$k]['showitem'] = implode(',', $showItemArray);
 							}
 						}
 					}
