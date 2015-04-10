@@ -1,3 +1,6 @@
+2015-04-10 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: use the correct flexform text references
+
 2015-04-09 Franz Holzinger <franz@ttproducts.de>
 	* bug fix: do not show duplicated basket content
 	* add all XML files from tt_products 2.11.0
