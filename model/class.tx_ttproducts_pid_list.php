@@ -128,8 +128,6 @@ class tx_ttproducts_pid_list {
 	 * @return	[type]		...
 	 */
 	public function applyRecursive ($recursive, &$pids, $bStore = FALSE) {
-		global $TSFE;
-
 		$cObj = t3lib_div::getUserObj('&tx_div2007_cobj');
 
 		if ($pids != '') {
@@ -139,16 +137,15 @@ class tx_ttproducts_pid_list {
 		}
 
 		if (!$pid_list) {
-			$pid_list = $TSFE->id;
+			$pid_list = $GLOBALS['TSFE']->id;
 		}
 
 		if ($recursive) {		// get pid-list if recursivity is enabled
 			$recursive = intval($recursive);
 			$this->recursive = $recursive;
-			$pid_list_arr = explode(',', $pid_list);
-			$pid_list = '';
-			reset($pid_list_arr);
 			$pidSubArray = array();
+
+			$pid_list_arr = explode(',', $pid_list);
 			foreach ($pid_list_arr as $val) {
 				$pidSub = $cObj->getTreeList($val, $recursive);
 				if ($pidSub != '') {
@@ -156,12 +153,13 @@ class tx_ttproducts_pid_list {
 				}
 			}
 
-			$pidSubList = implode(',', $pidSubArray);
-			$pidSubList = preg_replace('/,$/', '', $pidSubList);
-			$pidSubArray = explode(',', $pidSubList);
-			$pid_list_arr = array_merge($pid_list_arr, $pidSubArray);
-			$pid_list_arr = array_unique($pid_list_arr);
+			$pid_list .= ',' . implode(',', $pidSubArray);
+			$pid_list_arr = explode(',', $pid_list);
+			$flippedArray = array_flip($pid_list_arr);
+			$pid_list_arr = array_keys($flippedArray);
+			sort($pid_list_arr, SORT_NUMERIC);
 			$pid_list = implode(',', $pid_list_arr);
+			$pid_list = preg_replace('/^,/', '', $pid_list);
 		}
 
 		if ($bStore) {
