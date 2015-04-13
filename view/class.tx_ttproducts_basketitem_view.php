@@ -155,9 +155,7 @@ class tx_ttproducts_basketitem_view {
 					$variantRow = $row[$field];
 					$prodTmpRow = explode(';', $variantRow);
 
-					if ($bSelect && $variantRow && $prodTmpRow[0])	{
-// 						include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-
+					if ($bSelect && $bSelectableArray[$k] && $variantRow && $prodTmpRow[0]) {
 						$prodTranslatedRow = $prodTmpRow;
 						$viewTable->getTableObj()->substituteMarkerArray($prodTranslatedRow);
 						$text = tx_ttproducts_form_div::createSelect(
@@ -177,7 +175,7 @@ class tx_ttproducts_basketitem_view {
 					$markerArray['###FIELD_'.$fieldMarker.'_VALUE###'] = $row[$field];
 					$markerArray['###FIELD_'.$fieldMarker.'_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
 
-					// ###PRODUCT_SIZE_FUNCTION### +++
+					// ###PRODUCT_SIZE_FUNCTION###
 					$markerKey = '###'.$viewTable->marker.'_'.$fieldMarker.'###';
 					$markerArray[$markerKey] = $text;
 					$markerKey = '###'.$viewTable->marker.'_'.$fieldMarker.'_FUNCTION1###';
