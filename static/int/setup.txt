@@ -1,0 +1,18 @@
+##
+## @package TYPO3
+## @subpackage tt_products
+## @version $Id$
+##
+
+## Includes tt_products as a TYPO3 extension:
+includeLibs.tx_ttproducts_pi_int = EXT:tt_products/pi_int/class.tx_ttproducts_pi_int.php
+
+plugin.tx_ttproducts_pi_int = USER_INT
+plugin.tx_ttproducts_pi_int {
+  userFunc = tx_ttproducts_pi_int->main
+  no_cache = 0
+
+  basket.view {
+      showAmount =
+  }
+}
