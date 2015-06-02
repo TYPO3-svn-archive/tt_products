@@ -541,11 +541,18 @@ class tx_ttproducts_basket_view {
 					}
 
 					// Substitute
-					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($t['item'],$markerArray,$subpartArray,$wrappedSubpartArray);
-
 					$feUsersViewObj->getModelObj()->setCondition($row, $funcTablename);
-					$feUsersViewObj->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray,$funcTablename);
-					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached($tempContent,$markerArray,$subpartArray,$wrappedSubpartArray);
+					$feUsersViewObj->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray, $funcTablename);
+					$tempContent = $this->pibase->cObj->substituteMarkerArray(
+						$t['item'],
+						$markerArray
+					);
+					$tempContent = $this->pibase->cObj->substituteMarkerArrayCached(
+						$tempContent,
+						array(),
+						$subpartArray,
+						$wrappedSubpartArray
+					);
 
 					$itemsOut .= $tempContent;
 				}
@@ -864,13 +871,18 @@ class tx_ttproducts_basket_view {
 			$feUsersViewObj->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray, $funcTablename, $bUseBackPid);
 				// substitute the main subpart with the rendered content.
 
-			$out =
+			$tempContent =
 				$this->pibase->cObj->substituteMarkerArrayCached(
 					$frameWork,
-					$markerArray,
+					array(),
 					$subpartArray,
 					$wrappedSubpartArray
 				);
+
+			$out = $this->pibase->cObj->substituteMarkerArray(
+				$tempContent,
+				$markerArray
+			);
 		}
 
 		return $out;

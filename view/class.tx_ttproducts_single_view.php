@@ -192,7 +192,7 @@ class tx_ttproducts_single_view {
 			if (!$itemFrameWork) {
 				$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');
 				$error_code[0] = 'no_subtemplate';
-				$error_code[1] = $itemFrameTemplate;
+				$error_code[1] = '###' . $subPartMarker . '###';
 				$error_code[2] = $mainObj->templateFile;
 				return '';
 			}

@@ -131,6 +131,7 @@ class tx_ttproducts_main {
 		$this->config = &$config;
 		$this->piVars = &$pibase->piVars;
 		$config['LLkey'] = $pibase->LLkey;
+		$this->tt_product_single = array();
 
 			// basket
 		$this->basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
@@ -734,7 +735,6 @@ class tx_ttproducts_main {
 					$fileName = 'EXT:'.TT_PRODUCTS_EXT.'/template/products_help.tmpl';
 					$helpTemplate = $this->cObj->fileResource($fileName);
 					$content .= tx_div2007_alpha5::displayHelpPage_fh003($langObj, $this->cObj, $helpTemplate, TT_PRODUCTS_EXT, $this->errorMessage, $theCode);
-
 					unset($this->errorMessage);
 					break; // while
 			} else {

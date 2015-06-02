@@ -238,7 +238,7 @@ abstract class tx_ttproducts_catlist_view_base {
 							$categoryTable->get($cat, $this->pidListObj->getPidlist(),TRUE,'','','',FALSE,'',$orderBy);	// read all categories
 
 							if ($depth && !$tableConf['onlyChildsOfCurrent'])	{
-								$subChildArray = $categoryTable->getChildCategoryArray ($cat);
+								$subChildArray = $categoryTable->getChildCategoryArray($cat);
 								foreach ($subChildArray as $k2 => $subCat)	{
 									$categoryTable->get($subCat, $this->pidListObj->getPidlist());	// read the sub categories
 								}

@@ -241,7 +241,7 @@ abstract class tx_ttproducts_table_base_view	{
 
 				if (!$bSkip) {
 					$tableName = $this->conf['table.'][$functablename];
-					$fieldConf = $TCA[$tableName]['columns'][$field];
+					$fieldConf = $GLOBALS['TCA'][$tableName]['columns'][$field];
 					if (is_array($fieldConf))	{
 						if ($fieldConf['config']['eval'] == 'date')	{
 							$value = $this->cObj->stdWrap($value,$this->conf['usebyDate_stdWrap.']);

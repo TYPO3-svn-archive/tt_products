@@ -1,7 +1,12 @@
+2015-06-02 Franz Holzinger <franz@ttproducts.de>
+	* workaround for bug #255931: big marker arrays lead to regular expression error in TYPO3 Cache
+	* bug fix: noDiscountPriceNoTax must consider TAXincluded to calculate ###PRICE_DISCOUNT_GOODSTOTAL_TAX###
+	* support for TYPO3 7.2
+
 2015-04-13 Franz Holzinger <franz@ttproducts.de>
 	* bug fix: selectSize = 0 and other variants must not show a select box
 
-	2015-04-11 Franz Holzinger <franz@ttproducts.de>
+2015-04-11 Franz Holzinger <franz@ttproducts.de>
 	* bug fix: pid_list did add a wrong comma at the end
 
 2015-04-10 Franz Holzinger <franz@ttproducts.de>

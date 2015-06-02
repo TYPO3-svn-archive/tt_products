@@ -677,8 +677,8 @@ class tx_ttproducts_basket {
 					$this->calculatedArray['categoryPriceNoTax']['goodstotal'][$row['category']]+= $this->itemArray[$sort][$k1]['totalNoTax'];
 					$this->calculatedArray['price2NoTax']['goodstotal'] += $price2NoTax * $count;
 
-					$this->calculatedArray['noDiscountPriceTax']['goodstotal']  += $priceObj->getPrice($row['price'] * $actItem['count'], TRUE, $this->conf['TAXpercentage']);
-					$this->calculatedArray['noDiscountPriceNoTax']['goodstotal'] += $priceObj->getPrice($row['price'] * $actItem['count'], FALSE, $this->conf['TAXpercentage']);
+					$this->calculatedArray['noDiscountPriceTax']['goodstotal']  += $priceObj->getPrice($row['price'] * $actItem['count'], TRUE, $this->conf['TAXpercentage'], $this->conf['TAXincluded']);
+					$this->calculatedArray['noDiscountPriceNoTax']['goodstotal'] += $priceObj->getPrice($row['price'] * $actItem['count'], FALSE, $this->conf['TAXpercentage'], $this->conf['TAXincluded']);
 
 					if ($this->conf['TAXmode'] == '1')	{
 

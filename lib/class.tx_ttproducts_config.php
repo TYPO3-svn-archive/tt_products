@@ -94,7 +94,12 @@ class tx_ttproducts_config {
 				if ($theCode &&
 					is_array($this->conf[$type . '.'][$tablename . '.'][$theCode . '.'])) {
 					$tempConf = $this->conf[$type . '.'][$tablename . '.'][$theCode . '.'];
-					$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
+					$className = '\\TYPO3\\CMS\\Core\\Utility\\ArrayUtility';
+					if (class_exists($className)) {
+						call_user_func($className . '::mergeRecursiveWithOverrule', $specialConf, $tempConf);
+					} else {
+						$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
+					}
 				}
 				if ($specialConf['orderBy'] == '{$plugin.'.TT_PRODUCTS_EXT.'.orderBy}') {
 					$specialConf['orderBy'] = '';
@@ -106,7 +111,12 @@ class tx_ttproducts_config {
 				if ($theCode &&
 					is_array($this->conf[$type . '.'][$theCode . '.'])) {
 					$tempConf = $this->conf[$type . '.'][$theCode . '.'];
-					$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
+					$className = '\\TYPO3\\CMS\\Core\\Utility\\ArrayUtility';
+					if (class_exists($className)) {
+						call_user_func($className . '::mergeRecursiveWithOverrule', $specialConf, $tempConf);
+					} else {
+						$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
+					}
 				}
 			}
 		}

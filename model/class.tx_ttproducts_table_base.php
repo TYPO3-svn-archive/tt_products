@@ -124,6 +124,7 @@ abstract class tx_ttproducts_table_base	{
 	function get ($uid = '0', $pid = 0, $bStore = TRUE, $where_clause = '', $limit = '', $fields = '', $bCount = FALSE, $groupBy = '', $orderBy = '') {
 		global $TYPO3_DB;
 
+		$rc = FALSE;
 		$tableObj = $this->getTableObj();
 		$alias = $this->getAlias() . $aliasPostfix;
 
@@ -203,7 +204,7 @@ abstract class tx_ttproducts_table_base	{
 					$rc = current ($rc);
 				}
 
-				if ($bCount)	{
+				if ($bCount && is_array($rc[0])) {
 					reset($rc[0]);
 					$rc = intval(current($rc[0]));
 				}
