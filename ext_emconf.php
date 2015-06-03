@@ -34,7 +34,6 @@ $EM_CONF[$_EXTKEY] = array(
 	'constraints' => array(
 		'depends' => array(
 			'cms' => '',
-			'compatibility6' => '',
 			'div2007' => '1.1.5-0.0.0',
 			'php' => '5.1.2-5.6.99',
 			'table' => '0.3.0-0.0.0',
@@ -47,6 +46,7 @@ $EM_CONF[$_EXTKEY] = array(
 			'c3bi_cookie_at_login' => '',
 		),
 		'suggests' => array(
+			'compatibility6' => '',
 		),
 	),
 );
