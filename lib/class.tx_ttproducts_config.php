@@ -87,36 +87,31 @@ class tx_ttproducts_config {
 
 		if (is_array($this->conf[$type . '.'])) {
 
-			if ($tablename != '' && is_array($this->conf[$type . '.'][$tablename . '.'])) {
-				if (is_array($this->conf[$type . '.'][$tablename . '.']['ALL.'])) {
+			if ($tablename != '' && is_array($this->conf[$type . '.'][$tablename . '.'])
+				) {
+				if (is_array($this->conf[$type . '.'][$tablename . '.']['ALL.'])
+				) {
 					$specialConf = $this->conf[$type . '.'][$tablename . '.']['ALL.'];
 				}
 				if ($theCode &&
-					is_array($this->conf[$type . '.'][$tablename . '.'][$theCode . '.'])) {
+					is_array($this->conf[$type . '.'][$tablename . '.'][$theCode . '.'])
+				) {
 					$tempConf = $this->conf[$type . '.'][$tablename . '.'][$theCode . '.'];
-					$className = '\\TYPO3\\CMS\\Core\\Utility\\ArrayUtility';
-					if (class_exists($className)) {
-						call_user_func($className . '::mergeRecursiveWithOverrule', $specialConf, $tempConf);
-					} else {
-						$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
-					}
+					tx_div2007_core::mergeRecursiveWithOverrule($specialConf, $tempConf);
 				}
 				if ($specialConf['orderBy'] == '{$plugin.'.TT_PRODUCTS_EXT.'.orderBy}') {
 					$specialConf['orderBy'] = '';
 				}
 			} else {
-				if (is_array($this->conf[$type . '.']['ALL.'])) {
+				if (is_array($this->conf[$type . '.']['ALL.'])
+				) {
 					$specialConf = $this->conf[$type . '.']['ALL.'];
 				}
 				if ($theCode &&
-					is_array($this->conf[$type . '.'][$theCode . '.'])) {
+					is_array($this->conf[$type . '.'][$theCode . '.'])
+				) {
 					$tempConf = $this->conf[$type . '.'][$theCode . '.'];
-					$className = '\\TYPO3\\CMS\\Core\\Utility\\ArrayUtility';
-					if (class_exists($className)) {
-						call_user_func($className . '::mergeRecursiveWithOverrule', $specialConf, $tempConf);
-					} else {
-						$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
-					}
+					tx_div2007_core::mergeRecursiveWithOverrule($specialConf, $tempConf);
 				}
 			}
 		}

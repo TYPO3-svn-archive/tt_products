@@ -257,6 +257,7 @@ class tx_ttproducts_info_view {
 
 		if ($bMissingField || $this->overwriteMode && !$this->bDeliveryAddress) {
 			$fieldArray = t3lib_div::trimExplode(',',$this->feuserfields);
+			$address = trim($this->infoArray['delivery']['address']);
 
 			foreach($fieldArray as $k => $fName) {
 				if (
@@ -265,7 +266,7 @@ class tx_ttproducts_info_view {
 						$this->infoArray['delivery'][$fName] == '' ||
 						(
 							$this->infoArray['delivery'][$fName] == '0' &&
-							!trim($this->infoArray['delivery']['address'])
+							!$address
 						)
 					)
 				) {

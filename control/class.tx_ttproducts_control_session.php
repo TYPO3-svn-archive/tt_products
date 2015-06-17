@@ -109,8 +109,7 @@ class tx_ttproducts_control_session {
 				}
 			}
 
-			$allSessionData[$extKey] =
-				t3lib_div::array_merge_recursive_overrule($allSessionData[$extKey], $data);
+			tx_div2007_core::mergeRecursiveWithOverrule($allSessionData[$extKey], $data);
 		} else {
 			$allSessionData[$extKey] = $data;
 		}

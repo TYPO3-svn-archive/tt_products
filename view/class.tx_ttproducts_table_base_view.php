@@ -110,11 +110,19 @@ abstract class tx_ttproducts_table_base_view	{
 	public function &getObj ($className)	{
 		$classNameView = $className.'_view';
 
-		include_once (PATH_BE_ttproducts.'view/field/class.'.$classNameView.'.php');
+// 		include_once (PATH_BE_ttproducts.'view/field/class.'.$classNameView.'.php');
 		$fieldViewObj = t3lib_div::getUserObj('&'.$classNameView);	// fetch and store it as persistent object
+		if (!is_object($fieldViewObj)) {
+			throw new RuntimeException('Error in tt_products: The class "' . $classNameView . '" is not found.', 50001);
+		}
+
 		if ($fieldViewObj->needsInit())	{
-			include_once (PATH_BE_ttproducts.'model/field/class.'.$className.'.php');
+// 			include_once (PATH_BE_ttproducts.'model/field/class.'.$className.'.php');
 			$fieldObj = t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
+			if (!is_object($fieldObj)) {
+				throw new RuntimeException('Error in tt_products: The class "' . $className . '" is not found.', 50002);
+			}
+
 			if ($fieldObj->needsInit())	{
 				$fieldObj->init($this->cObj);
 			}

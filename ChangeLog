@@ -1,3 +1,7 @@
+2015-06-17 Franz Holzinger <franz@ttproducts.de>
+	* bugfix: the bill address has not been fully copied into the empty delivery address, only until the address field
+	* bugfix to tt_products 2.7.18: the call with the classname fails in PHP because the first array parameter in call_user_func($className ::mergeRecursiveWithOverrule ...) cannot become a reference but only a value
+
 2015-06-02 Franz Holzinger <franz@ttproducts.de>
 	* workaround for bug #255931: big marker arrays lead to regular expression error in TYPO3 Cache
 	* bug fix: noDiscountPriceNoTax must consider TAXincluded to calculate ###PRICE_DISCOUNT_GOODSTOTAL_TAX###
