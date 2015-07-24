@@ -1,3 +1,8 @@
+2015-07-24 Franz Holzinger <franz@ttproducts.de>
+	* bugfix: never store any product amount with the basket overview
+	* bugfix: ask uid=LAST_INSERT_ID to get the order uid from sys_products_orders
+	* tested under TYPO3 7.4.0 alpha
+
 2015-06-17 Franz Holzinger <franz@ttproducts.de>
 	* bugfix: the bill address has not been fully copied into the empty delivery address, only until the address field
 	* bugfix to tt_products 2.7.18: the call with the classname fails in PHP because the first array parameter in call_user_func($className ::mergeRecursiveWithOverrule ...) cannot become a reference but only a value

@@ -98,9 +98,20 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 				$insertFields['uid'] = intval($advanceUid);
 			}
 
-
-		$TYPO3_DB->exec_INSERTquery('sys_products_orders', $insertFields);
-			$newId = $TYPO3_DB->sql_insert_id();
+			$TYPO3_DB->exec_INSERTquery('sys_products_orders', $insertFields);
+			if (get_class($TYPO3_DB->getDatabaseHandle()) == 'mysqli') {
+				$rowArray = $TYPO3_DB->exec_SELECTgetRows('uid', 'sys_products_orders', 'uid=LAST_INSERT_ID()', '');
+				if (
+					isset($rowArray) &&
+					is_array($rowArray) &&
+					isset($rowArray['0']) &&
+					is_array($rowArray['0'])
+				) {
+					$newId = $rowArray['0']['uid'];
+				}
+			} else {
+				$newId = $TYPO3_DB->sql_insert_id();
+			}
 		}
 
 		return $newId;

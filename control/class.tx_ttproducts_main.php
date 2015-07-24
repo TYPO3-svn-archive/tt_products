@@ -426,7 +426,10 @@ class tx_ttproducts_main {
 			$updateMode = 0;
 		}
 
-		if (isset($this->conf['basket.']) && $this->conf['basket.']['store'] == '0' || count($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW' && !$this->conf['basket.']['store'])	{
+		if (
+			isset($this->conf['basket.']) && $this->conf['basket.']['store'] == '0' ||
+			count($this->codeArray) == 1 && $this->codeArray[0] == 'OVERVIEW'
+		) {
 			$bStoreBasket = FALSE;
 		}
 

@@ -283,11 +283,14 @@ class tx_ttproducts_paymentshipping {
 		$markerArray['###CHECKED###'] = ($value==implode('-',$activeArray) ? ' checked="checked"':'');
 		$markerArray['###TITLE###'] = $row['title'];
 
-		$imageCode = $this->cObj->IMAGE($row['image.']);
-
-		if ($theCode == 'EMAIL') {
-			tx_div2007_alpha5::fixImageCodeAbsRefPrefix($imageCode);
+		$imageCode = '';
+		if (isset($row['image.'])) {
+			$imageCode = $this->cObj->IMAGE($row['image.']);
+			if ($theCode == 'EMAIL') {
+				tx_div2007_alpha5::fixImageCodeAbsRefPrefix($imageCode);
+			}
 		}
+
 		$markerArray['###IMAGE###'] = $imageCode;
 	}
 
