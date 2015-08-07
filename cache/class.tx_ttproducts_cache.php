@@ -62,7 +62,7 @@ class tx_ttproducts_cache {
 		* @return void
 		*/
 	protected function initializeCache () {
-		t3lib_cache::initializeCachingFramework();
+		tx_div2007_core::initializeCachingFramework();
 		$typo3CacheManager = '';
 
 		try {
