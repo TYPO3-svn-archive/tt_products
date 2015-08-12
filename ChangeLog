@@ -1,3 +1,9 @@
+2015-08-12 Franz Holzinger <franz@ttproducts.de>
+	* bugfix for price taxrate markers: the ###PRICE_TAXRATE_GOODSTOTAL2### must only contain the sum of the products.
+	* new marker ###PRICE_TAXRATE_TOTAL2### for the total sum of products, shipping, payment and handling costs
+	* new marker ###PRICE_TAXRATE_GOODSTOTAL_ONLY_TAX1### for the tax value which considers only the products
+	* workaround for bug #44270 in product single view
+
 2015-07-24 Franz Holzinger <franz@ttproducts.de>
 	* bugfix: never store any product amount with the basket overview
 	* bugfix: ask uid=LAST_INSERT_ID to get the order uid from sys_products_orders

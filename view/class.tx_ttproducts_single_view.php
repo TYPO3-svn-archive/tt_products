@@ -770,6 +770,8 @@ class tx_ttproducts_single_view {
 			$this->javaScriptMarker->getMarkerArray($jsMarkerArray, $markerArray);
 			$markerArray = array_merge($categoryMarkerArray, $jsMarkerArray, $markerArray);
 			$markerArray['###HIDDENFIELDS###'] = $hiddenText; // TODO
+			$markerArray = $markerObj->reduceMarkerArray($itemFrameWork, $markerArray);
+
 				// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($itemFrameWork, $markerArray, $subpartArray, $wrappedSubpartArray);
 

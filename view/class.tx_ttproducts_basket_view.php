@@ -85,9 +85,15 @@ class tx_ttproducts_basket_view {
 				$markerArray['###PRICE_TAXRATE_NAME'.($k+1).'###'] = $label;
 				$markerArray['###PRICE_TAXRATE_TAX'.($k+1).'###'] = $taxrate;
 				$label = $priceViewObj->priceFormat($basket->calculatedArray['priceNoTax']['sametaxtotal'][$taxstr]);
-				$markerArray['###PRICE_TAXRATE_GOODSTOTAL'.($k+1).'###'] = $label;
+				$markerArray['###PRICE_TAXRATE_TOTAL' . ($k + 1) . '###'] = $label;
+				$label = $priceViewObj->priceFormat($basket->calculatedArray['priceNoTax']['goodssametaxtotal'][$taxstr]);
+				$markerArray['###PRICE_TAXRATE_GOODSTOTAL' . ($k + 1) . '###'] = $label;
+
 				$label = $priceViewObj->priceFormat($basket->calculatedArray['priceNoTax']['sametaxtotal'][$taxstr] * ($taxrate/100));
 				$markerArray['###PRICE_TAXRATE_ONLY_TAX' . ($k + 1) . '###'] = $label;
+
+				$label = $priceViewObj->priceFormat($basket->calculatedArray['priceNoTax']['goodssametaxtotal'][$taxstr] * ($taxrate / 100));
+				$markerArray['###PRICE_TAXRATE_GOODSTOTAL_ONLY_TAX' . ($k + 1) . '###'] = $label;
 			}
 		}
 

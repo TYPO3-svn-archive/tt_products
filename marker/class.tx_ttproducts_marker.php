@@ -141,6 +141,21 @@ class tx_ttproducts_marker {
 	} // setGlobalMarkerArray
 
 
+	public function reduceMarkerArray ($templateCode, $markerArray) {
+		$result = array();
+
+		$tagArray = $this->getAllMarkers($templateCode);
+
+		foreach ($tagArray as $tag => $v) {
+			$marker = '###' . $tag. '###';
+			if (isset($markerArray[$marker])) {
+				$result[$marker] = $markerArray[$marker];
+			}
+		}
+		return $result;
+	}
+
+
 	public function &getAllMarkers (&$templateCode)	{
 		$treffer = array();
 		preg_match_all('/###([\w:]+)###/', $templateCode, $treffer);
