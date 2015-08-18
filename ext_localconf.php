@@ -3,33 +3,6 @@ if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
 $_EXTCONF = unserialize($_EXTCONF);    // unserializing the configuration so we can use it here:
 
-$typoVersion = 0;
-if (class_exists('tx_div2007_core')) {
-	$typoVersion = tx_div2007_core::getTypoVersion();
-} else { // workaround for bug #55727
-	$result = FALSE;
-	$callingClassName = '\\TYPO3\\CMS\\Core\\Utility\\VersionNumberUtility';
-	if (
-		class_exists($callingClassName) &&
-		method_exists($callingClassName, 'convertVersionNumberToInteger')
-	) {
-		$result = call_user_func($callingClassName . '::convertVersionNumberToInteger', TYPO3_version);
-	} else if (
-		class_exists('t3lib_utility_VersionNumber') &&
-		method_exists('t3lib_utility_VersionNumber', 'convertVersionNumberToInteger')
-	) {
-		$result = t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version);
-	} else if (
-		class_exists('t3lib_div') &&
-		method_exists('t3lib_div', 'int_from_ver')
-	) {
-		$result = t3lib_div::int_from_ver(TYPO3_version);
-	}
-
-	$typoVersion = $result;
-}
-
-
 if (!defined ('TT_PRODUCTS_EXTkey')) {
 	define('TT_PRODUCTS_EXTkey',$_EXTKEY);
 }
@@ -68,16 +41,16 @@ if (!defined ('ADDONS_EXTkey')) {
 	define('ADDONS_EXTkey','addons_tt_products');
 }
 
-if (!defined ('TT_ADDRESS_EXTkey')) {
-	define('TT_ADDRESS_EXTkey','tt_address');
+if (!defined ('TT_ADDRESS_EXTKEY')) {
+	define('TT_ADDRESS_EXTKEY','tt_address');
 }
 
-if (!defined ('PARTNER_EXTkey')) {
-	define('PARTNER_EXTkey','partner');
+if (!defined ('PARTNER_EXTKEY')) {
+	define('PARTNER_EXTKEY','partner');
 }
 
-if (!defined ('PARTY_EXTkey')) {
-	define('PARTY_EXTkey','party');
+if (!defined ('PARTY_EXTKEY')) {
+	define('PARTY_EXTKEY','party');
 }
 
 if (!defined ('DIV2007_EXTkey')) {
@@ -284,7 +257,7 @@ if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_product
     $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['frontend'] = 't3lib_cache_frontend_StringFrontend';
 }
 
-if ($typoVersion >= '4006000') {
+if (version_compare(TYPO3_version, '4.6.0', '>=')) {
 
 	if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'])) {
 		$TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'] = $backendCache;
@@ -302,7 +275,7 @@ if (t3lib_extMgm::isLoaded('searchbox')) {
 
 t3lib_extMgm::addPItoST43($_EXTKEY, 'pi_int/class.tx_ttproducts_pi_int.php', '_pi_int', 'list_type', 1 );
 
-if ($typoVersion < '4006000') {
+if (version_compare(TYPO3_version, '4.6.0', '<')) {
 
 	t3lib_extMgm::addPItoST43($_EXTKEY, 'pi1/class.tx_ttproducts_pi1.php', '_pi1', 'list_type', 1);
 
@@ -335,7 +308,10 @@ if ($typoVersion < '4006000') {
 if (
 	isset($GLOBALS['typo3CacheFactory']) &&
 	is_object($GLOBALS['typo3CacheFactory']) &&
-	($typoVersion >= '4006000' || TYPO3_UseCachingFramework)
+	(
+		version_compare(TYPO3_version, '4.6.0', '>=') ||
+		TYPO3_UseCachingFramework
+	)
 ) {
     // register the cache in BE so it will be cleared with "clear all caches"
     try {
@@ -352,7 +328,5 @@ if (
         // do nothing, a tt_products_cache cache already exists
     }
 }
-
-
 
 ?>

@@ -42,12 +42,49 @@
 
 class tx_ttproducts_hooks_be {
 
-	function displayCategoryTree($PA, $fobj)    {
+	public function displayCategoryTree ($PA, $fobj) {
+		$result = FALSE;
 
 		if (t3lib_extMgm::isLoaded('mbi_products_categories')) {
-			$treeObj = t3lib_div::getUserObj('&tx_mbiproductscategories_treeview');
-			return $treeObj->displayCategoryTree($PA, $fobj);
+			$treeObj = FALSE;
+
+			if (class_exists('JambageCom\\MbiProductsCategories\\View\\TreeSelector')) {
+				$treeObj = t3lib_div::getUserObj('&JambageCom\\MbiProductsCategories\\View\\TreeSelector');
+			} else if (class_exists('tx_mbiproductscategories_treeview')) {
+				$treeObj = t3lib_div::getUserObj('&tx_mbiproductscategories_treeview');
+			}
+
+			if (is_object($treeObj)) {
+				$result = $treeObj->displayCategoryTree($PA, $fobj);
+			}
 		}
+
+		return $result;
+	}
+
+
+	public function displayOrderHtml ($PA, $fobj) {
+		$result = 'ERROR';
+
+		$table = $PA['table'];
+		$field = $PA['field'];
+		$row   = $PA['row'];
+
+			// Field configuration from TCA:
+		$config = $PA['fieldConf']['config'];
+		$orderData = unserialize($row['orderData']);
+		if (
+			is_array($orderData) &&
+			isset($orderData['html_output']) &&
+			isset($config['parameters']) &&
+			is_array($config['parameters']) &&
+			isset($config['parameters']['format']) &&
+			$config['parameters']['format'] == 'html'
+		) {
+			$result = $orderData['html_output'];
+		}
+
+		return $result;
 	}
 }
 

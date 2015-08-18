@@ -59,7 +59,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 	 * @return	[type]		...
 	 */
 	function create ()	{
-		global $TSFE, $TYPO3_DB;
+		global $TSFE;
 
 		$newId = 0;
 		$pid = intval($this->conf['PID_sys_products_orders']);
@@ -72,7 +72,7 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 			if ($this->conf['advanceOrderNumberWithInteger'] || $this->conf['alwaysAdvanceOrderNumber'])	{
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_products_orders', '', '', 'uid DESC', '1');
 				list($prevUid) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
-				$TYPO3_DB->sql_free_result($res);
+				$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
 				if ($this->conf['advanceOrderNumberWithInteger']) {
 					$rndParts = explode(',',$this->conf['advanceOrderNumberWithInteger']);
@@ -98,9 +98,21 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 				$insertFields['uid'] = intval($advanceUid);
 			}
 
-			$TYPO3_DB->exec_INSERTquery('sys_products_orders', $insertFields);
-			if (get_class($TYPO3_DB->getDatabaseHandle()) == 'mysqli') {
-				$rowArray = $TYPO3_DB->exec_SELECTgetRows('uid', 'sys_products_orders', 'uid=LAST_INSERT_ID()', '');
+			$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_products_orders', $insertFields);
+			$newId = $GLOBALS['TYPO3_DB']->sql_insert_id();
+
+			if (
+				!$newId &&
+				get_class($GLOBALS['TYPO3_DB']->getDatabaseHandle()) == 'mysqli'
+			) {
+				$rowArray =
+					$GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+						'uid',
+						'sys_products_orders',
+						'uid=LAST_INSERT_ID()',
+						''
+					);
+
 				if (
 					isset($rowArray) &&
 					is_array($rowArray) &&
@@ -109,8 +121,6 @@ class tx_ttproducts_order extends tx_ttproducts_table_base {
 				) {
 					$newId = $rowArray['0']['uid'];
 				}
-			} else {
-				$newId = $TYPO3_DB->sql_insert_id();
 			}
 		}
 

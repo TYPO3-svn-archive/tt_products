@@ -1,32 +1,6 @@
 <?php
 if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
-$typoVersion = 0;
-
-if (class_exists('tx_div2007_core')) {
-	$typoVersion = tx_div2007_core::getTypoVersion();
-} else { // workaround for bug #55727
-	$result = FALSE;
-	$callingClassName = '\\TYPO3\\CMS\\Core\\Utility\\VersionNumberUtility';
-	if (
-		class_exists($callingClassName) &&
-		method_exists($callingClassName, 'convertVersionNumberToInteger')
-	) {
-		$result = call_user_func($callingClassName . '::convertVersionNumberToInteger', TYPO3_version);
-	} else if (
-		class_exists('t3lib_utility_VersionNumber') &&
-		method_exists('t3lib_utility_VersionNumber', 'convertVersionNumberToInteger')
-	) {
-		$result = t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version);
-	} else if (
-		class_exists('t3lib_div') &&
-		method_exists('t3lib_div', 'int_from_ver')
-	) {
-		$result = t3lib_div::int_from_ver(TYPO3_version);
-	}
-
-	$typoVersion = $result;
-}
 
 $tempColumns = array (
 	'tt_products_memoItems' => array (
@@ -137,7 +111,7 @@ $tempColumns = array (
 );
 
 if (
-	$typoVersion < '6001000'
+	version_compare(TYPO3_version, '6.1.0', '<')
 ) {
 	t3lib_div::loadTCA('fe_users');
 }
@@ -150,8 +124,6 @@ if (!$loadTcaAdditions) {
 
 	t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXT, 'static/old_style/', 'Shop System Old Style');
 	t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXT, 'static/css_styled/', 'Shop System CSS Styled');
-
-	//t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXT, 'static/test/', 'Shop System Test');
 
 	$GLOBALS['TCA']['tt_products'] = array (
 		'ctrl' => array (
@@ -521,6 +493,7 @@ if (!$loadTcaAdditions) {
 			'mainpalette' => 1,
 			'iconfile' => PATH_ttproducts_icon_table_rel.'sys_products_orders.gif',
 			'dynamicConfigFile' => PATH_BE_ttproducts.'tca.php',
+			'dividers2tabs' => '1',
 			'searchFields' => 'uid,name,first_name,last_name,vat_id,zip,city,telephone,email,giftcode,bill_no',
 		),
 		'feInterface' => array (
@@ -529,7 +502,7 @@ if (!$loadTcaAdditions) {
 	);
 
 	if (
-		$typoVersion < '6001000'
+		version_compare(TYPO3_version, '6.1.0', '<')
 	) {
 		t3lib_div::loadTCA('tt_content');
 	}

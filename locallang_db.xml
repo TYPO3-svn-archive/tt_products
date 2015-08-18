@@ -191,6 +191,8 @@
 			<label index="sys_products_orders.status">status</label>
 			<label index="sys_products_orders.status_log">status_log</label>
 			<label index="sys_products_orders.orderData">order data</label>
+			<label index="sys_products_orders.orderHtml">Order Html</label>
+			<label index="sys_products_orders.orderHtmlDiv">Html</label>
 			<label index="sys_products_orders.agb">agb</label>
 			<label index="sys_products_orders.feusers_uid">frontend user</label>
 			<label index="sys_products_orders.creditpoints">credit points</label>
@@ -495,6 +497,7 @@
 			<label index="sys_products_orders.status">Zustand</label>
 			<label index="sys_products_orders.status_log">Zustands Logdatei</label>
 			<label index="sys_products_orders.orderData">Bestelldaten</label>
+			<label index="sys_products_orders.orderHtml">Bestellung Html</label>
 			<label index="sys_products_orders.agb">AGB</label>
 			<label index="sys_products_orders.feusers_uid">Frontend Benutzer</label>
 			<label index="sys_products_orders.creditpoints">Kontopunkte</label>

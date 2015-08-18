@@ -1,3 +1,7 @@
+2015-08-18 Franz Holzinger <franz@ttproducts.de>
+	* new feature: add field for HTML order to the order data single view in the backend
+	* bug fix: use sql_insert_id instead of LAST_INSERT_ID if possible to get the order uid from sys_products_orders
+
 2015-08-12 Franz Holzinger <franz@ttproducts.de>
 	* bugfix for price taxrate markers: the ###PRICE_TAXRATE_GOODSTOTAL2### must only contain the sum of the products.
 	* new marker ###PRICE_TAXRATE_TOTAL2### for the total sum of products, shipping, payment and handling costs

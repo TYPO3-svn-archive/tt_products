@@ -116,7 +116,6 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	function &getArticleRows ($uid, $where='')	{
-
 		$rowArray = $this->articleArray[$uid];
 
 		if (!$rowArray && $uid) {

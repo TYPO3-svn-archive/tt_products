@@ -3,11 +3,11 @@
 $addressTable = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addressTable'];
 
 if (!$addressTable)	{
-	if (t3lib_extMgm::isLoaded(PARTY_EXTkey))	{
+	if (t3lib_extMgm::isLoaded(PARTY_EXTKEY))	{
 		$addressTable = 'tx_party_addresses';
-	} else if (t3lib_extMgm::isLoaded(PARTNER_EXTkey))	{
+	} else if (t3lib_extMgm::isLoaded(PARTNER_EXTKEY))	{
 		$addressTable = 'tx_partner_main';
-	} else if (t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) {
+	} else if (t3lib_extMgm::isLoaded(TT_ADDRESS_EXTKEY)) {
 		$addressTable = 'tt_address';
 	} else {
 		$addressTable = 'fe_users';
@@ -2517,6 +2517,18 @@ $GLOBALS['TCA']['sys_products_orders'] = Array (
 				'rows' => '30',
 			)
 		),
+		'orderHtml' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXT.'/locallang_db.xml:sys_products_orders.orderHtml',
+			'config' => Array (
+				'type' => 'user',
+				'size' => '30',
+				'userFunc' => 'EXT:' . TT_PRODUCTS_EXT . '/hooks/class.tx_ttproducts_hooks_be.php:tx_ttproducts_hooks_be->displayOrderHtml',
+				'parameters' => array(
+					'format' => 'html'
+				)
+			)
+		),
 		'agb' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:'.TT_PRODUCTS_EXT.'/locallang_db.xml:sys_products_orders.agb',
@@ -2684,9 +2696,14 @@ $GLOBALS['TCA']['sys_products_orders'] = Array (
 			)
 		),
 	),
-	'types' => Array (
-		'1' => Array('showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,city,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,fax,business_partner,organisation_form,agb,feusers_uid,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,giftservice,foundby,giftcode,cc_uid,ac_uid,date_of_birth,radio1')
-	),
+	'types' => Array
+		(
+			'1' => Array
+				(
+					'showitem' => 'hidden;;;;1-1-1, name;;3;;3-3-3, first_name,last_name,salutation,address,zip,city,country,telephone,email,payment,shipping,amount,email_notify,tracking_code,status,fax,business_partner,organisation_form,agb,feusers_uid,creditpoints,creditpoints_spended,creditpoints_saved,creditpoints_gifts,desired_date,client_ip,note,giftservice,foundby,giftcode,cc_uid,ac_uid,date_of_birth,radio1,' .
+					'--div--;LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_orders.orderHtmlDiv,orderHtml;;3;;3-3-3,'
+				) // neu
+		),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'starttime, endtime, fe_group'),
 	)
