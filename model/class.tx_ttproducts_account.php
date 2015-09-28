@@ -98,7 +98,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		$pid = intval($this->conf['PID_sys_products_orders']);
 		if (!$pid)	$pid = intval($TSFE->id);
 
-		if ($acArray['ac_number'] && $TSFE->sys_page->getPage_noCheck ($pid))	{
+		if ($acArray['owner_name'] != '' && $acArray['bic'] != '' && $acArray['ac_number'] && $TSFE->sys_page->getPage_noCheck ($pid))	{
 			$time = time();
 			$newFields = array (
 				'pid' => intval($pid),

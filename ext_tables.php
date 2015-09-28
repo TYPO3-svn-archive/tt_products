@@ -1,6 +1,16 @@
 <?php
 if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
+$callingClassName = '\\TYPO3\\CMS\\Core\\Utility\\ExtensionManagementUtility';
+
+if (
+	class_exists($callingClassName) &&
+	method_exists($callingClassName, 'extPath')
+) {
+	// nothing
+} else {
+	$callingClassName = 't3lib_extMgm';
+}
 
 $tempColumns = array (
 	'tt_products_memoItems' => array (
@@ -116,14 +126,14 @@ if (
 	t3lib_div::loadTCA('fe_users');
 }
 
-t3lib_extMgm::addTCAcolumns('fe_users', $tempColumns);
-t3lib_extMgm::addToAllTCAtypes('fe_users', 'tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1,tt_products_vat;;;;1-1-1,tt_products_business_partner;;;;1-1-1,tt_products_organisation_form;;;;1-1-1');
+call_user_func($callingClassName . '::addTCAcolumns', 'fe_users', $tempColumns);
+call_user_func($callingClassName . '::addToAllTCAtypes', 'fe_users',  'tt_products_creditpoints;;;;1-1-1,tt_products_vouchercode;;;;1-1-1,tt_products_memoItems;;;;1-1-1,tt_products_discount;;;;1-1-1,tt_products_vat;;;;1-1-1,tt_products_business_partner;;;;1-1-1,tt_products_organisation_form;;;;1-1-1');
 
 
 if (!$loadTcaAdditions) {
 
-	t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXT, 'static/old_style/', 'Shop System Old Style');
-	t3lib_extMgm::addStaticFile(TT_PRODUCTS_EXT, 'static/css_styled/', 'Shop System CSS Styled');
+	call_user_func($callingClassName . '::addStaticFile', TT_PRODUCTS_EXT, 'static/old_style/', 'Shop System Old Style');
+	call_user_func($callingClassName . '::addStaticFile', TT_PRODUCTS_EXT, 'static/css_styled/', 'Shop System CSS Styled');
 
 	$GLOBALS['TCA']['tt_products'] = array (
 		'ctrl' => array (
@@ -513,37 +523,37 @@ if (!$loadTcaAdditions) {
 	)	{
 		$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 		$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['5']='pi_flexform';
-		t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:'.TT_PRODUCTS_EXT.'/flexform_ds_pi1.xml');
+		call_user_func($callingClassName . '::addPiFlexFormValue', '5', 'FILE:EXT:'.TT_PRODUCTS_EXT.'/flexform_ds_pi1.xml');
 	}
 
-	t3lib_extMgm::addPlugin(array('LLL:EXT:'.TT_PRODUCTS_EXT.'/locallang_db.xml:tt_content.list_type_pi1','5'),'list_type');
+	call_user_func($callingClassName . '::addPlugin', array('LLL:EXT:'.TT_PRODUCTS_EXT.'/locallang_db.xml:tt_content.list_type_pi1','5'),'list_type');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_articles');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_articles_language');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_cat');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_cat_language');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_emails');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_graduated_price');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_language');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_mm_graduated_price');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_texts');
+	call_user_func($callingClassName . '::addToInsertRecords', 'tt_products_texts_language');
 
-	t3lib_extMgm::addToInsertRecords('tt_products');
-	t3lib_extMgm::addToInsertRecords('tt_products_articles');
-	t3lib_extMgm::addToInsertRecords('tt_products_articles_language');
-	t3lib_extMgm::addToInsertRecords('tt_products_cat');
-	t3lib_extMgm::addToInsertRecords('tt_products_cat_language');
-	t3lib_extMgm::addToInsertRecords('tt_products_emails');
-	t3lib_extMgm::addToInsertRecords('tt_products_graduated_price');
-	t3lib_extMgm::addToInsertRecords('tt_products_language');
-	t3lib_extMgm::addToInsertRecords('tt_products_mm_graduated_price');
-	t3lib_extMgm::addToInsertRecords('tt_products_texts');
-	t3lib_extMgm::addToInsertRecords('tt_products_texts_language');
-
-	t3lib_extMgm::allowTableOnStandardPages('tt_products');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_articles');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_articles_language');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_cat');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_cat_language');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_graduated_price');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_emails');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_language');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_mm_graduated_price');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_texts');
-	t3lib_extMgm::allowTableOnStandardPages('tt_products_texts_language');
-	t3lib_extMgm::allowTableOnStandardPages('sys_products_accounts');
-	t3lib_extMgm::allowTableOnStandardPages('sys_products_cards');
-	t3lib_extMgm::allowTableOnStandardPages('sys_products_orders');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_articles');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_articles_language');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_cat');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_cat_language');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_graduated_price');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_graduated_price');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_emails');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_language');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_mm_graduated_price');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_texts');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'tt_products_texts_language');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'sys_products_accounts');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'sys_products_cards');
+	call_user_func($callingClassName . '::allowTableOnStandardPages', 'sys_products_orders');
 
 
 	//t3lib_extMgm::addToInsertRecords('tt_products');
@@ -551,7 +561,7 @@ if (!$loadTcaAdditions) {
 	if (TYPO3_MODE=='BE')	{
 		$GLOBALS['TBE_MODULES_EXT']['xMOD_db_new_content_el']['addElClasses']['tx_ttproducts_wizicon'] = PATH_BE_ttproducts.'class.tx_ttproducts_wizicon.php';
 
-		t3lib_extMgm::insertModuleFunction(
+		call_user_func($callingClassName . '::insertModuleFunction',
 			'web_func',
 			'tx_ttproducts_modfunc1',
 			PATH_BE_ttproducts . 'modfunc1/class.tx_ttproducts_modfunc1.php',
@@ -559,7 +569,7 @@ if (!$loadTcaAdditions) {
 			'wiz'
 		);
 
-		t3lib_extMgm::insertModuleFunction(
+		call_user_func($callingClassName . '::insertModuleFunction',
 			'web_func',
 			'tx_ttproducts_modfunc2',
 			PATH_BE_ttproducts . 'modfunc2/class.tx_ttproducts_modfunc2.php',
@@ -571,13 +581,13 @@ if (!$loadTcaAdditions) {
 		$pageType = 'ttpproduct';
 		$imageFile = PATH_TTPRODUCTS_ICON_TABLE_REL . 'tt_products.gif';
 
-		$callingClassName = '\\TYPO3\\CMS\\Backend\\Sprite\\SpriteManager';
+		$spriteManagerClassName = '\\TYPO3\\CMS\\Backend\\Sprite\\SpriteManager';
 		if (
-			class_exists($callingClassName) &&
-			method_exists($callingClassName, 'addTcaTypeIcon')
+			class_exists($spriteManagerClassName) &&
+			method_exists($spriteManagerClassName, 'addTcaTypeIcon')
 		) {
 			call_user_func(
-				$callingClassName . '::addTcaTypeIcon',
+				$spriteManagerClassName . '::addTcaTypeIcon',
 				'pages',
 				'contains-' . $pageType,
 				$imageFile
@@ -607,18 +617,28 @@ if (!$loadTcaAdditions) {
 		}
 	}
 
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprod.php');
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products_cat', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodc.php');
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products_articles','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttproda.php');
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products_emails','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprode.php');
-	t3lib_extMgm::addLLrefForTCAdescr('tt_products_texts','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodt.php');
-	t3lib_extMgm::addLLrefForTCAdescr('sys_products_accounts','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodac.php');
-	t3lib_extMgm::addLLrefForTCAdescr('sys_products_cards','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodca.php');
-	t3lib_extMgm::addLLrefForTCAdescr('sys_products_orders','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodo.php');
+	call_user_func($callingClassName . '::addLLrefForTCAdescr', 'tt_products', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprod.php');
+	call_user_func($callingClassName . '::addLLrefForTCAdescr', 'tt_products_cat', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodc.php');
+	call_user_func($callingClassName . '::addLLrefForTCAdescr', 'tt_products_articles','EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttproda.php');
+	call_user_func($callingClassName . '::addLLrefForTCAdescr', 'tt_products_emails', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprode.php');
+	call_user_func($callingClassName . '::addLLrefForTCAdescr', 'tt_products_texts', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodt.php');
+	call_user_func($callingClassName . '::addLLrefForTCAdescr', 'sys_products_accounts', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodac.php');
+	call_user_func($callingClassName . '::addLLrefForTCAdescr',  'sys_products_cards', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodca.php');
+	call_user_func($callingClassName . '::addLLrefForTCAdescr', 'sys_products_orders', 'EXT:' . TT_PRODUCTS_EXT . '/locallang_csh_ttprodo.php');
 
 	$productsTableArray = array('tt_products', 'tt_products_language', 'tt_products_related_products_products_mm', 'tt_products_accessory_products_products_mm', 'tt_products_products_dam_mm', 'tt_products_products_note_pages_mm', 'tt_products_cat', 'tt_products_cat_language', 'tt_products_articles', 'tt_products_articles_language', 'tt_products_gifts', 'tt_products_gifts_articles_mm', 'tt_products_emails', 'tt_products_texts', 'tt_products_texts_language', 'tt_products_mm_graduated_price', 'tt_products_graduated_price', 'sys_products_accounts', 'sys_products_cards', 'sys_products_orders', 'sys_products_orders_mm_tt_products', 'fe_users', 'pages_language_overlay');
 
-	$orderBySortingTablesArray = t3lib_div::trimExplode(',',$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['orderBySortingTables']);
+	$callingClassName = '\\TYPO3\\CMS\\Core\\Utility\\GeneralUtility';
+
+	if (
+		class_exists($callingClassName)
+	) {
+		// nothing
+	} else {
+		$callingClassName = 't3lib_div';
+	}
+
+	$orderBySortingTablesArray = call_user_func($callingClassName . '::trimExplode', ',',$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['orderBySortingTables']);
 
 	if (isset($orderBySortingTablesArray) && is_array($orderBySortingTablesArray))	{
 		foreach ($orderBySortingTablesArray as $k => $productTable)	{

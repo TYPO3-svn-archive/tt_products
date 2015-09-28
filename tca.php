@@ -1,13 +1,24 @@
 <?php
 
+$callingClassName = '\\TYPO3\\CMS\\Core\\Utility\\ExtensionManagementUtility';
+
+if (
+	class_exists($callingClassName) &&
+	method_exists($callingClassName, 'extPath')
+) {
+	// nothing
+} else {
+	$callingClassName = 't3lib_extMgm';
+}
+
 $addressTable = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addressTable'];
 
 if (!$addressTable)	{
-	if (t3lib_extMgm::isLoaded(PARTY_EXTKEY))	{
+	if (call_user_func($callingClassName . '::isLoaded', PARTY_EXTKEY)) {
 		$addressTable = 'tx_party_addresses';
-	} else if (t3lib_extMgm::isLoaded(PARTNER_EXTKEY))	{
+	} else if (call_user_func($callingClassName . '::isLoaded', PARTNER_EXTKEY)) {
 		$addressTable = 'tx_partner_main';
-	} else if (t3lib_extMgm::isLoaded(TT_ADDRESS_EXTKEY)) {
+	} else if (call_user_func($callingClassName . '::isLoaded', TT_ADDRESS_EXTKEY)) {
 		$addressTable = 'tt_address';
 	} else {
 		$addressTable = 'fe_users';
@@ -2711,8 +2722,18 @@ $GLOBALS['TCA']['sys_products_orders'] = Array (
 
 
 if (isset($excludeArray) && is_array($excludeArray)) {
+	$callingClassName = '\\TYPO3\\CMS\\Core\\Utility\\GeneralUtility';
+
+	if (
+		class_exists($callingClassName)
+	) {
+		// nothing
+	} else {
+		$callingClassName = 't3lib_div';
+	}
+
 	foreach ($excludeArray as $tablename => $excludeFields) {
-		$excludeFieldArray = t3lib_div::trimExplode(',', $excludeFields, 1);
+		$excludeFieldArray = call_user_func($callingClassName . '::trimExplode', ',', $excludeFields, 1);
 
 		if (
 			isset($GLOBALS['TCA'][$tablename]) &&

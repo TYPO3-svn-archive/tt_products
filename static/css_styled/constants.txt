@@ -44,25 +44,25 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Category images: As above, but for the category images
   clickEnlarge_listcat = 0
 
-    # cat=plugin.products//; type=boolean; label= Color selectable, List display: Make the color selectable in the list
+    # cat=plugin.products//; type=integer; label= Color selectable, List display: Make the color selectable in the list
   selectColor = 1
-    # cat=plugin.products//; type=boolean; label= 2nd Color selectable, List display: Make the 2nd color selectable in the list
+    # cat=plugin.products//; type=integer; label= 2nd Color selectable, List display: Make the 2nd color selectable in the list
   selectColor2 = 1
-    # cat=plugin.products//; type=boolean; label= 3rd Color selectable, List display: Make the 3rd color selectable in the list
+    # cat=plugin.products//; type=integer; label= 3rd Color selectable, List display: Make the 3rd color selectable in the list
   selectColor3 = 1
-    # cat=plugin.products//; type=boolean; label= Size selectable, List display: Make the size selectable in the list
+    # cat=plugin.products//; type=integer; label= Size selectable, List display: Make the size selectable in the list
   selectSize = 1
-    # cat=plugin.products//; type=boolean; label= 2nd Size selectable, List display: Make the 2nd size selectable in the list
+    # cat=plugin.products//; type=integer; label= 2nd Size selectable, List display: Make the 2nd size selectable in the list
   selectSize2 = 1
-    # cat=plugin.products//; type=boolean; label= 3rd Size selectable, List display: Make the 3rd size selectable in the list
+    # cat=plugin.products//; type=integer; label= 3rd Size selectable, List display: Make the 3rd size selectable in the list
   selectSize3 = 1
-    # cat=plugin.products//; type=boolean; label= Description selectable, List display: Make the description selectable in the list
+    # cat=plugin.products//; type=integer; label= Description selectable, List display: Make the description selectable in the list
   selectDescription = 1
-    # cat=plugin.products//; type=boolean; label= Gradings selectable, List display: Make the gradings selectable in the list
+    # cat=plugin.products//; type=integer; label= Gradings selectable, List display: Make the gradings selectable in the list
   selectGradings = 1
-    # cat=plugin.products//; type=boolean; label= Material selectable, List display: Make the material selectable in the list
+    # cat=plugin.products//; type=integer; label= Material selectable, List display: Make the material selectable in the list
   selectMaterial = 1
-    # cat=plugin.products//; type=boolean; label= Quality selectable, List display: Make the quality selectable in the list
+    # cat=plugin.products//; type=integer; label= Quality selectable, List display: Make the quality selectable in the list
   selectQuality = 1
 
     # cat=plugin.products//; type=boolean; label= Display Category Header in list: If this option is set, the category headers (page titles) will automatically be displayed in the product lists. This is not always convenient because you might have chosen a header-title for the "list" content element.
@@ -339,6 +339,6 @@ plugin.tt_products {
 
 }
 
-<INCLUDE_TYPOSCRIPT: source="FILE:EXT:'TT_PRODUCTS_EXTkey.'/static/share/constants.txt">
 
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:tt_products/static/share/constants.txt">
 
