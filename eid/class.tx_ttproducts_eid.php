@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2008 Kasper Skårhøj <kasperYYYY@typo3.com>
+*  (c) 2007-2009 Kasper Skårhøj <kasperYYYY@typo3.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -32,8 +32,8 @@
  * $Id$
  *
  * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -44,6 +44,18 @@ define ('CRLF', "\r\n");
 define ('DQT', '"');
 define ('QT', "'");
 
+
+// // *********************
+// // Libraries included
+// // *********************
+// $TT->push('Include Frontend libraries','');
+//     require_once(PATH_tslib.'class.tslib_fe.php');
+//     require_once(PATH_t3lib.'class.t3lib_page.php');
+//     require_once(PATH_t3lib.'class.t3lib_userauth.php');
+//     require_once(PATH_tslib.'class.tslib_feuserauth.php');
+//     require_once(PATH_t3lib.'class.t3lib_tstemplate.php');
+//     require_once(PATH_t3lib.'class.t3lib_cs.php');
+// $TT->pull();
 
 
 // ***********************************
@@ -74,7 +86,6 @@ if ($TSFE->RDCT)    {
 	$TSFE->sendRedirect();
 }
 
-
 // *********
 // FE_USER
 // *********
@@ -90,23 +101,24 @@ $TT->pull();
 $TT->push('Process ID','');
     // not needed and doesnot work with realurl //
 $TSFE->checkAlternativeIdMethods();
-    $TSFE->clear_preview();
-    $TSFE->determineId();
+$TSFE->clear_preview();
+$TSFE->determineId();
 
         // Now, if there is a backend user logged in and he has NO access to
 	// this page, then re-evaluate the id shown!
-    if ($TSFE->beUserLogin && !$BE_USER->extPageReadAccess($TSFE->page))    {
+if ($TSFE->beUserLogin && !$BE_USER->extPageReadAccess($TSFE->page))    {
 
-            // Remove user
-        unset($BE_USER);
-        $TSFE->beUserLogin = 0;
+	// Remove user
+	unset($BE_USER);
+	$TSFE->beUserLogin = 0;
 
-            // Re-evaluate the page-id.
-        $TSFE->checkAlternativeIdMethods();
-        $TSFE->clear_preview();
-        $TSFE->determineId();
-    }
-    $TSFE->makeCacheHash();
+		// Re-evaluate the page-id.
+	$TSFE->checkAlternativeIdMethods();
+	$TSFE->clear_preview();
+	$TSFE->determineId();
+}
+
+$TSFE->makeCacheHash();
 $TT->pull();
 
 
@@ -132,9 +144,7 @@ $TT->pull();
 $TSFE->getConfigArray();
 
 
-$typoVersion = tx_div2007_core::getTypoVersion();
-
-if ($typoVersion >= '6000000') {
+if (version_compare(TYPO3_version, '6.0.0', '>=')) {
 	// Initialize admin panel since simulation settings are required here:
 	$callingClassName3 = '\\TYPO3\\CMS\\Core\\Core\\Bootstrap';
 	$bootStrap = call_user_func($callingClassName3 . '::getInstance');
@@ -146,9 +156,19 @@ if ($typoVersion >= '6000000') {
 	}
 }
 
+
+// ******************************************************
+// Start with tt_products
+// ******************************************************
+
 $conf = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXT.'.'];
 $config = array();
 $config['LLkey'] = '';
+
+// tt_products specific parts
+
+// require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_ajax.php');
+// require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');
 
 
 // Make instance:
@@ -156,11 +176,11 @@ $ajax = t3lib_div::makeInstance('tx_ttproducts_ajax');
 $ajax->init();
 
 $SOBE = t3lib_div::makeInstance('tx_ttproducts_db');
-$errorCode = '';
-$SOBE->init($conf, $config, $ajax, $tmp = '', $errorCode);
+$SOBE->init($conf, $config, $ajax, $tmp='');
 
 if($_POST['xajax']){
 	global $trans;
+
 	$trans = $this;
 	$ajax->taxajax->processRequests();
 	exit();

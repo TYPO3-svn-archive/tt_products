@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,123 +31,98 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  */
 
+// require_once (PATH_BE_ttproducts.'model/interface.tx_ttproducts_variant_int.php');
+
 
 class tx_ttproducts_variant_dummy implements tx_ttproducts_variant_int {
-	var $bSelectableArray = array();
+	private $selectableArray = array();
+	public $conf;	// reduced local conf
 
 	/**
 	 * setting the local variables
-	 *
-	 * @param	[type]		$$itemTable: ...
-	 * @param	[type]		$tablename: ...
-	 * @param	[type]		$useArticles: ...
-	 * @return	[type]		...
 	 */
-	function init($itemTable, $tablename, $useArticles)  {
+	public function init ($itemTable, $tablename, $useArticles)  {
 
 	} // init
 
+	/**
+	 * getting the articles for a product
+	 */
+	public function getUseArticles ()	{
+	}
 
 	/**
 	 * fills in the row fields from the variant extVar string
 	 *
 	 * @param	array		the row
-	 * @param	string		variants separated by ';'
-	 * @return	void
+	 * @param	string	  variants separated by ';'
+	 * @return  void
 	 * @access private
 	 * @see getVariantFromRow
 	 */
-	 function modifyRowFromVariant (&$row, $variant) {
+	public function modifyRowFromVariant (&$row, $variant = '') {
 	}
-
 
 	/**
 	 * Returns the variant extVar string from the variant values in the row
 	 *
 	 * @param	array		the row
-	 * @return	string		variants separated by ';'
+	 * @return  string	  variants separated by ';'
 	 * @access private
 	 * @see modifyRowFromVariant
 	 */
-	function getVariantFromRow (&$row) {
+	public function getVariantFromRow (&$row) {
 	}
 
+	public function getVariantFromProductRow (&$row, $index) {
+	}
 
 	/**
 	 * Returns the variant extVar string from the incoming raw row into the basket
 	 *
-	 * @param	array		the basket raw row
-	 * @return	string		variants separated by ';'
+	 * @param	array	the basket raw row
+	 * @return  string	  variants separated by ';'
 	 * @access private
 	 * @see modifyRowFromVariant
 	 */
-	function getVariantFromRawRow (&$row) {
+	public function getVariantFromRawRow (&$row) {
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$row: ...
-	 * @return	[type]		...
-	 */
-	function getFirstVariantRow($row='')	{
+	public function getVariantRow($row = '', $varianArray = array())	{
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$table: ...
-	 * @param	[type]		$uid: ...
-	 * @return	[type]		...
-	 */
-	function getTableUid ($table, $uid)	{
+	public function getTableUid ($table, $uid)	{
 		$rc = '|'.$table.'|'.$uid;
 		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getSelectableArray()	{
-		return $this->bSelectableArray;
+	public function getSelectableArray ()	{
+		return $this->selectableArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$productRow: ...
-	 * @param	[type]		$articleRows: ...
-	 * @return	[type]		...
-	 */
-	function fetchArticle($productRow, $articleRows) {
+	public function getVariantValuesByArticle ($articleRowArray)	{
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getFieldArray()	{
+	public function filterArticleRowsByVariant ($articleRows, $variant) {
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getAdditionalKey()	{
+	public function getFieldArray ()	{
+	}
+
+	public function getSelectableFieldArray ()	{
+		return $this->selectableFieldArray;
+	}
+
+	public function getAdditionalKey ()	{
 	}
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_variant_dummy.php']) {

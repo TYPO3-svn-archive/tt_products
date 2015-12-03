@@ -8,5 +8,8 @@
 		<languageKey index="default" type="array">
 			<label index="item_limit">Item Limit</label>
 		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="item_limit">Anzeige Limit</label>
+		</languageKey>
 	</data>
 </T3locallang>

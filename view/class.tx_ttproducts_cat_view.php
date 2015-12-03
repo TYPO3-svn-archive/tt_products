@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -28,15 +28,20 @@
  * Part of the tt_products (Shop System) extension.
  *
  * category single view functions
- * may be used for the category, partner/address, dam category and pages table
+ * may be used for the category, party/partner/address, dam category and pages table
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
  */
+
+// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_pid_list.php');
+
+
 class tx_ttproducts_cat_view {
 	var $pibase; // reference to object of pibase
 	var $conf;
@@ -73,7 +78,7 @@ class tx_ttproducts_cat_view {
 
 
 	// returns the single view
-	function printView(&$templateCode, $functablename, $uid, $theCode, &$error_code, $templateSuffix = '') {
+	function &printView(&$templateCode, $functablename, $uid, $theCode, &$error_code, $templateSuffix = '') {
 		global $TSFE, $TCA, $TYPO3_DB;
 
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
@@ -102,6 +107,8 @@ class tx_ttproducts_cat_view {
 		}
 
 		if ($row) {
+			// $this->uid = intval ($row['uid']); // store the uid for later usage here
+
 			$markerArray = array();
 			$subpartArray = array();
 			$wrappedSubpartArray = array();
@@ -116,18 +123,15 @@ class tx_ttproducts_cat_view {
 			// Add the template suffix
 			$subPartMarker = substr($subPartMarker, 0, -3).$templateSuffix.'###';
 			$itemFrameWork = $this->cObj->getSubpart($templateCode,$this->subpartmarkerObj->spMarker($subPartMarker));
-
 			if (!$itemFrameWork) {
-				$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');
+				$templateObj = t3lib_div::getUserObj('&tx_ttproducts_template');
 				$error_code[0] = 'no_subtemplate';
 				$error_code[1] = $subPartMarker;
-				$error_code[2] = $mainObj->templateFile;
+				$error_code[2] = $templateObj->getTemplateFile();
 				return '';
 			}
-
-			$tablesObj->get('fe_users',TRUE)->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
-			$itemFrameWork = $this->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
-
+			$tablesObj->get('fe_users', TRUE)->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray);
+			$itemFrameWork = $this->cObj->substituteMarkerArrayCached($itemFrameWork, $markerArray, $subpartArray, $wrappedSubpartArray);
 			$markerFieldArray = array();
 			$viewTagArray = array();
 			$parentArray = array();
@@ -149,7 +153,7 @@ class tx_ttproducts_cat_view {
 
 			$param = array($functablename => $variantFieldArray);
 			$javaScriptObj->set('fetchdata', $param);
-			$bUseBackPid = true;
+			$bUseBackPid = TRUE;
 
 			$addQueryString = array();
 			$linkPid = $pid;
@@ -158,7 +162,7 @@ class tx_ttproducts_cat_view {
 			}
 
 			if ($viewTagArray['LINK_ITEM'])	{
-				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. htmlspecialchars($this->pibase->pi_getPageLink($linkPid,'',$this->urlObj->getLinkParams('',$addQueryString,TRUE,$bUseBackPid,'product',$tableViewObj->piVar),array('useCacheHash' => true))) .'">','</a>');
+				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. htmlspecialchars($this->pibase->pi_getPageLink($linkPid,'',$this->urlObj->getLinkParams('',$addQueryString,TRUE,$bUseBackPid,'product',$tableViewObj->piVar),array('useCacheHash' => TRUE))) .'">','</a>');
 			}
 			if ($viewCatTagArray['LINK_CATEGORY'])	{
 				$catListPid = $pageObj->getPID(
@@ -200,20 +204,14 @@ class tx_ttproducts_cat_view {
 				$viewCatTable->getSubpartArrays($this->urlObj, $catRow, $subpartArray, $wrappedSubpartArray, $viewTagArray, $catListPid, 'LINK_PARENT1_CATEGORY');
 			}
 
-			$pageAsCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['pageAsCategory'];
-
-			$tableViewObj->getMarkerArray (
+			$tableViewObj->getModelMarkerArray (
+				$row,
 				$markerArray,
-				$uid,
-				$row['pid'],
-				10,
-				'image',
+				$variantFieldArray,
+				$variantMarkerArray,
 				$viewTagArray,
-				array(),
-				$pageAsCategory,
 				$theCode,
-				'',
-				'',
+				TRUE,
 				''
 			);
 
@@ -233,13 +231,13 @@ class tx_ttproducts_cat_view {
 
 			if(is_array($tableConf) && isset($tableConf['orderBy']) && strpos($itemTableConf['orderBy'],',') === FALSE)	{
 				$orderByField = $tableConf['orderBy'];
-				$queryPrevPrefix = $orderByField.' < '.$TYPO3_DB->fullQuoteStr($row[$orderByField],$tableObj->getTableObj()->name);
-				$queryNextPrefix = $orderByField.' > '.$TYPO3_DB->fullQuoteStr($row[$orderByField],$tableObj->getTableObj()->name);
-				$prevOrderby = $orderByField.' DESC';;
-				$nextOrderby = $orderByField.' ASC';
+				$queryPrevPrefix = $orderByField . ' < ' . $TYPO3_DB->fullQuoteStr($row[$orderByField], $tableObj->getTableObj()->name);
+				$queryNextPrefix = $orderByField . ' > ' . $TYPO3_DB->fullQuoteStr($row[$orderByField], $tableObj->getTableObj()->name);
+				$prevOrderby = $orderByField . ' DESC';;
+				$nextOrderby = $orderByField . ' ASC';
 			} else {
-				$queryPrevPrefix = 'uid < '.intval($uid);
-				$queryNextPrefix = 'uid > '.intval($uid);
+				$queryPrevPrefix = 'uid < ' . intval($uid);
+				$queryNextPrefix = 'uid > ' . intval($uid);
 				$prevOrderby = 'uid DESC';
 				$nextOrderby = 'uid ASC';
 			}
@@ -251,23 +249,23 @@ class tx_ttproducts_cat_view {
 			if (is_array($tableConf['filter.']) && is_array($tableConf['filter.']['regexp.']))	{
 				if (is_array($tableConf['filter.']['regexp.']['field.']))	{
 					foreach ($tableConf['filter.']['field.'] as $field => $value)	{
-						$whereFilter .= ' AND '.$field.' REGEXP \''.$value.'\'';
+						$whereFilter .= ' AND ' . $field . ' REGEXP ' . $TYPO3_DB->fullQuoteStr(quotemeta($value), $tableObj->getTableObj()->name);
 					}
 				}
 			}
 
 			$queryprev = '';
 			$queryprev = $queryPrevPrefix .' AND pid IN ('.$this->pidListObj->getPidlist().')'. $tableObj->getTableObj()->enableFields();
+			// $resprev = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $queryprev,'', $prevOrderby);
 			$resprev = $tableObj->getTableObj()->exec_SELECTquery('*', $queryprev, '', $TYPO3_DB->stripOrderBy($prevOrderby));
 
 			if ($rowprev = $TYPO3_DB->sql_fetch_assoc($resprev) )	{
-				$addQueryString=array();
+				$addQueryString = array();
 				$addQueryString[$tableViewObj->getPivar()] = $rowprev['uid'];
 
 				if ($bUseBackPid) 	{
 					$addQueryString ['backPID'] = $backPID;
 				}
-
 				$wrappedSubpartArray['###LINK_PREV_SINGLE###']= array(
 					'<a href="' .
 					htmlspecialchars(
@@ -288,13 +286,13 @@ class tx_ttproducts_cat_view {
 						)
 					). '">',
 					'</a>');
-
 			} else	{
 				$subpartArray['###LINK_PREV_SINGLE###']='';
 			}
 			$TYPO3_DB->sql_free_result($resprev);
 
 			$querynext = $queryNextPrefix.' AND pid IN ('.$this->pidListObj->getPidlist().')'. $wherestock . $tableObj->getTableObj()->enableFields();
+			// $resnext = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', $querynext, $nextOrderby);
 			$resnext = $tableObj->getTableObj()->exec_SELECTquery('*', $querynext, '', $TYPO3_DB->stripOrderBy($nextOrderby));
 
 			if ($rownext = $TYPO3_DB->sql_fetch_assoc($resnext) )	{
@@ -335,7 +333,7 @@ class tx_ttproducts_cat_view {
 			$markerArray = array_merge ($jsMarkerArray, $markerArray);
 
 				// Substitute
-			$content = $this->cObj->substituteMarkerArrayCached($itemFrameWork,$markerArray,$subpartArray,$wrappedSubpartArray);
+			$content = $this->cObj->substituteMarkerArrayCached($itemFrameWork, $markerArray, $subpartArray, $wrappedSubpartArray);
 
 		} else {
 			$error_code[0] = 'wrong_parameter';

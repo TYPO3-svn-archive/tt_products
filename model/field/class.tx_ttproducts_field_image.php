@@ -39,11 +39,13 @@
  */
 
 
+// require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_media.php');
+
+
 class tx_ttproducts_field_image extends tx_ttproducts_field_media {
 
 	/**
-	 * @param	[type]		$$cObj: ...
-	 * @return	[type]		...
+	 *
 	 */
 	function init(&$cObj)	{
 		global $TYPO3_DB,$TSFE,$TCA;
@@ -57,7 +59,7 @@ class tx_ttproducts_field_image extends tx_ttproducts_field_media {
 
 
 	function &getImageArray($imageRow, $imageField)	{
-		$imageArray = ($imageRow[$imageField] ? explode(',',$imageRow[$imageField]) : array());
+		$imageArray = ($imageRow[$imageField] ? explode(',', $imageRow[$imageField]) : array());
 		$tmp = count($imageArray);
 		if (!$tmp && $imageRow['file_mime_type'] == 'image')	{
 			$imageArray = array($imageRow['file_name']);

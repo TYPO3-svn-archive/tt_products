@@ -71,7 +71,7 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 		$this->setIcon(PATH_BE_ttproducts_rel.'ext_icon.gif');
 
 		// required
-		return true;
+		return TRUE;
 	} # function - init
 
 
@@ -101,31 +101,31 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'deleted=0', '', 'uid DESC', $limit);
 
 				// Render List
-				$c .= $this->showDatabaseList('Orders:',$res,'uid,name,amount,crdate,note');
+				$c .= $this->showDatabaseList('Orders:', $res, 'uid,name,amount,crdate,note');
 			break;
 
 			case 'products':
 
 				// Show Database List
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tt_products','deleted=0 AND hidden=0','','crdate DESC',$limit);
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'deleted=0 AND hidden=0', '', 'crdate DESC', $limit);
 
 				// Render List
-				$c .= $this->showDatabaseList('Products:',$res,'uid,itemnumber,title,price');
+				$c .= $this->showDatabaseList('Products:', $res, 'uid,itemnumber,title,price');
 			break;
 
 			case 'outstock':
 
 				// Show Database List
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tt_products','deleted=0 AND hidden=0 AND inStock<=0','','inStock',$limit);
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products', 'deleted=0 AND hidden=0 AND inStock<=0', '', 'inStock', $limit);
 
 				// Render List
-				$c .= $this->showDatabaseList('Products:',$res,'uid,itemnumber,title,inStock');
+				$c .= $this->showDatabaseList('Products:', $res, 'uid,itemnumber,title,inStock');
 			break;
 
 			case 'fewstock':
 
 				// Show Database List
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tt_products','deleted=0 AND hidden=0 AND inStock>0','','inStock',$limit);
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_products','deleted=0 AND hidden=0 AND inStock>0', '', 'inStock', $limit);
 
 				// Render List
 				$c .= $this->showDatabaseList('Products:', $res, 'uid,itemnumber,title,inStock');

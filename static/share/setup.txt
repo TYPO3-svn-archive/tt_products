@@ -1,0 +1,13 @@
+##
+## @package TYPO3
+## @subpackage tt_products
+## @version $Id$
+##
+
+temp.tt_products.shared  = COBJ
+temp.tt_products.shared {
+  test12 = 0815
+}
+
+
+

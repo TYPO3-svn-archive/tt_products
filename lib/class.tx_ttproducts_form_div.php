@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,22 +31,40 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
 class tx_ttproducts_form_div {
 
-	function createSelect (&$langObj, &$valueArray, $name, $selectedKey, $bSelectTags=true, $bTranslateText=true, $allowedArray = array(), $type = 'select') {
-		global $TYPO3_DB, $TSFE;
 
+	static public function createSelect (
+		$langObj,
+		&$valueArray,
+		$name,
+		$selectedKey,
+		$bSelectTags=TRUE,
+		$bTranslateText=TRUE,
+		$allowedArray=array(),
+		$type='select',
+		$mainAttributeArray=array(),
+		$layout='',
+		$imageFileArray=''
+	) {
+		global $TSFE;
+
+		$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
 		$flags = ENT_QUOTES;
 
 		if (is_array($valueArray))	{
 			$totaltext = '';
 
 			foreach ($valueArray as $key => $parts) {
+
 				if (is_array($parts))	{
 					$selectKey = $parts[1];
 					$selectValue = $parts[0];
@@ -54,6 +72,7 @@ class tx_ttproducts_form_div {
 					$selectKey = $key;
 					$selectValue = $parts;
 				}
+
 				if ($bTranslateText)	{
 					$tmp = tx_div2007_alpha5::sL_fh002($selectValue);
 					$text = tx_div2007_alpha5::getLL_fh002($langObj, $tmp);
@@ -66,46 +85,69 @@ class tx_ttproducts_form_div {
 					}
 					$text = $selectValue;
 				}
-
 				if (!count($allowedArray) || in_array($selectKey, $allowedArray))	{
 					$nameText = trim($text);
 					$valueText = $selectKey;
+
 					$selectedText = '';
-					if ($selectKey == $selectedKey)	{
+					$paramArray = array();
+					$preParamArray = array();
+
+					if (strcmp($selectKey, $selectedKey) == 0)	{
 						switch ($type)	{
 							case 'select':
-								$selectedText = ' selected="selected"';
+								$selectedText = ($bUseXHTML ? ' selected="selected"' : ' selected');
+								$paramArray['selected'] = 'selected';
 								break;
+							case 'checkbox':
 							case 'radio':
-								$selectedText = ' checked="checked"';
+								$selectedText = ($bUseXHTML ? ' checked="checked"' : ' checked');
+								$paramArray['checked'] = 'checked';
+
 								break;
 						}
 					}
+
 					switch ($type)	{
 						case 'select':
-							$totaltext .= '<option value="' . $valueText . '"' . htmlspecialchars($selectedText, $flags) . '>' . $nameText . '</option>';
+							$inputText = '<option value="' . htmlspecialchars($valueText, $flags) . '"' . $selectedText . '>' . $nameText . '</option>';
 							break;
+						case 'checkbox':
 						case 'radio':
-							$totaltext .= '<input type="radio" name="' . $name . '" value="' . htmlspecialchars($valueText, $flags) . '" ' . $selectedText . '> ' . $nameText;
+							$preParamArray['type'] = $type;
+							$inputText = self::createTag('input', $name, $valueText, $preParamArray, $paramArray);
+							$inputText .=  ' ' . $nameText . '<br '. ($bUseXHTML ? '/' : '') . '>';
 							break;
 					}
+					if ($layout == '')	{
+						$totaltext .= $inputText;
+					} else	{
+						$tmpText = str_replace('###INPUT###', $inputText, $layout);
+						if (is_array($imageFileArray) && isset($imageFileArray[$key]))	{
+							$tmpText = str_replace('###IMAGE###', $imageFileArray[$key], $tmpText);
+						}
+						$totaltext .= $tmpText;
+					}
 				}
-			}
-			if ($bSelectTags && $type == 'select')	{
-				$text = '<select name="'.$name.'">' . $totaltext .'</select>';
+			} // foreach ($valueArray as $key => $parts) {
+
+			if ($bSelectTags && $type == 'select' && $name!='')	{
+
+				$mainAttributes = self::getAttributeString($mainAttributeArray);
+
+				$text = '<select name="' . $name . '"' . $mainAttributes . '>' . $totaltext . '</select>';
 			} else {
 				$text = $totaltext;
 			}
 		} else {
 			$text = FALSE;
 		}
-
 		return $text;
 	}
 
 
 	// fetches the valueArray needed for the functions of this class form a valueArray setup
-	function fetchValueArray($confArray)	{
+	static public function fetchValueArray ($confArray)	{
 		$rcArray = array();
 		if (is_array($confArray))	{
 			foreach ($confArray as $k => $vArray)	{
@@ -115,13 +157,8 @@ class tx_ttproducts_form_div {
 		return $rcArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$valueArray: ...
-	 * @return	[type]		...
-	 */
-	function getKeyValueArray($valueArray)	{
+
+	static public function getKeyValueArray ($valueArray)	{
 		$rc = array();
 
 		foreach ($valueArray as $k => $row)	{
@@ -129,7 +166,58 @@ class tx_ttproducts_form_div {
 		}
 		return $rc;
 	}
-}
 
+
+	static protected function getAttributeString ($mainAttributeArray)	{
+		global $TSFE;
+
+		$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
+		$rc = '';
+		if (count($mainAttributeArray))	{
+
+			foreach ($mainAttributeArray as $attribute => $value)	{
+				if ($bUseXHTML || $attribute != 'checked' && $attribute != 'selected')	{
+					$rc .= ' ' . $attribute . '="' . $value . '"';
+				} else {
+					$rc .= ' ' . $attribute;
+				}
+			}
+		}
+		return $rc;
+	}
+
+
+	static public function createTag (
+		$tag,
+		$name,
+		$value,
+		$preMainAttributes = '',
+		$mainAttributes = ''
+	) {
+		$bUseXHTML = $GLOBALS['TSFE']->config['config']['xhtmlDoctype'] != '';
+		$attributeTextArray = array();
+		$attributeArray = array();
+		$attributeArray['pre'] = $preMainAttributes;
+		$attributeArray['post'] = $mainAttributes;
+		$spaceArray = array();
+		$spaceArray['pre'] = ($preMainAttributes != '' ? ' ' : '');
+		$spaceArray['post'] = ($mainAttributes != '' ? ' ' : '');
+
+		foreach ($attributeArray as $k => $attributes) {
+			if (isset($attributes) && is_array($attributes)) {
+				$attributeTextArray[$k] = self::getAttributeString($attributes);
+			} else {
+				if ($attributes != '' && $attributes{0} != ' ') {
+					$attributeTextArray[$k] = ' ' . $attributes;
+				}
+			}
+		}
+
+		$flags = ENT_QUOTES;
+		$result = '<' . $tag . $spaceArray['pre'] . $attributeTextArray['pre'] . ' name="' . $name . '" value="' . htmlspecialchars($value, $flags) . '"' . $spaceArray['post'] . $attributeTextArray['post'] . ' ' . ($bUseXHTML ? '/' : '') . '>';
+
+		return $result;
+	}
+}
 
 ?>

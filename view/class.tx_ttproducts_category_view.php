@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,14 +31,15 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
+// require_once(PATH_BE_ttproducts.'view/class.tx_ttproducts_category_base_view.php');
 
 
 class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
@@ -56,7 +57,8 @@ class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 	 * 	 			for the tt_producst record, $row
 	 * @access private
 	 */
-	public function getMarkerArray (&$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $theCode, $id, $prefix, $linkWrap='')	{
+	public function getMarkerArray (&$markerArray, $markerKey, $category, $pid, $imageNum = 0, $imageRenderObj = 'image', &$viewCatTagArray, $forminfoArray = array(), $pageAsCategory = 0, $theCode, $id, $prefix, $linkWrap = '')	{
+		global $TSFE;
 
 		$modelObj = $this->getModelObj();
 		$row = ($category ? $modelObj->get($category) : array ('title' => '', 'pid' => $pid));
@@ -65,8 +67,7 @@ class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 			// Get image
-		$imageObj->getItemMarkerArray($functablename, 'image', $row, $this->marker, $markerArray, $viewCatTagArray, $theCode, $id, $tmp, TRUE, '', $prefix, $imageRenderObj);
-
+		$imageObj->getRowMarkerArrayEnhanced($functablename, $row, $this->marker, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $theCode, $id, $prefix, $linkWrap);
 		$pageCatTitle = '';
 		if ($pageAsCategory == 1) {
 			$pageObj = $tablesObj->get('pages');
@@ -78,8 +79,8 @@ class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 		if (($row['title']))	{
 			$catTitle .= ($this->tableconf['separator'].$row['title']);
 		}
-		$this->setMarkerArrayCatTitle ($markerArray, $catTitle, $prefix);
-		parent::getItemMarkerArray($row, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, TRUE, '', $prefix, $imageRenderObj);
+		$this->setMarkerArrayCatTitle($markerArray, $catTitle, $prefix);
+		parent::getRowMarkerArray($row, $markerKey, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, TRUE, $TSFE->renderCharset, $imageNum, $imageRenderObj, $id, $prefix, '', $linkWrap);
 	}
 }
 

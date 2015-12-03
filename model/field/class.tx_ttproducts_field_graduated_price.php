@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2008 Franz Holzinger <kontakt@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -39,6 +39,7 @@
  *
  */
 
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
 class tx_ttproducts_field_graduated_price extends tx_ttproducts_field_base {
 

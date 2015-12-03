@@ -38,16 +38,14 @@
  *
  */
 
-
-
 class tx_ttproducts_tables	{
-	var $tableArray = array();
 	protected $tableClassArray = array(
 		'address' => 'tx_ttproducts_address',
 		'fe_users' => 'tx_ttproducts_orderaddress',
 		'pages' => 'tx_ttproducts_page',
 		'static_banks_de' => 'tx_ttproducts_bank_de',
 		'static_countries' => 'tx_ttproducts_country',
+		'static_taxes' => 'tx_ttproducts_static_tax',
 		'sys_products_orders' => 'tx_ttproducts_order',
 		'sys_products_accounts' => 'tx_ttproducts_account',
 		'sys_products_cards' => 'tx_ttproducts_card',
@@ -62,31 +60,41 @@ class tx_ttproducts_tables	{
 		'tx_dam' => 'tx_ttproducts_dam',
 		'tx_dam_cat' => 'tx_ttproducts_damcategory'
 	);
-	var $needExtensionArray = array(
+	protected $needExtensionArray = array(
 		'static_banks_de' => 'static_info_tables_banks_de',
 		'static_countries' => 'static_info_tables',
 		'tx_dam' => 'dam',
 		'tx_dam_cat' => 'dam'
 	);
-	var $pibase;
-	var $cnf;
-	var $conf;
+	public $langObj;
+	public $cnf;
+	public $conf;
 
 
-	function init ($pibase)	{
+	public function init ($langObj)	{
 
-		$this->pibase = $pibase;
+		$this->langObj = $langObj;
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
 	}	// init
 
-	function gettableClass ($functablename, $bView=false)	{
+	public function getTableClassArray ()	{
+		return $this->tableClassArray;
+	}
+
+	public function setTableClassArray ($tableClassArray)	{
+		$this->tableClassArray = $tableClassArray;
+	}
+
+	public function getTableClass ($functablename, $bView = FALSE)	{
+
 		$rc = '';
 		if ($functablename)	{
+
 			$neededExtension = $this->needExtensionArray[$functablename];
-			if (!$neededExtension || t3lib_extMgm::isLoaded($neededExtension))	{
+			if (!isset($neededExtension) || t3lib_extMgm::isLoaded($neededExtension))	{
 				$rc = $this->tableClassArray[$functablename].($bView ? '_view': '');
 			} else {
 				$rc = 'skip';
@@ -95,55 +103,141 @@ class tx_ttproducts_tables	{
 		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$functablename: ...
-	 * @param	[type]		$bView: ...
-	 * @return	[type]		...
-	 */
-	function get ($functablename, $bView=false)	{
+	/* set the $bView to TRUE if you want to get the view class */
+	public function &get ($functablename, $bView=FALSE)	{
 		$classNameArray = array();
 		$tableObjArray = array();
 
-		$classNameArray['model'] = $this->gettableClass($functablename, false);
+		$classNameArray['model'] = $this->getTableClass($functablename, FALSE);
 		if ($bView)	{
-			$classNameArray['view'] = $this->gettableClass($functablename, true);
+			$classNameArray['view'] = $this->getTableClass($functablename, TRUE);
 		}
 
 		if (!$classNameArray['model'] || $bView && !$classNameArray['view'])	{
-			debug('Error in '.TT_PRODUCTS_EXT.'. No class found after calling function tx_ttproducts_tables::get with parameters "'.$functablename.'", '.$bView.'.');
+			debug('Error in '.TT_PRODUCTS_EXT.'. No class found after calling function tx_ttproducts_tables::get with parameters "'.$functablename.'", '.$bView.'.','internal error', __LINE__, __FILE__);
 			return 'ERROR';
 		}
 
 		foreach ($classNameArray as $k => $className)	{
 			if ($className != 'skip')	{
-				include_once (PATH_BE_ttproducts.$k.'/class.'.$className.'.php');
-				$tableObj[$k] = t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
+				// include_once (PATH_BE_ttproducts.$k.'/class.'.$className.'.php');
+				if (strpos($className, ':') === FALSE)	{
+					$path = PATH_BE_ttproducts;
+				} else {
+					list($extKey, $className) = t3lib_div::trimExplode(':', $className, TRUE);
+
+					if (!t3lib_extMgm::isLoaded($extKey))	{
+						debug('Error in '.TT_PRODUCTS_EXT.'. No extension "' . $extKey . '" has been loaded to use class class.' . $className . '.','internal error',  __LINE__,  __FILE__);
+						continue;
+					}
+					$path = t3lib_extMgm::extPath($extKey);
+				}
+				$classRef = 'class.'.$className;
+				$classFile = $path . $k . '/' . $classRef . '.php';
+				if (file_exists($classFile)) {
+					$classRef = $classFile . ':&' . $className;
+					$tableObj[$k] = t3lib_div::getUserObj($classRef);	// fetch and store it as persistent object
+				} else {
+					debug ($classFile, 'File not found: ' . $classFile . ' in file class.tx_ttproducts_tables.php');
+				}
 			}
 		}
 
 		if (isset($tableObj['model']) && is_object($tableObj['model']))	{
 			if ($tableObj['model']->needsInit())	{
 				$tableObj['model']->init(
-					$this->pibase->cObj,
+					$this->langObj->cObj,
 					$functablename
 				);
 			}
 		} else {
-			debug ('Object for \''.$functablename.'\' has not been found.');
+			debug ('Object for \''.$functablename.'\' has not been found.','internal error in '.TT_PRODUCTS_EXT, __LINE__, __FILE__);
 		}
 
-		if (isset($tableObj['view']) && is_object($tableObj['model']))	{
+		if (isset($tableObj['view']) && is_object($tableObj['view']) && isset($tableObj['model']) && is_object($tableObj['model']))	{
 			if ($tableObj['view']->needsInit())	{
 				$tableObj['view']->init(
-					$this->pibase,
+					$this->langObj,
 					$tableObj['model']
 				);
 			}
 		}
 
 		return ($bView ? $tableObj['view'] : $tableObj['model']);
+	}
+
+
+	public function &getMM ($functablename)	{
+
+		include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_mm_table.php');
+		$tableObj = t3lib_div::getUserObj('&tx_ttproducts_mm_table');
+
+		if (isset($tableObj) && is_object($tableObj))	{
+			if ($tableObj->needsInit() || $tableObj->getFuncTablename() != $functablename)	{
+				$tableObj->init(
+					$this->langObj->cObj,
+					$functablename
+				);
+			}
+		} else {
+			debug ('Object for \''.$functablename.'\' has not been found.','internal error in '.TT_PRODUCTS_EXT, __LINE__, __FILE__);
+		}
+		return $tableObj;
+	}
+
+
+	/**
+	 * Returns informations about the table and foreign table
+	 * This is used by various tables.
+	 *
+	 * @param	string		name of the table
+	 * @param	string		field of the table
+	 *
+	 * @return	array		infos about the table and foreign table:
+					table         ... name of the table
+					foreign_table ... name of the foreign table
+					mmtable       ... name of the mm table
+					foreign_field ... name of the field in the mm table which joins with
+					                  the foreign table
+	 * @access	public
+	 *
+	 */
+	public function getForeignTableInfo ($functablename,$fieldname)	{
+		global $TCA, $TYPO3_DB;
+
+		$rc = array();
+		if ($fieldname != '')	{
+			$tableObj = $this->get($functablename,FALSE);
+			$tablename = $tableObj->getTableName ($functablename);
+			$rc = tx_div2007_alpha5::getForeignTableInfo_fh003 ($tablename, $fieldname);
+		}
+		return $rc;
+	}
+
+
+	public function prepareSQL ($foreignTableInfoArray, $tableAliasArray, $aliasPostfix, &$sqlArray)	{
+
+		if ($foreignTableInfoArray['mmtable'] == '' && $foreignTableInfoArray['foreign_table'] != '')	{
+			$fieldname = $foreignTableInfoArray['table_field'];
+
+			$tablename = $foreignTableInfoArray['table'];
+			if (isset($tableAliasArray[$tablename]))	{
+				$tablealiasname = $tableAliasArray[$tablename];
+			} else {
+				$tablealiasname = $tablename;
+			}
+
+			$foreigntablename = $foreignTableInfoArray['foreign_table'];
+			if (isset($tableAliasArray[$foreigntablename]))	{
+				$foreigntablealiasname = $tableAliasArray[$foreigntablename];
+			} else {
+				$foreigntablealiasname = $foreigntablename;
+			}
+
+			$sqlArray['local'] = $tablename;
+			$sqlArray['from'] = $tablename.' '.$tablealiasname.$aliasPostfix.' INNER JOIN '.$foreigntablename.' '.$foreigntablealiasname.$aliasPostfix.' ON '.$tablealiasname.$aliasPostfix.'.'.$fieldname.'='.$foreigntablealiasname.$aliasPostfix.'.uid';
+			$sqlArray['where'] = $tablealiasname.'.uid='.$tablealiasname.$aliasPostfix.'.uid';
+		}
 	}
 }
 

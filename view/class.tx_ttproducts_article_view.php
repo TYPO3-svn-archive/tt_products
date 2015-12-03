@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,12 +40,20 @@
  */
 
 
+// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_article_base_view.php');
+
+
 class tx_ttproducts_article_view extends tx_ttproducts_article_base_view {
 	public $marker = 'ARTICLE';
 	public $type = 'article';
 	public $piVar = 'article';
 
+	function init(&$langObj, &$modelObj)	{
+		include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_dummy_view.php');
 
+		$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
+		parent::init($langObj, $modelObj);
+	}
 }
 
 

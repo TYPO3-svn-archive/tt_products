@@ -53,12 +53,8 @@ class tx_ttproducts_modfunc2 extends t3lib_extobjbase {
 	public function main () {
 			// Initializes the module. Done in this function because we may need to re-initialize if data is submitted!
 		$standardFields = array('pid', 'cruser_id', 'hidden', 'starttime', 'endtime', 'fe_group');
-		$typoVersion = '';
 
-		if (t3lib_extMgm::isLoaded('div2007')) {
-			$typoVersion = tx_div2007_core::getTypoVersion();
-		}
-		if ($typoVersion < '6001000') {
+		if (version_compare(TYPO3_version, '6.1.0', '<')) {
 			t3lib_div::loadTCA('tt_products_texts');
 			t3lib_div::loadTCA('tt_products_texts_language');
 		}

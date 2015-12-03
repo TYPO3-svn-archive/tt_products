@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2012-2012 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2012 Franz Holzinger (franz@ttproducts.de)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,7 +27,7 @@
 /**
  * Part of the tt_products (Shop System) extension.
  *
- * control of memo functions for the customer.
+ * functions for the control of the single view
  *
  * $Id$
  *
@@ -36,8 +36,8 @@
  * @package TYPO3
  * @subpackage tt_products
  *
+ *
  */
-
 
 
 class tx_ttproducts_control_memo {
@@ -207,7 +207,6 @@ class tx_ttproducts_control_memo {
 				$v = explode(',', $v);
 			}
 		}
-
 		self::$memoItemArray[$functablename] = $v;
 	}
 
@@ -230,7 +229,6 @@ class tx_ttproducts_control_memo {
 
 	static public function readFeUserMemoItems ($functablename) {
 		$result = '';
-		$tableArray = self::getMemoTableFieldArray();
 		$feuserField = self::getMemoField($functablename, TRUE);
 
 		if ($GLOBALS['TSFE']->fe_user->user[$feuserField]) {
@@ -243,6 +241,7 @@ class tx_ttproducts_control_memo {
 	static public function loadMemo ($functablename, $conf) {
 		$memoItems = '';
 		$bFeuser = self::bUseFeuser($conf);
+		$theField = self::getMemoField($functablename, $bFeuser);
 
 		if (self::bUseFeuser($conf)) {
 
@@ -283,6 +282,42 @@ class tx_ttproducts_control_memo {
 			}
 		}
 	}
+
+	/**
+	 * Adds link markers to a wrapped subpart array
+	 */
+	static public function getWrappedSubpartArray (
+		&$wrappedSubpartArray,
+		$pidMemo,
+		$uid,
+		$cObj,
+		$urlObj,
+		$excludeList = '',
+		$addQueryString = array(),
+		$css_current = '',
+		$bUseBackPid = TRUE
+	) {
+		$cmdArray = array('add', 'del');
+
+		foreach ($cmdArray as $cmd) {
+			$addQueryString[$cmd . 'memo'] = $uid;
+
+			$pageLink = tx_div2007_alpha5::getPageLink_fh003(
+				$cObj,
+				$pidMemo,
+				'',
+				$urlObj->getLinkParams(
+					$excludeList,
+					$addQueryString,
+					TRUE,
+					$bUseBackPid
+				)
+			);
+			$wrappedSubpartArray['###LINK_MEMO_' . strtoupper($cmd) . '###'] = array('<a href="' . htmlspecialchars($pageLink) . '"' . $css_current . '>','</a>');
+			unset($addQueryString[$cmd . 'memo']);
+		}
+	}
 }
+
 
 ?>

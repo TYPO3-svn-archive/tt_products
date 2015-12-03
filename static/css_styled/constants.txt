@@ -7,13 +7,16 @@
 
 plugin.tt_products {
     # cat=plugin.products/file; type=file[html,htm,tmpl,txt]; label= Template File: This is a simple textfile where each part of the shopping basket is defined with HTML-code. To see an example with explanations, take a look at EXT:tt_products/pi1/products_template.tmpl which is the default.
-  file.templateFile = EXT:tt_products/template/products_de.html
+  file.templateFile = EXT:tt_products/template/example_locallang_xml.html
     # cat=plugin.products/file; type=file[IMAGE_EXT]; label= Alternative Image: This image is used if there is no image present for the product
   file.noImageAvailable =
 
     # cat=plugin.products/file; type=file[pdf,gif,jpg]; label= datasheet icon:
   file.datasheetIcon =
-
+    # cat=plugin.products/file; type=file[xml]; label= Marker Language File: This is a simple language xml file which contains the texts for the global markers
+  file.markerFile = EXT:tt_products/marker/de.locallang.xml
+      # cat=plugin.products/file; type=file[txt,log]; label= Error Log File: This is a simple text file into which PHP error_log entries will be made for debugging purposes only. If emtpy then no error logging will be done.
+  file.errorLog =
     # cat=plugin.products/typo; type=wrap; label= Wrap 1: This wrap is used in the template-file.
   wrap1 = <span class="tx-ttproducts-pi1-wrap1"> | </span>
     # cat=plugin.products/typo; type=wrap; label= Wrap 2: This wrap is used in the template-file.
@@ -22,10 +25,11 @@ plugin.tt_products {
   nl2brNote = 1
 
     # cat=plugin.products//; type=integer; label= use article table: You have to set this to 1 if you want that your entries in the products articles table get used. Set it to 2 if your articles do not use the variant fields.
-  useArticles =
+    default is 3: The variants of the product need not be entered but are taken from the articles assigned to a product. Many articles are assigned to a product with the possibility of additional prices.
+  useArticles = 3
 
     # cat=plugin.products/color; type=color; label= Color 1: This bgcolor is used in the template-file.
-  color1 = #cccccc
+  color1 = #CCCCCC
     # cat=plugin.products/color; type=color; label= Color 2: This bgcolor is used in the template-file.
   color2 = #999999
     # cat=plugin.products/color; type=color; label= Color 3: This bgcolor is used in the template-file.
@@ -37,8 +41,6 @@ plugin.tt_products {
   clickEnlarge_list = 1
     # cat=plugin.products//; type=boolean; label= Click Enlarge, List display for items listed with a filter for a category having childs: See above
   clickEnlarge_listHasChilds = 1
-    # cat=plugin.products//; type=boolean; label= Click Enlarge, List display for items listed with a filter for a DAM root category
-  clickEnlarge_listRoot = 1
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Basket display: As above, but for the images in the basket
   clickEnlarge_basket = 1
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Category images: As above, but for the category images
@@ -71,34 +73,34 @@ plugin.tt_products {
   displayBasketCatHeader = 0
 
     # cat=plugin.products//; type=boolean; label= cObj settings: If set, certain settings are manipulated in order to let the script render a single item - the $cObj->data.
-  displayCurrentRecord =
+  displayCurrentRecord = 0
     # cat=plugin.products//; type=string; label= Type of display, category list: main HTML tag for category list view
   displayCatListType = ul
 
     # cat=plugin.products//; type=string; label= URL of the basket image
   basketPic = EXT:tt_products/res/icons/fe/minibasket1.gif
     # cat=plugin.products//; type=boolean; label= Click into basket: If set the basket page will be shown after a product has been put there. PIDbasket needs to be set.
-  clickIntoBasket =
+  clickIntoBasket = 0
     # cat=plugin.products//; type=boolean; label= Click into list: If set the list page will be shown after a product has been put there. PIDlistDisplay needs to be set.
-  clickIntoList =
+  clickIntoList = 0
     # cat=plugin.products//; type=boolean; label= Click item list into submenu: If set the click on an image on the list view will lead to the subcategory, if the category has childs
-  clickItemsIntoSubmenu =
+  clickItemsIntoSubmenu = 0
     # cat=plugin.products//; type=int+; label= maximum basket quantity: This is the maximal possible amount of one product in the basket.
   basketMaxQuantity = 1000
     # cat=plugin.products//; type=boolean; label= Quantity is a float value: If set the basket will accept float values as quantities
-  quantityIsFloat =
+  quantityIsFloat = 0
 
     # cat=plugin.products//; type=string; label= CSS even rows: Cascading Stylesheets (CSS) even rows in the products listing. This works only if displayColumns has been set.
-  CSSRowEven =
+  CSSRowEven = products-list-even
     # cat=plugin.products//; type=string; label= CSS uneven rows: Cascading Stylesheets (CSS) uneven rows in the products listing. This works only if displayColumns has been set.
-  CSSRowUneven =
+  CSSRowUneven = products-list-uneven
     # cat=plugin.products//; type=string; label= CSS default, List display: Cascading Stylesheets (CSS) for default entries in a list view.
   CSSListDefault =
     # cat=plugin.products//; type=string; label= CSS current, List display: Cascading Stylesheets (CSS) for the currently selected item a list view.
   CSSListCurrent =
 
     # cat=plugin.products//; type=boolean; label= single view, List display: Usually you get the link to the single item view on the display page of the LIST code. If you however want to create your own pages for single view with SINGLE code you must set this to 1.
-  NoSingleViewOnList =
+  NoSingleViewOnList = 0
     # cat=plugin.products//; type=boolean; label= list display on search: Usually the list view is shown if you have entered a search string.
   listViewOnSearch = 1
 
@@ -109,9 +111,9 @@ plugin.tt_products {
     # cat=plugin.products//; type=int+; label= Max images displayed: The maximum number of images displayed for an item on a single view.
   limitImageSingle = 10
     # cat=plugin.products//; type=boolean; label= Images from the page content used: The image of the page contents can be used instead of the images of the products table.
-  usePageContentImage =
+  usePageContentImage = 0
     # cat=plugin.products//; type=boolean; label= Separate images: Normally all images should not be displayed together. With separateImage=on you can use a ###PRODUCT_IMAGE3### for each image number separately.
-  separateImage =
+  separateImage = 0
 
     # cat=plugin.products/dims; type=int+; label= Max image width, single display: The maximum width in pixels of an image when displayed with a single product.
   maxW_single = 200
@@ -125,9 +127,9 @@ plugin.tt_products {
   maxW_listHasChilds = 50
     # cat=plugin.products/dims; type=int+; label= Max image height, list display: DAM, the category has childs
   maxH_listHasChilds = 100
-    # cat=plugin.products/dims; type=int+; label= Max image width, list display: DAM, the category is a root category
+    # cat=plugin.products/dims; type=int+; label= Max root image width, list display: The maximum width in pixels of an image when displayed in lists and searchresults on the category root level.
   maxW_listRoot = 50
-    # cat=plugin.products/dims; type=int+; label= Max image height, list display: DAM, the category is a root category
+    # cat=plugin.products/dims; type=int+; label= Max root image height, list display: The maximum height in pixels of an image when displayed in lists and searchresults on the category root level.
   maxH_listRoot = 100
     # cat=plugin.products/dims; type=int+; label= Max image width, basket display: The maximum width in pixels of an image when displayed in the shopping-basket.
   maxW_basket = 100
@@ -179,6 +181,8 @@ plugin.tt_products {
   pidsRelatedProducts =
     # cat=plugin.products//; type=eint+; label=allowed pages for addresses
   pidsAddresses =
+    # cat=plugin.products//; type=eint+; label=Store user: UID of the address table (fe_users) with the data of the shop.
+  UIDstore =
 
     # cat=plugin.products//; type=string; label=When the payment shall be executed. Possible values:  'payment', 'finalize'
   paymentActivity=payment
@@ -187,7 +191,7 @@ plugin.tt_products {
   advanceOrderNumberWithInteger =
 
     # cat=plugin.products//; type=boolean; label=always advance order number: If set then the order number will always get increased and the empty order numbers are not reused.
-  alwaysAdvanceOrderNumber =
+  alwaysAdvanceOrderNumber = 0
     # cat=plugin.products//; type=boolean; label=always update order amount: If set then the order amount will always be updated and not increased by the entered number
   alwaysUpdateOrderAmount = 1
 
@@ -234,11 +238,11 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label=lock login user: If set and a user is logged in, the address info of that fe_user is 'hardcoded' as billing address of the user.
   lockLoginUserInfo = 0
     # cat=plugin.products//; type=boolean; label=edit locked login info: If set and lockLoginUserInfo is set then it is possible to edit still the data only for the order if there are HTML edit fields in the template
-  editLockedLoginInfo =
+  editLockedLoginInfo = 0
     # cat=plugin.products//; type=boolean; label=lock login user address: If lockLoginUserInfo is set, this switch makes that the address field is filled in from address, country, zip and city of the fe_user
-  loginUserInfoAddress =
+  loginUserInfoAddress = 0
     # cat=plugin.products//; type=boolean; label=oder by item number: If the single item display should be sorted by ItemNumber instead of uid; used for ###LINK_NEXT_SINGLE### and ###LINK_PREV_SINGLE###
-  orderByItemNumberSg =
+  orderByItemNumberSg = 0
     # cat=plugin.products//; type=string; label=Prefix to the order numbers: Dont use spaces or special chars. Max 30 chars.
   orderNumberPrefix = %
     # cat=plugin.products//; type=string; label=from email addresss: From email address for the confirmation email to customer
@@ -247,16 +251,20 @@ plugin.tt_products {
   orderEmail_fromName = My TYPO3 Shop
     # cat=plugin.products//; type=string; label=to email addresses: Comma separated list of recipients of the order email. Shop and administrator/supervisor email addresses go here!
   orderEmail_to = email@webshop-typo3.com
-    # cat=plugin.products//; type=boolean; label=send email to delivery: If you want to send the email notification to the delivery email and not to the billing email
+    # cat=plugin.products//; type=string; label=to product addresses: If set, then the order email is sent to all addresses which are connected to the products in the basket.
+  orderEmail_toAddress =
+    # cat=plugin.products//; type=string; label=send email to delivery: If you want to send the email notification to the delivery email and not to the billing email
   orderEmail_toDelivery =
     # cat=plugin.products//; type=string; label=subject of email: The topic of your email. Or the first line in EMAIL_PLAINTEXT_TEMPLATE is used!
   orderEmail_subject = this is the subject
+    # cat=plugin.products//; type=string; label=return path of email: If the email of the recipient is invalid then the message will be sent to this address.
+  orderEmail_returnPath =
     # cat=plugin.products//; type=boolean; label=HTML email: If set, the order confirmation email is sent as HTML
   orderEmail_htmlmail = 0
     # cat=plugin.products//; type=string; label=header in apostrophes: If set, the order email subject and sender name will be set inside of apostrophes.
   orderEmail_apostrophe =
     # cat=plugin.products//; type=boolean; label=send 2 order notifications: If set, shop admin will get 2 email order notifications.
-  orderEmail_order2 =
+  orderEmail_order2 = 0
     # cat=plugin.products//; type=boolean; label=email notify: If email-notification for the customer is enabled by default (he can change it himself in the tracking module later)
   email_notify_default = 1
 
@@ -267,6 +275,8 @@ plugin.tt_products {
   usePriceTag = 0
     # cat=plugin.products//; type=boolean; label=Use Frontend User Static Info Country Field: This is the small country field of the fe_user table
   useStaticInfoCountry = 0
+    # cat=plugin.products//; type=boolean; label=Use Static Taxes extension: Even if the product has a tax, the tax is taken from the extension static_info_tables_taxes
+  useStaticTaxes = 0
     # cat=plugin.products//; type=string; label=Message displayed at bulkily items
   bulkilyWarning = <p><b>Warning! This article needs special transport.</b></p>
     # cat=plugin.products//; type=string; label=Special preparation: Message displayed at items marked as special preparation
@@ -277,6 +287,8 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=boolean; label=Create Users: Create an user account for each new customer
   createUsers = 0
+    # cat=plugin.products//; type=boolean; label=md5 password: Enable md5 password encryption.
+  useMd5Password = 0
     # cat=plugin.products//; type=string; label=Output folder: Folder where the bill and delivery sheets are created.
   outputFolder = fileadmin/data
     # cat=plugin.products//; type=int+; label=Group of customers
@@ -284,7 +296,8 @@ plugin.tt_products {
     # cat=plugin.products//; type=string; label=Discount group name: Name of the group for discount pricecalculation
   discountGroupName =
     # cat=plugin.products//; type=boolean; label=Get discount price: If set the discount price will be used even for normal customers without having a frontend user in the discount group.
-  getDiscountPrice =
+  getDiscountPrice = 0
+
 
     # cat=plugin.products//; type=eint+; label=PID of revocation page: PID of the page with the right of revocation
   PIDrevocation = 0
@@ -311,7 +324,7 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label=always in Stock: The stock will never get reduced.
   alwaysInStock = 1
     # cat=plugin.products//; type=boolean; label=show not in stock items: If set the items will be shown even if no product is in the stock.
-  showNotinStock =
+  showNotinStock = 0
     # cat=plugin.products//; type=string; label=Not in Stock message: Message is displayed if inStock = 0 (means not inStock)
   notInStockMessage = not in stock
     # cat=plugin.products//; type=string; label=Unit for pieces
@@ -335,7 +348,7 @@ plugin.tt_products {
   debug =
 
     # cat=plugin.products//; type=boolean; label=debug Ajax: Turn this on and xAjax debugs will be diplayed. Only for testing purposes. Must not be set in online shops.
-  ajaxDebug =
+  ajaxDebug = 0
 
 }
 

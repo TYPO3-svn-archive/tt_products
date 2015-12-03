@@ -40,51 +40,37 @@
  */
 
 
+// require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_javascript.php');
+
 
 class tx_ttproducts_ajax {
 	var $taxajax;	// xajax object
 	var $conf; 	// conf coming from JavaScript via Ajax
 
-	/**
-	 * initialization
-	 *
-	 * @return	void
-	 */
-	function init()	{
+
+	function init ()	{
 		global $TSFE;
 
-// 		include_once(PATH_BE_taxajax.'class.tx_taxajax.php');
+		include_once(PATH_BE_taxajax.'class.tx_taxajax.php');
 		$this->taxajax = t3lib_div::makeInstance('tx_taxajax');
+//		$charset = $TSFE->renderCharset;
+
+			// Encoding of the response to FE charset
+//		$this->taxajax->setCharEncoding($charset);
 		$this->taxajax->setCharEncoding('utf-8');
 	}
 
 
-	/**
-	 * set the setup configuration
-	 *
-	 * @param	array		$$conf: setup
-	 * @return	void
-	 */
-	function setConf(&$conf)	{
+	function setConf (&$conf)	{
 		$this->conf = $conf;
 	}
 
 
-	/**
-	 * get the configuration
-	 *
-	 * @return	array		setup
-	 */
-	function &getConf()	{
+	function &getConf ()	{
 		return $this->conf;
 	}
 
-	/**
-	 * main code
-	 *
-	 * @param	boolean		$debug: enable or disable debug for Ajax
-	 * @return	void
-	 */
+
 	function main ($debug)	{
 
 			// Encoding of the response to utf-8.
@@ -101,35 +87,18 @@ class tx_ttproducts_ajax {
 		} else	{
 			$this->taxajax->debugOff();
 		}
-			// To prevent conflicts, prepend the extension prefix.
-		// $this->taxajax->setWrapperPrefix($this->prefixId);
 		$this->taxajax->setWrapperPrefix('');
 
-// 		$param = '&FE_SESSION_KEY='.rawurlencode(
-// 			$TSFE->fe_user->id.'-'.
-// 				md5(
-// 				$TSFE->fe_user->idcheckRequired.'/'.
-// 				$GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
-// 				)
-// 			);
-
-			// Encoding of the response to FE charset
-	//	$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING');
 		$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
-		if (strpos($reqURI, '?'))	{
-			$nextDelimiter = '&';
-		} else {
-			$nextDelimiter = '?';
-		}
+		$origUrlArray = explode('?', $reqURI);
+		$urlArray = t3lib_div::explodeUrl2Array($origUrlArray['1'], TRUE);
+		unset($urlArray['cHash']);
+		$urlArray['no_cache'] = 1;
+		$urlArray['eID'] = TT_PRODUCTS_EXT;
+		$reqURI = t3lib_div::implodeArrayForUrl('', $urlArray);
+		$reqURI{0} = '?';
+		$reqURI = $origUrlArray['0'] . $reqURI;
 
-		$pos = strpos($reqURI, '&cHash=');
-		if ($pos !== FALSE) {
-			$reqURI = substr($reqURI, 0, $pos);
-		}
-		$reqURI .= $nextDelimiter.'no_cache=1&eID='.TT_PRODUCTS_EXT.$param;
-
-		// $reqURI = htmlspecialchars ($reqURI,ENT_QUOTES,$charset);  ==> funktioniert mit einigen Browsern nicht!
-		// $reqURI = tx_ttproducts_javascript::jsspecialchars($reqURI);
 		$this->taxajax->setRequestURI($reqURI);
 	}
 }

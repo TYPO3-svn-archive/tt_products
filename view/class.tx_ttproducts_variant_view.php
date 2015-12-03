@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,13 +31,15 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
+
+// require_once (PATH_BE_ttproducts.'view/interface.tx_ttproducts_variant_view_int.php');
 
 
 class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
@@ -52,28 +54,15 @@ class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 		$this->modelObj = $modelObj;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$subpartArray: ...
-	 * @param	[type]		$markerArray: ...
-	 * @param	[type]		$row: ...
-	 * @param	[type]		$tempContent: ...
-	 * @param	[type]		$useSelects: ...
-	 * @param	[type]		$conf: ...
-	 * @param	[type]		$bHasAdditional: ...
-	 * @param	[type]		$bGiftService: ...
-	 * @return	[type]		...
-	 */
-	function getVariantSubpartMarkerArray (&$subpartArray, &$markerArray, &$row, &$tempContent, $useSelects, &$conf, $bHasAdditional, $bGiftService)  {
+	public function getVariantSubpartMarkerArray (&$markerArray, &$subpartArray, &$wrappedSubpartArray, &$row, &$tempContent, $bUseSelects, &$conf, $bHasAdditional, $bGiftService)  {
 
-		if ($useSelects) {
+		if ($bUseSelects) {
 			$areaArray = array();
 			if (is_array($this->conf))	{
 				foreach ($this->conf as $key => $field)	{
 					if ($field != 'additional')	{	// no additional here
 						if (trim($row[$field]) != '')  {
-							$areaArray[] = 'display_variant'.$key;
+							$areaArray[] = 'display_variant' . $key;
 						}
 					}
 				}
@@ -92,25 +81,14 @@ class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 			}
 
 			foreach ($areaArray as $k => $area) {
-				$subpartArray['###'.$area.'###'] = $this->cObj->getSubpart($tempContent,'###'.$area.'###');
+				$subpartArray['###' . $area . '###'] = $this->cObj->getSubpart($tempContent, '###' . $area . '###');
 			}
 		}
-
-		$this->removeEmptyMarkerSubpartArray($markerArray, $subpartArray, $row, $conf, $bHasAdditional, $bGiftService);
+		$this->removeEmptyMarkerSubpartArray($markerArray, $subpartArray, $wrappedSubpartArray, $row, $conf, $bHasAdditional, $bGiftService);
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$markerArray: ...
-	 * @param	[type]		$subpartArray: ...
-	 * @param	[type]		$row: ...
-	 * @param	[type]		$conf: ...
-	 * @param	[type]		$bHasAdditional: ...
-	 * @param	[type]		$bGiftService: ...
-	 * @return	[type]		...
-	 */
-	function removeEmptyMarkerSubpartArray (&$markerArray, &$subpartArray, &$row, &$conf, $bHasAdditional, $bGiftService) {
+	public function removeEmptyMarkerSubpartArray (&$markerArray, &$subpartArray, &$wrappedSubpartArray, &$row, &$conf, $bHasAdditional, $bGiftService) {
+
 		$areaArray = array();
 		$remMarkerArray = array();
 		$variantConf = &$this->modelObj->conf;
@@ -118,10 +96,10 @@ class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 		if (is_array($variantConf))	{
 			foreach ($variantConf as $key => $field)	{
 				if ($field != 'additional')	{	// no additional here
-					if (trim($row[$field]) == '' || !$conf['select'.ucfirst($field)])	{
-						$remSubpartArray[] = 'display_variant'.$key;
+					if (trim($row[$field]) == '' || !$conf['select' . ucfirst($field)])	{
+						$remSubpartArray[] = 'display_variant' . $key;
 					} else {
-						$remMarkerArray[] = 'display_variant'.$key;
+						$remMarkerArray[] = 'display_variant' . $key;
 					}
 				}
 			}
@@ -150,6 +128,7 @@ class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 
 		foreach ($remMarkerArray as $k => $marker)	{
 			$markerArray['<!-- ###'.$marker.'### -->'] = '';
+			$wrappedSubpartArray['###'.$marker.'###'] = '';
 		}
 	}
 }
@@ -158,6 +137,5 @@ class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_variant_view.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_variant_view.php']);
 }
-
 
 ?>

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,12 +31,16 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
 class tx_ttproducts_account_view extends tx_ttproducts_table_base_view {
+	public $marker = 'ACCOUNT';
 
 	/**
 	 * Template marker substitution
@@ -50,15 +54,16 @@ class tx_ttproducts_account_view extends tx_ttproducts_table_base_view {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$markerArray)	{
+	function getMarkerArray (&$markerArray)	{
 		global $TCA;
 
 		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 
-		if ($this->bIsAllowed)	{
-			$acNumber = $this->acArray['ac_number'];
-			$acOwnerName = $this->acArray['owner_name'];
-			$acBic = $this->acArray['bic'];
+		$modelObj = $this->getModelObj();
+		if ($modelObj->bIsAllowed)	{
+			$acNumber = $modelObj->acArray['ac_number'];
+			$acOwnerName = $modelObj->acArray['owner_name'];
+			$acBic = $modelObj->acArray['bic'];
 		} else {
 			$acNumber = '';
 			$acOwnerName = '';
@@ -69,10 +74,7 @@ class tx_ttproducts_account_view extends tx_ttproducts_table_base_view {
 		$markerArray['###PERSON_ACCOUNTS_AC_NUMBER###'] = $acNumber;
 		$markerArray['###PERSON_ACCOUNTS_BIC###'] = $acBic;
 	} // getMarkerArray
-
-
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_account_view.php'])	{

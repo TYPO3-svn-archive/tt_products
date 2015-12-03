@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2012 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2008-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -43,55 +43,45 @@
  *
  */
 
+/*
+require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_main.php');
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_control.php');*/
+
+
+tx_div2007_core::activateCompatibility6();
+
 class tx_ttproducts_pi1_base extends tslib_pibase {
-	var $prefixId = 'tt_products';	// Same as class name
-	var $scriptRelPath = 'pi1/class.tx_ttproducts_pi1.php';	// Path to this script relative to the extension dir.
-	var $extKey = TT_PRODUCTS_EXT;	// The extension key.
-	var $bRunAjax = false;			// overrride this
+	public $prefixId = TT_PRODUCTS_EXT;
+	public $scriptRelPath = 'pi1/class.tx_ttproducts_pi1_base.php';	// Path to this script relative to the extension dir.
+	public $extKey = TT_PRODUCTS_EXT;	// The extension key.
+	public $bRunAjax = FALSE;		// overrride this
 
 
 	/**
-	 * Main method. Call this from TypoScript by a USER cObject.
-	 *
-	 * @param	[type]		$content: ...
-	 * @param	[type]		$conf: ...
-	 * @return	[type]		...
+	 * Main method. Call this from TypoScript by a USER or USER_INT cObject.
 	 */
-	function main ($content,$conf)	{
+	public function main ($content,$conf)	{
 		global $TSFE;
 
-		if ($conf['templateFile'] != '')	{
+		tx_ttproducts_model_control::setPrefixId($this->prefixId);
+		$this->pi_setPiVarDefaults();
+		$this->conf = &$conf;
+		$config = array();
+		$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');	// fetch and store it as persistent object
+		$errorCode = array();
+		$bDoProcessing = $mainObj->init($content, $conf, $config, get_class($this), $errorCode);
 
-			$this->pi_setPiVarDefaults();
-			$this->conf = &$conf;
-			$config = array();
-			$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');	// fetch and store it as persistent object
-			$errorCode = array();
-			$bDoProcessing = $mainObj->init ($this, $content, $conf, $config, $errorCode);
-
-			if ($bDoProcessing)	{
-				$content = $mainObj->run($content);
-			}
-		} else {
-			tx_div2007_alpha5::loadLL_fh002($this, 'EXT:' . TT_PRODUCTS_EXT . '/pi1/locallang.xml');
-			$content = tx_div2007_alpha5::getLL_fh002($this,'no_template').' plugin.tt_products.templateFile';
+		if ($bDoProcessing || count($errorCode))	{
+			$content = $mainObj->run(get_class($this), $errorCode, $content);
 		}
-
 		return $content;
 	}
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$bRunAjax: ...
-	 * @return	[type]		...
-	 */
-	function set ($bRunAjax)	{
+	public function set ($bRunAjax)	{
 		$this->bRunAjax = $bRunAjax;
 	}
 }
-
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1_base.php'])	{
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1_base.php']);

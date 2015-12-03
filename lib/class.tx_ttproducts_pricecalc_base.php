@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,14 +31,19 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
+
 class tx_ttproducts_pricecalc_base {
 
-	function getPrice (&$conf, $offset, $num = '1')	{
+	function getPrice (&$conf, $offset, $num='1')	{
 		$rc = 0;
 		$priceCalcTemp = $conf[$offset];
 		if (is_array($priceCalcTemp))	{
@@ -47,17 +52,7 @@ class tx_ttproducts_pricecalc_base {
 		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$itemArray: ...
-	 * @param	[type]		$conf: ...
-	 * @param	[type]		$type: ...
-	 * @param	[type]		$priceReduction: ...
-	 * @param	[type]		$priceTotalTax: ...
-	 * @return	[type]		...
-	 */
-	function getCalculatedData(&$itemArray, &$conf, $type, &$priceReduction, $priceTotalTax) {
+	function getCalculatedData (&$itemArray, &$conf, $type, &$priceReduction, $priceTotalTax, $bUseArticles) {
 	} // getCalculatedData
 
 }

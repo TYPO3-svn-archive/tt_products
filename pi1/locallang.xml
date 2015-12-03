@@ -53,6 +53,7 @@
 			<label index="setup_missing">Setup for | is missing.</label>
 			<label index="voucher_invalid">The voucher code | is not accepted.</label>
 			<label index="voucher_payment_article">Discount</label>
+			<label index="voucher_gained">You have gained the following voucher codes</label>
 			<label index="internal_error">Internal error no. | in tt_products (|).</label>
 			<label index="article_markers_unsubstituted">No substitution of article markers | . You must set useArticles (at the moment "|") to another value to use articles.</label>
 			<label index="in_stock">in stock</label>
@@ -120,6 +121,7 @@
 			<label index="setup_missing">Setup für | fehlt.</label>
 			<label index="voucher_invalid">Der Gutschein | wird nicht akzeptiert.</label>
 			<label index="voucher_payment_article">Rabatt</label>
+			<label index="voucher_gained">Sie haben folgende Gutschein Codes erworben</label>
 			<label index="internal_error">Interner Fehler Nr. | in tt_products (|).</label>
 			<label index="article_markers_unsubstituted">Keine Ersetzung der Artikel Marker | . Um das zu aktivieren, muss useArticles (derzeit "|") anders gesetzt werden. </label>
 			<label index="in_stock">auf Lager</label>

@@ -39,6 +39,7 @@
  *
  */
 
+// require_once(PATH_BE_div2007.'hooks/class.tx_div2007_hooks_cms.php');
 
 class tx_ttproducts_hooks_fe {
 
@@ -51,14 +52,14 @@ class tx_ttproducts_hooks_fe {
 	}
 
 
-	public function resetAdresses ($params, $pObj) {
+	public function resetAdresses (&$params, $pObj)	{
 		global $TSFE;
 
-		$recs = $TSFE->fe_user->getKey('ses','recs');
-		if (isset($recs) && is_array($recs)) {
+		$recs = $TSFE->fe_user->getKey('ses', 'recs');
+		if (isset($recs) && is_array($recs))	{
 			unset($recs['personinfo']);
 			unset($recs['delivery']);
-			$TSFE->fe_user->setKey('ses','recs',$recs);
+			$TSFE->fe_user->setKey('ses', 'recs', $recs);
 		}
 	}
 }

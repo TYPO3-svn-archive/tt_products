@@ -43,18 +43,43 @@
  * @see file tt_products/static/old_style/constants.txt
  * @see TSref
  *
- *
  */
 
+// require_once (PATH_BE_div2007.'class.tx_div2007_alpha.php');
+// require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
+//
+// require_once (PATH_BE_ttproducts.'pi1/class.tx_ttproducts_pi1_base.php');
+//
 
-class tx_ttproducts_pi1 extends tx_ttproducts_pi1_base {
-	var $bRunAjax = false;
+class tx_ttproducts_pi1 {
+	/**
+	 * The backReference to the mother cObj object set at call time
+	 *
+	 * @var tslib_cObj
+	 */
+	var $cObj;
 
+	/**
+	 * Main method. Call this from TypoScript by a USER cObject.
+	 */
+	public function main ($content,$conf)	{
+
+		$pibaseObj = t3lib_div::getUserObj('&tx_ttproducts_pi1_base');
+		$pibaseObj->cObj = $this->cObj;
+
+		if ($conf['templateFile'] != '')	{
+			$content = $pibaseObj->main($content, $conf);
+		} else {
+			tx_div2007_alpha5::loadLL_fh002($pibaseObj, 'EXT:' . TT_PRODUCTS_EXT . '/pi1/locallang.xml');
+			$content = tx_div2007_alpha5::getLL_fh002($pibaseObj, 'no_template') . ' plugin.tt_products.templateFile';
+		}
+
+		return $content;
+	}
 }
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1.php'])	{
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/pi1/class.tx_ttproducts_pi1.php']);
 }
-
 
 ?>

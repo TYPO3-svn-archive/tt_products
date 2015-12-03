@@ -97,5 +97,4 @@ class tx_ttproducts_static_info {
 }
 
 
-
 ?>

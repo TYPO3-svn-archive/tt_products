@@ -40,9 +40,11 @@
  */
 
 
+// require_once(PATH_BE_ttproducts.'view/class.tx_ttproducts_category_view.php');
+
+
 class tx_ttproducts_damcategory_view extends tx_ttproducts_category_view {
 	public $piVar = 'damcat';
-
 
 }
 

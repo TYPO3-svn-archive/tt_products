@@ -35,7 +35,11 @@
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
 class tx_ttproducts_field_datafield extends tx_ttproducts_field_base {
 
 	function getDirname (&$row, $fieldname)	{

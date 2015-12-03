@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,18 +31,21 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <franz@ttproducts.de>
- * @maintainer	Franz Holzinger <franz@ttproducts.de>
+ * @author  Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
+/*
+require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');*/
+
 
 class tx_ttproducts_address extends tx_ttproducts_category_base {
 	var $dataArray = array(); // array of read in categories
-	var $fields = array();
 	var $pibase; // reference to object of pibase
 	var $conf;
 	var $config;
@@ -53,12 +56,8 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 
 	/**
 	 * Getting all address values into internal array
-	 *
-	 * @param	[type]		$$pibase: ...
-	 * @param	[type]		$functablename: ...
-	 * @return	[type]		...
 	 */
-	function init ($pibase, $functablename)	{
+	function init(&$pibase, $functablename)	{
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($pibase, $functablename);
@@ -71,42 +70,32 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 		$tablename = $this->getTablename();
 
 		$tableObj->setConfig($tableconf);
-		$defaultFieldArray = array('uid'=>'uid', 'pid'=>'pid');
-		$checkDefaultFieldArray = array('tstamp'=>'tstamp', 'hidden'=>'hidden', 'deleted' => 'deleted');
-		foreach ($checkDefaultFieldArray as $theField)	{
-			if (isset($TCA[$tablename]['ctrl'][$theField]) && (is_array($TCA[$tablename]['columns'][$theField]) || in_array($theField,$TCA[$tablename]['ctrl'])))	{
-				$defaultFieldArray[$theField] = $theField;
-			}
-		}
-		$this->fields['name'] = ($tabledesc['name'] && is_array($TCA[$tabledesc['name']]['ctrl']) ? $tabledesc['name'] : ($TCA[$tablename]['ctrl']['label'] ? $TCA[$tablename]['ctrl']['label'] : 'name'));
-
+		$defaultFieldArray = $this->getDefaultFieldArray();
 		$tableObj->setDefaultFieldArray($defaultFieldArray);
 		$tableObj->setNewFieldArray();
-		$requiredListFields = 'uid,pid,'.$this->fields['name'];
-		$requiredListArray = t3lib_div::trimExplode(',', $requiredListFields);
+		$requiredFields = 'uid,pid,title';
+		$tableconf = $cnf->getTableConf($functablename);
+		if ($tableconf['requiredFields'])	{
+			$tmp = $tableconf['requiredFields'];
+			$requiredFields = ($tmp ? $tmp : $requiredFields);
+		}
+
+		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$tableObj->setRequiredFieldArray($requiredListArray);
 		$tableObj->setTCAFieldArray($tablename);
+
+		if (isset($tabledesc) && is_array($tabledesc))	{
+			$this->fieldArray = array_merge($this->fieldArray, $tabledesc);
+		}
 	} // init
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getRootCat ()	{
+	function getRootCat()	{
 		$rc = $this->conf['rootAddressID'];
 		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$excludeCats: ...
-	 * @param	[type]		$rootUids: ...
-	 * @param	[type]		$allowedCats: ...
-	 * @return	[type]		...
-	 */
+
 	function &getRelationArray ($excludeCats = '', $rootUids = '', $allowedCats = '') {
 		$relationArray = array();
 		$rootArray = t3lib_div::trimExplode(',', $rootUids);
@@ -114,7 +103,7 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 		if (is_array($this->dataArray))	{
 			foreach ($this->dataArray as $k => $row)	{
 				$uid = $row['uid'];
-				$title = $row[$this->fields['name']];
+				$title = $row[$this->getField('name')];
 				$relationArray [$uid]['title'] = $title;
 				$relationArray [$uid]['pid'] = $row['pid'];
 				$relationArray [$uid]['parent_category'] = '';
@@ -123,6 +112,7 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 
 		return $relationArray;
 	}
+
 }
 
 

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -42,8 +42,8 @@
 interface tx_ttproducts_variant_view_int {
 
 	public function init($langObj, $modelObj);
-	public function getVariantSubpartMarkerArray (&$subpartArray, &$markerArray, &$row, &$tempContent, $useSelects, &$conf, $bHasAdditional, $bGiftService);
-	public function removeEmptyMarkerSubpartArray (&$markerArray, &$subpartArray, &$row, &$conf, $bHasAdditional, $bGiftService);
+	public function getVariantSubpartMarkerArray (&$markerArray, &$subpartArray, &$wrappedSubpartArray, &$row, &$tempContent, $useSelects, &$conf, $bHasAdditional, $bGiftService);
+	public function removeEmptyMarkerSubpartArray (&$markerArray, &$subpartArray, &$wrappedSubpartArray, &$row, &$conf, $bHasAdditional, $bGiftService);
 
 }
 

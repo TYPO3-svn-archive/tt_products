@@ -40,50 +40,73 @@
  */
 
 
+
+// require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
+// require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
+
 class tx_ttproducts_billdelivery {
-	var $pibase;
-	var $conf;		  // original configuration
-	var $config;		// updated configuration
-	var $tableArray;
-	var $price;		 // object for price functions
-	var $type;		  // if bill or delivery
-	var $markerObj; // marker functions
-	var $subpartmarkerObj; // subpart marker functions
+	public $cObj;
+	public $conf;		  // original configuration
+	public $config;		// updated configuration
+	public $tableArray;
+	public $price;		 // object for price functions
+	public $typeArray = array('bill', 'delivery');
+
 
 	/**
 	 * Initialized the basket, setting the deliveryInfo if a users is logged in
-	 * $basket is the TYPO3 default shopping basket array from ses-data
+	 * $basketObj is the TYPO3 default shopping basket array from ses-data
 	 *
-	 * @param	string		$fieldname is the field in the table you want to create a JavaScript for
-	 * @param	[type]		$type: ...
-	 * @return	void
+	 * @param		string	  $fieldname is the field in the table you want to create a JavaScript for
+	 * @return	  void
 	 */
-	function init ($pibase, $type) {
+	public function init ($cObj) {
 		global $TSFE;
 
-		$this->pibase = $pibase;
+		$this->cObj = $cObj;
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
-		$this->type = $type;
+	}
 
-		$this->markerObj = t3lib_div::makeInstance('tx_ttproducts_marker');
-		$this->markerObj->init($pibase->cObj);
-		$this->subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
-		$this->subpartmarkerObj->init($pibase->cObj);
+
+	public function getTypeArray ()	{
+		return $this->typeArray;
+	}
+
+
+	/**
+	 * get the relative filename of the bill or delivery file by the tracking code
+	 */
+	public function getRelFilename ($tracking, $type)	{
+		$rc = $this->conf['outputFolder'] . '/' . $type . '/' . $tracking . '.htm';
+
+		return $rc;
+	}
+
+
+	public function getMarkerArray (&$markerArray, $tracking, $type)	{
+		$markerprefix = strtoupper($type);
+		$relfilename = $this->getRelFilename($tracking, $type);
+		$markerArray['###'.$markerprefix.'_FILENAME###'] = $relfilename;
+	}
+
+
+	public function writeFile ($type, $tracking, $content)	{
+
+		$relfilename = $this->getRelFilename($tracking, $type);
+		$filename = t3lib_div::getFileAbsFileName($relfilename);
+
+		$theFile = fopen($filename, 'wb');
+		fwrite($theFile, $content);
+		fclose($theFile);
 	}
 
 
 	/**
 	 * Bill,Delivery Generation from tracking code
-	 *
-	 * @param	[type]		$theCode: ...
-	 * @param	[type]		$orderRow: ...
-	 * @param	[type]		$templateCode: ...
-	 * @param	[type]		$tracking: ...
-	 * @return	[type]		...
 	 */
-	function getInformation ($theCode, $orderRow, $templateCode, $tracking)	{
+	public function getInformation ($theCode, $orderRow, $templateCode, $tracking, $type)	{
 		/*
 		Bill or delivery information display, which needs tracking code to be shown
 		This is extension information to tracking at another page
@@ -92,10 +115,13 @@ class tx_ttproducts_billdelivery {
 		global $TSFE;
 
 		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
-		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$subpartmarkerObj = t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
 		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$globalMarkerArray = $markerObj->getGlobalMarkerArray();
 
 			// initialize order data.
 		$orderData = unserialize($orderRow['orderData']);
@@ -115,7 +141,7 @@ class tx_ttproducts_billdelivery {
 		$tmp = $orderData['calculatedArray'];
 		$calculatedArray = ($tmp ? $tmp : array());
 
-		if ($this->type == 'bill') {
+		if ($type == 'bill') {
 			$subpartMarker='###BILL_TEMPLATE###';
 		} else {
 			$subpartMarker='###DELIVERY_TEMPLATE###';
@@ -124,14 +150,12 @@ class tx_ttproducts_billdelivery {
 			// Getting subparts from the template code.
 		$t=array();
 			// If there is a specific section for the billing address if user is logged in (used because the address may then be hardcoded from the database
-		$t['orderFrameWork'] = $this->pibase->cObj->getSubpart($templateCode, $this->subpartmarkerObj->spMarker($subpartMarker));
-
-		$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'], '###ITEM_CATEGORY###');
-		$t['itemFrameWork'] = $this->pibase->cObj->getSubpart($t['orderFrameWork'], '###ITEM_LIST###');
-		$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'], '###ITEM_SINGLE###');
-
+		$t['orderFrameWork'] = $this->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker($subpartMarker));
+		$t['orderFrameWork'] = &$this->cObj->substituteMarkerArray($t['orderFrameWork'],$globalMarkerArray);
+		$t['categoryFrameWork'] = $this->cObj->getSubpart($t['orderFrameWork'],'###ITEM_CATEGORY###');
+		$t['itemFrameWork'] = $this->cObj->getSubpart($t['orderFrameWork'],'###ITEM_LIST###');
+		$t['item'] = $this->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
 		$categoryQty = array();
-	//	  $categoryPrice = array();
 		$categoryArray = array();
 
 	//	  $countTotal = 0;
@@ -152,13 +176,16 @@ class tx_ttproducts_billdelivery {
 
 		$itemViewTable = $tablesObj->get('tt_products', TRUE);
 		$itemTable = $itemViewTable->getModelObj();
+		$articleViewObj = $tablesObj->get('tt_products_articles', TRUE);
+		$articleTable = $articleViewObj->getModelObj();
 		$viewTagArray = array();
 		$parentArray = array();
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$markerFieldArray = array('BULKILY_WARNING' => 'bulkily',
 			'PRODUCT_SPECIAL_PREP' => 'special_preparation',
 			'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
-			'LINK_DATASHEET' => 'datasheet');
-		$fieldsArray = $this->markerObj->getMarkerFields(
+			'PRODUCT_LINK_DATASHEET' => 'datasheet');
+		$fieldsArray = $markerObj->getMarkerFields(
 			$t['item'],
 			$itemTable->getTableObj()->tableFieldArray,
 			$itemTable->getTableObj()->requiredFieldArray,
@@ -168,24 +195,47 @@ class tx_ttproducts_billdelivery {
 			$parentArray
 		);
 
+		if ($this->conf['useArticles'] == 1 || $this->conf['useArticles'] == 3) {
+			$markerFieldArray = array();
+			$articleViewTagArray = array();
+			$articleParentArray = array();
+			$articleFieldsArray = $markerObj->getMarkerFields(
+				$t['item'],
+				$itemTable->getTableObj()->tableFieldArray,
+				$itemTable->getTableObj()->requiredFieldArray,
+				$markerFieldArray,
+				$articleTable->marker,
+				$articleViewTagArray,
+				$articleParentArray
+			);
+		}
+
 		$count = 0;
 		foreach ($categoryArray as $currentCategory=>$value)	{
 			$categoryChanged = 1;
 			// loop over all ordered items indexed by a sorting text
 			foreach ($itemArray as $sort=>$actItemArray) {
-				foreach ($actItemArray as $k1=>$actItem) {
+				foreach ($actItemArray as $k1 => $actItem) {
+
 					$count++;
 					$row = $actItem['rec'];
 
+					// $itemTable->mergeAttributeFields($row, $articleRow, FALSE);
+					$itemTable->variant->modifyRowFromVariant($row);
+
+					// $row = $itemTable->getRowFromExt('tt_products', $row, $this->conf['useArticles']);
+// 					$theItem = $basketObj->getItem($row, 'useExt');
+// 					$row = $theItem['rec'];
+
 						// Print Category Title
-					if ($actItem['rec']['category']==$currentCategory)	{
+					if ($row['category']==$currentCategory)	{
 						if ($categoryChanged == 1)	{
 							$markerArray=array();
 							$tmpCategory = $tablesObj->get('tt_products_cat')->get($currentCategory);
 							$catTitle= ($tmpCategory ? $tmpCategory['title']: '');
 
-							$this->pibase->cObj->setCurrentVal($catTitle);
-							$markerArray['###CATEGORY_TITLE###'] = $this->pibase->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
+							$this->cObj->setCurrentVal($catTitle);
+							$markerArray['###CATEGORY_TITLE###'] = $this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
 							$markerArray['###CATEGORY_QTY###'] = $categoryQty[$currentCategory];
 							$categoryPriceTax = $calculatedArray['categoryPriceTax']['goodstotal'][$currentCategory];
 							$markerArray['###PRICE_GOODS_TAX###'] = $priceViewObj->priceFormat($categoryPriceTax);
@@ -193,15 +243,17 @@ class tx_ttproducts_billdelivery {
 							$markerArray['###PRICE_GOODS_NO_TAX###'] = $priceViewObj->priceFormat($categoryPriceNoTax);
 							$markerArray['###PRICE_GOODS_ONLY_TAX###'] = $priceViewObj->priceFormat($categoryPriceTax - $categoryPriceNoTax);
 
-							$out2 = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
-							$out.= $out2;
+							$out2 = $this->cObj->substituteMarkerArray($t['categoryFrameWork'], $markerArray);
+							$out .= $out2;
 						}
 
 						// Print Item Title
 						$wrappedSubpartArray=array();
 						$markerArray = array();
-						$itemViewTable->getItemMarkerArray (
-							$actItem,
+						$subpartArray = array();
+						$itemViewTable->getModelMarkerArray (
+							$row,
+							'',
 							$markerArray,
 							$catTitle,
 							1,
@@ -211,6 +263,7 @@ class tx_ttproducts_billdelivery {
 							$theCode,
 							$count
 						);
+
 						$variantFieldArray = $itemTable->variant->getFieldArray();
 						$marker = $itemViewTable->getMarker();
 
@@ -218,6 +271,67 @@ class tx_ttproducts_billdelivery {
 							$tmpkey = '###' . $marker . '_' . strtoupper($field) . '###';
 							$markerArray[$tmpkey] = $row[$field];
 						}
+
+						$prodVariantRow = $row;
+
+						if ($this->conf['useArticles'] == 1 || $this->conf['useArticles'] == 3) {
+
+							$articleRow = $itemTable->getArticleRowFromExt($row);
+
+							if ($articleRow)	{
+								$bKeepNotEmpty = FALSE;
+								if ($this->conf['useArticles'] == 3)	{
+									$itemTable->fillVariantsFromArticles($prodVariantRow);
+									$itemTable->variant->modifyRowFromVariant($prodVariantRow);
+									// $bKeepNotEmpty = TRUE;
+								}
+								$itemTable->mergeAttributeFields($prodVariantRow, $articleRow, $bKeepNotEmpty, TRUE);
+							} else {
+								$variant = $itemTable->variant->getVariantFromRow($row);
+								$itemTable->variant->modifyRowFromVariant($prodVariantRow, $variant);
+							}
+								// use the fields of the article instead of the product
+							//
+							$prodVariantItem['rec'] = $prodVariantRow;
+							$articleViewObj->getModelMarkerArray (
+								$prodVariantRow,
+								'',
+								$markerArray,
+								$catTitle,
+								$this->config['limitImage'],
+								'basketImage',
+								$articleViewTagArray,
+								$tmp=array(),
+								$theCode,
+								$count,
+								'',
+								'',
+								TRUE,
+								$TSFE->renderCharset
+							);
+
+							$articleViewObj->getItemMarkerSubpartArrays (
+								$t['item'],
+								$articleViewObj->getModelObj()->getFuncTablename(),
+								$prodVariantRow,
+								$markerArray,
+								$subpartArray,
+								$wrappedSubpartArray,
+								$articleViewTagArray,
+								$theCode
+							);
+						}
+
+						$itemViewTable->variant->removeEmptyMarkerSubpartArray(
+							$markerArray,
+							$subpartArray,
+							$wrappedSubpartArray,
+							$row,
+							$this->conf,
+							$itemTable->hasAdditional($row, 'isSingle'),
+							!$itemTable->hasAdditional($row, 'noGiftService')
+						);
+
 
 						$markerArray['###PRICE_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($actItem['priceTax'], $taxInclExcl));
 						$markerArray['###PRICE_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($actItem['priceNoTax'], $taxInclExcl));
@@ -227,10 +341,10 @@ class tx_ttproducts_billdelivery {
 						$markerArray['###PRICE_TOTAL_TAX###'] = $priceViewObj->priceFormat($actItem['totalTax']);
 						$markerArray['###PRICE_TOTAL_NO_TAX###'] = $priceViewObj->priceFormat($actItem['totalNoTax']);
 						$markerArray['###PRICE_TOTAL_ONLY_TAX###'] = $priceViewObj->priceFormat($actItem['totalTax'] - $actItem['totalNoTax']);
+						$itemsOut = $this->cObj->substituteMarkerArrayCached($t['item'], $markerArray, $subpartArray, $wrappedSubpartArray);
 
-						$itemsOut = $this->pibase->cObj->substituteMarkerArrayCached($t['item'], $markerArray,array(), $wrappedSubpartArray);
 						if ($itemsOut) {
-							$out2 =$this->pibase->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
+							$out2 =$this->cObj->substituteSubpart($t['itemFrameWork'], '###ITEM_SINGLE###', $itemsOut);
 							$out .= $out2;
 						}
 						$itemsOut='';		// Clear the item-code var
@@ -239,29 +353,28 @@ class tx_ttproducts_billdelivery {
 				}
 			}
 		}
+
 		$subpartArray['###ITEM_CATEGORY_AND_ITEMS###'] = $out;
 
 			// Final things
 			// Personal and delivery info:
 
-		$orderData['billing']['salutation'] = tx_div2007_alpha5::getLL_fh002($langObj, 'salutation'.$orderData['billing']['salutation']);
+		$orderData['billing']['salutation'] = tx_div2007_alpha5::getLL_fh002($langObj, 'salutation' . $orderData['billing']['salutation']);
 		$orderData['delivery']['salutation'] = tx_div2007_alpha5::getLL_fh002($langObj, 'salutation'.$orderData['delivery']['salutation']);
 
-		/* Added Els: 'feusers_uid,'*/
-		$infoFields = explode(',','feusers_uid,name,cnum,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country');
+		$infoFields = explode(',','feusers_uid,name,cnum,first_name,last_name,company,salutation,address,telephone,fax,email,company,city,zip,state,country');
 		  // Fields...
 		foreach($infoFields as $fName)	{
 			$markerArray['###PERSON_'.strtoupper($fName).'###'] = $orderData['billing'][$fName];
 			$markerArray['###DELIVERY_'.strtoupper($fName).'###'] = $orderData['delivery'][$fName];
 		}
-		tx_ttproducts_static_info::init();
 		$staticInfo = tx_ttproducts_static_info::getStaticInfo();
 
-		if (isset($orderData['billing']['country_code'])) {
+		if (is_object($staticInfo) && isset($orderData['billing']['country_code'])) {
 			$markerArray['###PERSON_COUNTRY###'] =
 			$staticInfo->getStaticInfoName('COUNTRIES', $orderData['billing']['country_code'],'','');
 		}
-		if (isset($orderData['delivery']['country_code'])) {
+		if (is_object($staticInfo) && isset($orderData['delivery']['country_code'])) {
 			$markerArray['###DELIVERY_COUNTRY###'] =
 			$staticInfo->getStaticInfoName('COUNTRIES', $orderData['delivery']['country_code'],'','');
 		}
@@ -285,15 +398,17 @@ class tx_ttproducts_billdelivery {
 		if (isset($taxRateArray) && is_array($taxRateArray))	{
 			foreach ($taxRateArray as $k => $taxrate)	{
 				$taxstr = strval(number_format($taxrate,2));
-				$label = chr(ord('A')+$k);
-				$markerArray['###PRICE_TAXRATE_NAME'.($k+1).'###'] = $label;
-				$markerArray['###PRICE_TAXRATE_TAX'.($k+1).'###'] = $taxrate;
+				$label = chr(ord('A') + $k);
+				$markerArray['###PRICE_TAXRATE_NAME' . ($k + 1) . '###'] = $label;
+				$markerArray['###PRICE_TAXRATE_TAX' . ($k + 1) . '###'] = $taxrate;
 				$label = $priceViewObj->priceFormat($calculatedArray['priceNoTax']['sametaxtotal'][$taxstr]);
-				$markerArray['###PRICE_TAXRATE_GOODSTOTAL'.($k+1).'###'] = $label;
-				$label = $priceViewObj->priceFormat($calculatedArray['priceNoTax']['sametaxtotal'][$taxstr] * ($taxrate/100));
-				$markerArray['###PRICE_TAXRATE_ONLY_TAX'.($k+1).'###'] = $label;
+				$markerArray['###PRICE_TAXRATE_GOODSTOTAL' . ($k + 1) . '###'] = $label;
+				$label = $priceViewObj->priceFormat($calculatedArray['priceNoTax']['sametaxtotal'][$taxstr] * ($taxrate / 100));
+				$markerArray['###PRICE_TAXRATE_ONLY_TAX' . ($k + 1) . '###'] = $label;
 			}
 		}
+		$markerArray['###PRICE_VOUCHERTOTAL_TAX###'] = $calculatedArray['priceTax']['vouchertotal'];
+		$markerArray['###PRICE_VOUCHERTOTAL_NO_TAX###'] = $calculatedArray['priceNoTax']['vouchertotal'];
 
 			// Delivery note.
 		$markerArray['###DELIVERY_NOTE###'] = $orderData['delivery']['note'];
@@ -305,27 +420,35 @@ class tx_ttproducts_billdelivery {
 
 			// Desired delivery date.
 		$markerArray['###DELIVERY_DESIRED_DATE###'] = $orderData['delivery']['desired_date'];
+		$markerArray['###DELIVERY_DESIRED_TIME###'] = $orderData['delivery']['desired_time'];
 		$markerArray['###DELIVERY_DATE_OF_BIRTH###'] = $orderData['delivery']['date_of_birth'];
 		$orderObj = $tablesObj->get('sys_products_orders');
 		$markerArray['###ORDER_UID###'] = $orderObj->getNumber($orderRow['uid']);
-		$markerArray['###ORDER_DATE###'] = $this->pibase->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
+		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($orderRow['crdate'], $this->conf['orderDate_stdWrap.']);
 
-		$content = $this->pibase->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);
+		$markerArray['###FE_USER_UID###'] = $orderRow['feusers_uid'];
+		$cnum = 'XXX';
 
-		$reldateiname = $this->conf['outputFolder'] . '/' . $this->type . '/' . $tracking . '.htm';
-		// $dateiname = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') .'/'. $reldateiname;
-		$dateiname = t3lib_div::getFileAbsFileName($reldateiname);
-		$datei = fopen($dateiname, 'wb');
-		fwrite($datei, $content);
-		fclose($datei);
+		if ($orderRow['feusers_uid'] > 0) {
+			$feuserRow = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'fe_users', 'uid=' . intval($orderRow['feusers_uid']));
 
-		$message = tx_div2007_alpha5::getLL_fh002($langObj, 'open_' . $this->type);
-		$content = '<a href="' . $reldateiname . '" >'.$message.'</a>';
+			if (isset($feuserRow) && is_array($feuserRow)) {
+				$cnum = $feuserRow['0']['cnum'];
+			}
+		}
+		$markerArray['###FE_USER_CNUM###'] = $cnum;
 
+		$content = $this->cObj->substituteMarkerArrayCached($t['orderFrameWork'], $markerArray, $subpartArray);
+
+// 		$relfilename = $this->getRelFilename($tracking, $type);
+// 		$filename = t3lib_div::getFileAbsFileName($relfilename);
+//
+// 		$theFile = fopen($filename, 'wb');
+// 		fwrite($theFile, $content);
+// 		fclose($theFile);
 		return $content;
 	}
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_billdelivery.php']) {

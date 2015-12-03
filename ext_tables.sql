@@ -26,6 +26,7 @@ CREATE TABLE tt_products (
 	price2 decimal(19,2) DEFAULT '0.00' NOT NULL,
 	creditpoints int(11) DEFAULT '0' NOT NULL,
 	graduated_price_uid int(11) DEFAULT '0' NOT NULL,
+	article_uid int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
 	note2 text NOT NULL,
 	note_uid int(11) DEFAULT '0' NOT NULL,
@@ -36,14 +37,18 @@ CREATE TABLE tt_products (
 	datasheet text NOT NULL,
 	www varchar(160) DEFAULT '' NOT NULL,
 	category int(11) unsigned DEFAULT '0' NOT NULL,
+	damcat int(11) unsigned DEFAULT '0' NOT NULL,
 	address int(11) unsigned DEFAULT '0' NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
+	basketminquantity decimal(19,2) DEFAULT '0.00' NOT NULL,
+	tax_id tinyint(3) unsigned DEFAULT '1',
 	tax decimal(19,2) DEFAULT '0.00' NOT NULL,
 	weight decimal(19,6) DEFAULT '0.000000' NOT NULL,
 	usebydate int(11) unsigned DEFAULT '0' NOT NULL,
 	bulkily int(11) DEFAULT '0' NOT NULL,
 	offer int(11) DEFAULT '0' NOT NULL,
 	highlight int(11) DEFAULT '0' NOT NULL,
+	bargain int(11) DEFAULT '0' NOT NULL,
 	color mediumtext NOT NULL,
 	color2 mediumtext NOT NULL,
 	color3 mediumtext NOT NULL,
@@ -63,8 +68,11 @@ CREATE TABLE tt_products (
 	delivery int(11) DEFAULT '0' NOT NULL,
 	sellstarttime int(11) unsigned DEFAULT '0' NOT NULL,
 	sellendtime int(11) unsigned DEFAULT '0' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
+	KEY comp2 (pid,deleted,hidden,starttime,endtime,fe_group),
 );
 
 
@@ -98,8 +106,10 @@ CREATE TABLE tt_products_language (
 	image text NOT NULL,
 	datasheet text NOT NULL,
 	www varchar(160) DEFAULT '' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
 );
 
 
@@ -111,6 +121,7 @@ CREATE TABLE tt_products_related_products_products_mm (
 	uid_local int(11) DEFAULT '0' NOT NULL,
 	uid_foreign int(11) DEFAULT '0' NOT NULL,
 	sorting int(11) DEFAULT '0' NOT NULL,
+
 	KEY uid_local (uid_local),
 	KEY uid_foreign (uid_foreign),
 );
@@ -124,6 +135,7 @@ CREATE TABLE tt_products_accessory_products_products_mm (
 	uid_local int(11) DEFAULT '0' NOT NULL,
 	uid_foreign int(11) DEFAULT '0' NOT NULL,
 	sorting int(11) DEFAULT '0' NOT NULL,
+
 	KEY uid_local (uid_local),
 	KEY uid_foreign (uid_foreign),
 );
@@ -137,6 +149,7 @@ CREATE TABLE tt_products_products_dam_mm (
 	uid_local int(11) DEFAULT '0' NOT NULL,
 	uid_foreign int(11) DEFAULT '0' NOT NULL,
 	sorting int(11) DEFAULT '0' NOT NULL,
+
 	KEY uid_local (uid_local),
 	KEY uid_foreign (uid_foreign),
 );
@@ -150,6 +163,7 @@ CREATE TABLE tt_products_products_note_pages_mm (
 	uid_local int(11) DEFAULT '0' NOT NULL,
 	uid_foreign int(11) DEFAULT '0' NOT NULL,
 	sorting int(11) DEFAULT '0' NOT NULL,
+
 	KEY uid_local (uid_local),
 	KEY uid_foreign (uid_foreign),
 );
@@ -176,8 +190,10 @@ CREATE TABLE tt_products_cat (
 	note2 text NOT NULL,
 	image text NOT NULL,
 	email_uid int(11) DEFAULT '0' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
 );
 
 
@@ -205,7 +221,32 @@ CREATE TABLE tt_products_cat_language (
 	note text NOT NULL,
 	note2 text NOT NULL,
 	cat_uid int(11) DEFAULT '0' NOT NULL,
+
 	PRIMARY KEY (uid),
+	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
+);
+
+
+#
+# Table structure for table 'tt_products_products_mm_articles'
+#
+CREATE TABLE tt_products_products_mm_articles (
+	uid int(11) unsigned NOT NULL auto_increment,
+	pid int(11) unsigned DEFAULT '0' NOT NULL,
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
+	uid_local int(11) DEFAULT '0' NOT NULL,
+	uid_foreign int(11) DEFAULT '0' NOT NULL,
+	tablenames varchar(30) DEFAULT '' NOT NULL,
+	sorting int(10) DEFAULT '0' NOT NULL,
+	articlesort int(10) DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid),
+	KEY uid_local (uid_local),
+	KEY uid_foreign (uid_foreign),
 	KEY parent (pid)
 );
 
@@ -237,21 +278,25 @@ CREATE TABLE tt_products_articles (
 	note2 text NOT NULL,
 	image text NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
+	basketminquantity decimal(19,2) DEFAULT '0.00' NOT NULL,
 	weight decimal(19,6) DEFAULT '0.000000' NOT NULL,
-	color varchar(60) DEFAULT '' NOT NULL,
-	color2 varchar(60) DEFAULT '' NOT NULL,
-	color3 varchar(60) DEFAULT '' NOT NULL,
-	size varchar(60) DEFAULT '' NOT NULL,
-	size2 varchar(60) DEFAULT '' NOT NULL,
-	size3 varchar(60) DEFAULT '' NOT NULL,
-	description varchar(60) DEFAULT '' NOT NULL,
-	gradings varchar(60) DEFAULT '' NOT NULL,
-	material varchar(60) DEFAULT '' NOT NULL,
-	quality varchar(60) DEFAULT '' NOT NULL,
+	color mediumtext NOT NULL,
+	color2 mediumtext NOT NULL,
+	color3 mediumtext NOT NULL,
+	size mediumtext NOT NULL,
+	size2 mediumtext NOT NULL,
+	size3 mediumtext NOT NULL,
+	description mediumtext NOT NULL,
+	gradings mediumtext NOT NULL,
+	material mediumtext NOT NULL,
+	quality mediumtext NOT NULL,
+	config_type varchar(36) DEFAULT '' NOT NULL,
+	config mediumtext NOT NULL,
 	uid_product int(11) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
 );
 
 
@@ -279,8 +324,10 @@ CREATE TABLE tt_products_articles_language (
 	article_uid int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
 	note2 text NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
 );
 
 
@@ -293,6 +340,7 @@ CREATE TABLE tt_products_gifts (
 	tstamp int(11) DEFAULT '0' NOT NULL,
 	crdate int(11) DEFAULT '0' NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	sorting int(10) DEFAULT '0' NOT NULL,
 
 	ordernumber int(11) DEFAULT '0' NOT NULL,
 	personname varchar(80) DEFAULT '' NOT NULL,
@@ -304,6 +352,7 @@ CREATE TABLE tt_products_gifts (
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
 );
 
 
@@ -315,6 +364,7 @@ CREATE TABLE tt_products_gifts_articles_mm (
 	uid_local int(11) DEFAULT '0' NOT NULL,
 	uid_foreign int(11) DEFAULT '0' NOT NULL,
 	count int(11) DEFAULT '0' NOT NULL,
+
 	KEY uid_local (uid_local),
 	KEY uid_foreign (uid_foreign),
 );
@@ -340,8 +390,10 @@ CREATE TABLE tt_products_emails (
 	fe_group int(11) DEFAULT '0' NOT NULL,
 	name varchar(80) DEFAULT '' NOT NULL,
 	email varchar(80) DEFAULT '' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
 );
 
 
@@ -365,8 +417,10 @@ CREATE TABLE tt_products_texts (
 	note text NOT NULL,
 	parentid int(11) DEFAULT '0' NOT NULL,
 	parenttable varchar(30) DEFAULT '' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
 );
 
 
@@ -394,6 +448,7 @@ CREATE TABLE tt_products_texts_language (
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
 );
 
 
@@ -413,6 +468,7 @@ CREATE TABLE tt_products_mm_graduated_price (
 	tablenames varchar(30) DEFAULT '' NOT NULL,
 	productsort int(10) DEFAULT '0' NOT NULL,
 	graduatedsort int(10) DEFAULT '0' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY product_uid (product_uid),
 	KEY graduated_price_uid (graduated_price_uid),
@@ -440,8 +496,10 @@ CREATE TABLE tt_products_graduated_price (
 	startamount decimal(19,2) DEFAULT '0.00' NOT NULL,
 	note text NOT NULL,
 	items int(11) DEFAULT '0' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
+	KEY comp1 (pid,deleted,sorting),
 );
 
 
@@ -455,15 +513,8 @@ CREATE TABLE sys_products_accounts (
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 	owner_name varchar(255) DEFAULT '' NOT NULL,
 	ac_number varchar(255) DEFAULT '' NOT NULL,
-#  cc_number_hash1 varchar(255) DEFAULT '' NOT NULL,
-#  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,
 	bic varchar(11) DEFAULT '' NOT NULL,
-#  address_ok char(1) DEFAULT '' NOT NULL,
-#  test char(1) DEFAULT '' NOT NULL,
-#  auth_code varchar(16) DEFAULT '' NOT NULL,
-#  bin int(6) unsigned DEFAULT '0' NOT NULL,
-#  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,
-#  sequence int(6) unsigned DEFAULT '0' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
@@ -478,22 +529,11 @@ CREATE TABLE sys_products_cards (
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 	endtime int(11) DEFAULT '0' NOT NULL,
-#	order_uid int(11) unsigned DEFAULT '0' NOT NULL,
-#  session_id varchar(30) DEFAULT '' NOT NULL,
-#  amount_num int(10) DEFAULT '0' NOT NULL,
-#  response_code char(3) DEFAULT '' NOT NULL,
 	owner_name varchar(255) DEFAULT '' NOT NULL,
 	cc_number varchar(255) DEFAULT '' NOT NULL,
-#  cc_number_hash1 varchar(255) DEFAULT '' NOT NULL,
-#  cc_number_hash2 varchar(255) DEFAULT '' NOT NULL,
 	cc_type varchar(20) DEFAULT '' NOT NULL,
 	cvv2 int(11) unsigned DEFAULT '0' NOT NULL,
-#  address_ok char(1) DEFAULT '' NOT NULL,
-#  test char(1) DEFAULT '' NOT NULL,
-#  auth_code varchar(16) DEFAULT '' NOT NULL,
-#  bin int(6) unsigned DEFAULT '0' NOT NULL,
-#  fraud tinyint(1) unsigned DEFAULT '0' NOT NULL,
-#  sequence int(6) unsigned DEFAULT '0' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid)
 );
@@ -507,6 +547,7 @@ CREATE TABLE sys_products_orders (
 	pid int(11) unsigned DEFAULT '0' NOT NULL,
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+	sys_language_uid int(11) DEFAULT '0' NOT NULL,
 	deleted tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	feusers_uid int(11) DEFAULT '0' NOT NULL,
@@ -514,8 +555,8 @@ CREATE TABLE sys_products_orders (
 	first_name varchar(50) DEFAULT '' NOT NULL,
 	last_name varchar(50) DEFAULT '' NOT NULL,
 	salutation int(11) DEFAULT '0' NOT NULL,
-# company varchar(80) DEFAULT '' NOT NULL,
-# vat_id varchar(20) DEFAULT '' NOT NULL,
+	company varchar(80) DEFAULT '' NOT NULL,
+	vat_id varchar(20) DEFAULT '' NOT NULL,
 	address tinytext NOT NULL,
 	zip varchar(20) DEFAULT '' NOT NULL,
 	city varchar(50) DEFAULT '' NOT NULL,
@@ -529,6 +570,8 @@ CREATE TABLE sys_products_orders (
 	payment varchar(80) DEFAULT '' NOT NULL,
 	shipping varchar(80) DEFAULT '' NOT NULL,
 	amount decimal(19,2) DEFAULT '0.00' NOT NULL,
+	tax_mode tinyint(3) DEFAULT '0' NOT NULL,
+	pay_mode tinyint(3) DEFAULT '0' NOT NULL,
 	email_notify tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	tracking_code varchar(64) DEFAULT '' NOT NULL,
 	status tinyint(4) unsigned DEFAULT '0' NOT NULL,
@@ -542,6 +585,7 @@ CREATE TABLE sys_products_orders (
 	creditpoints_gifts decimal(10,0) default '0' NOT NULL,
 	agb tinyint(1) DEFAULT '0' NOT NULL,
 	desired_date varchar(30) DEFAULT '' NOT NULL,
+	desired_time varchar(30) DEFAULT '' NOT NULL,
 	client_ip varchar(15) DEFAULT '' NOT NULL,
 	note text NOT NULL,
 	giftservice text NOT NULL,
@@ -550,11 +594,16 @@ CREATE TABLE sys_products_orders (
 	foundby int(11) DEFAULT '0' NOT NULL,
 	giftcode varchar(80) DEFAULT '' NOT NULL,
 	date_of_birth int(11) DEFAULT '0' NOT NULL,
+	date_of_payment int(11) DEFAULT '0' NOT NULL,
+	date_of_delivery int(11) DEFAULT '0' NOT NULL,
+	bill_no varchar(80) DEFAULT '' NOT NULL,
 	radio1 int(11) unsigned DEFAULT '0' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid),
 	KEY tracking (tracking_code),
 	KEY status (status)
+	KEY comp1 (pid,deleted),
 );
 
 
@@ -566,6 +615,8 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 	sys_products_orders_qty int(11) unsigned DEFAULT '0' NOT NULL,
 	tt_products_uid int(11) unsigned DEFAULT '0' NOT NULL,
 	tt_products_articles_uid int(11) unsigned DEFAULT '0' NOT NULL,
+	tablenames varchar(50) DEFAULT '' NOT NULL,
+
 	KEY tt_products_uid (tt_products_uid),
 	KEY tt_products_articles_uid (tt_products_articles_uid),
 	KEY sys_products_orders_uid (sys_products_orders_uid)
@@ -577,6 +628,7 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 #
 CREATE TABLE fe_users (
 	tt_products_memoItems tinytext NOT NULL,
+	tt_products_memodam tinytext NOT NULL,
 	tt_products_discount decimal(19,2) DEFAULT '0.00' NOT NULL,
 	tt_products_creditpoints decimal(10,0) DEFAULT '0' NOT NULL,
 	tt_products_vouchercode varchar(50) DEFAULT '',
@@ -592,6 +644,20 @@ CREATE TABLE fe_users (
 CREATE TABLE pages_language_overlay (
 	sorting int(11) DEFAULT '0' NOT NULL,
 );
+
+
+#
+# Table structure for table 'tt_products_products_mm_damcat'
+#
+CREATE TABLE tt_products_products_mm_damcat (
+  uid_local int(11) unsigned DEFAULT '0' NOT NULL,
+  uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
+  tablenames varchar(30) DEFAULT '' NOT NULL,
+  sorting int(11) unsigned DEFAULT '0' NOT NULL,
+  KEY uid_local (uid_local),
+  KEY uid_foreign (uid_foreign)
+);
+
 
 
 
@@ -622,5 +688,3 @@ CREATE TABLE tt_products_cache_tags (
     KEY cache_id (identifier),
     KEY cache_tag (tag)
 ) ENGINE=InnoDB;
-
-

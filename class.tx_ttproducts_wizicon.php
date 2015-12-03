@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2006 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -32,6 +32,8 @@
  * @package TYPO3
  * @subpackage tt_products
  */
+
+
 class tx_ttproducts_wizicon {
 	function proc($wizardItems)	{
 		global $LANG;
@@ -39,24 +41,22 @@ class tx_ttproducts_wizicon {
 		$LL = $this->includeLocalLang();
 		$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=HELP';
 		$wizardItems['plugins_tx_ttproducts_pi1'] = array(
-			'icon'=>PATH_BE_ttproducts_rel . 'res/icons/be/ce_wiz.gif',
-			'title'=>$LANG->getLLL('plugins_title', $LL),
-			'description'=>$LANG->getLLL('plugins_description', $LL),
+			'icon'=>PATH_BE_ttproducts_rel.'res/icons/be/ce_wiz.gif',
+			'title'=>$LANG->getLLL('plugins_title',$LL),
+			'description'=>$LANG->getLLL('plugins_description',$LL),
 			'params'=> $params);
 
 		return $wizardItems;
 	}
+
 	/**
 	 * Includes the locallang.xml and returns the $LOCAL_LANG array found in that file.
-	 *
-	 * @return	[type]		...
 	 */
 	function includeLocalLang()	{
 
 		$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(PATH_BE_ttproducts.'locallang.xml',FALSE);
 		return $LOCAL_LANG;
 	}
-
 }
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/class.tx_ttproducts_wizicon.php'])	{

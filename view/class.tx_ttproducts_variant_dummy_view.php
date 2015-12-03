@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,12 +31,16 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  */
+
+
+
+// require_once (PATH_BE_ttproducts.'view/interface.tx_ttproducts_variant_view_int.php');
 
 
 class tx_ttproducts_variant_dummy_view implements tx_ttproducts_variant_view_int {
@@ -50,36 +54,11 @@ class tx_ttproducts_variant_dummy_view implements tx_ttproducts_variant_view_int
 		$this->modelObj = $modelObj;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$subpartArray: ...
-	 * @param	[type]		$markerArray: ...
-	 * @param	[type]		$row: ...
-	 * @param	[type]		$tempContent: ...
-	 * @param	[type]		$useSelects: ...
-	 * @param	[type]		$conf: ...
-	 * @param	[type]		$bHasAdditional: ...
-	 * @param	[type]		$bGiftService: ...
-	 * @return	[type]		...
-	 */
-	function getVariantSubpartMarkerArray (&$subpartArray, &$markerArray, &$row, &$tempContent, $useSelects, &$conf, $bHasAdditional, $bGiftService)  {
+	public function getVariantSubpartMarkerArray (&$markerArray, &$subpartArray, &$wrappedSubpartArray, &$row, &$tempContent, $useSelects, &$conf, $bHasAdditional, $bGiftService)  {
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$markerArray: ...
-	 * @param	[type]		$subpartArray: ...
-	 * @param	[type]		$row: ...
-	 * @param	[type]		$conf: ...
-	 * @param	[type]		$bHasAdditional: ...
-	 * @param	[type]		$bGiftService: ...
-	 * @return	[type]		...
-	 */
-	function removeEmptyMarkerSubpartArray (&$markerArray, &$subpartArray, &$row, &$conf, $bHasAdditional, $bGiftService) {
+	public function removeEmptyMarkerSubpartArray (&$markerArray, &$subpartArray, &$wrappedSubpartArray, &$row, &$conf, $bHasAdditional, $bGiftService) {
 	}
-
 }
 
 

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,44 +31,41 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  */
 
+// require_once (PATH_BE_ttproducts.'view/field/interface.tx_ttproducts_field_view_int.php');
+
 
 abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view_int	{
-	private $bHasBeenInitialised = false;
-	var $modelObj;
-	var $cObj;
-	var $conf;		// original configuration
-	var $config;		// modified configuration
-	var $langObj;
+	private $bHasBeenInitialised = FALSE;
+	public $modelObj;
+	public $cObj;
+	public $conf;		// original configuration
+	public $config;		// modified configuration
+	public $langObj;
 
-
-	public function init($langObj, $modelObj)	{
+	public function init ($langObj, $modelObj)	{
 		$this->langObj = $langObj;
 		$this->modelObj = $modelObj;
 		$this->cObj = $modelObj->cObj;
 		$this->conf = &$modelObj->conf;
 		$this->config = &$modelObj->config;
 
-		$this->bHasBeenInitialised = true;
+		$this->bHasBeenInitialised = TRUE;
 	}
 
-
-	public function needsInit()	{
+	public function needsInit ()	{
 		return !$this->bHasBeenInitialised;
 	}
-
 
 	public function getModelObj ()	{
 		return $this->modelObj;
 	}
-
-
 
 	public function getRepeatedRowSubpartArrays (
 		&$subpartArray,
@@ -121,9 +118,14 @@ abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view
 		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$upperField = strtoupper($fieldname);
 		$templateAreaList = $markerKey . '_' . $upperField . '_LIST';
-
 		$t = array();
 		$t['listFrameWork'] = $this->cObj->getSubpart($templateCode, '###' . $templateAreaList . '###');
+// 			$t['listFrameWork'] = $this->cObj->substituteMarkerArrayCached(
+// 				$t['listFrameWork'],
+// 				$markerArray,
+// 				$subpartArray,
+// 				$wrappedSubpartArray
+// 			);
 
 		$templateAreaSingle = $markerKey . '_' . $upperField . '_SINGLE';
 		$t['singleFrameWork'] = $this->cObj->getSubpart($t['listFrameWork'], '###' . $templateAreaSingle . '###');
@@ -181,7 +183,6 @@ abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view
 						$content .= $newContent;
 					}
 				}
-
 				$newContent = $this->cObj->substituteMarkerArrayCached(
 					$t['listFrameWork'],
 					array(),
@@ -191,7 +192,6 @@ abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view
 			}
 		}
 		$subpartArray['###' . $templateAreaList . '###'] = $newContent;
-
 		return $result;
 	}
 }

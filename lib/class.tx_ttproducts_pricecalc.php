@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,19 +40,22 @@
  */
 
 
+// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_base.php');
+// require_once (PATH_BE_ttproducts . 'lib/class.tx_ttproducts_sql.php');
+//
 
 class tx_ttproducts_pricecalc extends tx_ttproducts_pricecalc_base {
 
-	function getCalculatedData(&$itemArray, &$conf, $type, &$priceReduction, $priceTotalTax) {
+	function getCalculatedData(&$itemArray, &$conf, $type, &$priceReduction, $priceTotalTax, $bUseArticles) {
 		$sql = t3lib_div::getUserObj('tx_ttproducts_sql');
 
 		if (!$itemArray || !count($itemArray)) {
 			return;
 		}
-
 		ksort($conf);
 
 		foreach ($conf as $k1 => $priceCalcTemp) {
+
 			if (!is_array($priceCalcTemp)) {
 				continue;
 			}
@@ -63,6 +66,7 @@ class tx_ttproducts_pricecalc extends tx_ttproducts_pricecalc_base {
 			// loop over all items in the basket indexed by sort string
 			foreach ($itemArray as $sort=>$actItemArray) {
 				foreach ($actItemArray as $k2=>$actItem) {
+
 					$row = $actItem['rec'];
 
 					if (is_array($priceCalcTemp['sql.']))    {
@@ -78,8 +82,9 @@ class tx_ttproducts_pricecalc extends tx_ttproducts_pricecalc_base {
 
 					// count all items which will apply to the discount price
 					$count2 = $actItem['count'];
+
 					if (((float) $count2 > 0) && ($row['price'] == $pricefor1)) {
-						$countedItems [$k1][] = array ('sort' => $sort);
+						$countedItems[$k1][] = array ('sort' => $sort);
 						$dumCount += $count2;
 					}
 				}
@@ -94,6 +99,7 @@ class tx_ttproducts_pricecalc extends tx_ttproducts_pricecalc_base {
 			$countTemp = $dumCount;
 			krsort($priceCalcTemp['prod.']);
 			foreach ($priceCalcTemp['prod.'] as $k2=>$price2) {
+
 				if ((float) $k2 > 0) {
 					while ($countTemp >= (float) $k2) {
 						$countTemp -= (float) $k2;
@@ -101,15 +107,14 @@ class tx_ttproducts_pricecalc extends tx_ttproducts_pricecalc_base {
 					}
 				}
 			}
-
 			$priceProduct = ((float) $dumCount > 0 ? ($priceTotalTemp / $dumCount) : 0);
+
 			foreach ($countedItems[$k1] as $k3=>$v3) {
-				foreach ($itemArray [$v3['sort']] as $k4=>$actItem) {
-					$itemArray [$v3['sort']] [$k4] [$type] = $priceProduct;
+				foreach ($itemArray[$v3['sort']] as $k4=>$actItem) {
+					$itemArray[$v3['sort']][$k4][$type] = $priceProduct;
 				}
 			}
 		}
-
 	} // getCalculatedData
 }
 

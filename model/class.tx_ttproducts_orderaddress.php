@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,14 +31,17 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
+
+
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
 
 class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
@@ -48,7 +51,6 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 	var $tableconf;
 	var $piVar = 'fe';
 	var $marker = 'FEUSER';
-	var $image;
 
 	private $bCondition = FALSE;
 	private $bConditionRecord = FALSE;
@@ -56,22 +58,22 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	public function init($pibase, $functablename)  {
+	public function init ($cObj, $functablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		parent::init($pibase, $functablename);
+		parent::init($cObj, $functablename);
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->tableconf = $cnf->getTableConf($functablename);
 		$tablename = $this->getTablename ();
 
-			// image
-		$this->image = t3lib_div::makeInstance('tx_ttproducts_field_image_view');
-		$this->image->init($this->pibase->cObj, $this->pibase);
+// 			// image
+// 		$this->image = t3lib_div::makeInstance('tx_ttproducts_field_image_view');
+// 		$this->image->init($this->cObj, $this->pibase);
 
 		$this->getTableObj()->setTCAFieldArray($tablename);
-		$this->fields['payment'] = ($this->tableconf['payment'] ? $this->tableconf['payment'] : '');
-		$requiredFields = 'uid,pid,email' . ($this->fields['payment'] ? ','.$this->fields['payment'] : '');
+		$this->fieldArray['payment'] = ($this->tableconf['payment'] ? $this->tableconf['payment'] : '');
+		$requiredFields = 'uid,pid,email' . ($this->fieldArray['payment'] ? ',' . $this->fieldArray['payment'] : '');
 		if (is_array($this->tableconf['ALL.']))	{
 			$tmp = $this->tableconf['ALL.']['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
@@ -81,14 +83,14 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 	} // init
 
 
-	function getSelectInfoFields() {
+	public function getSelectInfoFields() {
 		$result = array('salutation', 'tt_products_business_partner', 'tt_products_organisation_form');
 
 		return $result;
 	}
 
 
-	function getTCATableFromField ($field) {
+	public function getTCATableFromField ($field) {
 		$result = 'fe_users';
 		if ($field == 'salutation') {
 			$result = 'sys_products_orders';
@@ -103,7 +105,7 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
 			$where = '1=1 '.$this->getTableObj()->enableFields();
-			$res = $this->getTableObj()->exec_SELECTquery('*',$where.' AND uid = '.intval($uid));
+			$res = $this->getTableObj()->exec_SELECTquery('*', $where . ' AND uid = ' . intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$TYPO3_DB->sql_free_result($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
@@ -114,24 +116,24 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 
 	public function getFieldName ($field)	{
 		$rc = $field;
-		if (is_array($this->fields) && $this->fields[$field])	{
-			$rc = $this->fields[$field];
+		if (is_array($this->fieldArray) && $this->fieldArray[$field])	{
+			$rc = $this->fieldArray[$field];
 		}
 
 		return $rc;
 	}
 
 
-	public function isUserInGroup($feuser, $group)	{
+	public function isUserInGroup ($feuser, $group)	{
 		$groups = explode(',', $feuser['usergroup']);
 		foreach ($groups as $singlegroup)
 			if ($singlegroup == $group)
-				return true;
-		return false;
+				return TRUE;
+		return FALSE;
 	} // isUserInGroup
 
 
-	public function setCondition($row, $funcTablename)	{
+	public function setCondition ($row, $funcTablename)	{
 		global $TSFE;
 
 		$bCondition = FALSE;
@@ -190,7 +192,6 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 	public function getConditionRecord()	{
 		return $this->bConditionRecord;
 	}
-
 }
 
 

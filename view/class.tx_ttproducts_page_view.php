@@ -39,6 +39,8 @@
  */
 
 
+// require_once(PATH_BE_ttproducts.'view/class.tx_ttproducts_category_base_view.php');
+
 
 class tx_ttproducts_page_view extends tx_ttproducts_category_base_view {
 	var $noteArray = array(); 	// array of pages with notes
@@ -49,39 +51,29 @@ class tx_ttproducts_page_view extends tx_ttproducts_category_base_view {
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
 	 *
-	 * 		 			for the tt_producst record, $row
-	 *
 	 * @param	array		reference to an item array with all the data of the item
 	 * @param	integer		number of images to be shown
 	 * @param	object		the image cObj to be used
 	 * @param	array		information about the parent HTML form
-	 * @param	[type]		$imageRenderObj: ...
-	 * @param	[type]		$viewCatTagArray: ...
-	 * @param	[type]		$forminfoArray: ...
-	 * @param	[type]		$pageAsCategory: ...
-	 * @param	[type]		$theCode: ...
-	 * @param	[type]		$id: ...
-	 * @param	[type]		$prefix: ...
-	 * @param	[type]		$linkWrap: ...
 	 * @return	array		Returns a markerArray ready for substitution with information
+	 * 		 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getMarkerArray (&$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $theCode, $id, $prefix,$linkWrap='')	{
+	function getMarkerArray (&$markerArray, $markerKey, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $theCode, $id, $prefix,$linkWrap='')	{
 		global $TSFE;
 
 		$row = $this->modelObj->get($pid);
 		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 			// Get image
-		$imageObj->getItemMarkerArrayEnhanced ($this->modelObj->getFuncTablename(), $row, $this->marker, $markerArray, $pid, $imageNum, $imageRenderObj, $viewCatTagArray, $theCode, $id, $prefix, $linkWrap);
+		$imageObj->getRowMarkerArrayEnhanced ($this->modelObj->getFuncTablename(), $row, $this->marker, $markerArray, $pid, $imageNum, $imageRenderObj, $viewCatTagArray, $theCode, $id, $prefix, '', $linkWrap);
 
 		$pageCatTitle = htmlentities($row['title'], ENT_QUOTES, $TSFE->renderCharset);
 		$this->setMarkerArrayCatTitle ($markerArray, $pageCatTitle, $prefix);
-		$markerArray['###' . $prefix . $this->marker . '_SUBTITLE###'] = htmlentities($row['subtitle'], ENT_QUOTES, $TSFE->renderCharset);
+		$markerArray['###'.$prefix.$this->marker.'_SUBTITLE###'] = htmlentities($row['subtitle'], ENT_QUOTES, $TSFE->renderCharset);
 
-		parent::getItemMarkerArray ($row, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, TRUE, '', $prefix, $imageRenderObj);
+		parent::getRowMarkerArray($row, $markerKey, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, TRUE, '', $imageNum, $imageRenderObj, $id, $prefix);
 	}
-
 }
 
 

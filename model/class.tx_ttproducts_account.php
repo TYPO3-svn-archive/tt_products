@@ -35,21 +35,30 @@
  * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
+
 class tx_ttproducts_account extends tx_ttproducts_table_base {
-	var $pibase; // reference to object of pibase
-	var $conf;
-	var $acArray;	// credit card data
-	var $bIsAllowed = array(); // allowed uids of bank ACCOUNTS
-	var $fieldArray = array('owner_name', 'ac_number', 'bic');
-	var $tablename = 'sys_products_accounts';
-	var $asterisk = '********';
+	public $pibase; // reference to object of pibase
+	public $conf;
+	public $acArray;	// credit card data
+	public $bIsAllowed = array(); // allowed uids of bank ACCOUNTS
+	public $fieldArray = array('owner_name', 'ac_number', 'bic');
+	public $tablename = 'sys_products_accounts';
+	public $asterisk = '********';
+	public $useAsterisk = TRUE;
 
 
 	function init ($pibase, $functablename) {
 		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$formerBasket = $basketObj->recs;
 		$bIsAllowed = $basketObj->basketExtra['payment.']['accounts'];
+		if (isset($basketObj->basketExtra['payment.']['useAsterisk']))	{
+			$this->useAsterisk = $basketObj->basketExtra['payment.']['useAsterisk'];
+		}
 
 		parent::init($pibase, 'sys_products_accounts');
 		$this->acArray = array();
@@ -58,10 +67,10 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 			$this->bIsAllowed = $bIsAllowed;
 		}
 
-		$bNumberRecentlyModified = true;
+		$bNumberRecentlyModified = TRUE;
 
 		if (!$this->acArray['ac_number'])	{
-			$bNumberRecentlyModified = false;
+			$bNumberRecentlyModified = FALSE;
 		}
 
 		if ($bNumberRecentlyModified)	{
@@ -71,25 +80,23 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 			if (!$acArray)	{
 				$acArray = array();
 			}
-			$acArray['ac_uid'] = $this->create ($acArray['ac_uid'], $this->acArray);
-			$TSFE->fe_user->setKey('ses', 'ac', $acArray);
-			$this->acArray['ac_number'] = $this->asterisk;
+			$acArray['ac_uid'] = $this->create($acArray['ac_uid'], $this->acArray);
+			$TSFE->fe_user->setKey('ses','ac',$acArray);
+			if ($this->useAsterisk)	{
+				$this->acArray['ac_number'] = $this->asterisk;
+			}
 		}
 	}
+
 
 	// **************************
 	// ORDER related functions
 	// **************************
-
 	/**
 	 * Create a new credit card record
 	 *
 	 * This creates a new credit card record on the page with pid PID_sys_products_orders. That page must exist!
 	 * Should be called only internally by eg. $order->getBlankUid, that first checks if a blank record is already created.
-	 *
-	 * @param	[type]		$uid: ...
-	 * @param	[type]		$acArray: ...
-	 * @return	[type]		...
 	 */
 	function create ($uid, $acArray)	{
 		global $TSFE, $TYPO3_DB;
@@ -98,7 +105,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		$pid = intval($this->conf['PID_sys_products_orders']);
 		if (!$pid)	$pid = intval($TSFE->id);
 
-		if ($acArray['owner_name'] != '' && $acArray['bic'] != '' && $acArray['ac_number'] && $TSFE->sys_page->getPage_noCheck ($pid))	{
+		if ($acArray['owner_name'] != '' && $acArray[$accountField] && $TSFE->sys_page->getPage_noCheck($pid)) {
 			$time = time();
 			$newFields = array (
 				'pid' => intval($pid),
@@ -112,7 +119,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 			}
 
 			if ($uid)	{
-				$TYPO3_DB->exec_UPDATEquery($this->tablename,'uid=' . $uid, $newFields);
+				$TYPO3_DB->exec_UPDATEquery($this->tablename, 'uid=' . $uid,$newFields);
 				$newId = $uid;
 			} else {
 				$TYPO3_DB->exec_INSERTquery($this->tablename, $newFields);
@@ -122,21 +129,16 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		return $newId;
 	} // create
 
+
 	function getUid ()	{
 		global $TSFE;
 
-		$acArray = $TSFE->fe_user->getKey('ses','ac');
+		$acArray = $TSFE->fe_user->getKey('ses', 'ac');
 		return $acArray['ac_uid'];
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$uid: ...
-	 * @param	[type]		$bFieldArrayAll: ...
-	 * @return	[type]		...
-	 */
-	function get ($uid, $bFieldArrayAll=false) {
+
+	function get ($uid, $bFieldArrayAll = FALSE) {
 		global $TYPO3_DB;
 		$rcArray = array();
 		if ($bFieldArrayAll)	{
@@ -146,11 +148,11 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		}
 
 		if ($uid) {
-			$where = 'uid = '.intval($uid);
+			$where = 'uid = ' . intval($uid);
 			// Fetching the products
 			$fields = '*';
 			if ($bFieldArrayAll)	{
-				$fields = implode(',',$this->fieldArray);
+				$fields = implode(',', $this->fieldArray);
 			}
 			$res = $TYPO3_DB->exec_SELECTquery($fields, $this->tablename, $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
@@ -162,6 +164,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		return $rcArray;
 	}
 
+
 	/**
 	 * Returns the label of the record, Usage in the following format:
 	 *
@@ -172,37 +175,6 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		return $row['owner_name'] . ':' . $row['ac_number'] . ':' . $row['bic'];
 	}
 
-	/**
-	 * Template marker substitution
-	 * Fills in the markerArray with data for a product
-	 *
-	 * @param	array		reference to an item array with all the data of the item
-	 * @param	string		title of the category
-	 * @param	integer		number of images to be shown
-	 * @param	object		the image cObj to be used
-	 * @param	array		information about the parent HTML form
-	 * @return	array
-	 * @access private
-	 */
-	function getItemMarkerArray (&$markerArray)	{
-		global $TCA;
-
-		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-
-		if ($this->bIsAllowed)	{
-			$acNumber = $this->acArray['ac_number'];
-			$acOwnerName = $this->acArray['owner_name'];
-			$acBic = $this->acArray['bic'];
-		} else {
-			$acNumber = '';
-			$acOwnerName = '';
-			$acBic = '';
-		}
-
-		$markerArray['###PERSON_ACCOUNTS_OWNER_NAME###'] = $acOwnerName;
-		$markerArray['###PERSON_ACCOUNTS_AC_NUMBER###'] = $acNumber;
-		$markerArray['###PERSON_ACCOUNTS_BIC###'] = $acBic;
-	} // getMarkerArray
 
 	/**
 	 * Checks if required fields for bank accounts are filled in
@@ -210,20 +182,21 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	function checkRequired ()	{
 		$rc = '';
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
-
 		if (t3lib_extMgm::isLoaded('static_info_tables_banks_de')) {
-
 			$bankObj = $tablesObj->get('static_banks_de');
 		}
 
 		foreach ($this->fieldArray as $k => $field)	{
 			if (!$this->acArray[$field])	{
 				$rc = $field;
+
 				break;
 			}
 			if ($field == 'bic' && is_object($bankObj) /* && t3lib_extMgm::isLoaded('static_info_tables_banks_de')*/)	{
-				$where_clause = 'sort_code=' . intval(implode('',t3lib_div::trimExplode(' ',$this->acArray[$field]))) . ' AND level=1';
-				$bankRow = $bankObj->get('',0,FALSE,$where_clause);
+				$where_clause = 'sort_code=' . intval(implode('', t3lib_div::trimExplode(' ', $this->acArray[$field]))) . ' AND level=1';
+
+				$bankRow = $bankObj->get('', 0, FALSE, $where_clause);
+
 				if (!$bankRow)	{
 					$rc = $field;
 					break;

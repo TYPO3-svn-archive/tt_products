@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,11 +31,16 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
+
 class tx_ttproducts_voucher_view extends tx_ttproducts_table_base_view {
 	var $amount;
 	var $code;
@@ -48,9 +53,6 @@ class tx_ttproducts_voucher_view extends tx_ttproducts_table_base_view {
 	 * Template marker substitution
 	 * Fills in the markerArray with data for the voucher
 	 *
-	 * @param	[type]		$&$subpartArray: ...
-	 * @param	[type]		$wrappedSubpartArray: ...
-	 * @param	[type]		$charset: ...
 	 * @return	void
 	 * @access private
 	 */
@@ -60,6 +62,7 @@ class tx_ttproducts_voucher_view extends tx_ttproducts_table_base_view {
 		$charset=''
 	)	{
 		$modelObj = $this->getModelObj();
+
 		$subpartArray['###SUB_VOUCHERCODE###'] = '';
 
 		if ($modelObj->getValid())	{
@@ -78,7 +81,6 @@ class tx_ttproducts_voucher_view extends tx_ttproducts_table_base_view {
 	 * Template marker substitution
 	 * Fills in the markerArray with data for the voucher
 	 *
-	 * @param	[type]		$&$markerArray: ...
 	 * @return	void
 	 * @access private
 	 */
@@ -95,9 +97,10 @@ class tx_ttproducts_voucher_view extends tx_ttproducts_table_base_view {
 		}
 
 		$markerArray['###VALUE_VOUCHERCODE###'] = htmlspecialchars($voucherCode);
-		$markerArray['###VOUCHER_DISCOUNT###'] = $priceViewObj->priceFormat($modelObj->getAmount());
-	} // getItemMarkerArray
+		$amount = $modelObj->getRebateAmount();
 
+		$markerArray['###VOUCHER_DISCOUNT###'] = $priceViewObj->priceFormat(abs($amount));
+	} // getMarkerArray
 }
 
 

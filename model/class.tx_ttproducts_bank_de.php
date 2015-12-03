@@ -40,28 +40,11 @@
  */
 
 
+// require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+
 
 class tx_ttproducts_bank_de extends tx_ttproducts_table_base {
 
-	/**
-	 * bank data elements
-	 *
-	 * @param	[type]		$$cObj: ...
-	 * @param	[type]		$functablename: ...
-	 * @return	[type]		...
-	 */
-	function init ($cObj, $functablename)  {
-		global $TYPO3_DB,$TSFE,$TCA;
-
-		parent::init($cObj, $functablename);
-		$tableObj = $this->getTableObj();
-		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
-		$tableObj->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 'starttime'=>'starttime', 'endtime'=>'endtime'));
-
-		$tablename = 'static_banks_de';
-		$this->tableObj->setName($tablename);
-		$this->tableObj->setTCAFieldArray($tablename, 'bank');
-	} // init
 }
 
 

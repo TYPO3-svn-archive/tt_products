@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,50 +31,40 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  */
 
 
+// require_once (PATH_BE_ttproducts.'model/field/interface.tx_ttproducts_field_int.php');
+
+
 abstract class tx_ttproducts_field_base implements tx_ttproducts_field_int {
-	private $bHasBeenInitialised = false;
+	private $bHasBeenInitialised = FALSE;
 	var $cObj;
 	var $conf;		// original configuration
 	var $config;		// modified configuration
 	var $viewObj;		// view object
 
-	function init($cObj)	{
+	function init ($cObj)	{
 		$this->cObj = $cObj;
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
-		$this->bHasBeenInitialised = true;
+		$this->bHasBeenInitialised = TRUE;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function needsInit()	{
+	function needsInit ()	{
 		return !$this->bHasBeenInitialised;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$row: ...
-	 * @param	[type]		$fieldname: ...
-	 * @return	[type]		...
-	 */
-	function getFieldValue($row, $fieldname)	{
+	function getFieldValue ($row, $fieldname)	{
 		return $row[$fieldname];
 	}
-
 }
 
 

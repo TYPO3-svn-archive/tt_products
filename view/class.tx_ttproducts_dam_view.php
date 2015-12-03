@@ -39,70 +39,92 @@
  */
 
 
+
 class tx_ttproducts_dam_view extends tx_ttproducts_article_base_view {
 	public $marker = 'DAM';
 	public $piVar = 'dam';
 
+	function init($langObj, $modelObj)	{
+		include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_dummy_view.php');
+
+		$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
+		parent::init($langObj, $modelObj);
+	}
 
 	/**
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
-	 *
-	 * 		 			for the tt_producst record, $row
 	 *
 	 * @param	array		reference to an item array with all the data of the item
 	 * @param	string		title of the category
 	 * @param	integer		number of images to be shown
 	 * @param	object		the image cObj to be used
 	 * @param	array		information about the parent HTML form
-	 * @param	[type]		$tagArray: ...
-	 * @param	[type]		$forminfoArray: ...
-	 * @param	[type]		$theCode: ...
-	 * @param	[type]		$id: ...
-	 * @param	[type]		$prefix: ...
-	 * @param	[type]		$linkWrap: ...
-	 * @param	[type]		$bHtml: ...
-	 * @param	[type]		$charset: ...
 	 * @return	array		Returns a markerArray ready for substitution with information
+	 * 		 			for the tt_producst record, $row
 	 * @access private
 	 */
-	function getItemMarkerArray (
-			&$item,
-			&$markerArray,
-			$catTitle,
-			$imageNum=0,
-			$imageRenderObj='image',
-			&$tagArray,
-			$forminfoArray=array(),
-			$theCode='',
-			$id='1',
-			$prefix='',
-			$linkWrap='',
-			$bHtml=true,
-			$charset=''
-		)	{
+	public function getRowMarkerArray (
+		&$row,
+		$markerKey,
+		&$markerArray,
+		&$variantFieldArray,
+		&$variantMarkerArray,
+		&$tagArray,
+		$theCode,
+		$bHtml=TRUE,
+		$charset='',
+		$imageNum=0,
+		$imageRenderObj='image',
+		$id='',	// id part to be added
+		$prefix='', // if FALSE, then no table marker will be added
+		$suffix='',	// this could be a number to discern between repeated rows
+		$linkWrap=''
+	)	{
+		global $TSFE,$TCA;
 
-		global $TSFE;
-
-		$row = &$item['rec'];
+		parent::getRowMarkerArray (
+			$row,
+			$markerKey,
+			$markerArray,
+			$variantFieldArray,
+			$variantMarkerArray,
+			$tagArray,
+			$theCode,
+			$bHtml,
+			$charset,
+			$imageNum,
+			$imageRenderObj,
+			$id,
+			$prefix,
+			$suffix,
+			$linkWrap
+		);
 		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$markerKey = $this->getMarkerKey($markerKey);
 
 			// Get image
-		$imageObj->getItemMarkerArrayEnhanced ($this->getModelObj()->getFuncTablename(), $row, $this->marker, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, $prefix, $linkWrap);
-		foreach ($row as $field => $value)	{
-			if (!is_array($row[$field]))	{
-				$markerArray['###'.$this->marker.'_'.strtoupper($field).'###'] = htmlentities($row[$field],ENT_QUOTES,$TSFE->renderCharset);
-			}
-		}
+		$imageObj->getRowMarkerArrayEnhanced (
+			$this->getModelObj()->getFuncTablename(),
+			$row,
+			$markerKey,
+			$markerArray,
+			$row['pid'],
+			$imageNum,
+			$imageRenderObj,
+			$tagArray,
+			$theCode,
+			$id,
+			$prefix,
+			$suffix,
+			$linkWrap
+		);
 	}
 
 
 	/**
 	 * Sets the markers for DAM specific FORM fields
 	 *
-	 * @param	[type]		$uid: ...
-	 * @param	[type]		$markerArray: ...
-	 * @return	[type]		...
 	 */
 	function setFormMarkerArray($uid, &$markerArray)  {
 		$markerArray['###DAM_FIELD_NAME###'] = 'ttp_basket[dam]';

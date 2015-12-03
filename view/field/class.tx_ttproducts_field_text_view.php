@@ -35,10 +35,13 @@
  * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
-class tx_ttproducts_field_text_view extends tx_ttproducts_field_base_view {
 
-	function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $imageRenderObj='')	{
+
+class tx_ttproducts_field_text_view extends tx_ttproducts_field_base_view {
+	function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml = TRUE, $charset = '', $prefix = '', $suffix = '', $imageRenderObj = '')	{
 
 		$htmlentitiesArray = array();
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');

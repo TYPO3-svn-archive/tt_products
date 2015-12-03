@@ -31,11 +31,14 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
  */
+
+
 class tx_ttproducts_text extends tx_ttproducts_table_base {
 	var $dataArray; // array of read in categories
 	var $marker = 'TEXT';
@@ -45,39 +48,6 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 	var $tt_products_texts; // element of class tx_table_db
 
 
-	/**
-	 * text elements
-	 *
-	 * @param	[type]		$$pibase: ...
-	 * @param	[type]		$functablename: ...
-	 * @return	[type]		...
-	 */
-	function init ($cObj, $functablename = 'tt_products_texts')  {
-		global $TYPO3_DB,$TSFE,$TCA;
-
-		parent::init($cObj, $functablename);
-		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tableconf = $cnf->getTableConf($functablename,$theCode);
-		$tableObj = $this->getTableObj();
-
-		$tablename = $cnf->getTableName($functablename);
-		$tableObj->setTCAFieldArray($tablename, 'texts');
-
-		if ($cnf->bUseLanguageTable($tableconf))	{
-			$tableObj->setLanguage ($this->config['LLkey']);
-			$tableObj->setLangName($tableconf['language.']['table']);
-			$tableObj->setTCAFieldArray($tableObj->langname, 'textslang', FALSE);
-		}
-	}
-
-
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$tagArray: ...
-	 * @param	[type]		$parentMarker: ...
-	 * @return	[type]		...
-	 */
 	function &getTagMarkerArray (&$tagArray, $parentMarker)	{
 		$rcArray = array();
 		$search = $parentMarker.'_'.$this->marker.'_';
@@ -91,26 +61,17 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 		return $rcArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$uid: ...
-	 * @param	[type]		$tagMarkerArray: ...
-	 * @param	[type]		$parenttable: ...
-	 * @return	[type]		...
-	 */
-	function getChildUidArray ($uid, $tagMarkerArray, $parenttable='tt_products')	{
+	function getChildUidArray ($uid, $tagMarkerArray, $parenttable = 'tt_products')	{
 		global $TYPO3_DB;
 
 		$rcArray = array();
 		$tagWhere = '';
 		if (count($tagMarkerArray))	{
-			$tagMarkerArray = $TYPO3_DB->fullQuoteArray ($tagMarkerArray, $this->getTableObj()->name);
+			$tagMarkerArray = $TYPO3_DB->fullQuoteArray($tagMarkerArray, $this->getTableObj()->name);
 			$tags = implode(',', $tagMarkerArray);
 			$tagWhere = ' AND marker IN (' . $tags . ')';
 		}
-		$where_clause = 'parentid = ' . intval($uid) .' AND parenttable=' . $TYPO3_DB->fullQuoteStr($parenttable, $this->getTableObj()->name) . $tagWhere . $this->getTableObj()->enableFields();
-
+		$where_clause = 'parentid = '.intval($uid) . ' AND parenttable=' . $TYPO3_DB->fullQuoteStr($parenttable, $this->getTableObj()->name) . $tagWhere . $this->getTableObj()->enableFields();
 		$rcArray = $this->get('', '', FALSE, $where_clause);
 
 		return $rcArray;

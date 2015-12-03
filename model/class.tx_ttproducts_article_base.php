@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,74 +31,72 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
+/*
+require_once (PATH_BE_table.'lib/class.tx_table_db.php');
+require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_datafield_view.php');*/
 
 
 abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
-	var $dataArray = array(); // array of read in products
-	var $table;	 // object of the type tx_table_db
-	var $conf;
-	var $config;
+	public $table;	 // object of the type tx_table_db
+	public $conf;
+	public $config;
 
-	var $tabledesc;
-	var $fields = array();
-	var $marker;	// marker prefix in the template file. must be overridden
-	var $type; 	// the type of table 'article' or 'product'
+	public $marker;	// marker prefix in the template file. must be overridden
+	public $type; 	// the type of table 'article' or 'product'
 			// this gets in lower case also used for the URL parameter
-	var $variant;       // object for the product variant attributes, must initialized in the init function
-	var $mm_table = ''; // only set if a mm table is used
+	public $variant;       // object for the product variant attributes, must initialized in the init function
+	public $mm_table = ''; // only set if a mm table is used
+
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	public function init ($cObj, $functablename)	{
+	public function init (&$cObj, $functablename)	{
 		parent::init($cObj, $functablename);
 		$tablename = $this->getTablename();
 		$useArticles = $this->conf['useArticles'];
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
-		$this->tabledesc = $cnf->getTableDesc($functablename);
+
 		if ($this->type == 'product')	{
-// 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant.php');
+			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant.php');
 
 			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant');
 			$this->variant->init($this, $tablename, $useArticles);
 		} else {
-// 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant_dummy.php');
+			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant_dummy.php');
 
 			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy');
 		}
+		$tableDesc = $this->getTableDesc();
 
-			// image
-		$this->fields['address'] = ($this->tabledesc['address'] ? $this->tabledesc['address'] : 'address');
-		$this->fields['itemnumber'] = ($this->tabledesc['itemnumber'] ? $this->tabledesc['itemnumber'] : 'itemnumber');
+		$this->fieldArray['address'] = ($tableDesc['address'] ? $tableDesc['address'] : 'address');
+		$this->fieldArray['itemnumber'] = ($tableDesc['itemnumber'] ? $tableDesc['itemnumber'] : 'itemnumber');
 	} // init
 
 
 	/**
 	 * Reduces the instock value of the orderRecord with the amount and returns the result
 	 *
-	 * @param	[type]		$uid: ...
-	 * @param	[type]		$count: ...
-	 * @return	[type]		...
 	 */
-	function reduceInStock($uid, $count)	{
+	public function reduceInStock ($uid, $count)	{
 		global $TYPO3_DB;
 
-		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
-		$instockField = $cnf->getTableDesc($this->getTableObj()->name, 'inStock');
+		$tableDesc = $this->getTableDesc();
+		$instockField = $tableDesc['inStock'];
 		$instockField = ($instockField ? $instockField : 'inStock');
 
 		if (is_array($this->getTableObj()->tableFieldArray[$instockField]))	{
 			$uid = intval($uid);
 			$fieldsArray = array();
-			$fieldsArray[$instockField] = $instockField.'-'.$count;
+			$fieldsArray[$instockField] = $instockField . '-' . $count;
 			$res = $TYPO3_DB->exec_UPDATEquery($this->getTableObj()->name, 'uid=\'' . $uid . '\'', $fieldsArray, $instockField);
 		}
 	}
@@ -107,111 +105,75 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	/**
 	 * Reduces the instock value of the orderRecords with the sold items and returns the result
 	 *
-	 * @param	[type]		$$itemArray: ...
-	 * @param	[type]		$useArticles: ...
-	 * @return	[type]		...
 	 */
-	function reduceInStockItems(&$itemArray, $useArticles)	{
-
+	public function reduceInStockItems (&$itemArray, $useArticles)	{
 	}
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$uid: ...
-	 * @param	[type]		$type: ...
-	 * @return	[type]		...
-	 */
-	function getRelated ($uid, $type) {
+	public function getRelated ($uid, $type) {
 	}
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$type: ...
-	 * @param	[type]		$val: ...
-	 * @return	[type]		...
-	 */
-	function getFlexQuery ($type,$val=1)	{
+	public function getType ()	{
+		return $this->type;
+	}
+
+
+	public function getFlexQuery ($type,$val = 1)	{
 		$spacectrl = '[[:space:][:cntrl:]]*';
 
-		 $rc = '<field index="'.$type.'">'.$spacectrl.'<value index="vDEF">'.($val ? '1': '0').'</value>'.$spacectrl.'</field>'.$spacectrl;
+		 $rc = '<field index="' . $type . '">' . $spacectrl . '<value index="vDEF">' . ($val ? '1': '0').'</value>' . $spacectrl . '</field>' . $spacectrl;
 		 return $rc;
 	}
 
 
-	public function addWhereCat (&$catObject, $theCode, $cat, $pid_list) {
+	public function addWhereCat (&$catObject, $theCode, $cat, $pid_list)	{
 		$where = '';
 
 		return $where;
 	}
 
 
-	public function addselectConfCat ($catObject, $cat, &$selectConf) {
+	public function addselectConfCat ($catObject, $cat, &$selectConf)	{
 	}
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$cat: ...
-	 * @return	[type]		...
-	 */
-	function getPageUidsCat($cat)	{
+	public function getPageUidsCat ($cat)	{
 		$uids = '';
 
 		return $uids;
 	}
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$row: ...
-	 * @param	[type]		$field: ...
-	 * @return	[type]		...
-	 */
-	function getProductField(&$row, $field)	{
+	public function getProductField (&$row, $field)	{
 		return '';
 	}
 
 
 	/**
-	 * Returns true if the item has the $check value checked
+	 * Returns TRUE if the item has the $check value checked
 	 *
-	 * @param	[type]		$$row: ...
-	 * @param	[type]		$check: ...
-	 * @return	[type]		...
 	 */
-	function hasAdditional(&$row, $check)  {
-		$hasAdditional = false;
+	public function hasAdditional (&$row, $check)  {
+		$hasAdditional = FALSE;
 		return $hasAdditional;
 	}
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$where: ...
-	 * @param	[type]		$theCode: ...
-	 * @return	[type]		...
-	 */
-	function getWhere ($where, $theCode = '', $orderBy = '') {
+	public function getWhere ($where, $theCode = '', $orderBy = '') {
 		global $TYPO3_DB;
 
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableconf = $cnf->getTableConf($this->getFuncTablename(), $theCode);
 		$rc = array();
-
-		$where = ($where ? $where : '1=1 ').$this->getTableObj()->enableFields();
+		$where = ($where ? $where : '1=1 ') . $this->getTableObj()->enableFields();
 
 		// Fetching the products
 		$res = $this->getTableObj()->exec_SELECTquery('*', $where, '', $TYPO3_DB->stripOrderBy($orderBy));
 		$translateFields = $cnf->getTranslationFields($tableconf);
 
 		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+
 			foreach ($translateFields as $field => $transfield)	{
 				$row[$field] = $row[$transfield];
 			}
@@ -224,21 +186,28 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 
 	/**
 	 * Generates a search where clause.
-	 *
-	 * @param	[type]		$$searchFieldList: ...
-	 * @param	[type]		$sw: ...
-	 * @return	[type]		...
 	 */
-	function searchWhere(&$searchFieldList, $sw)	{
-		$where = $this->cObj->searchWhere($sw, $searchFieldList, $this->getTableObj()->getAlias());
+	public function searchWhere ($searchFieldList, $sw, $theCode) {
+		$where = '';
+
+		$tableConf = $this->getTableConf($theCode);
+
+		$bUseLanguageTable = $this->bUseLanguageTable($tableConf);
+		if ($bUseLanguageTable) {
+			$where = $this->getTableObj()->searchWhere($sw, $searchFieldList);
+		} else {
+			$searchTable = $this->getTableObj()->getAlias();
+			$where = $this->cObj->searchWhere($sw, $searchFieldList, $searchTable);
+		}
+
 		return $where;
 	} // searchWhere
 
 
-	function getNeededUrlParams($conftablename, $theCode)	{
+	public function getNeededUrlParams ($functablename, $theCode)	{
 		$rc = '';
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tableconf = $cnf->getTableConf($conftablename, $theCode);
+		$tableconf = $cnf->getTableConf($functablename, $theCode);
 		if (is_array($tableconf) && $tableconf['urlparams'])	{
 			$rc = $tableconf['urlparams'];
 		}
@@ -246,28 +215,60 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	}
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$targetRow: ...
-	 * @param	[type]		$sourceRow: ...
-	 * @param	[type]		$bKeepNotEmpty: ...
-	 * @return	[type]		...
-	 */
-	function mergeAttributeFields(&$targetRow, &$sourceRow, $bKeepNotEmpty = TRUE)	{
-
+	public function mergeAttributeFields (&$targetRow, &$sourceRow, $bKeepNotEmpty = TRUE, $bAddValues = FALSE, $bUseExt = FALSE)	{
 		$fieldArray = array();
-		$fieldArray['data'] = array('title', 'subtitle', 'itemnumber', 'image', 'note', 'note2');
-		$fieldArray['number'] = array('price', 'price2', 'directcost', 'weight', 'inStock');
+
+		$fieldArray['config'] = array('config');
+		$fieldArray['data'] = array('itemnumber', 'image');
+		$fieldArray['number'] = array('weight', 'inStock');
+		$fieldArray['price'] = array('price', 'price2', 'directcost');
+		$bIsAddedPrice = FALSE;
+		$cnfObj = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tableDesc = $this->getTableDesc();
+
+		if (isset($tableDesc['conf.']) && is_array($tableDesc['conf.']) && isset($tableDesc['conf.']['mergeAppendFields']))	{
+			$mergeAppendArray = t3lib_div::trimExplode(',',$tableDesc['conf.']['mergeAppendFields']);
+			$fieldArray['text'] = $mergeAppendArray;
+		} else {
+			$mergeAppendArray = array();
+		}
+		$fieldArray['text'][] = 'title';
+		$fieldArray['text'][] = 'subtitle';
+		$fieldArray['text'][] = 'note';
+		$fieldArray['text'][] = 'note2';
+		$fieldArray['text'] = array_unique($fieldArray['text']);
+
+		$variantFieldArray = $this->variant->getFieldArray();
+		$previouslyAddedPrice = 0;
+		if ($bUseExt && isset($targetRow['ext']) && is_array($targetRow['ext']) && isset($targetRow['ext']['addedPrice']))	{
+			$previouslyAddedPrice = $targetRow['addedPrice'];
+		}
 
 		foreach ($fieldArray as $type => $fieldTypeArray)	{
 			foreach ($fieldTypeArray as $k => $field)	{
+				$mergedFieldArray[] = $field;
 
 				if (isset($sourceRow[$field]))	{
-
 					$value = $sourceRow[$field];
 
-					if ($type == 'number') {
+					if ($type == 'config') {
+						if ($field == 'config')	{
+							$bIsAddedPrice = $cnfObj->hasConfig($sourceRow, 'isAddedPrice');
+						}
+					}
+					if ($type == 'price') {
+						if ($bIsAddedPrice)	{
+							$value += $targetRow[$field];
+							if ($bUseExt)	{
+								if (!isset($targetRow['ext']))	{
+									$targetRow['ext'] = array();
+								}
+								$targetRow['ext']['addedPrice'] += $targetRow[$field];
+							}
+						}
+						if ($previouslyAddedPrice)	{
+							$value += $previouslyAddedPrice;
+						}
 						if($bKeepNotEmpty)	{
 							if (!round($targetRow[$field], 16)) {
 								$targetRow[$field] = $value;
@@ -275,21 +276,50 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 						} else { // $bKeepNotEmpty == FALSE
 							$targetRow[$field] = $value;
 						}
-					} else if ($type == 'data')	{
+					} else if (($type == 'text') || ($type == 'data') || ($type == 'number')) {
 						if($bKeepNotEmpty)	{
-							if (empty($targetRow[$field])) {
+							if (
+								$type == 'number' && !round($targetRow[$field], 16) ||
+								$type != 'number' && empty($targetRow[$field])
+							) {
 								$targetRow[$field] = $value;
 							}
 						} else { // $bKeepNotEmpty == FALSE
-							if (empty($targetRow[$field]) || !empty($value)) {
-								$targetRow[$field] = $value;
+							if (
+								$type == 'number' &&
+								(!round($targetRow[$field], 16) || round($value, 16))
+									||
+								$type != 'number' &&
+								(empty($targetRow[$field]) || !empty($value))
+							) {
+								if (($bAddValues == TRUE) && in_array($field, $mergeAppendArray))	{
+									$targetRow[$field] .= ' '.$value;
+								} else {
+									$targetRow[$field] = $value;
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-	}
+		// copy the normal fields
+
+		if (isset($variantFieldArray) && is_array($variantFieldArray))	{
+			foreach ($variantFieldArray as $field)	{
+				if (isset($sourceRow[$field]))	{
+					$value = $sourceRow[$field];
+					if($bKeepNotEmpty)	{
+						if (!$targetRow[$field])	{
+							$targetRow[$field] = $value;
+						}
+					} else {
+						$targetRow[$field] = $value;
+					}
+				}
+			}
+		}
+	} // mergeAttributeFields
 }
 
 

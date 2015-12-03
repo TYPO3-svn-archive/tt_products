@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2011 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -32,13 +32,17 @@
  * $Id$
  *
  * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author  Renè Fritz <r.fritz@colorcube.de>
+ * @author  René Fritz <r.fritz@colorcube.de>
  * @author  Franz Holzinger <franz@ttproducts.de>
  * @author  Klaus Zierer <zierer@pz-systeme.de>
  * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
 class tx_ttproducts_paymentshipping {
 	var $cObj;
 	var $conf;
@@ -46,29 +50,47 @@ class tx_ttproducts_paymentshipping {
 	var $basket;
 	var $basketView;
 	var $priceObj;	// price functions
-	var $typeArray = array('shipping','payment');
+	var $typeArray = array('shipping', 'payment');
 
-	function init ($cObj)	{
+
+	function init (&$cObj)	{
 		global $TSFE;
 
-		$this->cObj = $cObj;
+		$this->cObj = &$cObj;
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
-
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 		$this->basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$this->priceObj = t3lib_div::getUserObj('tx_ttproducts_field_price');	// new independant price object
 	}
 
+
 	public function getTypeArray () {
 		return $this->typeArray;
 	}
 
+
+	function getScriptPrices ($pskey='shipping', &$calculatedArray, &$itemArray)	{
+		$hookVar = 'scriptPrices';
+		if ($hookVar && isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar]) &&
+			is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar]) &&
+			isset ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar][$pskey]) &&
+			is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar][$pskey])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar][$pskey] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
+				if (method_exists($hookObj, 'init')) {
+					$hookObj->init($this);
+				}
+				if (method_exists($hookObj, 'getScriptPrices')) {
+					$tmpArray = $hookObj->getScriptPrices($calculatedArray, $itemArray, $this->basket->basketExtra[$pskey], $this->basket->basketExtra[$pskey.'.']);
+				}
+			}
+		}
+	}
+
+
 	/**
 	 * Setting shipping, payment methods
-	 *
-	 * @param	[type]		$$basketRec: ...
-	 * @return	[type]		...
 	 */
 	function setBasketExtras (&$basketRec) {
 		global $TSFE;
@@ -83,7 +105,7 @@ class tx_ttproducts_paymentshipping {
 			$k = intval ($shipArray[0]);
 			if (!$this->checkExtraAvailable('shipping',$k)) {
 				$temp = $this->cleanConfArr($this->conf['shipping.'],1);
-				$shipArray[0]=$k=intval(key($temp));
+				$shipArray[0] = $k = intval(key($temp));
 			}
 			$this->basket->basketExtra['shipping'] = $shipArray;
 			$this->basket->basketExtra['shipping.'] = $this->conf['shipping.'][$k.'.'];
@@ -152,16 +174,12 @@ class tx_ttproducts_paymentshipping {
 
 	/**
 	 * Check if payment/shipping option is available
-	 *
-	 * @param	[type]		$name: ...
-	 * @param	[type]		$key: ...
-	 * @return	[type]		...
 	 */
 	function checkExtraAvailable ($name,$key)	{
-		$result = false;
+		$result = FALSE;
 
 		if (is_array($this->conf[$name.'.'][$key.'.']) && (!isset($this->conf[$name.'.'][$key.'.']['show']) || $this->conf[$name.'.'][$key.'.']['show']))	{
-			$result = true;
+			$result = TRUE;
 		}
 
 		return $result;
@@ -173,19 +191,11 @@ class tx_ttproducts_paymentshipping {
 	 * Fills in the subpartArray with data depending on payment and shipping
 	 *
 	 * @param	array		reference to an item array with all the data of the item
-	 * @param	[type]		$markerArray: ...
-	 * @param	[type]		$framework: ...
-	 * @return	[type]		...
 	 * @access private
 	 */
-	function getSubpartArrays (&$markerArray, &$subpartArray, &$wrappedSubpartArray, &$framework)	{
+	function getSubpartArrays ($markerArray, &$subpartArray, &$wrappedSubpartArray, $framework)	{
 
 		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
-		$shipKeyArray = $this->basket->basketExtra['shipping'];
-
-		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
-		$conf = $cnf->getConf();
-		$handleLib = $this->basket->basketExtra['payment.']['handleLib'];
 
 		if (strpos($handleLib, 'transactor') !== FALSE && t3lib_extMgm::isLoaded($handleLib)) {
 
@@ -203,6 +213,7 @@ class tx_ttproducts_paymentshipping {
 			$subpartArray['###MESSAGE_PAYMENT_TRANSACTOR_YES###'] = '';
 		}
 
+		$shipKeyArray = $this->basket->basketExtra['shipping'];
 		if (!is_array($shipKeyArray))	{
 			$shipKeyArray = array($shipKeyArray);
 		}
@@ -214,31 +225,35 @@ class tx_ttproducts_paymentshipping {
 				$shipKey .= '_';
 			}
 			$shipKey .= $value;
-			$tmpSubpartArray['shipping'] = $this->cObj->getSubpart($framework,'###MESSAGE_SHIPPING_'.$shipKey.'###');
-			$subpartArray['###MESSAGE_SHIPPING###'] .= $this->cObj->substituteMarkerArrayCached($tmpSubpartArray['shipping'],$markerArray);
-			$subpartArray['###MESSAGE_SHIPPING_NE_'.$shipKey.'###'] = '';
+
+			$subFrameWork = $this->cObj->getSubpart($framework, '###MESSAGE_SHIPPING###');
+			if ($subFrameWork != '') {
+				$tmpSubpartArray['shipping'] = $this->cObj->getSubpart($subFrameWork, '###MESSAGE_SHIPPING_' . $shipKey . '###');
+				$subpartArray['###MESSAGE_SHIPPING###'] .= $this->cObj->substituteMarkerArrayCached($tmpSubpartArray['shipping'], $markerArray);
+			}
+			$subpartArray['###MESSAGE_SHIPPING_NE_' . $shipKey . '###'] = '';
 		}
 
-		$tagArray = $markerObj->getAllMarkers($framework);
+		$tagArray = &$markerObj->getAllMarkers($framework);
 
 		foreach($this->typeArray as $k => $type)	{
 			$marker = strtoupper($type);
-			$tmpMarkerPrefix = 'MESSAGE_'.$marker;
-			$markerPrefix = 'MESSAGE_' . $marker;
+			$tmpMarkerPrefix = 'MESSAGE_' . $marker;
 
-			if (isset($this->conf[$type.'.']) && is_array($this->conf[$type.'.']))	{
-				foreach($this->conf[$type.'.'] as $k2 => $confRow)	{
+			if (isset($this->conf[$type . '.']) && is_array($this->conf[$type . '.']))	{
+				foreach($this->conf[$type . '.'] as $k2 => $confRow)	{
+
 					if (
 						!tx_div2007_core::testInt(substr($k2, 0, -1))
 					) {
 						continue;
 					}
-					$key = substr($k2,0,-1);
+					$key = substr($k2, 0, -1);
 					if (is_numeric($key))	{
-						$tmpMarker = '###'.$tmpMarkerPrefix.'_'.$key.'###';
+						$tmpMarker = '###' . $tmpMarkerPrefix . '_' . $key . '###';
 						if ($key == $this->basket->basketExtra[$type][0])	{
-							$tmpSubpart = $this->cObj->getSubpart($framework,$tmpMarker);
-							$subpartArray['###'.$tmpMarkerPrefix.'###'] = $this->cObj->substituteMarkerArrayCached($tmpSubpart,$markerArray);
+							$tmpSubpart = $this->cObj->getSubpart($framework, $tmpMarker);
+							$subpartArray['###' . $tmpMarkerPrefix . '###'] = $this->cObj->substituteMarkerArrayCached($tmpSubpart, $markerArray);
 							$wrappedSubpartArray[$tmpMarker] = '';
 						} else {
 							$subpartArray[$tmpMarker] = '';
@@ -246,7 +261,6 @@ class tx_ttproducts_paymentshipping {
 					}
 				}
 			}
-
 			foreach($tagArray as $k3 => $v3)	{
 				if (strpos($k3, $tmpMarkerPrefix) === 0 && !isset($subpartArray['###' . $k3 . '###']))	{
 
@@ -269,47 +283,29 @@ class tx_ttproducts_paymentshipping {
 	 *
 	 * @param	array		reference to an item array with all the data of the item
 	 * @param	array		marker array
-	 * @param	[type]		$value: ...
-	 * @param	[type]		$activeArray: ...
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray ($theCode, &$item, &$markerArray, $value, $activeArray)	{
+	public function getModelMarkerArray ($theCode, $title, $value, $imageCode, $activeArray, &$markerArray) {
 
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
-		$row = &$item;
-
 		$markerArray['###VALUE###'] = $value;
-		$markerArray['###CHECKED###'] = ($value==implode('-',$activeArray) ? ' checked="checked"':'');
-		$markerArray['###TITLE###'] = $row['title'];
-
-		$imageCode = '';
-		if (isset($row['image.'])) {
-			$imageCode = $this->cObj->IMAGE($row['image.']);
-			if ($theCode == 'EMAIL') {
-				tx_div2007_alpha5::fixImageCodeAbsRefPrefix($imageCode);
-			}
-		}
-
+		$markerArray['###CHECKED###'] = ($value == implode('-', $activeArray) ? ' checked="checked"' : '');
+		$markerArray['###TITLE###'] = $title;
 		$markerArray['###IMAGE###'] = $imageCode;
 	}
 
 
 	/**
 	 * Generates a radio or selector box for payment shipping
-	 *
-	 * @param	[type]		$pskey: ...
-	 * @param	[type]		$calculatedArray: ...
-	 * @param	[type]		$basketUrl: ...
-	 * @return	[type]		...
 	 */
 	function generateRadioSelect ($theCode, $pskey, &$calculatedArray, $basketUrl)	{
 			/*
 			 The conf-array for the payment/shipping configuration has numeric keys for the elements
 			 But there are also these properties:
 				.radio	  [boolean]	Enables radiobuttons instead of the default, selector-boxes
-				.wrap		[string]	<select>|</select> - wrap for the selectorboxes.  Only if .radio is false. See default value below
-				.template	[string]	Template string for the display of radiobuttons.  Only if .radio is true. See default below
+				.wrap		[string]	<select>|</select> - wrap for the selectorboxes.  Only if .radio is FALSE. See default value below
+				.template	[string]	Template string for the display of radiobuttons.  Only if .radio is TRUE. See default below
 			 */
 		global $TSFE;
 
@@ -322,28 +318,31 @@ class tx_ttproducts_paymentshipping {
 		) {
 			$type = 0;
 		}
+		$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
+		$selectedText = ($bUseXHTML ? 'selected="selected"' : 'selected');
 
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$active = $this->basket->basketExtra[$pskey];
 		$activeArray = is_array($active) ? $active : array($active);
 		$confArr = $this->cleanConfArr($this->conf[$pskey.'.']);
 		$out='';
-		$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
-		$selectedText = ($bUseXHTML ? 'selected="selected"' : 'selected');
-
 		$submitCode = 'this.form.action=\''.$basketUrl.'\';this.form.submit();';
+	//	$template = $this->conf[$pskey.'.']['template'] ? ereg_replace('\' *\. *\$pskey *\. *\'',$pskey, $this->conf[$pskey.'.']['template']) : '###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>';
 
 		$template = (
 			$this->conf[$pskey.'.']['template'] ?
-				preg_replace('/[[:space:]]*\\.[[:space:]]*' . $pskey . '[[:space:]]*\\.[[:space:]]*/',$pskey, $this->conf[$pskey.'.']['template']) :
-				'###IMAGE### <input type="radio" name="recs[tt_products]['.$pskey.']" onClick="'.$submitCode.'" value="###VALUE###"###CHECKED###> ###TITLE###<br>'
+				preg_replace('/[[:space:]]*\\.[[:space:]]*' . $pskey . '[[:space:]]*\\.[[:space:]]*/', $pskey, $this->conf[$pskey . '.']['template']) :
+				'###IMAGE### <input type="radio" name="recs[tt_products][' . $pskey . ']" onClick="' . $submitCode . '" value="###VALUE###"###CHECKED###> ###TITLE###<br>'
 			);
+
 		$wrap = $this->conf[$pskey.'.']['wrap'] ? $this->conf[$pskey.'.']['wrap'] :'<select id="'.$pskey.'-select" name="recs[tt_products]['.$pskey.']" onChange="'.$submitCode.'">|</select>';
 		$t = array();
+
 		$actTitle = $this->basket->basketExtra[$pskey.'.']['title'];
 
 		if (is_array($confArr))	{
 			foreach($confArr as $key => $item)	{
+
 				if (
 					($item['show'] || !isset($item['show'])) &&
 					(!isset($item['showLimit']) || doubleval($item['showLimit']) >= doubleval($this->basket->calculatedArray['count']) ||
@@ -352,12 +351,12 @@ class tx_ttproducts_paymentshipping {
 					$addItems = array();
 					$itemTable = '';
 					$t['title'] = $item['title'];
-					if ($item['where.'] && strstr($t['title'], '###'))	{
+					if ($item['where.'] && strpos($t['title'], '###') !== FALSE)	{
 						$tableName = key($item['where.']);
 						if (($tableName == 'static_countries') && t3lib_extMgm::isLoaded('static_info_tables')) {
 							$viewTagArray = array();
-							$itemTable = $tablesObj->get($tableName);
-
+							$itemTableView = $tablesObj->get($tableName,TRUE);
+							$itemTable = $itemTableView->getModelObj();
 							if (is_object($itemTable))	{
 								$markerFieldArray = array();
 								$parentArray = array();
@@ -371,8 +370,8 @@ class tx_ttproducts_paymentshipping {
 									$viewTagArray,
 									$parentArray
 								);
+								$addItems = $itemTable->get('',0,FALSE, $item['where.'][$tableName],'','','', implode(',',$fieldsArray));
 
-								$addItems = $itemTable->get ('', $item['where.'][$tableName], implode(',',$fieldsArray));
 								if (isset($addItems) && is_array($addItems))	{
 									foreach ($addItems as $k1 => $row)	{
 										foreach ($row as $field => $v)	{
@@ -387,40 +386,68 @@ class tx_ttproducts_paymentshipping {
 					if (!count($addItems))	{
 						$addItems = array('0' => '');
 					}
-					if ($type)  {	// radio
-						foreach ($addItems as $k1 => $row)	{
 
-							if (is_array($row))	{
-								$markerArray = array();
-								$itemTable->getItemMarkerArray($row, $markerArray, $fieldsArray);
-								$item['title'] = $this->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
-								$value = $key . '-'.$row['uid'];
-								if ($value == implode('-',$activeArray))	{
-									$actTitle = $item['title'];
+					if (isset($addItems) && is_array($addItems))	{
+						if ($type)  {	// radio
+
+							foreach($addItems as $k1 => $row)	{
+								$image = '';
+								if (is_array($row))	{
+									$markerArray = array();
+									$itemTableView->getRowMarkerArray($row, $markerArray, $fieldsArray);
+									$title = $this->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
+									$title = htmlentities($title,ENT_QUOTES,$TSFE->renderCharset);
+									$value = $key . '-' . $row['uid'];
+									if ($value == implode('-',$activeArray))	{
+										$actTitle = $item['title'];
+									}
+									if (isset($row['image.'])) {
+										$image = $row['image.'];
+									}
+								} else {
+									$value = $key;
+									$title = $item['title'];
+									if (isset($row['image.'])) {
+										$image = $item['image.'];
+									}
 								}
-							} else {
-								$value = $key;
-							}
-							$markerArray = array();
-							$this->getItemMarkerArray($theCode, $item, $markerArray, $value, $activeArray);
-							$out .= $this->cObj->substituteMarkerArrayCached($template, $markerArray).chr(10);
-						}
-					} else {
-						foreach ($addItems as $k1 => $row)	{
-							if (is_array($row))	{
 								$markerArray = array();
-								$itemTable->getItemMarkerArray ($row, $markerArray, $fieldsArray);
-								$title = $this->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
-								$title = htmlentities($title,ENT_QUOTES,$TSFE->renderCharset);
-								$value = $key . '-'.$row['uid'];
-								if ($value == implode('-',$activeArray))	{
-									$actTitle = $title;
+								$imageCode = '';
+								if ($image != '') {
+									$imageCode = $this->cObj->IMAGE($image);
+									if ($theCode == 'EMAIL') {
+										tx_div2007_alpha5::fixImageCodeAbsRefPrefix($imageCode);
+									}
 								}
-							} else {
-								$value = $key;
-								$title = $item['title'];
+
+								$this->getModelMarkerArray(
+									$theCode,
+									$title,
+									$value,
+									$imageCode,
+									$activeArray,
+									$markerArray
+								);
+
+								$out .= $this->cObj->substituteMarkerArrayCached($template, $markerArray) . chr(10);
 							}
-							$out .= '<option value="' . $value . '"' . ($value == implode('-',$activeArray) ? ' ' . $selectedText : '') . '>' . $title . '</option>' . chr(10);
+						} else {
+							foreach ($addItems as $k1 => $row)	{
+								if (is_array($row))	{
+									$markerArray = array();
+									$itemTableView->getRowMarkerArray ($row, $markerArray, $fieldsArray);
+									$title = $this->cObj->substituteMarkerArrayCached($t['title'], $markerArray);
+									$title = htmlentities($title,ENT_QUOTES,$TSFE->renderCharset);
+									$value = $key . '-' . $row['uid'];
+									if ($value == implode('-', $activeArray))	{
+										$actTitle = $item['title'];
+									}
+								} else {
+									$value = $key;
+									$title = $item['title'];
+								}
+								$out .= '<option value="' . $value . '"' . ($value == implode('-',$activeArray) ? ' ' . $selectedText : '') . '>' . $title . '</option>' . chr(10);
+							}
 						}
 					}
 				}
@@ -441,54 +468,57 @@ class tx_ttproducts_paymentshipping {
 				$viewTagArray,
 				$parentArray
 			);
+
 			$markerArray = array();
 			foreach ($viewTagArray as $tag => $v)	{
-				$markerArray['###'.$tag.'###'] = '?';
+				$markerArray['###' . $tag . '###'] = '?';
 			}
 			$actTitle = $this->cObj->substituteMarkerArrayCached($actTitle, $markerArray);
 		}
-		$this->basket->basketExtra[$pskey.'.']['title'] = $actTitle;
+		$this->basket->basketExtra[$pskey . '.']['title'] = $actTitle;
 		if (!$type) {
-			$out = $this->cObj->wrap($out,$wrap);
+			$out = $this->cObj->wrap($out, $wrap);
 		}
 		return $out;
 	} // generateRadioSelect
 
 
-	function cleanConfArr ($confArr,$checkShow=0)	{
+	public function cleanConfArr ($confArray, $checkShow = 0)	{
 		$outArr=array();
-		if (is_array($confArr)) {
-			reset($confArr);
-			while(list($key,$val)=each($confArr))	{
+
+		if (is_array($confArray)) {
+			foreach($confArray as $key => &$val)	{
+
 				if (
-					!tx_div2007_core::testInt($key) &&
 					intval($key) &&
 					is_array($val) &&
-					(!$checkShow || $val['show'] || !isset($val['show']))
-				)	{
-					$outArr[intval($key)]=$val;
+					!tx_div2007_core::testInt($key) &&
+					(!$checkShow || !isset($val['show']) || $val['show'])
+				) {
+					$i = intval($key);
+ 					$outArr[$i] = $val;
 				}
 			}
 		}
 		ksort($outArr);
 		reset($outArr);
+
 		return $outArr;
 	} // cleanConfArr
 
 
-	function getConfiguredPrice (&$tax, &$confArr, &$countTotal, &$priceTotalTax, &$priceTax, &$priceNoTax) {
+	function getConfiguredPrice (&$row, &$confArr, &$countTotal, &$priceTotalTax, &$priceTax, &$priceNoTax,  &$funcParams='') {
 
 		if (is_array($confArr))	{
 			$minPrice=0;
 			$priceNew=0;
-
 			if ($confArr['WherePIDMinPrice.']) {
 					// compare PIDList with values set in priceTaxWherePIDMinPrice in the SETUP
 					// if they match, get the min. price
 					// if more than one entry for priceTaxWherePIDMinPrice exists, the highest is value will be taken into account
-				foreach ($confArr['WherePIDMinPrice.'] as $minPricePID=>$minPriceValue) {
-					foreach ($this->basket->itemArray as $sort=>$actItemArray) {
-						foreach ($actItemArray as $k1=>$actItem) {
+				foreach ($confArr['WherePIDMinPrice.'] as $minPricePID => $minPriceValue) {
+					foreach ($this->basket->itemArray as $sort => $actItemArray) {
+						foreach ($actItemArray as $k1 => $actItem) {
 							$tmpRow = &$actItem['rec'];
 							$pid = intval($tmpRow['pid']);
 							if ($pid == $minPricePID) {
@@ -529,10 +559,20 @@ class tx_ttproducts_paymentshipping {
 						break;
 					}
 				}
+			} else if ($confArr['type'] == 'objectMethod' && isset($confArr['class'])) {
+				$obj= t3lib_div::getUserObj($confArr['class']);
+				if (method_exists($obj, 'getConfiguredPrice')){
+					$funcParams = $confArr['method.'];
+					$priceNew = $obj->getConfiguredPrice($row, $confArr, $countTotal, $priceTotalTax, $priceTax, $priceNoTax, $funcParams);
+				} else {
+					$priceNew = '0';
+				}
 			}
-			if (is_array($confArr['calc.']) && isset($confArr['calc.']['use']))	{
+
+			if (is_array($confArr['calc.']) && isset($confArr['calc.']['use']) && isset($this->conf['shippingcalc.']) && is_array($this->conf['shippingcalc.']))	{
 				$useArray = t3lib_div::trimExplode(',', $confArr['calc.']['use']);
 				$shippingcalc = array();
+
 				foreach ($this->conf['shippingcalc.'] as $k => $v)	{
 					$kInt = trim($k, '.'); // substr($k, 0, strlen($k) - 1);
 					if (in_array($kInt, $useArray))	{
@@ -540,15 +580,26 @@ class tx_ttproducts_paymentshipping {
 					}
 				}
 				include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_discountprice.php');
-				$discountPrice = t3lib_div::makeInstance('tx_ttproducts_discountprice');
+				$discountPriceObj = t3lib_div::makeInstance('tx_ttproducts_discountprice');
 				$priceReduction = array();
-				$discountPrice->getCalculatedData($this->basket->itemArray, $shippingcalc, 'shipping', $priceReduction, $priceTotalTax);
+				$discountPriceObj->getCalculatedData(
+					$this->basket->itemArray,
+					$shippingcalc,
+					'shipping',
+					$priceReduction,
+					$priceTotalTax,
+					FALSE
+				);
+			}
 
-				if (count($priceReduction)) {
-					foreach ($priceReduction as $discountPriceValue) {
-						$priceNew += $discountPriceValue;
-					}
+			if(is_array($funcParams)){
+				$hookObj= t3lib_div::getUserObj($funcParams['class']);
+				if (method_exists($hookObj, 'init')) {
+					$hookObj->init($this);
 				}
+				if (method_exists($hookObj, 'getConfiguredPrice')) {
+					$tmpArray = $hookObj->getConfiguredPrice($tax, $confArr, $countTotal, $priceTotalTax, $priceTax, $priceNoTax,$funcParams);
+				};
 			}
 
 			// compare the price to the min. price
@@ -562,99 +613,77 @@ class tx_ttproducts_paymentshipping {
 				$priceTax = $priceNoTax = 0;
 			}
 			$taxIncluded = $this->priceObj->getTaxIncluded();
-			$priceTax += $this->priceObj->getPrice($priceNew, 1, $tax, $taxIncluded, true);
-			$priceNoTax += $this->priceObj->getPrice($priceNew, 0, $tax, $taxIncluded, true);
+			$priceTax += $this->priceObj->getPrice($priceNew, 1, $row, $taxIncluded, TRUE);
+			$priceNoTax += $this->priceObj->getPrice($priceNew, 0, $row, $taxIncluded, TRUE);
 		}
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$priceShippingTax: ...
-	 * @param	[type]		$priceShippingNoTax: ...
-	 * @param	[type]		$taxpercentage: ...
-	 * @param	[type]		$taxIncluded: ...
-	 * @return	[type]		...
-	 */
-	function addItemShippingPrices (&$priceShippingTax, &$priceShippingNoTax, $taxpercentage, $taxIncluded)	{
+
+	function addItemShippingPrices (&$priceShippingTax, &$priceShippingNoTax, $row, $taxIncluded)	{
+
 		foreach ($this->basket->itemArray as $sort=>$actItemArray) {
+
 			// $actItemArray = all items array
-			foreach ($actItemArray as $k2=>$actItem) {
+			foreach ($actItemArray as $k2 => $actItem) {
 				$row = &$actItem['rec'];
+
 				if ($row['bulkily'])	{
 					$value = floatval($this->basket->basketExtra['shipping.']['bulkilyAddition']) * $actItem['count'];
-					$tax = floatval($this->basket->basketExtra['shipping.']['bulkilyFeeTax']);
-					$priceShippingTax += $this->priceObj->getPrice($value,true,$tax,$taxIncluded,true);
-					$priceShippingNoTax += $this->priceObj->getPrice($value,false,$tax,$taxIncluded,true);
+					$row['tax'] = floatval($this->basket->basketExtra['shipping.']['bulkilyFeeTax']);
+					$priceShippingTax += $this->priceObj->getPrice($value, TRUE, $row, $taxIncluded, TRUE);
+
+					$priceShippingNoTax += $this->priceObj->getPrice($value, FALSE, $row, $taxIncluded, TRUE);
 				}
 			}
 		}
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$pskey: ...
-	 * @param	[type]		$countTotal: ...
-	 * @param	[type]		$priceTotalTax: ...
-	 * @param	[type]		$priceTax: ...
-	 * @param	[type]		$priceNoTax: ...
-	 * @param	[type]		$taxpercentage: ...
-	 * @return	[type]		...
-	 */
-	function getPrices ($pskey, $taxpercentage, $countTotal, $priceTotalTax, &$priceTax, &$priceNoTax)	{
+
+	function getPrices ($pskey, $row, $countTotal, $priceTotalTax, &$priceTax, &$priceNoTax)	{
 
 		$taxIncluded = $this->conf['TAXincluded'];
-		if (is_array($this->basket->basketExtra[$pskey.'.']) && isset($this->basket->basketExtra[$pskey.'.']['TAXincluded']))	{
-			$taxIncluded = $this->basket->basketExtra[$pskey.'.']['TAXincluded'];
+		if (is_array($this->basket->basketExtra[$pskey . '.']) && isset($this->basket->basketExtra[$pskey . '.']['TAXincluded']))	{
+			$taxIncluded = $this->basket->basketExtra[$pskey . '.']['TAXincluded'];
 		}
-		$confArr = $this->basket->basketExtra[$pskey.'.']['price.'];
-		$confArr = ($confArr ? $confArr : $this->basket->basketExtra[$pskey.'.']['priceTax.']);
-		$taxpercentage = doubleVal($this->conf[$pskey.'.']['TAXpercentage']);
-
-		$this->priceObj->init($this->cObj, $this->conf[$pskey.'.'], 0);
+		$confArr = $this->basket->basketExtra[$pskey . '.']['price.'];
+		$confArr = ($confArr ? $confArr : $this->basket->basketExtra[$pskey . '.']['priceTax.']);
+		$this->priceObj->init($this->cObj, $this->conf[$pskey . '.'], 0);
 		if ($confArr) {
-			$this->getConfiguredPrice($taxpercentage, $confArr, $countTotal, $priceTotalTax, $priceTax, $priceNoTax);
+			$this->getConfiguredPrice($row, $confArr, $countTotal, $priceTotalTax, $priceTax, $priceNoTax, $tmp = '');
 		} else {
-			$priceAdd = doubleVal($this->basket->basketExtra[$pskey.'.']['price']);
+			$priceAdd = doubleVal($this->basket->basketExtra[$pskey . '.']['price']);
 
 			if ($priceAdd)	{
-				$priceTaxAdd = $this->priceObj->getPrice($priceAdd,true,$taxpercentage,$taxIncluded,true);
+				$priceTaxAdd = $this->priceObj->getPrice($priceAdd, TRUE, $row, $taxIncluded, TRUE);
 			} else {
-				$priceTaxAdd = doubleVal($this->basket->basketExtra[$pskey.'.']['priceTax']);
+				$priceTaxAdd = doubleVal($this->basket->basketExtra[$pskey . '.']['priceTax']);
 			}
 			$priceTax += $priceTaxAdd;
-			$priceNoTaxAdd = doubleVal($this->basket->basketExtra[$pskey.'.']['priceNoTax']);
+
+			$priceNoTaxAdd = doubleVal($this->basket->basketExtra[$pskey . '.']['priceNoTax']);
 
 			if (!$priceNoTaxAdd) {
-				$priceNoTaxAdd = $this->priceObj->getPrice($priceTaxAdd,false,$taxpercentage,true,true);
+				$priceNoTaxAdd = $this->priceObj->getPrice($priceTaxAdd, FALSE, $row, TRUE, TRUE);
 			}
 			$priceNoTax += $priceNoTaxAdd;
 		}
+
 		if ($pskey == 'shipping')	{
-			$this->addItemShippingPrices($priceTax, $priceNoTax, $taxpercentage, $taxIncluded);
+			$this->addItemShippingPrices($priceTax, $priceNoTax, $row, $taxIncluded);
 		}
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$pskey: ...
-	 * @param	[type]		$taxpercentage: ...
-	 * @param	[type]		$priceShippingTax: ...
-	 * @param	[type]		$priceShippingNoTax: ...
-	 * @return	[type]		...
-	 */
-	function getSpecialPrices ($pskey, $taxpercentage, &$priceShippingTax, &$priceShippingNoTax)	{
+
+	function getSpecialPrices ($pskey, $row, &$priceShippingTax, &$priceShippingNoTax)	{
 		global $TSFE;
 
 		$perc = doubleVal($this->basket->basketExtra[$pskey.'.']['percentOfGoodstotal']);
 		if ($perc)  {
-			$priceShipping = doubleVal(($this->basket->calculatedArray['priceTax']['goodstotal']/100)*$perc);
-			$dum = $this->priceObj->getPrice($priceShipping,1,$taxpercentage);
+			$priceShipping = doubleVal(($this->basket->calculatedArray['priceTax']['goodstotal'] / 100) * $perc);
+			$dum = $this->priceObj->getPrice($priceShipping, TRUE, $row);
 			$taxIncluded = $this->priceObj->getTaxIncluded();
-			$priceShippingTax = $priceShippingTax + $this->priceObj->getPrice($priceShipping,true,$taxpercentage,$taxIncluded,true);
-			$priceShippingNoTax = $priceShippingNoTax + $this->priceObj->getPrice($priceShipping,false,$taxpercentage,$taxIncluded,true);
+			$priceShippingTax = $priceShippingTax + $this->priceObj->getPrice($priceShipping, TRUE, $row, $taxIncluded, TRUE);
+			$priceShippingNoTax = $priceShippingNoTax + $this->priceObj->getPrice($priceShipping, FALSE, $row, $taxIncluded, TRUE);
 		}
 
 		$calculationScript = $this->basket->basketExtra[$pskey.'.']['calculationScript'];
@@ -667,122 +696,106 @@ class tx_ttproducts_paymentshipping {
 		}
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$countTotal: ...
-	 * @param	[type]		$priceTotalTax: ...
-	 * @param	[type]		$priceShippingTax: ...
-	 * @param	[type]		$priceShippingNoTax: ...
-	 * @param	[type]		$pricePaymentTax: ...
-	 * @param	[type]		$pricePaymentNoTax: ...
-	 * @return	[type]		...
-	 */
+
 	function getPaymentShippingData (
 			$countTotal,
 			$priceTotalTax,
-			$shippingTax,
-			$paymentTax,
+			$shippingRow,
+			$paymentRow,
 			&$priceShippingTax,
 			&$priceShippingNoTax,
 			&$pricePaymentTax,
 			&$pricePaymentNoTax
 		) {
 		global $TSFE;
-		$taxpercentage = $shippingTax;
+
+		$row = $shippingRow;
 
 		// Shipping
 		$weigthFactor = doubleVal($this->basket->basketExtra['shipping.']['priceFactWeight']);
 		if($weigthFactor > 0) {
 			$priceShipping = $this->basket->calculatedArray['weight'] * $weigthFactor;
-			$priceShippingTax += $this->priceObj->getPrice($priceShipping, true, $taxpercentage, $taxIncluded, true);
-			$priceShippingNoTax += $this->priceObj->getPrice($priceShipping, false, $taxpercentage, $taxIncluded, true);
+			$priceShippingTax += $this->priceObj->getPrice($priceShipping, TRUE, $row, $taxIncluded, TRUE);
+			$priceShippingNoTax += $this->priceObj->getPrice($priceShipping, FALSE, $row, $taxIncluded, TRUE);
 		}
 		$countFactor = doubleVal($this->basket->basketExtra['shipping.']['priceFactCount']);
 		if($countFactor > 0) {
 			$priceShipping = $countTotal * $countFactor;
-			$priceShippingTax += $this->priceObj->getPrice($priceShipping, true, $taxpercentage, $taxIncluded, true);
-			$priceShippingNoTax += $this->priceObj->getPrice($priceShipping, false, $taxpercentage, $taxIncluded, true);
+			$priceShippingTax += $this->priceObj->getPrice($priceShipping, TRUE, $row, $taxIncluded, TRUE);
+			$priceShippingNoTax += $this->priceObj->getPrice($priceShipping, FALSE, $row, $taxIncluded, TRUE);
 		}
+		$this->getSpecialPrices('shipping', $row, $priceShippingTax, $priceShippingNoTax);
 
-		$this->getSpecialPrices('shipping', $taxpercentage, $priceShippingTax, $priceShippingNoTax);
+		$this->getPrices('shipping', $row, $countTotal, $priceTotalTax, $priceShippingTax, $priceShippingNoTax);
 
-		$this->getPrices('shipping', $taxpercentage, $countTotal, $priceTotalTax, $priceShippingTax, $priceShippingNoTax);
 		$taxIncluded = $this->priceObj->getTaxIncluded();
 
 			// Payment
 		$pricePayment = $pricePaymentTax = $pricePaymentNoTax = 0;
-		$taxpercentage = $paymentTax;
+		$taxpercentage = '';
+		$row = $paymentRow;
 		$perc = doubleVal($this->basket->basketExtra['payment.']['percentOfTotalShipping']);
+
 		if ($perc)  {
 			$payment = ($this->basket->calculatedArray['priceTax']['goodstotal'] + $this->basket->calculatedArray['priceTax']['shipping'] ) * doubleVal($perc);
-			$pricePaymentTax += $this->priceObj->getPrice($payment, true, $taxpercentage, $taxIncluded, true);
-			$pricePaymentNoTax += $this->priceObj->getPrice($payment, false, $taxpercentage, $taxIncluded, true);
+			$pricePaymentTax += $this->priceObj->getPrice($payment, TRUE, $row, $taxIncluded, TRUE);
+			$pricePaymentNoTax += $this->priceObj->getPrice($payment, FALSE, $row, $taxIncluded, TRUE);
 		}
-		$this->getSpecialPrices('payment', $taxpercentage, $pricePaymentTax, $pricePaymentNoTax);
-		$this->getPrices('payment', $taxpercentage, $countTotal, $priceTotalTax, $pricePaymentTax, $pricePaymentNoTax);
+		$this->getSpecialPrices('payment', $row, $pricePaymentTax, $pricePaymentNoTax);
+		$this->getPrices('payment', $row, $countTotal, $priceTotalTax, $pricePaymentTax, $pricePaymentNoTax);
 	} // getPaymentShippingData
 
 
 	/**
 	 * Include handle script
-	 *
-	 * @param	[type]		$handleScript: ...
-	 * @param	[type]		$confScript: ...
-	 * @param	[type]		$activity: ...
-	 * @param	[type]		$bFinalize: ...
-	 * @param	[type]		$pibase: ...
-	 * @param	[type]		$infoViewObj: ...
-	 * @return	[type]		...
 	 */
 	function includeHandleScript ($handleScript, &$confScript, $activity, &$bFinalize, $pibase, $infoViewObj)	{
 		$content = '';
+		$infoViewObj = t3lib_div::getUserObj('&tx_ttproducts_info_view');
+
 		include($handleScript);
 		return $content;
 	} // includeHandleScript
 
+
 	/**
 	 * get the TAXpercentage from the shipping if available
 	 */
-	function getTaxPercentage ($pskey='shipping')	{
+	function getTaxPercentage ($pskey = 'shipping')	{
 
-		if (is_array($this->basket->basketExtra[$pskey.'.']) && isset($this->basket->basketExtra[$pskey.'.']['TAXpercentage']))	{
-			$rc = doubleval($this->basket->basketExtra[$pskey.'.']['TAXpercentage']);
+		if (is_array($this->basket->basketExtra[$pskey . '.']) && isset($this->basket->basketExtra[$pskey . '.']['TAXpercentage']))	{
+			$rc = doubleval($this->basket->basketExtra[$pskey . '.']['TAXpercentage']);
 		} else {
-			$rc = $this->conf[$pskey.'.']['TAXpercentage'];
+			$rc = $this->conf[$pskey . '.']['TAXpercentage'];
 		}
 		$rc = doubleval($rc);
 		return $rc;
 	}
 
+
 	/**
 	 * get the replaceTAXpercentage from the shipping if available
-	 *
-	 * @return	[type]		...
 	 */
-	function getReplaceTaxPercentage ()	{
-		if (is_array($this->basket->basketExtra['shipping.']) && isset($this->basket->basketExtra['shipping.']['replaceTAXpercentage']))	{
-			$rc = doubleval($this->basket->basketExtra['shipping.']['replaceTAXpercentage']);
+	function getReplaceTaxPercentage ($pskey = 'shipping')	{
+		if (is_array($this->basket->basketExtra[$pskey . '.']) && isset($this->basket->basketExtra[$pskey . '.']['replaceTAXpercentage']))	{
+			$rc = doubleval($this->basket->basketExtra[$pskey . '.']['replaceTAXpercentage']);
 		}
 		return $rc;
 	}
 
+
 	/**
 	 * get the delivery costs
-	 *
-	 * @return	[type]		...
 	 */
 	function getDeliveryCosts ()	{
 		$rc = $this->basket->calculatedArray['priceTax']['shipping'] + $this->basket->calculatedArray['priceTax']['payment'];
 		return $rc;
 	}
 
+
 	/**
 	 * get the where condition for a shipping entry
 	 * E.g.:  30.where.static_countries = cn_short_local = 'Deutschland'
-	 *
-	 * @param	[type]		$tablename: ...
-	 * @return	[type]		...
 	 */
 	function getWhere ($tablename)	{
 		if (is_array($this->basket->basketExtra['shipping.']) && isset($this->basket->basketExtra['shipping.']['where.']))	{
@@ -801,15 +814,26 @@ class tx_ttproducts_paymentshipping {
 		return $rc;
 	}
 
-	public function getAddRequiredInfoFields () {
+	public function getAddRequiredInfoFields ($type) {
 		$resultArray = array();
-		$typeArray = $this->getTypeArray();
-		foreach ($typeArray as $type) {
+		$pskeyArray = $this->getTypeArray();
+
+		foreach ($pskeyArray as $pskey) {
 			if (
-				isset($this->basket->basketExtra[$type . '.']) &&
-				is_array($this->basket->basketExtra[$type . '.'])
+				isset($this->basket->basketExtra[$pskey . '.']) &&
+				is_array($this->basket->basketExtra[$pskey . '.'])
 			) {
-				$tmp = $this->basket->basketExtra[$type . '.']['addRequiredInfoFields'];
+				$tmp = '';
+
+				if (
+					isset($this->basket->basketExtra[$pskey . '.']['addRequiredInfoFields.']) &&
+					isset($this->basket->basketExtra[$pskey . '.']['addRequiredInfoFields.'][$type])
+				) {
+					$tmp = $this->basket->basketExtra[$pskey . '.']['addRequiredInfoFields.'][$type];
+				} else {
+					$tmp = $this->basket->basketExtra[$pskey . '.']['addRequiredInfoFields'];
+				}
+
 				if ($tmp != '') {
 					$resultArray[] = trim($tmp);
 				}
@@ -821,43 +845,34 @@ class tx_ttproducts_paymentshipping {
 
 	function get ($pskey, $setup)	{
 		$rc = '';
-		$tmp = $this->basket->basketExtra[$pskey.'.'][$setup];
+		$tmp = $this->basket->basketExtra[$pskey . '.'][$setup];
 		if ($tmp != '')	{
 			$rc = trim($tmp);
 		}
 		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
+
 	function useCreditcard ()	{
-		$rc = false;
+		$rc = FALSE;
 		$payConf = &$this->basket->basketExtra['payment.'];
 		if (is_array($payConf) && $payConf['creditcards'] != '')	{
-			$rc = true;
+			$rc = TRUE;
 		}
 		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
+
 	function useAccount ()	{
-		$rc = false;
+		$rc = FALSE;
 		$payConf = &$this->basket->basketExtra['payment.'];
 		if (is_array($payConf) && $payConf['accounts'] != '')	{
-			$rc = true;
+			$rc = TRUE;
 		}
 		return $rc;
 	}
 
 
-	// $request: request or form
 	public function getHandleLib ($request)	{ // getGatewayRequestExt
 
 		$rc = FALSE;
@@ -869,11 +884,11 @@ class tx_ttproducts_paymentshipping {
 		}
 
 		if (
-			(strpos($handleLib,'transactor') !== FALSE || strpos($handleLib,'paymentlib') !== FALSE) &&
+			(strpos($handleLib,'transactor') !== FALSE || strpos($handleLib, 'paymentlib') !== FALSE) &&
 			is_array($payConf['handleLib.']) &&
 			$payConf['handleLib.']['gatewaymode'] == $request &&
 			t3lib_extMgm::isLoaded($handleLib)
-		)	{
+		) {
 			$rc = $handleLib;
 		}
 
@@ -885,6 +900,5 @@ class tx_ttproducts_paymentshipping {
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_paymentshipping.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_paymentshipping.php']);
 }
-
 
 ?>

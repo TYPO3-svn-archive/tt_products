@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2007 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -32,11 +32,18 @@
  * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
+// require_once (PATH_t3lib . 'class.t3lib_parsehtml.php');
+
+
 class tx_ttproducts_subpartmarker {
 	var $cObj; // reference to object
 	var $conf;
@@ -47,43 +54,34 @@ class tx_ttproducts_subpartmarker {
 	 * $basket is the TYPO3 default shopping basket array from ses-data
 	 *
 	 * @param	string		$fieldname is the field in the table you want to create a JavaScript for
-	 * @param	array		array urls which should be overridden with marker key as index
-	 * @return	void
-	 */
-	function init($cObj)	{
+	* @param	array		array urls which should be overridden with marker key as index
+	 * @return	  void
+ 	 */
+	function init ($cObj)	{
  		$this->cObj = $cObj;
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
  		$this->conf = &$cnf->conf;
 	}
 
-
 	/**
 	 * Returning template subpart marker
-	 *
-	 * @param	[type]		$subpartMarker: ...
-	 * @return	[type]		...
 	 */
-	function spMarker($subpartMarker)	{
+	function spMarker ($subpartMarker)	{
 		$sPBody = substr($subpartMarker,3,-3);
 		$altSPM = '';
 		if (isset($this->conf['altMainMarkers.']))	{
-			$altSPM = trim($this->cObj->stdWrap($this->conf['altMainMarkers.'][$sPBody], $this->conf['altMainMarkers.'][$sPBody.'.']));
+			$altSPM = trim($this->cObj->stdWrap($this->conf['altMainMarkers.'][$sPBody], $this->conf['altMainMarkers.'][$sPBody . '.']));
 			$GLOBALS['TT']->setTSlogMessage('Using alternative subpart marker for "' . $subpartMarker . '": ' . $altSPM, 1);
 		}
 		$rc = $altSPM ? $altSPM : $subpartMarker;
 		return $rc;
 	} // spMarker
 
-
 	/**
 	 * Returning template subpart array
-	 *
-	 * @param	[type]		$templateCode: ...
-	 * @param	[type]		$subItemMarkerArray: ...
-	 * @return	[type]		...
 	 */
-	function getTemplateSubParts($templateCode, $subItemMarkerArray)	{
+	function getTemplateSubParts ($templateCode, $subItemMarkerArray)	{
 		$rc = array();
 		foreach ($subItemMarkerArray as $key => $subItemMarker)	{
 			$rc[$subItemMarker] = substr($this->spMarker('###' . $subItemMarker . '_TEMPLATE###'), 3, -3);
@@ -91,7 +89,35 @@ class tx_ttproducts_subpartmarker {
 		return $rc;
 	} // getTemplate
 
-
+	/**
+	 * Returns a subpart from the input content stream.
+	 * A subpart is a part of the input stream which is encapsulated in a
+	 * string matching the input string, $marker. If this string is found
+	 * inside of HTML comment tags the start/end points of the content block
+	 * returned will be that right outside that comment block.
+	 * Example: The contennt string is
+	 * "Hello <!--###sub1### begin--> World. How are <!--###sub1### end--> you?"
+	 * If $marker is "###sub1###" then the content returned is
+	 * " World. How are ". The input content string could just as well have
+	 * been "Hello ###sub1### World. How are ###sub1### you?" and the result
+	 * would be the same
+	 * Wrapper for t3lib_parsehtml::getSubpart which behaves identical
+	 *
+	 * @param	string		The content stream, typically HTML template content.
+	 * @param	string		The marker string, typically on the form "###[the marker string]###"
+	 * @return	string		The subpart found, if found.
+	 * @see substituteSubpart(), t3lib_parsehtml::getSubpart()
+	 */
+	public function getSubpart ($content, $marker, &$error_code) {
+		$rc = t3lib_parsehtml::getSubpart($content, $marker);
+		if (!$rc)	{
+			$templateObj = t3lib_div::getUserObj('&tx_ttproducts_template');
+			$error_code[0] = 'no_subtemplate';
+			$error_code[1] = $marker;
+			$error_code[2] = $templateObj->getTemplateFile();
+		}
+		return $rc;
+	}
 }
 
 

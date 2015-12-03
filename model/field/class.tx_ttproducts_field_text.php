@@ -35,7 +35,13 @@
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
+
+
 class tx_ttproducts_field_text extends tx_ttproducts_field_base {
 
 }

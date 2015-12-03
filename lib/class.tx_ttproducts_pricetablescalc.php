@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,55 +40,113 @@
  */
 
 
+
+// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_base.php');
+
 class tx_ttproducts_pricetablescalc extends tx_ttproducts_pricecalc_base {
-	var $conftablename = 'tt_products_graduated_price';
+//	var $conftablename = 'tt_products_graduated_price';
 
 
-	function init(&$pibase)	{
+	function init ($pibase)	{
 	// nothing
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$itemArray: ...
-	 * @param	[type]		$conf: ...
-	 * @param	[type]		$type: ...
-	 * @param	[type]		$priceReduction: ...
-	 * @param	[type]		$priceTotalTax: ...
-	 * @return	[type]		...
-	 */
-	function getCalculatedData(&$itemArray, &$conf, $type, &$priceReduction, $priceTotalTax ) {
+	function getCalculatedData (&$itemArray, &$conf, $type, &$priceReduction, $priceTotalTax, $bUseArticles) {
 
 		if (!$itemArray || !count($itemArray)) {
 			return;
 		}
 
 		$graduatedPriceObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$useArticles = $cnf->getUseArticles();
 
+		if ($bUseArticles && ($useArticles == 1 || $useArticles == 3)) {
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$articleTable = $tablesObj->get('tt_products_articles', FALSE);
+		}
+
+		$prodArray = array();
 		// loop over all items in the basket indexed by sort string
 		foreach ($itemArray as $sort => $actItemArray) {
+
 			foreach ($actItemArray as $k2 => $actItem) {
 				$row = $actItem['rec'];
-				$count = floatval($actItem['count']);
-				if ($row['graduated_price_uid'])	{
-					$priceProduct = floatval($row['price']);
-					$priceFormulaArray = $graduatedPriceObj->getFormulasByProduct($row['uid']);
-					foreach ($priceFormulaArray as $k => $priceFormula)	{
-						if ($count >= floatval($priceFormula['startamount']) && $priceProduct > floatval($priceFormula['formula']))	{
-							$priceProduct = $priceFormula['formula'];
+				$actItem['sort'] = $sort;
+				$actItem['k2'] = $k2;
+				$prodArray[$row['uid']][] = $actItem;
+			}
+		}
+
+		// loop over all items in the basket indexed by product uid
+		foreach ($prodArray as $uid => $actItemArray) {
+			$row1 = $actItemArray['0']['rec'];
+
+			if ($row1['graduated_price_uid'])	{
+				$count = 0;
+				$priceProduct = $row1['price'];
+
+				foreach($actItemArray as $actItem)	{
+					$count += floatval($actItem['count']);
+				}
+				$priceFormulaArray = $graduatedPriceObj->getFormulasByProduct($uid);
+
+				foreach ($priceFormulaArray as $k => $priceFormula)	{
+
+					if ($count >= floatval($priceFormula['startamount']))	{
+						$formula = trim($priceFormula['formula']);
+						$len = strlen($formula);
+						$lastChar = substr($formula, -1, 1);
+
+						if (
+							!tx_div2007_core::testInt($lastChar)
+						) {
+							$formula = substr($formula, 0, strlen($formula) - 1);
+
+							switch ($lastChar)	{
+								case '%':
+									if ($formula > 100)	{
+										$formula = 100;
+									}
+									$priceProduct = $priceProduct * (1 - $formula / 100);
+									break;
+							}
+						} else	{
+							$priceProduct = $formula;
 						}
 					}
-					if ($priceProduct > $itemArray[$sort][$k2][$type])	{
-						$itemArray[$sort][$k2][$type] = $priceProduct;
-					}
-					$priceReduction[$row['uid']] = 1;
 				}
+
+				foreach($actItemArray as $actItem)	{
+
+					$row = $actItem['rec'];
+					$count = floatval($actItem['count']);
+					$sort = $actItem['sort'];
+					$k2 = $actItem['k2'];
+					$actPrice = $priceProduct;
+
+					if (isset($articleTable) && is_object($articleTable))	{
+						$extArray = $row['ext'];
+						$articleUid = $extArray['tt_products_articles']['0']['uid'];
+
+						if (
+							tx_div2007_core::testInt($articleUid)
+						) {
+							$articleRow = $articleTable->get($articleUid);
+							$bIsAddedPrice = $cnf->hasConfig($articleRow, 'isAddedPrice');
+
+							if ($bIsAddedPrice)	{
+								$actPrice = $priceProduct + $articleRow['price'];
+							}
+						}
+					}
+
+					$itemArray[$sort][$k2]['rec'][$type] = $itemArray[$sort][$k2][$type] = $actPrice;
+				}
+				$priceReduction[$uid] = 1;
 			}
 		}
 	} // getCalculatedData
-
-
 }
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_pricetablescalc.php'])	{

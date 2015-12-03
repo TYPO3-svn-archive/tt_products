@@ -35,16 +35,21 @@
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
  */
+
+
+
+
 class tx_ttproducts_gifts_div {
 	/**
- * returns if the product has been put into the basket as a gift
- *
- * @param	integer		uid of the product
- * @param	integer		variant of the product only size is used now --> TODO
- * @return	array		all gift numbers for this product
- */
-	function getGiftNumbers($uid, $variant)	{
+	 * returns if the product has been put into the basket as a gift
+	 *
+	 * @param	integer	 uid of the product
+	 * @param	integer	 variant of the product only size is used now --> TODO
+	 * @return  array	all gift numbers for this product
+	 */
+	static public function getGiftNumbers($uid, $variant)	{
 		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$giftArray = array();
 
@@ -62,14 +67,8 @@ class tx_ttproducts_gifts_div {
 
 	/**
 	 * Adds gift markers to a markerArray
-	 *
-	 * @param	[type]		$markerArray: ...
-	 * @param	[type]		$giftnumber: ...
-	 * @param	[type]		$code: ...
-	 * @param	[type]		$id: ...
-	 * @return	[type]		...
 	 */
-	function addGiftMarkers($markerArray, $giftnumber, $code='LISTGIFTS', $id='1')	{
+	static public function addGiftMarkers($markerArray, $giftnumber, $code = 'LISTGIFTS', $id = '1')	{
 
 		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$markerArray['###GIFTNO###'] = $giftnumber;
@@ -79,7 +78,7 @@ class tx_ttproducts_gifts_div {
 		$markerArray['###GIFT_DELIVERY_EMAIL###'] = $basket->basketExt['gift'][$giftnumber]['deliveryemail'];
 		$markerArray['###GIFT_NOTE###'] = $basket->basketExt['gift'][$giftnumber]['note'];
 		//
-		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXT.'_'.strtolower($code).'_id_'.$id;
+		$markerArray['###FIELD_ID###'] = TT_PRODUCTS_EXT . '_' . strtolower($code) . '_id_' . $id;
 		// here again, because this is here in ITEM_LIST view
 		//	  $markerArray['###FIELD_QTY###'] =  '';
 
@@ -96,12 +95,8 @@ class tx_ttproducts_gifts_div {
 	/**
 	 * Saves the orderRecord and returns the result
 	 *
-	 * @param	[type]		$orderUid: ...
-	 * @param	[type]		$pid: ...
-	 * @param	[type]		$giftBasket: ...
-	 * @return	[type]		...
 	 */
-	function saveOrderRecord($orderUid, $pid, &$giftBasket) {
+	static public function saveOrderRecord($orderUid, $pid, &$giftBasket) {
 		global $TYPO3_DB;
 		$rc = '';
 
@@ -149,12 +144,12 @@ class tx_ttproducts_gifts_div {
 			foreach ($rec['item'] as $productid => $product) {
 				foreach ($product as $variant => $count) {
 					$row = array();
-					$productObj->variant->modifyRowFromVariant	($row, $variant);
+					$productObj->variant->modifyRowFromVariant ($row, $variant);
 
-					$query='uid_product=\''.intval($productid).'\'';
+					$query = 'uid_product=\'' . intval($productid) . '\'';
 					foreach ($variantFields as $k => $field)	{
 						if ($row[$field])	{
-							$query .= ' AND '.$field.'='.$TYPO3_DB->fullQuoteStr($row[$field],'tt_products_articles');
+							$query .= ' AND ' . $field . '=' . $TYPO3_DB->fullQuoteStr($row[$field], 'tt_products_articles');
 						}
 					}
 					$articleRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_products_articles', $query);

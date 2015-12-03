@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,12 +27,12 @@
 /**
  * Part of the tt_products (Shop System) extension.
  *
- * functions for the product
+ * graduated price view functions
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,21 +40,12 @@
  */
 
 
-class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_view {
-	var $dataArray = array(); // array of read in products
-	var $mmArray = array();
-	var $tableObj;	// object of the type tx_table_db
-	var $pibase;	// reference to object of pibase
-	var $conf;
-	var $config;
-	var $tableconf;
-	var $tabledesc;
-	var $conftablename;	// table name of the configuration
-	var $mm_table = ''; // mm table
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
+class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_view {
 
 	public function &getItemSubpartArrays (
-		$templateCode,
+		&$templateCode,
 		$markerKey,
 		$functablename,
 		&$row,
@@ -69,31 +60,14 @@ class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_
 		global $TCA;
 
 		$priceTablesViewObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
-		$priceTablesViewObj->getItemSubpartArrays($templateCode, $row, $fieldname, $subpartArray, $wrappedSubpartArray, $tagArray, $theCode, $id);
+		$priceTablesViewObj->getItemSubpartArrays ($templateCode, $row, $fieldname, $subpartArray, $wrappedSubpartArray, $tagArray, $theCode, $id);
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$functablename: ...
-	 * @param	[type]		$fieldname: ...
-	 * @param	[type]		$row: ...
-	 * @param	[type]		$markerKey: ...
-	 * @param	[type]		$markerArray: ...
-	 * @param	[type]		$tagArray: ...
-	 * @param	[type]		$theCode: ...
-	 * @param	[type]		$id: ...
-	 * @param	[type]		$bSkip: ...
-	 * @param	[type]		$bHtml: ...
-	 * @param	[type]		$charset: ...
-	 * @param	[type]		$prefix: ...
-	 * @param	[type]		$imageRenderObj: ...
-	 * @return	[type]		...
-	 */
-	function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $imageRenderObj='')	{
+
+	public function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
 
 		$priceTablesViewObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
-		$priceTablesViewObj->getItemMarkerArray ($row, $markerArray, $tagArray);
+		$priceTablesViewObj->getRowMarkerArray($row, $markerArray, $tagArray);
 	}
 }
 

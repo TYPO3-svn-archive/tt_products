@@ -35,19 +35,18 @@
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
 class tx_ttproducts_email extends tx_ttproducts_table_base {
 	var $emailArray;	// array of read in emails
 	var $table;		 // object of the type tx_table_db
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
-	 *
-	 * @param	[type]		$$pibase: ...
-	 * @param	[type]		$functablename: ...
-	 * @return	[type]		...
 	 */
-	function init(&$pibase, $functablename)  {
+	function init($pibase, $functablename)  {
 		parent::init($pibase, $functablename);
 		$tablename = $this->getTablename();
 		$this->getTableObj()->addDefaultFieldArray(array('sorting' => 'sorting'));
@@ -62,7 +61,8 @@ class tx_ttproducts_email extends tx_ttproducts_table_base {
 			$sql = t3lib_div::makeInstance('tx_table_db_access');
 			$sql->prepareFields($this->getTableObj(), 'select', '*');
 			$sql->prepareWhereFields ($this->getTableObj(), 'uid', '=', intval($uid));
-			$this->getTableObj()->enableFields();
+			$sql->prepareEnableFields ($this->getTableObj());
+			//$this->getTableObj()->enableFields();
 			// Fetching the email
 			$res = $sql->exec_SELECTquery();
 			$row = $TYPO3_DB->sql_fetch_assoc($res);

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,49 +31,49 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  */
 
 
+// require_once (PATH_BE_ttproducts.'model/interface.tx_ttproducts_variant_int.php');
+
 
 class tx_ttproducts_variant implements tx_ttproducts_variant_int {
-	var $conf;	// reduced local conf
+	public $conf;	// reduced local conf
 	var $itemTable;
-	var $useArticles;
-	var $bSelectableArray;
+	private $useArticles;
+	private $selectableArray;
 	var $fieldArray = array();	// array of fields which are variants with comma separated values
+	private $selectableFieldArray = array();
 	var $firstVariantRow = '';
 	var $additionalKey;
+	public $additionalField = 'additional';
+
 
 	/**
 	 * setting the local variables
-	 *
-	 * @param	[type]		$$itemTable: ...
-	 * @param	[type]		$tablename: ...
-	 * @param	[type]		$useArticles: ...
-	 * @return	[type]		...
 	 */
-	function init($itemTable, $tablename, $useArticles)  {
+	public function init ($itemTable, $tablename, $useArticles)  {
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$tmpArray = $cnf->getTableDesc($tablename);
 		$this->conf = (is_array($tmpArray) && is_array($tmpArray['variant.']) ? $tmpArray['variant.'] : array());
 		$this->itemTable = $itemTable;
 		$this->useArticles = $useArticles;
-		$this->bSelectableArray = array();
+		$this->selectableArray = array();
 		$firstVariantArray = array();
 		$fieldArray = $this->conf;
 		$additionalKey = '';
 
 		foreach ($fieldArray as $k => $field)	{
-			if ($field == 'additional')	{
+			if ($field == $this->additionalField)	{
 				$additionalKey = $k;
-			} else if ($cnf->conf['select'.ucfirst($field)])	{
-				$this->bSelectableArray[$k] = true;
+			} else if (intval($cnf->conf['select'.ucfirst($field)]))	{
+				$this->selectableArray[$k] = intval($cnf->conf[$this->getSelectConfKey($field)]);
 				$this->selectableFieldArray[$k] = $field;
 				$firstVariantArray[$k] = 0;
 			} else {
@@ -90,23 +90,37 @@ class tx_ttproducts_variant implements tx_ttproducts_variant_int {
 	} // init
 
 
+	public function getUseArticles ()	{
+		return $this->useArticles;
+	}
+
+
+	public function getSelectConfKey ($field)	{
+		$rc = 'select'.ucfirst($field);
+		return $rc;
+	}
+
+
 	/**
 	 * fills in the row fields from the variant extVar string
 	 *
 	 * @param	array		the row
-	 * @param	string		variants separated by ';'
-	 * @return	void
+	 * @param	string	  variants separated by ';'
+	 * @return  void
 	 * @access private
 	 * @see getVariantFromRow
 	 */
-	 function modifyRowFromVariant (&$row, $variant) {
+	public function modifyRowFromVariant (&$row, $variant='') {
+		if (!$variant)	{
+			$variant = $this->getVariantFromRow($row);
+		}
 		$variantArray = explode(';', $variant);
-
-		if ($this->useArticles == 1 || count ($this->bSelectableArray))	{
+		$useArticles = $this->getUseArticles();
+		if (in_array($useArticles, array(1,3)) || !$useArticles && count($this->selectableArray))	{
 			$fieldArray = $this->getFieldArray();
 			$count = 0;
 			foreach ($fieldArray as $key => $field)	{
-				if ($this->bSelectableArray[$key])	{
+				if ($this->selectableArray[$key])	{
 					$variantRow = $row[$field];
 					$variantValueArray = t3lib_div::trimExplode(';', $variantRow);
 					$variantIndex = $variantArray[$count];
@@ -120,21 +134,21 @@ class tx_ttproducts_variant implements tx_ttproducts_variant_int {
 				}
 			}
 		}
-	 }
+	}
 
 
 	/**
 	 * Returns the variant extVar string from the variant values in the row
 	 *
 	 * @param	array		the row
-	 * @return	string		variants separated by ';'
+	 * @return  string	  variants separated by ';'
 	 * @access private
 	 * @see modifyRowFromVariant
 	 */
-	function getVariantFromRow (&$row) {
+	public function getVariantFromRow (&$row) {
 		$extArray = $row['ext'];
 		if (is_array($extArray['tt_products']))	{
-			reset ($extArray['tt_products']);
+			reset($extArray['tt_products']);
 			$variantRow = current($extArray['tt_products']);
 			$variant = $variantRow['vars'];
 		}
@@ -145,28 +159,28 @@ class tx_ttproducts_variant implements tx_ttproducts_variant_int {
 	/**
 	 * Returns the variant extVar number from the incoming product row and the index in the variant array
 	 *
-	 * @param	array		the basket raw row
-	 * @param	[type]		$index: ...
-	 * @return	string		variants separated by ';'
+	 * @param	array	the basket raw row
+	 * @return  string	  variants separated by ';'
 	 * @access private
 	 * @see modifyRowFromVariant
 	 */
-	function getVariantFromProductRow (&$row, $index) {
+	public function getVariantFromProductRow (&$row, $index) {
 		$variantArray = array();
 		$bVariantRow = array();
 		if ($index == 0)	{
-			$bVariantRow = $this->getFirstVariantRow($row);
+			$variantRow = $this->getVariantRow($row,array());
 		}
+		$useArticles = $this->getUseArticles();
 
-		if ($this->useArticles == 1 || count ($this->bSelectableArray))	{
+		if (isset($variantRow) && count($variantRow) && ($useArticles == 1 || count($this->selectableArray)))	{
 			$fieldArray = $this->getFieldArray();
 			$count = 0;
 
 			foreach ($fieldArray as $key => $field)	{
-				if ($this->bSelectableArray[$key])	{
-					$variantValue = $bVariantRow[$field];
+				if ($this->selectableArray[$key])	{
+					$variantValue = $variantRow[$field];
 					$prodVariantArray = t3lib_div::trimExplode(';', $row[$field]);
-					if ($variantValue!='')	{
+					if ($variantValue != '')	{
 						$varantIndex = array_search($variantValue, $prodVariantArray);
 						$variantArray[] = $varantIndex;
 					} else {
@@ -184,20 +198,21 @@ class tx_ttproducts_variant implements tx_ttproducts_variant_int {
 	/**
 	 * Returns the variant extVar number from the incoming raw row into the basket
 	 *
-	 * @param	array		the basket raw row
-	 * @return	string		variants separated by ';'
+	 * @param	array	the basket raw row
+	 * @return  string	  variants separated by ';'
 	 * @access private
 	 * @see modifyRowFromVariant
 	 */
-	function getVariantFromRawRow (&$row) {
+	public function getVariantFromRawRow (&$row) {
 		$variantArray = array();
+		$useArticles = $this->getUseArticles();
 
-		if ($this->useArticles == 1 || count ($this->bSelectableArray))	{
+		if ($useArticles == 1 || count($this->selectableArray))	{
 			$fieldArray = $this->getFieldArray();
 			$count = 0;
 
 			foreach ($fieldArray as $key => $field)	{
-				if ($this->bSelectableArray[$key])	{
+				if ($this->selectableArray[$key])	{
 					$variantValue = $row[$field];
 					if (isset($variantValue))	{
 						$variantArray[] = $variantValue;
@@ -211,14 +226,8 @@ class tx_ttproducts_variant implements tx_ttproducts_variant_int {
 		$variant = implode (';', $variantArray);
 		return $variant;
 	}
-
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$row: ...
-	 * @return	[type]		...
-	 */
-	function getFirstVariantRow($row='')	{
+/*
+	public function getFirstVariantRow($row='')	{
 		$rc = '';
 		if (is_array($row))	{
 			$fieldArray = $this->getFieldArray();
@@ -233,92 +242,130 @@ class tx_ttproducts_variant implements tx_ttproducts_variant_int {
 			$rc = $this->firstVariantRow;
 		}
 		return $rc;
+	}*/
+
+
+	public function getVariantRow ($row = '', $varianArray = array())	{
+		$rc = '';
+
+		if (isset($row) && is_array($row))	{
+			if (!isset($varianArray))	{
+				$varianArray = array();
+			}
+			$fieldArray = $this->getFieldArray();
+			$rcRow = $row;
+			foreach ($fieldArray as $field)	{
+				$variants = $row[$field];
+				$tmpArray = t3lib_div::trimExplode(';', $variants);
+				$index = (isset($varianArray[$field]) ? $varianArray[$field] : 0);
+				$rcRow[$field] = $tmpArray[$index];
+			}
+			$rc = $rcRow;
+		} else {
+			$rc = $this->firstVariantRow;
+		}
+		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$table: ...
-	 * @param	[type]		$uid: ...
-	 * @return	[type]		...
-	 */
-	function getTableUid ($table, $uid)	{
+
+	public function getTableUid ($table, $uid)	{
 		$rc = '|'.$table.'|'.$uid;
 		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getSelectableArray()	{
-		return $this->bSelectableArray;
+
+	public function getSelectableArray ()	{
+		return $this->selectableArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$productRow: ...
-	 * @param	[type]		$articleRows: ...
-	 * @return	[type]		...
-	 */
-	function fetchArticle($productRow, $articleRows) {
 
-		$fieldArray = array();
-		foreach ($this->conf as $k => $field)	{
-			if ($productRow[$field] && $field != 'additional')	{
-				$fieldArray[$field] = t3lib_div::trimExplode(';', $productRow[$field]);
-			}
-		}
+	public function getVariantValuesByArticle ($articleRowArray,$row='')	{
+		$rc = array();
 
-		$articleRow = array();
-		if (count($fieldArray))	{
-			foreach ($articleRows as $k => $row)	{
-				$bFits = true;
-				foreach ($fieldArray as $field => $valueArray)	{
-					if ($row[$field] && !in_array($row[$field], $valueArray) && $field != 'additional')	{
-						$bFits = false;
-						break;
+		$selectableFieldArray = $this->getSelectableFieldArray();
+
+		foreach ($selectableFieldArray as $field)	{
+
+			if (!$row || isset($row[$field]))	{
+				$valueArray = array();
+
+				foreach ($articleRowArray as $articleRow)	{
+					$articleValueArray = t3lib_div::trimExplode(';', $articleRow[$field]);
+
+					if ($articleValueArray[0])	{
+						$valueArray = array_merge($valueArray, $articleValueArray);
 					}
 				}
-				if ($bFits)	{
-					$articleRow = $row;
-					break;
+				$valueArray = array_values(array_unique($valueArray));
+
+				if ($row)	{
+					$rc[$field] = implode(';', $valueArray);
+				} else {
+					$rc[$field] = $valueArray;
 				}
 			}
 		}
-		return $articleRow;
+		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getFieldArray()	{
+
+	// the article rows must be in the correct order already
+	public function filterArticleRowsByVariant ($articleRowArray, $variant, $bCombined = FALSE) {
+
+		$variantRowArray = $this->getVariantValuesByArticle($articleRowArray);
+		$variantArray = explode(';', $variant);
+		$selectableFieldArray = $this->getSelectableFieldArray();
+		$possibleArticleArray = array();
+
+		foreach ($articleRowArray as $articleRow)	{
+			$bMatches = TRUE;
+			$vCount = 0;
+
+			foreach ($this->selectableArray as $k => $v)	{
+
+				$variantIndex = $variantArray[$vCount]; // $k-1
+
+				if ($v && $variantIndex != '')	{
+					$field = $selectableFieldArray[$k];
+					$value = $articleRow[$field];
+
+					if ($value != '')	{
+						$tmpArray = t3lib_div::trimExplode (';', $value);
+						$variantValue = $variantRowArray[$field][$variantIndex];
+
+						if (!in_array($variantValue, $tmpArray))	{
+							$bMatches = FALSE;
+							break;
+						}
+					} else if (!$bCombined)	{
+						$bMatches = FALSE;
+					}
+				}
+				$vCount++;
+			}
+			if ($bMatches)	{
+				$rc[] = $articleRow;
+			}
+		}
+
+		return $rc;
+	}
+
+
+	public function getFieldArray ()	{
 		return $this->fieldArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getSelectableFieldArray()	{
+
+	public function getSelectableFieldArray ()	{
 		return $this->selectableFieldArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getAdditionalKey()	{
+
+	public function getAdditionalKey ()	{
 		return $this->additionalKey;
 	}
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_variant.php']) {

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2010 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -34,7 +34,11 @@
  * @author	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
 class tx_ttproducts_javascript {
 	var $pibase; // reference to object of pibase
 	var $conf;
@@ -45,15 +49,15 @@ class tx_ttproducts_javascript {
 	var $copyright;
 
 
-	function init($pibase, $ajax) {
+	function init ($pibase, $ajax) {
 		$this->pibase = $pibase;
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 		$this->ajax = $ajax;
-		$this->bAjaxAdded = false;
-		$this->bCopyrightShown = false;
+		$this->bAjaxAdded = FALSE;
+		$this->bCopyrightShown = FALSE;
 		$this->copyright = '
 /***************************************************************
 *
@@ -71,46 +75,39 @@ class tx_ttproducts_javascript {
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 *
-*  This copyright notice MUST APPEAR in all copies of this script
+*  This copyright notice MUST APPEAR in all copies of the script
 ***************************************************************/
 ';
 
 	}
 
- /*
- * Escapes strings to be included in javascript
- *
- * @param	[type]		$s: ...
- * @return	[type]		...
- */
+
+	/*
+	 * Escapes strings to be included in javascript
+	 */
 	function jsspecialchars($s) {
 	   return preg_replace('/([\x09-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e])/e',
 	       "'\\x'.(ord('\\1')<16? '0': '').dechex(ord('\\1'))",$s);
 	}
 
 		/**
- * Sets JavaScript code in the additionalJavaScript array
- *
- * @param	string		$fieldname is the field in the table you want to create a JavaScript for
- * @param	array		category array
- * @param	integer		counter
- * @param	string		$catid: id for the category
- * @param	array		$parentFieldArray: function table name as key, variantFieldArray as value
- * @param	array		$piVarArray: pivars to be set
- * @param	array		$fieldArray: array of fields
- * @param	string		$method: Ajax method
- * @return	void
- * @see
- */
-	function set($fieldname, $params='', $count=0, $catid='cat', $parentFieldArray=array(), $piVarArray=array(), $fieldArray=array(), $method='clickShow') {
+		 * Sets JavaScript code in the additionalJavaScript array
+		 *
+		 * @param		string		  $fieldname is the field in the table you want to create a JavaScript for
+		 * @param		array		  category array
+		 * @param		integer		  counter
+		 * @return	  	void
+		 * @see
+		 */
+	function set ($fieldname, $params='', $count=0, $catid='cat', $parentFieldArray=array(), $piVarArray=array(), $fieldArray=array(), $method='clickShow') {
 		global $TSFE;
 
-		$bDirectHTML = false;
+		$bDirectHTML = FALSE;
 		$code = '';
-		$bError = false;
+		$bError = FALSE;
 		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
-		$message = tx_div2007_alpha5::getLL_fh002($langObj, 'invalid_email');
-		$emailArr =  explode('|', $message);
+
+		$emailArr =  explode('|', $message = tx_div2007_alpha5::getLL_fh002($langObj, 'invalid_email'));
 
 		if (!$this->bCopyrightShown && $fieldname != 'xajax')	{
 			$code = $this->copyright;
@@ -126,35 +123,23 @@ class tx_ttproducts_javascript {
 				$code .= '
 	function test(eing) {
 		var reg = /@/;
-		var rc = true;
+		var rc = TRUE;
 		if (!reg.exec(eing)) {
-	 		rc = false;
+	 		rc = FALSE;
 	 	}
 	 	return rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$element: ...
-	 * @return	[type]		...
-	 */
 	function checkEmail(element) {
 		if (test(element.value)){
-			return (true);
+			return (TRUE);
 		}
-		alert("'.$emailArr[0].'\'"+element.value+"\''.$emailArr[1].'");
-		return (false);
+		alert("' . $emailArr[0] . '\'"+element.value+"\'' . $emailArr[1] . '");
+		return (FALSE);
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$formObj: ...
-	 * @return	[type]		...
-	 */
 	function checkParams(formObj) {
-		var rc = true;
+		var rc = TRUE;
 		for (var i = 0; i < formObj.length; i++) {
 			if (formObj[i].type == "text") {
 				var email = /email/i;
@@ -194,7 +179,7 @@ class tx_ttproducts_javascript {
 					$code .= 'var c = new Array(); // categories
 		var boxCount = '.$count.'; // number of select boxes
 		var pi = new Array(); // names of select boxes;
-		var inAction = false; // is the script still running?
+		var inAction = FALSE; // is the script still running?
 		var maxFunc = '.$funcs.';
 		';
 					foreach ($piVarArray as $fnr => $pivar)	{
@@ -205,21 +190,21 @@ class tx_ttproducts_javascript {
 					foreach ($params as $fnr => $catArray)	{
 						$code .= 'c['.$fnr.'] = new Array('.count($catArray).');';
 						foreach ($catArray as $k => $row)	{
-							$code .= 'c['.$fnr.']['.$k.'] = new Array(3);';
-							$code .= 'c['.$fnr.']['.$k.'][0] = "'.$this->jsspecialchars($row['title']).'"; ' ;
+							$code .= 'c[' . $fnr . '][' . $k . '] = new Array(3);';
+							$code .= 'c[' . $fnr . '][' . $k . '][0] = "'.$this->jsspecialchars($row['title']) . '"; ' ;
 							$parentField = $parentFieldArray[$fnr];
-							$code .= 'c['.$fnr.']['.$k.'][1] = "'.intval($row[$parentField]).'"; ' ;
+							$code .= 'c[' . $fnr . '][' . $k . '][1] = "' . intval($row[$parentField]) . '"; ' ;
 							$child_category = $row['child_category'];
 							if (is_array($child_category))	{
-								$code .= 'c['.$fnr.']['.$k.'][2] = new Array('.count($child_category).');';
+								$code .= 'c[' . $fnr . '][' . $k . '][2] = new Array(' . count($child_category) . ');';
 								$count = 0;
 								foreach ($child_category as $k1 => $childCat)	{
-									$newCode = 'c['.$fnr.']['.$k.'][2]['.$count.'] = "'.$childCat.'"; ';
+									$newCode = 'c[' . $fnr . '][' . $k . '][2][' . $count . '] = "' . $childCat . '"; ';
 									$code .= $newCode;
 									$count++;
 								}
 							} else {
-								$code .= 'c['.$fnr.']['.$k.'][2] = "0"; ' ;
+								$code .= 'c[' . $fnr . '][' . $k . '][2] = "0"; ' ;
 							}
 							$code .= '
 		';
@@ -240,10 +225,10 @@ class tx_ttproducts_javascript {
 		var idel;
 		var category;
 
-		if (inAction == true)	{
-			return false;
+		if (inAction == TRUE)	{
+			return FALSE;
 		}
-		inAction = true;
+		inAction = TRUE;
 		index = select.selectedIndex;
 		selOption = select.options[index];
 		category = selOption.value;
@@ -252,13 +237,12 @@ class tx_ttproducts_javascript {
 			var func;
 			var bRootFunctions = (maxFunc > 1) && (id == 2);
 
-			sb = document.getElementById("'.$catid.'"+1);
+			sb = document.getElementById("' . $catid . '"+1);
 			func = sb.selectedIndex - 1;
 			if (maxFunc == 1 || func < 0 || func > maxFunc)	{
 				func = 0;
-				bRootFunctions = false;
+				bRootFunctions = FALSE;
 			}
-
 			for (var l = boxCount; l >= id+1; l--)	{
 				idel = "'.$catid.'" + l;
 				sbt = document.getElementById(idel);
@@ -288,7 +272,6 @@ class tx_ttproducts_javascript {
 				sbt.options[0] = newOption; // sbt.options.add(newOption);
 		        len = subcategories.length;';
 	        	$code .= '
-				// sb.options[len] = new Option("2. +++ func = "+func+"len = "+len+" id = "+id+" category = "+category+" subcategories = "+subcategories, "B");
 				for (k = 0; k < len; k++)	{
 					var cat = subcategories[k];
 					var text = c[func][cat][0];
@@ -305,11 +288,11 @@ class tx_ttproducts_javascript {
 		if (bShowArticle)	{
 			var data = new Array();
 
-		data["'.$this->pibase->extKey.'"] = new Array();
-		data["'.$this->pibase->extKey.'"]["'.$catid.'"] = category;
+		data["' . $this->pibase->extKey . '"] = new Array();
+		data["' . $this->pibase->extKey . '"]["' . $catid . '"] = category;
 		';
 			if ($method == 'clickShow')	{
-				$code .= $this->pibase->extKey.'_showArticle(data);';
+				$code .= $this->pibase->extKey . '_showArticle(data);';
 			}
 				$code .= '
 		} else {
@@ -317,8 +300,8 @@ class tx_ttproducts_javascript {
 		}
 		';
 				$code .= '
-		inAction = false;
-		return true;
+		inAction = FALSE;
+		return TRUE;
 	}
 		';
 				$code .= '
@@ -326,59 +309,58 @@ class tx_ttproducts_javascript {
 		var data = new Array();
 		var func;
 
-		sb = document.getElementById("'.$catid.'"+1);
+		sb = document.getElementById("' . $catid . '"+1);
 		func = sb.selectedIndex - 1;
 		for (var k = 2; k <= boxCount; k++) {
-			sb = document.getElementById("'.$catid.'"+k);
+			sb = document.getElementById("' . $catid . '"+k);
 			index = sb.selectedIndex;
 			if (index > 0)	{
 				value = sb.options[index].value;
 				if (value)	{
-					data["'.$this->pibase->extKey.'"] = new Array();
-					data["'.$this->pibase->extKey.'"][pi[func]] = value;
+					data["' . $this->pibase->extKey . '"] = new Array();
+					data["' . $this->pibase->extKey . '"][pi[func]] = value;
 				}
 			}
 		}
-		var sub = document.getElementsByName("'.$this->pibase->prefixId.'[submit]")[0];
+		var sub = document.getElementsByName("' . $this->pibase->prefixId . '[submit]")[0];
 		for (k in sub.form.elements)	{
 			var el = sub.form.elements[k];
 			var elname;
 			if (el)	{
 				elname = String(el.name);
 			}
-			if (elname && elname.indexOf("function") == -1 && elname.indexOf("'.$this->pibase->prefixId.'") == 0)	{
+			if (elname && elname.indexOf("function") == -1 && elname.indexOf("' . $this->pibase->prefixId . '") == 0)	{
 				var start = elname.indexOf("[");
 				var end = elname.indexOf("]");
 				var element = elname.substring(start+1,end);
-				data["'.$this->pibase->extKey.'"][element] = el.value;
+				data["' . $this->pibase->extKey . '"][element] = el.value;
 			}
 		}
 
 			';
 				if ($method == 'submitShow')	{
-		        		$code .= $this->pibase->extKey.'_showList(data);';
+		        		$code .= $this->pibase->extKey . '_showList(data);';
 				}
 				$code .= '
-		return true;
+		return TRUE;
 	}
 	'		;
 				break;
 
 			case 'fetchdata':
-				$code .= 'var vBoxCount = new Array('.count($params).'); // number of select boxes'.chr(13);
+				$code .= 'var vBoxCount = new Array(' . count($params) . '); // number of select boxes'.chr(13);
 				$code .= 'var v = new Array(); // variants'.chr(13).chr(13);
-				foreach ($params as $tablename => $variantFieldArray)	{
-					if (is_array($variantFieldArray))	{
-						$code .= 'vBoxCount["'.$tablename.'"] = '.(count($variantFieldArray)).';'.chr(13);
-						$code .= 'v["'.$tablename.'"] = new Array('.count($variantFieldArray).');'.chr(13);
+				foreach ($params as $tablename => $selectableVariantFieldArray)	{
+					if (is_array($selectableVariantFieldArray))	{
+						$code .= 'vBoxCount["' . $tablename.'"] = ' . (count($selectableVariantFieldArray)) . ';' . chr(13);
+						$code .= 'v["'.$tablename.'"] = new Array(' . count($selectableVariantFieldArray) . ');'. chr(13);
 						$k = 0;
-						foreach ($variantFieldArray as $variant => $field)	{
-							$code .= 'v["'.$tablename.'"]['.$k.'] = "'.$field.'";'.chr(13);
+						foreach ($selectableVariantFieldArray as $variant => $field)	{
+							$code .= 'v["' . $tablename . '"][' . $k . '] = "' . $field . '";' . chr(13);
 							$k++;
 						}
 					}
 				}
-				$tableName = str_replace('_','-',$this->conftablename);
 				$code .= '
 
 	function doFetchRow(table, view, uid) {
@@ -408,8 +390,8 @@ class tx_ttproducts_javascript {
 			}
 		}
 	';
-				$code .= '	'.$this->pibase->extKey.'_fetchRow(data);
-		return true;
+				$code .= '	' . $this->pibase->extKey . '_fetchRow(data);
+		return TRUE;
 	}';
 				break;
 
@@ -425,13 +407,13 @@ class tx_ttproducts_javascript {
 				// XAJAX part
 				if (!$this->bAjaxAdded && is_object($this->ajax) && is_object($this->ajax->taxajax))	{
 					$code = $this->ajax->taxajax->getJavascript(t3lib_extMgm::siteRelPath(TAXAJAX_EXT));
-					$this->bXajaxAdded = true;
+					$this->bXajaxAdded = TRUE;
 				}
-				$bDirectHTML = true;
+				$bDirectHTML = TRUE;
 				break;
 
 			default:
-				$bError = true;
+				$bError = TRUE;
 				break;
 		} // switch
 

@@ -3,15 +3,17 @@ if (!defined ('TYPO3_MODE'))	die ('Access denied.');
 
 $_EXTCONF = unserialize($_EXTCONF);    // unserializing the configuration so we can use it here:
 
-$callingClassName = '\\TYPO3\\CMS\\Core\\Utility\\ExtensionManagementUtility';
+$emClass = '\\TYPO3\\CMS\\Core\\Utility\\ExtensionManagementUtility';
+$divClass = '\\TYPO3\\CMS\\Core\\Utility\\GeneralUtility';
 
 if (
-	class_exists($callingClassName) &&
-	method_exists($callingClassName, 'extPath')
+	class_exists($emClass) &&
+	method_exists($emClass, 'extPath')
 ) {
 	// nothing
 } else {
-	$callingClassName = 't3lib_extMgm';
+	$divClass = 't3lib_div';
+	$emClass = 't3lib_extMgm';
 }
 
 if (!defined ('TT_PRODUCTS_EXTkey')) {
@@ -23,15 +25,15 @@ if (!defined ('TT_PRODUCTS_EXT')) {
 }
 
 if (!defined ('PATH_BE_ttproducts')) {
-	define('PATH_BE_ttproducts', call_user_func($callingClassName . '::extPath', TT_PRODUCTS_EXT));
+	define('PATH_BE_ttproducts', call_user_func($emClass . '::extPath', TT_PRODUCTS_EXT));
 }
 
 if (!defined ('PATH_BE_ttproducts_rel')) {
-	define('PATH_BE_ttproducts_rel', call_user_func($callingClassName . '::extRelPath', TT_PRODUCTS_EXT));
+	define('PATH_BE_ttproducts_rel', call_user_func($emClass . '::extRelPath', TT_PRODUCTS_EXT));
 }
 
 if (!defined ('PATH_FE_ttproducts_rel')) {
-	define('PATH_FE_ttproducts_rel', call_user_func($callingClassName . '::siteRelPath', TT_PRODUCTS_EXT));
+	define('PATH_FE_ttproducts_rel', call_user_func($emClass . '::siteRelPath', TT_PRODUCTS_EXT));
 }
 
 if (!defined ('PATH_ttproducts_icon_table_rel')) {
@@ -42,39 +44,47 @@ if (!defined ('TABLE_EXTkey')) {
 	define('TABLE_EXTkey','table');
 }
 
-if (call_user_func($callingClassName . '::isLoaded', TABLE_EXTkey)) {
+if (call_user_func($emClass . '::isLoaded', TABLE_EXTkey)) {
 	if (!defined ('PATH_BE_table')) {
-		define('PATH_BE_table', call_user_func($callingClassName . '::extPath', TABLE_EXTkey));
+		define('PATH_BE_table', call_user_func($emClass . '::extPath', TABLE_EXTkey));
 	}
 }
 
 if (!defined ('ADDONS_EXTkey')) {
-	define('ADDONS_EXTkey','addons_tt_products');
+	define('ADDONS_EXTkey', 'addons_tt_products');
 }
 
-if (!defined ('TT_ADDRESS_EXTKEY')) {
-	define('TT_ADDRESS_EXTKEY','tt_address');
+if (!defined ('TT_ADDRESS_EXTkey')) {
+	define('TT_ADDRESS_EXTkey','tt_address');
 }
 
-if (!defined ('PARTNER_EXTKEY')) {
-	define('PARTNER_EXTKEY','partner');
+if (!defined ('PARTNER_EXTkey')) {
+	define('PARTNER_EXTkey','partner');
 }
 
-if (!defined ('PARTY_EXTKEY')) {
-	define('PARTY_EXTKEY','party');
+if (!defined ('PARTY_EXTkey')) {
+	define('PARTY_EXTkey','party');
 }
 
 if (!defined ('DIV2007_EXTkey')) {
 	define('DIV2007_EXTkey','div2007');
 }
 
-if (call_user_func($callingClassName . '::isLoaded', DIV2007_EXTkey)) {
-	if (TYPO3_MODE == 'FE')	{ // hooks for FE extensions
-		tx_div2007_core::activateCompatibility6();
-	}
+if (!defined ('POOL_EXTkey')) {
+	define('POOL_EXTkey','pool');
+}
+
+if (call_user_func($emClass . '::isLoaded', DIV2007_EXTkey)) {
 	if (!defined ('PATH_BE_div2007')) {
-		define('PATH_BE_div2007', call_user_func($callingClassName . '::extPath', DIV2007_EXTkey));
+		define('PATH_BE_div2007', t3lib_extMgm::extPath(DIV2007_EXTkey));
 	}
+}
+
+if (call_user_func($emClass . '::isLoaded', POOL_EXTkey)) {
+	if (!defined ('PATH_BE_pool')) {
+		define('PATH_BE_pool', t3lib_extMgm::extPath(POOL_EXTkey));
+	}
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/pool/mod_main/index.php']['addClass'][] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_pool.php:&tx_ttproducts_hooks_pool';
 }
 
 if (!defined ('TT_PRODUCTS_DIV_DLOG')) {
@@ -89,16 +99,21 @@ if (!defined ('DAM_EXTkey')) {
 	define('DAM_EXTkey','dam');
 }
 
-if (call_user_func($callingClassName . '::isLoaded', TAXAJAX_EXT)) {
+if (!defined ('STATIC_INFO_TABLES_TAXES_EXTkey')) {
+	define('STATIC_INFO_TABLES_TAXES_EXTkey', 'static_info_tables_taxes');
+}
+
+if (call_user_func($emClass . '::isLoaded', TAXAJAX_EXT)) {
 	if (!defined ('PATH_BE_taxajax')) {
-		define('PATH_BE_taxajax', call_user_func($callingClassName . '::extPath', TAXAJAX_EXT));
+		define('PATH_BE_taxajax', t3lib_extMgm::extPath(TAXAJAX_EXT));
 	}
+
 	$GLOBALS['TYPO3_CONF_VARS'] ['FE']['eID_include'][TT_PRODUCTS_EXT] =  'EXT:'.TT_PRODUCTS_EXT.'/eid/class.tx_ttproducts_eid.php' ;
 }
 
-call_user_func($callingClassName . '::addUserTSConfig', 'options.saveDocNew.tt_products=1');
-call_user_func($callingClassName . '::addUserTSConfig', 'options.saveDocNew.tt_products_cat=1');
-call_user_func($callingClassName . '::addUserTSConfig', 'options.saveDocNew.tt_products_articles=1');
+call_user_func($emClass . '::addUserTSConfig', 'options.saveDocNew.tt_products=1');
+call_user_func($emClass . '::addUserTSConfig', 'options.saveDocNew.tt_products_cat=1');
+call_user_func($emClass . '::addUserTSConfig', 'options.saveDocNew.tt_products_articles=1');
 
 if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]))	{
 	$tmpArray = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT];
@@ -108,7 +123,6 @@ if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]) && is_array($
 
 if (isset($_EXTCONF) && is_array($_EXTCONF))	{
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT] = $_EXTCONF;
-
 	if (isset($tmpArray) && is_array($tmpArray))	{
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT] = array_merge($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT], $tmpArray);
 	}
@@ -125,7 +139,7 @@ if (!defined($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTabl
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
-			'fList' =>  'title,itemnumber,price,image',
+			'fList' =>  'title,image,itemnumber,ean,price,price2,directcost',
 			'icon' => TRUE
 		),
 		'ext' => array (
@@ -156,7 +170,7 @@ if (!defined($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTabl
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['tt_products_articles'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
-			'fList' =>  'title,itemnumber,price,inStock',
+			'fList' =>  'title,itemnumber,price,inStock,image',
 			'icon' => TRUE
 		),
 		'ext' => array(
@@ -190,42 +204,78 @@ if (!defined($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTabl
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables']['sys_products_orders'] = array (
 		'default' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_default',
-			'fList' => 'name,first_name,last_name,zip,city,country,email,amount',
+			'fList' => 'name,zip,city,country,sys_language_uid,tracking_code,amount,tax_mode,pay_mode,date_of_payment,date_of_delivery,bill_no',
 			'icon' => TRUE
 		),
 		'ext' => array(
 			'MENU' => 'LLL:EXT:tt_products/locallang.xml:m_ext',
-			'fList' => 'name,feusers_uid,address,telephone,status,note',
+			'fList' => 'name,first_name,last_name,feusers_uid,address,telephone,email,date_of_birth,status,note',
 			'icon' => TRUE
 		)
 	);
 }
 
-if (isset($_EXTCONF['where.']) && is_array($_EXTCONF['where.']))	{
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['where.'] = $_EXTCONF['where.'];
+if (isset($_EXTCONF) && is_array($_EXTCONF)) {
+	if (isset($_EXTCONF['where.']) && is_array($_EXTCONF['where.'])) {
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['where.'] = $_EXTCONF['where.'];
+	}
+
+	if (isset($_EXTCONF['exclude.']) && is_array($_EXTCONF['exclude.'])) {
+		$excludeArray = array();
+		foreach ($_EXTCONF['exclude.'] as $tablename => $excludefields) {
+			if ($excludefields != '') {
+				$excludeArray[$tablename] = call_user_func($divClass . '::trimExplode',  ',', $excludefields);
+			}
+		}
+
+		if (count($excludeArray)) {
+			$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['exclude'] = $excludeArray;
+		}
+	}
 }
 
 if (
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['useFlexforms']
 )	{
 	// replace the output of the former CODE field with the flexform
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][5][] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_cms.php:&tx_ttproducts_cms->pmDrawItem';
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][5][] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_cms.php:&tx_ttproducts_hooks_cms->pmDrawItem';
 }
+
+if (call_user_func($emClass . '::isLoaded', 'searchbox')) {
+
+	$listType = TT_PRODUCTS_EXT.'_pi_search';
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][$listType][] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_cms.php:&tx_ttproducts_hooks_cms->pmDrawItem';
+}
+
+
 
 if (TYPO3_MODE=='FE')	{ // hooks for FE extensions
 
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['login_confirmed'][TT_PRODUCTS_EXT] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_fe.php:&tx_ttproducts_hooks_fe->login_confirmed';
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['login_confirmed'][TT_PRODUCTS_EXT] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_fe.php:&tx_ttproducts_hooks_fe->resetAdresses';
 
-	// add the table enhancements to the FE
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['transactor']['listener'][TT_PRODUCTS_EXT] = 'tx_ttproducts_hooks_transactor';
+
+}
+
+$listType = TT_PRODUCTS_EXT.'_pi_int';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][$listType][] = 'EXT:' . TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_cms.php:&tx_ttproducts_hooks_cms->pmDrawItem';
+
+
+  // Extending TypoScript from static template uid=43 to set up userdefined tag:
+t3lib_extMgm::addTypoScript($_EXTKEY, 'editorcfg', 'tt_content.CSS_editor.ch.tt_products = < plugin.tt_products.CSS_editor ',43);
+
+
+$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/mydashboard/class.tx_mydashboard_widgetmgm.php']['addWidget']['tt_products_latest'] = 'EXT:'.TT_PRODUCTS_EXT.'/widgets/class.tx_ttproducts_latest.php:tx_ttproducts_latest';
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tce']['formevals']['tx_double6'] = 'EXT:'.DIV2007_EXTkey.'/hooks/class.tx_div2007_hooks_eval.php';
+
+if (TYPO3_MODE=='FE') { // add the table enhancements to the FE
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['extendingTCA'][] = TT_PRODUCTS_EXT;
 }
 
-  // Extending TypoScript from static template uid=43 to set up userdefined tag:
-call_user_func($callingClassName . '::addTypoScript', $_EXTKEY, 'editorcfg', 'tt_content.CSS_editor.ch.tt_products = < plugin.tt_products.CSS_editor ', 43);
 
-$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/mydashboard/class.tx_mydashboard_widgetmgm.php']['addWidget']['tt_products_latest'] = 'EXT:tt_products/widgets/class.tx_ttproducts_latest.php:tx_ttproducts_latest';
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tce']['formevals']['tx_double6'] = 'EXT:'.DIV2007_EXTkey.'/hooks/class.tx_div2007_hooks_eval.php';
+
 
 
 
@@ -261,40 +311,46 @@ if (
 	}
 }
 
-if (version_compare(TYPO3_version, '7.0.0', '<')) {
+if (
+	version_compare(TYPO3_version, '7.0.0', '<') &&
+	!isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache'])
+) {
+	$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache'] = array();
+}
 
-	if (!isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache'])) {
-		$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_products_cache'] = array();
-	}
-
-	// Define string frontend as default frontend, this must be set with TYPO3 4.5 and below
-	// and overrides the default variable frontend of 4.6
-	if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['frontend'])) {
-		$TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['frontend'] = 't3lib_cache_frontend_StringFrontend';
-	}
-
-	if (version_compare(TYPO3_version, '4.6.0', '>=')) {
-
-		if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'])) {
-			$TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'] = $backendCache;
-		}
-
-		if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options'])) {
-			$TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options'] = $optionsArray;
-		}
-	}
+// Define string frontend as default frontend, this must be set with TYPO3 4.5 and below
+// and overrides the default variable frontend of 4.6
+if (
+	version_compare(TYPO3_version, '7.0.0', '<') &&
+	!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['frontend'])
+) {
+    $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['frontend'] = 't3lib_cache_frontend_StringFrontend';
 }
 
 
-if (call_user_func($callingClassName . '::isLoaded', 'searchbox')) {
-	call_user_func($callingClassName . '::addPItoST43', $_EXTKEY, 'pi_search/class.tx_ttproducts_pi_search.php', '_pi_search', 'list_type', 1 );
+if (
+	version_compare(TYPO3_version, '4.6.0', '>=') &&
+	version_compare(TYPO3_version, '7.0.0', '<')
+) {
+	if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'])) {
+		$TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'] = $backendCache;
+	}
+
+	if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options'])) {
+		$TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['options'] = $optionsArray;
+	}
 }
 
-call_user_func($callingClassName . '::addPItoST43', $_EXTKEY, 'pi_int/class.tx_ttproducts_pi_int.php', '_pi_int', 'list_type', 1 );
+if (call_user_func($emClass . '::isLoaded', 'searchbox')) {
+	call_user_func($emClass . '::addPItoST43', $_EXTKEY, 'pi_search/class.tx_ttproducts_pi_search.php', '_pi_search', 'list_type', 1 );
+}
+
+call_user_func($emClass . '::addPItoST43', $_EXTKEY, 'pi_int/class.tx_ttproducts_pi_int.php', '_pi_int', 'list_type', 1 );
+
 
 if (version_compare(TYPO3_version, '4.6.0', '<')) {
 
-	call_user_func($callingClassName . '::addPItoST43', $_EXTKEY, 'pi1/class.tx_ttproducts_pi1.php', '_pi1', 'list_type', 1);
+	call_user_func($emClass . '::addPItoST43', $_EXTKEY, 'pi1/class.tx_ttproducts_pi1.php', '_pi1', 'list_type', 1);
 
 	// Define database backend as backend for 4.5 and below (default in 4.6)
 	if (!isset($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tt_products_cache']['backend'])) {
@@ -315,7 +371,7 @@ if (version_compare(TYPO3_version, '4.6.0', '<')) {
 } else {
 	// add missing setup for the tt_content "list_type = 5" which is used by tt_products
 	$addLine = 'tt_content.list.20.5 = < plugin.tt_products';
-	call_user_func($callingClassName . '::addTypoScript', TT_PRODUCTS_EXT, 'setup', '
+	call_user_func($emClass . '::addTypoScript', TT_PRODUCTS_EXT, 'setup', '
 	# Setting ' . TT_PRODUCTS_EXT . ' plugin TypoScript
 	' . $addLine . '
 	', 43);
@@ -323,15 +379,15 @@ if (version_compare(TYPO3_version, '4.6.0', '<')) {
 
 
 if (
+	version_compare(TYPO3_version, '7.0.0', '<') &&
 	isset($GLOBALS['typo3CacheFactory']) &&
 	is_object($GLOBALS['typo3CacheFactory']) &&
-	version_compare(TYPO3_version, '7.0.0', '<') &&
 	(
 		version_compare(TYPO3_version, '4.6.0', '>=') ||
 		TYPO3_UseCachingFramework
 	)
 ) {
-    // register the cache in BE so it will be cleared with "clear all caches"
+   // register the cache in BE so it will be cleared with "clear all caches"
     try {
 		$cacheName = 'tt_products_cache';
 		if (!$GLOBALS['typo3CacheManager']->hasCache($cacheName)) {
@@ -346,5 +402,6 @@ if (
         // do nothing, a tt_products_cache cache already exists
     }
 }
+
 
 ?>

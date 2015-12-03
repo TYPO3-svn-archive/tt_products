@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,13 +31,16 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
-class tx_ttproducts_country_view extends tx_ttproducts_table_base_view {
 
+
+class tx_ttproducts_country_view extends tx_ttproducts_table_base_view {
 
 	/**
 	 * Template marker substitution
@@ -45,20 +48,19 @@ class tx_ttproducts_country_view extends tx_ttproducts_table_base_view {
 	 *
 	 * @param	array		reference to an item array with all the data of the item
 	 * @param	array		marker array
-	 * @param	[type]		$fieldsArray: ...
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$row, &$markerArray, &$fieldsArray)	{
+	function getRowMarkerArray (&$row, &$markerArray, &$fieldsArray)	{
 		global $TSFE;
 
-		$markerTable = implode('',t3lib_div::trimExplode('_',$this->getTableObj()->name));
+		$markerTable = implode('', t3lib_div::trimExplode('_' , $this->getModelObj()->getFuncTablename()));
 
 		foreach ($fieldsArray as $k => $field)	{
-			$markerArray['###'.strtoupper($markerTable.'_'.$field).'###'] = htmlentities($row [$field],ENT_QUOTES,$TSFE->renderCharset);
+			$markerKey = strtoupper($markerTable . '_' . $field);
+			$markerArray['###'.$markerKey.'###'] = htmlentities($row[$field], ENT_QUOTES, $TSFE->renderCharset);
 		}
 	}
-
 }
 
 

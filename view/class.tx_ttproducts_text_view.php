@@ -31,18 +31,20 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
  */
+
+
 class tx_ttproducts_text_view extends tx_ttproducts_table_base_view {
 	public $marker = 'TEXT';
 
 	function &getTagMarkerArray(&$tagArray, $parentMarker)	{
 		$rcArray = array();
 		$search = $parentMarker.'_'.$this->marker.'_';
-
 		$searchLen = strlen($search);
 		foreach ($tagArray as $marker => $k)	{
 			if (substr($marker, 0, $searchLen) == $search)	{
@@ -60,16 +62,18 @@ class tx_ttproducts_text_view extends tx_ttproducts_table_base_view {
 	 *
 	 * @param	array		reference to an item array with all the data of the item
 	 * @param	array		Returns a markerArray ready for substitution with information
-	 * @param	[type]		$parentMarker: ...
-	 * @param	[type]		$tagArray: ...
-	 * @return	[type]		...
 	 * @access private
 	 */
-	function getItemMarkerArray ($itemArray, &$markerArray, $parentMarker, $tagArray)	{
+	public function getRowsMarkerArray (
+		&$rowArray,
+		&$markerArray,
+		$parentMarker,
+		$tagArray
+	) {
 		$bFoundTagArray = array();
 
-		if (isset($itemArray) && is_array($itemArray) && count($itemArray)) {
-			foreach ($itemArray as $k => $row) {
+		if (isset($rowArray) && is_array($rowArray) && count($rowArray)) {
+			foreach ($rowArray as $k => $row) {
 				$tag = strtoupper($row['marker']);
 				$bFoundTagArray[$tag] = TRUE;
 				$marker = $parentMarker . '_' . $this->getMarker() . '_' . $tag;

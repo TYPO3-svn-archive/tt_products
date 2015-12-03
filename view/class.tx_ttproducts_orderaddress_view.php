@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2011 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,11 +31,16 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <franz@ttproducts.de>
- * @maintainer	Franz Holzinger <franz@ttproducts.de>
+ * @author  Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
+
 class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 	var $dataArray; // array of read in frontend users
 	var $table;		 // object of the type tx_table_db
@@ -46,8 +51,7 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 	var $image;
 
 
-
-	function getWrappedSubpartArray(&$subpartArray, &$wrappedSubpartArray)	{
+	function getWrappedSubpartArray (&$subpartArray, &$wrappedSubpartArray)	{
 		global $TSFE;
 
 		if ($TSFE->fe_user->user)	{
@@ -59,10 +63,10 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 		}
 
 		if ($this->getModelObj()->getCondition() || !$this->getModelObj()->getConditionRecord())	{
-			$wrappedSubpartArray['###FE_CONDITION1_TRUE_TEMPLATE###'] = array('','');
+			$wrappedSubpartArray['###FE_CONDITION1_TRUE_TEMPLATE###'] = array('', '');
 			$subpartArray['###FE_CONDITION1_FALSE_TEMPLATE###'] = '';
 		} else {
-			$wrappedSubpartArray['###FE_CONDITION1_FALSE_TEMPLATE###'] = array('','');
+			$wrappedSubpartArray['###FE_CONDITION1_FALSE_TEMPLATE###'] = array('', '');
 			$subpartArray['###FE_CONDITION1_TRUE_TEMPLATE###'] = '';
 		}
 		return;
@@ -81,28 +85,31 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 	 * @return	array
 	 * @access private
 	 */
-	function getItemMarkerArray (&$row, &$markerArray, $bSelect, $type)	{
+	function getRowMarkerArray (&$row, &$markerArray, $bSelect, $type)	{
 		global $TCA;
 
 		$fieldOutputArray = array();
-		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 		$modelObj = $this->getModelObj();
 		$selectInfoFields = $modelObj->getSelectInfoFields();
 
 		if ($bSelect)	{
-// 			include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
+// 			t3lib_div::requireOnce (PATH_BE_ttproducts . 'lib/class.tx_ttproducts_form_div.php');
+
+
 			foreach ($selectInfoFields as $field) {
 				$tablename = $modelObj->getTCATableFromField($field);
 
 				$fieldOutputArray[$field] =
-					tx_ttproducts_form_div::createSelect (
-						$langObj,
+					tx_ttproducts_form_div::createSelect(
+						$this->langObj,
 						$TCA[$tablename]['columns'][$field]['config']['items'],
-						'recs['.$type.']['.$field.']',
+						'recs['.$type.'][' . $field . ']',
 						(is_array($row) ? $row[$field] : ''),
-						true,
-						true,
-						array()
+						TRUE,
+						TRUE,
+						array(),
+						'select',
+						array('id' => 'field_' . $type . '_' . $field) /* Add ID for field to be able to use labels. */
 					);
 			}
 		} else {
@@ -121,7 +128,7 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 					}
 
 					$tmp = tx_div2007_alpha5::sL_fh002($tcaValue);
-					$fieldOutputArray[$field] = htmlspecialchars(tx_div2007_alpha5::getLL_fh002($langObj, $tmp));
+					$fieldOutputArray[$field] = htmlspecialchars(tx_div2007_alpha5::getLL_fh002($this->langObj, $tmp));
 				} else {
 					$fieldOutputArray[$field] = '';
 				}
@@ -129,7 +136,7 @@ class tx_ttproducts_orderaddress_view extends tx_ttproducts_table_base_view {
 		}
 
 		foreach ($selectInfoFields as $field) {
-			$markerkey = '###' . ($type=='personinfo' ? 'PERSON' : 'DELIVERY') . '_'. strtoupper($field) . '###';
+			$markerkey = '###' . ($type == 'personinfo' ? 'PERSON' : 'DELIVERY') . '_'. strtoupper($field) . '###';
 			$markerArray[$markerkey] = $fieldOutputArray[$field];
 		}
 	} // getMarkerArray

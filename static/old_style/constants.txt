@@ -7,13 +7,14 @@
 
 plugin.tt_products {
     # cat=plugin.products/file; type=file[html,htm,tmpl,txt]; label= Template File: This is a simple textfile where each part of the shopping basket is defined with HTML-code. To see an example with explanations, take a look at EXT:tt_products/pi1/products_template.tmpl which is the default.
-  file.templateFile = EXT:tt_products/template/products_de.html
+  file.templateFile = EXT:tt_products/template/example_locallang_xml.html
     # cat=plugin.products/file; type=file[IMAGE_EXT]; label= Alternative Image: This image is used if there is no image present for the product
   file.noImageAvailable =
 
     # cat=plugin.products/file; type=file[pdf,gif,jpg]; label= datasheet icon:
   file.datasheetIcon =
-
+    # cat=plugin.products/file; type=file[xml]; label= Marker Language File: This is a simple language xml file which contains the texts for the global markers
+  file.markerFile = EXT:tt_products/marker/de.locallang.xml
     # cat=plugin.products/typo; type=wrap; label= Wrap 1: This wrap is used in the template-file.
   wrap1 = <span class="tx-ttproducts-pi1-wrap1"> | </span>
     # cat=plugin.products/typo; type=wrap; label= Wrap 2: This wrap is used in the template-file.
@@ -37,8 +38,6 @@ plugin.tt_products {
   clickEnlarge_list = 1
     # cat=plugin.products//; type=boolean; label= Click Enlarge, List display for items listed with a filter for a category having childs: See above
   clickEnlarge_listHasChilds = 1
-    # cat=plugin.products//; type=boolean; label= Click Enlarge, List display for items listed with a filter for a DAM root category
-  clickEnlarge_listRoot = 1
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Basket display: As above, but for the images in the basket
   clickEnlarge_basket = 1
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Category images: As above, but for the category images
@@ -89,9 +88,9 @@ plugin.tt_products {
   quantityIsFloat =
 
     # cat=plugin.products//; type=string; label= CSS even rows: Cascading Stylesheets (CSS) even rows in the products listing. This works only if displayColumns has been set.
-  CSSRowEven =
+  CSSRowEven = products-list-even
     # cat=plugin.products//; type=string; label= CSS uneven rows: Cascading Stylesheets (CSS) uneven rows in the products listing. This works only if displayColumns has been set.
-  CSSRowUneven =
+  CSSRowUneven = products-list-uneven
     # cat=plugin.products//; type=string; label= CSS default, List display: Cascading Stylesheets (CSS) for default entries in a list view.
   CSSListDefault =
     # cat=plugin.products//; type=string; label= CSS current, List display: Cascading Stylesheets (CSS) for the currently selected item a list view.
@@ -125,9 +124,9 @@ plugin.tt_products {
   maxW_listHasChilds = 50
     # cat=plugin.products/dims; type=int+; label= Max image height, list display: DAM, the category has childs
   maxH_listHasChilds = 100
-    # cat=plugin.products/dims; type=int+; label= Max image width, list display: DAM, the category is a root category
+    # cat=plugin.products/dims; type=int+; label= Max root image width, list display: The maximum width in pixels of an image when displayed in lists and searchresults on the category root level.
   maxW_listRoot = 50
-    # cat=plugin.products/dims; type=int+; label= Max image height, list display: DAM, the category is a root category
+    # cat=plugin.products/dims; type=int+; label= Max root image height, list display: The maximum height in pixels of an image when displayed in lists and searchresults on the category root level.
   maxH_listRoot = 100
     # cat=plugin.products/dims; type=int+; label= Max image width, basket display: The maximum width in pixels of an image when displayed in the shopping-basket.
   maxW_basket = 100
@@ -179,6 +178,8 @@ plugin.tt_products {
   pidsRelatedProducts =
     # cat=plugin.products//; type=eint+; label=allowed pages for addresses
   pidsAddresses =
+    # cat=plugin.products//; type=eint+; label=Store user: UID of the address table (fe_users) with the data of the shop.
+  UIDstore =
 
     # cat=plugin.products//; type=string; label=When the payment shall be executed. Possible values:  'payment', 'finalize'
   paymentActivity=payment
@@ -247,6 +248,8 @@ plugin.tt_products {
   orderEmail_fromName = My TYPO3 Shop
     # cat=plugin.products//; type=string; label=to email addresses: Comma separated list of recipients of the order email. Shop and administrator/supervisor email addresses go here!
   orderEmail_to = email@webshop-typo3.com
+    # cat=plugin.products//; type=boolean; label=to product addresses: If set, then the order email is sent to all addresses which are connected to the products in the basket.
+  orderEmail_toAddress =
     # cat=plugin.products//; type=boolean; label=send email to delivery: If you want to send the email notification to the delivery email and not to the billing email
   orderEmail_toDelivery =
     # cat=plugin.products//; type=string; label=subject of email: The topic of your email. Or the first line in EMAIL_PLAINTEXT_TEMPLATE is used!
@@ -267,6 +270,8 @@ plugin.tt_products {
   usePriceTag = 0
     # cat=plugin.products//; type=boolean; label=Use Frontend User Static Info Country Field: This is the small country field of the fe_user table
   useStaticInfoCountry = 0
+    # cat=plugin.products//; type=boolean; label=Use Static Taxes extension: Even if the product has a tax, the tax is taken from the extension static_info_tables_taxes
+  useStaticTaxes = 0
     # cat=plugin.products//; type=string; label=Message displayed at bulkily items
   bulkilyWarning = <p><b>Warning! This article needs special transport.</b></p>
     # cat=plugin.products//; type=string; label=Special preparation: Message displayed at items marked as special preparation
@@ -277,6 +282,8 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=boolean; label=Create Users: Create an user account for each new customer
   createUsers = 0
+    # cat=plugin.products//; type=boolean; label=md5 password: Enable md5 password encryption.
+  useMd5Password = 0
     # cat=plugin.products//; type=string; label=Output folder: Folder where the bill and delivery sheets are created.
   outputFolder = fileadmin/data
     # cat=plugin.products//; type=int+; label=Group of customers
@@ -338,5 +345,6 @@ plugin.tt_products {
   ajaxDebug =
 
 }
+
 
 <INCLUDE_TYPOSCRIPT: source="FILE:EXT:tt_products/static/share/constants.txt">

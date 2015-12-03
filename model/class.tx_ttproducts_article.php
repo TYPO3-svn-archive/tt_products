@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2006-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,102 +40,75 @@
  */
 
 
+// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
+
+
 class tx_ttproducts_article extends tx_ttproducts_article_base {
-	var $fields = array();
-	var $tt_products; // element of class tx_table_db to get the parent product
-	var $marker = 'ARTICLE';
-	var $type = 'article';
-	var $tableArray;
+	public $fields = array();
+	public $tt_products; // element of class tx_table_db to get the parent product
+	public $marker = 'ARTICLE';
+	public $type = 'article';
+	public $tableArray;
+	protected $tableAlias = 'article';
+
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
-	 *
-	 * @param	[type]		$$cObj: ...
-	 * @param	[type]		$tablename: ...
-	 * @return	[type]		...
 	 */
-	function init($cObj, $tablename)  {
+	function init ($cObj, $functablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
+		parent::init($cObj, $functablename);
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
-		$conftablename = 'tt_products_articles';
-		parent::init($cObj, $conftablename);
-		$tablename = ($tablename ? $tablename : $conftablename);
+		$tableConfig = array();
+		$tableConfig['orderBy'] = $cnf->conf['orderBy'];
 
-		$this->getTableObj()->addDefaultFieldArray(array('sorting' => 'sorting'));
-		$this->getTableObj()->setTCAFieldArray($tablename);
-
-		$requiredFields = 'uid,pid,uid_product,price,price2,directcost';
-		$tableconf = $cnf->getTableConf($conftablename,$theCode);
-		if ($tableconf['requiredFields'])	{
-			$tmp = $tableconf['requiredFields'];
-			$requiredFields = ($tmp ? $tmp : $requiredFields);
+		if (!$tableConfig['orderBy'])	{
+			 $tableConfig['orderBy'] = $this->getOrderBy ();
 		}
 
-		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
-		$this->getTableObj()->setRequiredFieldArray($requiredListArray);
-
-		if ($tableconf['language.'] && is_array($tableconf['language.']['marker.']))	{
-			$this->getTableObj()->initMarkerFile($tableconf['language.']['marker.']['file']);
-		}
+		$tableObj = $this->getTableObj();
+		$tableObj->setConfig($tableConfig);
+		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
 	} // init
 
 
-	function get($uid = 0, $pid = 0, $bStore = true, $where_clause = '', $limit = '', $fields = '', $bCount = FALSE) {
+	function &getWhereArray ($prodUid, $where) {
 		global $TYPO3_DB;
 
-		$rc = $this->dataArray[$uid];
-		if (!$rc && $uid) {
-			$where = '1=1 '.$this->getTableObj()->enableFields().' AND uid = ' . intval($uid);
-			if ($where_clause)	{
-				$where .= ' ' . $where_clause;
-			}
-			// Fetching the articles
-			$res = $this->getTableObj()->exec_SELECTquery('*', $where);
-			$row = $TYPO3_DB->sql_fetch_assoc($res);
-			$TYPO3_DB->sql_free_result($res);
-			$variantFieldArray = $this->variant->getFieldArray();
-			$this->getTableObj()->substituteMarkerArray($row, $variantFieldArray);
-			$rc = $this->dataArray[$uid] = $row;
-		}
-		return $rc;
-	}
-
-
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$where: ...
-	 * @return	[type]		...
-	 */
-	function getWhereArray ($where) {
-		global $TYPO3_DB;
 		$rowArray = array();
 		$enableWhere = $this->getTableObj()->enableFields();
-		$where = ($where ? $where.' '.$enableWhere : '1=1 ' . $enableWhere);
+		$where = ($where ? $where . ' ' . $enableWhere : '1=1 ' . $enableWhere);
+		$alias = $this->getAlias();
 
-		$res = $this->getTableObj()->exec_SELECTquery('*', $where);
+		if (in_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['articleMode'], array(1,2)))	{
+
+			$finalWhere = 'tt_products_products_mm_articles.uid_local=' . intval($prodUid) . ' AND tt_products_products_mm_articles.deleted=0 AND tt_products_products_mm_articles.hidden=0' . ($where!='' ? ' AND '.$where : '');
+			$mmTable = 'tt_products_products_mm_articles';
+			$uidForeignArticle = 'uid_foreign';
+			$fromJoin = 'tt_products_articles ' . $alias . ' JOIN ' . $mmTable . ' ON ' . $alias . '.uid=' . $mmTable . '.' . $uidForeignArticle;
+			$finalOrderBy = $mmTable . '.sorting DESC';
+		} else {
+			// $fromJoin = 'tt_products_articles ' . $alias;
+			$finalWhere = $alias . '.uid_product=' . intval($prodUid) . ($where ? ' AND ' . $where : '');
+			$finalOrderBy = '';
+		}
+		$res = $this->getTableObj()->exec_SELECTquery('*', $finalWhere, '', $finalOrderBy, '', $fromJoin);
 		$variantFieldArray = $this->variant->getFieldArray();
 
-		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-			$uid = intval($row[uid]);
-
+		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+			$uid = intval($row['uid']);
 			$this->getTableObj()->substituteMarkerArray($row, $variantFieldArray);
 			$this->dataArray[$uid] = $row;	// remember for later queries
+			$uidArray[] = $uid;
 			$rowArray[] = $row;
 		}
 		$TYPO3_DB->sql_free_result($res);
 		return $rowArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$$row: ...
-	 * @param	[type]		$field: ...
-	 * @return	[type]		...
-	 */
-	function getProductField(&$row, $field)	{
+
+	function getProductField (&$row, $field)	{
 		$rc = '';
 		if ($field != 'uid')	{
 			$rowProducts = $this->tt_products->get($row['uid_product']);
@@ -146,23 +119,35 @@ class tx_ttproducts_article extends tx_ttproducts_article_base {
 		return $rc;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$row: ...
-	 * @return	[type]		...
-	 */
-	function getProductRow($row)	{
+
+	function &getProductRow ($row)	{
 		$rc = $this->tt_products->get($row['uid_product']);
+		return $rc;
+	}
+
+
+	public function getRequiredFieldArray ($theCode='')	{
+		$tableConf = $this->getTableConf($theCode);
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$rc = array();
+		if ($tableConf['requiredFields'] != '')	{
+			$requiredFields = $tableConf['requiredFields'];
+		} else {
+			$requiredFields = 'uid,pid,category,price,price2,directcost';
+		}
+		$instockField = $cnf->getTableDesc($functablename,'inStock');
+		if ($instockField && !$this->conf['alwaysInStock'])	{
+			$requiredFields = $requiredFields . ',' . $instockField;
+		}
+
+		$rc = $requiredFields;
 		return $rc;
 	}
 }
 
 
-
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_article.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/model/class.tx_ttproducts_article.php']);
 }
-
 
 ?>

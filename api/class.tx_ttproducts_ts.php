@@ -45,7 +45,6 @@ class tx_ttproducts_ts {
 	protected function getChilds ($uid = 0) {
 		$cObj = t3lib_div::getUserObj('&tx_div2007_cobj');
 		$where = 'pid = ' . $uid . $cObj->enableFields('pages');
-
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', 'pages', $where);
 		$childs = array();
 
@@ -184,7 +183,7 @@ class tx_ttproducts_ts {
 	public function processMemo() {
 
 		$functablename = 'tt_products';
-		$conf = $GLOBALS['TSFE']->tmpl->setup['plugin.'][TT_PRODUCTS_EXT.'.'];
+		$conf = $GLOBALS['TSFE']->tmpl->setup['plugin.'][TT_PRODUCTS_EXT . '.'];
 		$piVars = t3lib_div::_GPmerged('tt_products');
 
 		tx_ttproducts_control_memo::process($functablename, $piVars, $conf);
@@ -195,6 +194,5 @@ class tx_ttproducts_ts {
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/api/class.tx_ttproducts_ts.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/api/class.tx_ttproducts_ts.php']);
 }
-
 
 ?>

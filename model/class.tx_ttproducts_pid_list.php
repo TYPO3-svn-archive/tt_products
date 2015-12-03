@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,11 +31,15 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <contact@fholzinger.com>
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
 class tx_ttproducts_pid_list {
 	var $pid_list;				// list of page ids
 	var $recursive;
@@ -44,46 +48,35 @@ class tx_ttproducts_pid_list {
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
-	 *
-	 * @param	[type]		$$cObj: ...
-	 * @return	[type]		...
 	 */
-	function init($cObj)	{
+	function init ($cObj)	{
 		$this->cObj = $cObj;
 	} // init
 
 
 	/**
 	 * Sets the pid_list internal var
-	 *
-	 * @param	[type]		$pid_list: ...
-	 * @return	[type]		...
 	 */
-	function setPidlist($pid_list)	{
+	function setPidlist ($pid_list)	{
 		$this->pid_list = $pid_list;
 	}
 
 
 	/**
 	 * gets the latest applied recursive
-	 *
-	 * @return	[type]		...
 	 */
-	function getRecursive()	{
+	function getRecursive ()	{
 		return $this->recursive;
 	}
 
 
 	/**
 	 * Gets the pid_list internal var or the child pid_list of the page id as parameter
-	 *
-	 * @param	[type]		$pid: ...
-	 * @return	[type]		...
 	 */
-	function getPidlist($pid='')	{
+	function getPidlist ($pid = '')	{
 		$rc = '';
 		if ($pid)	{
-			$this->applyRecursive(1,$pid,FALSE);
+			$this->applyRecursive(1, $pid, FALSE);
 			$rc = $pid;
 		} else {
 			$rc = $this->pid_list;
@@ -94,21 +87,14 @@ class tx_ttproducts_pid_list {
 
 	/**
 	 * Sets the pid_list internal var
-	 *
-	 * @return	[type]		...
 	 */
-	function setPageArray()	{
+	function setPageArray ()	{
 		$this->pageArray = t3lib_div::trimExplode (',', $this->pid_list);
 		$this->pageArray = array_flip($this->pageArray);
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$pid: ...
-	 * @return	[type]		...
-	 */
-	function getPageArray($pid=0)	{
+
+	function getPageArray ($pid = 0)	{
 		if ($pid)	{
 			$rc = isset($this->pageArray[$pid]);
 		} else {
@@ -118,15 +104,6 @@ class tx_ttproducts_pid_list {
 		return $rc;
 	}
 
-
-	/**
-	 * Extends the internal pid_list by the levels given by $recursive
-	 *
-	 * @param	[type]		$recursive: ...
-	 * @param	[type]		$pids: ...
-	 * @param	[type]		$bStore: ...
-	 * @return	[type]		...
-	 */
 	public function applyRecursive ($recursive, &$pids, $bStore = FALSE) {
 		$cObj = t3lib_div::getUserObj('&tx_div2007_cobj');
 

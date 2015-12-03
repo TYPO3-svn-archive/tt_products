@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2008 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,29 +31,40 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
  */
+
+
 class tx_ttproducts_css {
 	var $pibase; // reference to object of pibase
-	var $conf;
+	public $conf;
+	protected $isCssStyled;
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
-	 *
-	 * @param	[type]		$$pibase: ...
-	 * @return	[type]		...
 	 */
-	function init($pibase)	{
+	public function init ($pibase)	{
 		global $TYPO3_DB;
 		$this->pibase = $pibase;
-		$this->conf = &$this->getConf();
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->isCssStyled = ($cnf->conf['templateStyle'] == 'css-styled');
+		$this->conf = &$cnf->conf['CSS.']['ALL.'];
 	} // init
 
+	public function isCSSStyled ()	{
+		if (isset($this->conf) && is_array($this->conf) && $this->isCssStyled && $this->conf['file'] != '')	{
+			$rc = TRUE;
+		} else {
+			$rc = FALSE;
+		}
+		return $rc;
+	}
 
-	function &getConf ($tablename='', $theCode='ALL')	{
+	public function &getConf ($tablename = '', $theCode = 'ALL')	{
 
 		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$cssConf = $cnf->getSpecialConf('CSS', $tablename, $theCode);
@@ -61,11 +72,8 @@ class tx_ttproducts_css {
 	}
 }
 
-
-
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_css.php'])	{
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_css.php']);
 }
-
 
 ?>

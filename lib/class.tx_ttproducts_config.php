@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2007 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2006-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -35,11 +35,15 @@
  * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
+ *
  */
+
+
 class tx_ttproducts_config {
 	public $conf;
 	public $config;
-	private $bHasBeenInitialised = false;
+	private $bHasBeenInitialised = FALSE;
+
 
 	/**
 	 * Getting the configurations
@@ -47,27 +51,36 @@ class tx_ttproducts_config {
 	public function init (&$conf, &$config) {
 		$this->conf = &$conf;
 		$this->config = &$config;
-		$this->bHasBeenInitialised = true;
+		$this->bHasBeenInitialised = TRUE;
 	} // init
+
 
 	public function needsInit ()	{
 		return !$this->bHasBeenInitialised;
 	}
 
+
 	public function &getConf ()	{
 		return $this->conf;
 	}
+
 
 	public function &getConfig ()	{
 		return $this->config;
 	}
 
-	public function &getTableDesc ($functablename, $type='')	{
+
+	public function getUseArticles ()	{
+		return $this->conf['useArticles'];
+	}
+
+
+	public function &getTableDesc ($functablename, $type = '')	{
 		$tableDesc = array();
 		if (is_array($this->conf['table.']) &&
-			is_array($this->conf['table.'][$functablename.'.'])
+			is_array($this->conf['table.'][$functablename . '.'])
 			)	{
-			$tableDesc = $this->conf['table.'][$functablename.'.'];
+			$tableDesc = $this->conf['table.'][$functablename . '.'];
 		}
 
 		if ($type)	{
@@ -78,39 +91,40 @@ class tx_ttproducts_config {
 		return $rc;
 	}
 
+
 	public function getTableName ($functablename)	{
-		return $this->conf['table.'][$functablename];
+		if (isset($this->conf['table.']) && is_array($this->conf['table.']) && isset($this->conf['table.'][$functablename]))	{
+			$rc = $this->conf['table.'][$functablename];
+		} else {
+			$rc = $functablename;
+		}
+		return $rc;
 	}
 
-	public function &getSpecialConf ($type, $tablename='', $theCode='') {
+
+	public function &getSpecialConf ($type, $tablename = '', $theCode = '')	{
 		$specialConf = array();
 
-		if (is_array($this->conf[$type . '.'])) {
-
-			if ($tablename != '' && is_array($this->conf[$type . '.'][$tablename . '.'])
-				) {
-				if (is_array($this->conf[$type . '.'][$tablename . '.']['ALL.'])
-				) {
-					$specialConf = $this->conf[$type . '.'][$tablename . '.']['ALL.'];
+		if (is_array($this->conf[$type.'.']))	{
+			if ($tablename != '' && is_array($this->conf[$type.'.'][$tablename.'.']))	{
+				if (is_array($this->conf[$type.'.'][$tablename.'.']['ALL.']))	{
+					$specialConf = $this->conf[$type.'.'][$tablename.'.']['ALL.'];
 				}
 				if ($theCode &&
-					is_array($this->conf[$type . '.'][$tablename . '.'][$theCode . '.'])
-				) {
-					$tempConf = $this->conf[$type . '.'][$tablename . '.'][$theCode . '.'];
+					is_array($this->conf[$type.'.'][$tablename.'.'][$theCode.'.']))	{
+					$tempConf = $this->conf[$type.'.'][$tablename.'.'][$theCode.'.'];
 					tx_div2007_core::mergeRecursiveWithOverrule($specialConf, $tempConf);
 				}
-				if ($specialConf['orderBy'] == '{$plugin.'.TT_PRODUCTS_EXT.'.orderBy}') {
+				if ($specialConf['orderBy'] == '{$plugin.'.TT_PRODUCTS_EXT.'.orderBy}')	{
 					$specialConf['orderBy'] = '';
 				}
 			} else {
-				if (is_array($this->conf[$type . '.']['ALL.'])
-				) {
-					$specialConf = $this->conf[$type . '.']['ALL.'];
+				if (is_array($this->conf[$type.'.']['ALL.']))	{
+					$specialConf = $this->conf[$type.'.']['ALL.'];
 				}
 				if ($theCode &&
-					is_array($this->conf[$type . '.'][$theCode . '.'])
-				) {
-					$tempConf = $this->conf[$type . '.'][$theCode . '.'];
+					is_array($this->conf[$type.'.'][$theCode.'.']))	{
+					$tempConf = $this->conf[$type.'.'][$theCode.'.'];
 					tx_div2007_core::mergeRecursiveWithOverrule($specialConf, $tempConf);
 				}
 			}
@@ -118,44 +132,52 @@ class tx_ttproducts_config {
 		return $specialConf;
 	}
 
-	public function &getTableConf ($functablename, $theCode='')	{
+
+	public function &getTableConf ($functablename, $theCode = '')	{
 		$tableConf = $this->getSpecialConf('conf', $functablename, $theCode);
 		return $tableConf;
 	}
 
-	public function &getCSSConf ($functablename, $theCode='')	{
+
+	public function &getCSSConf ($functablename, $theCode = '')	{
 		$cssConf = $this->getSpecialConf('CSS', $functablename, $theCode);
 
 		return $cssConf;
 	}
 
-	public function &getViewControlConf ($theCode)	{
-		$viewConf = $this->getSpecialConf('control', '', $theCode);
 
-		return $viewConf;
+	public function &getFormConf ($theCode = '')	{
+		$cssConf = $this->getSpecialConf('form', '', $theCode);
+
+		return $cssConf;
 	}
 
-	public function getBasketConf ($feature)	{
+
+
+
+	public function getBasketConf ($feature, $detail = '')	{
+
 		$rc = array();
 		if (is_array($this->conf['basket.']))	{
-			$rc = $this->conf['basket.'][$feature.'.'];
-		}
-		return $rc;
-	}
-
-	public function bUseLanguageTable ($tableConf) 	{
-		global $TSFE;
-
-		$rc = FALSE;
-		$sys_language_uid = $TSFE->config['config']['sys_language_uid'];
-		if (is_numeric($sys_language_uid))	{
-
-			if ((is_array($tableConf['language.']) && $tableConf['language.']['type'] == 'table' && $sys_language_uid > 0))	{
-				$rc = TRUE;
+			if ($detail != '')	{
+				if (isset($this->conf['basket.'][$feature . '.']) && is_array($this->conf['basket.'][$feature . '.']))	{
+					if (isset($this->conf['basket.'][$feature . '.'][$detail]))	{
+						$rc = $this->conf['basket.'][$feature . '.'][$detail];
+					} else if (isset($this->conf['basket.'][$feature . '.'][$detail . '.']))	{
+						$rc = $this->conf['basket.'][$feature . '.'][$detail . '.'];
+					}
+				}
+			} else {
+				if (isset($this->conf['basket.'][$feature . '.'])) {
+					$rc = $this->conf['basket.'][$feature . '.'];
+				} else {
+					$rc = $this->conf['basket.'][$feature];
+				}
 			}
 		}
 		return $rc;
 	}
+
 
 	public function getTranslationFields ($tableConf)	{
 		$fieldArray = array();
@@ -169,6 +191,7 @@ class tx_ttproducts_config {
 		}
 		return $fieldArray;
 	}
+
 
 	public function getImageFields ($tableConf)	{
 		$retArray = array();
@@ -189,6 +212,20 @@ class tx_ttproducts_config {
 		}
 		return $retArray;
 	}
+
+
+	/**
+	 * Returns TRUE if the item has the $check value checked
+	 *
+	 */
+	public function hasConfig (&$row, $check)  {
+		$hasConfig = FALSE;
+		$config = t3lib_div::xml2array($row['config']);
+		$hasConfig = tx_div2007_ff::get($config, $check);
+
+		return $hasConfig;
+	}
+
 
 	public function getColumnFields ($tableConf) {
 		$retArray = array();
@@ -211,6 +248,7 @@ class tx_ttproducts_config {
 		return $retArray;
 	}
 
+
 	public function getAJAXConf ()	{
 		$rc = array();
 		if (isset($this->conf['ajax.']) && is_array($this->conf['ajax.']['conf.']))	{
@@ -218,6 +256,7 @@ class tx_ttproducts_config {
 		}
 		return $rc;
 	}
+
 
 	public function getTemplateFile ($theCode) {
 		$rc = '';
@@ -229,6 +268,7 @@ class tx_ttproducts_config {
 
 		return $rc;
 	}
+
 
 	public function mergeAJAX ($ajaxconf)	{
 		global $TYPO3_DB;

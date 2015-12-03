@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -39,6 +39,7 @@
  *
  */
 
+
 class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 	public $relatedArray = array(); // array of related products
 	public $marker = 'PRODUCT';
@@ -48,16 +49,36 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 	public $datafield;
 
 
+	function init ($langObj, $modelObj)	{
+
+		$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_view');
+		parent::init($langObj, $modelObj);
+	}
+
+
 	public function getItemMarkerSubpartArrays (
 		&$templateCode,
+		$functablename,
 		&$row,
 		$markerArray,
 		&$subpartArray,
 		&$wrappedSubpartArray,
 		&$tagArray,
-		$code=''
+		$theCode='',
+		$iCount=''
 	)	{
-		parent::getItemMarkerSubpartArrays ($templateCode, $row, $markerArray, $subpartArray, $wrappedSubpartArray, $tagArray, $code);
+
+		parent::getItemMarkerSubpartArrays(
+			$templateCode,
+			$functablename,
+			$row,
+			$markerArray,
+			$subpartArray,
+			$wrappedSubpartArray,
+			$tagArray,
+			$theCode,
+			$iCount
+		);
 		$extArray = $row['ext'];
 
 		if (is_array($extArray) && is_array($extArray['tt_products']))	{
@@ -65,14 +86,15 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 		} else if (is_array($extArray) && is_array($extArray['tx_dam']))	{
 			$variant = $extArray['tx_dam'][0]['vars'];
 		}
-		$bGiftService = true;
+		$bGiftService = TRUE;
 		if ($this->getModelObj()->hasAdditional($row,'noGiftService'))	{
-			$bGiftService = false;
+			$bGiftService = FALSE;
 		}
 
-		$this->variant->getVariantSubpartMarkerArray (
-			$subpartArray,
+		$this->variant->getVariantSubpartMarkerArray(
 			$markerArray,
+			$subpartArray,
+			$wrappedSubpartArray,
 			$row,
 			$templateCode,
 			$bSelectVariants,
@@ -81,21 +103,23 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 			$bGiftService
 		);
 
-		$modelObj = $this->getModelObj();
 		$datafieldViewObj = $this->getFieldObj('datasheet');
-		$datafieldViewObj->getItemSubpartArrays(
+		if (isset($datafieldViewObj) && is_object($datafieldViewObj))	{
+			$datafieldViewObj->getItemSubpartArrays(
 				$templateCode,
 				$this->marker,
-				$modelObj->getFuncTablename(),
+				$functablename,
 				$row,
 				'datasheet',
-				$modelObj->getTableConf($code),
+				$this->getModelObj()->getTableConf($theCode),
 				$subpartArray,
 				$wrappedSubpartArray,
 				$tagArray,
-				$code
-		);
+				$theCode
+			);
+		}
 	}
+
 
 	/**
 	 * Template marker substitution
@@ -109,8 +133,9 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 	 * @return	array
 	 * @access private
 	 */
-	public function getItemMarkerArray (
-		&$item,
+	public function getModelMarkerArray (
+		&$row,
+		$markerParam,
 		&$markerArray,
 		$catTitle,
 		$imageNum=0,
@@ -118,23 +143,58 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 		&$tagArray,
 		$forminfoArray=array(),
 		$theCode='',
-		$id='1',
+		$id='',
 		$prefix='',
+		$suffix='',
 		$linkWrap='',
-		$bHtml=true,
+		$bHtml=TRUE,
 		$charset=''
 	)	{
+		global $TYPO3_DB;
 
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
-		$row = &$item['rec'];
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$modelObj = $this->getModelObj ();
+		$modelObj = $this->getModelObj();
 
-		parent::getItemMarkerArray($item, $markerArray, $catTitle, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $theCode, $id, '', $linkWrap, $bHtml, $charset);
+		parent::getModelMarkerArray(
+			$row,
+			$markerParam,
+			$markerArray,
+			$catTitle,
+			$imageNum,
+			$imageRenderObj,
+			$tagArray,
+			$forminfoArray,
+			$theCode,
+			$id,
+			$prefix,
+			$suffix,
+			$linkWrap,
+			$bHtml,
+			$charset
+		);
+// Todo: das hier löschen
+
 		$datafieldViewObj = $this->getFieldObj('datasheet');
 		if (isset($datafieldViewObj) && is_object($datafieldViewObj))	{
-			$datafieldViewObj->getItemMarkerArray($modelObj->getTablename(), 'datasheet', $row, $this->marker, $markerArray, $tagArray, $theCode, $id, $tmp, FALSE,'','', 'datasheetIcon');
+			$datafieldViewObj->getRowMarkerArray(
+				$modelObj->getTablename(),
+				'datasheet',
+				$row,
+				$markerParam.'_DATASHEET',
+				$markerArray,
+				$tagArray,
+				$theCode,
+				$id,
+				$tmp,
+				FALSE,
+				'',
+				'',
+				'',
+				'datasheetIcon'
+			);
 		}
+
 
 			// Subst. fields
 		$markerArray['###'.$this->marker.'_UNIT###'] = $row['unit'];
@@ -147,6 +207,25 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 		}
 
 		if ($theCode == 'SINGLE')	{
+			$addressUid = intval($row['address']);
+			$addressRow = array();
+			$addressViewObj = $tablesObj->get('address', TRUE);
+
+			if (($this->conf['table.']['address'] != 'tt_address' || t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) && $addressUid && $modelObj->fieldArray['address'])	{
+				$addressObj = $addressViewObj->getModelObj();
+				$addressRow = $addressObj->get($addressUid);
+			}
+			$adressMarkerArray = array();
+			$addressViewObj->getRowMarkerArray($addressRow, '', $adressMarkerArray, $tmp='', $tmp='', $tagArray, $theCode, $bHtml, $charset, $prefix, $imageNum, $imageRenderObj, $id, $suffix, $linkWrap);
+			if (is_array($adressMarkerArray))	{
+				$markerArray = array_merge($markerArray, $adressMarkerArray);
+			}
+// 			if (is_array($tagArray))	{
+// 				foreach ($tagArray as $tag)	{
+//
+// 				}
+// 			}
+
 			if ($row['note_uid']) {
 				$pageObj = $tablesObj->get('pages');
 
@@ -154,21 +233,21 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 				$confObj = t3lib_div::getUserObj('&tx_ttproducts_config');
 				$contentConf = $confObj->getTableConf('tt_content', $code);
 
-				foreach ($notePageArray as $k => $pid)	{
+				foreach($notePageArray as $k => $pid)	{
 					$pageRow = $pageObj->get($pid);
 					$pageMarkerKey = 'PRODUCT_NOTE_UID_'.($k + 1);
 					$contentArray = $tablesObj->get('tt_content')->getFromPid($pid);
 					$countArray = array();
-					foreach ($contentArray as $k2 => $contentEl)	{
+					foreach($contentArray as $k2 => $contentEl)	{
 						$cType = $contentEl['CType'];
 						$countArray[$cType] = intval($countArray[$cType]) + 1;
-						$markerKey = $pageMarkerKey.'_'.$countArray[$cType].'_'.strtoupper($cType);
-						foreach ($tagArray as $index => $v)	{
+						$markerKey = $pageMarkerKey . '_' . $countArray[$cType] . '_'. strtoupper($cType);
+						foreach($tagArray as $index => $v)	{
 							$pageFoundPos = strpos($index, $pageMarkerKey);
 							if ($pageFoundPos == 0 && $pageFoundPos !== FALSE)	{
-								$fieldName = str_replace($pageMarkerKey.'_','',$index);
+								$fieldName = str_replace($pageMarkerKey . '_', '', $index);
 								if (isset($pageRow[$fieldName]))	{
-									$markerArray['###'.$index.'###'] = $pageRow[$fieldName];
+									$markerArray['###' . $index . '###'] = $pageRow[$fieldName];
 								}
 							}
 							if (strstr($index, $markerKey) === FALSE)	{
@@ -183,8 +262,8 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 									$markerArray['###'.$index.'###'] =
 										tx_div2007_alpha5::RTEcssText($this->cObj, $contentEl[$fieldName]);
 								} else if (is_array($this->conf['parseFunc.']))	{
-									$markerArray['###'.$index.'###'] =
-										$this->cObj->parseFunc($contentEl[$fieldName],$this->conf['parseFunc.']);
+									$markerArray['###' . $index . '###'] =
+										$this->cObj->parseFunc($contentEl[$fieldName], $this->conf['parseFunc.']);
 								}
 							}
 						}
@@ -193,7 +272,7 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 			}
 
 			foreach ($tagArray as $key => $val)	{
-				if (strstr($key,'PRODUCT_NOTE_UID')!==FALSE)	{
+				if (strstr($key,'PRODUCT_NOTE_UID') !== FALSE)	{
 					if (!isset($markerArray['###'.$key.'###']))	{
 						$markerArray['###'.$key.'###'] = '';
 					}
@@ -202,11 +281,11 @@ class tx_ttproducts_product_view extends tx_ttproducts_article_base_view {
 		}
 
 		if ($row['special_preparation'])	{
-			$markerArray['###' . $this->marker . '_SPECIAL_PREP###'] = $this->cObj->substituteMarkerArray($this->conf['specialPreparation'], $markerArray);
+			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = $this->cObj->substituteMarkerArray($this->conf['specialPreparation'], $markerArray);
 		} else	{
-			$markerArray['###' . $this->marker . '_SPECIAL_PREP###'] = '';
+			$markerArray['###'.$this->marker.'_SPECIAL_PREP###'] = '';
 		}
-	} // getItemMarkerArray
+	} // getModelMarkerArray
 }
 
 

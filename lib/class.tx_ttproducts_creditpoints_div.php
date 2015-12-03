@@ -35,23 +35,24 @@
  * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
+ *
+ *
  */
+
+
+
 class tx_ttproducts_creditpoints_div {
 
 	/**
 	 * Returns the number of creditpoints for the frontend user
-	 *
-	 * @param	[type]		$amount: ...
-	 * @param	[type]		$creditpointsConf: ...
-	 * @return	[type]		...
 	 */
-	function getCreditPoints($amount, $creditpointsConf)	{
+	static public function getCreditPoints($amount, $creditpointsConf)	{
 		$type = '';
 		$creditpoints = 0;
 		if (is_array($creditpointsConf))	{
-			foreach ($creditpointsConf as $k1=>$priceCalcTemp) {
+			foreach ($creditpointsConf as $k1 => $priceCalcTemp) {
 				if (is_array($priceCalcTemp)) {
-					foreach ($priceCalcTemp as $k2=>$v2) {
+					foreach ($priceCalcTemp as $k2 => $v2) {
 						if (!is_array($v2)) {
 							switch ($k2) {
 								case 'type':
@@ -84,18 +85,14 @@ class tx_ttproducts_creditpoints_div {
 
 	/**
 	 * adds the number of creditpoints for the frontend user
-	 *
-	 * @param	[type]		$username: ...
-	 * @param	[type]		$creditpoints: ...
-	 * @return	[type]		...
 	 */
-	function addCreditPoints($username, $creditpoints)  {
+	static public function addCreditPoints($username, $creditpoints)  {
 		global $TYPO3_DB;
 
 		if ($username) {
 			$uid_voucher = '';
 			// get the "old" creditpoints for the user
-			$res1 = $TYPO3_DB->exec_SELECTquery('uid, tt_products_creditpoints', 'fe_users', 'username='.$TYPO3_DB->fullQuoteStr($username,'tt_products_creditpoints'));
+			$res1 = $TYPO3_DB->exec_SELECTquery('uid, tt_products_creditpoints', 'fe_users', 'username=' . $TYPO3_DB->fullQuoteStr($username, 'tt_products_creditpoints'));
 			if ($row = $TYPO3_DB->sql_fetch_assoc($res1)) {
 				$ttproductscreditpoints = $row['tt_products_creditpoints'];
 				$uid_voucher = $row['uid'];
@@ -104,7 +101,7 @@ class tx_ttproducts_creditpoints_div {
 				$fieldsArrayFeUserCredit = array();
 				$fieldsArrayFeUserCredit['tt_products_creditpoints'] = $ttproductscreditpoints + $creditpoints;
 
-				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.intval($uid_voucher), $fieldsArrayFeUserCredit);
+				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid=' . intval($uid_voucher), $fieldsArrayFeUserCredit);
 			}
 		}
 	}
