@@ -1,0 +1,15 @@
+##
+## @package TYPO3
+## @subpackage tt_products
+## @version $Id$
+##
+
+
+plugin.tt_products {
+    # cat=plugin.products//; type=int+; label=Test: for testing purposes only
+  test = 0815
+
+}
+
+
+
