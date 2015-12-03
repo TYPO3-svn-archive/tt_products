@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2008-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -43,21 +43,17 @@
  *
  */
 
-
-require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
+/*
 require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_main.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_control.php');
-
-require_once(PATH_tslib.'class.tslib_pibase.php');
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_control.php');*/
 
 
-//define('XAJAX_DEFAULT_ENCODING',  'iso-8859-1');
+tx_div2007_core::activateCompatibility6();
 
 class tx_ttproducts_pi1_base extends tslib_pibase {
-	public $prefixId = TT_PRODUCTS_EXTkey;
+	public $prefixId = TT_PRODUCTS_EXT;
 	public $scriptRelPath = 'pi1/class.tx_ttproducts_pi1_base.php';	// Path to this script relative to the extension dir.
-	public $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
-	public $pi_checkCHash = TRUE;		// activate cHash
+	public $extKey = TT_PRODUCTS_EXT;	// The extension key.
 	public $bRunAjax = FALSE;		// overrride this
 
 
@@ -71,12 +67,12 @@ class tx_ttproducts_pi1_base extends tslib_pibase {
 		$this->pi_setPiVarDefaults();
 		$this->conf = &$conf;
 		$config = array();
-		$mainObj = &t3lib_div::getUserObj('&tx_ttproducts_main');	// fetch and store it as persistent object
+		$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');	// fetch and store it as persistent object
 		$errorCode = array();
 		$bDoProcessing = $mainObj->init($content, $conf, $config, get_class($this), $errorCode);
 
 		if ($bDoProcessing || count($errorCode))	{
-			$content = &$mainObj->run(get_class($this), $errorCode, $content);
+			$content = $mainObj->run(get_class($this), $errorCode, $content);
 		}
 		return $content;
 	}

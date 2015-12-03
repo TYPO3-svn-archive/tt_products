@@ -47,16 +47,16 @@ class tx_ttproducts_css {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	public function init (&$pibase)	{
+	public function init ($pibase)	{
 		global $TYPO3_DB;
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->isCssStyled = ($cnf->conf['templateStyle'] == 'css-styled');
 		$this->conf = &$cnf->conf['CSS.']['ALL.'];
 	} // init
 
 	public function isCSSStyled ()	{
-		if (isset($this->conf) && is_array($this->conf) && $this->isCssStyled && $this->conf['file']!='')	{
+		if (isset($this->conf) && is_array($this->conf) && $this->isCssStyled && $this->conf['file'] != '')	{
 			$rc = TRUE;
 		} else {
 			$rc = FALSE;
@@ -64,9 +64,9 @@ class tx_ttproducts_css {
 		return $rc;
 	}
 
-	public function &getConf ($tablename='', $theCode='ALL')	{
+	public function &getConf ($tablename = '', $theCode = 'ALL')	{
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$cssConf = $cnf->getSpecialConf('CSS', $tablename, $theCode);
 		return $cssConf;
 	}

@@ -38,33 +38,161 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'view/field/interface.tx_ttproducts_field_view_int.php');
+// require_once (PATH_BE_ttproducts.'view/field/interface.tx_ttproducts_field_view_int.php');
 
 
 abstract class tx_ttproducts_field_base_view implements tx_ttproducts_field_view_int	{
-	private $bHasBeenInitialised = false;
+	private $bHasBeenInitialised = FALSE;
 	public $modelObj;
 	public $cObj;
 	public $conf;		// original configuration
 	public $config;		// modified configuration
 	public $langObj;
 
-	public function init (&$langObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->modelObj = &$modelObj;
-		$this->cObj = &$modelObj->cObj;
+	public function init ($langObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->modelObj = $modelObj;
+		$this->cObj = $modelObj->cObj;
 		$this->conf = &$modelObj->conf;
 		$this->config = &$modelObj->config;
 
-		$this->bHasBeenInitialised = true;
+		$this->bHasBeenInitialised = TRUE;
 	}
 
 	public function needsInit ()	{
 		return !$this->bHasBeenInitialised;
 	}
 
-	public function &getModelObj ()	{
+	public function getModelObj ()	{
 		return $this->modelObj;
+	}
+
+	public function getRepeatedRowSubpartArrays (
+		&$subpartArray,
+		&$wrappedSubpartArray,
+		$markerKey,
+		$row,
+		$fieldname,
+		$key,
+		$value,
+		$fieldname,
+		$tableConf,
+		$tagArray
+	) {
+		// overwrite this!
+		return FALSE;
+	}
+
+	public function getRepeatedRowMarkerArray (
+		&$markerArray,
+		$markerKey,
+		$functablename,
+		$row,
+		$fieldname,
+		$key,
+		$value,
+		$tableConf,
+		$tagArray,
+		$theCode='',
+		$id='1'
+	)	{
+		// overwrite this!
+		return FALSE;
+	}
+
+	public function getRepeatedSubpartArrays (
+		&$subpartArray,
+		&$wrappedSubpartArray,
+		$templateCode,
+		$markerKey,
+		$functablename,
+		$row,
+		$fieldname,
+		$tableConf,
+		$tagArray,
+		$theCode='',
+		$id='1'
+	)	{
+		$result = FALSE;
+		$newContent = '';
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$upperField = strtoupper($fieldname);
+		$templateAreaList = $markerKey . '_' . $upperField . '_LIST';
+		$t = array();
+		$t['listFrameWork'] = $this->cObj->getSubpart($templateCode, '###' . $templateAreaList . '###');
+// 			$t['listFrameWork'] = $this->cObj->substituteMarkerArrayCached(
+// 				$t['listFrameWork'],
+// 				$markerArray,
+// 				$subpartArray,
+// 				$wrappedSubpartArray
+// 			);
+
+		$templateAreaSingle = $markerKey . '_' . $upperField . '_SINGLE';
+		$t['singleFrameWork'] = $this->cObj->getSubpart($t['listFrameWork'], '###' . $templateAreaSingle . '###');
+
+		if ($t['singleFrameWork'] != '') {
+			$repeatedTagArray = $markerObj->getAllMarkers($t['singleFrameWork']);
+
+			$value = $row[$fieldname];
+			$valueArray = t3lib_div::trimExplode(',', $value);
+
+			if (isset($valueArray) && is_array($valueArray) && $valueArray['0'] != '') {
+
+				$content = '';
+				foreach ($valueArray as $key => $value) {
+					$repeatedMarkerArray = array();
+					$repeatedSubpartArray = array();
+					$repeatedWrappedSubpartArray = array();
+
+					$resultRowMarker = $this->getRepeatedRowMarkerArray (
+						$repeatedMarkerArray,
+						$markerKey,
+						$functablename,
+						$row,
+						$fieldname,
+						$key,
+						$value,
+						$tableConf,
+						$tagArray,
+						$theCode,
+						$id
+					);
+
+					$this->getRepeatedRowSubpartArrays (
+						$repeatedSubpartArray,
+						$repeatedWrappedSubpartArray,
+						$markerKey,
+						$row,
+						$fieldname,
+						$key,
+						$value,
+						$fieldname,
+						$tableConf,
+						$tagArray
+					);
+
+					$newContent = $this->cObj->substituteMarkerArrayCached(
+						$t['singleFrameWork'],
+						$repeatedMarkerArray,
+						$repeatedSubpartArray,
+						$repeatedWrappedSubpartArray
+					);
+
+					$result = $resultRowMarker;
+					if ($result) {
+						$content .= $newContent;
+					}
+				}
+				$newContent = $this->cObj->substituteMarkerArrayCached(
+					$t['listFrameWork'],
+					array(),
+					array('###' . $templateAreaSingle . '###' => $content),
+					array()
+				);
+			}
+		}
+		$subpartArray['###' . $templateAreaList . '###'] = $newContent;
+		return $result;
 	}
 }
 

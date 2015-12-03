@@ -40,8 +40,6 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'view/field/interface.tx_ttproducts_field_view_int.php');
-
 class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	public $langObj;
 	public $cObj;
@@ -81,13 +79,13 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	public function init (&$langObj, &$cObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	public function init ($langObj, $cObj, &$modelObj)	{
+		$this->langObj = $langObj;
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
-		$this->modelObj = &$modelObj;
-		$this->bHasBeenInitialised = true;
+		$this->modelObj = $modelObj;
+		$this->bHasBeenInitialised = TRUE;
 	} // init
 
 
@@ -96,7 +94,7 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	}
 
 
-	public function &getModelObj ()	{
+	public function getModelObj ()	{
 		return $this->modelObj;
 	}
 
@@ -104,15 +102,15 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	/**
 	 * Generate a graphical price tag or print the price as text
 	 */
-	public function printPrice ($priceText,$taxInclExcl='')	{
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$conf = &$cnf->conf;
+	public function printPrice ($priceText, $taxInclExcl = '')	{
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$conf = $cnf->conf;
 
 		if (($conf['usePriceTag']) && (isset($conf['priceTagObj.'])))	{
 			$ptconf = $conf['priceTagObj.'];
 			$markContentArray = array();
 			$markContentArray['###PRICE###'] = $priceText;
-			$markContentArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha::getLL($this->langObj, $taxInclExcl) : '');
+			$markContentArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha5::getLL_fh002($this->langObj, $taxInclExcl) : '');
 
 			$this->cObj->substituteMarkerInObject($ptconf, $markContentArray);
 			$rc = $this->cObj->cObjGetSingle($conf['priceTagObj'], $ptconf);
@@ -126,12 +124,17 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	/**
 	 * Formatting a price
 	 */
-	public function priceFormat ($double)	{
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$conf = &$cnf->conf;
+	public function priceFormat ($double) {
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$conf = $cnf->conf;
 		$double = round($double, 10);
 
-		$rc = number_format($double,intval($conf['priceDec']),$conf['priceDecPoint'],$conf['priceThousandPoint']);
+		$rc = number_format($double, intval($conf['priceDec']), $conf['priceDecPoint'], $conf['priceThousandPoint']);
+
+		if ($rc == '-0,00') {
+			$rc = '0,00';
+		}
+
 		return $rc;
 	} // priceFormat
 
@@ -151,7 +154,7 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 
 		foreach (self::$convertArray['price'] as $field => $mark)	{
 			if (isset($newItem[$field]))	{
-				$markerArray['###'.$mark.'###'] = self::printPrice(self::priceFormat($newItem[$field]));
+				$markerArray['###' . $mark . '###'] = self::printPrice(self::priceFormat($newItem[$field]));
 			}
 		}
 	}
@@ -159,43 +162,34 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 
 	public function getModelMarkerArray ($field, $row, &$markerArray, $priceMarkerPrefix, $id)	{
 
-
-// Todo:
-// 		$pricefactor = doubleval($this->conf['creditpoints.']['priceprod']);
-// 		// price if discounted by credipoints
-// 		$markerArray['###PRICE_IF_DISCOUNTED_BY_CREDITPOINTS_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat(($item['priceTax'] - $pricefactor * $row['creditpoints']), $taxInclExcl));
-// 		$markerArray['###PRICE_IF_DISCOUNTED_BY_CREDITPOINTS_NO_TAX###'] = $this->pibase->price->printPrice($this->pibase->price->priceFormat(($item['priceNoTax'] - $pricefactor * $row['creditpoints']), $taxInclExcl));
-//
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$conf = $cnf->conf;
+		$config = $cnf->config;
 
 		if ($priceMarkerPrefix != '')	{
 			$priceMarkerPrefix.='_';
 		}
 		$priceMarkerArray = array();
-		$modelObj = &$this->getModelObj();
-		$priceNo = intval($this->config['priceNoReseller']);
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$modelObj = $this->getModelObj();
+		$priceNo = intval($config['priceNoReseller']);
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
 
-// 		$priceTaxArray =
-// 			array(
-// 				'price_tax' => $item['priceTax'],
-// 				'price_no_tax' => $item['priceNoTax'],
-// 				'price_only_tax' => $item['priceTax']-$item['priceNoTax'],
-// 			);
-
-		$priceTaxArray = $modelObj->getPriceTaxArray($field, $row);
+		$priceTaxArray = $modelObj->getPriceTaxArray($field, tx_ttproducts_control_basket::getRoundFormat(), $row);
 
 		foreach ($priceTaxArray as $priceKey => $priceValue)	{
-			$convertedKey = $this->convertKey($priceKey,$field);
-			if ($convertedKey != '')	{
-				$displayKey = $priceMarkerPrefix . $convertedKey;
-				$priceMarkerArray['###'.$displayKey.'###'] = $this->printPrice($this->priceFormat($priceValue, $taxInclExcl));
-				$priceMarkerArray['###'.$displayKey.'_ID###'] = $id.'-price'.str_replace('_','',$priceKey);
+			$displayTax = $this->convertKey($priceKey, $field);
+			if ($displayTax != '')	{
+				$displayKey = $priceMarkerPrefix . $displayTax;
+				$priceMarkerArray['###' . $displayKey . '###'] = $this->printPrice($this->priceFormat($priceValue, $taxInclExcl));
+
+				$displaySuffixId = str_replace('_', '', strtolower($displayTax));
+				$priceMarkerArray['###'.$displayKey.'_ID###'] = $id . '-' . $displaySuffixId;
 			}
 		}
-		$priceMarkerArray['###CUR_SYM###'] = ' '.($this->conf['currencySymbol'] ? ($charset ? htmlentities($this->conf['currencySymbol'],ENT_QUOTES,$charset) : $this->conf['currencySymbol']) : '');
-		$priceMarkerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha::getLL($this->langObj, $taxInclExcl) : '');
+		$priceMarkerArray['###CUR_SYM###'] = ' ' . ($conf['currencySymbol'] ? ($charset ? htmlentities($conf['currencySymbol'], ENT_QUOTES, $charset) : $conf['currencySymbol']) : '');
+		$priceMarkerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha5::getLL_fh002($this->langObj, $taxInclExcl) : '');
 
 		if (is_array($markerArray))	{
 			$markerArray = array_merge($markerArray, $priceMarkerArray);
@@ -204,18 +198,18 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 		}
 	} // getModelMarkerArray
 
-	public function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
+	public function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
 
 		$priceArray = array();
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$prodTable = &$tablesObj->get($functablename, TRUE);
-		$modelObj = &$this->getModelObj();
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$prodTable = $tablesObj->get($functablename, TRUE);
+		$modelObj = $this->getModelObj();
 		$marker = strtoupper($fieldname);
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && ($taxFromShipping == 0) ? 'tax_zero' : 'tax_included');
 // tt-products-single-1-pricetax
-		$priceTaxArray = $modelObj->getPriceTaxArray($fieldname,$row);
+		$priceTaxArray = $modelObj->getPriceTaxArray($fieldname, tx_ttproducts_control_basket::getRoundFormat(), $row);
 		$priceMarkerPrefix = $prodTable->getMarker() . '_';
 
 		foreach ($priceTaxArray as $priceType => $priceValue)	{
@@ -224,8 +218,11 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 				exit ('internal error in tt_products in class tx_ttproducts_field_price_view with fieldname = "' . $fieldname . '"');
 			}
 			$taxMarker = $priceMarkerPrefix . strtoupper($displayTax);
-			$markerArray['###'.$taxMarker.'###'] = $this->printPrice($this->priceFormat($priceValue), $taxInclExcl);
-			$markerArray['###'.$taxMarker.'_ID###'] = $id.str_replace('_','',$displayTax);
+			$markerArray['###' . $taxMarker . '###'] = $this->printPrice($this->priceFormat($priceValue), $taxInclExcl);
+
+			$displaySuffixId = str_replace('_', '', strtolower($displayTax));
+			$displaySuffixId = str_replace($fieldname, '', $displaySuffixId);
+			$markerArray['###' . $taxMarker . '_ID###'] = $id . $displaySuffixId;
 		}
 	}
 }

@@ -52,10 +52,10 @@ class tx_ttproducts_csv {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init (&$pibase, &$itemArray, &$calculatedArray, $accountUid)	{
+	function init ($pibase, &$itemArray, &$calculatedArray, $accountUid)	{
 		global $TYPO3_DB;
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->calculatedArray = &$calculatedArray;
@@ -65,25 +65,28 @@ class tx_ttproducts_csv {
 
 
 	function create ($functablename, &$address, $csvorderuid, &$csvfilepath, &$errorMessage) {
-		$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$orderObj = &$tablesObj->get('sys_products_orders');
-		$accountObj = &$tablesObj->get('sys_products_accounts');
-		$itemTable = &$tablesObj->get($functablename, FALSE);
+		$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$orderObj = $tablesObj->get('sys_products_orders');
+		$accountObj = $tablesObj->get('sys_products_accounts');
+		$itemTable = $tablesObj->get($functablename, FALSE);
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		$csvfilepath = trim($csvfilepath);
-		if ($csvfilepath{strlen($csvfilepath)-1} != '/') {
+
+		if ($csvfilepath{strlen($csvfilepath) - 1} != '/') {
 			$csvfilepath .= '/';
 		}
-		$csvfilepath .= $orderObj->getNumber($csvorderuid).'.csv';
+		$csvfilepath .= $orderObj->getNumber($csvorderuid) . '.csv';
+
 		$csvfile = fopen($csvfilepath, 'w');
 		if ($csvfile !== FALSE)	{
 			// Generate invoice and delivery address
 			$csvlinehead = '';
 			$csvlineperson = '';
 			$csvlinedelivery = '';
-			$infoFields = explode(',','feusers_uid,name,cnum,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country,agb');
+			$infoFields = explode(',', 'feusers_uid,name,cnum,first_name,last_name,salutation,address,telephone,fax,email,company,city,zip,state,country,agb,business_partner,organisation_form');
 			foreach($infoFields as $fName) {
 				if ($csvlinehead != '') {
 					$csvlinehead .= ';';
@@ -102,9 +105,9 @@ class tx_ttproducts_csv {
 
 			$accountRow = array();
 			if ($this->accountUid)	{
-				$accountRow = $accountObj->get($this->accountUid,0,true);
+				$accountRow = $accountObj->get($this->accountUid, 0, TRUE);
 				if (is_array($accountRow) && count($accountRow))	{
-					$csvlineAccount = '"' . implode('";"',$accountRow) . '"';
+					$csvlineAccount = '"' . implode('";"', $accountRow) . '"';
 					$accountdescr = '"' . implode('";"', array_keys($accountRow)) . '"';
 				}
 			}
@@ -130,7 +133,7 @@ class tx_ttproducts_csv {
 			$csvdescr = '"uid";"count"';
 			$variantFieldArray = $itemTable->variant->getSelectableFieldArray();
 			if (count($variantFieldArray))	{
-				$csvdescr .= ';"' . implode('";"',$variantFieldArray) . '"';
+				$csvdescr .= ';"' . implode('";"', $variantFieldArray) . '"';
 			}
 			if ($csvfieldcount)	{
 				foreach($csvfields as $csvfield)	{
@@ -154,8 +157,8 @@ class tx_ttproducts_csv {
 			$infoWritten = FALSE;
 
 			// loop over all items in the basket indexed by a sorting text
-			foreach ($this->itemArray as $sort=>$actItemArray) {
-				foreach ($actItemArray as $k1=>$actItem) {
+			foreach ($this->itemArray as $sort => $actItemArray) {
+				foreach ($actItemArray as $k1 => $actItem) {
 					$row = &$actItem['rec'];
 					$pid = intval($row['pid']);
 					if (!$basket->getPidListObj()->getPageArray($pid)) {
@@ -164,7 +167,7 @@ class tx_ttproducts_csv {
 					}
 					$variants = explode(';', $itemTable->variant->getVariantFromRow($row));
 					$csvdata = '"' . intval($row['uid']) . '";"' .
-						intval($actItem['count']) . '";"' . implode('";"',$variants) . '"';
+						intval($actItem['count']) . '";"' . implode('";"', $variants) . '"';
 					foreach($csvfields as $csvfield) {
 						$csvdata .= ';"' . $row[$csvfield] . '"';
 					}
@@ -198,7 +201,7 @@ class tx_ttproducts_csv {
 			}
 			fclose($csvfile);
 		} else {
-			$message = tx_div2007_alpha::getLL($this->pibase, 'no_csv_creation');
+			$message = tx_div2007_alpha5::getLL_fh002($langObj, 'no_csv_creation');
 			$messageArr =  explode('|', $message);
 			$errorMessage = $messageArr[0] . $csvfilepath . $messageArr[1];
 		}

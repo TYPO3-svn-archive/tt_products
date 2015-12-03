@@ -39,12 +39,7 @@
  *
  */
 
-
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_view.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_dummy_view.php');
-
-
+//
 abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_view {
 	private $dataArray = array(); // array of read in products
 	private $table;	 // object of the type tx_table_db
@@ -57,7 +52,7 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 	protected $mm_table = ''; // only set if a mm table is used
 
 
-	public function init (&$langObj, &$modelObj)	{
+	public function init ($langObj, $modelObj)	{
 		parent::init($langObj, $modelObj);
 
 		$this->variant->init($langObj, $modelObj->variant);
@@ -99,7 +94,9 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		if (is_array($mergedRow))	{
 			$row = $mergedRow;
 			if (is_array($originalRow) && count($originalRow))	{
-				$id .= 'from-'.str_replace('_','-',$mergedName);
+				if ($mergedName != '') {
+					$id .= 'from-' . str_replace('_', '-', $mergedName);
+				}
 				$row['uid'] = $originalRow['uid'];
 			}
 		} else {
@@ -113,7 +110,7 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		global $TCA;
 
 		$modelObj = $this->getModelObj();
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 
 		$functablename = $modelObj->getFuncTablename();
 		$mainId = $this->getId($row, $id, $theCode);
@@ -153,14 +150,14 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		$prefix='',
 		$suffix='',
 		$linkWrap='',
-		$bHtml=true,
+		$bHtml=TRUE,
 		$charset=''
 	)	{
 		global $TSFE, $TCA;
 
-		$modelObj = &$this->getModelObj();
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$modelObj = $this->getModelObj();
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 		if ($markerKey)	{
 			$marker = $markerKey;
@@ -192,35 +189,16 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 			$linkWrap
 		);
 
-/*		$markerArray = array_merge($markerArray, $variantMarkerArray);*/
+// 		$markerArray = array_merge($markerArray, $variantMarkerArray); // neu +++
 
 		$this->getPriceMarkerArray($markerArray, $row, $markerKey, $id, $theCode);
 
 		if (isset($row['delivery']))	{
-			$imageObj->getSingleImageMarkerArray ($marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.']);
+			$imageObj->getSingleImageMarkerArray ($marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.'], $theCode);
 		} else {
 			$markerArray['###'.$marker.'_DELIVERY###'] = '';
 		}
 
-//		$markerArray['###'.$this->marker.'_WEIGHT###'] = doubleval($row['weight']);
-/*		$cObjectMarkerArray = array();
-		$tableconf = $modelObj->getTableConf($theCode);
-
-		if (is_array($tableconf['field.']))	{
-			$fieldMarkerArray = array_merge($markerArray, $variantMarkerArray);
-			foreach ($row as $field => $value)	{
-				$tmpMarkerKey = '###'.$marker.'_'.strtoupper($field).'###';
-				if (is_array($tableconf['field.'][$field.'.']))	{
-					if (isset($cObjectMarkerArray[$tmpMarkerKey]))	{
-						$value = $cObjectMarkerArray[$tmpMarkerKey];
-					}
-					$tableconf['field.'][$field.'.']['value'] = $value;
-					$fieldContent = $this->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field.'.'],TT_PRODUCTS_EXTkey);
-					$cObjectMarkerArray[$tmpMarkerKey] = $this->cObj->substituteMarkerArray($fieldContent,$fieldMarkerArray);
-				}
-			}
-		}
-		$markerArray = array_merge($markerArray, $cObjectMarkerArray);*/
 	}
 }
 

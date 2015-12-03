@@ -32,14 +32,14 @@
  * $Id$
  *
  * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com> 
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category.php');
+// require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category.php');
 
 
 class tx_ttproducts_damcategory extends tx_ttproducts_category {

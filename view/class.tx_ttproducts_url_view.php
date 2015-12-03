@@ -54,12 +54,30 @@ class tx_ttproducts_url_view {
 	 * @return	  void
  	 */
 
-	public function init (&$pibase)	{
- 		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	public function init ($pibase)	{
+ 		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
  		$this->conf = &$cnf->conf;
  		$this->config = &$cnf->config;
+	}
+
+	public function getSingleExcludeList ($excludeList) {
+		$excludeListArray = t3lib_div::trimExplode(',', $excludeList);
+		$singleExcludeListArray =
+			array(
+				'article',
+				'product',
+				'variants',
+				'dam'
+			);
+		$singleExcludeListArray = array_merge($excludeListArray, $singleExcludeListArray);
+
+		if (!$singleExcludeListArray[0]) {
+			unset($singleExcludeListArray[0]);
+		}
+		$singleExcludeList = implode(',', $singleExcludeListArray);
+		return $singleExcludeList;
 	}
 
 	public function setUrlArray ($urlArray)	{
@@ -69,18 +87,18 @@ class tx_ttproducts_url_view {
 	/**
 	 * Adds link markers to a wrapped subpart array
 	 */
-	public function getWrappedSubpartArray (&$wrappedSubpartArray,$addQueryString=array(),$css_current='')	{
+	public function getWrappedSubpartArray (&$wrappedSubpartArray, $addQueryString = array(), $css_current = '')	{
 		global $TSFE;
 
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
-		$pageLink = $this->pibase->pi_getPageLink($pidBasket,'',$this->getLinkParams('',$addQueryString,true)) ;
-		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="'. $pageLink .'"'.$css_current.'>','</a>');
+		$pageLink = $this->pibase->pi_getPageLink($pidBasket, '' , $this->getLinkParams('', $addQueryString, TRUE)) ;
+		$wrappedSubpartArray['###LINK_BASKET###'] = array('<a href="' . htmlspecialchars($pageLink) . '"' . $css_current . '>', '</a>');
 	}
 
 	/**
 	 * Adds URL markers to a markerArray
 	 */
-	public function addURLMarkers ($pidNext,$markerArray,$addQueryString=array(),$excludeList='',$bUseBackPid=TRUE,$bExcludeSingleVar=TRUE)	{
+	public function addURLMarkers ($pidNext, $markerArray, $addQueryString = array(), $excludeList = '', $bUseBackPid = TRUE, $bExcludeSingleVar = TRUE)	{
 		global $TSFE;
 
 		$charset = $TSFE->renderCharset;
@@ -94,7 +112,13 @@ class tx_ttproducts_url_view {
 		$pidBasket = ($this->conf['PIDbasket'] ? $this->conf['PIDbasket'] : $TSFE->id);
 		$pidFormUrl = ($pidNext ? $pidNext : $pidBasket);
 		if ($pidFormUrl != $TSFE->id && $bExcludeSingleVar)	{
-			$newExcludeListArray = array('tt_products[article]', 'tt_products[product]');
+			$newExcludeListArray =
+				array(
+					'tt_products[article]',
+					'tt_products[product]',
+					'tt_products[variants]',
+					'tt_products[dam]'
+				);
 			$excludeListArray = t3lib_div::trimExplode(',', $excludeList);
 			$excludeListArray = array_merge ($excludeListArray, $newExcludeListArray);
 			if (!$excludeListArray[0])	{
@@ -103,21 +127,46 @@ class tx_ttproducts_url_view {
 			$excludeList = implode(',', $excludeListArray);
 		}
 		$bUseBackPid = ($bUseBackPid && $pidNext != $TSFE->id);
-
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pidFormUrl,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
+		$url = tx_div2007_alpha5::getTypoLink_URL_fh003(
+			$this->pibase->cObj,
+			$pidFormUrl,
+			$this->getLinkParams(
+				$urlExcludeList,
+				$addQueryString,
+				TRUE,
+				$bUseBackPid
+			),
+			$target,
+			$conf
+		);
 		$urlMarkerArray['###FORM_URL###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
-		$pid = ( $this->conf['PIDinfo'] ? $this->conf['PIDinfo'] : $pidBasket);
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
-		$urlMarkerArray['###FORM_URL_INFO###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
-		$pid = ( $this->conf['PIDpayment'] ? $this->conf['PIDpayment'] : $pidBasket);
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
-		$urlMarkerArray['###FORM_URL_PAYMENT###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
-		$pid = ( $this->conf['PIDfinalize'] ? $this->conf['PIDfinalize'] : $pidBasket);
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
-		$urlMarkerArray['###FORM_URL_FINALIZE###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
-		$pid = ( $this->conf['PIDthanks'] ? $this->conf['PIDthanks'] : $pidBasket);
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->getLinkParams($excludeList,$addQueryString,TRUE,$bUseBackPid),$target,$conf);
-		$urlMarkerArray['###FORM_URL_THANKS###'] = htmlspecialchars($url, ENT_NOQUOTES, $charset);
+
+		$commandArray = array('basket', 'info', 'payment', 'finalize', 'thanks', 'search', 'memo', 'tracking', 'billing', 'delivery', 'agb');
+
+		foreach ($commandArray as $command) {
+			$pid = ($this->conf['PID' . $command] ? $this->conf['PID' . $command] : $pidBasket);
+
+			$url = tx_div2007_alpha5::getTypoLink_URL_fh003(
+				$this->pibase->cObj,
+				$pid,
+				$this->getLinkParams(
+					$excludeList,
+					$addQueryString,
+					TRUE,
+					$bUseBackPid
+				),
+				$target,
+				$conf
+			);
+
+			$urlMarkerArray['###FORM_URL_' . strtoupper($command) . '###'] =
+				htmlspecialchars(
+					$url,
+					ENT_NOQUOTES,
+					$charset
+				);
+		}
+
 		$urlMarkerArray['###FORM_URL_TARGET###'] = '_self';
 
 		if (isset($this->urlArray) && is_array($this->urlArray))	{
@@ -127,15 +176,14 @@ class tx_ttproducts_url_view {
 		}
 
 			// Call all addURLMarkers hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addURLMarkers'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addURLMarkers'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addURLMarkers'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addURLMarkers')) {
-					$hookObj->addURLMarkers($this->pibase,$pidNext,$urlMarkerArray,$addQueryString,$excludeList,$bUseBackPid,$bExcludeSingleVar);
+					$hookObj->addURLMarkers($this->pibase, $pidNext, $urlMarkerArray, $addQueryString, $excludeList, $bUseBackPid, $bExcludeSingleVar);
 				}
 			}
 		}
-
 		if (isset($markerArray) && is_array($markerArray))	{
 			$markerArray = array_merge($markerArray, $urlMarkerArray);
 		} else {
@@ -147,7 +195,7 @@ class tx_ttproducts_url_view {
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	public function addQueryStringParam (&$queryString, $param, $bUsePrefix=false) {
+	public function addQueryStringParam (&$queryString, $param, $bUsePrefix=FALSE) {
 		$temp = $this->pibase->piVars[$param];
 		$temp = ($temp ? $temp : (t3lib_div::_GP($param) && ($param!='pid') ? t3lib_div::_GP($param) : 0));
 		if ($temp)	{
@@ -162,34 +210,52 @@ class tx_ttproducts_url_view {
 	/**
 	 * Returns a url for use in forms and links
 	 */
-	public function getLinkParams ($excludeList='',$addQueryString=array(),$bUsePrefix=FALSE,$bUseBackPid=TRUE,$piVarCat='cat') {
+	public function getLinkParams ($excludeList = '', $addQueryString = array(), $bUsePrefix = FALSE, $bUseBackPid = TRUE, $piVarSingle = 'product', $piVarCat = 'cat') {
 		global $TSFE;
 
-		$queryString=array();
+		$queryString = array();
 		if ($bUseBackPid)	{
-			if ($bUsePrefix && !$addQueryString[$this->pibase->prefixId.'[backPID]'])	{
+			if ($bUsePrefix && !$addQueryString[$this->pibase->prefixId . '[backPID]'])	{
 				$queryString[$this->pibase->prefixId . '[backPID]'] = $TSFE->id;
 			} else if (!$addQueryString['backPID'])	{
 				$queryString['backPID'] = $TSFE->id;
 			}
 		}
+		if ($excludeList != '' && $bUsePrefix) {
+			$excludeArray = explode(',', $excludeList);
+			foreach ($excludeArray as $k => $v) {
+				$excludeArray[$k] = $this->pibase->prefixId.'[' . $v . ']';
+			}
+			$excludeList = implode(',', $excludeArray);
+		}
+
 
 		$this->addQueryStringParam($queryString, 'C', $bUsePrefix);
+		if ($piVarSingle != '') {
+			$this->addQueryStringParam($queryString, $piVarSingle, $bUsePrefix);
+		}
 		if ($piVarCat)	{
 			$this->addQueryStringParam($queryString, $piVarCat, $bUsePrefix);
 		}
 
+		$this->addQueryStringParam($queryString, 'mode', FALSE);
 		$this->addQueryStringParam($queryString, 'begin_at', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'newitemdays', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'searchbox', $bUsePrefix);
 		$this->addQueryStringParam($queryString, 'sword', $bUsePrefix);
 
-		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
-		if (!$temp)	{
-			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
-		}
-		if ($temp) {
-			$queryString['sword'] = $temp;
+// 		$sword = t3lib_div::_GP('sword') ? t3lib_div::_GP('sword') : '';
+// 		if (!$sword) {
+// 			$sword = t3lib_div::_GP('swords') ? t3lib_div::_GP('swords') : '';
+// 		}
+// 		if ($sword) {
+// 			$queryString['sword'] = rawurlencode(rawurldecode($sword));
+// 		}
+
+		foreach($queryString as $key => $val)	{
+			if ($val == '' || (strlen($excludeList) && t3lib_div::inList($excludeList, $key)))	{
+				unset($queryString[$key]);
+			}
 		}
 
 		if (is_array($addQueryString))	{
@@ -202,16 +268,10 @@ class tx_ttproducts_url_view {
 			}
 		}
 
-		foreach($queryString as $key => $val)	{
-			if ($val=='' || (strlen($excludeList) && t3lib_div::inList($excludeList,$key)))	{
-				unset($queryString[$key]);
-			}
-		}
-
 			// Call all getLinkParams hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['getLinkParams'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['getLinkParams'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['getLinkParams'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getLinkParams')) {
 					$hookObj->getLinkParams($this,$queryString,$excludeList,$addQueryString,$bUsePrefix,$bUseBackPid,$piVarCat);
 				}

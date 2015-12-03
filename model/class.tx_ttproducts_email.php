@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -46,7 +46,7 @@ class tx_ttproducts_email extends tx_ttproducts_table_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$pibase, $functablename)  {
+	function init($pibase, $functablename)  {
 		parent::init($pibase, $functablename);
 		$tablename = $this->getTablename();
 		$this->getTableObj()->addDefaultFieldArray(array('sorting' => 'sorting'));

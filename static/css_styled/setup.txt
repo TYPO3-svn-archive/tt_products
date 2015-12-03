@@ -1,7 +1,7 @@
 ##
 ## @package TYPO3
 ## @subpackage tt_products
-## @version $Id$
+## @version $Id: setup.txt 90302 2015-12-03 15:46:12Z franzholz $
 ##
 
 ## Includes tt_products as a TYPO3 extension:
@@ -17,8 +17,8 @@ plugin.tt_products {
   templateFile = {$plugin.tt_products.file.templateFile}
   defaultSetup = 1
   fe = 1
-  no_cache = 1
   markerFile = {$plugin.tt_products.file.markerFile}
+  errorLog = {$plugin.tt_products.file.errorLog}
   templateStyle = css-styled
   pid_list = {$plugin.tt_products.pid_list}
   code.field = select_key
@@ -68,7 +68,7 @@ plugin.tt_products {
   listcatImage.file.maxH = {$plugin.tt_products.maxH_listcat}
   listcatImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_listcat}
 
-  image.wrap = | <BR>
+  image.wrap = | <br />
 
   noImageAvailable = {$plugin.tt_products.file.noImageAvailable}
   datasheetIcon {
@@ -177,6 +177,7 @@ plugin.tt_products {
   orderEmail_from = {$plugin.tt_products.orderEmail_from}
   orderEmail_fromName = {$plugin.tt_products.orderEmail_fromName}
   orderEmail_to = {$plugin.tt_products.orderEmail_to}
+  orderEmail_toAddress = {$plugin.tt_products.orderEmail_toAddress}
   orderEmail_toDelivery = {$plugin.tt_products.orderEmail_toDelivery}
   orderEmail_subject = {$plugin.tt_products.orderEmail_subject}
   orderEmail_htmlmail = {$plugin.tt_products.orderEmail_htmlmail}
@@ -256,14 +257,39 @@ plugin.tt_products {
   }
   basket.store = 1
 
+  basket.activity {
+    basket {
+		check = basket
+    }
+    info {
+		check = basket
+    }
+    payment {
+		check = address,agb,basket,account,card
+    }
+    finalize {
+		check = address,agb,basket,account,card
+    }
+    overview {
+		check = basket
+		store = 0
+    }
+  }
+
+  memo.allow = fe_users,session
+
   # table settings
   # attention: Do not change the tt_products fields if you don't know what you do
-  table.address = tx_party_addresses
-  table.address {
-    title = thoroughfare
-    static_info_country = country
-    zone = administrative_area
-  }
+#  table.address = tt_address
+  table.address = fe_users
+
+#  table.address = tx_party_addresses
+#  table.address {
+#    title = thoroughfare
+#    static_info_country = country
+#    zone = administrative_area
+#  }
+
 
   table.tt_products = tt_products
   table.tt_products {
@@ -457,7 +483,25 @@ plugin.tt_products {
   )
 
   shopAdmin = BE
+
+  orderEmail {
+       10000.suffix = shop
+       10000.from = customer
+       10000.returnPath = {$plugin.tt_products.orderEmail_returnPath}
+       10002.suffix = customer
+       10002.from = shop
+       10002.returnPath = {$plugin.tt_products.orderEmail_returnPath}
+  }
+
 }
+
+[globalVar = GP:ttp_basket != '']
+plugin.tt_products = USER_INT
+[global]
+
+[globalVar = GP:tt_products|sword != '']
+plugin.tt_products = USER_INT
+[global]
 
 [ext:static_info_tables_taxes:isLoaded = 1]
 plugin.tt_products.conf.tt_products.ALL.requiredFields = uid,pid,category,price,price2,directcost,graduated_price_uid,tax_id,inStock

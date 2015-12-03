@@ -39,9 +39,9 @@
  *
  */
 
-
+/*
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
+require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');*/
 
 
 class tx_ttproducts_address extends tx_ttproducts_category_base {
@@ -61,12 +61,12 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($pibase, $functablename);
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$tableconf = $cnf->getTableConf('address');
 		$tabledesc = $cnf->getTableDesc('address');
 
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$tablename = $this->getTablename();
 
 		$tableObj->setConfig($tableconf);
@@ -96,7 +96,7 @@ class tx_ttproducts_address extends tx_ttproducts_category_base {
 	}
 
 
-	function &getRelationArray ($excludeCats='',$rootUids='',$allowedCats='') {
+	function &getRelationArray ($excludeCats = '', $rootUids = '', $allowedCats = '') {
 		$relationArray = array();
 		$rootArray = t3lib_div::trimExplode(',', $rootUids);
 

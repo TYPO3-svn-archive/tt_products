@@ -44,17 +44,12 @@
  */
 
 
-require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
-require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_control_search.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_control.php');
-
-require_once(PATH_tslib.'class.tslib_pibase.php');
-
+tx_div2007_core::activateCompatibility6();
 
 class tx_ttproducts_pi_search_base extends tslib_pibase {
-	public $prefixId = TT_PRODUCTS_EXTkey;
+	public $prefixId = TT_PRODUCTS_EXT;
 	public $scriptRelPath = 'pi_search_base/class.tx_ttproducts_pi_search_base.php';	// Path to this script relative to the extension dir.
-	public $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
+	public $extKey = TT_PRODUCTS_EXT;	// The extension key.
 	public $pi_checkCHash = TRUE;		// activate cHash
 	public $bRunAjax = FALSE;		// overrride this
 
@@ -66,15 +61,15 @@ class tx_ttproducts_pi_search_base extends tslib_pibase {
 
 		tx_ttproducts_model_control::setPrefixId($this->prefixId);
 		$this->pi_setPiVarDefaults();
-		$confMain = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXTkey.'.'];
+		$confMain = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXT.'.'];
 		$this->conf = array_merge($confMain, $conf);
 		$config = array();
-		$mainObj = &t3lib_div::getUserObj('&tx_ttproducts_control_search');	// fetch and store it as persistent object
+		$mainObj = t3lib_div::getUserObj('&tx_ttproducts_control_search');	// fetch and store it as persistent object
 		$errorCode = array();
 		$bDoProcessing = $mainObj->init($content, $this->conf, $config, get_class($this), $errorCode);
 
 		if ($bDoProcessing || count($errorCode))	{
-			$content = &$mainObj->run(get_class($this),$errorCode,$content);
+			$content = $mainObj->run(get_class($this),$errorCode,$content);
 		}
 
 		return $content;

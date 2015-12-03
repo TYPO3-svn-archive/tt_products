@@ -45,17 +45,17 @@ class tx_ttproducts_field_tax extends tx_ttproducts_field_base {
 	/**
 	 *
 	 */
-	public function init(&$cObj, $bUseStaticTaxes, $uidStore)	{
+	public function init($cObj, $bUseStaticTaxes, $uidStore)	{
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($cObj);
 
 		if ($bUseStaticTaxes && $uidStore)	{
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-			$staticTabObj = &$tablesObj->get('static_taxes', FALSE);
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$staticTaxObj = $tablesObj->get('static_taxes', FALSE);
 /*			$dummyRow = array('tax_id' => '1');*/
-			$staticTabObj->setStoreData($uidStore);
-			if ($staticTabObj->isValid())	{
+			$staticTaxObj->setStoreData($uidStore);
+			if ($staticTaxObj->isValid())	{
 				$this->bUseStaticTaxes = TRUE;
 			}
 		}
@@ -75,17 +75,18 @@ class tx_ttproducts_field_tax extends tx_ttproducts_field_base {
 
 		if ($this->getUseStaticTaxes())	{
 			$taxArray = array();
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-			$staticTabObj = &$tablesObj->get('static_taxes', FALSE);
-			$staticTabObj->getStaticTax($row, $newTax, $taxArray);
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$staticTaxObj = $tablesObj->get('static_taxes', FALSE);
+			$staticTaxObj->getStaticTax($row, $newTax, $taxArray);
 		}
 
-		if ($newTax != '')	{
+		if (is_float($newTax))	{
 			$fieldValue = $newTax;
 		} else {
 			$fieldValue = parent::getFieldValue($row, $fieldname);
+
 			if (!floatval($fieldValue))	{
-				if ($this->conf['TAXpercentage'] && !$this->getUseStaticTaxes())	{
+				if ($this->conf['TAXpercentage'])	{
 					$fieldValue = floatval($this->conf['TAXpercentage']);
 				} else {
 					$fieldValue = 0.0;

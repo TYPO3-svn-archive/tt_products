@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -47,13 +47,13 @@ class tx_ttproducts_javascript_marker {
 	var $marker = 'JAVASCRIPT';
 
 
-	function init(&$pibase) {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($pibase) {
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
-		$this->bneedXajax = false;
+		$this->bneedXajax = FALSE;
 	}
 
 
@@ -72,8 +72,8 @@ class tx_ttproducts_javascript_marker {
 	function getMarkerArray (&$markerArray, &$itemMarkerArray)	{
 
 		if (is_array($this->conf['javaScript.']))	{
-			$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
-	
+			$javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
+
 			$jsItemMarkerArray = array();
 			foreach ($itemMarkerArray as $marker => $value)	{
 				$jsItemMarkerArray[$marker] = $javaScriptObj->jsspecialchars($value);
@@ -83,7 +83,7 @@ class tx_ttproducts_javascript_marker {
 				$jsText = $this->pibase->cObj->substituteMarkerArray($confJS['value'], $jsItemMarkerArray);
 				$paramsArray = array($marker => $jsText);
 				$javaScriptObj->set('direct', $paramsArray);
-				$marker = '###'.$this->marker.'_'.strtoupper($marker).'###';
+				$marker = '###' . $this->marker . '_' . strtoupper($marker) . '###';
 				$markerArray[$marker] = '';
 			}
 		}

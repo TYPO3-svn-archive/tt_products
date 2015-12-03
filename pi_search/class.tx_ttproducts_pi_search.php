@@ -41,8 +41,10 @@
  *
  */
 
+/*
 require_once (PATH_BE_div2007.'class.tx_div2007_alpha.php');
-require_once (PATH_BE_ttproducts.'pi_search/class.tx_ttproducts_pi_search_base.php');
+require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
+require_once (PATH_BE_ttproducts.'pi_search/class.tx_ttproducts_pi_search_base.php');*/
 
 
 class tx_ttproducts_pi_search {
@@ -56,18 +58,17 @@ class tx_ttproducts_pi_search {
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
-	public function main($content, &$conf)	{
+	public function main($content, $conf)	{
 
-		$pibaseObj = &t3lib_div::getUserObj('&tx_ttproducts_pi_search_base');
-		$pibaseObj->cObj = &$this->cObj;
+		$pibaseObj = t3lib_div::getUserObj('&tx_ttproducts_pi_search_base');
+		$pibaseObj->cObj = $this->cObj;
 
 		if ($conf['templateFile'] != '')	{
 
-			$content = $pibaseObj->main($content,$conf);
+			$content = $pibaseObj->main($content, $conf);
 		} else {
-			tx_div2007_alpha::loadLL_fh001($pibaseObj,'EXT:'.TT_PRODUCTS_EXTkey.'/pi_search/locallang.xml');
-
-			$content = tx_div2007_alpha::getLL($pibaseObj,'no_template').' plugin.tt_products_pi_search.templateFile';
+			tx_div2007_alpha5::loadLL_fh002($pibaseObj, 'EXT:' . TT_PRODUCTS_EXT . '/pi_search/locallang.xml');
+			$content = tx_div2007_alpha5::getLL_fh002($pibaseObj, 'no_template') . ' plugin.tt_products_pi_search.templateFile';
 		}
 
 		return $content;

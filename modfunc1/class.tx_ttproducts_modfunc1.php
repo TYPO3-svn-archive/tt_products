@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2009 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2012 Franz Holzinger (franz@ttproducts.de)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,11 +23,11 @@
 ***************************************************************/
 
 
-require_once(PATH_t3lib.'class.t3lib_extobjbase.php');
-
 
 
 /**
+ * $Id$
+ *
  * Module extension (addition to function menu) 'Move Items' for the 'tt_products' extension.
  *
  * @author	Franz Holzinger <franz@ttproducts.de>
@@ -37,13 +37,11 @@ require_once(PATH_t3lib.'class.t3lib_extobjbase.php');
 class tx_ttproducts_modfunc1 extends t3lib_extobjbase {
 
 	/**
-		* Returns the module menu
-		*
-		* @return	Array with menuitems
-		*/
-	function modMenu()	{
-		global $LANG;
-
+	* Returns the module menu
+	*
+	* @return	Array with menuitems
+	*/
+	public function modMenu () {
 		return Array (
 			'tx_ttproducts_modfunc1_pid_dest' => '',
 			'tx_ttproducts_modfunc1_age' => '',
@@ -51,59 +49,58 @@ class tx_ttproducts_modfunc1 extends t3lib_extobjbase {
 	}
 
 	/**
-		* Main method of the module
-		*
-		* @return	HTML
-		*/
-	function main()	{
+	* Main method of the module
+	*
+	* @return	HTML
+	*/
+	public function main () {
 			// Initializes the module. Done in this function because we may need to re-initialize if data is submitted!
-		global $SOBE,$BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS,$TYPO3_DB;
 
-		$theOutput.=$this->pObj->doc->spacer(5);
-		if ($BE_USER->user['admin'])	{
+		$theOutput .= $this->pObj->doc->spacer(5);
+		if ($GLOBALS['BE_USER']->user['admin']) {
 			$currId = $this->pObj->id;
-			$content = sprintf($LANG->getLL('pid_src'),$currId);
+			$content = sprintf($GLOBALS['LANG']->getLL('pid_src'), $currId);
 		} else {
-			$content = $LANG->getLL('only_admin');
+			$content = $GLOBALS['LANG']->getLL('only_admin');
 		}
-		$theOutput.=$this->pObj->doc->section($LANG->getLL('title'),$content,0,1);
+		$theOutput .= $this->pObj->doc->section($GLOBALS['LANG']->getLL('title'), $content, 0, 1);
 		$destId = $this->pObj->MOD_SETTINGS['tx_ttproducts_modfunc1_pid_dest'];
 		$age = $this->pObj->MOD_SETTINGS['tx_ttproducts_modfunc1_age'];
 
-		if($currId && $destId && $age)	{
+		if($_REQUEST['create'] != '' && $currId && $destId && $age) {
 			$fieldsArray = array();
 			$fieldsArray['pid'] = intval($destId);
 			$day = 24 * 60 * 60;
 			$time = time();
 			$tstamplimit = $time - $age * $day;
-			$TYPO3_DB->exec_UPDATEquery('tt_products', 'pid='.intval($currId).' AND tstamp<'.$tstamplimit, $fieldsArray);
-			$TYPO3_DB->exec_UPDATEquery('tt_products_articles', 'pid='.intval($currId).' AND tstamp<'.$tstamplimit, $fieldsArray);
-			$content .= '<br />'.$LANG->getLL('moved');
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products', 'pid=' . intval($currId) . ' AND tstamp<' . $tstamplimit, $fieldsArray);
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_products_articles', 'pid=' . intval($currId) . ' AND tstamp<' . $tstamplimit, $fieldsArray);
+			$content .= '<br />' . $GLOBALS['LANG']->getLL('moved');
 		}
 
-		if ($BE_USER->user['admin'])	{
+		if ($GLOBALS['BE_USER']->user['admin']) {
 			$menu=array();
 // 			$menu[]=t3lib_BEfunc::getFuncCheck(
 // 				$this->wizard->pObj->id,
 // 				'SET[tx_ttproducts_modfunc1_check]',
 // 				$this->wizard->pObj->MOD_SETTINGS['tx_ttproducts_modfunc1_check']
-// 			).$LANG->getLL('checklabel');
+// 			).$GLOBALS['LANG']->getLL('checklabel');
 
 			$content = '';
-			$content.='<br />'.$LANG->getLL('pid_dest').t3lib_BEfunc::getFuncInput(
+			$content .= '<br />' . $GLOBALS['LANG']->getLL('pid_dest') . t3lib_BEfunc::getFuncInput(
 				$this->pObj->id,
 				'SET[tx_ttproducts_modfunc1_pid_dest]',
 				$destId
 			);
-			$content.='<br />'.$LANG->getLL('age').t3lib_BEfunc::getFuncInput(
+			$content .= '<br />' . $GLOBALS['LANG']->getLL('age') . t3lib_BEfunc::getFuncInput(
 				$this->pObj->id,
 				'SET[tx_ttproducts_modfunc1_age]',
 				$age
 			);
-			$content .= '<br /><input type="submit" name="create" value="'.$LANG->getLL('start').'">';
-			$menu[]=$content;
-			$theOutput.=$this->pObj->doc->spacer(5);
-			$theOutput.=$this->pObj->doc->section('Menu',implode(' - ',$menu),0,1);
+			$content .= '<br /><input type="submit" name="create" value="' . $GLOBALS['LANG']->getLL('start') . '">';
+			$menu[] = $content;
+			$theOutput .= $this->pObj->doc->spacer(5);
+			$theOutput .= $this->pObj->doc->section('Menu', implode(' - ' , $menu) , 0, 1);
 		}
 
 		return $theOutput;
@@ -111,8 +108,7 @@ class tx_ttproducts_modfunc1 extends t3lib_extobjbase {
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/modfunc1/class.tx_ttproducts_modfunc1.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_products/modfunc1/class.tx_ttproducts_modfunc1.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/modfunc1/class.tx_ttproducts_modfunc1.php']) {
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/modfunc1/class.tx_ttproducts_modfunc1.php']);
 }
 
-?>

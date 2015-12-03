@@ -31,7 +31,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************
 
-$Id$
+$Id: products_css_variants_de.html 90302 2015-12-03 15:46:12Z franzholz $
 -->
 
 </head>
@@ -79,7 +79,6 @@ $Id$
   <!--###LINK_ITEM###--><b><span id="###PRODUCT_TITLE_ID###"> ###PRODUCT_TITLE###</span></b><!--###LINK_ITEM###-->
 </div>
 
-  <!-- <input type="image" name="addtomemo" src="typo3/ext/tt_products/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tt_products[addmemo]=###PRODUCT_ID###';" title="Add to memo">-->
   <div class="###PRODUCT_ID###-display-variant2">
     <!-- ###display_variant2### -->
     ###GW2B### Gr&ouml;&szlig;e: ###GW2E###
@@ -293,7 +292,7 @@ Sie sind eingeloggt!
 <!-- ###ITEM_LIST### begin -->
 
 
-<form method="post" action="###FORM_URL###" name="###FORM_NAME###">
+<form method="post" action="###FORM_URL###" name="RelatedForm">
   <!-- ###ITEM_SINGLE### begin-->
   ###ITEM_SINGLE_PRE_HTML###
   <div align="left" style="height:150px;" valign="bottom">
@@ -311,7 +310,7 @@ Sie sind eingeloggt!
     <!-- ###display_variant5_isSingle### -->
     <!-- ###display_variant5_isNotSingle### -->
     ###GW1B### St&uuml;ckzahl: ###GW1E### <input size="8" maxlength="10" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###">
-    <input type="image" name="addtomemo" src="typo3/ext/tt_products/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('###FORM_NAME###')[0].action='###FORM_MEMO###&amp;tt_products[addmemo]=###PRODUCT_UID###';" title="Add to memo">
+    <input type="image" name="addtomemo" src="typo3/ext/tt_products/res/icons/fe/addmemo.png" value="auf die Merkliste" onClick="document.getElementsByName('RelatedForm')[0].action='###FORM_MEMO###&amp;tt_products%5Baddmemo%5D=###PRODUCT_UID###';" title="Add to memo">
     <!-- ###display_variant5_isNotSingle### -->
     ###ITEM_SINGLE_POST_HTML###
     <!-- ###ITEM_SINGLE### end -->
@@ -1082,7 +1081,8 @@ Exact same features as BASKET_TEMPLATE
   </div>
   <div id="PRICE_TOTAL_BASKET_PAYMENT_TEMPLATE7" style="white-space:nowrap;">
      ###GW1B### <b>EUR ###PRICE_TOTAL_TAX###</b>
-     <br />
+	<br />(###VAT### ###P_CURRENCY### ###PRICE_TOTAL_ONLY_TAX###)
+    <br />
      (exkl. MwSt.: EUR ###PRICE_TOTAL_NO_TAX###)<br />###GW1E###
   </div>
   <div id="SUBMIT_BASKET_PAYMENT_TEMPLATE7">
@@ -1090,7 +1090,7 @@ Exact same features as BASKET_TEMPLATE
   <form method="post" action="###FORM_URL###" name="###FORM_NAME###" id="paymentForm">
   <input type="submit" name="products_update" value="zur&uuml;ck zum Warenkorb">
   <input type="hidden" name="products_cmd" value="cardno" />
-  <input type="submit" name="products_finalize" value="Bestellung abschlie&szlig;en!" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### <!--(auch PayPal)-->###GW1E###
+  <input type="submit" name="products_finalize" value="Zahlungspflichtig bestellen" onclick="document.forms[0].action='###FORM_URL_THANKS###'; document.forms[0].target='###FORM_URL_TARGET###';">###GW1B### <!--(auch PayPal)-->###GW1E###
  </div>
 </div>
 ###HIDDENFIELDS###
@@ -1707,9 +1707,14 @@ http://###DOMAIN###/index.php?id=###PID_TRACKING###&amp;tracking=###ORDER_TRACKI
 
 Ihre Bestellung:
 1) ARTIKEL:
-
+<!-- ###ITEM_CATEGORY_AND_ITEMS### -->
+<!-- ###ITEM_LIST### begin -->
+<!-- ###ITEM_SINGLE### begin-->
 ###PRODUCT_TITLE### ###PRODUCT_IMAGE###
 Anzahl: ###FIELD_QTY### Price: ###PRICE_TAX### (Steuer: ###PRICE_ONLY_TAX###)
+<!-- ###ITEM_SINGLE### end -->
+<!-- ###ITEM_LIST### end -->
+<!-- ###ITEM_CATEGORY_AND_ITEMS### end -->
 
 2) ZAHLUNGSADRESSE:
 ###PERSON_SALUTATION###

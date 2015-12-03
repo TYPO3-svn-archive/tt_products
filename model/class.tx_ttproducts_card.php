@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -43,12 +43,12 @@
 class tx_ttproducts_card extends tx_ttproducts_table_base {
 	var $ccArray;	// credit card data
 	var $allowedArray = array(); // allowed uids of credit cards
-	var $fieldArray = array('cc_type', 'cc_number_1','cc_number_2','cc_number_3', 'cc_number_4', 'owner_name', 'cvv2', 'endtime_mm', 'endtime_yy');
+	var $inputFieldArray = array('cc_type', 'cc_number_1','cc_number_2','cc_number_3', 'cc_number_4', 'owner_name', 'cvv2', 'endtime_mm', 'endtime_yy');
 	var $sizeArray = array('cc_type' => 4, 'cc_number_1' => 4,'cc_number_2' => 4,'cc_number_3' => 4, 'cc_number_4' => 4, 'owner_name' => 0, 'cvv2' => 4, 'endtime_mm' => 2, 'endtime_yy'  => 2);
 	var $asteriskArray = array(2 => '**', 4 => '****');
 
-	function init (&$pibase, $functablename) {
-		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+	function init ($pibase, $functablename) {
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$formerBasket = $basketObj->recs;
 		$allowedUids = $basketObj->basketExtra['payment.']['creditcards'];
 
@@ -57,15 +57,15 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 		$this->ccArray = array();
 		$this->ccArray = $formerBasket['creditcard'];
 		if (isset($allowedUids))	{
-			$this->allowedArray = t3lib_div::trimExplode(',',$allowedUids);
+			$this->allowedArray = t3lib_div::trimExplode(',', $allowedUids);
 		}
-		$bNumberRecentlyModified = false;
+		$bNumberRecentlyModified = FALSE;
 
-		foreach ($this->inputFieldArray as $k => $field)	{
+		foreach ($this->inputFieldArray as $k => $field) {
 			$size = $this->sizeArray[$field];
-			if ($size)	{
-				if ($this->ccArray[$field] && strcmp ($this->ccArray[$field], $this->asteriskArray[$size]) != 0)	{
-					$bNumberRecentlyModified = true;
+			if ($size) {
+				if ($this->ccArray[$field] && strcmp ($this->ccArray[$field], $this->asteriskArray[$size]) != 0) {
+					$bNumberRecentlyModified = TRUE;
 				}
 			}
 		}
@@ -73,7 +73,7 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 		if ($bNumberRecentlyModified)	{
 			global $TSFE;
 
-			$ccArray = $TSFE->fe_user->getKey('ses','cc');
+			$ccArray = $TSFE->fe_user->getKey('ses', 'cc');
 			if (!$ccArray)	{
 				$ccArray = array();
 			}
@@ -85,7 +85,7 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 
 			if ($this->ccArray)	{
 				$newId = $this->create ($ccArray['cc_uid'], $this->ccArray);
-				
+
 				if ($newId)	{
 					$ccArray['cc_uid'] = $newId;
 					$TSFE->fe_user->setKey('ses','cc',$ccArray);
@@ -154,13 +154,13 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 
 			if ($uid)	{
 				$where_clause = 'uid='.$uid;
-				$res = $TYPO3_DB->exec_SELECTquery('*',$tablename,$where_clause);
+				$res = $TYPO3_DB->exec_SELECTquery('*', $tablename, $where_clause);
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
 				$TYPO3_DB->sql_free_result($res);
 				for ($i = 1; $i <= 4; ++$i)	{
 					$tmpOldPart = substr($row['cc_number'],($i-1) * 4, 4);
-					if (strcmp($ccArray['cc_number_'.$i],$this->asteriskArray[$this->sizeArray['cc_number_'.$i]]) == 0)	{
-						$ccArray['cc_number_'.$i] = $tmpOldPart; 
+					if (strcmp($ccArray['cc_number_' . $i], $this->asteriskArray[$this->sizeArray['cc_number_' . $i]]) == 0)	{
+						$ccArray['cc_number_' . $i] = $tmpOldPart;
 					}
 				}
 				$fieldArray = array('cc_type', 'owner_name', 'cvv2');
@@ -168,15 +168,15 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 				foreach ($fieldArray as $k => $field)	{
 					if (strcmp($ccArray[$field], $this->asteriskArray[$this->sizeArray[$field]]) == 0)	{
 						unset($newFields[$field]); // prevent from change into asterisks
-					}	
+					}
 				}
 				$newFields['cc_number'] = $ccArray['cc_number_1'].$ccArray['cc_number_2'].$ccArray['cc_number_3'].$ccArray['cc_number_4'];
 				$oldEndtime = getdate($row['endtime']);
 				if (strcmp($ccArray['endtime_mm'], $this->asteriskArray[$this->sizeArray['endtime_mm']]) == 0)	{
-					$ccArray['endtime_mm'] = $oldEndtime['mon']; 
+					$ccArray['endtime_mm'] = $oldEndtime['mon'];
 				}
 				if (strcmp($ccArray['endtime_yy'], $this->asteriskArray[$this->sizeArray['endtime_yy']]) == 0)	{
-					$ccArray['endtime_yy'] = $oldEndtime['year']; 
+					$ccArray['endtime_yy'] = $oldEndtime['year'];
 				}
 
 				$timeArray =
@@ -210,7 +210,7 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 	}
 
 
-	function get ($uid, $bFieldArrayAll=false) {
+	function get ($uid, $bFieldArrayAll=FALSE) {
 		global $TYPO3_DB;
 		$rcArray = array();
 		if ($bFieldArrayAll)	{
@@ -224,7 +224,7 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 
 			$fields = '*';
 			if ($bFieldArrayAll)	{
-				$fields = implode(',',$this->inputFieldArray);
+				$fields = implode(',', $this->inputFieldArray);
 			}
 			$tablename = $this->getTablename();
 			$res = $TYPO3_DB->exec_SELECTquery($fields, $tablename, $where);
@@ -238,97 +238,6 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 	}
 
 
-	/**
-	 * Template marker substitution
-	 * Fills in the markerArray with data for a product
-	 *
-	 * @param	array		reference to an item array with all the data of the item
-	 * @param	string		title of the category
-	 * @param	integer		number of images to be shown
-	 * @param	object		the image cObj to be used
-	 * @param	array		information about the parent HTML form
-	 * @return	array
-	 * @access private
-	 */
-// 	function getItemMarkerArray (&$markerArray)	{
-// 		global $TCA, $TSFE;
-// 
-// 		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-// 
-// 		$ccNumberArray = array();
-// 		$ccTypeTextSelected = '';
-// 		$tablename = $this->getTablename();
-// 
-// 		if (count($this->allowedArray))	{
-// 			$ccTypeText =
-// 				tx_ttproducts_form_div::createSelect (
-// 					$this->pibase,
-// 					$TCA[$tablename]['columns']['cc_type']['config']['items'],
-// 					'recs[creditcard][cc_type]',
-// 					$this->ccArray['cc_type'],
-// 					true,
-// 					true,
-// 					$this->allowedArray
-// 				);
-// 			for ($i = 1; $i <= 4; ++$i)	{
-// 				$ccNumberArray[$i - 1] = $this->ccArray['cc_number_'.$i]; 
-// 			}
-// 			$ccOwnerName = $this->ccArray['owner_name'];
-// 		} else {
-// 			$ccTypeText = '';
-// 			$ccNumber = '';
-// 			$ccOwnerName = '';
-// 		}
-// 
-// 		$markerArray['###PERSON_CARDS_OWNER_NAME###'] = htmlentities($ccOwnerName,ENT_QUOTES,$TSFE->renderCharset);
-// 		$markerArray['###PERSON_CARDS_CC_TYPE###'] = $ccTypeText;
-// 		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $this->ccArray['cc_type'];
-// 		if (isset($this->ccArray['cc_type']))	{
-// 			$tmp = $TCA[$tablename]['columns']['cc_type']['config']['items'][$this->ccArray['cc_type']]['0'];
-// 			$tmp = tx_div2007_alpha::sL_fh001($tmp);
-// 			$ccTypeTextSelected = tx_div2007_alpha::getLL($this->pibase,$tmp);
-// 		}
-// 
-// 		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $ccTypeTextSelected;
-// 		for ($i = 1; $i <= 4; ++$i)	{
-// 			$markerArray['###PERSON_CARDS_CC_NUMBER_'.$i.'###'] = $ccNumberArray[$i - 1];
-// 		}
-// 		$markerArray['###PERSON_CARDS_CVV2###'] = $this->ccArray['cvv2'];
-// 		$markerArray['###PERSON_CARDS_ENDTIME_MM###'] = $this->ccArray['endtime_mm'];
-// 		$markerArray['###PERSON_CARDS_ENDTIME_YY###'] = $this->ccArray['endtime_yy'];
-// 		$markerArray['###PERSON_CARDS_ENDTIME_YY_SELECT###'] = '';
-// 		$markerArray['###PERSON_CARDS_ENDTIME_MM_SELECT###'] = '';
-// 
-// 		if (is_array($this->conf['payment.']['creditcardSelect.']))	{
-// 			$mmArray = $this->conf['payment.']['creditcardSelect.']['mm.'];
-// 			if (is_array($mmArray))	{
-// 				$valueArray = tx_ttproducts_form_div::fetchValueArray($mmArray['valueArray.']);
-// 				$markerArray['###PERSON_CARDS_ENDTIME_MM_SELECT###'] = 
-// 					tx_ttproducts_form_div::createSelect (
-// 						$this->pibase,
-// 						$valueArray,
-// 						'recs[creditcard][endtime_mm]',
-// 						$this->ccArray['endtime_mm'],
-// 						true,
-// 						true
-// 					);
-// 			}
-// 			$yyArray = $this->conf['payment.']['creditcardSelect.']['yy.'];
-// 			if (is_array($yyArray))	{
-// 				$valueArray = tx_ttproducts_form_div::fetchValueArray($yyArray['valueArray.']);
-// 				$markerArray['###PERSON_CARDS_ENDTIME_YY_SELECT###'] = 
-// 					tx_ttproducts_form_div::createSelect (
-// 						$this->pibase,
-// 						$valueArray,
-// 						'recs[creditcard][endtime_yy]',
-// 						$this->ccArray['endtime_yy'],
-// 						true,
-// 						true
-// 					);
-// 			}
-// 		}
-// 	} // getMarkerArray
-
 
 	/**
 	 * Checks if required fields for credit cards and bank accounts are filled in
@@ -338,7 +247,15 @@ class tx_ttproducts_card extends tx_ttproducts_table_base {
 
 		foreach ($this->inputFieldArray as $k => $field)	{
 			$testVal = $this->ccArray[$field];
-			if (!t3lib_div::testInt($testVal) && !$testVal)	{
+
+			if ($field == 'cc_type' && !count($this->allowedArray)) {
+				continue;
+			}
+
+			if (
+				!tx_div2007_core::testInt($testVal) &&
+				!$testVal
+			) {
 				$rc = $field;
 				break;
 			}

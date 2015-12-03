@@ -54,11 +54,11 @@ class tx_ttproducts_country_view extends tx_ttproducts_table_base_view {
 	function getRowMarkerArray (&$row, &$markerArray, &$fieldsArray)	{
 		global $TSFE;
 
-		$markerTable = implode('',t3lib_div::trimExplode('_',$this->getModelObj()->getFuncTablename()));
+		$markerTable = implode('', t3lib_div::trimExplode('_' , $this->getModelObj()->getFuncTablename()));
 
 		foreach ($fieldsArray as $k => $field)	{
-			$markerKey = strtoupper($markerTable.'_'.$field);
-			$markerArray['###'.$markerKey.'###'] = htmlentities($row [$field],ENT_QUOTES,$TSFE->renderCharset);
+			$markerKey = strtoupper($markerTable . '_' . $field);
+			$markerArray['###'.$markerKey.'###'] = htmlentities($row[$field], ENT_QUOTES, $TSFE->renderCharset);
 		}
 	}
 }

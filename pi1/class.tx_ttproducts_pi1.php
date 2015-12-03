@@ -37,8 +37,6 @@
  * @author	Renè Fritz <r.fritz@colorcube.de>
  * @author	Franz Holzinger <franz@ttproducts.de>
  * @author	Klaus Zierer <zierer@pz-systeme.de>
- * @author	Milosz Klosowicz <typo3@miklobit.com>
- * @author	Els Verberne <verberne@bendoo.nl>
  * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
@@ -47,10 +45,11 @@
  *
  */
 
-require_once (PATH_BE_div2007.'class.tx_div2007_alpha.php');
+// require_once (PATH_BE_div2007.'class.tx_div2007_alpha.php');
+// require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
 //
-require_once (PATH_BE_ttproducts.'pi1/class.tx_ttproducts_pi1_base.php');
-
+// require_once (PATH_BE_ttproducts.'pi1/class.tx_ttproducts_pi1_base.php');
+//
 
 class tx_ttproducts_pi1 {
 	/**
@@ -65,14 +64,14 @@ class tx_ttproducts_pi1 {
 	 */
 	public function main ($content,$conf)	{
 
-		$pibaseObj = &t3lib_div::getUserObj('&tx_ttproducts_pi1_base');
-		$pibaseObj->cObj = &$this->cObj;
+		$pibaseObj = t3lib_div::getUserObj('&tx_ttproducts_pi1_base');
+		$pibaseObj->cObj = $this->cObj;
 
 		if ($conf['templateFile'] != '')	{
-			$content = $pibaseObj->main($content,$conf);
+			$content = $pibaseObj->main($content, $conf);
 		} else {
-			tx_div2007_alpha::loadLL_fh001($pibaseObj,'EXT:'.TT_PRODUCTS_EXTkey . '/pi1/locallang.xml');
-			$content = tx_div2007_alpha::getLL($pibaseObj,'no_template') . ' plugin.tt_products.templateFile';
+			tx_div2007_alpha5::loadLL_fh002($pibaseObj, 'EXT:' . TT_PRODUCTS_EXT . '/pi1/locallang.xml');
+			$content = tx_div2007_alpha5::getLL_fh002($pibaseObj, 'no_template') . ' plugin.tt_products.templateFile';
 		}
 
 		return $content;

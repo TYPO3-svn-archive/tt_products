@@ -41,7 +41,7 @@
 
 class tx_ttproducts_field_datetime_view extends tx_ttproducts_field_base_view {
 
-	function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
+	function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
 
 		$stdWrap = 'date_stdWrap.';
 		if ($fieldname == 'usebydate' && $functablename == 'tt_products')	{

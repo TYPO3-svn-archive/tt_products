@@ -39,26 +39,26 @@
  *
  */
 
-require_once(PATH_BE_pool.'hooks/class.tx_pool_hooks_base.php');
-require_once (PATH_BE_ttproducts.'pi1/class.tx_ttproducts_pi1_base.php');
+// require_once(PATH_BE_pool.'hooks/class.tx_pool_hooks_base.php');
+// require_once (PATH_BE_ttproducts.'pi1/class.tx_ttproducts_pi1_base.php');
 
 
 class tx_ttproducts_hooks_pool extends tx_pool_hooks_base {
-	public $extKey=TT_PRODUCTS_EXTkey;
+	public $extKey=TT_PRODUCTS_EXT;
 	public $prefixId = 'tx_ttproducts_hooks_pool';	// Same as class name
 	public $LLFileArray = array ('hooks/locallang_pool.xml', 'EXT:lang/locallang_mod_web_list.xml');
 	public $modMenu = array('function' => array('search'));
 	public $headerText = 'header_search';
 
-	public function getViewData(&$content, &$header, &$docHeaderButtons, &$markerArray, &$pOb)	{
+	public function getViewData(&$content, &$header, &$docHeaderButtons, &$markerArray, $pObj)	{
 		$content = '<b>Suche &uuml;ber tt_products</b><br/>';
 		if (t3lib_extMgm::isLoaded('searchbox')) {
 
 			include_once(t3lib_extMgm::extPath('searchbox').'view/class.tx_searchbox_view.php');
-			$searchBoxObj = &t3lib_div::getUserObj('tx_searchbox_view');
+			$searchBoxObj = t3lib_div::getUserObj('tx_searchbox_view');
 
 			$content .= $searchBoxObj->getContent(
-				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['templateFile'],
+				$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['templateFile'],
 				'ITEM_SEARCH',
 				$this->prefixId,
 				$this->vars,
@@ -68,7 +68,7 @@ class tx_ttproducts_hooks_pool extends tx_pool_hooks_base {
 		}
 		if (t3lib_extMgm::isLoaded('db_list')) {
 			include_once(t3lib_extMgm::extPath('db_list').'class.tx_dblist_script.php');
-			$dbListObj = &t3lib_div::getUserObj('tx_dblist_script');
+			$dbListObj = t3lib_div::getUserObj('tx_dblist_script');
 			$dbListObj->init($this->vars,$dbListConf);
 
 			$dbListObj->clearCache();

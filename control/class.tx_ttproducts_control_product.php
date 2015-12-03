@@ -39,14 +39,14 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_control.php');
+// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_control.php');
 
 
 class tx_ttproducts_control_product {
 
 	/**
 	 */
-	function &getPresetVariantArray (
+	static public function &getPresetVariantArray (
 		$uid
 	)	{
 		$basketVar = tx_ttproducts_model_control::getBasketVar();
@@ -63,7 +63,7 @@ class tx_ttproducts_control_product {
 	} // getPresetVariantArray
 
 
-	function getActiveArticleNo ()	{
+	static public function getActiveArticleNo ()	{
 		$piVars = tx_ttproducts_model_control::getPiVars();
 		$piVar = tx_ttproducts_model_control::getPiVar('tt_products_articles');
 		$rc = FALSE;
@@ -74,10 +74,6 @@ class tx_ttproducts_control_product {
 	}
 }
 
-
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_control_product.php'])	{
-	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/control/class.tx_ttproducts_control_product.php']);
-}
 
 
 ?>

@@ -45,7 +45,7 @@ class ext_update  {
 		$content.= '<br /><b>Create a backup of your TYPO3 database before you execute this script!</b>';
 
 		if(t3lib_div::_GP('integrate')) {
-			require_once(t3lib_extMgm::extPath(TT_PRODUCTS_EXTkey).'lib/class.tx_ttproducts_integrate.php');
+// 			require_once(t3lib_extMgm::extPath(TT_PRODUCTS_EXT).'lib/class.tx_ttproducts_integrate.php');
 			$count = tx_ttproducts_integrate::generateArticleMM();
 
 			$content .= '<p>You have integrated '.$count.' articles into the table tt_products_products_mm_articles</p>';
@@ -66,10 +66,10 @@ class ext_update  {
 	/**
 	 * access is always allowed
 	 *
-	 * @return	boolean		Always returns true
+	 * @return	boolean		Always returns TRUE
 	 */
 	function access() {
-		return true;
+		return TRUE;
 	}
 
 }

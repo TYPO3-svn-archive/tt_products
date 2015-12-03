@@ -39,9 +39,9 @@
  *
  */
 
-
+/*
 require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');
+require_once(PATH_BE_ttproducts.'model/class.tx_ttproducts_category_base.php');*/
 
 
 class tx_ttproducts_category extends tx_ttproducts_category_base {
@@ -52,34 +52,38 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	/**
 	 * initialization with table object and language table
 	 */
-	function init (&$cObj, $functablename)	{
+	function init ($cObj, $functablename)	{
 		global $TYPO3_DB;
 
 		$tablename = ($tablename ? $tablename : $functablename);
 		parent::init($pibase, $functablename);
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->tableconf = $cnf->getTableConf($functablename);
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
 		$tablename = $this->getTablename();
 		$tableObj->setTCAFieldArray($tablename);
 
 		if (t3lib_extMgm::isLoaded('mbi_products_categories')) {
 
-			$tableDesc = $cnf->getTableDesc($functablename);
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-			$functablenameArray = t3lib_div::trimExplode(',',$tableDesc['leafFuncTables']);
-			$prodfunctablename = $functablenameArray[0];
-			if (!$prodfunctablename)	{
-				$prodfunctablename = 'tt_products';
+			$extensionInfo = tx_div2007_alpha5::getExtensionInfo_fh003('mbi_products_categories');
+			if (version_compare($extensionInfo['version'], '0.5.0', '>=')) {
+
+				$tableDesc = $cnf->getTableDesc($functablename);
+				$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+				$functablenameArray = t3lib_div::trimExplode(',',$tableDesc['leafFuncTables']);
+				$prodfunctablename = $functablenameArray[0];
+				if (!$prodfunctablename)	{
+					$prodfunctablename = 'tt_products';
+				}
+				$prodOb = $tablesObj->get($prodfunctablename, FALSE);
+				$prodTableDesc = $cnf->getTableDesc($prodfunctablename);
+				$prodtablename = $prodOb->getTablename();
+				$categoryField = ($prodTableDesc['category'] ? $prodTableDesc['category'] : 'category');
+				$rcArray = tx_div2007_alpha5::getForeignTableInfo_fh003($prodtablename, $categoryField);
+				$this->setMMTablename($rcArray['mmtable']);
 			}
-			$prodOb = &$tablesObj->get($prodfunctablename, FALSE);
-			$prodTableDesc = $cnf->getTableDesc($prodfunctablename);
-			$prodtablename = $prodOb->getTablename();
-			$categoryField = ($prodTableDesc['category'] ? $prodTableDesc['category'] : 'category');
-			$rcArray = tx_div2007_alpha::getForeignTableInfo_fh002($prodtablename,$categoryField);
-			$this->setMMTablename($rcArray['mmtable']);
 
 /*			if ($functablename == 'tt_products_cat')	{
 				$this->mm_table = 'tx_mbiproductscategories_mm';
@@ -118,64 +122,6 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		}
 	} // init
 
-	/**
-	 * Getting all tt_products_cat categories into internal array
-	 */
-// 	function get($uid=0,$pid=0,$bStore=TRUE,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
-// 		global $TYPO3_DB;
-//
-// 		$tableObj = &$this->getTableObj();
-//
-// 		if (is_array($this->dataArray[$uid]))	{
-// 			if (($pid && $this->dataArray[$uid]['pid'] == $pid) || ($pid == 0))	{
-// 				$rc = $this->dataArray[$uid];
-// 			} else {
-// 				$rc = array();
-// 			}
-// 		}
-//
-// 		if (!$rc) {
-// 			$where = '1=1 '.$tableObj->enableFields();
-// 			$where .= ($uid ? ' AND uid='.intval($uid) : '');
-// 			$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
-// 			$orderBy = $this->tableconf['orderBy'];
-// 			$res = $tableObj->exec_SELECTquery('*',$where,'',$TYPO3_DB->stripOrderBy($orderBy));
-//
-// 			if ($uid)	{
-// 				$row = $TYPO3_DB->sql_fetch_assoc($res);
-// 				if (is_array($tableObj->langArray) && $tableObj->langArray[$row['title']])	{
-// 					$row['title'] = $tableObj->langArray[$row['title']];
-// 				}
-// 				$rc =  $row;
-// 				if ($bStore && $row)	{
-// 					$this->dataArray[$uid] = $rc;
-// 				}
-// 			} else {
-// 				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-// 					if (is_array($tableObj->langArray) && $tableObj->langArray[$row['title']])	{
-// 						$row['title'] = $tableObj->langArray[$row['title']];
-// 					}
-// 					if ($row)	{
-// 						$rc[$row['uid']] = $row;
-// 						if($bStore)	{
-// 							$this->dataArray[$row['uid']] = $row;
-// 						}
-// 					} else {
-// 						break;
-// 					}
-// 				}
-// 			}
-//
-// 			$TYPO3_DB->sql_free_result($res);
-// 		}
-// 		if (!$rc) {
-// 			$rc = array();
-// 		}
-//
-// 		return $rc;
-// 	}
-
-
 	function getRootCat ()	{
 		$functablename = $this->getFuncTablename ();
 		if ($functablename == 'tt_products_cat')	{
@@ -183,42 +129,68 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		} else if ($functablename == 'tx_dam_cat')	{
 			$rc = $this->conf['rootDAMCategoryID'];
 		}
+		if ($rc == '') {
+			$rc = '0';
+		}
+
 		return $rc;
+	}
+
+	public function getAllChildCats ($pid, $orderBy, $category = 0) {
+		$rowArray = array();
+		if ($this->parentField != '') {
+			$where = $this->parentField . '=' . intval($category);
+			$rowArray = $this->get('', $pid, FALSE, $where, '', $orderBy, '', 'uid');
+		}
+
+		$resultArray = array();
+		$result = '';
+		if (isset($rowArray) && is_array($rowArray)) {
+			foreach($rowArray as $row) {
+				$resultArray[] = $row['uid'];
+			}
+			$result = implode (',', $resultArray);
+		}
+
+		return $result;
 	}
 
 	function getRootline ($rootArray, $uid, $pid)	{
 		global $TYPO3_DB;
 
-		$bRootfound = false;
+		$bRootfound = FALSE;
 		$rc = array();
 		if ($uid)	{
-			$tableObj = &$this->getTableObj();
-			$rc = $rowArray = $this->get($uid.' ', $pid, false);
+			$tableObj = $this->getTableObj();
+			$rc = $rowArray = $this->get($uid.' ', $pid, FALSE);
 			$orderBy = $this->tableconf['orderBy'];
 			$uidArray = t3lib_div::trimExplode (',', $uid);
+
 			foreach ($uidArray as $actUid)	{
+
 				if (!in_array($actUid,$rootArray))	{
 					$iCount = 0;
 					$row = $rowArray[$actUid];
-					while (($parent = $row[$this->parentField]) && ($iCount < 100))	{
+
+					while (is_array($row) && ($parent = $row[$this->parentField]) && ($iCount < 100))	{
 						$where = 'uid ='.$parent;
 						$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
 						$where .= $tableObj->enableFields();
-
-						$res = $tableObj->exec_SELECTquery('*',$where,'',$TYPO3_DB->stripOrderBy($orderBy));
+						$res = $tableObj->exec_SELECTquery('*', $where, '', $TYPO3_DB->stripOrderBy($orderBy));
 						$row = $TYPO3_DB->sql_fetch_assoc($res);
+
 						$TYPO3_DB->sql_free_result($res);
 						if ($row)	{
-							$rc [$parent] = $row;
+							$rc[$parent] = $row;
 						}
-						if (in_array($parent,$rootArray))	{
-							$bRootfound = true;
+						if (in_array($parent, $rootArray))	{
+							$bRootfound = TRUE;
 							break;
 						}
 						$iCount++;
 					}
 				} else {
-					$bRootfound = true;
+					$bRootfound = TRUE;
 				}
 			}
 		}
@@ -228,13 +200,12 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		return $rc;
 	}
 
-	function &getRelated ($rootUids,$currentCat,$pid=0, $orderBy='') {
+	function &getRelated ($rootUids, $currentCat, $pid = 0, $orderBy = '') {
 		global $TYPO3_DB;
 
 		$relatedArray = array();
 		$uidArray = $rootArray = t3lib_div::trimExplode(',', $rootUids);
-
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$rootLine = $this->getRootline($uidArray, $currentCat, $pid);
 
 		foreach ($rootLine as $k => $row)	{
@@ -244,28 +215,32 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		}
 
 		foreach ($uidArray as $uid)	{
-			$row = $this->get($uid, $pid, in_array($uid, $rootArray),'','',$orderBy);
 
-			$relatedArray[$uid] = $row;
-			if (isset($rootLine[$uid]) || $uid==0)	{
-				if ($this->parentField)	{
-					$where = $this->parentField.'='.intval($uid);
-				} else {
-					$where = '1=1';
-				}
-				$where .= ($pid ? ' AND pid IN ('.$pid.')' : '');
-				$where .= $tableObj->enableFields();
+			if (
+				tx_div2007_core::testInt($uid)
+			) {
+				$row = $this->get($uid, $pid, in_array($uid, $rootArray), '', '', $orderBy);
+				$relatedArray[$uid] = $row;
 
-				$res = $tableObj->exec_SELECTquery('*',$where,'',$TYPO3_DB->stripOrderBy($orderBy));
-				while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-
-					if (is_array($tableObj->langArray) && $tableObj->langArray[$row['title']])	{
-						$row['title'] = $tableObj->langArray[$row['title']];
+				if (isset($rootLine[$uid]) || $uid == 0)	{
+					if ($this->parentField)	{
+						$where = $this->parentField . '=' . intval($uid);
+					} else {
+						$where = '1=1';
 					}
-					$rc = $this->dataArray[$row['uid']] = $row;
-					$relatedArray[$row['uid']] = $row;
+					$where .= ($pid ? ' AND pid IN (' . $pid . ')' : '');
+					$where .= $tableObj->enableFields();
+
+					$res = $tableObj->exec_SELECTquery('*', $where, '', $TYPO3_DB->stripOrderBy($orderBy));
+					while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+						if (is_array($tableObj->langArray) && $tableObj->langArray[$row['title']])	{
+							$row['title'] = $tableObj->langArray[$row['title']];
+						}
+						$rc = $this->dataArray[$row['uid']] = $row;
+						$relatedArray[$row['uid']] = $row;
+					}
+					$TYPO3_DB->sql_free_result($res);
 				}
-				$TYPO3_DB->sql_free_result($res);
 			}
 		}
 		foreach ($rootLine as $k => $row)	{
@@ -277,11 +252,11 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 	function getRowFromTitle ($title)	{
 		$rc = $this->titleArray[$title];
 		if (is_array($rc))	{
-			$tableObj = &$this->getTableObj();
+			$tableObj = $this->getTableObj();
 
-			$where = '1=1 '.$tableObj->enableFields();
-			$where .= ' AND title='.$TYPO3_DB->fullQuoteStr($title,$tableObj->name);
-			$res = $tableObj->exec_SELECTquery('*',$where);
+			$where = '1=1 ' . $tableObj->enableFields();
+			$where .= ' AND title=' . $TYPO3_DB->fullQuoteStr($title, $tableObj->name);
+			$res = $tableObj->exec_SELECTquery('*', $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$TYPO3_DB->sql_free_result($res);
 			$rc = $this->titleArray[$title] = $row;
@@ -289,7 +264,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		return $rc;
 	}
 
-	function getParent ($uid=0) {
+	function getParent ($uid = 0) {
 		$result = FALSE;
 
 		$row = $this->get($uid);
@@ -324,12 +299,23 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 			$tableConf = $this->getTableConf ($theCode);
 			$catArray = t3lib_div::intExplode(',', $cat);
 
-			if (is_array($tableConf['special.']) && t3lib_div::testInt($tableConf['special.']['all']) && in_array($tableConf['special.']['all'], $catArray)) 	{
+			if (
+				is_array($tableConf['special.']) &&
+				(
+					tx_div2007_core::testInt($tableConf['special.']['all']) &&
+					in_array($tableConf['special.']['all'], $catArray) ||
+					$tableConf['special.']['all'] == 'all'
+				)
+			) 	{
 				$cat = '';	// no filter shall be used
-			} else if (is_array($tableConf['special.']) && t3lib_div::testInt($tableConf['special.']['no']) && in_array($tableConf['special.']['no'], $catArray)) {
+			} else if (
+				is_array($tableConf['special.']) &&
+				tx_div2007_core::testInt($tableConf['special.']['no']) &&
+				in_array($tableConf['special.']['no'], $catArray)
+			) {
 				$cat = '0';	// no products shall be shown
 			} else {
-				$cat = implode(',',$catArray);
+				$cat = implode(',', $catArray);
 			}
 		}
 		return $cat;
@@ -367,7 +353,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 		}
 	}
 
-	function &getRelationArray ($excludeCats='',$rootUids='',$allowedCats='') {
+	function &getRelationArray ($excludeCats = '', $rootUids = '', $allowedCats = '') {
 		$relationArray = array();
 		$rootArray = t3lib_div::trimExplode(',', $rootUids);
 		$catArray = t3lib_div::trimExplode(',', $allowedCats);
@@ -411,7 +397,7 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 
 				$relationArray [$uid]['parent_category'] = $parent;
 				$parentId = $row[$this->parentField];
-				if ($parentId && isset($this->dataArray[$parentId]) && !in_array($uid, $rootArray) && !in_array($parentId,$excludeArray))	{
+				if ($parentId && isset($this->dataArray[$parentId]) && !in_array($uid, $rootArray) && !in_array($parentId, $excludeArray))	{
 					if (!isset($relationArray[$parentId]['child_category']))	{
 						$relationArray[$parentId]['child_category'] = array();
 					}
@@ -431,17 +417,19 @@ class tx_ttproducts_category extends tx_ttproducts_category_base {
 
 	// returns the delivery email addresses from the basket`s item array with the category number as index
 	function getEmail (&$itemArray) {
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$emailArray = array();
-		$emailObj = &$tablesObj->get('tt_products_emails');
+		$emailObj = $tablesObj->get('tt_products_emails');
 
 		// loop over all items in the basket indexed by page and a sorting text
 		foreach ($itemArray as $sort=>$actItemArray) {
 			foreach ($actItemArray as $k1=>$actItem) {
-				$category = $this->get($actItem['rec']['category']);
-				$tmp = $emailObj->getEmail($category['email_uid']);
-				if ($tmp) {
-					$emailArray[$actItem['rec']['category']] = $tmp['name'].' <'.$tmp['email'].'>';
+				if ($actItem['rec']['category']) {
+					$category = $this->get($actItem['rec']['category']);
+					$tmp = $emailObj->getEmail($category['email_uid']);
+					if ($tmp) {
+						$emailArray[$actItem['rec']['category']] = array($tmp['email'] => $tmp['name']);
+					}
 				}
 			}
 		}

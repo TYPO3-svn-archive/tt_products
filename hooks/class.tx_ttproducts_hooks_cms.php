@@ -32,17 +32,17 @@
  * $Id$
  *
  * @author	Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com> 
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-require_once(PATH_BE_div2007.'hooks/class.tx_div2007_hooks_cms.php');
+// require_once(PATH_BE_div2007.'hooks/class.tx_div2007_hooks_cms.php');
 
 class tx_ttproducts_hooks_cms extends tx_div2007_hooks_cms {
-	public $extKey=TT_PRODUCTS_EXTkey;
+	public $extKey=TT_PRODUCTS_EXT;
 
 }
 

@@ -39,11 +39,6 @@
  *
  */
 
-
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
-require_once(PATH_BE_div2007.'class.tx_div2007_ff.php');
-
-
 class tx_ttproducts_product extends tx_ttproducts_article_base {
 	public $relatedArray = array(); // array of related products
 	public $marker = 'PRODUCT';
@@ -55,11 +50,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	public function init (&$cObj, $functablename='tt_products')  {
+	public function init ($cObj, $functablename = 'tt_products')  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($cObj, $functablename);
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableConfig = array();
 		$tableConfig['orderBy'] = $cnf->conf['orderBy'];
 
@@ -67,7 +62,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 			 $tableConfig['orderBy'] = $this->getOrderBy();
 		}
 
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$tableObj->setConfig($tableConfig);
 		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
 
@@ -85,19 +80,26 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	} // init
 
 
-	public function fixTableConf (&$tableConf)	{
-		if (t3lib_extMgm::isLoaded('static_info_tables_taxes') && !t3lib_extMgm::isLoaded('patchem'))	{
-			$tableConf['requiredFields'] = str_replace(',tax,', ',tax_id,', $tableConf['requiredFields']);
+	public function fixTableConf (&$tableConf) {
+		if (t3lib_extMgm::isLoaded('static_info_tables_taxes') && !t3lib_extMgm::isLoaded('patchem')) {
+			$eInfo = tx_div2007_alpha5::getExtensionInfo_fh003('static_info_tables_taxes');
+
+			if (is_array($eInfo)) {
+				$sittVersion = $eInfo['version'];
+				if (version_compare($sittVersion, '0.1.0', '>=')) {
+					$tableConf['requiredFields'] = str_replace(',tax,', ',tax_id,', $tableConf['requiredFields']);
+				}
+			}
 		}
 	}
 
 
-	public function &getArticleRows ($uid, $whereArticle='')	{
+	public function &getArticleRows ($uid, $whereArticle = '')	{
 		$rowArray = $this->articleArray[$uid];
 
-		if (!$rowArray && $uid || $whereArticle!='') {
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-			$articleObj = &$tablesObj->get('tt_products_articles');
+		if (!$rowArray && $uid || $whereArticle != '') {
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$articleObj = $tablesObj->get('tt_products_articles');
 			$rowArray = $articleObj->getWhereArray($uid, $whereArticle);
 
 			if (!$whereArticle)	{
@@ -111,15 +113,21 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	public function fillVariantsFromArticles (&$row)	{
 
 		$articleRowArray = $this->getArticleRows($row['uid']);
-
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$articleObj = &$tablesObj->get('tt_products_articles');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$articleObj = $tablesObj->get('tt_products_articles');
 
 		if (count($articleRowArray))	{
 			// $articleObj->sortArticleRowsByUidArray($row['uid'],$articleRowArray);
 			$variantRow = $this->variant->getVariantValuesByArticle($articleRowArray,$row);
-			$row = array_merge($row, $variantRow);
+			$selectableFieldArray = $this->variant->getSelectableFieldArray();
+
+			foreach ($selectableFieldArray as $field)	{
+				if ($row[$field] == '')	{
+					$row[$field] = $variantRow[$field];
+				}
+			}
 		}
+	}
 
 /*
 		$fieldArray = $this->variant->getFieldArray();
@@ -136,14 +144,14 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				$row[$field] = implode(';', $valueArray);
 			}
 		}*/
-	}
+// 	}
 
 
 	public function &getArticleRowsFromVariant ($row, $theCode, $variant) {
 
 		$articleRowArray = $this->getArticleRows(intval($row['uid']));
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$articleObj = &$tablesObj->get('tt_products_articles');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$articleObj = $tablesObj->get('tt_products_articles');
 	//	$articleRowArray = $articleObj->sortArticleRowsByUidArray($row['uid'],$articleRowArray);
 		$rc = $this->variant->filterArticleRowsByVariant($articleRowArray, $variant, TRUE);
 		return $rc;
@@ -181,8 +189,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 			if ($articleCount > 1)	{
 				// many articles fit here. So lets generated a merged article.
-				$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-				$articleObj = &$tablesObj->get('tt_products_articles');
+				$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+				$articleObj = $tablesObj->get('tt_products_articles');
 				for ($i=1; $i<=$articleCount; ++$i)	{
 
 					$articleObj->mergeAttributeFields($articleRow, $bFitArticleRowArray[$i], FALSE, TRUE, TRUE);
@@ -200,7 +208,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	public function &getArticleRow ($row, $theCode, $bUsePreset=TRUE) {
 		global $TYPO3_DB;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$articleNo = FALSE;
 		if ($bUsePreset)	{
 			$presetVarianArray = tx_ttproducts_control_product::getPresetVariantArray($row['uid']);
@@ -212,13 +220,13 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		}
 
 		if ($articleNo === FALSE)	{
-			$currentRow = $this->variant->getVariantRow($row,$presetVarianArray);
+			$currentRow = $this->variant->getVariantRow($row, $presetVarianArray);
 		} else {
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-			$articleObj = &$tablesObj->get('tt_products_articles');
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$articleObj = $tablesObj->get('tt_products_articles');
 
 			$articleRow = $articleObj->get($articleNo);
-			$variantRow = $this->variant->getVariantValuesByArticle(array($articleRow),$row);
+			$variantRow = $this->variant->getVariantValuesByArticle(array($articleRow), $row);
 			$currentRow = array_merge($row, $variantRow);
 
 			// $articleObj->mergeAttributeFields($currentRow, $articleRow, FALSE, TRUE);
@@ -226,20 +234,20 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 		$fieldArray = $this->variant->getSelectableFieldArray();
 		$whereArray = array();
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$articleObj = &$tablesObj->get('tt_products_articles');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$articleObj = $tablesObj->get('tt_products_articles');
 
 		foreach ($fieldArray as $k => $field)	{
-			$whereClause = $field.'=\''.$currentRow[$field].'\'';
+			$whereClause = $field . '=\'' . $currentRow[$field] . '\'';
 
 			$value = trim($currentRow[$field]);
 			// $value = $TYPO3_DB->fullQuoteStr($value, $articleObj->getTablename());
 			$regexpValue = $TYPO3_DB->quoteStr(quotemeta($value), $articleObj->getTablename());
-			if ($value!='')	{
-				$whereClause = '('.$whereClause;
-				$whereClause .= ' OR '.$field.' LIKE \'%;'.$value.';%\''.
-				' OR '.$field.' REGEXP \'^('.$regexpValue.')[[:blank:]]*[[.semicolon.]]\''.
-				' OR '.$field.' REGEXP \'[[.semicolon.]][[:blank:]]*('.$regexpValue.')[[:blank:]]*$\')';
+			if ($value != '')	{
+				$whereClause = '(' . $whereClause;
+				$whereClause .= ' OR ' . $field . ' LIKE \'%;' . $value . ';%\''.
+				' OR ' . $field . ' REGEXP \'^(' . $regexpValue . ')[[:blank:]]*[[.semicolon.]]\''.
+				' OR ' . $field . ' REGEXP \'[[.semicolon.]][[:blank:]]*(' . $regexpValue . ')[[:blank:]]*$\')';
 				$whereArray[] = $whereClause;
 			} else if ($this->conf['useArticles'] == 1) {
 				$whereArray[] = $whereClause;
@@ -255,7 +263,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$articleRows = $this->getArticleRows(intval($row['uid']), $where);
 
 		if (is_array($articleRows) && count($articleRows))	{
-			$articleRow = $this->getMatchingArticleRows($row, $articleRows);
+
+// vorher:			$articleRow = $this->getMatchingArticleRows($row, $articleRows);
+			$articleRow = $this->getMatchingArticleRows($currentRow, $articleRows);
 			$articleConf = $cnf->getTableConf('tt_products_articles', $theCode);
 
 			if (
@@ -263,11 +273,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 				isset($articleConf['fieldIndex.']) && is_array($articleConf['fieldIndex.']) &&
 				isset($articleConf['fieldIndex.']['image.']) && is_array($articleConf['fieldIndex.']['image.'])
 			)	{
-				$prodImageArray = t3lib_div::trimExplode(',',$row['image']);
-				$artImageArray = t3lib_div::trimExplode(',',$articleRow['image']);
+				$prodImageArray = t3lib_div::trimExplode(',', $row['image']);
+				$artImageArray = t3lib_div::trimExplode(',', $articleRow['image']);
 				$tmpDestArray = $prodImageArray;
 				foreach ($articleConf['fieldIndex.']['image.'] as $kImage => $vImage)	{
-					$tmpDestArray[$vImage-1] = $artImageArray[$kImage-1];
+					$tmpDestArray[$vImage - 1] = $artImageArray[$kImage - 1];
 				}
 				$articleRow['image'] = implode (',', $tmpDestArray);
 			}
@@ -277,16 +287,16 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	public function getRowFromExt ($funcTablename, $row, $useArticles)	{
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$priceRow = $row;
 
 		if (
-			in_array($useArticles, array(1,3)) &&
+			in_array($useArticles, array(1, 3)) &&
 			$funcTablename == 'tt_products' &&
 			isset($row['ext']['tt_products_articles']) &&
 			is_array($row['ext']['tt_products_articles'])
 		) {
-			$articleObj = &$tablesObj->get('tt_products_articles');
+			$articleObj = $tablesObj->get('tt_products_articles');
 			reset($row['ext']['tt_products_articles']);
 
 			$articleInfo = current($row['ext']['tt_products_articles']);
@@ -296,11 +306,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 				if (isset($articleUid))	{
 					$articleRow = $articleObj->get($articleUid);
-					$articleObj->mergeAttributeFields($priceRow, $articleRow, FALSE,TRUE);
+					$articleObj->mergeAttributeFields($priceRow, $articleRow, FALSE, TRUE);
 				}
 
 				if ($articleRow)	{
-					$priceRow['weight'] = ($articleRow['weight'] ? $articleRow['weight'] : $row['weight']);
+					$priceRow['weight'] = (round($articleRow['weight'], 16) ? $articleRow['weight'] : $row['weight']);
 					$priceRow['inStock'] = $articleRow['inStock'];
 				}
 			}
@@ -310,14 +320,14 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	public function getArticleRowFromExt ($row)	{
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 		$rc = FALSE;
 		$extArray = $row['ext'];
 
 		if (isset($extArray) && is_array($extArray) && is_array($extArray['tt_products_articles']) && is_array($extArray['tt_products_articles']['0']))	{
 			$articleUid = $extArray['tt_products_articles']['0']['uid'];
-			$articleTable = &$tablesObj->get('tt_products_articles', FALSE);
+			$articleTable = $tablesObj->get('tt_products_articles', FALSE);
 			$rc = $articleTable->get($articleUid);
 		}
 		return $rc;
@@ -346,21 +356,29 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 					}
 				}
 			} else {
-				if (t3lib_div::testInt($uid))	{
+				if (
+					tx_div2007_core::testInt($uid)
+				) {
 					$rowArray = $this->relatedArray[$type][$uid];
 				}
+
 				if (!is_array($rowArray) && $uid) {
 					$mmTable = array(
 						'accessories' => array('table' =>  'tt_products_accessory_products_products_mm'),
 						'products' => array('table' =>  'tt_products_related_products_products_mm')
 					);
-					if (t3lib_div::testInt($uid))	{
+					if (
+						tx_div2007_core::testInt($uid)
+					) {
 						$where = 'uid_local = '.intval($uid);
 					} else if (is_array($uid))	{
-						$where = 'uid_local IN ('.implode(',',$uid).')';
+						$where = 'uid_local IN (' . implode(',', $uid) . ')';
 					}
 					$rowArray = $TYPO3_DB->exec_SELECTgetRows('*', $mmTable[$type]['table'], $where);
-					if (t3lib_div::testInt($uid))	{
+
+					if (
+						tx_div2007_core::testInt($uid)
+					) {
 						$this->relatedArray[$type][$uid] = $rowArray;
 					}
 				}
@@ -390,8 +408,8 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	public function &reduceInStockItems (&$itemArray, $useArticles)	{
 		global $TYPO3_DB, $TCA;
 		$instockTableArray = array();
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 		$instockField = $cnf->getTableDesc($this->getTableObj()->name, 'inStock');
 		$instockField = ($instockField ? $instockField : 'inStock');
@@ -403,20 +421,20 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 					foreach ($actItemArray as $k1=>$actItem) {
 						$row = $this->getArticleRow($actItem['rec'], $theCode);
 						if ($row)	{
-							$tt_products_articles = &$tablesObj->get('tt_products_articles');
+							$tt_products_articles = $tablesObj->get('tt_products_articles');
 							$tt_products_articles->reduceInStock($row['uid'], $actItem['count']);
-							$instockTableArray['tt_products_articles'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row[$instockField] - $actItem['count']);
+							$instockTableArray['tt_products_articles'][$row['uid'] . ',' . $row['itemnumber'] . ',' . $row['title']] = intval($row[$instockField] - $actItem['count']);
 						}
 					}
 				}
 			}
 			// loop over all items in the basket indexed by a sorting text
-			foreach ($itemArray as $sort=>$actItemArray) {
-				foreach ($actItemArray as $k1=>$actItem) {
+			foreach ($itemArray as $sort => $actItemArray) {
+				foreach ($actItemArray as $k1 => $actItem) {
 					$row = $actItem['rec'];
-					if (!$this->hasAdditional($row,'alwaysInStock')) {
+					if (!$this->hasAdditional($row, 'alwaysInStock')) {
 						$this->reduceInStock($row['uid'], $actItem['count']);
-						$instockTableArray['tt_products'][$row['uid'].','.$row['itemnumber'].','.$row['title']] = intval($row[$instockField] - $actItem['count']);
+						$instockTableArray['tt_products'][$row['uid'] . ',' . $row['itemnumber'] . ',' . $row['title']] = intval($row[$instockField] - $actItem['count']);
 					}
 				}
 			}
@@ -426,11 +444,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 
 
 	/**
-	 * Returns true if the item has the $check value checked
+	 * Returns TRUE if the item has the $check value checked
 	 *
 	 */
 	public function hasAdditional (&$row, $check)  {
-		$hasAdditional = false;
+		$hasAdditional = FALSE;
 		$additional = t3lib_div::xml2array($row['additional']);
 		$hasAdditional = tx_div2007_ff::get($additional, $check);
 
@@ -443,14 +461,14 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$where = '';
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
-				$hookObj=&t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'] as $classRef) {
+				$hookObj=t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addWhereCat')) {
 					$whereNew = $hookObj->addWhereCat($this, $catObject, $cat, $where, $operator, $pid_list, $catObject->getDepth($theCode));
 					if ($bLeadingOperator)	{
 						$operator = ($operator ? $operator : 'OR');
-						$where .= ($whereNew ? ' '.$operator.' '.$whereNew : '');
+						$where .= ($whereNew ? ' ' . $operator . ' ' . $whereNew : '');
 					} else {
 						$where .= $whereNew;
 					}
@@ -471,11 +489,12 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$tableNameArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addConfCatProduct')) {
 					$newTablenames = $hookObj->addConfCatProduct($this, $catObject, $selectConf, $aliasArray);
+
 					if ($newTablenames != '')	{
 						$tableNameArray[] = $newTablenames;
 					}
@@ -490,9 +509,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$tableNameArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addselectConfCat')) {
 					$newTablenames = $hookObj->addselectConfCat($this, $catObject, $cat, $selectConf,$catObject->getDepth());
 					if ($newTablenames != '')	{
@@ -509,16 +528,16 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		$uidArray = array();
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['prodCategory'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['prodCategory'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getPageUidsCat')) {
 					$hookObj->getPageUidsCat($this, $cat, $uidArray);
 				}
 			}
 		}
 		$uidArray = array_unique($uidArray);
-		return (implode(',',$uidArray));
+		return (implode(',', $uidArray));
 	}
 
 
@@ -527,9 +546,9 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 	}
 
 
-	public function getRequiredFields ($theCode='')	{
+	public function getRequiredFields ($theCode = '')	{
 		$tableConf = $this->getTableConf($theCode);
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		if ($tableConf['requiredFields']!='')	{
 			$requiredFields = $tableConf['requiredFields'];
@@ -538,7 +557,7 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		}
 		$instockField = $cnf->getTableDesc($functablename,'inStock');
 		if ($instockField && !$this->conf['alwaysInStock'])	{
-			$requiredFields = $requiredFields.','.$instockField;
+			$requiredFields = $requiredFields . ',' . $instockField;
 		}
 
 		$rc = $requiredFields;

@@ -55,7 +55,7 @@ class tx_ttproducts_control_view {
 		global $TSFE;
 
 		if (isset($tableConfArray) && is_array($tableConfArray))	{
-			$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+			$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 			$allValueArray = array();
 
 			$controlArray = tx_ttproducts_model_control::getControlArray();
@@ -65,11 +65,11 @@ class tx_ttproducts_control_view {
 				if (isset($tableConf['view.']) && is_array($tableConf['view.']))	{
 					foreach ($tableConf['view.'] as $type => $typeConf)	{
 
-						$type = substr($type,0,strpos($type,'.'));
+						$type = substr($type, 0, strpos($type, '.'));
 						if (is_array($typeConf))	{
 							foreach ($typeConf as $numberx => $numberConf)	{
-								$number = substr($numberx,0,strpos($numberx,'.'));
-								$markerkey = strtoupper($type).$number;
+								$number = substr($numberx, 0, strpos($numberx ,'.'));
+								$markerkey = strtoupper($type) . $number;
 								if ($allMarkers[$markerkey] != '')	{
 									$allValueArray[$type.';'.$number] = $numberConf;
 								}
@@ -106,9 +106,9 @@ class tx_ttproducts_control_view {
 							$attributeArray
 						);
 					}
-					$markerkey = strtoupper($keyArray[0].$keyArray[1]);
-					$markerArray['###'.$markerkey.'_LABEL###'] = $xValueArray['label'];
-					$markerArray['###'.$markerkey.'###'] = $out;
+					$markerkey = strtoupper($keyArray[0] . $keyArray[1]);
+					$markerArray['###' . $markerkey . '_LABEL###'] = $xValueArray['label'];
+					$markerArray['###' . $markerkey . '###'] = $out;
 				}
 			}
 		}

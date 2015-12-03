@@ -41,7 +41,7 @@
 
 
 
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
 
 class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
@@ -58,11 +58,11 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	public function init (&$cObj, $functablename)  {
+	public function init ($cObj, $functablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($cObj, $functablename);
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->tableconf = $cnf->getTableConf($functablename);
 		$tablename = $this->getTablename ();
@@ -73,7 +73,7 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 
 		$this->getTableObj()->setTCAFieldArray($tablename);
 		$this->fieldArray['payment'] = ($this->tableconf['payment'] ? $this->tableconf['payment'] : '');
-		$requiredFields = 'uid,pid,email'.($this->fieldArray['payment'] ? ','.$this->fieldArray['payment'] : '');
+		$requiredFields = 'uid,pid,email' . ($this->fieldArray['payment'] ? ',' . $this->fieldArray['payment'] : '');
 		if (is_array($this->tableconf['ALL.']))	{
 			$tmp = $this->tableconf['ALL.']['requiredFields'];
 			$requiredFields = ($tmp ? $tmp : $requiredFields);
@@ -83,13 +83,29 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 	} // init
 
 
+	public function getSelectInfoFields() {
+		$result = array('salutation', 'tt_products_business_partner', 'tt_products_organisation_form');
+
+		return $result;
+	}
+
+
+	public function getTCATableFromField ($field) {
+		$result = 'fe_users';
+		if ($field == 'salutation') {
+			$result = 'sys_products_orders';
+		}
+		return $result;
+	}
+
+
 	public function get ($uid) {
 		global $TYPO3_DB;
 
 		$rc = $this->dataArray[$uid];
 		if (!$rc && $uid) {
 			$where = '1=1 '.$this->getTableObj()->enableFields();
-			$res = $this->getTableObj()->exec_SELECTquery('*',$where.' AND uid = '.intval($uid));
+			$res = $this->getTableObj()->exec_SELECTquery('*', $where . ' AND uid = ' . intval($uid));
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
 			$TYPO3_DB->sql_free_result($res);
 			$rc = $this->dataArray[$row['uid']] = $row;
@@ -112,8 +128,8 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 		$groups = explode(',', $feuser['usergroup']);
 		foreach ($groups as $singlegroup)
 			if ($singlegroup == $group)
-				return true;
-		return false;
+				return TRUE;
+		return FALSE;
 	} // isUserInGroup
 
 
@@ -124,21 +140,13 @@ class tx_ttproducts_orderaddress extends tx_ttproducts_table_base {
 
 		if (isset($this->conf['conf.'][$funcTablename.'.']['ALL.']['fe_users.']['date_of_birth.']['period.']['y']))	{
 			$year = $this->conf['conf.'][$funcTablename.'.']['ALL.']['fe_users.']['date_of_birth.']['period.']['y'];
-			$infoObj = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
+			$infoObj = t3lib_div::getUserObj('&tx_ttproducts_info_view');
 
 			if ($infoObj->infoArray['billing']['date_of_birth'])	{
 				$timeTemp = $infoObj->infoArray['billing']['date_of_birth'];
 				$bAge = TRUE;
 			} else if ($TSFE->fe_user->user)	{
-				if (t3lib_extMgm::isLoaded('sr_feuser_register')) {
-					require_once(PATH_BE_srfeuserregister.'pi1/class.tx_srfeuserregister_pi1_adodb_time.php');
-
-					// prepare for handling dates before 1970
-					$adodbTime = &t3lib_div::getUserObj('&tx_srfeuserregister_pi1_adodb_time');
-					$timeTemp = $adodbTime->adodb_date('d-m-Y', $TSFE->fe_user->user['date_of_birth']);
-				} else {
-					$timeTemp = date('d-m-Y', ($TSFE->fe_user->user['date_of_birth']));
-				}
+				$timeTemp = date('d-m-Y', ($TSFE->fe_user->user['date_of_birth']));
 				$bAge = TRUE;
 			} else {
 				$bAge = FALSE;

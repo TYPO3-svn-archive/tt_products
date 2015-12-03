@@ -42,7 +42,7 @@
 
 class tx_ttproducts_field_instock_view extends tx_ttproducts_field_base_view {
 
-	function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
+	function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
 
 		if ($row[$fieldname])	{
 			$markerArray['###'.$markerKey.'_INSTOCK_UNIT###'] = $this->conf['inStockPieces'];

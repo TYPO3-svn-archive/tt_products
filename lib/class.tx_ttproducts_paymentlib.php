@@ -37,7 +37,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts . 'model/class.tx_ttproducts_language.php');
+// require_once (PATH_BE_ttproducts . 'model/class.tx_ttproducts_language.php');
 
 
 class tx_ttproducts_paymentlib {
@@ -50,15 +50,15 @@ class tx_ttproducts_paymentlib {
 	private $providerObject;
 
 
-	public function init (&$pibase, &$basketView, &$urlObj)	{
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	public function init ($pibase, $basketView, $urlObj)	{
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
-		$this->basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$this->basketView = &$basketView;
-		$this->urlObj = &$urlObj;
+		$this->basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$this->basketView = $basketView;
+		$this->urlObj = $urlObj;
 	}
 
 
@@ -86,22 +86,21 @@ class tx_ttproducts_paymentlib {
 		$providerObject = $this->getProviderObject();
 
 		if (is_object($providerObject))	{
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-
-			$orderObj = &$tablesObj->get('sys_products_orders');
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$orderObj = $tablesObj->get('sys_products_orders');
 			$orderUid = $orderObj->getUid();
 
 			if (!$orderUid)	{
 				$orderUid = $orderObj->getBlankUid();
 			}
 			if (method_exists($providerObject, 'generateReferenceUid'))	{
-				$referenceId = $providerObject->generateReferenceUid($orderUid, TT_PRODUCTS_EXTkey);
+				$referenceId = $providerObject->generateReferenceUid($orderUid, TT_PRODUCTS_EXT);
 			} else if (method_exists($providerObject, 'createUniqueID'))	{
-				$referenceId = $providerObject->createUniqueID($orderUid, TT_PRODUCTS_EXTkey);
+				$referenceId = $providerObject->createUniqueID($orderUid, TT_PRODUCTS_EXT);
 			} else if (method_exists($providerObject, 'getLibObj'))	{
 				$libObj = $providerObject->getLibObj();
 				if (is_object($libObj))	{
-					$referenceId = $libObj->createUniqueID($orderUid, TT_PRODUCTS_EXTkey);
+					$referenceId = $libObj->createUniqueID($orderUid, TT_PRODUCTS_EXT);
 				}
 			}
 		}
@@ -122,7 +121,7 @@ class tx_ttproducts_paymentlib {
 	/**
 	 * Include handle extension library
 	 */
-	public function includeHandleLib ($handleLib, &$confScript, &$bFinalize)	{
+	public function includeHandleLib ($handleLib, &$confScript, &$bFinalize, &$errorMessage)	{
 		global $TSFE;
 
 		$lConf = $confScript;
@@ -132,10 +131,10 @@ class tx_ttproducts_paymentlib {
 			if (t3lib_extMgm::isLoaded($handleLib))	{
 				require_once(t3lib_extMgm::extPath($handleLib) . 'lib/class.tx_' . $handleLib . '_providerfactory.php');
 			}
-			$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+			$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 			$providerFactoryObj = ($handleLib == 'paymentlib' ? tx_paymentlib_providerfactory::getInstance() : tx_paymentlib2_providerfactory::getInstance());
 			$paymentMethod = $confScript['paymentMethod'];
-			$providerProxyObject = &$providerFactoryObj->getProviderObjectByPaymentMethod($paymentMethod);
+			$providerProxyObject = $providerFactoryObj->getProviderObjectByPaymentMethod($paymentMethod);
 			if (is_object($providerProxyObject))	{
 				if (method_exists($providerProxyObject, 'getRealInstance'))	{
 					$providerObject = $providerProxyObject->getRealInstance();
@@ -149,17 +148,27 @@ class tx_ttproducts_paymentlib {
 					($handleLib == 'paymentlib' ? TX_PAYMENTLIB_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER : TX_PAYMENTLIB2_TRANSACTION_ACTION_AUTHORIZEANDTRANSFER),
 					$paymentMethod,
 					$gatewayMode,
-					TT_PRODUCTS_EXTkey,
+					TT_PRODUCTS_EXT,
 					$confScript['conf.']
 				);
 				if (!$ok)	{
-					return 'ERROR: Could not initialize transaction.';
+					$errorMessage = 'ERROR: Could not initialize transaction.';
+					return '';
 				}
 				$this->getPaymentBasket($totalArr, $addrArr, $paymentBasketArray);
 				$referenceId = $this->getReferenceUid();
 				if (!$referenceId)	{
-					$rc = tx_div2007_alpha::getLL($langObj,'error_reference_id');
-					return $rc;
+					$errorMessage = tx_div2007_alpha5::getLL_fh002($langObj, 'error_reference_id');
+					return '';
+				}
+
+				$transactionDetailsArr = $this->getTransactionDetails($referenceId, $handleLib, $confScript, $totalArr, $addrArr, $paymentBasketArray);
+
+					// Set payment details and get the form data:
+				$ok = $providerObject->transaction_setDetails($transactionDetailsArr);
+				if (!$ok) {
+					$errorMessage = tx_div2007_alpha5::getLL_fh002($langObj, 'error_transaction_details');
+					return '';
 				}
 
 					// Get results of a possible earlier submit and display messages:
@@ -168,17 +177,10 @@ class tx_ttproducts_paymentlib {
 				if ($providerObject->transaction_succeded($transactionResultsArr)) {
 					$bFinalize = TRUE;
 				} else if ($providerObject->transaction_failed($transactionResultsArr))	{
-					$content = '<span style="color:red;">'.htmlspecialchars($providerObject->transaction_message($transactionResultsArr)).'</span><br />';
-					$content .= '<br />';
+					$errorMessage = '<span style="color:red;">'.htmlspecialchars($providerObject->transaction_message($transactionResultsArr)).'</span><br />';
+					$errorMessage .= '<br />';
+					$content = '';
 				} else {
-					$transactionDetailsArr = &$this->getTransactionDetails($referenceId, $handleLib, $confScript, $totalArr, $addrArr, $paymentBasketArray);
-
-						// Set payment details and get the form data:
-					$ok = $providerObject->transaction_setDetails($transactionDetailsArr);
-					if (!$ok) {
-						$rc = tx_div2007_alpha::getLL($langObj,'error_transaction_details');
-						return $rc;
-					}
 					$providerObject->transaction_setOkPage($transactionDetailsArr['transaction']['successlink']);
 					$providerObject->transaction_setErrorPage($transactionDetailsArr['transaction']['faillink']);
 
@@ -187,13 +189,13 @@ class tx_ttproducts_paymentlib {
 
 					if ($gatewayMode == $compGatewayForm)	{
 
-						$templateFilename = $lConf['templateFile'] ? $lConf['templateFile'] : (t3lib_extMgm::isLoaded('addons_tt_products') ? 'EXT:'.TT_PRODUCTS_EXTkey.'/template/paymentlib.tmpl' : '');
+						$templateFilename = $lConf['templateFile'] ? $lConf['templateFile'] : (t3lib_extMgm::isLoaded('addons_tt_products') ? 'EXT:' . TT_PRODUCTS_EXT . '/template/paymentlib.tmpl' : '');
 						if (!$templateFilename)	{
-							$templateObj = &t3lib_div::getUserObj('&tx_ttproducts_template');
+							$templateObj = t3lib_div::getUserObj('&tx_ttproducts_template');
 							$templateFilename = $templateObj->getTemplateFile();
 						}
 						$localTemplateCode = $this->pibase->cObj->fileResource($templateFilename);
-						$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+						$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 						$localTemplateCode = $this->pibase->cObj->substituteMarkerArrayCached($localTemplateCode, $markerObj->getGlobalMarkerArray());
 
 							// Render hidden fields:
@@ -220,9 +222,9 @@ class tx_ttproducts_paymentlib {
 							$content=$this->basketView->getView($localTemplateCode,'PAYMENT', $this->info, FALSE, FALSE, TRUE, 'PAYMENTLIB_FORM_TEMPLATE', $markerArray, $templateFilename);
 						} else {
 							if ($bError)	{
-								$content = $formuri;
+								$errorMessage = $formuri;
 							} else {
-								$content = tx_div2007_alpha::getLL($langObj,'error_relay_url');
+								$errorMessage = tx_div2007_alpha5::getLL_fh002($langObj, 'error_relay_url');
 							}
 						}
 					} else if ($gatewayMode == $compGatewayWebservice)	{
@@ -230,7 +232,7 @@ class tx_ttproducts_paymentlib {
 						$resultsArray = $providerObject->transaction_getResults($referenceId);//array holen mit allen daten
 
 						if ($providerObject->transaction_succeded($resultsArray) == FALSE) 	{
-							$content = $providerObject->transaction_message($resultsArray); // message auslesen
+							$errorMessage = $providerObject->transaction_message($resultsArray); // message auslesen
 						} else {
 							$bFinalize = TRUE;
 						}
@@ -238,8 +240,7 @@ class tx_ttproducts_paymentlib {
 					}
 				}
 			} else {
-				$rc = tx_div2007_alpha::getLL($langObj,'error_relay_url');
-				return 'ERROR: Could not find provider object for payment method \''.$paymentMethod.'\' .';
+				$errorMessage = 'ERROR: Could not find provider object for payment method \''.$paymentMethod.'\' .';
 			}
 		}
 		return $content;
@@ -261,7 +262,7 @@ class tx_ttproducts_paymentlib {
 				$paymentBasketArray = array();
 				$addrArr = array();
 				$totalArr = array();
-				$transactionDetailsArr = &$this->GetTransactionDetails($referenceId, $confScript, $totalArr, $addrArr, $paymentBasketArray);
+				$transactionDetailsArr = $this->GetTransactionDetails($referenceId, $confScript, $totalArr, $addrArr, $paymentBasketArray);
 				echo "<br><br>ausgabe details: ";
 				print_r ($transactionDetailsArr);
 				echo "<br><br>";
@@ -287,7 +288,7 @@ class tx_ttproducts_paymentlib {
 		$addQueryString = array();
 		$excludeList = '';
 		$target = '';
-		$url = tx_div2007_alpha::getTypoLink_URL_fh001($this->pibase,$pid,$this->urlObj->getLinkParams($excludeList,$addQueryString,TRUE),$target,$conf);
+		$url = tx_div2007_alpha5::getTypoLink_URL_fh003($this->pibase->cObj, $pid, $this->urlObj->getLinkParams($excludeList, $addQueryString, TRUE), $target, $conf);
 		return $url;
 	}
 
@@ -295,11 +296,11 @@ class tx_ttproducts_paymentlib {
 	/**
 	 * Gets all the data needed for the transaction or the verification check
 	 */
-	public function &getTransactionDetails ($referenceId, $handleLib, &$confScript, &$totalArr, &$addrArr, &$paymentBasketArray)	{
+	public function getTransactionDetails ($referenceId, $handleLib, &$confScript, &$totalArr, &$addrArr, &$paymentBasketArray)	{
 		global $TSFE;
 
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 		$param = '';
 		// perform the access to the Gateway
@@ -311,7 +312,7 @@ class tx_ttproducts_paymentlib {
 			// Prepare some values for the form fields:
 		$totalPrice = $this->basket->calculatedArray['priceNoTax']['total'];
 		$totalPriceFormatted = $priceViewObj->priceFormat($totalPrice);
-		$orderObj = &$tablesObj->get('sys_products_orders');
+		$orderObj = $tablesObj->get('sys_products_orders');
 		$orderUid = $orderObj->getUid();
 		if (!$orderUid)	{
 			$orderUid = $orderObj->getBlankUid(); // Gets an order number, creates a new order if no order is associated with the current session
@@ -352,7 +353,7 @@ class tx_ttproducts_paymentlib {
 		$transactionDetailsArr['options']['reference'] = $referenceId;
 
 		$gatewayMode = $this->getGatewayMode($handleLib, $confScript);
-		$cardObj = &$tablesObj->get('sys_products_cards');
+		$cardObj = $tablesObj->get('sys_products_cards');
 		if (is_object($this->card) && $gatewayMode == TX_PAYMENTLIB_GATEWAYMODE_WEBSERVICE)	{
 			$cardUid = $cardObj->getUid();
 			$cardRow = $cardObj->get($cardUid);
@@ -373,29 +374,24 @@ class tx_ttproducts_paymentlib {
 	//* @providerObject		The paymentlib-object which  *//
 	//*                     holds the payment-basket     *//
 	//****************************************************//
-	public function &getPaymentBasket (&$totalArr, &$addrArr, &$basketArr) {
+	public function getPaymentBasket (&$totalArr, &$addrArr, &$basketArr) {
 		global $TYPO3_DB;
 
 		$bUseStaticInfo = FALSE;
-		$infoViewObj = &t3lib_div::getUserObj('&tx_ttproducts_info_view');
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$infoViewObj = t3lib_div::getUserObj('&tx_ttproducts_info_view');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 
 		if (t3lib_extMgm::isLoaded('static_info_tables'))	{
-			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
+			$eInfo = tx_div2007_alpha5::getExtensionInfo_fh003('static_info_tables');
 			$sitVersion = $eInfo['version'];
 			if (version_compare($sitVersion, '2.0.5', '>='))	{
 				$bUseStaticInfo = TRUE;
 			}
 		}
 
-		if ($bUseStaticInfo)	{
-			$path = t3lib_extMgm::extPath('static_info_tables');
-			include_once($path.'class.tx_staticinfotables_div.php');
-		}
-
 		// Get references to the concerning baskets
 		//$pOBasket = &$providerObject->payment_basket;
-		$shopBasket = &$this->basket;
+		$shopBasket = $this->basket;
 
 		// Get references from the shop basket
 		$items = &$shopBasket->itemArray;
@@ -460,7 +456,7 @@ class tx_ttproducts_paymentlib {
 			// record which is found will be returned. If there is no record at all, the codes will be returned untouched
 
 			if ($bUseStaticInfo)	{
-				$countryArray = tx_staticinfotables_div::fetchCountries($addrArr[$key]['country'], $addrArr[$key]['countryISO2'], $addrArr[$key]['countryISO3'], $addrArr[$key]['countryISONr']);
+				$countryArray = tx_div2007_staticinfotables::fetchCountries($addrArr[$key]['country'], $addrArr[$key]['countryISO2'], $addrArr[$key]['countryISO3'], $addrArr[$key]['countryISONr']);
 				$countryRow = $countryArray[0];
 
 				if (count($countryRow))	{
@@ -472,7 +468,7 @@ class tx_ttproducts_paymentlib {
 
 		// Fill the basket array
 		$basketArr = array();
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
 
 		$totalCount = 0;
 		foreach ($items as $sort => $actItemArray) {
@@ -508,7 +504,7 @@ class tx_ttproducts_paymentlib {
 
 		if ($calculatedArray['priceTax']['vouchertotal'] != $calculatedArray['priceTax']['total'])	{
 			$voucherAmount = $calculatedArray['priceTax']['vouchertotal'] - $calculatedArray['priceTax']['total'];
-			$voucherText = tx_div2007_alpha::getLL($langObj,'voucher_payment_article');
+			$voucherText = tx_div2007_alpha5::getLL_fh002($langObj, 'voucher_payment_article');
 
 			$basketArr['VOUCHER'][] =
 				array(
@@ -526,14 +522,14 @@ class tx_ttproducts_paymentlib {
 	}
 
 
-	public function fFloat ($value=0)	{
+	public function fFloat ($value = 0)	{
 		if (is_float($value))	{
 			$float = $value;
 		} else {
 			$float = floatval($value);
 		}
 
-		return round($float,2);
+		return round($float, 2);
 	}
 }
 

@@ -38,10 +38,6 @@
  *
  */
 
-
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_table_base.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_table_base_view.php');
-
 class tx_ttproducts_tables	{
 	protected $tableClassArray = array(
 		'address' => 'tx_ttproducts_address',
@@ -75,10 +71,10 @@ class tx_ttproducts_tables	{
 	public $conf;
 
 
-	public function init (&$langObj)	{
+	public function init ($langObj)	{
 
-		$this->langObj = &$langObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->langObj = $langObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
@@ -92,7 +88,7 @@ class tx_ttproducts_tables	{
 		$this->tableClassArray = $tableClassArray;
 	}
 
-	public function getTableClass ($functablename, $bView=FALSE)	{
+	public function getTableClass ($functablename, $bView = FALSE)	{
 
 		$rc = '';
 		if ($functablename)	{
@@ -118,27 +114,32 @@ class tx_ttproducts_tables	{
 		}
 
 		if (!$classNameArray['model'] || $bView && !$classNameArray['view'])	{
-			debug('Error in '.TT_PRODUCTS_EXTkey.'. No class found after calling function tx_ttproducts_tables::get with parameters "'.$functablename.'", '.$bView.'.','internal error', __LINE__, __FILE__);
+			debug('Error in '.TT_PRODUCTS_EXT.'. No class found after calling function tx_ttproducts_tables::get with parameters "'.$functablename.'", '.$bView.'.','internal error', __LINE__, __FILE__);
 			return 'ERROR';
 		}
 
 		foreach ($classNameArray as $k => $className)	{
 			if ($className != 'skip')	{
 				// include_once (PATH_BE_ttproducts.$k.'/class.'.$className.'.php');
-				if (strpos($className,':') === FALSE)	{
+				if (strpos($className, ':') === FALSE)	{
 					$path = PATH_BE_ttproducts;
 				} else {
-					list($extKey,$className) = t3lib_div::trimExplode(':',$className,TRUE);
+					list($extKey, $className) = t3lib_div::trimExplode(':', $className, TRUE);
 
 					if (!t3lib_extMgm::isLoaded($extKey))	{
-						debug('Error in '.TT_PRODUCTS_EXTkey.'. No extension "'.$extKey.'" has been loaded to use class class.'.$className.'.','internal error', __LINE__, __FILE__);
+						debug('Error in '.TT_PRODUCTS_EXT.'. No extension "' . $extKey . '" has been loaded to use class class.' . $className . '.','internal error',  __LINE__,  __FILE__);
 						continue;
 					}
 					$path = t3lib_extMgm::extPath($extKey);
 				}
 				$classRef = 'class.'.$className;
-				$classRef = $path.$k.'/'.$classRef.'.php:&'.$className;
-				$tableObj[$k] = &t3lib_div::getUserObj($classRef);	// fetch and store it as persistent object
+				$classFile = $path . $k . '/' . $classRef . '.php';
+				if (file_exists($classFile)) {
+					$classRef = $classFile . ':&' . $className;
+					$tableObj[$k] = t3lib_div::getUserObj($classRef);	// fetch and store it as persistent object
+				} else {
+					debug ($classFile, 'File not found: ' . $classFile . ' in file class.tx_ttproducts_tables.php');
+				}
 			}
 		}
 
@@ -150,7 +151,7 @@ class tx_ttproducts_tables	{
 				);
 			}
 		} else {
-			debug ('Object for \''.$functablename.'\' has not been found.','internal error in '.TT_PRODUCTS_EXTkey, __LINE__, __FILE__);
+			debug ('Object for \''.$functablename.'\' has not been found.','internal error in '.TT_PRODUCTS_EXT, __LINE__, __FILE__);
 		}
 
 		if (isset($tableObj['view']) && is_object($tableObj['view']) && isset($tableObj['model']) && is_object($tableObj['model']))	{
@@ -168,8 +169,8 @@ class tx_ttproducts_tables	{
 
 	public function &getMM ($functablename)	{
 
-include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_mm_table.php');
-		$tableObj = &t3lib_div::getUserObj('&tx_ttproducts_mm_table');
+		include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_mm_table.php');
+		$tableObj = t3lib_div::getUserObj('&tx_ttproducts_mm_table');
 
 		if (isset($tableObj) && is_object($tableObj))	{
 			if ($tableObj->needsInit() || $tableObj->getFuncTablename() != $functablename)	{
@@ -179,7 +180,7 @@ include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_mm_table.php');
 				);
 			}
 		} else {
-			debug ('Object for \''.$functablename.'\' has not been found.','internal error in '.TT_PRODUCTS_EXTkey, __LINE__, __FILE__);
+			debug ('Object for \''.$functablename.'\' has not been found.','internal error in '.TT_PRODUCTS_EXT, __LINE__, __FILE__);
 		}
 		return $tableObj;
 	}
@@ -206,17 +207,17 @@ include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_mm_table.php');
 
 		$rc = array();
 		if ($fieldname != '')	{
-			$tableObj = &$this->get($functablename,FALSE);
+			$tableObj = $this->get($functablename,FALSE);
 			$tablename = $tableObj->getTableName ($functablename);
-			$rc = tx_div2007_alpha::getForeignTableInfo_fh002 ($tablename,$fieldname);
+			$rc = tx_div2007_alpha5::getForeignTableInfo_fh003 ($tablename, $fieldname);
 		}
 		return $rc;
 	}
 
 
-	public function prepareSQL ($foreignTableInfoArray,$tableAliasArray,$aliasPostfix,&$sqlArray)	{
+	public function prepareSQL ($foreignTableInfoArray, $tableAliasArray, $aliasPostfix, &$sqlArray)	{
 
-		if ($foreignTableInfoArray['mmtable']=='' && $foreignTableInfoArray['foreign_table']!='')	{
+		if ($foreignTableInfoArray['mmtable'] == '' && $foreignTableInfoArray['foreign_table'] != '')	{
 			$fieldname = $foreignTableInfoArray['table_field'];
 
 			$tablename = $foreignTableInfoArray['table'];

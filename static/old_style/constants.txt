@@ -1,7 +1,7 @@
 ##
 ## @package TYPO3
 ## @subpackage tt_products
-## @version $Id$
+## @version $Id: constants.txt 90302 2015-12-03 15:46:12Z franzholz $
 ##
 
 
@@ -43,25 +43,25 @@ plugin.tt_products {
     # cat=plugin.products//; type=boolean; label= Click Enlarge, Category images: As above, but for the category images
   clickEnlarge_listcat = 0
 
-    # cat=plugin.products//; type=boolean; label= Color selectable, List display: Make the color selectable in the list
+    # cat=plugin.products//; type=integer; label= Color selectable, List display: Make the color selectable in the list
   selectColor = 1
-    # cat=plugin.products//; type=boolean; label= 2nd Color selectable, List display: Make the 2nd color selectable in the list
+    # cat=plugin.products//; type=integer; label= 2nd Color selectable, List display: Make the 2nd color selectable in the list
   selectColor2 = 1
-    # cat=plugin.products//; type=boolean; label= 3rd Color selectable, List display: Make the 3rd color selectable in the list
+    # cat=plugin.products//; type=integer; label= 3rd Color selectable, List display: Make the 3rd color selectable in the list
   selectColor3 = 1
-    # cat=plugin.products//; type=boolean; label= Size selectable, List display: Make the size selectable in the list
+    # cat=plugin.products//; type=integer; label= Size selectable, List display: Make the size selectable in the list
   selectSize = 1
-    # cat=plugin.products//; type=boolean; label= 2nd Size selectable, List display: Make the 2nd size selectable in the list
+    # cat=plugin.products//; type=integer; label= 2nd Size selectable, List display: Make the 2nd size selectable in the list
   selectSize2 = 1
-    # cat=plugin.products//; type=boolean; label= 3rd Size selectable, List display: Make the 3rd size selectable in the list
+    # cat=plugin.products//; type=integer; label= 3rd Size selectable, List display: Make the 3rd size selectable in the list
   selectSize3 = 1
-    # cat=plugin.products//; type=boolean; label= Description selectable, List display: Make the description selectable in the list
+    # cat=plugin.products//; type=integer; label= Description selectable, List display: Make the description selectable in the list
   selectDescription = 1
-    # cat=plugin.products//; type=boolean; label= Gradings selectable, List display: Make the gradings selectable in the list
+    # cat=plugin.products//; type=integer; label= Gradings selectable, List display: Make the gradings selectable in the list
   selectGradings = 1
-    # cat=plugin.products//; type=boolean; label= Material selectable, List display: Make the material selectable in the list
+    # cat=plugin.products//; type=integer; label= Material selectable, List display: Make the material selectable in the list
   selectMaterial = 1
-    # cat=plugin.products//; type=boolean; label= Quality selectable, List display: Make the quality selectable in the list
+    # cat=plugin.products//; type=integer; label= Quality selectable, List display: Make the quality selectable in the list
   selectQuality = 1
 
     # cat=plugin.products//; type=boolean; label= Display Category Header in list: If this option is set, the category headers (page titles) will automatically be displayed in the product lists. This is not always convenient because you might have chosen a header-title for the "list" content element.
@@ -124,6 +124,10 @@ plugin.tt_products {
   maxW_listHasChilds = 50
     # cat=plugin.products/dims; type=int+; label= Max image height, list display: DAM, the category has childs
   maxH_listHasChilds = 100
+    # cat=plugin.products/dims; type=int+; label= Max root image width, list display: The maximum width in pixels of an image when displayed in lists and searchresults on the category root level.
+  maxW_listRoot = 50
+    # cat=plugin.products/dims; type=int+; label= Max root image height, list display: The maximum height in pixels of an image when displayed in lists and searchresults on the category root level.
+  maxH_listRoot = 100
     # cat=plugin.products/dims; type=int+; label= Max image width, basket display: The maximum width in pixels of an image when displayed in the shopping-basket.
   maxW_basket = 100
     # cat=plugin.products/dims; type=int+; label= Max image height, basket display: The maximum height in pixels of an image when displayed in the shopping-basket.
@@ -192,9 +196,9 @@ plugin.tt_products {
    defaultArticleID =
     # cat=plugin.products//; type=eint+; label=default product ID: ID of the default product that will be shown in a single page when nothing else is configured
   defaultProductID =
-    # cat=plugin.products//; type=eint+; label=default category ID: ID of the default category that will be shown in the list view when no tx_ttproducts_pi1[cat] parameter is given
+    # cat=plugin.products//; type=eint+; label=default category ID: ID of the default category that will be shown in the list view when no tt_products[cat] parameter is given
   defaultCategoryID =
-    # cat=plugin.products//; type=eint+; label=default DAM category ID: ID of the default DAM category that will be shown in the list view when no tx_ttproducts_pi1[damcat] parameter is given
+    # cat=plugin.products//; type=eint+; label=default DAM category ID: ID of the default DAM category that will be shown in the list view when no tt_products[damcat] parameter is given
   defaultDAMCategoryID =
     # cat=plugin.products//; type=eint+; label=root category ID: The upper most category ID from where you want to start to list categories.
   rootCategoryID =
@@ -244,6 +248,8 @@ plugin.tt_products {
   orderEmail_fromName = My TYPO3 Shop
     # cat=plugin.products//; type=string; label=to email addresses: Comma separated list of recipients of the order email. Shop and administrator/supervisor email addresses go here!
   orderEmail_to = email@webshop-typo3.com
+    # cat=plugin.products//; type=boolean; label=to product addresses: If set, then the order email is sent to all addresses which are connected to the products in the basket.
+  orderEmail_toAddress =
     # cat=plugin.products//; type=boolean; label=send email to delivery: If you want to send the email notification to the delivery email and not to the billing email
   orderEmail_toDelivery =
     # cat=plugin.products//; type=string; label=subject of email: The topic of your email. Or the first line in EMAIL_PLAINTEXT_TEMPLATE is used!
@@ -266,9 +272,9 @@ plugin.tt_products {
   useStaticInfoCountry = 0
     # cat=plugin.products//; type=boolean; label=Use Static Taxes extension: Even if the product has a tax, the tax is taken from the extension static_info_tables_taxes
   useStaticTaxes = 0
-    # cat=plugin.products//; type=text; label=Message displayed at bulkily items
+    # cat=plugin.products//; type=string; label=Message displayed at bulkily items
   bulkilyWarning = <p><b>Warning! This article needs special transport.</b></p>
-    # cat=plugin.products//; type=text; label=Special preparation: Message displayed at items marked as special preparation
+    # cat=plugin.products//; type=string; label=Special preparation: Message displayed at items marked as special preparation
   specialPreparation = Special preparation possible! <A HREF="?id=999&tt_products=###PRODUCT_ID###">Order here</A>.
 
     # cat=plugin.products//; type=int+; label=Max note length: Max. number of characters of the note text in the list view
@@ -299,21 +305,21 @@ plugin.tt_products {
 
     # cat=plugin.products//; type=boolean; label=Order CSV generation: Generate a CSV file for each order
   generateCSV = 0
-    # cat=plugin.products//; type=text; label=Order CSV folder: Destination directory for CSV files generated by orders; Important: Enter a directory, that is NOT accessible via web!
+    # cat=plugin.products//; type=string; label=Order CSV folder: Destination directory for CSV files generated by orders; Important: Enter a directory, that is NOT accessible via web!
   CSVdestination = ../csvorders/
-    # cat=plugin.products//; type=text; label=Order CSV export fields: Product database fields to export (Comma seperated)
+    # cat=plugin.products//; type=string; label=Order CSV export fields: Product database fields to export (Comma seperated)
   CSVfields = tstamp,title,price,price2,itemnumber,category,inStock,tax,weight,bulkily,offer,highlight,directcost,subtitle
     # cat=plugin.products//; type=boolean; label=Choose your CSV format: Write all additional information in one line behind the first ordered product. This is good if you want to import this files somewhere. If you not check this, the CSV is formatted for best view in Excel for example
   CSVinOneLine = 0
 
-    # cat=plugin.products//; type=text; label=Search fields: fields to be considered for a search
+    # cat=plugin.products//; type=string; label=Search fields: fields to be considered for a search
   stdSearchFieldExt = title, subtitle, note
 
     # cat=plugin.products//; type=boolean; label=always in Stock: The stock will never get reduced.
   alwaysInStock = 1
     # cat=plugin.products//; type=boolean; label=show not in stock items: If set the items will be shown even if no product is in the stock.
   showNotinStock =
-    # cat=plugin.products//; type=text; label=Not in Stock message: Message is displayed if inStock = 0 (means not inStock)
+    # cat=plugin.products//; type=string; label=Not in Stock message: Message is displayed if inStock = 0 (means not inStock)
   notInStockMessage = not in stock
     # cat=plugin.products//; type=string; label=Unit for pieces
   inStockPieces = pieces
@@ -341,4 +347,4 @@ plugin.tt_products {
 }
 
 
-<INCLUDE_TYPOSCRIPT: source="FILE:EXT:'TT_PRODUCTS_EXTkey.'/static/share/constants.txt">
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:tt_products/static/share/constants.txt">

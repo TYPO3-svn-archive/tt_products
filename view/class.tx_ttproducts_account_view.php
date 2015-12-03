@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author	Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com> 
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -59,7 +59,7 @@ class tx_ttproducts_account_view extends tx_ttproducts_table_base_view {
 
 		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 
-		$modelObj = &$this->getModelObj();
+		$modelObj = $this->getModelObj();
 		if ($modelObj->bIsAllowed)	{
 			$acNumber = $modelObj->acArray['ac_number'];
 			$acOwnerName = $modelObj->acArray['owner_name'];
@@ -72,7 +72,7 @@ class tx_ttproducts_account_view extends tx_ttproducts_table_base_view {
 
 		$markerArray['###PERSON_ACCOUNTS_OWNER_NAME###'] = $acOwnerName;
 		$markerArray['###PERSON_ACCOUNTS_AC_NUMBER###'] = $acNumber;
-		$markerArray['###PERSON_ACCOUNTS_BIC###'] = $acBic; 
+		$markerArray['###PERSON_ACCOUNTS_BIC###'] = $acBic;
 	} // getMarkerArray
 }
 

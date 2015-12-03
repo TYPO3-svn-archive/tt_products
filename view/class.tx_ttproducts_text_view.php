@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com> 
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -64,30 +64,40 @@ class tx_ttproducts_text_view extends tx_ttproducts_table_base_view {
 	 * @param	array		Returns a markerArray ready for substitution with information
 	 * @access private
 	 */
-	function getRowsMarkerArray (&$rowArray, &$markerArray, $parentMarker, $textTagArray)	{
-		global $TSFE;
+	public function getRowsMarkerArray (
+		&$rowArray,
+		&$markerArray,
+		$parentMarker,
+		$tagArray
+	) {
+		$bFoundTagArray = array();
 
-		if (isset($rowArray) && is_array($rowArray) && count($rowArray))	{
-			foreach ($rowArray as $k => $row)	{
-				$marker = $parentMarker.'_'.$this->marker.'_'.strtoupper($row['marker']);
+		if (isset($rowArray) && is_array($rowArray) && count($rowArray)) {
+			foreach ($rowArray as $k => $row) {
+				$tag = strtoupper($row['marker']);
+				$bFoundTagArray[$tag] = TRUE;
+				$marker = $parentMarker . '_' . $this->getMarker() . '_' . $tag;
 				$value = $row['note'];
-				$value =  ($this->conf['nl2brNote'] ? nl2br($value) : $value);
-	
+				$value = ($this->conf['nl2brNote'] ? nl2br($value) : $value);
+
 					// Extension CSS styled content
 				if (t3lib_extMgm::isLoaded('css_styled_content')) {
-					$value = tx_div2007_alpha::RTEcssText($this->cObj, $value);
-				} else if (is_array($this->conf['parseFunc.']))	{
-					$value = $this->cObj->parseFunc($value,$this->conf['parseFunc.']);
+					$value = tx_div2007_alpha5::RTEcssText($this->getCObj(), $value);
+				} else if (is_array($this->conf['parseFunc.'])) {
+					$value = $this->getCObj()->parseFunc($value, $this->conf['parseFunc.']);
 				}
-				$markerArray['###'.$marker.'###'] = $value;
-				$markerTitle = $marker.'_'.strtoupper('title');
-				$markerArray['###'.$markerTitle.'###'] = $row['title'];
+				$markerArray['###' . $marker . '###'] = $value;
+				$markerTitle = $marker . '_' . strtoupper('title');
+				$markerArray['###' . $markerTitle . '###'] = $row['title'];
 			}
-		} else {
-			if (isset($textTagArray) && is_array($textTagArray))	{
-				foreach ($textTagArray as $textTagMarker)	{
-					$marker = $parentMarker.'_'.$this->marker.'_'.$textTagMarker;
-					$markerArray['###'.$marker.'###'] = '';
+		}
+
+
+		if (isset($tagArray) && is_array($tagArray)) {
+			foreach ($tagArray as $tag) {
+				if (!$bFoundTagArray[$tag]) {
+					$marker = $parentMarker . '_' . $this->getMarker() . '_' . $tag;
+					$markerArray['###' . $marker . '###'] = '';
 				}
 			}
 		}

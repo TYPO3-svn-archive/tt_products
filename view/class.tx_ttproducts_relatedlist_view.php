@@ -39,7 +39,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_pid_list.php');
+// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_pid_list.php');
 
 
 class tx_ttproducts_relatedlist_view {
@@ -49,14 +49,14 @@ class tx_ttproducts_relatedlist_view {
 	public $cObj;
 
 
-	public function init (&$cObj, $pid_list, $recursive)	{
-		$this->cObj = &$cObj;
+	public function init ($cObj, $pid_list, $recursive)	{
+		$this->cObj = $cObj;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 
-		$this->pidListObj = &t3lib_div::getUserObj('tx_ttproducts_pid_list');
+		$this->pidListObj = t3lib_div::getUserObj('tx_ttproducts_pid_list');
 		$this->pidListObj->init($cObj);
 		$this->pidListObj->applyRecursive($recursive, $pid_list, TRUE);
 		$this->pidListObj->setPageArray();
@@ -72,7 +72,7 @@ class tx_ttproducts_relatedlist_view {
 		&$markerArray,
 		$viewTagArray
 	) {
-		require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_control_basketquantity.php');
+// 		require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_control_basketquantity.php');
 
 		$addListArray = $this->getAddListArray (
 			$theCode,
@@ -81,8 +81,8 @@ class tx_ttproducts_relatedlist_view {
 			'',
 			$this->useArticles
 		);
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$itemObj = &$tablesObj->get($functablename);
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$itemObj = $tablesObj->get($functablename);
 
 		$rowArray = array();
 		$rowArray[$functablename] = $itemArray;
@@ -200,13 +200,13 @@ class tx_ttproducts_relatedlist_view {
 		&$error_code
 	)	{
 		$result = FALSE;
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$itemViewObj = &$tablesObj->get($functablename, TRUE);
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$itemViewObj = $tablesObj->get($functablename, TRUE);
 		$addListArray = $this->getAddListArray($theCode, $functablename, $itemViewObj->getMarker(), $uid, $useArticles);
 
 		if (is_array($addListArray))	{
 			$listView = '';
-			$itemObj = &$itemViewObj->getModelObj();
+			$itemObj = $itemViewObj->getModelObj();
 
 			foreach ($addListArray as $subtype => $funcArray)	{
 
@@ -215,7 +215,6 @@ class tx_ttproducts_relatedlist_view {
 
 					if (count($relatedIds))	{
 						// List all products:
-						include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
 						if (!is_object($listView))	{
 
 							$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');

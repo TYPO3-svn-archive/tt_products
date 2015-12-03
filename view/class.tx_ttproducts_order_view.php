@@ -39,9 +39,9 @@
  *
  */
 
-
+/*
 require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');*/
 
 
 class tx_ttproducts_order_view extends tx_ttproducts_table_base_view {
@@ -51,29 +51,41 @@ class tx_ttproducts_order_view extends tx_ttproducts_table_base_view {
 	public function getBasketRecsMarkerArray (&$markerArray)	{
 			// order
 		$orderObj = $this->getModelObj();
-		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 
-			// Order:	NOTE: Data exist only if the order->getBlankUid() has been called. Therefore this field in the template should be used only when an order has been established
-		$markerArray['###ORDER_UID###'] = $orderObj->getNumber($basketObj->order['orderUid']);
-		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($basketObj->order['orderDate'],$this->conf['orderDate_stdWrap.']);
-		$markerArray['###ORDER_TRACKING_NO###'] = $basketObj->order['orderTrackingNo'];
+		if (
+			isset($basketObj->order) &&
+			is_array($basketObj->order) &&
+			isset($basketObj->order['orderUid']) &&
+			isset($basketObj->order['orderDate']) &&
+			isset($basketObj->order['orderTrackingNo'])
+		) {
+				// Order:	NOTE: Data exist only if the order->getBlankUid() has been called. Therefore this field in the template should be used only when an order has been established
+			$markerArray['###ORDER_UID###'] = $orderObj->getNumber($basketObj->order['orderUid']);
+			$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($basketObj->order['orderDate'], $this->conf['orderDate_stdWrap.']);
+			$markerArray['###ORDER_TRACKING_NO###'] = $basketObj->order['orderTrackingNo'];
+		} else {
+			$markerArray['###ORDER_UID###'] = '';
+			$markerArray['###ORDER_DATE###'] = '';
+			$markerArray['###ORDER_TRACKING_NO###'] = '';
+		}
 	}
 
 	public function &printView(&$templateCode, &$error_code)	 {
 		global $TSFE, $TYPO3_DB;
 
 		$feusers_uid = $TSFE->fe_user->user['uid'];
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$subpartmarkerObj = &t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$subpartmarkerObj = t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 		$globalMarkerArray = $markerObj->getGlobalMarkerArray();
 
 			// order
-		$orderObj = &$tablesObj->get('sys_products_orders');
+		$orderObj = $tablesObj->get('sys_products_orders');
 
 		if (!$feusers_uid)	{
-			$frameWork = $this->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###MEMO_NOT_LOGGED_IN###'));
+			$frameWork = $this->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###MEMO_NOT_LOGGED_IN###'));
 			$content = $this->cObj->substituteMarkerArray($frameWork, $globalMarkerArray);
 			return $content;
 		}
@@ -81,9 +93,9 @@ class tx_ttproducts_order_view extends tx_ttproducts_table_base_view {
 		$where = 'feusers_uid='.intval($feusers_uid).' AND NOT deleted ORDER BY crdate';
 		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders', $where);
 
-		$frameWork = $this->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###ORDERS_LIST_TEMPLATE###'));
+		$frameWork = $this->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###ORDERS_LIST_TEMPLATE###'));
 		$content = $this->cObj->substituteMarkerArray($frameWork, $globalMarkerArray);
-		$orderitem = $this->cObj->getSubpart($content,'###ORDER_ITEM###');
+		$orderitem = $this->cObj->getSubpart($content, '###ORDER_ITEM###');
 		$count = $TYPO3_DB->sql_num_rows($res);
 
 		if ($count) {
@@ -97,7 +109,7 @@ class tx_ttproducts_order_view extends tx_ttproducts_table_base_view {
 			$this->orders = array();
 			while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
 				$markerArray['###TRACKING_CODE###'] = $row['tracking_code'];
-				$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($row['crdate'],$this->conf['orderDate_stdWrap.']);
+				$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($row['crdate'], $this->conf['orderDate_stdWrap.']);
 				$markerArray['###ORDER_NUMBER###'] = $orderObj->getNumber($row['uid']);
 				//$rt= $row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
 				$markerArray['###ORDER_CREDITS###'] =$row['creditpoints_saved'] + $row['creditpoints_gifts'] - $row['creditpoints_spended'] - $row['creditpoints'];
@@ -118,17 +130,17 @@ class tx_ttproducts_order_view extends tx_ttproducts_table_base_view {
 			}
 			$TYPO3_DB->sql_free_result($res);
 
-			$res1 = $TYPO3_DB->exec_SELECTquery('username ', 'fe_users', 'uid="'.intval($feusers_uid).'"');
+			$res1 = $TYPO3_DB->exec_SELECTquery('username ', 'fe_users', 'uid="' . intval($feusers_uid) . '"');
 			if ($row = $TYPO3_DB->sql_fetch_assoc($res1)) {
 				$username = $row['username'];
 			}
 			$TYPO3_DB->sql_free_result($res1);
 
-			$res2 = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode='.$TYPO3_DB->fullQuoteStr($username, 'fe_users'));
+			$res2 = $TYPO3_DB->exec_SELECTquery('username', 'fe_users', 'tt_products_vouchercode=' . $TYPO3_DB->fullQuoteStr($username, 'fe_users'));
 			$num_rows = $TYPO3_DB->sql_num_rows($res2) * 5;
 			$TYPO3_DB->sql_free_result($res2);
 
-			$res3 = $TYPO3_DB->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid='.intval($feusers_uid).' AND NOT deleted');
+			$res3 = $TYPO3_DB->exec_SELECTquery('tt_products_creditpoints ', 'fe_users', 'uid=' . intval($feusers_uid) . ' AND NOT deleted');
 			$this->creditpoints = array();
 			if ($res3 !== FALSE)	{
 				while($row = $TYPO3_DB->sql_fetch_assoc($res3)) {
@@ -141,20 +153,20 @@ class tx_ttproducts_order_view extends tx_ttproducts_table_base_view {
 			$subpartArray = array();
 			$markerArray['###CLIENT_NUMBER###'] = $feusers_uid;
 			$markerArray['###CLIENT_NAME###'] = $username;
-			$markerArray['###CREDIT_POINTS_SAVED###'] = number_format($tot_creditpoints_saved,0);
-			$markerArray['###CREDIT_POINTS_SPENT###'] = number_format($tot_creditpoints_spended,0);
-			$markerArray['###CREDIT_POINTS_CHANGED###'] = number_format($tot_creditpoints_changed,0);
-			$markerArray['###CREDIT_POINTS_USED###'] = number_format($tot_creditpoints_spended,0) + number_format($tot_creditpoints_changed,0);
-			$markerArray['###CREDIT_POINTS_GIFTS###'] = number_format($tot_creditpoints_gifts,0);
-			$markerArray['###CREDIT_POINTS_TOTAL###'] = number_format($totalcreditpoints,0);
+			$markerArray['###CREDIT_POINTS_SAVED###'] = number_format($tot_creditpoints_saved, 0);
+			$markerArray['###CREDIT_POINTS_SPENT###'] = number_format($tot_creditpoints_spended, 0);
+			$markerArray['###CREDIT_POINTS_CHANGED###'] = number_format($tot_creditpoints_changed, 0);
+			$markerArray['###CREDIT_POINTS_USED###'] = number_format($tot_creditpoints_spended, 0) + number_format($tot_creditpoints_changed, 0);
+			$markerArray['###CREDIT_POINTS_GIFTS###'] = number_format($tot_creditpoints_gifts, 0);
+			$markerArray['###CREDIT_POINTS_TOTAL###'] = number_format($totalcreditpoints, 0);
 			$markerArray['###CREDIT_POINTS_VOUCHER###'] = $num_rows;
 			$markerArray['###CALC_DATE###'] = date('d M Y');
 			$subpartArray['###ORDER_LIST###'] = $orderlistc;
 			$subpartArray['###ORDER_NOROWS###'] = '';
-			$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+			$content = $this->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		} else {
 			$TYPO3_DB->sql_free_result($res);
-			$norows = $this->cObj->getSubpart($content,'###ORDER_NOROWS###');
+			$norows = $this->cObj->getSubpart($content, '###ORDER_NOROWS###');
 			$content = $norows;
 		} // else of if ($GLOBALS['TYPO3_DB']->sql_num_rows($res))
 

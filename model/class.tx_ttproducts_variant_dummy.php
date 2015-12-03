@@ -38,7 +38,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'model/interface.tx_ttproducts_variant_int.php');
+// require_once (PATH_BE_ttproducts.'model/interface.tx_ttproducts_variant_int.php');
 
 
 class tx_ttproducts_variant_dummy implements tx_ttproducts_variant_int {
@@ -48,7 +48,7 @@ class tx_ttproducts_variant_dummy implements tx_ttproducts_variant_int {
 	/**
 	 * setting the local variables
 	 */
-	public function init (&$itemTable, $tablename, $useArticles)  {
+	public function init ($itemTable, $tablename, $useArticles)  {
 
 	} // init
 
@@ -67,7 +67,7 @@ class tx_ttproducts_variant_dummy implements tx_ttproducts_variant_int {
 	 * @access private
 	 * @see getVariantFromRow
 	 */
-	public function modifyRowFromVariant (&$row, $variant='') {
+	public function modifyRowFromVariant (&$row, $variant = '') {
 	}
 
 	/**
@@ -95,7 +95,7 @@ class tx_ttproducts_variant_dummy implements tx_ttproducts_variant_int {
 	public function getVariantFromRawRow (&$row) {
 	}
 
-	public function getVariantRow($row='',$varianArray=array())	{
+	public function getVariantRow($row = '', $varianArray = array())	{
 	}
 
 	public function getTableUid ($table, $uid)	{

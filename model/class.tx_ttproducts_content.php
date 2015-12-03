@@ -40,8 +40,8 @@
  */
 
 
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
+// require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
 
 
 class tx_ttproducts_content extends tx_ttproducts_table_base {
@@ -55,12 +55,12 @@ class tx_ttproducts_content extends tx_ttproducts_table_base {
 	public function init (&$cObj, $functablename)	{
 		parent::init($cObj, $functablename);
 
-		$this->getTableObj()->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'sorting'=> 'sorting',
-		'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));
+		$this->getTableObj()->setDefaultFieldArray(array('uid' => 'uid', 'pid' => 'pid', 't3ver_oid' => 't3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp' => 'tstamp', 'sorting' => 'sorting',
+		'deleted' => 'deleted', 'hidden' => 'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));
 		$this->getTableObj()->setTCAFieldArray('tt_content');
 	} // init
 
-// 	function get ($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
+// 	function get ($uid=0,$pid=0,$bStore=TRUE,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
 // 		global $TYPO3_DB;
 // 		$rc = $this->dataArray[$uid];
 // 		if (!$rc) {

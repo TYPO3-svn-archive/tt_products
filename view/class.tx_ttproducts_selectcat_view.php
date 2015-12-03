@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php');
+// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php');
 
 class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 
@@ -54,11 +54,11 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 		$out='';
 		$where='';
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$categoryTableView = &$tablesObj->get($functablename,1);
-		$categoryTable = &$categoryTableView->getModelObj();
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$categoryTableView = $tablesObj->get($functablename,1);
+		$categoryTable = $categoryTableView->getModelObj();
 
-		$bSeparated = false;
+		$bSeparated = FALSE;
 		$t = array();
 		$ctrlArray = array();
 
@@ -87,6 +87,11 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 			$catArray [(int) $depth] = &$rootArray;*/
 			$menu = $this->conf['CSS.'][$functablename.'.']['menu'];
 			$menu = ($menu ? $menu : $categoryTableView->piVar.$depth);
+
+			if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
+				$bSeparated = TRUE;
+			}
+
 			$fill = '';
 			if ($bSeparated)	{
 				$fill = ' onchange="fillSelect(this,2,1);"';
@@ -148,12 +153,9 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 			$markerArray = array();
 			$subpartArray = array();
 			$wrappedSubpartArray = array();
-			$markerArray = $this->urlObj->addURLMarkers($this->conf['PIDlistDisplay'],$markerArray);
+			$markerArray = $this->urlObj->addURLMarkers($this->conf['PIDlistDisplay'], $markerArray);
 			$this->urlObj->getWrappedSubpartArray($wrappedSubpartArray);
 			$subpartArray['###CATEGORY_SINGLE###'] = $out;
-			if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
-				$bSeparated = true;
-			}
 
 			if ($bSeparated)	{
 				$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
@@ -165,22 +167,22 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 					$parentFieldArray = array('parent_category');
 				}
 				$piVar = $categoryTableView->piVar;
-				$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
-				$javaScriptObj->set('selectcat', array($categoryArray), 1+$count, $piVar, $parentFieldArray, array($catid), array(), 'clickShow');
+				$javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
+				$javaScriptObj->set('selectcat', array($categoryArray), 1 + $count, $piVar, $parentFieldArray, array($catid), array(), 'clickShow');
 
-				for ($i = 2; $i <= 1+$count; ++$i)	{
+				for ($i = 2; $i <= 1 + $count; ++$i)	{
 					$menu = $piVar.$i;
-					$bShowSubcategories = ($i < 1+$count ? 1 : 0);
-					$boxNumber = ($i < 1+$count ? ($i+1) : 0);
-					$fill = ' onchange="fillSelect(this, '.$boxNumber.','.$bShowSubcategories.');"';
-					$tmp = '<'.$this->htmlTagMain.' id="'.$menu.'"'.$fill.'>';
+					$bShowSubcategories = ($i < 1 + $count ? 1 : 0);
+					$boxNumber = ($i < 1 + $count ? ($i + 1) : 0);
+					$fill = ' onchange="fillSelect(this, ' . $boxNumber . ',' . $bShowSubcategories . ');"';
+					$tmp = '<' . $this->htmlTagMain . ' id="' . $menu . '"' . $fill . '>';
 					$tmp .= '<option value="0"></option>';
-					$tmp .= '</'.$this->htmlTagMain.'>';
-					$subpartArray['###CATEGORY_SINGLE_'.$i.'###'] = $tmp;
+					$tmp .= '</' . $this->htmlTagMain . '>';
+					$subpartArray['###CATEGORY_SINGLE_' . $i . '###'] = $tmp;
 				}
 				// $subpartArray['###CATEGORY_SINGLE_BUTTON'] = '<input type="button" value="Laden" onclick="fillSelect(0, '.$boxNumber.','.$bShowSubcategories.');">';
 			}
-			$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
+			$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'], $markerArray, $subpartArray, $wrappedSubpartArray);
 			$content = $out;
 		}
 		return $content;

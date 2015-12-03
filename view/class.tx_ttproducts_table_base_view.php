@@ -38,7 +38,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_base_view.php');
+// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_base_view.php');
 
 
 abstract class tx_ttproducts_table_base_view	{
@@ -52,10 +52,10 @@ abstract class tx_ttproducts_table_base_view	{
 	public $marker;		// can be overridden
 
 
-	public function init (&$langObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->modelObj = &$modelObj;
-		$this->cObj = &$langObj->cObj;
+	public function init ($langObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->modelObj = $modelObj;
+		$this->cObj = $langObj->cObj;
 		$this->conf = &$modelObj->conf;
 		$this->config = &$modelObj->config;
 
@@ -68,12 +68,20 @@ abstract class tx_ttproducts_table_base_view	{
 	}
 
 
-	public function &getModelObj ()	{
+	public function setCObj ($cObj) {
+		$this->cObj = $cObj;
+	}
+
+	public function getCObj () {
+		return $this->cObj;
+	}
+
+	public function getModelObj ()	{
 		return $this->modelObj;
 	}
 
 
-	public function &getFieldObj ($field)	{
+	public function getFieldObj ($field)	{
 		$classAndPath = $this->getFieldClassAndPath($field);
 		if ($classAndPath['class'])	{
 			$rc = $this->getObj($classAndPath);
@@ -114,16 +122,21 @@ abstract class tx_ttproducts_table_base_view	{
 	}
 
 
-	public function &getObj ($classArray)	{
+	public function getObj ($classArray)	{
 		$className = $classArray['class'];
 		$classNameView = $className.'_view';
 		$path = $classArray['path'];
 
-		include_once ($path.'view/field/class.'.$classNameView.'.php');
-		$fieldViewObj = &t3lib_div::getUserObj('&'.$classNameView);	// fetch and store it as persistent object
+		$fieldViewObj = t3lib_div::getUserObj('&'.$classNameView);	// fetch and store it as persistent object
+		if (!is_object($fieldViewObj)) {
+			throw new RuntimeException('Error in tt_products: The class "' . $classNameView . '" is not found.', 50001);
+		}
+
 		if ($fieldViewObj->needsInit())	{
-			include_once ($path.'model/field/class.'.$className.'.php');
-			$fieldObj = &t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
+			$fieldObj = t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
+			if (!is_object($fieldObj)) {
+				throw new RuntimeException('Error in tt_products: The class "' . $className . '" is not found.', 50002);
+			}
 			if ($fieldObj->needsInit())	{
 				$fieldObj->init($this->cObj);
 			}
@@ -151,9 +164,9 @@ abstract class tx_ttproducts_table_base_view	{
 	)	{
 		global $TCA;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tableconf = $cnf->getTableConf($functablename,$theCode);
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tableconf = $cnf->getTableConf($functablename, $theCode);
 
 		if (is_array($row))	{
 			if (count($row))	{	// check for artificial rows by some fields
@@ -229,7 +242,7 @@ abstract class tx_ttproducts_table_base_view	{
 						}
 					}
 				}
-				$itemTableObj = &$tablesObj->get($functablename, FALSE);
+				$itemTableObj = $tablesObj->get($functablename, FALSE);
 				$tablename = $itemTableObj->getTablename();
 
 				foreach ($row as $field => $value)	{
@@ -243,14 +256,14 @@ abstract class tx_ttproducts_table_base_view	{
 							$partMarkerKey = $markerKey.($k+1);
 							if (isset($tagArray[$partMarkerKey]))	{
 								if ($partValue)	{
-									$wrappedSubpartArray['###' . $partMarkerKey . '###'] = array('','');
+									$wrappedSubpartArray['###' . $partMarkerKey . '###'] = array('', '');
 								} else {
 									$subpartArray['###' . $partMarkerKey . '###'] = '';
 								}
 							}
 						}
-						for ($i=count($valueArray); $i<100; ++$i)	{
-							$partMarkerKey = $markerKey.($i);
+						for ($i = count($valueArray); $i < 100; ++$i)	{
+							$partMarkerKey = $markerKey . ($i);
 							if (isset($tagArray[$partMarkerKey]) && !isset($wrappedSubpartArray['###' . $partMarkerKey . '###']))	{
 								$subpartArray['###' . $partMarkerKey . '###'] = '';
 							}
@@ -284,7 +297,7 @@ abstract class tx_ttproducts_table_base_view	{
 					$wrappedSubpartArray['###' . $markerKey . '###'] = '';
 				}
 			} else { // if count($row)
-				$itemTableObj = &$tablesObj->get($functablename, FALSE);
+				$itemTableObj = $tablesObj->get($functablename, FALSE);
 				$tablename = $itemTableObj->getTablename();
 				$markerKey = $this->marker . '_NOT_EMPTY';
 				if (isset($tagArray[$markerKey]))	{
@@ -312,12 +325,12 @@ abstract class tx_ttproducts_table_base_view	{
 
 	public function getId (&$row, $midId, $theCode)	{
 		$functablename = $this->getModelObj()->getFuncTablename();
-		$extTableName = str_replace('_','-',$functablename);
+		$extTableName = str_replace('_', '-', $functablename);
 		$preId = $extTableName;
 		if ($midId)	{
-			$preId .= '-'.$midId;
+			$preId .= '-' . $midId;
 		}
-		$rc = $preId.'-'.str_replace('_','-',strtolower($theCode)).'-'.intval($row['uid']);
+		$rc = $preId.'-'.str_replace('_', '-', strtolower($theCode)) . '-' . intval($row['uid']);
 		return $rc;
 	}
 
@@ -351,13 +364,13 @@ abstract class tx_ttproducts_table_base_view	{
 
 		if (is_array($row) && $row['uid'])	{
 			$functablename = $this->getModelObj()->getFuncTablename();
-			$extTableName = str_replace('_','-',$functablename);
+			$extTableName = str_replace('_', '-', $functablename);
 			$mainId = $this->getId($row, $id, $theCode);
-			$markerPrefix = ($marker != '' ? $marker.'_' : '');
+			$markerPrefix = ($marker != '' ? $marker . '_' : '');
 			$rowMarkerArray['###' . $markerPrefix . 'ID###'] = $mainId;
 			$rowMarkerArray['###' . $markerPrefix . 'NAME###'] = $extTableName . '-' . $row['uid'];
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-			$tableconf = $cnf->getTableConf($functablename,$theCode);
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+			$tableconf = $cnf->getTableConf($functablename, $theCode);
 			$tabledesc = $cnf->getTableDesc($functablename);
 			$fieldMarkerArray = array();
 			foreach ($row as $field => $value)	{
@@ -365,15 +378,14 @@ abstract class tx_ttproducts_table_base_view	{
 				$markerKey = $markerPrefix . strtoupper($viewField . $suffix);
 				$fieldMarkerArray['###' . $markerKey . '###'] = $value;
 			}
-
 			foreach ($row as $field => $value)	{
 				$viewField = $field;
 				$bSkip = FALSE;
 				$theMarkerArray = &$rowMarkerArray;
 				$fieldId = $mainId . '-' . $viewField;
-				$markerKey = $markerPrefix . strtoupper($viewField.$suffix);
+				$markerKey = $markerPrefix . strtoupper($viewField . $suffix);
 
-				if (isset($tagArray[$markerKey]))	{
+				if (isset($tagArray[$markerKey . '_ID']))	{
 					$rowMarkerArray['###' . $markerKey . '_ID###'] = $fieldId;
 				}
 
@@ -384,8 +396,8 @@ abstract class tx_ttproducts_table_base_view	{
 				} else {
 					$classAndPath = $this->getFieldClassAndPath($field);
 				}
-				if ($classAndPath['class'])	{
 
+				if ($classAndPath['class'])	{
 					$fieldViewObj = $this->getObj($classAndPath);
 					$modifiedValue =
 						$fieldViewObj->getRowMarkerArray	(
@@ -410,7 +422,7 @@ abstract class tx_ttproducts_table_base_view	{
 				} else {
 					switch ($field)	{
 						case 'ext':
-							$bSkip = true;
+							$bSkip = TRUE;
 							break;
 						default:
 							// nothing
@@ -421,14 +433,14 @@ abstract class tx_ttproducts_table_base_view	{
 				if (!$bSkip)	{
 					if (is_array($tableconf['field.'][$field . '.']))	{
 						$tableconf['field.'][$field . '.']['value'] = $value;
-						$fieldContent = $this->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field . '.'],TT_PRODUCTS_EXTkey);
+						$fieldContent = $this->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field . '.'],TT_PRODUCTS_EXT);
 						$value = $this->cObj->substituteMarkerArray($fieldContent,$fieldMarkerArray);
 					}
 					$theMarkerArray['###' . $markerKey . '###'] = $value;
 				}
 			}
 		} else {
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 			$tablename = $this->getModelObj()->getTablename();
 			$tmpMarkerArray = array();
 			$tmpMarkerArray[] = $marker;
@@ -439,7 +451,7 @@ abstract class tx_ttproducts_table_base_view	{
 					if ($confArray['config']['type'] == 'group')	{
 						$foreigntablename = $confArray['config']['foreign_table'];
 						if ($foreigntablename != '')	{
-							$foreignTableViewObj = &$tablesObj->get($foreigntablename,TRUE);
+							$foreignTableViewObj = $tablesObj->get($foreigntablename, TRUE);
 							if (is_object($foreignTableViewObj))	{
 								$foreignMarker = $foreignTableViewObj->getMarker();
 								$tmpMarkerArray[] = $foreignMarker;
@@ -448,6 +460,7 @@ abstract class tx_ttproducts_table_base_view	{
 					}
 				}
 			}
+
 			if (isset($tagArray) && is_array($tagArray))	{
 				foreach ($tagArray as $theTag => $v)	{
 					foreach ($tmpMarkerArray as $theMarker)	{
@@ -477,14 +490,14 @@ abstract class tx_ttproducts_table_base_view	{
 	}
 
 
-	protected function getRowMarkerArrayHooks ($pObj, &$markerArray, &$cObjectMarkerArray, &$row, $imageNum, &$imageRenderObj, &$forminfoArray, $theCode, $id, &$linkWrap)	{
+	protected function getRowMarkerArrayHooks ($pObj, &$markerArray, &$cObjectMarkerArray, &$row, $imageNum, $imageRenderObj, &$forminfoArray, $theCode, $id, &$linkWrap)	{
 
 			// Call all getRowMarkerArray hooks at the end of this method
 		$marker = $this->getMarker();
 
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$marker])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$marker] as $classRef) {
-				$hookObj = &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$marker])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$marker] as $classRef) {
+				$hookObj = t3lib_div::getUserObj($classRef);
 
 				if (method_exists($hookObj, 'getRowMarkerArray')) {
 					$hookObj->getRowMarkerArray($pObj, $markerArray, $cObjectMarkerArray, $row, $imageNum, $imageRenderObj, $forminfoArray, $theCode, $id, $linkWrap);

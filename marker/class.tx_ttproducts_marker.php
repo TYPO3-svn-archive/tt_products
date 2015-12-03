@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_language.php');
+// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_language.php');
 
 
 class tx_ttproducts_marker {
@@ -62,23 +62,23 @@ class tx_ttproducts_marker {
 	 * @param	array		array urls which should be overridden with marker key as index
 	 * @return	  void
 	 */
-	public function init (&$cObj, $piVars)	{
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	public function init ($cObj, $piVars)	{
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 		$this->markerArray = array('CATEGORY', 'PRODUCT', 'ARTICLE');
-		$langObj = &t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
 		$langObj->init($this, $this->cObj, $this->conf['marks.'], 'marker/class.tx_ttproducts_marker.php');
 
 		$markerFile = $this->conf['markerFile'];
 		$language = $langObj->getLanguage();
-		$defaultMarkerFile = 'EXT:'.TT_PRODUCTS_EXTkey.'/marker/locallang.xml';
-		tx_div2007_alpha::loadLL_fh001($langObj,$defaultMarkerFile);
+		$defaultMarkerFile = 'EXT:'.TT_PRODUCTS_EXT.'/marker/locallang.xml';
+		tx_div2007_alpha5::loadLL_fh002($langObj, $defaultMarkerFile);
 
-		if ($language == '' || $language == 'default')	{
+		if ($language == '' || $language == 'default' || $language == 'en')	{
 			if ($markerFile)	{
-				tx_div2007_alpha::loadLL_fh001($langObj,$markerFile);
+				tx_div2007_alpha5::loadLL_fh002($langObj,$markerFile);
 			}
 		} else	{
 			if (!$markerFile)	{
@@ -87,10 +87,10 @@ class tx_ttproducts_marker {
 				} else if (t3lib_extMgm::isLoaded(ADDONS_EXTkey))	{
 					$markerFile = 'EXT:' . ADDONS_EXTkey . '/' . $language . '.locallang.xml';
 				}
-			} else if (substr($markerFile,0,4)=='EXT:')	{	// extension
-				list($extKey,$local) = explode('/',substr($markerFile,4),2);
+			} else if (substr($markerFile, 0, 4) == 'EXT:')	{	// extension
+				list($extKey,$local) = explode('/', substr($markerFile, 4), 2);
 				$filename='';
-				if (strcmp($extKey,'') && !t3lib_extMgm::isLoaded($extKey) && strcmp($local,''))	{
+				if (strcmp($extKey, '') && !t3lib_extMgm::isLoaded($extKey) && strcmp($local, ''))	{
 					$error_code = array();
 					$error_code[0] = 'extension_missing';
 					$error_code[1] = $extKey;
@@ -98,11 +98,12 @@ class tx_ttproducts_marker {
 					$this->setErrorCode($error_code);
 				}
 			}
-			tx_div2007_alpha::loadLL_fh001($langObj,$markerFile);
+			tx_div2007_alpha5::loadLL_fh002($langObj, $markerFile);
 		}
 		$locallang = $langObj->getLocallang();
 		$LLkey = $langObj->getLLkey();
-		$this->setGlobalMarkerArray($piVars,$locallang,$LLkey);
+
+		$this->setGlobalMarkerArray($piVars, $locallang, $LLkey);
 		$error_code = $this->getErrorCode();
 		return (count($error_code) == 0 ? TRUE : FALSE);
 	}
@@ -136,16 +137,16 @@ class tx_ttproducts_marker {
 	/**
 	 * getting the global markers
 	 */
-	public function setGlobalMarkerArray ($piVars,&$locallang,$LLkey)	{
+	public function setGlobalMarkerArray ($piVars, $locallang, $LLkey)	{
 		global $TSFE;
 
 		$markerArray = array();
 
 			// globally substituted markers, fonts and colors.
 		$splitMark = md5(microtime());
-		list($markerArray['###GW1B###' ],$markerArray['###GW1E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap1.']));
-		list($markerArray['###GW2B###'],$markerArray['###GW2E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap2.']));
-		list($markerArray['###GW3B###'],$markerArray['###GW3E###']) = explode($splitMark,$this->cObj->stdWrap($splitMark,$this->conf['wrap3.']));
+		list($markerArray['###GW1B###' ], $markerArray['###GW1E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap1.']));
+		list($markerArray['###GW2B###'], $markerArray['###GW2E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap2.']));
+		list($markerArray['###GW3B###'], $markerArray['###GW3E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap3.']));
 		$markerArray['###GC1###'] = $this->cObj->stdWrap($this->conf['color1'], $this->conf['color1.']);
 		$markerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'], $this->conf['color2.']);
 		$markerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'], $this->conf['color3.']);
@@ -155,18 +156,18 @@ class tx_ttproducts_marker {
 			$markerArray['###PATH_FE_REL###'] = PATH_FE_addons_rel;
 			$markerArray['###PATH_FE_ICONS###'] = PATH_FE_addons_icon_rel;
 		}
-		$pidMarkerArray = array('agb','basket','info','finalize','payment',
-			'thanks','itemDisplay','listDisplay','revocation','search','storeRoot',
-			'memo','tracking','billing','delivery'
+		$pidMarkerArray = array('agb', 'basket', 'info', 'finalize', 'payment',
+			'thanks', 'itemDisplay', 'listDisplay', 'revocation', 'search', 'storeRoot',
+			'memo', 'tracking', 'billing', 'delivery'
 		);
 		foreach ($pidMarkerArray as $k => $function)	{
-			$markerArray['###PID_'.strtoupper($function).'###'] = intval($this->conf['PID'.$function]);
+			$markerArray['###PID_' . strtoupper($function) . '###'] = intval($this->conf['PID' . $function]);
 		}
 		$markerArray['###SHOPADMIN_EMAIL###'] = $this->conf['orderEmail_from'];
 		$lang =  t3lib_div::_GET('L');
 
 		if ($lang!='')	{
-			$markerArray['###LANGPARAM###'] = '&amp;L='.$lang;
+			$markerArray['###LANGPARAM###'] = '&amp;L=' . $lang;
 		} else {
 			$markerArray['###LANGPARAM###'] = '';
 		}
@@ -180,22 +181,34 @@ class tx_ttproducts_marker {
 		$markerArray['###BACK_PID###'] = $backPID;
 
 			// Call all addURLMarkers hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['addGlobalMarkers'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addGlobalMarkers'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['addGlobalMarkers'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addGlobalMarkers')) {
 					$hookObj->addGlobalMarkers($markerArray);
 				}
 			}
 		}
 		if (isset($locallang[$LLkey]))	{
-			$langArray = array_merge($locallang['default'],$locallang[$LLkey]);
+			$langArray = array_merge($locallang['default'], $locallang[$LLkey]);
 		} else {
 			$langArray = $locallang['default'];
 		}
 		if(isset($langArray) && is_array($langArray))	{
 			foreach ($langArray as $key => $value)	{
-				$markerArray['###'.strtoupper($key).'###'] = $value;
+				if (
+					version_compare(TYPO3_version, '4.6.0', '>=') &&
+					is_array($value)
+				) {
+					if ($value[0]['target']) {
+						$value = $value[0]['target'];
+					} else {
+						$value = $value[0]['source'];
+					}
+				}
+
+				$langArray[$key] = $value;
+				$markerArray['###' . strtoupper($key) . '###'] = $value;
 			}
 		} else {
 			$langArray = array();
@@ -210,13 +223,13 @@ class tx_ttproducts_marker {
 						case 'image.':
 							foreach ($value as $k2 => $v2)	{
 								$fileresource = $this->cObj->fileResource($v2);
-								$markerArray['###IMAGE'.strtoupper($k2).'###'] = $fileresource;
+								$markerArray['###IMAGE' . strtoupper($k2) . '###'] = $fileresource;
 							}
 						break;
 					}
 				} else {
-					if(isset($this->conf['marks.'][$key.'.']) && is_array($this->conf['marks.'][$key.'.']))	{
-						$out = $this->cObj->cObjGetSingle($this->conf['marks.'][$key],$this->conf['marks.'][$key.'.']);
+					if(isset($this->conf['marks.'][$key . '.']) && is_array($this->conf['marks.'][$key . '.']))	{
+						$out = $this->cObj->cObjGetSingle($this->conf['marks.'][$key], $this->conf['marks.'][$key . '.']);
 					} else {
 						$langArray[$key] = $value;
 						$out = $value;
@@ -228,6 +241,20 @@ class tx_ttproducts_marker {
 		$this->globalMarkerArray = &$markerArray;
 		$this->setLangArray($langArray);
 	} // setGlobalMarkerArray
+
+	public function reduceMarkerArray ($templateCode, $markerArray) {
+		$result = array();
+
+		$tagArray = $this->getAllMarkers($templateCode);
+
+		foreach ($tagArray as $tag => $v) {
+			$marker = '###' . $tag. '###';
+			if (isset($markerArray[$marker])) {
+				$result[$marker] = $markerArray[$marker];
+			}
+		}
+		return $result;
+	}
 
 	public function &getAllMarkers (&$templateCode)	{
 		$treffer = array();
@@ -274,6 +301,9 @@ class tx_ttproducts_marker {
 
 					$fieldPartArray = t3lib_div::trimExplode('_', $fieldTmp);
 					$field = $fieldPartArray[0];
+					$fieldPartArray = t3lib_div::trimExplode(':', $fieldTmp);
+					$field = $fieldPartArray[0];
+
 					if (strstr($field,'image'))	{	// IMAGE markers can contain following number
 						$field = 'image';
 					} else {
@@ -297,6 +327,8 @@ class tx_ttproducts_marker {
 							}
 						}
 					}
+					$field = strtolower($field);
+
 					if (is_array($tableFieldArray[$field]))	{
 						$retArray[] = $field;
 						$bFieldaddedArray[$field] = TRUE;

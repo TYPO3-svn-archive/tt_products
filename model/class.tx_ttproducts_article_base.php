@@ -39,9 +39,9 @@
  *
  */
 
-
+/*
 require_once (PATH_BE_table.'lib/class.tx_table_db.php');
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_datafield_view.php');
+require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_datafield_view.php');*/
 
 
 abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
@@ -63,17 +63,17 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 		parent::init($cObj, $functablename);
 		$tablename = $this->getTablename();
 		$useArticles = $this->conf['useArticles'];
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		if ($this->type == 'product')	{
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant.php');
 
-			$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant');
+			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant');
 			$this->variant->init($this, $tablename, $useArticles);
 		} else {
 			include_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_variant_dummy.php');
 
-			$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant_dummy');
+			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy');
 		}
 		$tableDesc = $this->getTableDesc();
 
@@ -96,8 +96,8 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 		if (is_array($this->getTableObj()->tableFieldArray[$instockField]))	{
 			$uid = intval($uid);
 			$fieldsArray = array();
-			$fieldsArray[$instockField] = $instockField.'-'.$count;
-			$res = $TYPO3_DB->exec_UPDATEquery($this->getTableObj()->name,'uid=\''.$uid.'\'', $fieldsArray,$instockField);
+			$fieldsArray[$instockField] = $instockField . '-' . $count;
+			$res = $TYPO3_DB->exec_UPDATEquery($this->getTableObj()->name, 'uid=\'' . $uid . '\'', $fieldsArray, $instockField);
 		}
 	}
 
@@ -119,10 +119,10 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	}
 
 
-	public function getFlexQuery ($type,$val=1)	{
+	public function getFlexQuery ($type,$val = 1)	{
 		$spacectrl = '[[:space:][:cntrl:]]*';
 
-		 $rc = '<field index="'.$type.'">'.$spacectrl.'<value index="vDEF">'.($val ? '1': '0').'</value>'.$spacectrl.'</field>'.$spacectrl;
+		 $rc = '<field index="' . $type . '">' . $spacectrl . '<value index="vDEF">' . ($val ? '1': '0').'</value>' . $spacectrl . '</field>' . $spacectrl;
 		 return $rc;
 	}
 
@@ -151,25 +151,25 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 
 
 	/**
-	 * Returns true if the item has the $check value checked
+	 * Returns TRUE if the item has the $check value checked
 	 *
 	 */
 	public function hasAdditional (&$row, $check)  {
-		$hasAdditional = false;
+		$hasAdditional = FALSE;
 		return $hasAdditional;
 	}
 
 
-	public function getWhere ($where, $theCode='') {
+	public function getWhere ($where, $theCode = '', $orderBy = '') {
 		global $TYPO3_DB;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableconf = $cnf->getTableConf($this->getFuncTablename(), $theCode);
 		$rc = array();
 		$where = ($where ? $where : '1=1 ') . $this->getTableObj()->enableFields();
 
 		// Fetching the products
-		$res = $this->getTableObj()->exec_SELECTquery('*', $where);
+		$res = $this->getTableObj()->exec_SELECTquery('*', $where, '', $TYPO3_DB->stripOrderBy($orderBy));
 		$translateFields = $cnf->getTranslationFields($tableconf);
 
 		while($row = $TYPO3_DB->sql_fetch_assoc($res))	{
@@ -187,18 +187,26 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	/**
 	 * Generates a search where clause.
 	 */
-	public function searchWhere (&$searchFieldList, $sw, $theCode)	{
+	public function searchWhere ($searchFieldList, $sw, $theCode) {
+		$where = '';
+
 		$tableConf = $this->getTableConf($theCode);
+
 		$bUseLanguageTable = $this->bUseLanguageTable($tableConf);
-		$searchTable = ($bUseLanguageTable ? $this->getTableObj()->getLangAlias() : $this->getTableObj()->getAlias());
-		$where = $this->cObj->searchWhere($sw, $searchFieldList, $searchTable);
+		if ($bUseLanguageTable) {
+			$where = $this->getTableObj()->searchWhere($sw, $searchFieldList);
+		} else {
+			$searchTable = $this->getTableObj()->getAlias();
+			$where = $this->cObj->searchWhere($sw, $searchFieldList, $searchTable);
+		}
+
 		return $where;
 	} // searchWhere
 
 
 	public function getNeededUrlParams ($functablename, $theCode)	{
 		$rc = '';
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableconf = $cnf->getTableConf($functablename, $theCode);
 		if (is_array($tableconf) && $tableconf['urlparams'])	{
 			$rc = $tableconf['urlparams'];
@@ -207,14 +215,15 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 	}
 
 
-	public function mergeAttributeFields (&$targetRow, &$sourceRow, $bKeepNotEmpty=TRUE, $bAddValues=FALSE, $bUseExt=FALSE)	{
+	public function mergeAttributeFields (&$targetRow, &$sourceRow, $bKeepNotEmpty = TRUE, $bAddValues = FALSE, $bUseExt = FALSE)	{
 		$fieldArray = array();
 
 		$fieldArray['config'] = array('config');
-		$fieldArray['data'] = array('itemnumber', 'image', 'weight', 'inStock');
+		$fieldArray['data'] = array('itemnumber', 'image');
+		$fieldArray['number'] = array('weight', 'inStock');
 		$fieldArray['price'] = array('price', 'price2', 'directcost');
 		$bIsAddedPrice = FALSE;
-		$cnfObj = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnfObj = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableDesc = $this->getTableDesc();
 
 		if (isset($tableDesc['conf.']) && is_array($tableDesc['conf.']) && isset($tableDesc['conf.']['mergeAppendFields']))	{
@@ -261,19 +270,28 @@ abstract class tx_ttproducts_article_base extends tx_ttproducts_table_base {
 							$value += $previouslyAddedPrice;
 						}
 						if($bKeepNotEmpty)	{
-							if (!floatval($targetRow[$field]))	{
+							if (!round($targetRow[$field], 16)) {
 								$targetRow[$field] = $value;
 							}
 						} else { // $bKeepNotEmpty == FALSE
 							$targetRow[$field] = $value;
 						}
-					} else if (($type == 'text') || ($type == 'data'))	{
+					} else if (($type == 'text') || ($type == 'data') || ($type == 'number')) {
 						if($bKeepNotEmpty)	{
-							if (!$targetRow[$field])	{
+							if (
+								$type == 'number' && !round($targetRow[$field], 16) ||
+								$type != 'number' && empty($targetRow[$field])
+							) {
 								$targetRow[$field] = $value;
 							}
 						} else { // $bKeepNotEmpty == FALSE
-							if (!$targetRow[$field] || $value != '')	{
+							if (
+								$type == 'number' &&
+								(!round($targetRow[$field], 16) || round($value, 16))
+									||
+								$type != 'number' &&
+								(empty($targetRow[$field]) || !empty($value))
+							) {
 								if (($bAddValues == TRUE) && in_array($field, $mergeAppendArray))	{
 									$targetRow[$field] .= ' '.$value;
 								} else {

@@ -42,7 +42,7 @@
 class tx_ttproducts_config {
 	public $conf;
 	public $config;
-	private $bHasBeenInitialised = false;
+	private $bHasBeenInitialised = FALSE;
 
 
 	/**
@@ -51,7 +51,7 @@ class tx_ttproducts_config {
 	public function init (&$conf, &$config) {
 		$this->conf = &$conf;
 		$this->config = &$config;
-		$this->bHasBeenInitialised = true;
+		$this->bHasBeenInitialised = TRUE;
 	} // init
 
 
@@ -75,12 +75,12 @@ class tx_ttproducts_config {
 	}
 
 
-	public function &getTableDesc ($functablename, $type='')	{
+	public function &getTableDesc ($functablename, $type = '')	{
 		$tableDesc = array();
 		if (is_array($this->conf['table.']) &&
-			is_array($this->conf['table.'][$functablename.'.'])
+			is_array($this->conf['table.'][$functablename . '.'])
 			)	{
-			$tableDesc = $this->conf['table.'][$functablename.'.'];
+			$tableDesc = $this->conf['table.'][$functablename . '.'];
 		}
 
 		if ($type)	{
@@ -102,7 +102,7 @@ class tx_ttproducts_config {
 	}
 
 
-	public function &getSpecialConf ($type, $tablename='', $theCode='')	{
+	public function &getSpecialConf ($type, $tablename = '', $theCode = '')	{
 		$specialConf = array();
 
 		if (is_array($this->conf[$type.'.']))	{
@@ -113,9 +113,9 @@ class tx_ttproducts_config {
 				if ($theCode &&
 					is_array($this->conf[$type.'.'][$tablename.'.'][$theCode.'.']))	{
 					$tempConf = $this->conf[$type.'.'][$tablename.'.'][$theCode.'.'];
-					$specialConf = array_merge($specialConf, $tempConf);
+					tx_div2007_core::mergeRecursiveWithOverrule($specialConf, $tempConf);
 				}
-				if ($specialConf['orderBy'] == '{$plugin.'.TT_PRODUCTS_EXTkey.'.orderBy}')	{
+				if ($specialConf['orderBy'] == '{$plugin.'.TT_PRODUCTS_EXT.'.orderBy}')	{
 					$specialConf['orderBy'] = '';
 				}
 			} else {
@@ -125,7 +125,7 @@ class tx_ttproducts_config {
 				if ($theCode &&
 					is_array($this->conf[$type.'.'][$theCode.'.']))	{
 					$tempConf = $this->conf[$type.'.'][$theCode.'.'];
-					$specialConf = t3lib_div::array_merge_recursive_overrule($specialConf, $tempConf);
+					tx_div2007_core::mergeRecursiveWithOverrule($specialConf, $tempConf);
 				}
 			}
 		}
@@ -133,27 +133,29 @@ class tx_ttproducts_config {
 	}
 
 
-	public function &getTableConf ($functablename, $theCode='')	{
+	public function &getTableConf ($functablename, $theCode = '')	{
 		$tableConf = $this->getSpecialConf('conf', $functablename, $theCode);
 		return $tableConf;
 	}
 
 
-	public function &getCSSConf ($functablename, $theCode='')	{
+	public function &getCSSConf ($functablename, $theCode = '')	{
 		$cssConf = $this->getSpecialConf('CSS', $functablename, $theCode);
 
 		return $cssConf;
 	}
 
 
-	public function &getFormConf ($theCode='')	{
+	public function &getFormConf ($theCode = '')	{
 		$cssConf = $this->getSpecialConf('form', '', $theCode);
 
 		return $cssConf;
 	}
 
 
-	public function getBasketConf ($feature, $detail='')	{
+
+
+	public function getBasketConf ($feature, $detail = '')	{
 
 		$rc = array();
 		if (is_array($this->conf['basket.']))	{
@@ -175,26 +177,6 @@ class tx_ttproducts_config {
 		}
 		return $rc;
 	}
-
-
-// 	public function getBasketRadiobox ($row)	{
-//
-// 		$rc = '';
-// 		if (isset($this->conf['radio.']) && is_array($this->conf['radio.']))	{
-// 			if ($uid == '')	{
-// 				$rc = $this->conf['radio.'];
-// 			} else {
-// 				foreach ($this->conf['radio.'] as $radiobox => $idList)	{
-// 					$idArray = t3lib_div::trimExplode(',',$idList);
-// 					if (in_array($uid, $idArray))	{
-// 						$rc = $radiobox;
-// 						break;
-// 					}
-// 				}
-// 			}
-// 		}
-// 		return $rc;
-// 	}
 
 
 	public function getTranslationFields ($tableConf)	{
@@ -233,15 +215,37 @@ class tx_ttproducts_config {
 
 
 	/**
-	 * Returns true if the item has the $check value checked
+	 * Returns TRUE if the item has the $check value checked
 	 *
 	 */
 	public function hasConfig (&$row, $check)  {
-		$hasConfig = false;
+		$hasConfig = FALSE;
 		$config = t3lib_div::xml2array($row['config']);
 		$hasConfig = tx_div2007_ff::get($config, $check);
 
 		return $hasConfig;
+	}
+
+
+	public function getColumnFields ($tableConf) {
+		$retArray = array();
+
+		$generateArray = array('generateColumn');
+		foreach ($generateArray as $k => $generate) {
+			if (is_array($tableConf) && is_array($tableConf[$generate . '.'])) {
+				$genPartArray = $tableConf[$generate . '.'];
+				if ($genPartArray['type'] == 'tablefields') {
+					$fieldArray = $genPartArray['field.'];
+
+					if (is_array($fieldArray)) {
+						foreach ($fieldArray as $field => $value) {
+							$retArray[$field] = $value;
+						}
+					}
+				}
+			}
+		}
+		return $retArray;
 	}
 
 
@@ -269,22 +273,6 @@ class tx_ttproducts_config {
 	public function mergeAJAX ($ajaxconf)	{
 		global $TYPO3_DB;
 
-//		if (is_array($ajaxconf) && isset($this->conf['ajax.']) && is_array($this->conf['ajax.']['conf.']))	{
-//			foreach ($ajaxconf as $k => $v){
-//				$newVal = $this->conf['ajax.']['conf.'][$k];
-//				if (isset($newVal))	{
-//					if (is_array($newVal))	{
-//						if ($k == 'TSFE.')	{
-//							$TSFE->config['config'] = array_merge ($TSFE->config['config'], $newVal);
-//						} else {
-//							$this->conf[$k] = array_merge($this->conf[$k], $newVal);
-//						}
-//					} else {
-//						$this->conf[$k] = $newVal;
-//					}
-//				}
-//			}
-//		}
 	}
 }
 

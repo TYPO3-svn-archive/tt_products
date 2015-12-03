@@ -39,7 +39,7 @@
  *
  */
 
-require_once(PATH_BE_ttproducts.'view/class.tx_ttproducts_category_base_view.php');
+// require_once(PATH_BE_ttproducts.'view/class.tx_ttproducts_category_base_view.php');
 
 
 class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
@@ -57,20 +57,20 @@ class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 	 * 	 			for the tt_producst record, $row
 	 * @access private
 	 */
-	public function getMarkerArray (&$markerArray, $markerKey, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $theCode, $id, $prefix, $linkWrap='')	{
+	public function getMarkerArray (&$markerArray, $markerKey, $category, $pid, $imageNum = 0, $imageRenderObj = 'image', &$viewCatTagArray, $forminfoArray = array(), $pageAsCategory = 0, $theCode, $id, $prefix, $linkWrap = '')	{
 		global $TSFE;
 
-		$modelObj = &$this->getModelObj();
+		$modelObj = $this->getModelObj();
 		$row = ($category ? $modelObj->get($category) : array ('title' => '', 'pid' => $pid));
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$functablename = $modelObj->getFuncTablename();
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 			// Get image
 		$imageObj->getRowMarkerArrayEnhanced($functablename, $row, $this->marker, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $viewCatTagArray, $theCode, $id, $prefix, $linkWrap);
 		$pageCatTitle = '';
 		if ($pageAsCategory == 1) {
-			$pageObj = &$tablesObj->get('pages');
+			$pageObj = $tablesObj->get('pages');
 			$pageTmp = $pageObj->get($pid);
 			$pageCatTitle = $pageTmp['title'];
 		}
@@ -80,7 +80,7 @@ class tx_ttproducts_category_view extends tx_ttproducts_category_base_view {
 			$catTitle .= ($this->tableconf['separator'].$row['title']);
 		}
 		$this->setMarkerArrayCatTitle($markerArray, $catTitle, $prefix);
-		parent::getRowMarkerArray($row, $markerKey, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, TRUE, $TSFE->renderCharset, $imageNum=0, $imageRenderObj, $id, $prefix, '', $linkWrap);
+		parent::getRowMarkerArray($row, $markerKey, $markerArray, $variantFieldArray, $variantMarkerArray, $viewCatTagArray, $theCode, TRUE, $TSFE->renderCharset, $imageNum, $imageRenderObj, $id, $prefix, '', $linkWrap);
 	}
 }
 

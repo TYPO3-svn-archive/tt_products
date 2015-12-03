@@ -48,7 +48,7 @@ class tx_ttproducts_integrate {
 		while ($rowArticle = $TYPO3_DB->sql_fetch_assoc($resArticle) )	{
 			$prodUid = intval($rowArticle['uid_product']);
 			$where = 'uid_foreign='.$rowArticle['uid'].' AND uid_local='.$prodUid;
-			$resMM = $TYPO3_DB->exec_SELECTquery('count(*)',$mmTable, $where);
+			$resMM = $TYPO3_DB->exec_SELECTquery('count(*)', $mmTable, $where);
 
 			$rowMM = $TYPO3_DB->sql_fetch_row($resMM);
 			$TYPO3_DB->sql_free_result($resMM);
@@ -59,7 +59,7 @@ class tx_ttproducts_integrate {
 				$insertFields['uid_local'] = $prodUid;
 				$insertFields['uid_foreign'] = intval($rowArticle['uid']);
 
-				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['articleMode'] == '2')	{
+				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['articleMode'] == '2')	{
 					$insertFields['crdate'] = $insertFields['tstamp'] = time();
 					$insertFields['pid'] = $rowArticle['pid'];
 					$insertFields['sorting'] = 1;
@@ -68,7 +68,7 @@ class tx_ttproducts_integrate {
 
 				$updateFields = array();
 				$updateFields['article_uid'] = 'article_uid + 1';
-				$TYPO3_DB->exec_UPDATEquery('tt_products', 'uid='.$prodUid, $updateFields, 'article_uid');
+				$TYPO3_DB->exec_UPDATEquery('tt_products', 'uid=' . $prodUid, $updateFields, 'article_uid');
 				$count++;
 			}
 		}

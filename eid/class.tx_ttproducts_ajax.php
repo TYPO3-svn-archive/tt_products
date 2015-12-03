@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_javascript.php');
+// require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_javascript.php');
 
 
 class tx_ttproducts_ajax {
@@ -52,7 +52,7 @@ class tx_ttproducts_ajax {
 		global $TSFE;
 
 		include_once(PATH_BE_taxajax.'class.tx_taxajax.php');
-		$this->taxajax = &t3lib_div::makeInstance('tx_taxajax');
+		$this->taxajax = t3lib_div::makeInstance('tx_taxajax');
 //		$charset = $TSFE->renderCharset;
 
 			// Encoding of the response to FE charset
@@ -91,11 +91,11 @@ class tx_ttproducts_ajax {
 
 		$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
 		$origUrlArray = explode('?', $reqURI);
-		$urlArray = t3lib_div::explodeUrl2Array($origUrlArray['1'],TRUE);
+		$urlArray = t3lib_div::explodeUrl2Array($origUrlArray['1'], TRUE);
 		unset($urlArray['cHash']);
 		$urlArray['no_cache'] = 1;
-		$urlArray['eID'] = TT_PRODUCTS_EXTkey;
-		$reqURI = t3lib_div::implodeArrayForUrl('',$urlArray);
+		$urlArray['eID'] = TT_PRODUCTS_EXT;
+		$reqURI = t3lib_div::implodeArrayForUrl('', $urlArray);
 		$reqURI{0} = '?';
 		$reqURI = $origUrlArray['0'] . $reqURI;
 

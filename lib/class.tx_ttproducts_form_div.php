@@ -42,8 +42,8 @@
 class tx_ttproducts_form_div {
 
 
-	public function createSelect (
-		&$langObj,
+	static public function createSelect (
+		$langObj,
 		&$valueArray,
 		$name,
 		$selectedKey,
@@ -58,6 +58,7 @@ class tx_ttproducts_form_div {
 		global $TSFE;
 
 		$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
+		$flags = ENT_QUOTES;
 
 		if (is_array($valueArray))	{
 			$totaltext = '';
@@ -73,8 +74,8 @@ class tx_ttproducts_form_div {
 				}
 
 				if ($bTranslateText)	{
-					$tmp = tx_div2007_alpha::sL_fh001($selectValue);
-					$text = tx_div2007_alpha::getLL($langObj, $tmp);
+					$tmp = tx_div2007_alpha5::sL_fh002($selectValue);
+					$text = tx_div2007_alpha5::getLL_fh002($langObj, $tmp);
 				} else {
 					$text = '';
 				}
@@ -84,15 +85,15 @@ class tx_ttproducts_form_div {
 					}
 					$text = $selectValue;
 				}
-
 				if (!count($allowedArray) || in_array($selectKey, $allowedArray))	{
-					$nameText = htmlentities(trim($text),ENT_QUOTES,$TSFE->renderCharset);
-					$valueText = htmlentities($selectKey,ENT_QUOTES,$TSFE->renderCharset);
+					$nameText = trim($text);
+					$valueText = $selectKey;
+
 					$selectedText = '';
 					$paramArray = array();
 					$preParamArray = array();
 
-					if (strcmp($selectKey,$selectedKey)==0)	{
+					if (strcmp($selectKey, $selectedKey) == 0)	{
 						switch ($type)	{
 							case 'select':
 								$selectedText = ($bUseXHTML ? ' selected="selected"' : ' selected');
@@ -102,36 +103,38 @@ class tx_ttproducts_form_div {
 							case 'radio':
 								$selectedText = ($bUseXHTML ? ' checked="checked"' : ' checked');
 								$paramArray['checked'] = 'checked';
+
 								break;
 						}
 					}
 
 					switch ($type)	{
 						case 'select':
-							$inputText = '<option value="' . $valueText . '"' . $selectedText . '>' . $nameText . '</option>';
+							$inputText = '<option value="' . htmlspecialchars($valueText, $flags) . '"' . $selectedText . '>' . $nameText . '</option>';
 							break;
 						case 'checkbox':
 						case 'radio':
 							$preParamArray['type'] = $type;
 							$inputText = self::createTag('input', $name, $valueText, $preParamArray, $paramArray);
-
-// '<input type="'.$type.'" name="'.$name.'" value="'.$valueText.'" '.$selectedText.'>.'
-							$inputText .=  ' ' . $nameText . '<br '. ($bUseXHTML ? '/' : '') . '/>';
+							$inputText .=  ' ' . $nameText . '<br '. ($bUseXHTML ? '/' : '') . '>';
 							break;
 					}
 					if ($layout == '')	{
 						$totaltext .= $inputText;
 					} else	{
-						$tmpText = str_replace('###INPUT###',$inputText,$layout);
+						$tmpText = str_replace('###INPUT###', $inputText, $layout);
 						if (is_array($imageFileArray) && isset($imageFileArray[$key]))	{
-							$tmpText = str_replace('###IMAGE###',$imageFileArray[$key],$tmpText);
+							$tmpText = str_replace('###IMAGE###', $imageFileArray[$key], $tmpText);
 						}
 						$totaltext .= $tmpText;
 					}
 				}
 			} // foreach ($valueArray as $key => $parts) {
+
 			if ($bSelectTags && $type == 'select' && $name!='')	{
+
 				$mainAttributes = self::getAttributeString($mainAttributeArray);
+
 				$text = '<select name="' . $name . '"' . $mainAttributes . '>' . $totaltext . '</select>';
 			} else {
 				$text = $totaltext;
@@ -144,7 +147,7 @@ class tx_ttproducts_form_div {
 
 
 	// fetches the valueArray needed for the functions of this class form a valueArray setup
-	public function fetchValueArray ($confArray)	{
+	static public function fetchValueArray ($confArray)	{
 		$rcArray = array();
 		if (is_array($confArray))	{
 			foreach ($confArray as $k => $vArray)	{
@@ -155,7 +158,7 @@ class tx_ttproducts_form_div {
 	}
 
 
-	public function getKeyValueArray ($valueArray)	{
+	static public function getKeyValueArray ($valueArray)	{
 		$rc = array();
 
 		foreach ($valueArray as $k => $row)	{
@@ -165,7 +168,7 @@ class tx_ttproducts_form_div {
 	}
 
 
-	protected function getAttributeString ($mainAttributeArray)	{
+	static protected function getAttributeString ($mainAttributeArray)	{
 		global $TSFE;
 
 		$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
@@ -184,28 +187,37 @@ class tx_ttproducts_form_div {
 	}
 
 
-	public function createTag ($tag, $name, $value, $preMainAttributes='', $mainAttributes='')	{
-		global $TSFE;
-
-		$bUseXHTML = $TSFE->config['config']['xhtmlDoctype'] != '';
+	static public function createTag (
+		$tag,
+		$name,
+		$value,
+		$preMainAttributes = '',
+		$mainAttributes = ''
+	) {
+		$bUseXHTML = $GLOBALS['TSFE']->config['config']['xhtmlDoctype'] != '';
 		$attributeTextArray = array();
 		$attributeArray = array();
 		$attributeArray['pre'] = $preMainAttributes;
 		$attributeArray['post'] = $mainAttributes;
+		$spaceArray = array();
+		$spaceArray['pre'] = ($preMainAttributes != '' ? ' ' : '');
+		$spaceArray['post'] = ($mainAttributes != '' ? ' ' : '');
 
-		foreach ($attributeArray as $k => $attributes)	{
-			if (is_array($attributes))	{
+		foreach ($attributeArray as $k => $attributes) {
+			if (isset($attributes) && is_array($attributes)) {
 				$attributeTextArray[$k] = self::getAttributeString($attributes);
 			} else {
-				if ($attributes != '' && $attributes{0} != ' ')	{
+				if ($attributes != '' && $attributes{0} != ' ') {
 					$attributeTextArray[$k] = ' ' . $attributes;
 				}
 			}
 		}
-		$rc = '<' . $tag . $attributeTextArray['pre'] . ' name="' . $name . '" value="' . $value . '"' . $attributeTextArray['post'] . ($bUseXHTML ? '/' : '') . '>';
-		return $rc;
+
+		$flags = ENT_QUOTES;
+		$result = '<' . $tag . $spaceArray['pre'] . $attributeTextArray['pre'] . ' name="' . $name . '" value="' . htmlspecialchars($value, $flags) . '"' . $spaceArray['post'] . $attributeTextArray['post'] . ' ' . ($bUseXHTML ? '/' : '') . '>';
+
+		return $result;
 	}
 }
-
 
 ?>

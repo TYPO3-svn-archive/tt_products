@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author  Milosz Klosowicz <typo3@miklobit.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,8 +40,8 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
+// require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
+// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
 
 
 class tx_ttproducts_currency_view {
@@ -51,15 +51,15 @@ class tx_ttproducts_currency_view {
 	var $subpartMarkerObj; // marker functions
 	var $urlObj;
 
-	function init(&$pibase) {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($pibase) {
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 
 		$this->subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
 		$this->subpartmarkerObj->init($pibase->cObj);
-		$this->urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
+		$this->urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
 	}
 
 
@@ -70,19 +70,19 @@ class tx_ttproducts_currency_view {
 		global $TSFE;
 
 		$currList = $this->exchangeRate->initCurrencies($this->BaseCurrency);
-		$jScript =  '	var currlink = new Array(); '.chr(10);
+		$jScript =  '	var currlink = new Array(); ' . chr(10);
 		$index = 0;
 		foreach( $currList as $key => $value)	{
 			//$url = $this->getLinkUrl('','',array('C' => 'C='.$key));
-			$url = $this->pibase->pi_getPageLink($TSFE->id,'',$this->urlObj->getLinkParams('',array('C' => 'C='.$key),true));
+			$url = $this->pibase->pi_getPageLink($TSFE->id, '', $this->urlObj->getLinkParams('', array('C' => 'C=' . $key), TRUE));
 			$jScript .= '	currlink['.$index.'] = "'.$url.'"; '.chr(10) ;
 			$index ++ ;
 		}
 
-		$content = $this->pibase->cObj->getSubpart($this->templateCode,$this->subpartmarkerObj->spMarker('###CURRENCY_SELECTOR###'));
+		$content = $this->pibase->cObj->getSubpart($this->templateCode, $this->subpartmarkerObj->spMarker('###CURRENCY_SELECTOR###'));
 		$content = $this->pibase->cObj->substituteMarker( $content, '###CURRENCY_FORM_NAME###', 'tt_products_currsel_form' );
 		$onChange = 'if (!document.tt_products_currsel_form.C.options[document.tt_products_currsel_form.C.selectedIndex].value) return; top.location.replace(currlink[document.tt_products_currsel_form.C.selectedIndex] );';
-		$selector = $this->exchangeRate->buildCurrSelector($this->BaseCurrency,'C','',$this->currency, $onChange);
+		$selector = $this->exchangeRate->buildCurrSelector($this->BaseCurrency, 'C', '', $this->currency, $onChange);
 		$content = $this->pibase->cObj->substituteMarker( $content, '###SELECTOR###', $selector );
 
 		// javascript to submit correct get parameters for each currency

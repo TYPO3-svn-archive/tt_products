@@ -32,7 +32,7 @@
  * $Id$
  *
  * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com> 
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_article_base_view.php');
+// require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_article_base_view.php');
 
 
 class tx_ttproducts_article_view extends tx_ttproducts_article_base_view {
@@ -51,7 +51,7 @@ class tx_ttproducts_article_view extends tx_ttproducts_article_base_view {
 	function init(&$langObj, &$modelObj)	{
 		include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_dummy_view.php');
 
-		$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
+		$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
 		parent::init($langObj, $modelObj);
 	}
 }

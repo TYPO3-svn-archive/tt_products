@@ -44,39 +44,42 @@
  */
 
 
-require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
-require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_main.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_control.php');
+// require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_main.php');
+// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_model_control.php');
+//
+// require_once(PATH_tslib.'class.tslib_pibase.php');
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
-
+tx_div2007_core::activateCompatibility6();
 
 class tx_ttproducts_pi_int_base extends tslib_pibase {
-	public $prefixId = TT_PRODUCTS_EXTkey;
+	public $prefixId = TT_PRODUCTS_EXT;
 	public $scriptRelPath = 'pi_int_base/class.tx_ttproducts_pi_int_base.php';	// Path to this script relative to the extension dir.
-	public $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
+	public $extKey = TT_PRODUCTS_EXT;	// The extension key.
 	public $pi_USER_INT_obj = TRUE;		// If set, then links are 1) not using cHash and 2) not allowing pages to be cached. (Set this for all USER plugins!)
 	public $bRunAjax = FALSE;		// overrride this
 
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
-	public function main ($content,$conf)	{
+	public function main ($content, $conf)	{
 		global $TSFE;
 
 		tx_ttproducts_model_control::setPrefixId($this->prefixId);
 		$this->pi_setPiVarDefaults();
-		$confMain = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXTkey.'.'];
-		$this->conf = t3lib_div::array_merge_recursive_overrule($confMain,$conf);
+
+		$confMain = $GLOBALS['TSFE']->tmpl->setup['plugin.'][TT_PRODUCTS_EXT . '.'];
+		tx_div2007_core::mergeRecursiveWithOverrule($confMain, $conf);
+		$$this->conf = $confMain;
+
 		$config = array();
-		$mainObj = &t3lib_div::getUserObj('&tx_ttproducts_main');	// fetch and store it as persistent object
+		$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');	// fetch and store it as persistent object
 		$mainObj->bNoCachePossible = FALSE;
 		$errorCode = array();
 		$bDoProcessing = $mainObj->init($content, $this->conf, $config, get_class($this), $errorCode);
 		$errorCode = array();
 
 		if ($bDoProcessing || count($errorCode))	{
-			$content = &$mainObj->run(get_class($this),$errorCode,$content);
+			$content = $mainObj->run(get_class($this), $errorCode, $content);
 		}
 
 		return $content;

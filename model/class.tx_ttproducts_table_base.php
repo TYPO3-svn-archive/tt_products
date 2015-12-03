@@ -39,18 +39,14 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_base.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-
-
 abstract class tx_ttproducts_table_base	{
 	public $bHasBeenInitialised = FALSE;
 	public $cObj;
 	public $conf;
 	public $config;
 	public $tableObj;	// object of the type tx_table_db
-	public $defaultFieldArray=array('uid'=>'uid', 'pid'=>'pid'); // fields which must always be read in
-	public $relatedFromTableArray=array();
+	public $defaultFieldArray = array('uid' => 'uid', 'pid' => 'pid'); // fields which must always be read in
+	public $relatedFromTableArray = array();
 	protected $insertRowArray;	// array of stored insert records
 	protected $insertKey;		// array for insertion
 	public $fieldArray = array(); // field replacements
@@ -66,34 +62,39 @@ abstract class tx_ttproducts_table_base	{
 	private $orderBy;
 
 	private $fieldClassArray = array (
-		'ac_uid' => 'tx_ttproducts_field_foreign_table',
-		'datasheet' => 'tx_ttproducts_field_datafield',
-		'directcost' => 'tx_ttproducts_field_price',
-		'endtime' => 'tx_ttproducts_field_datetime',
-		'graduated_price_uid' => 'tx_ttproducts_field_graduated_price',
-		'image' => 'tx_ttproducts_field_image',
-		'itemnumber' => 'tx_ttproducts_field_text',
-		'note' => 'tx_ttproducts_field_note',
-		'note2' => 'tx_ttproducts_field_note',
-		'price' => 'tx_ttproducts_field_price',
-		'price2' => 'tx_ttproducts_field_price',
-		'sellendtime' => 'tx_ttproducts_field_datetime',
-		'sellstarttime' => 'tx_ttproducts_field_datetime',
-		'starttime' => 'tx_ttproducts_field_datetime',
-		'subtitle' => 'tx_ttproducts_field_text',
-		'tax' => 'tx_ttproducts_field_tax',
-		'title' => 'tx_ttproducts_field_text',
-	);
+			'ac_uid' => 'tx_ttproducts_field_foreign_table',
+			'crdate' => 'tx_ttproducts_field_datetime',
+// 			'creditpoints' => 'tx_ttproducts_field_creditpoints',
+			'datasheet' => 'tx_ttproducts_field_datafield',
+// 			'delivery' => 'tx_ttproducts_field_delivery',
+			'directcost' => 'tx_ttproducts_field_price',
+			'endtime' => 'tx_ttproducts_field_datetime',
+			'graduated_price_uid' => 'tx_ttproducts_field_graduated_price',
+			'image' => 'tx_ttproducts_field_image',
+			'smallimage' => 'tx_ttproducts_field_image',
+			'itemnumber' => 'tx_ttproducts_field_text',
+			'note' => 'tx_ttproducts_field_note',
+			'note2' => 'tx_ttproducts_field_note',
+			'price' => 'tx_ttproducts_field_price',
+			'price2' => 'tx_ttproducts_field_price',
+			'sellendtime' => 'tx_ttproducts_field_datetime',
+			'sellstarttime' => 'tx_ttproducts_field_datetime',
+			'starttime' => 'tx_ttproducts_field_datetime',
+			'subtitle' => 'tx_ttproducts_field_text',
+			'tax' => 'tx_ttproducts_field_tax',
+			'title' => 'tx_ttproducts_field_text',
+			'tstamp' => 'tx_ttproducts_field_datetime',
+			'usebydate' => 'tx_ttproducts_field_datetime',
+		);
 
-
-	public function init (&$cObj, $functablename)	{
+	public function init ($cObj, $functablename)	{
 		global $TCA;
 
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
-		$this->tableObj = &t3lib_div::makeInstance('tx_table_db');
+		$this->tableObj = t3lib_div::makeInstance('tx_table_db');
 		$this->insertKey = 0;
 
 		$this->setFuncTablename($functablename);
@@ -102,13 +103,15 @@ abstract class tx_ttproducts_table_base	{
 		$this->setTablename($tablename);
 		$this->tableDesc = $cnf->getTableDesc($functablename);
 
-		$checkDefaultFieldArray = array('tstamp'=>'tstamp', 'crdate'=>'crdate', 'hidden'=>'hidden', 'deleted' => 'deleted');
+		$checkDefaultFieldArray = array('tstamp' => 'tstamp', 'crdate' => 'crdate', 'hidden' => 'hidden', 'deleted' => 'deleted');
 
 		if (isset($TCA[$tablename]['ctrl']) && is_array($TCA[$tablename]['ctrl']))	{
+
 			foreach ($checkDefaultFieldArray as $theField)	{
-				if (isset($TCA[$tablename]['ctrl'][$theField]) && is_array($TCA[$tablename]['columns'][$theField]) ||
+				if (
+					isset($TCA[$tablename]['ctrl'][$theField]) && is_array($TCA[$tablename]['ctrl'][$theField]) ||
 					in_array($theField,$TCA[$tablename]['ctrl'],TRUE) ||
-					isset($TCA[$tablename]['ctrl']['enablecolumns']) && is_array($TCA[$tablename]['columns']['enablecolumns']) && in_array($theField,$TCA[$tablename]['ctrl']['enablecolumns'],TRUE)
+					isset($TCA[$tablename]['ctrl']['enablecolumns']) && is_array($TCA[$tablename]['ctrl']['enablecolumns']) && in_array($theField,$TCA[$tablename]['ctrl']['enablecolumns'],TRUE)
 				)	{
 					$this->defaultFieldArray[$theField] = $theField;
 				}
@@ -151,13 +154,19 @@ abstract class tx_ttproducts_table_base	{
 
 	/* uid can be a string. Add a blank character to your uid integer if you want to have muliple rows as a result
 	*/
-	public function get ($uid='0',$pid=0,$bStore=TRUE,$where_clause='',$groupBy='',$orderBy='',$limit='',$fields='',$bCount=FALSE,$aliasPostfix='') {
+	public function get ($uid = '0', $pid = 0, $bStore = TRUE, $where_clause = '', $groupBy = '', $orderBy = '', $limit = '', $fields = '', $bCount = FALSE, $aliasPostfix = '') {
 		global $TYPO3_DB;
 
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$alias = $this->getAlias() . $aliasPostfix;
-		if (t3lib_div::testInt($uid) && isset($this->dataArray[$uid]) && is_array($this->dataArray[$uid]) && !$where_clause && !$fields)	{
 
+		if (
+			tx_div2007_core::testInt($uid) &&
+			isset($this->dataArray[$uid]) &&
+			is_array($this->dataArray[$uid]) &&
+			!$where_clause &&
+			!$fields
+		) {
 			if (!$pid || ($pid && $this->dataArray[$uid]['pid'] == $pid))	{
 				$rc = $this->dataArray[$uid];
 			} else {
@@ -166,28 +175,36 @@ abstract class tx_ttproducts_table_base	{
 		}
 
 		if (!$rc) {
+			$needsEnableFields = TRUE;
 			$enableFields = $tableObj->enableFields($aliasPostfix);
-			$where = '1=1 '.$enableFields;
+			$where = '1=1';
 
 			if (is_int($uid))	{
-				$where .= ' AND '.$alias.'.uid = '.intval($uid);
+				$where .= ' AND ' . $alias . '.uid = ' . intval($uid);
 			} else if($uid)	{
-				$uidArray = t3lib_div::trimExplode(',',$uid);
+				$uidArray = t3lib_div::trimExplode(',', $uid);
 				foreach ($uidArray as $k => $v)	{
 					$uidArray[$k] = intval($v);
 				}
-				$where .= ' AND '.$alias.'.uid IN ('.implode(',',$uidArray).')';
+				$where .= ' AND ' . $alias . '.uid IN (' . implode(',', $uidArray) . ')';
 			}
 			if ($pid)	{
-				$pidArray = t3lib_div::trimExplode(',',$pid);
+				$pidArray = t3lib_div::trimExplode(',', $pid);
 				foreach ($pidArray as $k => $v)	{
 					$pidArray[$k] = intval($v);
 				}
-				$where .= ' AND '.$alias.'.pid IN ('.implode(',',$pidArray).')';
+				$where .= ' AND ' . $alias . '.pid IN (' . implode(',', $pidArray) . ')';
 			}
 			if ($where_clause)	{
-				$where .= ' AND ( '.$where_clause.' )';
+				if (strpos($where_clause, $enableFields) !== FALSE) {
+					$needsEnableFields = FALSE;
+				}
+				$where .= ' AND ( ' . $where_clause . ' )';
 			}
+			if ($needsEnableFields) {
+				$where .= $enableFields;
+			}
+
 			if (!$fields)	{
 				if ($bCount)	{
 					$fields = 'count(*)';
@@ -206,6 +223,7 @@ abstract class tx_ttproducts_table_base	{
 				$rc = array();
 
 				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+// +++ hook +++
 					if (is_array($tableObj->langArray) && $tableObj->langArray[$row['title']])	{
 						$row['title'] = $tableObj->langArray[$row['title']];
 					}
@@ -220,7 +238,9 @@ abstract class tx_ttproducts_table_base	{
 				}
 
 				$TYPO3_DB->sql_free_result($res);
-				if (t3lib_div::testInt($uid))	{
+				if (
+					tx_div2007_core::testInt($uid)
+				) {
 					reset($rc);
 					$rc = current ($rc);
 				}
@@ -241,13 +261,25 @@ abstract class tx_ttproducts_table_base	{
 	}
 
 
+	/**
+	 * Returns the label of the record, Usage in the following format:
+	 *
+	 * @param	array		$row: current record
+	 * @return	string		Label of the record
+	 */
+	public function getLabel ($row) {
+
+		return $row['title'];
+	}
+
+
 	public function getCobj ()	{
 		return $this->cObj;
 	}
 
 
-	public function setCobj (&$cObj)	{
-		$this->cObj = &$cObj;
+	public function setCobj ($cObj)	{
+		$this->cObj = $cObj;
 	}
 
 
@@ -272,12 +304,12 @@ abstract class tx_ttproducts_table_base	{
 
 			$funcTablename = $this->getFuncTablename();
 			if (
-				isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['fieldClass']) &&
-				is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['fieldClass']) &&
-				isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['fieldClass'][$funcTablename]) &&
-				is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['fieldClass'][$funcTablename])
+				isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['fieldClass']) &&
+				is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['fieldClass']) &&
+				isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['fieldClass'][$funcTablename]) &&
+				is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['fieldClass'][$funcTablename])
 			)	{
-				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['fieldClass'][$funcTablename] as $extKey => $hookArray)	{
+				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['fieldClass'][$funcTablename] as $extKey => $hookArray)	{
 					if (t3lib_extMgm::isLoaded($extKey)) {
 						$class = $hookArray[$fieldname];
 						if ($class)	{
@@ -301,7 +333,7 @@ abstract class tx_ttproducts_table_base	{
 
 
 	public function getAlias ()	{
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		return $tableObj->getAlias();
 	}
 
@@ -327,7 +359,7 @@ abstract class tx_ttproducts_table_base	{
 
 
 	public function getLangName () {
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		return $tableObj->getLangName();
 	}
 
@@ -348,7 +380,7 @@ abstract class tx_ttproducts_table_base	{
 
 
 	/* initalisation for code dependant configuration */
-	public function initCodeConf ($theCode,$tableConf)	{
+	public function initCodeConf ($theCode, $tableConf)	{
 		if ($theCode != $this->getCode())	{
 			$this->setCode($theCode);
 			if ($this->orderBy != $tableConf['orderBy'])	{
@@ -368,7 +400,7 @@ abstract class tx_ttproducts_table_base	{
 				$addRequiredFields = $tableConf['language.']['field.'];
 				$this->getTableObj()->addRequiredFieldArray($addRequiredFields);
 			}
-			$tableObj = &$this->getTableObj();
+			$tableObj = $this->getTableObj();
 			if ($this->bUseLanguageTable($tableConf))	{
 				$tableObj->setLanguage($this->config['LLkey']);
 				$tableObj->setLangName($tableConf['language.']['table']);
@@ -377,7 +409,6 @@ abstract class tx_ttproducts_table_base	{
 			if ($tableConf['language.'] && $tableConf['language.']['type'] == 'csv')	{
 				$tableObj->initLanguageFile($tableConf['language.']['file']);
 			}
-
 			if ($tableConf['language.'] && is_array($tableConf['language.']['marker.']))	{
 				$tableObj->initMarkerFile($tableConf['language.']['marker.']['file']);
 			}
@@ -424,11 +455,11 @@ abstract class tx_ttproducts_table_base	{
 	}
 
 
-	public function getTableConf ($theCode='')	{
-		if ($theCode=='' && $this->getCode()!='')	{
+	public function getTableConf ($theCode = '')	{
+		if ($theCode == '' && $this->getCode() != '')	{
 			$rc = $this->tableConf;
 		} else {
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 			$rc = &$cnf->getTableConf($this->getFuncTablename(), $theCode);
 		}
 		$this->fixTableConf($rc);
@@ -451,7 +482,7 @@ abstract class tx_ttproducts_table_base	{
 	}
 
 
-	public function getKeyFieldArray ($theCode='')	{
+	public function getKeyFieldArray ($theCode = '')	{
 		$tableConf = $this->getTableConf($theCod);
 		$rc = array();
 		if (isset($tableConf['keyfield.']) && is_array($tableConf['keyfield.']))	{
@@ -473,7 +504,7 @@ abstract class tx_ttproducts_table_base	{
 	}
 
 
-	public function getLanguageFieldArray ($theCode='')	{
+	public function getLanguageFieldArray ($theCode = '')	{
 
 		$tableConf = $this->getTableConf($theCode);
 		if (is_array($tableConf['language.']) &&
@@ -488,7 +519,7 @@ abstract class tx_ttproducts_table_base	{
 	}
 
 
-	public function &getTableObj ()	{
+	public function getTableObj ()	{
 		return $this->tableObj;
 	}
 

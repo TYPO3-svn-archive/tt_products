@@ -40,15 +40,15 @@
  */
 
 
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once(PATH_BE_table.'lib/class.tx_table_db.php');
 
 
 class tx_ttproducts_static_tax extends tx_ttproducts_table_base {
 	protected $uidStore;
 	private $allTaxesArray;
 	private $taxArray;
-	private $countryArray=array();
-	private $taxIdArray=array();
+	private $countryArray = array();
+	private $taxIdArray = array();
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
@@ -57,9 +57,9 @@ class tx_ttproducts_static_tax extends tx_ttproducts_table_base {
 		if ($this->isInstalled())	{
 			parent::init($pibase, $functablename);
 			$tablename = $this->getTablename();
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 			$tableconf = $cnf->getTableConf('static_taxes');
-			$this->getTableObj()->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid'));
+			$this->getTableObj()->setDefaultFieldArray(array('uid' => 'uid', 'pid' => 'pid'));
 			$this->getTableObj()->setTCAFieldArray('static_taxes');
 
 			$requiredFields = 'uid,pid';
@@ -72,8 +72,19 @@ class tx_ttproducts_static_tax extends tx_ttproducts_table_base {
 		}
 	} // init
 
-	public function isInstalled ()	{
-		$rc = t3lib_extMgm::isLoaded('static_info_tables_taxes');
+	public function isInstalled () {
+		$rc = FALSE;
+
+		if (t3lib_extMgm::isLoaded('static_info_tables_taxes')) {
+			$eInfo = tx_div2007_alpha5::getExtensionInfo_fh003('static_info_tables_taxes');
+
+			if (is_array($eInfo)) {
+				$sittVersion = $eInfo['version'];
+				if (version_compare($sittVersion, '0.1.0', '>=')) {
+					$rc = TRUE;
+				}
+			}
+		}
 		return $rc;
 	}
 
@@ -94,27 +105,32 @@ class tx_ttproducts_static_tax extends tx_ttproducts_table_base {
 		global $TYPO3_DB;
 
 		if ($this->isInstalled())	{
-			$staticInfoObj = &t3lib_div::getUserObj('&tx_staticinfotables_pi1');
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-			$orderAdressObj = &$tablesObj->get('address', FALSE);
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$orderAdressObj = $tablesObj->get('address', FALSE);
 			$storeRow = $orderAdressObj->get($uidStore);
+			$theCountryCode = '';
 
 			if ($storeRow)	{
 				$staticInfoCountryField = $orderAdressObj->getField('static_info_country');
-				$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+				$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 				$tableconf = $cnf->getTableConf('address');
 
-				if ($tableconf['countryReference'] == 'uid')	{
-					$countryObj = &$tablesObj->get('static_countries');
-					$countryRow = $countryObj->get($storeRow[$staticInfoCountryField]);
-					$theCountryCode = $countryRow['cn_iso_3'];
+				if (
+					$tableconf['countryReference'] == 'uid' &&
+					tx_div2007_core::testInt($storeRow[$staticInfoCountryField])
+				) {
+					$countryObj = $tablesObj->get('static_countries');
+					if (is_object($countryObj)) {
+						$countryRow = $countryObj->get($storeRow[$staticInfoCountryField]);
+						$theCountryCode = $countryRow['cn_iso_3'];
+					}
 				} else {
 					$theCountryCode = $storeRow[$staticInfoCountryField];
 				}
 
 				$zoneField = $orderAdressObj->getField('zone');
 				if ($tableconf['zoneReference'] == 'uid')	{
-					$zoneArray = $TYPO3_DB->exec_SELECTgetRows('zn_code','static_country_zones','uid='.intval($storeRow[$zoneField]));
+					$zoneArray = $TYPO3_DB->exec_SELECTgetRows('zn_code', 'static_country_zones', 'uid=' . intval($storeRow[$zoneField]));
 					if (isset($zoneArray) && is_array($zoneArray) && isset($zoneArray[0]))	{
 						$theZoneCode = $zoneArray[0]['zn_code'];
 					}
@@ -149,7 +165,7 @@ class tx_ttproducts_static_tax extends tx_ttproducts_table_base {
 		}
 	}
 
-	public function getAllTaxesArray ($taxId='')	{
+	public function getAllTaxesArray ($taxId = '')	{
 		if (strlen($taxId))	{
 				$rc = $this->allTaxesArray[$taxId];
 		} else {
@@ -181,15 +197,18 @@ class tx_ttproducts_static_tax extends tx_ttproducts_table_base {
 	public function getStaticTax (&$row, &$tax, &$taxArray)	{
 
 		if ($this->getUidStore() && $this->isInstalled())	{
-			$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+			$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 
 			if (isset($basketObj->recs) && is_array($basketObj->recs) && count($basketObj->recs))	{
 				$deliveryInfo = $basketObj->recs['delivery'];
 			}
+
 			if (isset($this->countryArray['shop']['country_code']) && strlen($row['tax_id']))	{
 				$taxId = $row['tax_id'];
-				$staticInfoObj = &t3lib_div::getUserObj('&tx_staticinfotables_pi1');
+				$staticInfoObj = tx_ttproducts_static_info::getStaticInfo();
+
 				$countryArray = $this->countryArray;
+
 				if (isset($deliveryInfo) && is_array($deliveryInfo))	{
 					$countryArray['customer']['country_code'] =  $deliveryInfo['country_code'];
 					$countryArray['customer']['zone'] = $deliveryInfo['zone'];
@@ -215,18 +234,19 @@ class tx_ttproducts_static_tax extends tx_ttproducts_table_base {
 						$countryArray
 					);
 					$this->setAllTaxesArray($taxArray,$taxId);
-					$tax = 0;
+					$tax = 0.0;
+
 					if (isset($taxArray) && is_array($taxArray) && count($taxArray))	{
 						$priceOne = tx_staticinfotablestaxes_div::applyConsumerTaxes (
 							$staticInfoObj,
 							1,
 							$taxArray
 						);
-						$tax = $priceOne - 1;
+						$tax = floatval($priceOne - 1);
 					}
 					$this->setTax($tax,$taxId);
 				} else {
-					$tax = $this->getTaxArray($taxId);
+					$tax = floatval($this->getTaxArray($taxId));
 				}
 			}
 		}

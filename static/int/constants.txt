@@ -1,11 +1,10 @@
 ##
 ## @package TYPO3
 ## @subpackage tt_products
-## @version $Id$
+## @version $Id: constants.txt 90302 2015-12-03 15:46:12Z franzholz $
 ##
 
 
 plugin.tx_ttproducts_pi_int {
-    # cat=plugin.products/file; type=file[html,htm,tmpl,txt]; label= Template File: This is a simple textfile for the display of the search box.
-  file.templateFile = EXT:tt_products/template/example_locallang_xml.html
+
 }

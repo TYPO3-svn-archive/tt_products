@@ -292,6 +292,12 @@ $Id$
 <!-- ###ITEM_SINGLE_DISPLAY### begin
 	This subpart is used to display single products.
 -->
+<table border="0" cellspacing="0" cellpadding="1" width="100%">
+	<tr>
+		<td align="left"><!--###LINK_PREV_SINGLE###-->###GW2B###&lt;&lt; voriger Artikel###GW2E###<!--###LINK_PREV_SINGLE###--></td>
+		<td align="right"><!--###LINK_NEXT_SINGLE###-->###GW2B###n&auml;chster Artikel &gt;&gt;###GW2E###<!--###LINK_NEXT_SINGLE###--></td>
+	</tr>
+</table>
 
 <table border="0" cellspacing="0" cellpadding="1" width=1>
 <form method="post" name="###FORM_NAME###" action="###FORM_URL###">
@@ -673,6 +679,15 @@ $Id$
 
 
 
+<h3>MEMO_EMPTY</h3>
+<em>Subpart displayed when trying to view the memo but the logged in frontend user hasn't stored any memo yet.</em>
+
+<!-- ###MEMO_EMPTY### begin -->
+###GW1B###<b>Sie haben keine Produkte vorgemerkt.</b>###GW1E###
+<!-- ###MEMO_EMPTY### end -->
+
+
+
 
 <br><br><br><br><hr><br><br><br>
 <h3>ITEM_SEARCH</h3>
@@ -737,7 +752,7 @@ The product list part has the exact same features as the regular LIST_ITEM_TEMPL
 In addition there's a number of fields used for delivery and payment information.
 -->
 ###EXTERNAL_COBJECT###
-<form method="post" action="###FORM_URL###">
+<form method="post" id="basketForm" action="###FORM_URL###">
 
 <table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse: collapse" bordercolor="#111111">
 <tr>
@@ -924,6 +939,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 <!-- ###MESSAGE_PAYMENT_120### -->
 <br><b>Bezahlung &uuml;ber Cyberplus.</b><br>
 <!-- ###MESSAGE_PAYMENT_120### -->
+
 <!-- ###MESSAGE_PAYMENT### -->
 ###GW2E###
 
@@ -953,7 +969,7 @@ This whole subpart, message_payment is substituted with the subpart 'message_pay
 <input type="Submit" name="products_update" value="###BASKET_UPDATE_CART###">
 <input type="Submit" name="products_clear_basket" value="###BASKET_EMPTY_CART###"></td>
 <td align="right">
-<input type="submit" name="products_info" value="###BASKET_CHECKOUT###" onclick="this.form.action='###FORM_URL_INFO###';"></td>
+<input type="submit" name="products_info" value="###BASKET_CHECKOUT###" onClick="var basketForm; basketForm = document.getElementById('basketForm'); basketForm.action='###FORM_URL_INFO###';"></td>
 </tr>
 </table>
 </form>
@@ -1205,7 +1221,32 @@ If this part is not empty then this will be used instead of BILLING_ADDRESS if t
 <td colspan="3">###GW1B###<b><!--###LINK_AGB### -->###BASKET_TERMS###<!--###LINK_AGB### --></b><br>
 ###BASKET_TERMS_READ###<input type="checkbox" name="recs[personinfo][agb]" ###PERSON_AGB### />###GW1E### </td>
 <td colspan="3"></td>
+
 </tr>
+<!-- ###MESSAGE_PAYMENT### begin -->
+<!-- ###MESSAGE_PAYMENT_700### -->
+<tr>
+<td colspan="3">
+<table>
+<tr>
+<td>###GW1B###<strong>Kreditkarte:</strong>###GW1E###</td>
+<td>###PERSON_CARDS_CC_TYPE###   zuletzt: ###PERSON_CARDS_CC_TYPE_SELECTED###</td>
+<td><input name="recs[creditcard][cc_number_1]" value="###PERSON_CARDS_CC_NUMBER_1###" size="4" maxlength="4"/>-<input name="recs[creditcard][cc_number_2]" value="###PERSON_CARDS_CC_NUMBER_2###" size="4" maxlength="4" />-<input name="recs[creditcard][cc_number_3]" value="###PERSON_CARDS_CC_NUMBER_3###" size="4" maxlength="4" />-<input name="recs[creditcard][cc_number_4]" value="###PERSON_CARDS_CC_NUMBER_4###" size="4" maxlength="4" /> Sicherheitszahl <input name="recs[creditcard][cvv2]" value="###PERSON_CARDS_CVV2###" size="4" maxlength="4" />
+</td>
+<td>G&uuml;ltigkeit bis: <input name="recs[creditcard][endtime_mm]" value="###PERSON_CARDS_ENDTIME_MM###" size="2" maxlength="2"/> / <input name="recs[creditcard][endtime_yy]" value="###PERSON_CARDS_ENDTIME_YY###" size="2" maxlength="2"/></td>
+</tr>
+<tr>
+  <td >###GW1B###<strong>Inhaber</strong>###GW1E###</td>
+  <td colspan="3"><input name="recs[creditcard][owner_name]" value="###PERSON_CARDS_OWNER_NAME###" size="20"/>
+  </td>
+</tr>
+</table>
+</td>
+</tr>
+<!-- ###MESSAGE_PAYMENT_700### -->
+<!-- ###MESSAGE_PAYMENT### end -->
+
+
 </table>
 <br>
 <table width="100%"><tr>
@@ -1456,6 +1497,7 @@ Exact same features as BASKET_TEMPLATE
 		<td valign=top colspan=3>###GW1B###<strong>###BASKET_PAYMENT_INVOICE###</strong>
       ###GW1E###</td>
 		<td valign=top align=right colspan=2 nowrap>###GW1B### <b>###P_CURRENCY### ###PRICE_TOTAL_TAX###</b>
+		<br />(###VAT### ###P_CURRENCY### ###PRICE_TOTAL_ONLY_TAX###)
 		<br>(###NO_VAT### ###P_CURRENCY### ###PRICE_TOTAL_NO_TAX###)<br>###GW1E###</td>
 	</tr>
 	<tr><td>

@@ -38,17 +38,16 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_article_base_view.php');
 
 
 class tx_ttproducts_dam_view extends tx_ttproducts_article_base_view {
 	public $marker = 'DAM';
 	public $piVar = 'dam';
 
-	function init(&$langObj, &$modelObj)	{
+	function init($langObj, $modelObj)	{
 		include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_dummy_view.php');
 
-		$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
+		$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
 		parent::init($langObj, $modelObj);
 	}
 
@@ -101,7 +100,7 @@ class tx_ttproducts_dam_view extends tx_ttproducts_article_base_view {
 			$suffix,
 			$linkWrap
 		);
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 		$markerKey = $this->getMarkerKey($markerKey);
 
 			// Get image
@@ -120,12 +119,6 @@ class tx_ttproducts_dam_view extends tx_ttproducts_article_base_view {
 			$suffix,
 			$linkWrap
 		);
-
-/*		foreach ($row as $field => $value)	{
-			if (!is_array($row[$field]))	{
-				$markerArray['###'.$this->marker.'_'.strtoupper($field).'###'] = htmlentities($row[$field],ENT_QUOTES,$TSFE->renderCharset);
-			}
-		}*/
 	}
 
 

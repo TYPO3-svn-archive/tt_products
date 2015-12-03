@@ -39,7 +39,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'view/interface.tx_ttproducts_variant_view_int.php');
+// require_once (PATH_BE_ttproducts.'view/interface.tx_ttproducts_variant_view_int.php');
 
 
 class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
@@ -48,10 +48,10 @@ class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 	public $langObj;
 
 
-	public function init(&$langObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->cObj = &$langObj->cObj;
-		$this->modelObj = &$modelObj;
+	public function init($langObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->cObj = $langObj->cObj;
+		$this->modelObj = $modelObj;
 	}
 
 	public function getVariantSubpartMarkerArray (&$markerArray, &$subpartArray, &$wrappedSubpartArray, &$row, &$tempContent, $bUseSelects, &$conf, $bHasAdditional, $bGiftService)  {
@@ -81,7 +81,7 @@ class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 			}
 
 			foreach ($areaArray as $k => $area) {
-				$subpartArray['###'.$area.'###'] = $this->cObj->getSubpart($tempContent,'###'.$area.'###');
+				$subpartArray['###' . $area . '###'] = $this->cObj->getSubpart($tempContent, '###' . $area . '###');
 			}
 		}
 		$this->removeEmptyMarkerSubpartArray($markerArray, $subpartArray, $wrappedSubpartArray, $row, $conf, $bHasAdditional, $bGiftService);
@@ -96,10 +96,10 @@ class tx_ttproducts_variant_view implements tx_ttproducts_variant_view_int {
 		if (is_array($variantConf))	{
 			foreach ($variantConf as $key => $field)	{
 				if ($field != 'additional')	{	// no additional here
-					if (trim($row[$field]) == '' || !$conf['select'.ucfirst($field)])	{
-						$remSubpartArray[] = 'display_variant'.$key;
+					if (trim($row[$field]) == '' || !$conf['select' . ucfirst($field)])	{
+						$remSubpartArray[] = 'display_variant' . $key;
 					} else {
-						$remMarkerArray[] = 'display_variant'.$key;
+						$remMarkerArray[] = 'display_variant' . $key;
 					}
 				}
 			}

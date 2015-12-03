@@ -41,8 +41,9 @@
  *
  */
 
-require_once (PATH_BE_div2007.'class.tx_div2007_alpha.php');
-require_once (PATH_BE_ttproducts.'pi_int/class.tx_ttproducts_pi_int_base.php');
+// require_once (PATH_BE_div2007.'class.tx_div2007_alpha.php');
+// require_once(PATH_BE_div2007.'class.tx_div2007_alpha5.php');
+// require_once (PATH_BE_ttproducts.'pi_int/class.tx_ttproducts_pi_int_base.php');
 
 
 class tx_ttproducts_pi_int {
@@ -56,21 +57,17 @@ class tx_ttproducts_pi_int {
 	/**
 	 * Main method. Call this from TypoScript by a USER cObject.
 	 */
-	public function main ($content, &$conf)	{
+	public function main ($content, $conf)	{
 
-		$pibaseObj = &t3lib_div::getUserObj('&tx_ttproducts_pi_int_base');
-		$pibaseObj->cObj = &$this->cObj;
-
-		$confMain = $GLOBALS['TSFE']->tmpl->setup['plugin.'][TT_PRODUCTS_EXT . '.'];
-		$conf = t3lib_div::array_merge_recursive_overrule($confMain, $conf);
+		$pibaseObj = t3lib_div::getUserObj('&tx_ttproducts_pi_int_base');
+		$pibaseObj->cObj = $this->cObj;
 
 		if ($conf['templateFile'] != '')	{
 
 			$content = $pibaseObj->main($content,$conf);
 		} else {
-			tx_div2007_alpha::loadLL_fh001($pibaseObj,'EXT:'.TT_PRODUCTS_EXTkey.'/pi_int/locallang.xml');
-
-			$content = tx_div2007_alpha::getLL($pibaseObj,'no_template').' plugin.tx_ttproducts_pi_int.templateFile';
+			tx_div2007_alpha5::loadLL_fh002($pibaseObj, 'EXT:' . TT_PRODUCTS_EXT . '/pi_int/locallang.xml');
+			$content = tx_div2007_alpha5::getLL_fh002($pibaseObj, 'no_template') . ' plugin.tx_ttproducts_pi_int.templateFile';
 		}
 
 		return $content;

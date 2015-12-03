@@ -32,14 +32,14 @@
  * $Id$
  *
  * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com> 
+ * @maintainer	Franz Holzinger <contact@fholzinger.com>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
 class tx_ttproducts_field_foreign_table extends tx_ttproducts_field_base {
 

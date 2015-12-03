@@ -47,9 +47,9 @@ class tx_ttproducts_activity_base {
 	public $alwaysInStock;
 	public $useArticles;
 
-	public function init (&$pibase)  {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	public function init ($pibase)  {
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 

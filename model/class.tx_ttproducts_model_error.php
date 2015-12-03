@@ -49,8 +49,8 @@ class tx_ttproducts_model_error {
 
 		foreach ($error_code as $key => $indice) {
 			if ($key == 0) {
-				$messageArr = explode('|', $message = tx_div2007_alpha::getLL($langObj,$indice));
-				$rc .= '<b>' . tx_div2007_alpha::getLL($langObj,'plugin') . ': ' . $messageArr[0] . '</b>';
+				$messageArr = explode('|', $message = tx_div2007_alpha5::getLL_fh002($langObj, $indice));
+				$rc .= '<b>' . tx_div2007_alpha5::getLL_fh002($langObj, 'plugin') . ': ' . $messageArr[0] . '</b>';
 			} else if (isset($messageArr[$i])) {
 				$rc .= '<b>' . $indice . $messageArr[$i] . '</b>';
 			}

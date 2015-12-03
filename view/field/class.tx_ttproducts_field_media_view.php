@@ -42,6 +42,21 @@
 
 class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 
+
+	public function getImageCode ($imageConf, $theCode) {
+		$imageCode = $this->cObj->IMAGE($imageConf);
+
+		if ($theCode == 'EMAIL' && $GLOBALS['TSFE']->absRefPrefix == '') {
+			$absRefPrefix = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
+			$fixImgCode = str_replace('index.php', $absRefPrefix . 'index.php', $imageCode);
+			$fixImgCode = str_replace('src="', 'src="' . $absRefPrefix, $fixImgCode);
+			$fixImgCode = str_replace('"uploads/', '"' . $absRefPrefix . 'uploads/', $fixImgCode);
+			$imageCode = $fixImgCode;
+		}
+		return $imageCode;
+	}
+
+
 	/**
 	 * replaces a text string with its markers
 	 * used for JavaScript functions
@@ -71,7 +86,7 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 		$markerArray['###IMAGE_FILE###'] = $imageConf['file'];
 
 		foreach ($row as $field => $val)	{
-			$key = '###IMAGE_'.strtoupper($field).'###';
+			$key = '###IMAGE_' . strtoupper($field) . '###';
 			$markerArray[$key] = $val;
 		}
 	}
@@ -104,11 +119,13 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 	public function &getCodeMarkerArray ($functablename, $markerKey, $theCode, &$imageRow, &$imageArray, $dirname, $mediaNum=0, $imageRenderObj, $linkWrap, &$markerArray, &$theImgDAM, &$specialConf)	{
 
 		$imgCodeArray = array();
+
 		$markerArray['###'.$markerKey.'_PATH###'] = $dirname;
 
 		if (count($imageArray))	{
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 			$tableConf = $cnf->getTableConf($functablename, $theCode);
+
 			if (is_array($tableConf))	{
 				$imageMarkerArray = $tableConf['imageMarker.'];
 			}
@@ -146,14 +163,14 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 				if ($c == $mediaNum)	{
 					break;
 				}
-				$bUseImage = false;
-				$meta = false;
+				$bUseImage = FALSE;
+				$meta = FALSE;
 				if ($val)	{
 					$imageConf['file'] = $dirname.$val;
-					$bUseImage = true;
+					$bUseImage = TRUE;
 				}
 				if (t3lib_extMgm::isLoaded('dam') && $bUseImage && $bImages) {
-					$damObj = &t3lib_div::getUserObj('tx_dam');
+					$damObj = t3lib_div::getUserObj('tx_dam');
 					if(method_exists($damObj,'meta_getDataForFile')) {
 						$fieldList = 'uid,pid,tstamp,crdate,active,media_type,title,category,index_type,file_mime_type,file_mime_subtype,
 							file_type,file_type_version,file_name,file_path,file_size,file_mtime,file_inode,file_ctime,file_hash,file_status,
@@ -176,9 +193,11 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 				}
 
 				$this->cObj->alternativeData = ($meta ? $meta : $imageRow);
-				$imageConf['params'] = preg_replace('/\s+/',' ',$imageConf['params']);
+				$imageConf['params'] = preg_replace('/\s+/', ' ', $imageConf['params']);
 				$this->replaceMarkerArray($markerArray, $imageConf, $this->cObj->alternativeData);
-				$tmpImgCode = $this->cObj->IMAGE($imageConf);
+
+				$tmpImgCode = $this->getImageCode($imageConf, $theCode);
+
 				if ($tmpImgCode != '')	{
 					$imgCodeArray[$key] .= $tmpImgCode;
 				}
@@ -191,28 +210,29 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 						$theImageConf = array_merge($imageConf, $specialImageConf);
 						$this->cObj->alternativeData = ($meta ? $meta : $imageRow); // has to be redone here
 						$this->replaceMarkerArray($markerArray, $theImageConf, $this->cObj->alternativeData);
-						$tmpImgCode = $this->cObj->IMAGE($theImageConf);
+						$tmpImgCode = $this->getImageCode($theImageConf, $theCode);
+
 						$key1 = $key.':'.$specialConfType;
 						$imgCodeArray[$key1] .= $tmpImgCode;
 					}
 				}
 			}	// foreach
-		} else if ($this->conf['noImageAvailable']!='') {	// if (count($imageArray))
-			$imageConf = $this->conf[$imageRenderObj.'.'];
+		} else if ($this->conf['noImageAvailable'] != '') {	// if (count($imageArray))
+			$imageConf = $this->conf[$imageRenderObj . '.'];
 			$imageConf['file'] = $this->conf['noImageAvailable'];
-			$tmpImgCode = $this->cObj->IMAGE($imageConf);
+			$tmpImgCode = $this->getImageCode($imageConf, $theCode);
 			$imgCodeArray[0] = $tmpImgCode;
 		}
 		return $imgCodeArray;
 	}
 
-	private function getMediaMarkerArray ($functablename, $fieldname, &$row, $mediaNum, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $suffix='', $imageRenderObj='image')	{
+	private function getMediaMarkerArray ($functablename, $fieldname, &$row, $mediaNum, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml = TRUE, $charset = '', $prefix = '', $suffix = '', $imageRenderObj = 'image')	{
 
 		$imageRow = $row;
 		$bImages = FALSE;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableConf = $cnf->getTableConf($functablename, $theCode);
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 			// Get image
 		$theImgDAM = array();
@@ -255,9 +275,9 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 					$fieldconfParent['generateImage'] = $tempConf['field.'];
 					$where_clause = $conftable.'.'.$foreignfield .'='. $imageRow[$localfield];
 					$where_clause .= $this->cObj->enableFields($conftable);
-					$res = $TYPO3_DB->exec_SELECTquery('*',$conftable,$where_clause,'',$foreignfield,1);
+					$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $conftable, $where_clause, '', $foreignfield, 1);
 						// only first found row will be used
-					$imageRow = $TYPO3_DB->sql_fetch_assoc($res);
+					$imageRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 				}
 			}
 
@@ -302,7 +322,7 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 				if ($nameArray['generateImage'] && is_dir($dirname))	{
 					$directory = dir($dirname);
 					while($entry=$directory->read())	{
-						if (strstr($entry, $nameArray['generateImage'].'_') !== FALSE)	{
+						if (strstr($entry, $nameArray['generateImage'] . '_') !== FALSE)	{
 							$imgs[] = $entry;
 						}
 					}
@@ -333,7 +353,7 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 				$tagKey = $keyArray[0];
 				if ($specialConfType &&
 					(!is_array($specialConf[$tagKey]) || !isset($specialConf[$tagKey][$specialConfType]) ) &&
-					is_array($tempImageConf[$specialConfType.'.'])
+					is_array($tempImageConf[$specialConfType . '.'])
 				) {
 
 					// add the special configuration
@@ -350,8 +370,8 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 		} else {
 			$dirname = $this->getModelObj()->getDirname($imageRow);
 		}
-
 		$theImgCode = $this->getCodeMarkerArray($functablename, $markerKey, $theCode, $imageRow, $imgs, $dirname, $mediaNum, $imageRenderObj, $linkWrap, $markerArray, $theImgDAM, $specialConf);
+
 		$actImgCode = current($theImgCode);
 		$markerArray['###'.$markerKey.'###'] = $actImgCode ? $actImgCode : ''; // for compatibility only
 
@@ -373,9 +393,9 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 				$key =  $markerKey . intval($count);
 
 				if (isset($count) && is_array($specialConf[$key]) && isset($specialConf[$key][$keyArray[1]]) && is_array($specialConf[$key][$keyArray[1]]))	{
-					$combkey = $key.':'.strtoupper($keyArray[1]);
+					$combkey = $key . ':' . strtoupper($keyArray[1]);
 					if (isset($tagArray[$combkey]))	{
-						$markerArray['###'.$combkey.'###'] = $val;
+						$markerArray['###' . $combkey . '###'] = $val;
 					}
 				}
 			} else {
@@ -388,7 +408,7 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 			if (is_array($theImgDAM[$k1]))	{
 
 				foreach ($theImgDAM[$k1] as $field => $val2)	{
-					$key1 = '###'.$key.'_'.strtoupper($field).'###';
+					$key1 = '###' . $key . '_' . strtoupper($field) . '###';
 					if (isset($tagArray[$key1]))	{
 						$markerArray[$key1] = $val2;
 					}
@@ -407,16 +427,16 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 		if ($bImageMarker)	{
 			foreach ($theImgCode as $imageName => $imgValue)	{
 				$nameArray = t3lib_div::trimExplode(':', $imageName);
-				$suffix = ($nameArray[1] ? ':'.$nameArray[1] : '');
-				$tagkey = $this->getMarkerkey($imageMarkerArray, $markerKey, $imageName).strtoupper($suffix);
+				$suffix = ($nameArray[1] ? ':' . $nameArray[1] : '');
+				$tagkey = $this->getMarkerkey($imageMarkerArray, $markerKey, $imageName) . strtoupper($suffix);
 				if (isset($tagArray[$tagkey]))	{
 					$markerArray['###'.$tagkey.'###'] = $imgValue;
 				}
 				if (is_array($theImgDAM[$imageName]))	{
 					foreach ($theImgDAM[$imageName] as $field => $val2)	{
-						$key1 = $tagkey.'_'.strtoupper($field);
+						$key1 = $tagkey . '_' . strtoupper($field);
 						if (isset($tagArray[$key1]))	{
-							$markerArray['###'.$key1.'###'] = $val2;
+							$markerArray['###' . $key1 . '###'] = $val2;
 						}
 					}
 				}
@@ -424,81 +444,85 @@ class tx_ttproducts_field_media_view extends tx_ttproducts_field_base_view {
 		}
 	}
 
+
 	public function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $suffix='', $imageRenderObj='image')	{
-		$bSkip = TRUE;
 
-		$mediaMarkerKeyArray = array();
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tableConf = $cnf->getTableConf($functablename, $theCode);
+		if ($bHtml) {
+			$bSkip = TRUE;
 
-		foreach ($tagArray as $value => $k1)	{
-			if (strpos($value, $markerKey) !== FALSE)	{
-				$keyMarker = '###'.$value.'###';
-				$foundPos = strpos($value, $markerKey.'_ID');
+			$mediaMarkerKeyArray = array();
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+			$tableConf = $cnf->getTableConf($functablename, $theCode);
 
-				if ($foundPos !== FALSE)	{
-					$c = substr ($value, strlen($markerKey.'_ID'));
-					$markerArray[$keyMarker] = $id.'-'.$c;
-				} else {
-					$mediaMarkerKeyArray[] = $keyMarker;
-				}
+			foreach ($tagArray as $value => $k1)	{
+				if (strpos($value, $markerKey) !== FALSE)	{
+					$keyMarker = '###'.$value.'###';
+					$foundPos = strpos($value, $markerKey . '_ID');
 
-				// empty all image fields with no available image
-				if (!isset($markerArray[$keyMarker]))	{
-					$markerArray[$keyMarker] = '';
+					if ($foundPos !== FALSE)	{
+						$c = substr ($value, strlen($markerKey . '_ID'));
+						$markerArray[$keyMarker] = $id . '-' . $c;
+					} else {
+						$mediaMarkerKeyArray[] = $keyMarker;
+					}
+
+					// empty all image fields with no available image
+					if (!isset($markerArray[$keyMarker]))	{
+						$markerArray[$keyMarker] = '';
+					}
 				}
 			}
-		}
 
-		if (count($mediaMarkerKeyArray))	{
-			// example: plugin.tt_products.conf.tt_products.ALL.limitImage = 10
-			$mediaNum = $tableConf['limitImage'];
-			if (!$mediaNum)	{
-				$codeTypeArray = array(	// Todo: make this configurable
-					'list' => array('real' => array('SEARCH', 'MEMO'), 'part' => array('LIST', 'MENU'), 'num' => $this->conf['limitImage']),
-					'basket' => array('real' => array('OVERVIEW', 'BASKET', 'FINALIZE', 'INFO', 'PAYMENT'),
-						'part' => array() , 'num' => 1),
-					'single' => array('real' => array(), 'part' => array('SINGLE'), 'num' => $this->conf['limitImageSingle'])
-				);
-				foreach ($codeTypeArray as $type => $codeArray)	{
-					$realArray = $codeArray['real'];
-					if (count ($realArray))	{
-						if (in_array($theCode, $realArray))	{
-							$mediaNum = $codeArray['num'];
-							break;
-						}
-					}
-					$partArray = $codeArray['part'];
-					if (count ($partArray))	{
-						foreach ($partArray as $k => $part)	{
-							if (strpos($theCode, $part) !== FALSE)	{
+			if (count($mediaMarkerKeyArray))	{
+				// example: plugin.tt_products.conf.tt_products.ALL.limitImage = 10
+				$mediaNum = $tableConf['limitImage'];
+				if (!$mediaNum)	{
+					$codeTypeArray = array(	// Todo: make this configurable
+						'list' => array('real' => array('SEARCH', 'MEMO'), 'part' => array('LIST', 'MENU'), 'num' => $this->conf['limitImage']),
+						'basket' => array('real' => array('OVERVIEW', 'BASKET', 'FINALIZE', 'INFO', 'PAYMENT', 'EMAIL'),
+							'part' => array() , 'num' => 1),
+						'single' => array('real' => array(), 'part' => array('SINGLE'), 'num' => $this->conf['limitImageSingle'])
+					);
+					foreach ($codeTypeArray as $type => $codeArray)	{
+						$realArray = $codeArray['real'];
+						if (count ($realArray))	{
+							if (in_array($theCode, $realArray))	{
 								$mediaNum = $codeArray['num'];
 								break;
 							}
 						}
+						$partArray = $codeArray['part'];
+						if (count ($partArray))	{
+							foreach ($partArray as $k => $part)	{
+								if (strpos($theCode, $part) !== FALSE)	{
+									$mediaNum = $codeArray['num'];
+									break;
+								}
+							}
+						}
 					}
 				}
-			}
 
-			if ($mediaNum)	{
+				if ($mediaNum)	{
 
-				$this->getMediaMarkerArray(
-					$functablename,
-					$fieldname,
-					$row,
-					$mediaNum,
-					$markerKey,
-					$markerArray,
-					$tagArray,
-					$theCode,
-					$id,
-					$bSkip,
-					$bHtml,
-					$charset,
-					$prefix,
-					$suffix,
-					$imageRenderObj
-				);
+					$this->getMediaMarkerArray(
+						$functablename,
+						$fieldname,
+						$row,
+						$mediaNum,
+						$markerKey,
+						$markerArray,
+						$tagArray,
+						$theCode,
+						$id,
+						$bSkip,
+						$bHtml,
+						$charset,
+						$prefix,
+						$suffix,
+						$imageRenderObj
+					);
+				}
 			}
 		}
 	}

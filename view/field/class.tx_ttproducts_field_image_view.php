@@ -38,7 +38,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_media_view.php');
+// require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_media_view.php');
 
 
 class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
@@ -46,7 +46,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 	/**
 	 *
 	 */
-	public function init(&$langObj, &$modelObj)	{
+	public function init($langObj, $modelObj)	{
 		parent::init($langObj, $modelObj);
 
 		if ($this->conf['noImageAvailable'] == '{$plugin.tt_products.file.noImageAvailable}')	{
@@ -54,8 +54,8 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 		}
 	} // init
 
-	public function getSingleImageMarkerArray ($markerKey, &$markerArray, &$imageConf)	{
-		$tmpImgCode = $this->cObj->IMAGE($imageConf);
+	public function getSingleImageMarkerArray ($markerKey, &$markerArray, &$imageConf, $theCode)	{
+		$tmpImgCode = $this->getImageCode($imageConf, $theCode);
 		$markerArray['###'.$markerKey.'###'] = $tmpImgCode;
 	}
 
@@ -95,10 +95,10 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 // TODO: replace this function
 
 		$imageRow = $row;
-		$bImages = false;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$bImages = FALSE;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tableConf = $cnf->getTableConf($functablename, $theCode);
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 			// Get image
 		$theImgDAM = array();
@@ -121,7 +121,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 					$imgs[] = $contentRow[$imageField];
 				}
 			}
-			$bImages = true;
+			$bImages = TRUE;
 		}
 
 		if (!$bImages)	{
@@ -141,7 +141,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 					$fieldconfParent['generateImage'] = $tempConf['field.'];
 					$where_clause = $conftable.'.'.$foreignfield .'='. $imageRow[$localfield];
 					$where_clause .= $this->cObj->enableFields($conftable);
-					$res = $TYPO3_DB->exec_SELECTquery('*',$conftable,$where_clause,'',$foreignfield,1);
+					$res = $TYPO3_DB->exec_SELECTquery('*', $conftable, $where_clause, '', $foreignfield, 1);
 						// only first found row will be used
 					$imageRow = $TYPO3_DB->sql_fetch_assoc($res);
 				}
@@ -155,7 +155,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 
 			foreach ($generateArray as $k => $generate)	{
 				if (is_array($conftableConf) &&
-				 	is_array($conftableConf[$generate.'.'])) {
+				 	is_array($conftableConf[$generate . '.'])) {
 				 	$genPartArray = $conftableConf[$generate.'.'];
 				 	$tableFieldsCode = '';
 
@@ -172,7 +172,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 								if ($imageRow[$field])	{
 									$nameArray[$generate] .= substr($imageRow[$field], 0, $count);
 									if ($generate == 'generateImage')	{
-										$bImages = true;
+										$bImages = TRUE;
 									}
 								}
 							}
@@ -183,19 +183,19 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 
 			if ($nameArray['generatePath'])	{
 				if (is_array($conftableConf['generatePath.']))	{
-					$dirname = $conftableConf['generatePath.']['base'].'/'.$nameArray['generatePath'];
+					$dirname = $conftableConf['generatePath.']['base'] . '/' . $nameArray['generatePath'];
 				}
 				if ($nameArray['generateImage'] && is_dir($dirname))	{
 					$directory = dir($dirname);
-					while($entry=$directory->read())	{
-						if (strstr($entry, $nameArray['generateImage'].'_') !== FALSE)	{
+					while($entry = $directory->read())	{
+						if (strstr($entry, $nameArray['generateImage'] . '_') !== FALSE)	{
 							$imgs[] = $entry;
 						}
 					}
 					$directory->close();
 				}
 				if (count($imgs))	{
-					$bImages = true;
+					$bImages = TRUE;
 				}
 			}
 		}
@@ -246,9 +246,9 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 		$c = 1;
 		$countArray = array();
 		foreach($theImgCode as $k1 => $val) {
-			$bIsSpecial = true;
+			$bIsSpecial = TRUE;
 			if (strstr($k1, ':') === FALSE)	{
-				$bIsSpecial = false;
+				$bIsSpecial = FALSE;
 			}
 			$key = $marker.'_IMAGE' . intval($c);
 			if (isset($tagArray[$key]))	{
@@ -274,7 +274,7 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 
 			if (is_array($theImgDAM[$k1]))	{
 				foreach ($theImgDAM[$k1] as $field => $val2)	{
-					$key1 = '###'.$key.'_'.strtoupper($field).'###';
+					$key1 = '###' . $key . '_' . strtoupper($field) . '###';
 					if (isset($tagArray[$key1]))	{
 						$markerArray[$key1] = $val2;
 					}
@@ -285,11 +285,11 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 			}
 		}
 
-		$bImageMarker = false;
+		$bImageMarker = FALSE;
 		if (is_array($tableConf) &&
 			is_array($tableConf['imageMarker.']) &&
 			$tableConf['imageMarker.']['type'] == 'imagename' )	{
-			$bImageMarker = true;
+			$bImageMarker = TRUE;
 		}
 
 		if ($bImageMarker)	{
@@ -302,9 +302,9 @@ class tx_ttproducts_field_image_view extends tx_ttproducts_field_media_view {
 				}
 				if (is_array($theImgDAM[$imageName]))	{
 					foreach ($theImgDAM[$imageName] as $field => $val2)	{
-						$key1 = $tagkey.'_'.strtoupper($field);
+						$key1 = $tagkey . '_' . strtoupper($field);
 						if (isset($tagArray[$key1]))	{
-							$markerArray['###'.$key1.'###'] = $val2;
+							$markerArray['###' . $key1 . '###'] = $val2;
 						}
 					}
 				}

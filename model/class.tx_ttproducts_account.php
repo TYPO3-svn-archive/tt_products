@@ -52,8 +52,8 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	public $useAsterisk = TRUE;
 
 
-	function init (&$pibase, $functablename) {
-		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+	function init ($pibase, $functablename) {
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$formerBasket = $basketObj->recs;
 		$bIsAllowed = $basketObj->basketExtra['payment.']['accounts'];
 		if (isset($basketObj->basketExtra['payment.']['useAsterisk']))	{
@@ -67,10 +67,10 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 			$this->bIsAllowed = $bIsAllowed;
 		}
 
-		$bNumberRecentlyModified = true;
+		$bNumberRecentlyModified = TRUE;
 
 		if (!$this->acArray['ac_number'])	{
-			$bNumberRecentlyModified = false;
+			$bNumberRecentlyModified = FALSE;
 		}
 
 		if ($bNumberRecentlyModified)	{
@@ -105,7 +105,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		$pid = intval($this->conf['PID_sys_products_orders']);
 		if (!$pid)	$pid = intval($TSFE->id);
 
-		if ($acArray['ac_number'] && $TSFE->sys_page->getPage_noCheck ($pid))	{
+		if ($acArray['owner_name'] != '' && $acArray[$accountField] && $TSFE->sys_page->getPage_noCheck($pid)) {
 			$time = time();
 			$newFields = array (
 				'pid' => intval($pid),
@@ -133,12 +133,12 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	function getUid ()	{
 		global $TSFE;
 
-		$acArray = $TSFE->fe_user->getKey('ses','ac');
+		$acArray = $TSFE->fe_user->getKey('ses', 'ac');
 		return $acArray['ac_uid'];
 	}
 
 
-	function get ($uid, $bFieldArrayAll=false) {
+	function get ($uid, $bFieldArrayAll = FALSE) {
 		global $TYPO3_DB;
 		$rcArray = array();
 		if ($bFieldArrayAll)	{
@@ -148,11 +148,11 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		}
 
 		if ($uid) {
-			$where = 'uid = '.intval($uid);
+			$where = 'uid = ' . intval($uid);
 			// Fetching the products
 			$fields = '*';
 			if ($bFieldArrayAll)	{
-				$fields = implode(',',$this->fieldArray);
+				$fields = implode(',', $this->fieldArray);
 			}
 			$res = $TYPO3_DB->exec_SELECTquery($fields, $this->tablename, $where);
 			$row = $TYPO3_DB->sql_fetch_assoc($res);
@@ -166,11 +166,22 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 
 
 	/**
+	 * Returns the label of the record, Usage in the following format:
+	 *
+	 * @param	array		$row: current record
+	 * @return	string		Label of the record
+	 */
+	public function getLabel ($row) {
+		return $row['owner_name'] . ':' . $row['ac_number'] . ':' . $row['bic'];
+	}
+
+
+	/**
 	 * Checks if required fields for bank accounts are filled in
 	 */
 	function checkRequired ()	{
 		$rc = '';
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		if (t3lib_extMgm::isLoaded('static_info_tables_banks_de')) {
 			$bankObj = $tablesObj->get('static_banks_de');
 		}
@@ -178,11 +189,14 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		foreach ($this->fieldArray as $k => $field)	{
 			if (!$this->acArray[$field])	{
 				$rc = $field;
+
 				break;
 			}
 			if ($field == 'bic' && is_object($bankObj) /* && t3lib_extMgm::isLoaded('static_info_tables_banks_de')*/)	{
-				$where_clause = 'sort_code=' . intval(implode('',t3lib_div::trimExplode(' ',$this->acArray[$field]))) . ' AND level=1';
-				$bankRow = $bankObj->get('',0,FALSE,$where_clause);
+				$where_clause = 'sort_code=' . intval(implode('', t3lib_div::trimExplode(' ', $this->acArray[$field]))) . ' AND level=1';
+
+				$bankRow = $bankObj->get('', 0, FALSE, $where_clause);
+
 				if (!$bankRow)	{
 					$rc = $field;
 					break;

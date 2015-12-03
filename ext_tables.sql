@@ -33,8 +33,8 @@ CREATE TABLE tt_products (
 	text_uid int(11) DEFAULT '0' NOT NULL,
 	unit varchar(20) DEFAULT '' NOT NULL,
 	unit_factor varchar(6) DEFAULT '' NOT NULL,
-	image tinyblob NOT NULL,
-	datasheet tinyblob NOT NULL,
+	image text NOT NULL,
+	datasheet text NOT NULL,
 	www varchar(160) DEFAULT '' NOT NULL,
 	category int(11) unsigned DEFAULT '0' NOT NULL,
 	damcat int(11) unsigned DEFAULT '0' NOT NULL,
@@ -97,11 +97,14 @@ CREATE TABLE tt_products_language (
 	fe_group int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	subtitle mediumtext NOT NULL,
+	itemnumber varchar(40) DEFAULT '' NOT NULL,
 	prod_uid int(11) DEFAULT '0' NOT NULL,
+	text_uid int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
 	note2 text NOT NULL,
 	unit varchar(20) DEFAULT '' NOT NULL,
-	datasheet tinyblob NOT NULL,
+	image text NOT NULL,
+	datasheet text NOT NULL,
 	www varchar(160) DEFAULT '' NOT NULL,
 
 	PRIMARY KEY (uid),
@@ -185,7 +188,7 @@ CREATE TABLE tt_products_cat (
 	subtitle mediumtext NOT NULL,
 	note text NOT NULL,
 	note2 text NOT NULL,
-	image tinyblob NOT NULL,
+	image text NOT NULL,
 	email_uid int(11) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
@@ -272,7 +275,8 @@ CREATE TABLE tt_products_articles (
 	price decimal(19,2) DEFAULT '0.00' NOT NULL,
 	price2 decimal(19,2) DEFAULT '0.00' NOT NULL,
 	note text NOT NULL,
-	image tinyblob NOT NULL,
+	note2 text NOT NULL,
+	image text NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
 	basketminquantity decimal(19,2) DEFAULT '0.00' NOT NULL,
 	weight decimal(19,6) DEFAULT '0.000000' NOT NULL,
@@ -319,6 +323,7 @@ CREATE TABLE tt_products_articles_language (
 	subtitle varchar(80) DEFAULT '' NOT NULL,
 	article_uid int(11) DEFAULT '0' NOT NULL,
 	note text NOT NULL,
+	note2 text NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)
@@ -438,6 +443,8 @@ CREATE TABLE tt_products_texts_language (
 	text_uid int(11) DEFAULT '0' NOT NULL,
 	title tinytext NOT NULL,
 	note text NOT NULL,
+	parentid int(11) DEFAULT '0' NOT NULL,
+	parenttable varchar(30) DEFAULT '' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)
@@ -558,13 +565,15 @@ CREATE TABLE sys_products_orders (
 	telephone varchar(20) DEFAULT '' NOT NULL,
 	email varchar(80) DEFAULT '' NOT NULL,
 	fax varchar(20) DEFAULT '' NOT NULL,
+	business_partner int(11) DEFAULT '0' NOT NULL,
+	organisation_form varchar(2) DEFAULT 'U' NOT NULL,
 	payment varchar(80) DEFAULT '' NOT NULL,
 	shipping varchar(80) DEFAULT '' NOT NULL,
 	amount decimal(19,2) DEFAULT '0.00' NOT NULL,
 	tax_mode tinyint(3) DEFAULT '0' NOT NULL,
 	pay_mode tinyint(3) DEFAULT '0' NOT NULL,
 	email_notify tinyint(4) unsigned DEFAULT '0' NOT NULL,
-	tracking_code varchar(32) DEFAULT '' NOT NULL,
+	tracking_code varchar(64) DEFAULT '' NOT NULL,
 	status tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	status_log blob NOT NULL,
 	orderData mediumblob NOT NULL,
@@ -620,10 +629,12 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 CREATE TABLE fe_users (
 	tt_products_memoItems tinytext NOT NULL,
 	tt_products_memodam tinytext NOT NULL,
-	tt_products_discount decimal(19,2) DEFAULT '0.00' NOT NULL
+	tt_products_discount decimal(19,2) DEFAULT '0.00' NOT NULL,
 	tt_products_creditpoints decimal(10,0) DEFAULT '0' NOT NULL,
 	tt_products_vouchercode varchar(50) DEFAULT '',
-	tt_products_vat varchar(15) DEFAULT '' NOT NULL
+	tt_products_vat varchar(15) DEFAULT '' NOT NULL,
+	tt_products_business_partner int(11) DEFAULT '0' NOT NULL,
+	tt_products_organisation_form varchar(2) DEFAULT 'U' NOT NULL
 );
 
 
@@ -647,3 +658,33 @@ CREATE TABLE tt_products_products_mm_damcat (
   KEY uid_foreign (uid_foreign)
 );
 
+
+
+
+### cache tables needed only for TYPO3 4.3 - 4.5
+
+#
+# TABLE structure FOR TABLE 'tt_products_cache'
+#
+CREATE TABLE tt_products_cache (
+    id int(11) unsigned NOT NULL auto_increment,
+    identifier varchar(250) DEFAULT '' NOT NULL,
+    crdate int(11) unsigned DEFAULT '0' NOT NULL,
+    content mediumblob,
+    lifetime int(11) unsigned DEFAULT '0' NOT NULL,
+    PRIMARY KEY (id),
+    KEY cache_id (identifier)
+) ENGINE=InnoDB;
+
+
+#
+# TABLE structure FOR TABLE 'tt_products_cache_tags'
+#
+CREATE TABLE tt_products_cache_tags (
+    id int(11) unsigned NOT NULL auto_increment,
+    identifier varchar(250) DEFAULT '' NOT NULL,
+    tag varchar(250) DEFAULT '' NOT NULL,
+    PRIMARY KEY (id),
+    KEY cache_id (identifier),
+    KEY cache_tag (tag)
+) ENGINE=InnoDB;

@@ -39,48 +39,29 @@
  *
  */
 
-
+/*
 require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_base.php');
 require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_tax.php');
 require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_price.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_basket.php');
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_basket.php');*/
 
+
+require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_static_info.php');
 
 class tx_ttproducts_model_creator {
 
 	public function init (&$conf, &$config, $cObj)  {
 
+		tx_ttproducts_static_info::init();
+
 		$bUseStaticTaxes = FALSE;
-		if (t3lib_extMgm::isLoaded('static_info_tables')) {
-			$eInfo = tx_div2007_alpha::getExtensionInfo_fh001('static_info_tables');
-
-			if (is_array($eInfo))	{
-				$sitVersion = $eInfo['version'];
-				if (version_compare($sitVersion, '2.0.0', '>='))	{
-
-					if ($conf['useStaticTaxes'] && t3lib_extMgm::isLoaded('static_info_tables_taxes'))	{
-						$path = t3lib_extMgm::extPath('static_info_tables_taxes');
-						include_once($path.'class.tx_staticinfotablestaxes_div.php');
-						$bUseStaticTaxes = TRUE;
-					}
-					$path = t3lib_extMgm::extPath('static_info_tables');
-					include_once($path.'class.tx_staticinfotables_div.php');
-					include_once($path.'pi1/class.tx_staticinfotables_pi1.php');
-				}
-			}
-		}
-
-		$staticInfoObj = &t3lib_div::getUserObj('&tx_staticinfotables_pi1');
-		if (method_exists($staticInfoObj, needsInit) && $staticInfoObj->needsInit())	{
-			$staticInfoObj->init();
-		}
 
 		if (isset($conf['UIDstore']))	{
-			$tmpArray = t3lib_div::trimExplode(',',$conf['UIDstore']);
+			$tmpArray = t3lib_div::trimExplode(',', $conf['UIDstore']);
 			$UIDstore = $tmpArray['0'];
 		}
 
-		$taxObj = &t3lib_div::getUserObj('&tx_ttproducts_field_tax');
+		$taxObj = t3lib_div::getUserObj('&tx_ttproducts_field_tax');
 		$taxObj->init(
 			$cObj,
 			$bUseStaticTaxes,
@@ -88,19 +69,18 @@ class tx_ttproducts_model_creator {
 		);
 
 			// price
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
 		$priceObj->init(
 			$cObj,
 			$conf
 		);
 
 			// paymentshipping
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$paymentshippingObj->init(
 			$cObj
 		);
 
-		
 	}
 }
 

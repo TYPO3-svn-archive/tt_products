@@ -42,14 +42,17 @@
 
 class tx_ttproducts_field_note_view extends tx_ttproducts_field_base_view {
 
-	function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
+	function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml = TRUE, $charset = '', $prefix = '', $suffix = '', $imageRenderObj = '')	{
 
-		if ($theCode != 'EMAIL' || $this->conf['orderEmail_htmlmail'])	{
+		if (
+			$bHtml
+			&& ($theCode != 'EMAIL' || $this->conf['orderEmail_htmlmail'])
+		)	{
 			$value = $this->getModelObj()->getFieldValue($row, $fieldname);
 
 				// Extension CSS styled content
 			if (t3lib_extMgm::isLoaded('css_styled_content')) {
-				$value = tx_div2007_alpha::RTEcssText($this->cObj, $value);
+				$value = tx_div2007_alpha5::RTEcssText($this->cObj, $value);
 			} else if (is_array($this->conf['parseFunc.']))	{
 				$value = $this->cObj->parseFunc($value,$this->conf['parseFunc.']);
 			} else if ($this->conf['nl2brNote']) {

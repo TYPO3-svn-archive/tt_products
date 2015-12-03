@@ -41,8 +41,8 @@
 
 
 
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_ttproducts.'view/class.tx_ttproducts_category_base_view.php');
+// require_once(PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once(PATH_BE_ttproducts.'view/class.tx_ttproducts_category_base_view.php');
 
 class tx_ttproducts_address_view extends tx_ttproducts_category_base_view {
 	var $piVar = 'a';
@@ -68,7 +68,7 @@ class tx_ttproducts_address_view extends tx_ttproducts_category_base_view {
 		$catTitle = '';
 		$titleField = $this->fieldArray['name'];
 		if (($row[$titleField]))	{
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 			$tableConfig = $cnf->getTableConf('address', $theCode);
 			$catTitle .= ($tableConfig['separator'].$row[$titleField]);
 		}

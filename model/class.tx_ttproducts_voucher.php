@@ -39,7 +39,7 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
+// require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 
 class tx_ttproducts_voucher extends tx_ttproducts_table_base {
@@ -53,11 +53,11 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	function init(&$cObj, $functablename)  {
+	function init($cObj, $functablename)  {
 		global $TSFE;
 
 		parent::init($cObj, $functablename);
-		$usedCodeArray = $TSFE->fe_user->getKey('ses','vo');
+		$usedCodeArray = $TSFE->fe_user->getKey('ses', 'vo');
 
 		if (isset($usedCodeArray) && is_array($usedCodeArray))	{
 			list($voucherCode, $voucherArray) = each($usedCodeArray);
@@ -93,7 +93,7 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 		$amount = $this->getAmount();
 
 		if ($amountType == 1)	{
-			$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+			$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 			$calculatedArray = $basketObj->getCalculatedArray();
 			$amount = $calculatedArray['priceTax']['goodstotal'] * ($amount / 100);
 		}
@@ -172,7 +172,7 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 				$uid_voucher = $row['uid'];
 			} else {
 				$uid_voucher = $row['fe_users_uid'];
-				$whereGeneral = '(fe_users_uid="'.$TSFE->fe_user->user['uid'].'" OR fe_users_uid=0) ';
+				$whereGeneral = '(fe_users_uid="' . $TSFE->fe_user->user['uid'] . '" OR fe_users_uid=0) ';
 				$whereGeneral .= 'AND code="'.$voucherCode.'"';
 			}
 
@@ -223,7 +223,7 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 				$where = 'username=' . $TYPO3_DB->fullQuoteStr($voucherCode, $voucherTable);
 			} else {
 				$voucherfieldArray = array('starttime', 'endtime', 'title', 'fe_users_uid', 'code', 'amount', 'amount_type', 'note');
-				$whereGeneral = '(fe_users_uid="'.$TSFE->fe_user->user['uid'].'" OR fe_users_uid=0) ';
+				$whereGeneral = '(fe_users_uid="' . intval($TSFE->fe_user->user['uid']) . '" OR fe_users_uid=0) ';
 				$whereGeneral .= 'AND code=' . $TYPO3_DB->fullQuoteStr($voucherCode, $voucherTable);
 			}
 			$where = $whereGeneral.$this->cObj->enableFields($voucherTable);
@@ -258,13 +258,13 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 				$this->setValid(TRUE);
 
 				$this->setCodeUsed($voucherCode, $row);
-				$TSFE->fe_user->setKey('ses','vo',$this->getUsedCodeArray());
+				$TSFE->fe_user->setKey('ses', 'vo', $this->getUsedCodeArray());
 			}
 
 			if ($uid_voucher) {
 				// first check if not inserted own vouchercode
 				if ($TSFE->fe_user->user['uid'] != $uid_voucher) {
-					$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+					$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 					$basket->calculatedArray['priceTax']['voucher'] = $this->conf['voucher.']['price'];
 				}
 			}

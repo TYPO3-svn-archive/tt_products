@@ -40,7 +40,7 @@
  */
 
 
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
+// require_once (PATH_BE_table.'lib/class.tx_table_db.php');
 
 class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_view {
 
@@ -54,19 +54,19 @@ class tx_ttproducts_field_graduated_price_view extends tx_ttproducts_field_base_
 		&$subpartArray,
 		&$wrappedSubpartArray,
 		&$tagArray,
-		$theCode='',
-		$id='1'
-	)	{
+		$theCode = '',
+		$id = '1'
+	) {
 		global $TCA;
 
-		$priceTablesViewObj = &t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
-		$priceTablesViewObj->getItemSubpartArrays ($templateCode, $functablename, $row, $fieldname, $subpartArray, $wrappedSubpartArray, $tagArray, $theCode, $id);
+		$priceTablesViewObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
+		$priceTablesViewObj->getItemSubpartArrays ($templateCode, $row, $fieldname, $subpartArray, $wrappedSubpartArray, $tagArray, $theCode, $id);
 	}
 
 
-	public function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
+	public function getRowMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $suffix='', $imageRenderObj='')	{
 
-		$priceTablesViewObj = &t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
+		$priceTablesViewObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price_view');
 		$priceTablesViewObj->getRowMarkerArray($row, $markerArray, $tagArray);
 	}
 }

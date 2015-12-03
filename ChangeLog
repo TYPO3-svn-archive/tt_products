@@ -1,3 +1,164 @@
+2015-12-03 Franz Holzinger <franz@ttproducts.de>
+	* new version 2.8.1 with many new features and improvements
+	* useArticles=3 and articleMode>0 to assign multiple articles to a product with additional prices
+	* individual markers to have only one shop template which is edited within Typoscript setup
+
+2015-09-28 Franz Holzinger <franz@ttproducts.de>
+	* compatibility to TYPO3 7.4. Remove cache for TYPO3 7.4.
+	* convert locallang_csh_.php context sensitive help files into xml format
+
+2015-08-18 Franz Holzinger <franz@ttproducts.de>
+	* new feature: add field for HTML order to the order data single view in the backend
+	* bug fix: use sql_insert_id instead of LAST_INSERT_ID if possible to get the order uid from sys_products_orders
+
+2015-08-12 Franz Holzinger <franz@ttproducts.de>
+	* bugfix for price taxrate markers: the ###PRICE_TAXRATE_GOODSTOTAL2### must only contain the sum of the products.
+	* new marker ###PRICE_TAXRATE_TOTAL2### for the total sum of products, shipping, payment and handling costs
+	* new marker ###PRICE_TAXRATE_GOODSTOTAL_ONLY_TAX1### for the tax value which considers only the products
+	* workaround for bug #44270 in product single view
+
+2015-07-24 Franz Holzinger <franz@ttproducts.de>
+	* bugfix: never store any product amount with the basket overview
+	* bugfix: ask uid=LAST_INSERT_ID to get the order uid from sys_products_orders
+	* tested under TYPO3 7.4.0 alpha
+
+2015-06-17 Franz Holzinger <franz@ttproducts.de>
+	* bugfix: the bill address has not been fully copied into the empty delivery address, only until the address field
+	* bugfix to tt_products 2.7.18: the call with the classname fails in PHP because the first array parameter in call_user_func($className ::mergeRecursiveWithOverrule ...) cannot become a reference but only a value
+
+2015-06-02 Franz Holzinger <franz@ttproducts.de>
+	* workaround for bug #255931: big marker arrays lead to regular expression error in TYPO3 Cache
+	* bug fix: noDiscountPriceNoTax must consider TAXincluded to calculate ###PRICE_DISCOUNT_GOODSTOTAL_TAX###
+	* support for TYPO3 7.2
+
+2015-04-13 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: selectSize = 0 and other variants must not show a select box
+
+2015-04-11 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: pid_list did add a wrong comma at the end
+
+2015-04-10 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: use the correct flexform text references
+
+2015-04-09 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: do not show duplicated basket content
+	* add all XML files from tt_products 2.11.0
+	* use htmlspecialchars instead of htmlentities in form generation
+	* allow addRequiredInfoFields also for shipping
+	* use htmlspecialchars for PERSON and DELIVERY markers because of some special characters
+	* bug fix: The fe_users field static_info_country is not NULL and it is only available if agency or sr_feuser_register has been installed.
+	* bug fix: pid_list did wrongly change pids
+
+2015-01-31 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: send plain text emails
+	* do not automatically change the delivery fields with plugins outside of the basket
+	* support for the extension db_list 0.2.0 for multiple texts and its better translation backend
+	* db_list 0.2.0 makes texts translatable at the alternative product level
+
+2014-11-27 Franz Holzinger <franz@ttproducts.de>
+	* restore the foreign languages in the locallang.xml files - see issue #60678
+	* bug fix: do not send an email if one of the email addresses is empty
+
+2014-10-17 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: category single view
+	* bug fix: do not overwrite the weight of products with a zero from an article
+
+2014-05-21 Franz Holzinger <franz@ttproducts.de>
+	* bug fix: support for TYPO3 6.2 with Ajax and eID
+
+2014-05-12 Franz Holzinger <franz@ttproducts.de>
+	* new feature: selection of products for the list plugin
+
+2014-05-03 Franz Holzinger <franz@ttproducts.de>
+	* support for TYPO3 6.2
+
+2014-03-15 Franz Holzinger <franz@ttproducts.de>
+	* fix markers for payment / shipping
+	* remove labels for other languages
+
+2014-01-04 Franz Holzinger <franz@ttproducts.de>
+	* support for extension agency which is a fork of sr_feuser_register
+	* support for TYPO3 6.2
+	* new feature: subpart markers ###MESSAGE_PAYMENT_TRANSACTOR_YES### and ###MESSAGE_PAYMENT_TRANSACTOR_NO###
+	* fix bug in sending of emails by SwiftMailer
+
+2013-03-08 Franz Holzinger <franz@ttproducts.de>
+	* add the autoloader file ext_autoload.php
+	* changes for PHP 5.4
+
+2012-06-10 Franz Holzinger <franz@ttproducts.de>
+	* enable hierarchytiers for the depth of categories to filter the products in the list view
+	* use a workaround to set the page title in single view, because USER_INT has no function
+	* markers for pricesums for each tax rate
+	* date_of_birth for sr_feuser_register
+	* gift service
+	* enable sorting of categories in category list view
+	* support for the TYPO3 caching framework
+	* fix bugs in category single view
+	* new feature: revocation link
+
+2011-08-15 Franz Holzinger <franz@ttproducts.de>
+	* Fix compatibility break in the HTML emails with Swift Mailer of TYPO3 4.5
+	* fix bug 12022: PHP 5.3. warning with parameter of main function
+	* use the tax even for negative prices
+	* change in paymentlib: initialize the detailsArray in the beginning
+	* fix bug: the delivery country has not been stored if no name field has been filled out
+	* new feature: fields can be excluded from TCA and TCE of the normal data and the language tables
+	* add the fields itemnumber and image to the translation of the product
+	* add the field cnum for the customer number
+	* fix bug in the numbering of the form ids in the list view
+
+2011-06-02 Franz Holzinger <franz@ttproducts.de>
+	* Fix bug with price2 basket calculation
+	* Fix bug with missing images in HTML email
+	* Fix bug with Swift Mailer
+
+2011-04-12 Franz Holzinger <franz@ttproducts.de>
+	* Fix compatibility break in the HTML emails with Swift Mailer of TYPO3 4.5
+
+2011-04-12 Franz Holzinger <franz@ttproducts.de>
+	* consider the recursive setup for the category list view
+	* keep always the singe product and article parameters, except with the link from the single view to list view if both are on the same page
+	* fix bug: if 2 plugins in the list view are filtered by the category, then the category object is not initialized with the modified config. Use the real config instead and not from the category object.
+
+2011-03-21 Franz Holzinger <franz@ttproducts.de>
+	* birth day with date_of_birth for sr_feuser_register
+
+2011-02-17 Franz Holzinger <franz@ttproducts.de>
+	* fix bug: the link to return to the list from the product single view must not keep always the product parameter
+	* fix bug: the shipping price on the product level must be added only once for the first shipping price
+	* fix bug #17622: the email name must be encoded using addcslashes and have double quotes around it
+
+2010-11-21 Franz Holzinger <franz@ttproducts.de>
+	* keep the parameters product and article in the url form markers ###FORM_URL###
+	* fix tax string in calculatedArray to a format with 2 digits after the comma
+	* fix bug in setup of caching for TYPO3 4.3
+	* Improved caching by Dmitry Dulepov. tt_products runs without the clearing of the cache of the whole page now. no_cache is not used any more. A USER object is converted automatically into a USER_INT object.
+	* Fix bug: do not show the payment output if the paymentlib has been called and will go to the order confirmation page.
+	* Fix bug: consider the enable fields for the related pages content
+	* remove duplicate language select box: sys_language_uid
+	* Fix bug: unit has been missing in the backend TCE for the product in the alternative language
+	* security: fix CSS with giftcodes
+	* add itemnumber and image to tt_products_language
+
+2010-06-03 Franz Holzinger <franz@ttproducts.de>
+	* fix bug 11655: Invalid arguments in call of tx_ttproducts_paymentshipping::includeHandleScript
+	* Fix bug in tracking where the status has been lost after a new log entry
+	* Fix bug in marker ###PRICE_TOTAL_TOTUNITS_TAX###
+	* Change constants.txt: use eint+ instead of int+ together with the extension tsparser because empty values must not be converted to 0
+	* Fix bug with not working salutation select box for delivery
+	* Fix bug with product single view called wrongly by a category parameter
+	* check the $TCA for the fields of the fe_users table and add all those field to the billing and delivery address
+	* fix bug with PHP 5.3: replace split by explode or t3lib_div::trimExplode or preg_split
+	* Activate the flexforms if nothing has been set in the Extension Manager
+
+2010-06-03 Franz Holzinger <franz@ttproducts.de>
+	* Add marker for EAN: ###PRODUCT_EAN###
+	* Fix bug: static_info_country of the fe_users must be written only if useStaticInfoCountry=1. It must not contain values outside the range of the country ISO3 codes.
+	* Consider the installed extension addons_tt_products in the marker ###PATH_FE_REL###
+	* Fix bug: The deleted products in alternative languages shall not be shown in the single view
+	* ready for PHP 5.3: replace ereg_replace by preg_replace
+
 2010-01-04 Franz Holzinger <franz@ttproducts.de>
 	* support for Payment Transactor API
 	* markers for pricesums for each tax rate

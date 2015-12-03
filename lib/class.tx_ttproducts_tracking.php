@@ -41,7 +41,7 @@
 
 
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
+// require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
 
 
 class tx_ttproducts_tracking {
@@ -59,15 +59,15 @@ class tx_ttproducts_tracking {
 	function init (&$cObj) {
 		global $TSFE;
 
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 
 		if ($this->conf['statusCodesSource'])	{
 
 			switch ($this->conf['statusCodesSource'])	{
 				case 'marker_locallang':
-					$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+					$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 					$langArray = $markerObj->getLangArray();
 					if (is_array($langArray))	{
 						$statusMessage = 'tracking_status_message_';
@@ -75,7 +75,10 @@ class tx_ttproducts_tracking {
 						foreach ($langArray as $k => $v)	{
 							if (($pos = strpos($k, $statusMessage))===0)	{
 								$rest = substr($k, $len);
-								if (t3lib_div::testInt($rest))	{
+
+								if (
+									tx_div2007_core::testInt($rest)
+								) {
 									$statusCodeArray[$rest] = $v;
 								}
 							}
@@ -86,7 +89,9 @@ class tx_ttproducts_tracking {
 		}
 		if (isset($this->conf['statusCodes.']) && is_array($this->conf['statusCodes.']))	{
 			foreach ($this->conf['statusCodes.'] as $k => $v)	{
-				if (t3lib_div::testInt($k))	{
+				if (
+					tx_div2007_core::testInt($k)
+				) {
 					$statusCodeArray[$k] = $v;
 				}
 			}
@@ -103,6 +108,18 @@ class tx_ttproducts_tracking {
 
 	function getStatusCodeArray ()	{
 		return $this->statusCodeArray;
+	}
+
+
+	protected function getDate ($newData) {
+		$date = '';
+		if ($newData) {
+			$dateArray = t3lib_div::trimExplode('-', $newData);
+			$date = mktime(0, 0, 0, $dateArray[1], $dateArray[0], $dateArray[2]);
+		} else {
+			$date = time();
+		}
+		return $date;
 	}
 
 
@@ -157,17 +174,19 @@ class tx_ttproducts_tracking {
 	function getTrackingInformation ($orderRow, $templateCode, $trackingCode, $updateCode, &$orderRecord, $admin) {
 		global $TSFE, $TYPO3_DB;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$orderObj = &$tablesObj->get('sys_products_orders');
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
-		$pibaseObj = &t3lib_div::getUserObj('&tx_ttproducts_pi1_base');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$orderObj = $tablesObj->get('sys_products_orders');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$pibaseObj = t3lib_div::getUserObj('&tx_ttproducts_pi1_base');
 		$statusCodeArray = $this->getStatusCodeArray();
 		$allowUpdateFields = array('email', 'email_notify', 'status', 'status_log');
 		$newData = $pibaseObj->piVars['data'];
 		$bStatusValid = FALSE;
 
 		if (isset($orderRow) && is_array($orderRow) && $orderRow['uid'])	{
-			$TSFE->page['title'] = $orderRow['uid'].' ('.$orderRow['bill_no'].'): '.$orderRow['name'].'-'.$orderRow['zip'].'-'.$orderRow['city'].'-'.$orderRow['country'];
+			$titleStr = $orderRow['uid'].' ('.$orderRow['bill_no'].'): '.$orderRow['name'].'-'.$orderRow['zip'].'-'.$orderRow['city'].'-'.$orderRow['country'];
+
+			$GLOBALS['TSFE']->page['title'] = $titleStr;
 
 				// Initialize update of status...
 			$fieldsArray = array();
@@ -201,31 +220,34 @@ class tx_ttproducts_tracking {
 						'comment' => ($count == 0 ? $orderRecord['status_comment'].($newData != '' ? '|'.$newData : '') : ''), // comment is inserted only to the fist status
 					);
 
-					if ($admin && $newData)	{
+					if ($admin)	{
 
-						if ($val>=31 && $val<=32)	{// Numbers 31,32 are for storing of bill no. of external software
-							$fieldsArray['bill_no'] = $newData;
-							$update = 1;
+						if ($newData) {
+							if ($val >= 31 && $val <= 32) {// Numbers 31,32 are for storing of bill no. of external software
+								$fieldsArray['bill_no'] = $newData;
+							}
 						}
-						if ($val==13)	{// Number 13 is that order has been paid. The date muss be entered in format dd-mm-yyyy
-							$dateArray = t3lib_div::trimExplode('-', $newData);
-							$date = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+
+						if ($val == 13) {// Number 13 is that order has been paid. The date muss be entered in format dd-mm-yyyy
+							$date = $this->getDate($newData);
 							$fieldsArray['date_of_payment'] = $date;
 							$fieldsArray['pay_mode'] = '1';
 						}
-						if ($val==20)	{// Number 20 is that items have been shipped. The date muss be entered in format dd-mm-yyyy
-							$dateArray = t3lib_div::trimExplode('-', $newData);
-							$date = mktime(0,0,0,$dateArray[1],$dateArray[0],$dateArray[2]);
+
+						if ($val == 20) {// Number 20 is that items have been shipped. The date muss be entered in format dd-mm-yyyy
+							$date = $this->getDate($newData);
 							$fieldsArray['date_of_delivery'] = $date;
 						}
 					}
+
+
 					if ($admin || ($val>=50 && $val<59))	{// Numbers 50-59 are usermessages.
 						$recipient = $this->conf['orderEmail_to'];
 						if ($orderRow['email'] && ($orderRow['email_notify']))  {
 							$recipient .= ','.$orderRow['email'];
 						}
 						$templateMarker = 'TRACKING_EMAILNOTIFY_TEMPLATE';
-						$feusersObj = &$tablesObj->get('fe_users', TRUE);
+						$feusersObj = $tablesObj->get('fe_users', TRUE);
 						tx_ttproducts_email_div::sendNotifyEmail(
 							$this->cObj,
 							$this->conf,
@@ -284,33 +306,33 @@ class tx_ttproducts_tracking {
 			$status_log = unserialize($orderRow['status_log']);
 			$orderData = unserialize($orderRow['orderData']);
 			if ($orderData === FALSE)	{
-				$orderData = tx_div2007_alpha::unserialize_fh001($orderRow['orderData'],FALSE);
+				$orderData = tx_div2007_alpha5::unserialize_fh002($orderRow['orderData'],FALSE);
 			}
 		}
 
 			// Getting the template stuff and initialize order data.
 		$template=$this->cObj->getSubpart($templateCode,'###TRACKING_DISPLAY_INFO###');
 		$this->searchOrderStatus($status_log, $orderPaid, $orderClosed);
-		$globalMarkerArray = &$markerObj->getGlobalMarkerArray();
+		$globalMarkerArray = $markerObj->getGlobalMarkerArray();
 
 		// making status code 60 disappear if the order has not been payed yet
 		if (!$orderPaid || $orderClosed) {
 				// Fill marker arrays
 			$markerArray = $globalMarkerArray;
-			$subpartArray=Array();
+			$subpartArray = Array();
 			$subpartArray['###STATUS_CODE_60###']= '';
 
-			$template = $this->cObj->substituteMarkerArrayCached($template,$markerArray,$subpartArray);
+			$template = $this->cObj->substituteMarkerArrayCached($template, $markerArray, $subpartArray);
 		}
 
 			// Status:
-		$STATUS_ITEM = $this->cObj->getSubpart($template,'###STATUS_ITEM###');
+		$STATUS_ITEM = $this->cObj->getSubpart($template, '###STATUS_ITEM###');
 		$STATUS_ITEM_c='';
 		if (is_array($status_log))  {
 			reset($status_log);
 			foreach($status_log as $k => $v)	{
 				$markerArray=Array();
-				$markerArray['###ORDER_STATUS_TIME###'] = $this->cObj->stdWrap($v['time'],$this->conf['statusDate_stdWrap.']);
+				$markerArray['###ORDER_STATUS_TIME###'] = $this->cObj->stdWrap($v['time'], $this->conf['statusDate_stdWrap.']);
 				$markerArray['###ORDER_STATUS###'] = $v['status'];
 				$info = $statusCodeArray[$v['status']];
 				$markerArray['###ORDER_STATUS_INFO###'] = ($info ? $info : $v['info']);
@@ -320,10 +342,10 @@ class tx_ttproducts_tracking {
 			}
 		}
 
-		$markerArray=$globalMarkerArray;
-		$subpartArray=array();
-		$wrappedSubpartArray=array();
-		$subpartArray['###STATUS_ITEM###']=$STATUS_ITEM_c;
+		$markerArray = $globalMarkerArray;
+		$subpartArray = array();
+		$wrappedSubpartArray = array();
+		$subpartArray['###STATUS_ITEM###'] = $STATUS_ITEM_c;
 
 			// Display admin-interface if access.
 		if (!$TSFE->beUserLogin)	{
@@ -337,13 +359,13 @@ class tx_ttproducts_tracking {
 			$wrappedSubpartArray['###ADMIN_CONTROL_DENY###']='';
 			$wrappedSubpartArray['###ADMIN_CONTROL###']='';
 		}
-		$orderView = &$tablesObj->get('sys_products_orders', TRUE);
-		$orderObj = &$orderView->getModelObj();
+		$orderView = $tablesObj->get('sys_products_orders', TRUE);
+		$orderObj = $orderView->getModelObj();
 		$orderMarkerArray = $globalMarkerArray;
 		$viewTagArray = array();
 		$parentArray = array();
 		$t = array();
-		$t['orderFrameWork'] = $this->cObj->getSubpart($template,'###ORDER_ITEM###');
+		$t['orderFrameWork'] = $this->cObj->getSubpart($template, '###ORDER_ITEM###');
 		$fieldsArray = $markerObj->getMarkerFields(
 			$t['orderFrameWork'],
 			$orderObj->getTableObj()->tableFieldArray,
@@ -379,14 +401,14 @@ class tx_ttproducts_tracking {
 					}
 				}
 			}
-			$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+			$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 
 				// Get unprocessed orders.
 			$res = $TYPO3_DB->exec_SELECTquery('uid,name,tracking_code,amount,status,status_log,bill_no', 'sys_products_orders', 'NOT deleted AND status!=0 AND status<100', '', 'crdate');
 			while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 				$tmpStatuslog = unserialize($row['status_log']);
 				$tmpOrderData = unserialize($row['orderData']);
-				$classPrefix = str_replace('_','-',$pibaseObj->prefixId);
+				$classPrefix = str_replace('_', '-', $pibaseObj->prefixId);
 				$this->searchOrderStatus($tmpStatuslog, $tmpPaid, $tmpClosed);
 				$class = ($tmpPaid ? $classPrefix.'-paid' : '');
 				$class = ($class ? $class.' ' : '' ) . ($tmpClosed ? $classPrefix.'-closed' : '');
@@ -405,7 +427,7 @@ class tx_ttproducts_tracking {
 		$markerArray['###FIELD_EMAIL_NOTIFY###'] = $orderRow['email_notify'] ? ' checked' : '';
 		$markerArray['###FIELD_EMAIL###'] = $orderRow['email'];
 		$markerArray['###ORDER_UID###'] = $orderObj->getNumber($orderRow['uid']);
-		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
+		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($orderRow['crdate'], $this->conf['orderDate_stdWrap.']);
 		$markerArray['###TRACKING_NUMBER###'] =  $trackingCode;
 		$markerArray['###UPDATE_CODE###'] = $updateCode;
 		$markerArray['###TRACKING_DATA_NAME###'] = $pibaseObj->prefixId.'[data]';
@@ -413,9 +435,9 @@ class tx_ttproducts_tracking {
 		$markerArray['###TRACKING_STATUS_COMMENT_NAME###'] = 'orderRecord[status_comment]';
 		$markerArray['###TRACKING_STATUS_COMMENT_VALUE###'] = ($bStatusValid ? '' : $orderRecord['status_comment']);
 
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tracking'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tracking'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['tracking'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['tracking'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getTrackingInformation')) {
 					$hookObj->getTrackingInformation ($this, $orderRow, $templateCode, $trackingCode, $updateCode, $orderRecord, $admin, $template, $markerArray,$subpartArray);
 				}
