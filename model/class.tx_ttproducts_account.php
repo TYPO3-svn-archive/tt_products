@@ -49,7 +49,7 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	public $fieldArray = array('owner_name', 'ac_number', 'bic');
 	public $tablename = 'sys_products_accounts';
 	public $asterisk = '********';
-	public $useAsterisk = TRUE;
+	public $useAsterisk = FALSE;
 
 
 	function init ($pibase, $functablename) {

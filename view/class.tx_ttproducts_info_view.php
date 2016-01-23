@@ -83,7 +83,10 @@ class tx_ttproducts_info_view {
 			$this->infoArray['delivery'] = $formerBasket['delivery'];
 		}
 		$shippingType = $paymentshippingObj->get('shipping', 'type');
-		if ($shippingType == 'pick_store')	{
+		if (
+			$shippingType == 'pick_store' ||
+			$shippingType == 'nocopy'
+		)	{
 			$this->bDeliveryAddress = TRUE;
 		}
 
@@ -607,7 +610,7 @@ class tx_ttproducts_info_view {
 		$valueArray = $TCA['sys_products_orders']['columns']['foundby']['config']['items'];
 
 		unset($valueArray[0]);
-		$foundbyText = tx_ttproducts_form_div::createSelect (
+		$foundbyText = tx_ttproducts_form_div::createSelect(
 			$this->pibase,
 			$valueArray,
 			'recs[delivery][foundby]',

@@ -40,11 +40,6 @@
  */
 
 
-/*
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_orderaddress.php');
-require_once (PATH_BE_div2007 . 'class.tx_div2007_alpha5.php');*/
-
-
 class tx_ttproducts_email_div {
 
 	/**
@@ -97,13 +92,6 @@ class tx_ttproducts_email_div {
 				->setSubject($subject)
 				->setBody($html, 'text/html', $GLOBALS['TSFE']->renderCharset)
 				->addPart($message, 'text/plain', $GLOBALS['TSFE']->renderCharset);
-
-/*
-			if ($html != '') {
-				$mailMessage->setBody($html, 'text/html', 'iso-8859-1');
-			} else if ($message != '') {
-				$mailMessage->addPart($message, 'text/plain', 'iso-8859-1');
-			}*/
 
 			if (isset($attachment)) {
 				if (is_array($attachment)) {

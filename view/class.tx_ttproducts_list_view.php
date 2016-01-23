@@ -646,11 +646,7 @@ class tx_ttproducts_list_view {
 			$begin_at = ($begin_at ? $begin_at : t3lib_div::_GP('begin_at'));
 		}
 
-		$begin_at = (
-			class_exists('t3lib_utility_Math') ?
-			t3lib_utility_Math::forceIntegerInRange($begin_at, 0, 100000) :
-			tx_div2007_core::intInRange($begin_at, 0, 100000)
-		);
+		$begin_at = tx_div2007_core::intInRange($begin_at, 0, 100000);
 
 		if ($theCode == 'SINGLE')	{
 			$begin_at = ''; // no page browser in single view for related products

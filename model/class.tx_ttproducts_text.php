@@ -61,8 +61,14 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 		return $rcArray;
 	}
 
-	function getChildUidArray ($uid, $tagMarkerArray, $parenttable = 'tt_products')	{
+	function getChildUidArray ($theCode, $uid, $tagMarkerArray, $parenttable = 'tt_products')	{
 		global $TYPO3_DB;
+
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$functablename = $this->getFuncTablename();
+		$fallback = FALSE;
+		$tableConf = $cnf->getTableConf($functablename, $theCode);
+		$fallback = $cnf->getFallback($tableConf);
 
 		$rcArray = array();
 		$tagWhere = '';
@@ -71,10 +77,24 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 			$tags = implode(',', $tagMarkerArray);
 			$tagWhere = ' AND marker IN (' . $tags . ')';
 		}
-		$where_clause = 'parentid = '.intval($uid) . ' AND parenttable=' . $TYPO3_DB->fullQuoteStr($parenttable, $this->getTableObj()->name) . $tagWhere . $this->getTableObj()->enableFields();
-		$rcArray = $this->get('', '', FALSE, $where_clause);
+		$where_clause = 'parentid = '.intval($uid) . ' AND parenttable=' . $TYPO3_DB->fullQuoteStr($parenttable, $this->getTableObj()->name) . $tagWhere;
 
-		return $rcArray;
+		$resultArray =
+			$this->get(
+				'',
+				'',
+				FALSE,
+				$where_clause,
+				'', // $groupBy
+				'', // $orderBy
+				'', // $limit
+				'', // $fields
+				FALSE, // $bCount
+				'', // $aliasPostfix
+				$fallback
+			);
+
+		return $resultArray;
 	}
 }
 

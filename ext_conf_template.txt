@@ -12,6 +12,8 @@ orderBySortingTables =
 articleMode = 0
   # cat=basic/enable; type=string; label=BE template: file path to the template for the BE module
 templateFile = EXT:tt_products/template/example_template_bill_de.tmpl
+  # cat=basic/enable; type=integer; label=endtime year: Enter the year for the endtime field. Some Microsoft Windows systems are limeted to 2038 for the PHP function mktime.
+endtimeYear = 2021
   # cat=basic/enable; type=string; label=category where: Foreign table where for the selection of categories. See TSConfig for more info.
 where.category =
   # cat=basic/enable; type=string; label=tt_products exclude: exclude these fields from the table tt_products.

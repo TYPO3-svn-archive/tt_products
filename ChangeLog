@@ -1,3 +1,12 @@
+2016-01-23 Franz Holzinger <franz@ttproducts.de>
+	* consider Microsoft Windows limitation to the year 2038 for the PHP date function
+	* remove extension compatibility6 from the requirements
+	* fallback for tt_products_texts
+	* bugfix: do not add duplicate enable fields
+	* Add a dummy hook for the transactor extension. Then the listener will be able to determine the extension key of tt_products.
+	* add renderType selectSingle to the TCA, needed for TYPO3 7
+	* new feature shipping type nocopy
+
 2015-12-03 Franz Holzinger <franz@ttproducts.de>
 	* new version 2.8.1 with many new features and improvements
 	* useArticles=3 and articleMode>0 to assign multiple articles to a product with additional prices

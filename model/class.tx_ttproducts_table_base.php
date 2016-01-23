@@ -154,7 +154,7 @@ abstract class tx_ttproducts_table_base	{
 
 	/* uid can be a string. Add a blank character to your uid integer if you want to have muliple rows as a result
 	*/
-	public function get ($uid = '0', $pid = 0, $bStore = TRUE, $where_clause = '', $groupBy = '', $orderBy = '', $limit = '', $fields = '', $bCount = FALSE, $aliasPostfix = '') {
+	public function get ($uid = '0', $pid = 0, $bStore = TRUE, $where_clause = '', $groupBy = '', $orderBy = '', $limit = '', $fields = '', $bCount = FALSE, $aliasPostfix = '', $fallback = FALSE) {
 		global $TYPO3_DB;
 
 		$tableObj = $this->getTableObj();
@@ -216,17 +216,31 @@ abstract class tx_ttproducts_table_base	{
 // 			$orderBy = $TYPO3_DB->stripOrderBy($tableConf['orderBy']);
 
 			// Fetching the records
-			$res = $tableObj->exec_SELECTquery($fields, $where, $groupBy, $orderBy, $limit, '', $aliasPostfix);
+			$res = $tableObj->exec_SELECTquery($fields, $where, $groupBy, $orderBy, $limit, '', $aliasPostfix, $fallback);
 
 			if ($res !== FALSE)	{
 
 				$rc = array();
 
-				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-// +++ hook +++
-					if (is_array($tableObj->langArray) && $tableObj->langArray[$row['title']])	{
+				while ($dbRow = $TYPO3_DB->sql_fetch_row($res)) {
+// 				while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
+					foreach ($dbRow as $index => $value) {
+						if ($res instanceof mysqli_result) {
+							$fieldObject = mysqli_fetch_field_direct($res, $index);
+							$field = $fieldObject->name;
+						} else {
+							$field = mysql_field_name($res, $index);
+						}
+
+						if (!isset($row[$field]) || !empty($value)) {
+							$row[$field] = $value;
+						}
+					}
+
+					if (!$fallback && is_array($tableObj->langArray) && $tableObj->langArray[$row['title']]) {
 						$row['title'] = $tableObj->langArray[$row['title']];
 					}
+
 					if ($row)	{
 						$rc[$row['uid']] = $row;
 						if($bStore && $fields == '*')	{

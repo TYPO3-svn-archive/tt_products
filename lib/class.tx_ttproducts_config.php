@@ -179,6 +179,24 @@ class tx_ttproducts_config {
 	}
 
 
+	public function getFallback ($tableConf) {
+		global $TSFE;
+
+		$result = FALSE;
+		if (
+			isset($tableConf) &&
+			is_array($tableConf) &&
+			isset($tableConf['language.']) &&
+			$tableConf['language.']['type'] == 'table' &&
+			$tableConf['language.']['mode'] == 'fallback'
+		) {
+			$result = TRUE;
+		}
+
+		return $result;
+	}
+
+
 	public function getTranslationFields ($tableConf)	{
 		$fieldArray = array();
 		if (is_array($tableConf['language.']) && $tableConf['language.']['type'] == 'field')	{

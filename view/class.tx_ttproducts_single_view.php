@@ -138,7 +138,7 @@ class tx_ttproducts_single_view {
 
 		if ($this->config['displayCurrentRecord'] && $this->type == 'product' && !$this->useArticles)	{
 			$rowArray[$this->type] = $this->cObj->data;
-		} else {
+		} else if ($this->uid) {
 			$where = 'pid IN ('.$this->pidListObj->getPidlist().')';
 			$rowArray[$this->type] = $itemTableArray[$this->type]->get($this->uid, 0, TRUE, $where);
 			$itemTableConf[$this->type] = $cnf->getTableConf($itemTableArray[$this->type]->getFuncTablename(), 'SINGLE');
@@ -171,7 +171,7 @@ class tx_ttproducts_single_view {
 		$row = $rowArray[$this->type];
 		$tablename = $itemTableArray[$this->type]->getTableObj()->getName();
 
-		if ($row['uid']) {
+		if (!empty($row['uid'])) {
 			// $this->uid = intval ($row['uid']); // store the uid for later usage here
 
 			$itemTableArray['product']->getTableObj()->transformRow($row, TT_PRODUCTS_EXT);
@@ -299,7 +299,7 @@ class tx_ttproducts_single_view {
 				$viewTextTable = $tablesObj->get('tt_products_texts');
 				$viewTextViewTable = $tablesObj->get('tt_products_texts',TRUE);
 				$textTagArray = $viewTextViewTable->getTagMarkerArray($viewTagArray, $itemTableArray['product']->marker);
-				$itemArray = $viewTextTable->getChildUidArray($this->uid, $textTagArray, 'tt_products');
+				$itemArray = $viewTextTable->getChildUidArray($theCode, $this->uid, $textTagArray, 'tt_products');
 				$viewTextViewTable->getRowsMarkerArray($itemArray, $markerArray, $itemTableArray['product']->marker, $textTagArray);
 			}
 

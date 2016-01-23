@@ -55,6 +55,8 @@ if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['where.']) && 
 	$whereCategory = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['where.']['category'];
 }
 
+$endtimeYear = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['endtimeYear'];
+
 // ******************************************************************
 // This is the standard TypoScript products table, tt_products
 // ******************************************************************
@@ -99,7 +101,7 @@ $GLOBALS['TCA']['tt_products'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -109,6 +111,7 @@ $GLOBALS['TCA']['tt_products'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('', 0),
 					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
@@ -311,6 +314,7 @@ $GLOBALS['TCA']['tt_products'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.category',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('', 0)
 				),
@@ -403,6 +407,7 @@ $GLOBALS['TCA']['tt_products'] = Array (
 			'label' => 'LLL:EXT:' . STATIC_INFO_TABLES_TAXES_EXTkey . '/locallang_db.xml:static_taxes_item.tx_rate_id',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('LLL:EXT:' . STATIC_INFO_TABLES_TAXES_EXTkey . '/locallang_db.xml:static_taxes_item.tx_rate_id.I.1', '1'),
 					Array('LLL:EXT:' . STATIC_INFO_TABLES_TAXES_EXTkey . '/locallang_db.xml:static_taxes_item.tx_rate_id.I.2', '2'),
@@ -596,6 +601,7 @@ $GLOBALS['TCA']['tt_products'] = Array (
 			'label' => 'LLL:EXT:cms/locallang_ttc.php:list_type',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('','')
 				),
@@ -722,6 +728,7 @@ $GLOBALS['TCA']['tt_products'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products.delivery',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array ('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products.delivery.availableDemand', '0'),
 					Array ('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products.delivery.availableImmediate', '1'),
@@ -755,7 +762,7 @@ $GLOBALS['TCA']['tt_products'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -855,6 +862,7 @@ $GLOBALS['TCA']['tt_products_language'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.language',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'foreign_table' => 'sys_language',
 				'foreign_table_where' => 'ORDER BY sys_language.title',
 				'items' => Array(
@@ -899,7 +907,7 @@ $GLOBALS['TCA']['tt_products_language'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -909,6 +917,7 @@ $GLOBALS['TCA']['tt_products_language'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('', 0),
 					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
@@ -1073,6 +1082,7 @@ $GLOBALS['TCA']['tt_products_mm_graduated_price'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_mm_graduated_price.product_uid',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'foreign_table' => 'tt_products',
 				'maxitems' => 1
 			)
@@ -1081,6 +1091,7 @@ $GLOBALS['TCA']['tt_products_mm_graduated_price'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_mm_graduated_price.graduated_price_uid',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'foreign_table' => 'tt_products_graduated_price',
 				'maxitems' => 1
 			)
@@ -1145,7 +1156,7 @@ $GLOBALS['TCA']['tt_products_graduated_price'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -1192,6 +1203,7 @@ $GLOBALS['TCA']['tt_products_graduated_price'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_graduated_price.items',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectMultipleSideBySide',
 				'items' => Array (
 					Array('',0),
 				),
@@ -1260,7 +1272,7 @@ $GLOBALS['TCA']['tt_products_cat'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -1270,6 +1282,7 @@ $GLOBALS['TCA']['tt_products_cat'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('', 0),
 					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
@@ -1336,6 +1349,7 @@ $GLOBALS['TCA']['tt_products_cat'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_cat.email_uid',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('',0),
 				),
@@ -1372,6 +1386,7 @@ $GLOBALS['TCA']['tt_products_cat_language'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.language',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'foreign_table' => 'sys_language',
 				'foreign_table_where' => 'ORDER BY sys_language.title',
 				'items' => Array(
@@ -1416,7 +1431,7 @@ $GLOBALS['TCA']['tt_products_cat_language'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -1533,7 +1548,7 @@ $GLOBALS['TCA']['tt_products_articles'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -1543,6 +1558,7 @@ $GLOBALS['TCA']['tt_products_articles'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('', 0),
 					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
@@ -1746,6 +1762,7 @@ $GLOBALS['TCA']['tt_products_articles'] = Array (
 			'label' => 'LLL:EXT:cms/locallang_ttc.php:list_type',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('','')
 				),
@@ -1857,6 +1874,7 @@ if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['articleMode'] == '2
 				'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_products_mm_articles.uid_local',
 				'config' => Array (
 					'type' => 'select',
+					'renderType' => 'selectSingle',
 					'foreign_table' => 'tt_products',
 					'maxitems' => 1
 				)
@@ -1865,6 +1883,7 @@ if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['articleMode'] == '2
 				'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_products_mm_articles.uid_foreign',
 				'config' => Array (
 					'type' => 'select',
+					'renderType' => 'selectSingle',
 					'foreign_table' => 'tt_products_articles',
 					'maxitems' => 1
 				)
@@ -1904,6 +1923,7 @@ $GLOBALS['TCA']['tt_products_articles_language'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.language',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'foreign_table' => 'sys_language',
 				'foreign_table_where' => 'ORDER BY sys_language.title',
 				'items' => Array(
@@ -1948,7 +1968,7 @@ $GLOBALS['TCA']['tt_products_articles_language'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -1958,6 +1978,7 @@ $GLOBALS['TCA']['tt_products_articles_language'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('', 0),
 					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
@@ -2074,7 +2095,7 @@ $GLOBALS['TCA']['tt_products_emails'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0,0,0,12,31,2020),
+					'upper' => mktime(0,0,0,12,31,$endtimeYear),
 					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
 				)
 			)
@@ -2084,6 +2105,7 @@ $GLOBALS['TCA']['tt_products_emails'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('', 0),
 					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
@@ -2168,7 +2190,7 @@ $GLOBALS['TCA']['tt_products_texts'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -2178,6 +2200,7 @@ $GLOBALS['TCA']['tt_products_texts'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
 			'config' => array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => array (
 					array('', 0),
 					array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
@@ -2233,6 +2256,7 @@ $GLOBALS['TCA']['tt_products_texts'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_texts.parenttable',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array(
 					Array('tt_products', 'tt_products')
 				)
@@ -2265,6 +2289,7 @@ $GLOBALS['TCA']['tt_products_texts_language'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.language',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'foreign_table' => 'sys_language',
 				'foreign_table_where' => 'ORDER BY sys_language.title',
 				'items' => Array(
@@ -2309,7 +2334,7 @@ $GLOBALS['TCA']['tt_products_texts_language'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31 , 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -2319,6 +2344,7 @@ $GLOBALS['TCA']['tt_products_texts_language'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
 			'config' => array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => array (
 					array('', 0),
 					array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
@@ -2352,6 +2378,7 @@ $GLOBALS['TCA']['tt_products_texts_language'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_texts_language.text_uid',
 			'config' => array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'allowed' => 'tt_products_texts',
 				'foreign_table' => 'tt_products_texts',
 				'itemsProcFunc' => 'tx_ttproducts_hooks_be->extendedItemList',
@@ -2381,6 +2408,7 @@ $GLOBALS['TCA']['tt_products_texts_language'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_texts_language.parenttable',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array(
 					Array('tt_products_language', 'tt_products_language')
 				),
@@ -2470,7 +2498,7 @@ $GLOBALS['TCA']['sys_products_cards'] = Array (
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
-					'upper' => mktime(0, 0, 0, 12, 31, 2020),
+					'upper' => mktime(0, 0, 0, 12, 31, $endtimeYear),
 					'lower' => mktime(0, 0, 0, date('m') - 1, date('d'), date('Y'))
 				)
 			)
@@ -2499,6 +2527,7 @@ $GLOBALS['TCA']['sys_products_cards'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_cards.cc_type',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_cards.cc_type.I.0', '0'),
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_cards.cc_type.I.1', '1'),
@@ -2574,6 +2603,7 @@ $GLOBALS['TCA']['sys_products_orders'] = Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.language',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'foreign_table' => 'sys_language',
 				'foreign_table_where' => 'ORDER BY sys_language.title',
 				'items' => Array(
@@ -2636,6 +2666,7 @@ $GLOBALS['TCA']['sys_products_orders'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_orders.salutation',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_orders.salutation.I.0', '0'),
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_orders.salutation.I.1', '1'),
@@ -2717,6 +2748,7 @@ $GLOBALS['TCA']['sys_products_orders'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_business_partner',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_business_partner.I.0', '0'),
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_business_partner.I.1', '1'),
@@ -2730,6 +2762,7 @@ $GLOBALS['TCA']['sys_products_orders'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_organisation_form',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_organisation_form.A1', 'A1'),
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_organisation_form.A2', 'A2'),
@@ -3004,6 +3037,7 @@ $GLOBALS['TCA']['sys_products_orders'] = Array (
 			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_orders.foundby',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_orders.foundby.I.0', '0'),
 					Array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:sys_products_orders.foundby.I.1', '1'),
