@@ -76,13 +76,13 @@ if (!defined ('POOL_EXTkey')) {
 
 if (call_user_func($emClass . '::isLoaded', DIV2007_EXTkey)) {
 	if (!defined ('PATH_BE_div2007')) {
-		define('PATH_BE_div2007', t3lib_extMgm::extPath(DIV2007_EXTkey));
+		define('PATH_BE_div2007', call_user_func($emClass . '::extPath', DIV2007_EXTkey));
 	}
 }
 
 if (call_user_func($emClass . '::isLoaded', POOL_EXTkey)) {
 	if (!defined ('PATH_BE_pool')) {
-		define('PATH_BE_pool', t3lib_extMgm::extPath(POOL_EXTkey));
+		define('PATH_BE_pool', call_user_func($emClass . '::extPath', POOL_EXTkey));
 	}
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/pool/mod_main/index.php']['addClass'][] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_pool.php:&tx_ttproducts_hooks_pool';
 }
@@ -105,7 +105,7 @@ if (!defined ('STATIC_INFO_TABLES_TAXES_EXTkey')) {
 
 if (call_user_func($emClass . '::isLoaded', TAXAJAX_EXT)) {
 	if (!defined ('PATH_BE_taxajax')) {
-		define('PATH_BE_taxajax', t3lib_extMgm::extPath(TAXAJAX_EXT));
+		define('PATH_BE_taxajax', call_user_func($emClass . '::extPath', TAXAJAX_EXT));
 	}
 
 	$GLOBALS['TYPO3_CONF_VARS'] ['FE']['eID_include'][TT_PRODUCTS_EXT] =  'EXT:'.TT_PRODUCTS_EXT.'/eid/class.tx_ttproducts_eid.php' ;
@@ -248,7 +248,6 @@ if (call_user_func($emClass . '::isLoaded', 'searchbox')) {
 }
 
 
-
 if (TYPO3_MODE=='FE')	{ // hooks for FE extensions
 
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['login_confirmed'][TT_PRODUCTS_EXT] = 'EXT:'.TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_fe.php:&tx_ttproducts_hooks_fe->resetAdresses';
@@ -257,24 +256,24 @@ if (TYPO3_MODE=='FE')	{ // hooks for FE extensions
 
 }
 
+
 $listType = TT_PRODUCTS_EXT.'_pi_int';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info'][$listType][] = 'EXT:' . TT_PRODUCTS_EXT.'/hooks/class.tx_ttproducts_hooks_cms.php:&tx_ttproducts_hooks_cms->pmDrawItem';
 
 
   // Extending TypoScript from static template uid=43 to set up userdefined tag:
-t3lib_extMgm::addTypoScript($_EXTKEY, 'editorcfg', 'tt_content.CSS_editor.ch.tt_products = < plugin.tt_products.CSS_editor ',43);
+call_user_func($emClass . '::addTypoScript', $_EXTKEY, 'editorcfg', 'tt_content.CSS_editor.ch.tt_products = < plugin.tt_products.CSS_editor ',43);
+
 
 
 $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/mydashboard/class.tx_mydashboard_widgetmgm.php']['addWidget']['tt_products_latest'] = 'EXT:'.TT_PRODUCTS_EXT.'/widgets/class.tx_ttproducts_latest.php:tx_ttproducts_latest';
 
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tce']['formevals']['tx_double6'] = 'EXT:'.DIV2007_EXTkey.'/hooks/class.tx_div2007_hooks_eval.php';
 
+
 if (TYPO3_MODE=='FE') { // add the table enhancements to the FE
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_products']['extendingTCA'][] = TT_PRODUCTS_EXT;
 }
-
-
-
 
 
 
@@ -376,7 +375,6 @@ if (version_compare(TYPO3_version, '4.6.0', '<')) {
 	' . $addLine . '
 	', 43);
 }
-
 
 if (
 	version_compare(TYPO3_version, '7.0.0', '<') &&

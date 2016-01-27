@@ -80,6 +80,7 @@ $tempColumns = array (
 		'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_business_partner',
 		'config' => array (
 			'type' => 'select',
+			'renderType' => 'selectSingle',
 			'items' => array (
 				array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_business_partner.I.0', '0'),
 				array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_business_partner.I.1', '1'),
@@ -93,6 +94,7 @@ $tempColumns = array (
 		'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_organisation_form',
 		'config' => array (
 			'type' => 'select',
+			'renderType' => 'selectSingle',
 			'items' => array (
 				array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_organisation_form.A1', 'A1'),
 				array('LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:fe_users.tt_products_organisation_form.A2', 'A2'),
@@ -534,21 +536,21 @@ if (!$loadTcaAdditions) {
 	)	{
 		$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['5']='layout,select_key';
 		$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['5']='pi_flexform';
-		t3lib_extMgm::addPiFlexFormValue('5', 'FILE:EXT:'.TT_PRODUCTS_EXT.'/pi1/flexform_ds_pi1.xml');
+		call_user_func($emClass . '::addPiFlexFormValue', '5', 'FILE:EXT:'.TT_PRODUCTS_EXT.'/pi1/flexform_ds_pi1.xml');
 
-		if (t3lib_extMgm::isLoaded('searchbox')) {
+		if (call_user_func($emClass . '::isLoaded', 'searchbox')) {
 
 			$listType = TT_PRODUCTS_EXT.'_pi_search';
 			$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist'][$listType] = 'layout,select_key';
 			$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$listType] = 'pi_flexform';
-			t3lib_extMgm::addPiFlexFormValue($listType, 'FILE:EXT:' . TT_PRODUCTS_EXT . '/pi_search/flexform_ds_pi_search.xml');
+			call_user_func($emClass . '::addPiFlexFormValue', $listType, 'FILE:EXT:' . TT_PRODUCTS_EXT . '/pi_search/flexform_ds_pi_search.xml');
 			call_user_func($emClass . '::addPlugin', array('LLL:EXT:' . TT_PRODUCTS_EXT . '/pi_search/locallang_db.xml:tt_content.list_type_pi_search', $listType), 'list_type');
 		}
 
 		$listType = TT_PRODUCTS_EXT.'_pi_int';
 		$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist'][$listType] = 'layout,select_key';
 		$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$listType] = 'pi_flexform';
-		t3lib_extMgm::addPiFlexFormValue($listType, 'FILE:EXT:'.TT_PRODUCTS_EXT.'/pi_int/flexform_ds_pi_int.xml');
+		call_user_func($emClass . '::addPiFlexFormValue', $listType, 'FILE:EXT:'.TT_PRODUCTS_EXT.'/pi_int/flexform_ds_pi_int.xml');
 		call_user_func($emClass . '::addPlugin', array('LLL:EXT:' . TT_PRODUCTS_EXT . '/pi_int/locallang_db.xml:tt_content.list_type_pi_int', $listType),'list_type');
 	}
 

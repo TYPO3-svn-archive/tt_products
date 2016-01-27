@@ -528,7 +528,11 @@ class tx_ttproducts_single_view {
 			}
 
 			if ($this->type == 'product' || $this->type == 'article')	{
-				$item = $basketObj->getItem($prodVariantRow, 'firstVariant');
+				$item =
+					$basketObj->getItem(
+						$prodRow, // $prodVariantRow
+						'firstVariant'
+					);
 
 				$basketItemView = t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 				$basketItemView->init($this->pibaseClass,$basketObj->basketExt,$basketObj->getItemObj());

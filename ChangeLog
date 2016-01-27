@@ -1,3 +1,7 @@
+2016-01-27 Franz Holzinger <franz@ttproducts.de>
+	* bugfix for TYPO3 7.6.2: no call to t3lib_extMgm in the files ext_tables.php and ext_localconf.php
+	* bugfix: the product variants in the single view must come from the product record
+
 2016-01-23 Franz Holzinger <franz@ttproducts.de>
 	* consider Microsoft Windows limitation to the year 2038 for the PHP date function
 	* remove extension compatibility6 from the requirements

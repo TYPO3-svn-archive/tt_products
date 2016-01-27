@@ -220,7 +220,11 @@ class tx_ttproducts_product extends tx_ttproducts_article_base {
 		}
 
 		if ($articleNo === FALSE)	{
-			$currentRow = $this->variant->getVariantRow($row, $presetVarianArray);
+			if (empty($presetVariantArray)) {
+				$currentRow = $row;
+			} else {
+				$currentRow = $this->variant->getVariantRow($row, $presetVariantArray);
+			}
 		} else {
 			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 			$articleObj = $tablesObj->get('tt_products_articles');

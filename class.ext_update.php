@@ -57,7 +57,7 @@ class ext_update  {
 			$content .= 'This integration works only once. When you added entries in the articles table <br />'.
 				'and you want to do it again you have to select \'UPDATE!\' in the EM.';
 			$content .= '<br /><br />';
-			$content .= '<input type="submit" name="integrate" value="Integrate the product articles table into the relational mm table" onclick="this.form.action=\''.$linkScript.'\';submit();" />';
+			$content .= '<input type="submit" name="integrate" value="Integrate the product articles table into the relational mm table" onclick="this.form.action=\'' . $linkScript . '\';submit();" />';
 		}
 
 		return $content;
@@ -75,8 +75,8 @@ class ext_update  {
 }
 
 // Include extension?
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/static_info_tables/class.ext_update.php'])	{
-	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/static_info_tables/class.ext_update.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/class.ext_update.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/class.ext_update.php']);
 }
 
 
