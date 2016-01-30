@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,16 +31,13 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  */
 
-
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_table_base.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_table_base_view.php');
 
 
 class tx_ttproducts_tables	{
@@ -49,6 +46,7 @@ class tx_ttproducts_tables	{
 		'address' => 'tx_ttproducts_address',
 		'fe_users' => 'tx_ttproducts_orderaddress',
 		'pages' => 'tx_ttproducts_page',
+		'static_banks_de' => 'tx_ttproducts_bank_de',
 		'static_countries' => 'tx_ttproducts_country',
 		'sys_products_orders' => 'tx_ttproducts_order',
 		'sys_products_accounts' => 'tx_ttproducts_account',
@@ -65,6 +63,7 @@ class tx_ttproducts_tables	{
 		'tx_dam_cat' => 'tx_ttproducts_damcategory'
 	);
 	var $needExtensionArray = array(
+		'static_banks_de' => 'static_info_tables_banks_de',
 		'static_countries' => 'static_info_tables',
 		'tx_dam' => 'dam',
 		'tx_dam_cat' => 'dam'
@@ -74,10 +73,10 @@ class tx_ttproducts_tables	{
 	var $conf;
 
 
-	function init(&$pibase)	{
+	function init ($pibase)	{
 
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->cnf = &$cnf;
 		$this->conf = &$cnf->conf;
@@ -103,24 +102,24 @@ class tx_ttproducts_tables	{
 	 * @param	[type]		$bView: ...
 	 * @return	[type]		...
 	 */
-	function &get($functablename, $bView=false)	{
+	function get ($functablename, $bView=false)	{
 		$classNameArray = array();
 		$tableObjArray = array();
 
-		$classNameArray['model'] = $this->gettableClass ($functablename, false);
+		$classNameArray['model'] = $this->gettableClass($functablename, false);
 		if ($bView)	{
-			$classNameArray['view'] = $this->gettableClass ($functablename, true);
+			$classNameArray['view'] = $this->gettableClass($functablename, true);
 		}
 
-		if (!$classNameArray['model'] || $bView && !$classNameArray['model'])	{
-			debug('Error in '.TT_PRODUCTS_EXTkey.'. No class found after calling function tx_ttproducts_tables::get with parameters "'.$functablename.'", '.$bView.'.');
+		if (!$classNameArray['model'] || $bView && !$classNameArray['view'])	{
+			debug('Error in '.TT_PRODUCTS_EXT.'. No class found after calling function tx_ttproducts_tables::get with parameters "'.$functablename.'", '.$bView.'.');
 			return 'ERROR';
 		}
 
 		foreach ($classNameArray as $k => $className)	{
 			if ($className != 'skip')	{
 				include_once (PATH_BE_ttproducts.$k.'/class.'.$className.'.php');
-				$tableObj[$k] = &t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
+				$tableObj[$k] = t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
 			}
 		}
 
@@ -147,7 +146,6 @@ class tx_ttproducts_tables	{
 		return ($bView ? $tableObj['view'] : $tableObj['model']);
 	}
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/lib/class.tx_ttproducts_tables.php']) {

@@ -42,6 +42,7 @@ class tx_ttproducts_text_view extends tx_ttproducts_table_base_view {
 	function &getTagMarkerArray(&$tagArray, $parentMarker)	{
 		$rcArray = array();
 		$search = $parentMarker.'_'.$this->marker.'_';
+
 		$searchLen = strlen($search);
 		foreach ($tagArray as $marker => $k)	{
 			if (substr($marker, 0, $searchLen) == $search)	{
@@ -60,34 +61,39 @@ class tx_ttproducts_text_view extends tx_ttproducts_table_base_view {
 	 * @param	array		reference to an item array with all the data of the item
 	 * @param	array		Returns a markerArray ready for substitution with information
 	 * @param	[type]		$parentMarker: ...
-	 * @param	[type]		$textTagArray: ...
+	 * @param	[type]		$tagArray: ...
 	 * @return	[type]		...
 	 * @access private
 	 */
-	function getItemMarkerArray (&$itemArray, &$markerArray, $parentMarker, $textTagArray)	{
-		global $TSFE;
+	function getItemMarkerArray ($itemArray, &$markerArray, $parentMarker, $tagArray)	{
+		$bFoundTagArray = array();
 
-		if (isset($itemArray) && is_array($itemArray) && count($itemArray))	{
-			foreach ($itemArray as $k => $row)	{
-				$marker = $parentMarker.'_'.$this->marker.'_'.strtoupper($row['marker']);
+		if (isset($itemArray) && is_array($itemArray) && count($itemArray)) {
+			foreach ($itemArray as $k => $row) {
+				$tag = strtoupper($row['marker']);
+				$bFoundTagArray[$tag] = TRUE;
+				$marker = $parentMarker . '_' . $this->getMarker() . '_' . $tag;
 				$value = $row['note'];
-				$value =  ($this->conf['nl2brNote'] ? nl2br($value) : $value);
+				$value = ($this->conf['nl2brNote'] ? nl2br($value) : $value);
 
 					// Extension CSS styled content
 				if (t3lib_extMgm::isLoaded('css_styled_content')) {
-					$value = tx_div2007_alpha::RTEcssText($this->cObj, $value);
-				} else if (is_array($this->conf['parseFunc.']))	{
-					$value = $this->cObj->parseFunc($value,$this->conf['parseFunc.']);
+					$value = tx_div2007_alpha5::RTEcssText($this->getCObj(), $value);
+				} else if (is_array($this->conf['parseFunc.'])) {
+					$value = $this->getCObj()->parseFunc($value, $this->conf['parseFunc.']);
 				}
-				$markerArray['###'.$marker.'###'] = $value;
-				$markerTitle = $marker.'_'.strtoupper('title');
-				$markerArray['###'.$markerTitle.'###'] = $row['title'];
+				$markerArray['###' . $marker . '###'] = $value;
+				$markerTitle = $marker . '_' . strtoupper('title');
+				$markerArray['###' . $markerTitle . '###'] = $row['title'];
 			}
-		} else {
-			if (isset($textTagArray) && is_array($textTagArray))	{
-				foreach ($textTagArray as $textTagMarker)	{
-					$marker = $parentMarker.'_'.$this->marker.'_'.$textTagMarker;
-					$markerArray['###'.$marker.'###'] = '';
+		}
+
+
+		if (isset($tagArray) && is_array($tagArray)) {
+			foreach ($tagArray as $tag) {
+				if (!$bFoundTagArray[$tag]) {
+					$marker = $parentMarker . '_' . $this->getMarker() . '_' . $tag;
+					$markerArray['###' . $marker . '###'] = '';
 				}
 			}
 		}

@@ -39,9 +39,6 @@
  *
  */
 
-
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_catlist_view_base.php');
-
 class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 
 	var $htmlTagMain = 'select';	// main HTML tag
@@ -49,15 +46,15 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 
 
 	// returns the products list view
-	function &printView($functablename, &$templateCode, $theCode, &$error_code, $templateArea = 'ITEM_CATEGORY_SELECT_TEMPLATE', $pageAsCategory, $templateSuffix = '') {
+	function printView($functablename, &$templateCode, $theCode, &$error_code, $templateArea = 'ITEM_CATEGORY_SELECT_TEMPLATE', $pageAsCategory, $templateSuffix = '') {
 		global $TSFE, $TCA;
 		$content='';
 		$out='';
 		$where='';
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$categoryTableView = &$tablesObj->get($functablename,1);
-		$categoryTable = &$categoryTableView->getModelObj();
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$categoryTableView = $tablesObj->get($functablename,1);
+		$categoryTable = $categoryTableView->getModelObj();
 
 		$bSeparated = false;
 		$t = array();
@@ -82,8 +79,11 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 		if (!count($error_code)) 	{
 			$count = 0;
 			$depth = 1;
-	/*		$catArray = array();
-			$catArray [(int) $depth] = &$rootArray;*/
+			if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
+				$bSeparated = true;
+			}
+
+
 			$menu = $this->conf['CSS.'][$functablename.'.']['menu'];
 			$menu = ($menu ? $menu : $categoryTableView->piVar.$depth);
 			$fill = '';
@@ -150,9 +150,6 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 			$markerArray = $this->urlObj->addURLMarkers($this->conf['PIDlistDisplay'],$markerArray);
 			$this->urlObj->getWrappedSubpartArray($wrappedSubpartArray);
 			$subpartArray['###CATEGORY_SINGLE###'] = $out;
-			if($pos = strstr($t['listFrameWork'],'###CATEGORY_SINGLE_'))	{
-				$bSeparated = true;
-			}
 
 			if ($bSeparated)	{
 				$count = intval(substr_count($t['listFrameWork'], '###CATEGORY_SINGLE_') / 2);
@@ -164,7 +161,7 @@ class tx_ttproducts_selectcat_view extends tx_ttproducts_catlist_view_base {
 					$parentFieldArray = array('parent_category');
 				}
 				$piVar = $categoryTableView->piVar;
-				$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
+				$javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
 				$javaScriptObj->set('selectcat', array($categoryArray), 1+$count, $piVar, $parentFieldArray, array($catid), array(), 'clickShow');
 
 				for ($i = 2; $i <= 1+$count; ++$i)	{

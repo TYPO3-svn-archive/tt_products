@@ -435,7 +435,7 @@ Exact same features as BASKET_TEMPLATE.</em></p>
 	            <legend>Trading conditions</legend>
 	            <div class="trading_conditions">
 	                <p>Hereby I confirm to have read and accepted the <!--###LINK_AGB###-->General trading conditions (AGB)<!--###LINK_AGB###-->:</p>
-	                <input type="checkbox" name="recs[personinfo][agb]" value="0" id="delivery_agb" class="checkbox" ###PERSON_AGB### />&nbsp;
+	                <input type="checkbox" name="recs[personinfo][agb]" id="delivery_agb" class="checkbox" ###PERSON_AGB### />&nbsp;
 	                    <label for="delivery_agb" class="checkbox"><strong>I agree to the general trading conditions.*</strong></label>
 	            </div>
 	        </fieldset>
@@ -621,7 +621,7 @@ Exact same features as BASKET_TEMPLATE.</em></p>
 	    <h2>Order information</h2>
         <p>
         	Delivery will be done according to our sales policy. Your order is dated ###ORDER_DATE###.<br />
-        	You can follow your order by using your tracking number, which is: <strong>###ORDER_TRACKING_NO###</strong>. Click here to <a href="index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO##">see the status now.</a><br />
+        	You can follow your order by using your tracking number, which is: <strong>###ORDER_TRACKING_NO###</strong>. Click here to <a href="index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###">see the status now.</a><br />
 			Click here to <a href="index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###">view your bill</a>.<br />
             Click here to <a href="index.php?id=###PID_DELIVERY###&type=0&tracking=###ORDER_TRACKING_NO###">view your delivery sheet</a>.
         </p>
@@ -954,6 +954,12 @@ Exact same features as BASKET_TEMPLATE.</em></p>
 	            <!-- ###ADMIN_CONTROL_OK### begin -->
                 	<div class="admin_control_ok">
 	                    <form method="post" action="###FORM_URL###">
+	                        <div class="form_control">
+	                            <input type="hidden" name="tracking" value="###TRACKING_NUMBER###" />
+	                            <input type="hidden" name="update_code" value="###UPDATE_CODE###" />
+	                            <input type="submit" name="submit" value="Add order status" />
+	                        </div>
+
 	                        <fieldset>
 	                            <legend>Change order status</legend>
 	                            <select name="orderRecord[status][]" id="orderRecord_status" size="9" multiple="multiple">
@@ -963,11 +969,6 @@ Exact same features as BASKET_TEMPLATE.</em></p>
 	                                <textarea cols="40" rows="5" name="orderRecord[status_comment]" id="orderRecord_status_comment"></textarea>
 	                        </fieldset>
 
-	                        <div class="form_control">
-	                            <input type="hidden" name="tracking" value="###TRACKING_NUMBER###" />
-	                            <input type="hidden" name="update_code" value="###UPDATE_CODE###" />
-	                            <input type="submit" name="submit" value="Add order status" />
-	                        </div>
 	                    </form>
                     </div>
 

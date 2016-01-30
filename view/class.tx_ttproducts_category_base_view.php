@@ -53,17 +53,17 @@ abstract class tx_ttproducts_category_base_view extends tx_ttproducts_table_base
 
 		$this->cObj->setCurrentVal($catTitle);
 		$title = $this->cObj->cObjGetSingle($this->conf['categoryHeader'],$this->conf['categoryHeader.'], 'categoryHeader');
-		$markerArray['###'.$prefix.$this->marker.'_TITLE###'] = htmlentities($title,ENT_QUOTES,$TSFE->renderCharset);
+		$markerArray['###'.$prefix.$this->marker.'_TITLE###'] = htmlentities($title, ENT_QUOTES, $TSFE->renderCharset);
 	}
 
-	public function getMarkerArrayCatTitle(&$markerArray,$prefix='')	{
+	public function getMarkerArrayCatTitle(&$markerArray, $prefix = '')	{
 		return ($markerArray['###'.$prefix.$this->marker.'_TITLE###']);
 	}
 
-	public function &getSubpartArrays (&$urlmarkerObj, $row, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $pid, $linkMarker)	{
+	public function &getSubpartArrays ($urlmarkerObj, $row, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $pid, $linkMarker)	{
 		$addQueryString = array();
 		$addQueryString[$this->piVar] = $row['uid'];
-		$wrappedSubpartArray['###'.$linkMarker.'###'] = array('<a href="'.  tx_div2007_alpha::getPageLink_fh001($this->langObj, $pid,'',$urlmarkerObj->getLinkParams('',$addQueryString,true,FALSE,$this->piVar),array('useCacheHash' => true)) .'">','</a>');
+		$wrappedSubpartArray['###'.$linkMarker.'###'] = array('<a href="'.  htmlspecialchars(tx_div2007_alpha5::getPageLink_fh003($this->cObj, $pid, '', $urlmarkerObj->getLinkParams('', $addQueryString, true, FALSE, 'product', $this->piVar), array('useCacheHash' => true))) . '">', '</a>');
 	}
 
 	/**
@@ -78,21 +78,21 @@ abstract class tx_ttproducts_category_base_view extends tx_ttproducts_table_base
 	 * 			 			for the tt_producst record, $row
 	 * @access private
 	 */
-	abstract function getMarkerArray (&$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $theCode, $id, $prefix,$linkWrap='');
+	abstract function getMarkerArray (&$markerArray, $category, $pid, $imageNum=0, $imageRenderObj = 'image', &$viewCatTagArray, $forminfoArray = array(), $pageAsCategory = 0, $theCode, $id, $prefix,$linkWrap = '');
 
-	public function getParentMarkerArray (&$parentArray, &$row, &$markerArray, $category, $pid, $imageNum=0, $imageRenderObj='image', &$viewCatTagArray, $forminfoArray=array(), $pageAsCategory=0, $code, $id, $prefix)	{
+	public function getParentMarkerArray ($parentArray, $row, &$markerArray, $category, $pid, $imageNum = 0, $imageRenderObj = 'image', &$viewCatTagArray, $forminfoArray = array(), $pageAsCategory = 0, $code, $id, $prefix)	{
 
 		if (is_array($parentArray) && count($parentArray)) {
 			$currentRow = $row;
 			$count = 0;
-			$currentCategory = $this->getRowCategory($row);
+			$currentCategory = $this->getModelObj()->getRowCategory($row);
 			$parentCategory = '';
 
 			foreach ($parentArray as $key => $parent)	{
 				do	{
-					$parentRow = $this->getParent($currentCategory);
+					$parentRow = $this->getModelObj()->getParent($currentCategory);
 					$parentCategory = $parentRow['uid'];
-					$parentPid = $this->getRowPid($parentRow);
+					$parentPid = $this->getModelObj()->getRowPid($parentRow);
 					$count++;
 					if ($count < $parent) {
 						$currentCategory = $parentCategory;
@@ -119,10 +119,10 @@ abstract class tx_ttproducts_category_base_view extends tx_ttproducts_table_base
 		}
 	}
 
-	public function getItemMarkerArray (&$row, &$markerArray, &$variantFieldArray, &$variantMarkerArray, &$tagArray, $theCode, $bHtml=TRUE, $charset='', $prefix='', $imageRenderObj='image')	{
+	public function getItemMarkerArray (&$row, &$markerArray, &$variantFieldArray, &$variantMarkerArray, &$tagArray, $theCode, $bHtml = TRUE, $charset = '', $prefix = '', $imageRenderObj = 'image')	{
 
 		$functablename = $this->getModelObj()->getFuncTablename();
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$cssConf = $cnf->getCSSConf($functablename, $theCode);
 
 		parent::getItemMarkerArray($row, $markerArray, $variantFieldArray, $variantMarkerArray, $tagArray, $theCode, $bHtml, $charset, $prefix, $imageRenderObj);
@@ -133,6 +133,5 @@ abstract class tx_ttproducts_category_base_view extends tx_ttproducts_table_base
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_category_base_view.php'])	{
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_category_base_view.php']);
 }
-
 
 ?>

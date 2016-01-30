@@ -40,7 +40,6 @@ class tx_ttproducts_basketitem_view {
 	var $tt_products_cat; // element of class tx_table_db
 	var $conf;
 	var $config;
-	var $price;
 	var $basketExt; 	// basket
 	var $basketVar = 'ttp_basket';
 	var $pibase; // reference to object of pibase
@@ -54,12 +53,11 @@ class tx_ttproducts_basketitem_view {
 	 * @param	[type]		$basketExt: ...
 	 * @return	void
 	 */
-	function init(&$pibase, &$basketExt)	{
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($pibase, &$basketExt)	{
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
  		$this->conf = &$cnf->conf;
  		$this->config = &$cnf->config;
-		$this->price = &$price;
 		$this->basketExt = &$basketExt;
 	} // init
 
@@ -93,8 +91,9 @@ class tx_ttproducts_basketitem_view {
 	)	{
 		global $TCA, $TSFE;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$viewTable = &$tablesObj->get($functablename);
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
+		$viewTable = $tablesObj->get($functablename);
 			// Returns a markerArray ready for substitution with information for the tt_producst record, $row
 		$row = &$item['rec'];
 		$extArray = $row['ext'];
@@ -113,7 +112,7 @@ class tx_ttproducts_basketitem_view {
 		$markerArray['###FIELD_QTY###'] = $quantity ? $quantity : '';
 		$markerArray['###FIELD_ID###'] = $jsTableName.'-'.strtolower($theCode).'-id-'.$id;
 
-		$priceFieldObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$priceFieldObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 		$fieldIdTax = $id.'tax';
 		$markerArray['###PRICE_TAX###'] = $priceFieldObj->printPrice($priceFieldObj->priceFormat($item['priceTax'], $taxInclExcl));
 		$markerArray['###PRICE_NO_TAX###'] = $priceFieldObj->printPrice($priceFieldObj->priceFormat($item['priceNoTax'], $taxInclExcl));
@@ -156,9 +155,7 @@ class tx_ttproducts_basketitem_view {
 					$variantRow = $row[$field];
 					$prodTmpRow = explode(';', $variantRow);
 
-					if ($bSelect && $variantRow && $prodTmpRow[0])	{
-						include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
-
+					if ($bSelect && $bSelectableArray[$k] && $variantRow && $prodTmpRow[0]) {
 						$prodTranslatedRow = $prodTmpRow;
 						$viewTable->getTableObj()->substituteMarkerArray($prodTranslatedRow);
 						$text = tx_ttproducts_form_div::createSelect(
@@ -178,19 +175,26 @@ class tx_ttproducts_basketitem_view {
 					$markerArray['###FIELD_'.$fieldMarker.'_VALUE###'] = $row[$field];
 					$markerArray['###FIELD_'.$fieldMarker.'_ONCHANGE'] = ''; // TODO:  use $forminfoArray['###FORM_NAME###' in something like onChange="Go(this.form.Auswahl.options[this.form.Auswahl.options.selectedIndex].value)"
 
+					// ###PRODUCT_SIZE_FUNCTION###
 					$markerKey = '###'.$viewTable->marker.'_'.$fieldMarker.'###';
 					$markerArray[$markerKey] = $text;
 					$markerKey = '###'.$viewTable->marker.'_'.$fieldMarker.'_FUNCTION1###';
 					$markerArray[$markerKey] = 'doFetchRow(\''.$functablename.'\',\''.strtolower($theCode).'\','.$row['uid'].');';
+
+	/*				if (isset($row['ext']))	{
+						$markerArray['###PRODUCT_'.$fieldMarker.'###'] = $row[$field];
+					}*/
 				}
 			}
 		}
+		// $markerArray['###FIELD_ADDITIONAL_NAME###'] = 'ttp_basket['.$row['uid'].'][additional]';
 		$prodAdditionalText['single'] = '';
+		// $variant = $row['extVars'];
 
 		if ($keyAdditional !== FALSE) {
 			$isSingleProduct = $viewTable->hasAdditional($row,'isSingle');
 			if ($isSingleProduct)	{
-				$message = tx_div2007_alpha::getLL($this->pibase,'additional_single');
+				$message = tx_div2007_alpha5::getLL_fh002($langObj, 'additional_single');
 				$prodAdditionalText['single'] = $message.'<input type="checkbox" name="'.$basketQuantityName.'" '.($quantity ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="1">';
 				$hiddenText .= '<input type="hidden" name="'.$basketQuantityName.'[1]" value="'.($quantity ? '1' : '0') .'">';
 			}
@@ -215,7 +219,7 @@ class tx_ttproducts_basketitem_view {
 			$basketAdditionalName = $this->basketVar.'['.$row['uid'].'][additional]['.md5($variant).']';
 			$bGiftService = $this->basketExt[$row['uid']][$variant.'.']['additional']['giftservice'];
 			$giftServicePostfix = '[giftservice]';
-			$message = $this->pibase->pi_getLL('additional_gift_service');
+			$message = tx_div2007_alpha5::getLL_fh002($langObj, 'additional_gift_service');
 			$value = ($bGiftService ? '1' : '0');
 			$prodAdditionalText['giftService'] = $message.'<input type="checkbox" name="'.$basketAdditionalName.$giftServicePostfix.'" '.($value ? 'checked="checked"':'').'onchange = "this.form[this.name+\'[1]\'].value=(this.checked ? 1 : 0);"'.' value="'.$value.'">';
 			$hiddenText .= '<input type="hidden" name="'.$basketAdditionalName.$giftServicePostfix.'[1]" value="'.$value.'">';

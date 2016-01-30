@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,14 +31,12 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  */
-
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_base_view.php');
 
 
 abstract class tx_ttproducts_table_base_view	{
@@ -47,15 +45,14 @@ abstract class tx_ttproducts_table_base_view	{
 	public $conf;
 	public $config;
 	public $piVar;
-
 	public $modelObj;
 	public $langObj;
 	public $marker;		// must be overridden
 
-	public function init(&$langObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->modelObj = &$modelObj;
-		$this->cObj = &$langObj->cObj;
+	public function init ($langObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->modelObj = $modelObj;
+		$this->cObj = $langObj->cObj;
 		$this->conf = &$modelObj->conf;
 		$this->config = &$modelObj->config;
 
@@ -68,6 +65,14 @@ abstract class tx_ttproducts_table_base_view	{
 
 	public function needsInit ()	{
 		return !$this->bHasBeenInitialised;
+	}
+
+	public function setCObj ($cObj) {
+		$this->cObj = $cObj;
+	}
+
+	public function getCObj () {
+		return $this->cObj;
 	}
 
 	public function &getModelObj ()	{
@@ -84,7 +89,7 @@ abstract class tx_ttproducts_table_base_view	{
 	 *
 	 * @return	[type]		...
 	 */
-	function getPivar()	{
+	function getPivar ()	{
 		return $this->piVar;
 	}
 
@@ -94,22 +99,30 @@ abstract class tx_ttproducts_table_base_view	{
 	 * @param	[type]		$piVar: ...
 	 * @return	[type]		...
 	 */
-	function setPivar($piVar)	{
+	function setPivar ($piVar)	{
 		$this->piVar = $piVar;
 	}
 
-	public function getMarker()	{
+	public function getMarker ()	{
 		return $this->marker;
 	}
 
 	public function &getObj ($className)	{
 		$classNameView = $className.'_view';
 
-		include_once (PATH_BE_ttproducts.'view/field/class.'.$classNameView.'.php');
-		$fieldViewObj = &t3lib_div::getUserObj('&'.$classNameView);	// fetch and store it as persistent object
+// 		include_once (PATH_BE_ttproducts.'view/field/class.'.$classNameView.'.php');
+		$fieldViewObj = t3lib_div::getUserObj('&'.$classNameView);	// fetch and store it as persistent object
+		if (!is_object($fieldViewObj)) {
+			throw new RuntimeException('Error in tt_products: The class "' . $classNameView . '" is not found.', 50001);
+		}
+
 		if ($fieldViewObj->needsInit())	{
-			include_once (PATH_BE_ttproducts.'model/field/class.'.$className.'.php');
-			$fieldObj = &t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
+// 			include_once (PATH_BE_ttproducts.'model/field/class.'.$className.'.php');
+			$fieldObj = t3lib_div::getUserObj('&'.$className);	// fetch and store it as persistent object
+			if (!is_object($fieldObj)) {
+				throw new RuntimeException('Error in tt_products: The class "' . $className . '" is not found.', 50002);
+			}
+
 			if ($fieldObj->needsInit())	{
 				$fieldObj->init($this->cObj);
 			}
@@ -128,12 +141,27 @@ abstract class tx_ttproducts_table_base_view	{
 		global $TCA;
 
 		if (is_array($row))	{
+			$modelObj = $this->getModelObj();
+			$tableConf = $modelObj->getTableConf($theCode);
+
 			foreach ($row as $field => $value)	{
 				$className = $this->getfieldClass($field);
 				if ($className)	{
 					$fieldViewObj = $this->getObj($className);
 					if (method_exists ($fieldViewObj, 'getItemSubpartArrays'))	{
-						$fieldViewObj->getItemSubpartArrays($templateCode, $row, $field, $subpartArray, $wrappedSubpartArray, $tagArray, $theCode, $id);
+						$fieldViewObj->getItemSubpartArrays(
+							$templateCode,
+							$this->marker,
+							$functablename,
+							$row,
+							$field,
+							$tableConf,
+							$subpartArray,
+							$wrappedSubpartArray,
+							$tagArray,
+							$theCode,
+							$id
+						);
 					}
 				}
 			}
@@ -154,26 +182,29 @@ abstract class tx_ttproducts_table_base_view	{
 	)	{
 		global $TSFE;
 
-		if (is_array($row))	{
+		$rowMarkerArray = array();
+
+		if (is_array($row) && $row['uid'])	{
 			$functablename = $this->getModelObj()->getFuncTablename();
 			$marker = $prefix.$this->marker;
 			$extTableName = str_replace('_','-',$functablename);
 			$extId = $extTableName.'-'.str_replace('_','-',strtolower($theCode));
 			$id = $extId.'-'.$row['uid'];
-			$markerArray['###'.$marker.'_ID###'] = $id;
-			$markerArray['###'.$marker.'_NAME###'] = $extName.'-'.$row['uid'];
-			$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+			$rowMarkerArray['###'.$marker.'_ID###'] = $id;
+			$rowMarkerArray['###'.$marker.'_NAME###'] = $extName.'-'.$row['uid'];
+			$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 			$tableconf = $cnf->getTableConf($functablename,$theCode);
 			$tabledesc = $cnf->getTableDesc($functablename);
 
 			foreach ($row as $field => $value)	{
 				$viewField = $field;
 				$bSkip = FALSE;
-				$theMarkerArray = &$markerArray;
+				$theMarkerArray = &$rowMarkerArray;
 				$fieldId = $id.'-'.$viewField;
 				$markerKey = $marker.'_'.strtoupper($viewField);
-				if (isset($tagArray[$markerKey]))	{
-					$markerArray['###'.$markerKey.'_ID###'] = $fieldId;
+
+				if (isset($tagArray[$markerKey . '_ID']))	{
+					$rowMarkerArray['###' . $markerKey . '_ID###'] = $fieldId;
 				}
 
 				if (is_array($variantFieldArray) && is_array($variantMarkerArray) && in_array($field, $variantFieldArray))	{
@@ -182,6 +213,7 @@ abstract class tx_ttproducts_table_base_view	{
 				} else {
 					$className = $this->getfieldClass($field);
 				}
+
 				if ($className)	{
 					$fieldViewObj = $this->getObj($className);
 					$modifiedValue =
@@ -215,9 +247,9 @@ abstract class tx_ttproducts_table_base_view	{
 					}
 				}
 
-				if (!$bSkip)	{
+				if (!$bSkip) {
 					$tableName = $this->conf['table.'][$functablename];
-					$fieldConf = $TCA[$tableName]['columns'][$field];
+					$fieldConf = $GLOBALS['TCA'][$tableName]['columns'][$field];
 					if (is_array($fieldConf))	{
 						if ($fieldConf['config']['eval'] == 'date')	{
 							$value = $this->cObj->stdWrap($value,$this->conf['usebyDate_stdWrap.']);
@@ -226,7 +258,26 @@ abstract class tx_ttproducts_table_base_view	{
 					$theMarkerArray['###'.$markerKey.'###'] = $value;
 				}
 			}
+		} else {
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$tablename = $this->getModelObj()->getTablename();
+			$tmpMarkerArray = array();
+			$tmpMarkerArray[] = $marker;
+
+			if (isset($tagArray) && is_array($tagArray))	{
+				foreach ($tagArray as $theTag => $v)	{
+					foreach ($tmpMarkerArray as $theMarker)	{
+						if (strpos($theTag,$theMarker) === 0)	{
+							$rowMarkerArray['###' . $theTag . '###'] = '';
+						}
+					}
+					if (!isset($rowMarkerArray['###' . $theTag . '###']) && strpos($theTag, $markerKey) === 0)	{
+// Todo
+					}
+				}
+			}
 		}
+		$markerArray = array_merge($markerArray, $rowMarkerArray);
 	}
 }
 

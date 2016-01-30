@@ -50,9 +50,9 @@ class tx_ttproducts_subpartmarker {
 	 * @param	array		array urls which should be overridden with marker key as index
 	 * @return	void
 	 */
-	function init(&$cObj)	{
- 		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($cObj)	{
+ 		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
  		$this->conf = &$cnf->conf;
 	}
@@ -68,8 +68,8 @@ class tx_ttproducts_subpartmarker {
 		$sPBody = substr($subpartMarker,3,-3);
 		$altSPM = '';
 		if (isset($this->conf['altMainMarkers.']))	{
-			$altSPM = trim($this->cObj->stdWrap($this->conf['altMainMarkers.'][$sPBody],$this->conf['altMainMarkers.'][$sPBody.'.']));
-			$GLOBALS['TT']->setTSlogMessage('Using alternative subpart marker for "'.$subpartMarker.'": '.$altSPM,1);
+			$altSPM = trim($this->cObj->stdWrap($this->conf['altMainMarkers.'][$sPBody], $this->conf['altMainMarkers.'][$sPBody.'.']));
+			$GLOBALS['TT']->setTSlogMessage('Using alternative subpart marker for "' . $subpartMarker . '": ' . $altSPM, 1);
 		}
 		$rc = $altSPM ? $altSPM : $subpartMarker;
 		return $rc;
@@ -86,10 +86,11 @@ class tx_ttproducts_subpartmarker {
 	function getTemplateSubParts($templateCode, $subItemMarkerArray)	{
 		$rc = array();
 		foreach ($subItemMarkerArray as $key => $subItemMarker)	{
-			$rc[$subItemMarker] = substr($this->spMarker('###'.$subItemMarker.'_TEMPLATE###'),3,-3);
+			$rc[$subItemMarker] = substr($this->spMarker('###' . $subItemMarker . '_TEMPLATE###'), 3, -3);
 		}
 		return $rc;
 	} // getTemplate
+
 
 }
 

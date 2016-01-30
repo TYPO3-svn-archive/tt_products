@@ -40,9 +40,6 @@
  */
 
 
-require_once(PATH_BE_table.'lib/class.tx_table_db.php');
-require_once(PATH_BE_table.'lib/class.tx_table_db_access.php');
-
 
 class tx_ttproducts_content extends tx_ttproducts_table_base {
 	var $dataArray=array(); // array of read in contents
@@ -59,13 +56,13 @@ class tx_ttproducts_content extends tx_ttproducts_table_base {
 	function init(&$pibase, $functablename)  {
 		parent::init($pibase, $functablename);
 
-		$this->getTableObj()->setDefaultFieldArray(array('uid'=>'uid', 'pid'=>'pid', 't3ver_oid'=>'t3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'sorting'=> 'sorting',
+		$this->getTableObj()->setDefaultFieldArray(array('uid' => 'uid', 'pid' => 'pid', 't3ver_oid' => 't3ver_oid', 't3ver_id' => 't3ver_id', 't3ver_label' => 't3ver_label', 'tstamp'=>'tstamp', 'sorting'=> 'sorting',
 		'deleted' => 'deleted', 'hidden'=>'hidden', 'starttime' => 'starttime', 'endtime' => 'endtime', 'fe_group' => 'fe_group'));
 		$this->getTableObj()->setTCAFieldArray('tt_content');
 	} // init
 
 
-	function get($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
+	function get($uid = 0, $pid = 0, $bStore = true, $where_clause = '', $limit = '', $fields = '', $bCount = FALSE) {
 		global $TYPO3_DB;
 		$rc = $this->dataArray[$uid];
 		if (!$rc) {
@@ -97,7 +94,9 @@ class tx_ttproducts_content extends tx_ttproducts_table_base {
 			$sql->prepareFields($this->getTableObj(), 'orderBy', 'sorting');
 			$sql->prepareWhereFields ($this->getTableObj(), 'pid', '=', intval($pid));
 			$sql->prepareWhereFields ($this->getTableObj(), 'sys_language_uid', '=', intval($TSFE->config['config']['sys_language_uid']));
-			$this->getTableObj()->enableFields();
+			$enableFields = $this->getTableObj()->enableFields();
+			$sql->where_clause .= $enableFields;
+
 			// Fetching the category
 			$res = $sql->exec_SELECTquery();
 			while ($row = $TYPO3_DB->sql_fetch_assoc($res)) {

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2005-2012 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,51 +31,79 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-require_once (PATH_BE_ttproducts.'view/field/interface.tx_ttproducts_field_view_int.php');
 
 class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	public $langObj;
 	public $cObj;
 	public $conf;			// original configuration
 	public $modelObj;
+	static $convertArray = array(
+		'price' => array(
+			'tax' => 'PRICE_TAX',
+			'taxperc' => 'TAX',
+			'0tax' => 'OLD_PRICE_TAX',
+			'0notax' => 'OLD_PRICE_NO_TAX',
+			'calc' => 'calcprice',
+			'notax' => 'PRICE_NO_TAX',
+			'onlytax' => 'PRICE_ONLY_TAX',
+			'skontotax' => 'PRICE_TAX_DISCOUNT',
+			'skontotaxperc' => 'PRICE_TAX_DISCOUNT_PERCENT',
+			'unotax' => 'UNIT_PRICE_NO_TAX',
+			'utax' => 'UNIT_PRICE_TAX',
+			'wnotax' => 'WEIGHT_UNIT_PRICE_NO_TAX',
+			'wtax' => 'WEIGHT_UNIT_PRICE_TAX',
+		),
+		'price2' => array(
+			'2tax' => 'PRICE2_TAX',
+			'2notax' => 'PRICE2_NO_TAX',
+			'2onlytax' => 'PRICE2_ONLY_TAX',
+			'skonto2tax' => 'PRICE2_TAX_DISCOUNT',
+			'skonto2taxperc' => 'PRICE2_TAX_DISCOUNT_PERCENT',
+		),
+		'directcost' => array(
+			'dctax' => 'DIRECTCOST_TAX',
+			'dcnotax' => 'DIRECTCOST_NO_TAX',
+		)
+	);
+
 
 	/**
 	 * Getting all tt_products_cat categories into internal array
 	 */
-	public function init(&$langObj, &$cObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	public function init ($langObj, $cObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
-		$this->modelObj = &$modelObj;
+		$this->modelObj = $modelObj;
 		$this->bHasBeenInitialised = true;
 	} // init
 
-	public function needsInit()	{
+	public function needsInit ()	{
 		return !$this->bHasBeenInitialised;
 	}
 
-	public function &getModelObj ()	{
+	public function getModelObj ()	{
 		return $this->modelObj;
 	}
 
 	/**
 	 * Generate a graphical price tag or print the price as text
 	 */
-	public function printPrice($priceText,$taxInclExcl='')	{
+	public function printPrice ($priceText,$taxInclExcl='')	{
 		if (($this->conf['usePriceTag']) && (isset($this->conf['priceTagObj.'])))	{
 			$ptconf = $this->conf['priceTagObj.'];
 			$markContentArray = array();
 			$markContentArray['###PRICE###'] = $priceText;
-			$markContentArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha::getLL($this->langObj, $taxInclExcl) : '');
+			$markContentArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha5::getLL_fh002($this->langObj, $taxInclExcl) : '');
 
 			$this->cObj->substituteMarkerInObject($ptconf, $markContentArray);
 			return $this->cObj->cObjGetSingle($this->conf['priceTagObj'], $ptconf);
@@ -87,30 +115,46 @@ class tx_ttproducts_field_price_view implements tx_ttproducts_field_view_int {
 	/**
 	 * Formatting a price
 	 */
-	public function priceFormat($double)	{
-		return number_format($double,intval($this->conf['priceDec']),$this->conf['priceDecPoint'],$this->conf['priceThousandPoint']);
+	public function priceFormat ($double)	{
+
+		$double = round($double, 10);
+		$rc = number_format($double,intval($this->conf['priceDec']),$this->conf['priceDecPoint'],$this->conf['priceThousandPoint']);
+
+		return $rc;
 	} // priceFormat
 
-	public function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $imageRenderObj='')	{
+	public static function convertKey ($k, $fieldname)	{
+		$rc = FALSE;
+
+		if (isset(self::$convertArray[$fieldname]) && is_array(self::$convertArray[$fieldname]))	{
+			$rc = self::$convertArray[$fieldname][$k];
+		}
+		return $rc;
+	}
+
+	public function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=TRUE, $charset='', $prefix='', $imageRenderObj='')	{
 
 		$priceArray = array();
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$prodTable = &$tablesObj->get($functablename);
-		$modelObj = &$this->getModelObj();
-		$marker = strtoupper($fieldname);
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
-
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$prodTable = $tablesObj->get($functablename, TRUE);
+		$modelObj = $this->getModelObj();
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+		$markerProd = $prodTable->getMarker();
 		$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && ($taxFromShipping == 0) ? 'tax_zero' : 'tax_included');
 
 // tt-products-single-1-pricetax
 		$priceArray = $modelObj->getPriceArray($fieldname,$row);
+		$priceMarkerPrefix = $prodTable->getMarker() . '_';
 
-		$priceMarkerPrefix = $prodTable->marker.'_';
 		foreach ($priceArray as $displayTax => $priceValue)	{
-			$taxMarker = $priceMarkerPrefix.$marker.'_'.strtoupper($displayTax);
-			$markerArray['###'.$taxMarker.'###'] = $this->printPrice($this->priceFormat($priceValue, $taxInclExcl));
-			$markerArray['###'.$taxMarker.'_ID###'] = $id.str_replace('_','',$displayTax);
+			$marker = $this->convertKey($displayTax,$fieldname);
+			$taxMarker = ($markerProd != 'PRODUCT' ? $markerProd . '_' : '') . $marker;
+			$markerArray['###'.$taxMarker.'###'] = $this->printPrice($this->priceFormat($priceValue), $taxInclExcl);
+
+			$displaySuffixId = str_replace('_', '', strtolower($displayTax));
+			$displaySuffixId = str_replace($fieldname, '', $displaySuffixId);
+			$markerArray['###'.$taxMarker.'_ID###'] = $id . $displaySuffixId;
 		}
 	}
 }

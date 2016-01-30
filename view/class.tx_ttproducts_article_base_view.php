@@ -40,11 +40,6 @@
  */
 
 
-require_once (PATH_BE_table.'lib/class.tx_table_db.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_view.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_dummy_view.php');
-
-
 abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_view {
 	var $dataArray = array(); // array of read in products
 	var $table;	 // object of the type tx_table_db
@@ -57,17 +52,17 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 	var $mm_table = ''; // only set if a mm table is used
 
 
-	function init(&$langObj, &$modelObj)	{
+	function init($langObj, $modelObj)	{
 		parent::init($langObj, $modelObj);
 
 		if ($modelObj->type == 'product')	{
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_view.php');
 
-			$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant_view');
+			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_view');
 		} else {
 			include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_variant_dummy_view.php');
 
-			$this->variant = &t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
+			$this->variant = t3lib_div::getUserObj('&tx_ttproducts_variant_dummy_view');
 		}
 		$this->variant->init($langObj, $modelObj->variant);
 	}
@@ -84,7 +79,7 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 	 * @param	[type]		$code: ...
 	 * @return	[type]		...
 	 */
-	function &getItemMarkerSubpartArrays (
+	function getItemMarkerSubpartArrays (
 		&$templateCode,
 		&$row,
 		$markerArray,
@@ -134,7 +129,6 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		}
 	}
 
-
 	/**
 	 * Template marker substitution
 	 * Fills in the markerArray with data for a product
@@ -149,7 +143,7 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 	 * @access private
 	 */
 	public function getItemMarkerArray (
-			&$item,
+			$item,
 			&$markerArray,
 			$catTitle,
 			$imageNum=0,
@@ -165,11 +159,11 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		)	{
 		global $TSFE, $TCA;
 
-		$modelObj = &$this->getModelObj();
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$modelObj = $this->getModelObj();
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 		$tableconf = $modelObj->getTableConf($theCode);
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 
 		if (!$this->marker)	{
 			return array();
@@ -185,58 +179,46 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		if (is_array($tableconf['functions.']) && isset($tableconf['functions.']['htmlentities']))	{
 			$htmlentitiesArray = t3lib_div::trimExplode(',', $tableconf['functions.']['htmlentities']);
 		}
-		$fieldId = TT_PRODUCTS_EXTkey.'_'.strtolower($theCode).'_id_'.$id;
+		$fieldId = TT_PRODUCTS_EXT.'_'.strtolower($theCode).'_id_'.$id;
 		$functablename = $modelObj->getFunctablename();
 
-		parent::getItemMarkerArray ($row, $markerArray, $variantFieldArray, $variantMarkerArray, $tagArray, $theCode, $bHtml, $charset, $prefix, $imageRenderObj);
+		parent::getItemMarkerArray($row, $markerArray, $variantFieldArray, $variantMarkerArray, $tagArray, $theCode, $bHtml, $charset, $prefix, $imageRenderObj);
 
 			// Get image
-		// +++ $imageObj->getItemMarkerArrayEnhanced ($functablename, $row, $this->marker, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $theCode, $id, '', $linkWrap, $charset);
-
 		if (isset($row['delivery']))	{
-			$imageObj->getSingleImageMarkerArray ($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.']);
+			$imageObj->getSingleImageMarkerArray ($this->marker.'_DELIVERY', $markerArray, $this->conf['delivery.'][$row['delivery'].'.']['image.'], $theCode);
 		} else {
 			$markerArray['###'.$this->marker.'_DELIVERY###'] = '';
 		}
 
 		$markerArray['###'.$this->marker.'_TAX###'] = (!empty($row['tax'])) ? $row['tax'] : $this->conf['TAXpercentage'];
 		$markerArray['###CUR_SYM###'] = ' '.($this->conf['currencySymbol'] ? ($charset ? htmlentities($this->conf['currencySymbol'],ENT_QUOTES,$charset) : $this->conf['currencySymbol']) : '');
+
 		$priceNo = intval($this->config['priceNoReseller']);
-		$paymentshippingObj = &t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
+
+		$paymentshippingObj = t3lib_div::getUserObj('&tx_ttproducts_paymentshipping');
 		$taxFromShipping = $paymentshippingObj->getReplaceTaxPercentage();
 		$taxInclExcl = (isset($taxFromShipping) && is_double($taxFromShipping) && $taxFromShipping == 0 ? 'tax_zero' : 'tax_included');
 
-		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha::getLL($this->langObj, $taxInclExcl) : '');
-	//	$markerArray['###'.$priceMarkerPrefix.'PRICE_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceTax'], $taxInclExcl));
-
-		$oldPrice = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['price'],1,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
-		$oldPriceNoTax = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['price'],0,$row['tax'],$this->conf['TAXincluded']), $taxInclExcl));
-
-		if ($priceNo == 0) {	// no old price will be shown when the new price has not been reducted
-			$oldPrice = $oldPriceNoTax = '';
-		}
-		$markerArray['###'.$priceMarkerPrefix.'OLD_PRICE_TAX###'] = $oldPrice;
-	//	$markerArray['###'.$priceMarkerPrefix.'PRICE_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceNoTax'], $taxInclExcl));
-		$markerArray['###'.$priceMarkerPrefix.'OLD_PRICE_NO_TAX###'] = $oldPriceNoTax;
-
-		$markerArray['###'.$priceMarkerPrefix.'UNIT_PRICE_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceUnitNoTax'], $taxInclExcl));
-		$markerArray['###'.$priceMarkerPrefix.'UNIT_PRICE_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceUnitTax'], $taxInclExcl));
-
-		$markerArray['###'.$priceMarkerPrefix.'WEIGHT_UNIT_PRICE_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceWeightUnitNoTax'], $taxInclExcl));
-		$markerArray['###'.$priceMarkerPrefix.'WEIGHT_UNIT_PRICE_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceWeightUnitTax'], $taxInclExcl));
+		$markerArray['###TAX_INCL_EXCL###'] = ($taxInclExcl ? tx_div2007_alpha5::getLL_fh002($this->langObj, $taxInclExcl) : '');
 
 		$markerArray['###'.$priceMarkerPrefix.'DIRECTCOST_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['directcost'],1,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
 		$markerArray['###'.$priceMarkerPrefix.'DIRECTCOST_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($priceObj->getPrice($row['directcost'],0,$row['tax'],$this->conf['TAXincluded'],$taxInclExcl)));
 
-//		$markerArray['###'.$this->marker.'_WEIGHT###'] = doubleval($row['weight']);
+		$markerArray['###USER_DISCOUNT_PERCENT###'] = $TSFE->fe_user->user['tt_products_discount'];
+		$markerArray['###USER_DISCOUNT_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceNoTax']-$oldPriceNoTax, $taxInclExcl));
+		$markerArray['###USER_DISCOUNT_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($item['priceTax']-$oldPriceTax, $taxInclExcl));
+		$markerArray['###USER_DISCOUNT2_NO_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($price2-$oldPriceNoTax, $taxInclExcl));
+		$markerArray['###USER_DISCOUNT2_TAX###'] = $priceViewObj->printPrice($priceViewObj->priceFormat($price2NoTax-$oldPriceTax, $taxInclExcl));
+
 		$cObjectMarkerArray = array();
 
 			// Call all getItemMarkerArray hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$this->marker])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$this->marker] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getItemMarkerArray')) {
-					$hookObj->getItemMarkerArray ($this, $markerArray, $cObjectMarkerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $theCode, $id, $linkWrap);
+					$hookObj->getItemMarkerArray($this, $markerArray, $cObjectMarkerArray, $item, $catTitle, $imageNum, $imageRenderObj, $forminfoArray, $theCode, $id, $linkWrap);
 				}
 			}
 		}
@@ -244,23 +226,24 @@ abstract class tx_ttproducts_article_base_view extends tx_ttproducts_table_base_
 		if (is_array($tableconf['field.']))	{
 			$fieldMarkerArray = array_merge($markerArray, $variantMarkerArray);
 			foreach ($row as $field => $value)	{
-				$markerKey = '###'.$this->marker.'_'.strtoupper($field).'###';
-				if (is_array($tableconf['field.'][$field.'.']) && !isset($cObjectMarkerArray[$markerKey]))	{
-					$fieldContent = $this->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field.'.'],$this->pibase->extKey);
-					$cObjectMarkerArray[$markerKey] = $this->cObj->substituteMarkerArray($fieldContent,$fieldMarkerArray);
+				$markerKey = '###'.$this->getMarker().'_'.strtoupper($field).'###';
+				if (is_array($tableconf['field.'][$field.'.']))	{
+					if (isset($markerArray[$markerKey]))	{
+						$value = $markerArray[$markerKey];
+					}
+					$tableconf['field.'][$field.'.']['value'] = $value;
+					$fieldContent = $this->cObj->cObjGetSingle($tableconf['field.'][$field],$tableconf['field.'][$field.'.'],TT_PRODUCTS_EXT);
+					$cObjectMarkerArray[$markerKey] = $this->cObj->substituteMarkerArray($fieldContent, $fieldMarkerArray);
 				}
 			}
 		}
-
-		$markerArray = array_merge ($markerArray, $cObjectMarkerArray);
+		$markerArray = array_merge($markerArray, $cObjectMarkerArray);
 	}
 }
-
 
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_article_base_view.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_article_base_view.php']);
 }
-
 
 ?>

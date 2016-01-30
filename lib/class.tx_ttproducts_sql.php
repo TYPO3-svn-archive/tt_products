@@ -37,7 +37,7 @@
  * @subpackage tt_products
  */
 class tx_ttproducts_sql {
-	function isValid (&$row, $where)	{
+	static public function isValid (&$row, $where)	{
 		$whereArray = t3lib_div::trimExplode ('AND', $where);
 
 		$isValid = true;

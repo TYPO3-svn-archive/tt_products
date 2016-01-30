@@ -39,17 +39,14 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'view/interface.tx_ttproducts_variant_view_int.php');
-
-
 class tx_ttproducts_variant_dummy_view implements tx_ttproducts_variant_view_int {
 	public $modelObj;
 	public $cObj;
 	public $langObj;
 
-	public function init(&$langObj, &$modelObj)	{
-		$this->langObj = &$langObj;
-		$this->cObj = &$langObj->cObj;
+	public function init($langObj, $modelObj)	{
+		$this->langObj = $langObj;
+		$this->cObj = $langObj->cObj;
 		$this->modelObj = $modelObj;
 	}
 

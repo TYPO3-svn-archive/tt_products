@@ -48,8 +48,8 @@ class tx_ttproducts_pid_list {
 	 * @param	[type]		$$cObj: ...
 	 * @return	[type]		...
 	 */
-	function init(&$cObj)	{
-		$this->cObj = &$cObj;
+	function init($cObj)	{
+		$this->cObj = $cObj;
 	} // init
 
 
@@ -127,37 +127,45 @@ class tx_ttproducts_pid_list {
 	 * @param	[type]		$bStore: ...
 	 * @return	[type]		...
 	 */
-	function applyRecursive($recursive, &$pids, $bStore=FALSE)	{
-		global $TSFE;
+	public function applyRecursive ($recursive, &$pids, $bStore = FALSE) {
+		$cObj = t3lib_div::getUserObj('&tx_div2007_cobj');
 
-		if ($pids)	{
-			if ($bStore)	{
-				$this->pid_list = $pids;
-				$pid_list = &$this->pid_list;
-			} else {
-				$pid_list = &$pids;
-			}
+		if ($pids != '') {
+			$pid_list = &$pids;
 		} else {
-			$pid_list = &$this->pid_list;
+			$pid_list = $this->pid_list;
 		}
+
 		if (!$pid_list) {
-			$pid_list = $TSFE->id;
+			$pid_list = $GLOBALS['TSFE']->id;
 		}
-		if ($recursive)	{		// get pid-list if recursivity is enabled
+
+		if ($recursive) {		// get pid-list if recursivity is enabled
 			$recursive = intval($recursive);
 			$this->recursive = $recursive;
-			$pid_list_arr = explode(',',$pid_list);
-			$pid_list = '';
-			while(list(,$val) = each($pid_list_arr))	{
-				$pid_list .= $val.','.$this->cObj->getTreeList($val,$recursive);
+			$pidSubArray = array();
+
+			$pid_list_arr = explode(',', $pid_list);
+			foreach ($pid_list_arr as $val) {
+				$pidSub = $cObj->getTreeList($val, $recursive);
+				if ($pidSub != '') {
+					$pidSubArray[] = $pidSub;
+				}
 			}
-			$pid_list = ereg_replace(',$','',$pid_list);
-			$pid_list_arr = explode(',',$pid_list);
-			$pid_list_arr = array_unique ($pid_list_arr);
+
+			$pid_list .= ',' . implode(',', $pidSubArray);
+			$pid_list_arr = explode(',', $pid_list);
+			$flippedArray = array_flip($pid_list_arr);
+			$pid_list_arr = array_keys($flippedArray);
+			sort($pid_list_arr, SORT_NUMERIC);
 			$pid_list = implode(',', $pid_list_arr);
+			$pid_list = preg_replace('/^,/', '', $pid_list);
+		}
+
+		if ($bStore) {
+			$this->pid_list = $pid_list;
 		}
 	}
-
 }
 
 

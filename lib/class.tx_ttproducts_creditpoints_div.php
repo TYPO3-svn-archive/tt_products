@@ -45,7 +45,7 @@ class tx_ttproducts_creditpoints_div {
 	 * @param	[type]		$creditpointsConf: ...
 	 * @return	[type]		...
 	 */
-	function getCreditPoints($amount, $creditpointsConf)	{
+	static public function getCreditPoints($amount, $creditpointsConf)	{
 		$type = '';
 		$creditpoints = 0;
 		if (is_array($creditpointsConf))	{
@@ -89,7 +89,7 @@ class tx_ttproducts_creditpoints_div {
 	 * @param	[type]		$creditpoints: ...
 	 * @return	[type]		...
 	 */
-	function addCreditPoints($username, $creditpoints)  {
+	static public function addCreditPoints($username, $creditpoints)  {
 		global $TYPO3_DB;
 
 		if ($username) {

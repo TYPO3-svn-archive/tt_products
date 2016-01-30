@@ -40,9 +40,6 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_article_base_view.php');
-
-
 class tx_ttproducts_article_view extends tx_ttproducts_article_base_view {
 	public $marker = 'ARTICLE';
 	public $type = 'article';

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2013 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,40 +31,250 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
 class tx_ttproducts_field_datafield_view extends tx_ttproducts_field_base_view {
 
-	function &getItemSubpartArrays (&$templateCode, &$row, $fieldname, &$subpartArray, &$wrappedSubpartArray, &$tagArray, $theCode='', $id='1')	{
-		global $TCA;
+	function getLinkArray (
+		&$wrappedSubpartArray,
+		$tagArray,
+		$marker,
+		$dirname,
+		$dataFile,
+		$fieldname,
+		$tableConf
+	) {
+		if ($tagArray[$marker])	{
 
-		$dirname = $this->getModelObj()->getDirname ($row, $fieldname);
-		$dataFileArray = t3lib_div::trimExplode(',',$row[$fieldname]);
+			// $wrappedSubpartArray['###' . $marker . '###'] = array('<a href="' . $dirname . '/' . $dataFile . '">','</a>');
+
+			if (
+				isset($tableConf['fieldLink.']) &&
+				is_array($tableConf['fieldLink.']) &&
+				isset($tableConf['fieldLink.'][$fieldname.'.'])
+			)	{
+				$typolinkConf = $tableConf['fieldLink.'][$fieldname.'.'];
+			} else {
+				$typolinkConf = array();
+			}
+			$typolinkConf['parameter'] = $dirname . '/' . $dataFile;
+			$linkTxt = microtime();
+			$typoLink = $this->cObj->typoLink($linkTxt, $typolinkConf);
+			$wrappedSubpartArray['###' . $marker . '###'] = t3lib_div::trimExplode($linkTxt, $typoLink);
+		}
+	}
+
+
+	public function getRepeatedRowSubpartArrays (
+		&$subpartArray,
+		&$wrappedSubpartArray,
+		$markerKey,
+		$row,
+		$fieldname,
+		$key,
+		$value,
+		$fieldname,
+		$tableConf,
+		$tagArray
+	) {
+		$dirname = $this->modelObj->getDirname($row, $fieldname);
+		$upperField = strtoupper($fieldname);
+		$marker = $markerKey . '_LINK_' . $upperField;
+
+		$this->getLinkArray(
+			$wrappedSubpartArray,
+			$tagArray,
+			$marker,
+			$dirname,
+			$value,
+			$fieldname,
+			$tableConf
+		);
+	}
+
+	public function &getItemSubpartArrays (
+		&$templateCode,
+		$markerKey,
+		$functablename,
+		&$row,
+		$fieldname,
+		$tableConf,
+		&$subpartArray,
+		&$wrappedSubpartArray,
+		&$tagArray,
+		$theCode = '',
+		$id = '1'
+	) {
+		$this->getRepeatedSubpartArrays (
+			$subpartArray,
+			$wrappedSubpartArray,
+			$templateCode,
+			$markerKey,
+			$functablename,
+			$row,
+			$fieldname,
+			$tableConf,
+			$tagArray,
+			$theCode,
+			$id
+		);
+
+		$dirname = $this->getModelObj()->getDirname($row, $fieldname);
+		$dataFileArray = t3lib_div::trimExplode(',', $row[$fieldname]);
 		$upperField = strtoupper($fieldname);
 
 		if (count($dataFileArray) && $dataFileArray[0])	{
 			foreach ($dataFileArray as $k => $dataFile)	{
-				$marker = '###LINK_'.$upperField.($k+1).'###';
-				if ($tagArray[$marker])	{
-					$wrappedSubpartArray[$marker] = array('<a href="'.$dirname.'/'.$dataFile.'">','</a>');
-				}
-			}
-			$marker = '###LINK_'.$upperField.'###';
-			$wrappedSubpartArray[$marker] = array('<a href="'.$dirname.'/'.$dataFileArray[0].'">','</a>');
-		}
 
+				$marker = $markerKey . '_LINK_' . $upperField . ($k+1);
+				$this->getLinkArray(
+					$wrappedSubpartArray,
+					$tagArray,
+					$marker,
+					$dirname,
+					$dataFile,
+					$fieldname,
+					$tableConf
+				);
+			}
+
+			$marker = $markerKey.'_LINK_'.$upperField;
+			$this->getLinkArray(
+				$wrappedSubpartArray,
+				$tagArray,
+				$marker,
+				$dirname,
+				$dataFileArray[0],
+				$fieldname,
+				$tableConf
+			);
+		}
 
 		// empty all image fields with no available image
 		foreach ($tagArray as $value => $k1)	{
 			$keyMarker = '###'.$value.'###';
-			if (strstr($value, '_'.$upperField) && strstr($value, 'LINK') && !$wrappedSubpartArray[$keyMarker])	{
+			if (strpos($value, $markerKey . '_LINK_' . $upperField) !== FALSE && !$wrappedSubpartArray[$keyMarker])	{
+
 				$wrappedSubpartArray[$keyMarker] =  array('<!--','-->');
 			}
 		}
 	}
+
+
+	function getRepeatedRowMarkerArray (
+		&$markerArray,
+		$markerKey,
+		$functablename,
+		$row,
+		$fieldname,
+		$key,
+		$value,
+		$tableConf,
+		$tagArray,
+		$theCode='',
+		$id='1'
+	)	{
+		$dirname = $this->modelObj->getDirname($row, $fieldname);
+		$upperField = strtoupper($fieldname);
+		$marker = $markerKey . '_' . $upperField;
+
+		$this->getSingleValueArray(
+			$markerArray,
+			$marker,
+			$tagArray,
+			$imageConf,
+			$dirname,
+			$value
+		);
+		$marker1 = 'ICON_' . strtoupper($fieldname);
+
+		$this->getIconMarker(
+			$markerArray,
+			$marker1,
+			$tagArray,
+			'datasheetIcon',
+			$value
+		);
+
+		return TRUE;
+	}
+
+
+	function getSingleValueArray (
+		&$markerArray,
+		$marker,
+		$tagArray,
+		$imageConf,
+		$dirname,
+		$dataFile
+	) {
+		$imageConf['file'] = $dirname . '/' . $dataFile;
+		$iconImgCode = $this->cObj->IMAGE($imageConf);
+
+		if (isset($tagArray[$marker])) {
+			$markerArray['###' . $marker . '###'] = $iconImgCode; // new marker now
+		}
+
+		if (isset($tagArray[$marker . '_FILE'])) {
+			$markerArray['###' . $marker . '_FILE###'] = basename($imageConf['file']);
+		}
+	}
+
+
+	function getIconMarker (
+		&$markerArray,
+		$marker,
+		$tagArray,
+		$imageRenderObj,
+		$filename
+	) {
+		$extensionPos = strrpos($filename, '.');
+		$extension = '';
+		if ($extensionPos !== FALSE) {
+			$extension = substr($filename, $extensionPos + 1);
+		}
+
+		if (isset($imageRenderObj)) {
+
+			$imageConf = $this->conf[$imageRenderObj . '.'];
+
+			if (isset($tagArray[$marker]) && isset($this->conf['datasheetIcon.']))	{
+				$imageFilename = '';
+
+				if ($this->conf['datasheetIcon.']['file'] != '{$plugin.tt_products.file.datasheetIcon}')	{
+					$imageFilename = $this->conf['datasheetIcon.']['file'];
+				}
+
+				foreach ($this->conf['datasheetIcon.'] as $confKey => $confArray) {
+					if (
+						strpos($confKey, '.') == strlen($confKey) - 1 &&
+						isset($confArray) && is_array($confArray) &&
+						$confArray['fileext'] == $extension
+					) {
+						$imageFilename = $confArray['file'];
+						break;
+					}
+				}
+
+				if ($imageFilename != '')	{
+					$imageConf['file'] = $imageFilename;
+					$iconImgCode = $this->cObj->IMAGE($imageConf);
+
+					$markerArray['###' . $marker . '###'] = $iconImgCode;
+				} else {
+					$markerArray['###' . $marker . '###'] = '';
+				}
+			} else {
+				$markerArray['###' . $marker . '###'] = '';
+			}
+		} else if (isset($tagArray[$marker]))	{
+			$markerArray['###' . $marker . '###'] = '';
+		}
+	}
+
 
 	/**
 	 * Template marker substitution
@@ -90,18 +300,40 @@ class tx_ttproducts_field_datafield_view extends tx_ttproducts_field_base_view {
 	 */
 	function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $imageRenderObj='')	{
 
-		$val = $row[$fieldname];
-		if (isset($imageRenderObj) && $val)	{
-			$imageConf = $this->conf[$imageRenderObj.'.'];
-			$dirname = $this->modelObj->getDirname ($row, $fieldname);
-			$iconImgCode = $this->cObj->IMAGE($imageConf);
-			$markerArray['###ICON_'.strtoupper($fieldname).'###'] = $iconImgCode;
-			$imageConf['file'] = $dirname.'/'.$val;
-			$iconImgCode = $this->cObj->IMAGE($imageConf);
-			$markerArray['###'.$markerKey.'_'.strtoupper($fieldname).'1###'] = $iconImgCode; // new marker now
-		} else {
-			$markerArray['###ICON_'.strtoupper($fieldname).'###'] = '';
-			$markerArray['###'.$markerKey.'_'.strtoupper($fieldname).'1###'] = '';
+		$value = $row[$fieldname];
+		$marker1 = 'ICON_' . strtoupper($fieldname);
+		$dirname = $this->modelObj->getDirname($row, $fieldname);
+		$dataFileArray = t3lib_div::trimExplode(',', $value);
+
+		$this->getIconMarker(
+			$markerArray,
+			$marker1,
+			$tagArray,
+			$imageRenderObj,
+			''
+		);
+
+		if (count($dataFileArray) && $dataFileArray[0])	{
+			foreach ($dataFileArray as $k => $dataFile)	{
+				$marker = $markerKey . '_' . $upperField . ($k+1);
+
+				$this->getSingleValueArray(
+					$markerArray,
+					$marker,
+					$tagArray,
+					$imageConf,
+					$dirname,
+					$dataFile
+				);
+			}
+		}
+
+		for ($i = 1; $i <= 50; ++$i) {
+			$marker2 = $markerKey . $i;
+
+			if (isset($tagArray[$marker2]) && !isset($markerArray['###' . $marker2 . '###'])) {
+				$markerArray['###' . $marker2 . '###'] = '';
+			}
 		}
 	}
 }

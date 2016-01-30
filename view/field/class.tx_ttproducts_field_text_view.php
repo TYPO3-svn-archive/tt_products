@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,25 +31,37 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
 class tx_ttproducts_field_text_view extends tx_ttproducts_field_base_view {
+
 	function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='', $imageRenderObj='')	{
 
 		$htmlentitiesArray = array();
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tableconf = $cnf->getTableConf($functablename);
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tableconf = $cnf->getTableConf($functablename, $theCode);
 
 		if (is_array($tableconf['functions.']) && isset($tableconf['functions.']['htmlentities']))	{
 			$htmlentitiesArray = t3lib_div::trimExplode(',', $tableconf['functions.']['htmlentities']);
 		}
 
 		$value = $this->getModelObj()->getFieldValue($row, $fieldname);
+
 		if ($bHtml && $charset != '' && in_array($fieldname, $htmlentitiesArray))	{
-			$value = htmlentities($value,ENT_QUOTES,$charset);
+			$bConvertNewlines = $this->conf['nl2brNote'];
+			if (
+				$bConvertNewlines &&
+				(
+					$theCode != 'EMAIL' || $this->conf['orderEmail_htmlmail']
+				)
+			) {
+				$value = nl2br($value);
+			} else {
+				$value = htmlentities($value, ENT_QUOTES, $charset);
+			}
 		}
 
 		return $value;

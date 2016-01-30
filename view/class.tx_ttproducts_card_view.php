@@ -56,11 +56,12 @@ class tx_ttproducts_card_view extends tx_ttproducts_table_base_view {
 
 		include_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_form_div.php');
 
+		$modelObj = &$this->getModelObj();
 		$ccNumberArray = array();
 		$ccTypeTextSelected = '';
-		$tablename = $this->getTablename();
+		$tablename = $modelObj->getTablename();
 
-		if (count($this->allowedArray))	{
+		if (count($modelObj->allowedArray))	{
 			$ccTypeText =
 				tx_ttproducts_form_div::createSelect (
 					$this->langObj,
@@ -69,7 +70,7 @@ class tx_ttproducts_card_view extends tx_ttproducts_table_base_view {
 					$this->ccArray['cc_type'],
 					true,
 					true,
-					$this->allowedArray
+					$modelObj->allowedArray
 				);
 			for ($i = 1; $i <= 4; ++$i)	{
 				$ccNumberArray[$i - 1] = $this->ccArray['cc_number_'.$i];
@@ -86,8 +87,8 @@ class tx_ttproducts_card_view extends tx_ttproducts_table_base_view {
 		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $this->ccArray['cc_type'];
 		if (isset($this->ccArray['cc_type']))	{
 			$tmp = $TCA[$tablename]['columns']['cc_type']['config']['items'][$this->ccArray['cc_type']]['0'];
-			$tmp = tx_div2007_alpha::sL_fh001($tmp);
-			$ccTypeTextSelected = tx_div2007_alpha::getLL($this->langObj, $tmp);
+			$tmp = tx_div2007_alpha5::sL_fh002($tmp);
+			$ccTypeTextSelected = tx_div2007_alpha5::getLL_fh002($this->langObj, $tmp);
 		}
 		$markerArray['###PERSON_CARDS_CC_TYPE_SELECTED###'] = $ccTypeTextSelected;
 		for ($i = 1; $i <= 4; ++$i)	{
@@ -128,7 +129,6 @@ class tx_ttproducts_card_view extends tx_ttproducts_table_base_view {
 			}
 		}
 	} // getMarkerArray
-
 }
 
 

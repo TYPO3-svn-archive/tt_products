@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2011 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -44,6 +44,7 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 	var $config;
 	var $tt_products_texts; // element of class tx_table_db
 
+
 	/**
 	 * text elements
 	 *
@@ -51,37 +52,24 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init(&$pibase, $functablename)  {
-		parent::init($pibase, $functablename);
-		$tablename = $this->getTablename();
-		$this->getTableObj()->addDefaultFieldArray(array('sorting' => 'sorting'));
-		$this->getTableObj()->setTCAFieldArray($tablename);
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$this->tableconf = $cnf->getTableConf($functablename);
-		$this->tabledesc = $cnf->getTableDesc($functablename);
-		$requiredFields = 'uid,pid,title,marker,note,parentid,parenttable';
-		if ($this->tableconf['requiredFields'])	{
-			$tmp = $this->tableconf['requiredFields'];
-			$requiredFields = ($tmp ? $tmp : $requiredFields);
+	function init ($cObj, $functablename = 'tt_products_texts')  {
+		global $TYPO3_DB,$TSFE,$TCA;
+
+		parent::init($cObj, $functablename);
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tableconf = $cnf->getTableConf($functablename,$theCode);
+		$tableObj = $this->getTableObj();
+
+		$tablename = $cnf->getTableName($functablename);
+		$tableObj->setTCAFieldArray($tablename, 'texts');
+
+		if ($cnf->bUseLanguageTable($tableconf))	{
+			$tableObj->setLanguage ($this->config['LLkey']);
+			$tableObj->setLangName($tableconf['language.']['table']);
+			$tableObj->setTCAFieldArray($tableObj->langname, 'textslang', FALSE);
 		}
-		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
-		$this->getTableObj()->setRequiredFieldArray($requiredListArray);
-
-	} // init
-
-
-	function get($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
-		global $TYPO3_DB;
-		$rc = $this->dataArray[$uid];
-		if (!$rc) {
-			$this->getTableObj()->enableFields();
-			$res = $this->getTableObj()->exec_SELECTquery('*','uid = '.intval($uid));
-			$row = $TYPO3_DB->sql_fetch_assoc($res);
-			$TYPO3_DB->sql_free_result($res);
-			$rc = $this->dataArray[$uid] = $row;
-		}
-		return $rc;
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -90,7 +78,7 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 	 * @param	[type]		$parentMarker: ...
 	 * @return	[type]		...
 	 */
-	function &getTagMarkerArray(&$tagArray, $parentMarker)	{
+	function &getTagMarkerArray (&$tagArray, $parentMarker)	{
 		$rcArray = array();
 		$search = $parentMarker.'_'.$this->marker.'_';
 		$searchLen = strlen($search);
@@ -111,22 +99,26 @@ class tx_ttproducts_text extends tx_ttproducts_table_base {
 	 * @param	[type]		$parenttable: ...
 	 * @return	[type]		...
 	 */
-	function getChildUidArray ($uid, $tagMarkerArray, $parenttable='tt_products')	{
+	function getChildUidArray ($theCode, $uid, $tagMarkerArray, $parenttable='tt_products')	{
 		global $TYPO3_DB;
+
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$functablename = $this->getFuncTablename();
+		$fallback = FALSE;
+		$tableConf = $cnf->getTableConf($functablename, $theCode);
+		$fallback = $cnf->getFallback($tableConf);
 
 		$rcArray = array();
 		$tagWhere = '';
 		if (count($tagMarkerArray))	{
-			$tagMarkerArray = $TYPO3_DB->fullQuoteArray ($tagMarkerArray,$this->getTableObj()->name);
-			$tags = implode(',',$tagMarkerArray);
-			$tagWhere = ' AND marker IN ('.$tags.')';
+			$tagMarkerArray = $TYPO3_DB->fullQuoteArray($tagMarkerArray, $this->getTableObj()->name);
+			$tags = implode(',', $tagMarkerArray);
+			$tagWhere = ' AND marker IN (' . $tags . ')';
 		}
-		$where = 'parentid = '.intval($uid).' AND parenttable='.$TYPO3_DB->fullQuoteStr($parenttable, $this->getTableObj()->name).$tagWhere.$this->getTableObj()->enableFields();
-		$res = $this->getTableObj()->exec_SELECTquery('*', $where);
+		$where_clause = 'parentid = ' . intval($uid) .' AND parenttable=' . $TYPO3_DB->fullQuoteStr($parenttable, $this->getTableObj()->name) . $tagWhere/* . $this->getTableObj()->enableFields()*/;
 
-		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
-			$rcArray[] = $row;
-		}
+		$rcArray = $this->get('', '', FALSE, $where_clause, '', '', FALSE, '', '', $fallback);
+
 		return $rcArray;
 	}
 }

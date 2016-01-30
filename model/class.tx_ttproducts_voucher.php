@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,16 +31,13 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
-
-
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
 
 
 
@@ -58,10 +55,10 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init(&$pibase, $functablename)  {
+	function init(&$cObj, $functablename)  {
 		global $TSFE;
 
-		parent::init($pibase, $functablename);
+		parent::init($cObj, $functablename);
 		$voucherArray = $TSFE->fe_user->getKey('ses','vo');
 		$amount = $voucherArray['amount'];
 		$this->setAmount (floatval($amount));
@@ -257,14 +254,14 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 			if ($voucherTable == 'fe_users')	{
 				$voucherfieldArray = array('uid', 'tt_products_vouchercode');
 				$voucherTable = 'fe_users';
-				$where = '"username="'.$voucherCode.'"';
+				$where = 'username=' . $TYPO3_DB->fullQuoteStr($voucherCode, $voucherTable);
 			} else {
 				$voucherfieldArray = array('starttime', 'endtime', 'title', 'fe_users_uid', 'code', 'amount', 'note');
-				$whereGeneral = '(fe_users_uid="'.$TSFE->fe_user->user['uid'].'" OR fe_users_uid=0) ';
-				$whereGeneral .= 'AND code="'.$voucherCode.'"';
+				$whereGeneral = '(fe_users_uid="' . intval($TSFE->fe_user->user['uid']) . '" OR fe_users_uid=0) ';
+				$whereGeneral .= 'AND code=' . $TYPO3_DB->fullQuoteStr($voucherCode, $voucherTable);
 			}
-			$where = $whereGeneral.$this->pibase->cObj->enableFields($voucherTable);
-			$fields = implode (',', $voucherfieldArray);
+			$where = $whereGeneral.$this->cObj->enableFields($voucherTable);
+			$fields = implode(',', $voucherfieldArray);
 
 			$res = $TYPO3_DB->exec_SELECTquery($fields, $voucherTable, $where);
 			if ($row = $TYPO3_DB->sql_fetch_assoc($res)) {
@@ -293,7 +290,7 @@ class tx_ttproducts_voucher extends tx_ttproducts_table_base {
 			if ($uid_voucher) {
 				// first check if not inserted own vouchercode
 				if ($TSFE->fe_user->user['uid'] != $uid_voucher) {
-					$basket = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+					$basket = t3lib_div::getUserObj('&tx_ttproducts_basket');
 					$basket->calculatedArray['priceTax']['voucher'] = $this->conf['voucher.']['price'];
 				}
 			}

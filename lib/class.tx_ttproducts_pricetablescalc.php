@@ -40,8 +40,6 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_pricecalc_base.php');
-
 class tx_ttproducts_pricetablescalc extends tx_ttproducts_pricecalc_base {
 	var $conftablename = 'tt_products_graduated_price';
 
@@ -66,7 +64,7 @@ class tx_ttproducts_pricetablescalc extends tx_ttproducts_pricecalc_base {
 			return;
 		}
 
-		$graduatedPriceObj = &t3lib_div::getUserObj('&tx_ttproducts_graduated_price');
+		$graduatedPriceObj = t3lib_div::getUserObj('&tx_ttproducts_graduated_price');
 
 		// loop over all items in the basket indexed by sort string
 		foreach ($itemArray as $sort => $actItemArray) {
@@ -81,8 +79,8 @@ class tx_ttproducts_pricetablescalc extends tx_ttproducts_pricecalc_base {
 							$priceProduct = $priceFormula['formula'];
 						}
 					}
-					if ($priceProduct > $itemArray [$sort][$k2][$type])	{
-						$itemArray [$sort][$k2][$type] = $priceProduct;
+					if ($priceProduct > $itemArray[$sort][$k2][$type])	{
+						$itemArray[$sort][$k2][$type] = $priceProduct;
 					}
 					$priceReduction[$row['uid']] = 1;
 				}

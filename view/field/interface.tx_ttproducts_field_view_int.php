@@ -40,9 +40,9 @@
 
 
 
-interface tx_ttproducts_field_view_int	{
-	public function needsInit();
-	public function &getModelObj();
+interface tx_ttproducts_field_view_int {
+	public function needsInit ();
+	public function getModelObj ();
 	public function getItemMarkerArray ($functablename, $fieldname, &$row, $markerKey, &$markerArray, $tagArray, $theCode, $id, &$bSkip, $bHtml=true, $charset='', $prefix='');
 }
 

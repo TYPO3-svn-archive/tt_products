@@ -3,6 +3,7 @@
 <html>
 <head>
 	<TITLE>Products example template</TITLE>
+<!-- $Id$ -->
 </head>
 
 <body>
@@ -32,7 +33,7 @@
 
 			<tr>
 			<td colspan=4>
-			<font size=3><strong>Client ###CLIENT_NAME### n° : ###CLIENT_NUMBER###</strong></font> 
+			<font size=3><strong>Client ###CLIENT_NAME### n° : ###CLIENT_NUMBER###</strong></font>
 			</td>
 			</tr>
 
@@ -82,7 +83,7 @@
 		<!-- ###ORDER_NOROWS### end -->
 
 
-		
+
 </TABLE>
 <BR><BR>
 
@@ -118,11 +119,11 @@
 		<td><img src="clear.gif" width=100 height=1></td>
 	</tr>
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
-		<!-- ###ITEM_CATEGORY### begin -->		
+		<!-- ###ITEM_CATEGORY### begin -->
 			<tr>
 				<td colspan=4><br>###GW1B###<font size=3><strong>###CATEGORY_TITLE###</strong></font> ###GW1E###
 				<br>
-				
+
 				</td>
 			</tr>
 		<!-- ###ITEM_CATEGORY### end -->
@@ -154,7 +155,7 @@
 				</tr>
 				<TR>
 					<TD valign=top>###PRODUCT_IMAGE###</TD>
-					<td> 
+					<td>
 			<!-- ###display_variant1### -->
   					###GW2B### Color: ###GW2E### <SELECT style="font-size: 10px"
   					name="###FIELD_COLOR_NAME###" rows="1">###PRODUCT_COLOR###</SELECT><br>
@@ -168,7 +169,7 @@
 					<TD valign=top>###GW2B######PRODUCT_NOTE######GW2E###<br />
 						###GW1B###<B>Prix TTC:</b> <font color=red><strong>###PRICE_TAX### EUR</strong></font>###GW1E###<br />
 						###GW2B###(Prix HT: ###PRICE_NO_TAX###)###GW2E###<br />
-						###GW2B###(dont TVA ###PRICE_VAT###)###GW2E###
+						###GW2B###(dont TVA ###PRICE_TAX###)###GW2E###
 					</TD>
 					<TD valign=top nowrap align=right>###GW2B### Qté: ###GW2E###<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><BR><input type="Submit" name="order" value="Ajouter au panier" onClick="if (!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 					</TD>
@@ -237,7 +238,7 @@
 				<B>Catégorie:</B> ###CATEGORY_TITLE### <br>
 				<B>Ref. article:</B> ###PRODUCT_ITEMNUMBER###<br>
 				<B>Prix TTC:</B> <font color=red><strong>###PRICE_TAX### EUR</strong></font>###GW2B### &nbsp; (Prix HT ###PRICE_NO_TAX###)###GW2E###<br>
-				
+
 				<B>Information:</B><br>
 				###PRODUCT_NOTE###<br>
 			###GW1E###	<br>
@@ -249,12 +250,12 @@
 <br>
 <br>
 
-###GW2B###	
+###GW2B###
 <!--###LINK_ITEM###-->
 <b><- Retour</b>
 <!--###LINK_ITEM###-->
-###GW2E###						
-	
+###GW2E###
+
 <!-- ###ITEM_SINGLE_DISPLAY### end -->
 
 
@@ -346,7 +347,7 @@ In addition there's a number of fields used for delivery and payment information
 		<td align=center bgcolor="###GC2###">###GW2B###<b>Total:</b>###GW2E###</td>
 	</tr>
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
-		<!-- ###ITEM_CATEGORY### begin -->		
+		<!-- ###ITEM_CATEGORY### begin -->
 			<tr>
 				<td colspan=6><br>###CATEGORY_TITLE###<br>
 				</td>
@@ -362,7 +363,7 @@ In addition there's a number of fields used for delivery and payment information
 					<td></td>
 					<TD valign=top>
 						<!--###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!--###LINK_ITEM###-->
-						
+
 					</TD>
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
 					<TD valign=top>&nbsp;<INPUT size="3" maxlength="4" type="text" name="###FIELD_NAME_BASKET###" value="###FIELD_QTY###">&nbsp;</TD>
@@ -384,7 +385,7 @@ In addition there's a number of fields used for delivery and payment information
 	<TR>
 		<td colspan=5>
 		###GW1B###Port : <b>###SHIPPING_TITLE###</B>###GW1E###<br><br>
-							
+
 		###SHIPPING_SELECTOR###
 
 		###SHIPPING_IMAGE###
@@ -404,11 +405,11 @@ In addition there's a number of fields used for delivery and payment information
 	<TR>
 		<td colspan=5>
 		###GW1B###
-		
+
 		###PAYMENT_SELECTOR###
 
 		###GW1E###
-		
+
 ###GW2B###
 		<!-- ###MESSAGE_PAYMENT### begin
 			This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
@@ -418,7 +419,7 @@ In addition there's a number of fields used for delivery and payment information
 			<!-- ###MESSAGE_PAYMENT_10### end -->
 		<!-- ###MESSAGE_PAYMENT### end -->
 ###GW2E###
-		
+
 		</td>
 		<td valign=top align=right>###GW1B### <b>###PRICE_PAYMENT_TAX###</b> <BR>(###PRICE_PAYMENT_NO_TAX###) ###GW1E###</td>
 	</TR>
@@ -432,13 +433,13 @@ In addition there's a number of fields used for delivery and payment information
 		<td valign=top colspan=5></td>
 		<td valign=top align=right nowrap>###GW1B### <b>EUR###PRICE_TOTAL_TAX###</b><br>
 		(Prix HT ###PRICE_TOTAL_NO_TAX###) ###GW1E###<br>
-		(dont TVA ###PRICE_VAT###)
+		(dont TVA ###PRICE_TAX###)
 					</TD>
 </td>
 	</TR>
 </TABLE>
 <input type="hidden" name="mode_update" value="1">
-<input type="Submit" name="products_update" value="Mise à jour panier">&nbsp;&nbsp;	
+<input type="Submit" name="products_update" value="Mise à jour panier">&nbsp;&nbsp;
 <input type="Submit" name="products_info" value="Commander" onClick="document.forms[0].action='###FORM_URL_INFO###';">
 </FORM>
 <BR>
@@ -481,7 +482,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 		###GW1B###
 			Entrez votre adresse postale. Ce nom et cette adresse seront utilisé pour facturer les produits achetés de la commande..<br>
 			Nous envoyons les produits commandés par défaut à cette adresse, si vous voulez que l'on vous envoi votre commande à une autre adresse saisissez la ci dessous.<br>
-			Si vouc choisissez de prendre la machandise en magasin, rien ne vous sera envoyé bien sûr. 
+			Si vouc choisissez de prendre la machandise en magasin, rien ne vous sera envoyé bien sûr.
 		###GW1E###
 			<br>
 			<br>
@@ -503,13 +504,13 @@ Exact same features as BASKET_TEMPLATE<BR>
 				<td><input type="text" name="recs[personinfo][email]" size="30" value="###PERSON_EMAIL###"></td>
 			</tr>
 			</table><br>
-			
+
 			###GW1B###
 			<em>Attention : Les champs marqués avec  * doivent être remplis !!</em>
 			###GW1E###
 		<!-- ###BILLING_ADDRESS### end-->
 
-		
+
 		<!-- ###BILLING_ADDRESS_LOGIN### start
 			If this part is not empty then this will be used instead of BILLING_ADDRESS if there is a FE-login user.
 		 -->
@@ -637,7 +638,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 			<td bgcolor="###GC2###">###GW2B###<b>Total:</b>###GW2E###</td>
 		</tr>
 		<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
-			<!-- ###ITEM_CATEGORY### begin -->		
+			<!-- ###ITEM_CATEGORY### begin -->
 				<tr>
 					<td colspan=6><br>###CATEGORY_TITLE###<br>
 					</td>
@@ -653,7 +654,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 						<td></td>
 						<TD valign=top>
 							###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
-							
+
 						</TD>
 						<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
 						<TD valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
@@ -760,14 +761,14 @@ Exact same features as BASKET_TEMPLATE<BR>
 	<TR>
 		<td valign=top colspan=3>###GW1B###
 			<strong>Methode de  transport:</strong><br>
-			###SHIPPING_IMAGE### ###SHIPPING_TITLE###				
-			
+			###SHIPPING_IMAGE### ###SHIPPING_TITLE###
+
 		###GW1E###</td>
-		
+
 		<td valign=top align=right colspan=3>###GW1B###
 		<b>###PRICE_SHIPPING_TAX###</b><br>
 		(###PRICE_SHIPPING_NO_TAX###)<br>
-						
+
 		###GW1E###</td>
 	</TR>
 	<TR>
@@ -776,7 +777,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 			###PAYMENT_IMAGE### ###PAYMENT_TITLE###
 		###GW1E###
 ###GW2B###
-		<!-- ###MESSAGE_PAYMENT### 
+		<!-- ###MESSAGE_PAYMENT###
 			This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
 		-->
 			<!-- ###MESSAGE_PAYMENT_10### begin -->
@@ -788,7 +789,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 		<td valign=top align=right colspan=3>###GW1B###
 		<b>###PRICE_PAYMENT_TAX###</b><br>
 		(###PRICE_PAYMENT_NO_TAX###)<br>
-						
+
 		###GW1E###</td>
 	</TR>
 	<tr>
@@ -799,13 +800,13 @@ Exact same features as BASKET_TEMPLATE<BR>
 	</tr>
 	<TR>
 		<td valign=top colspan=3>###GW1B###
-			<strong>Total :</strong>				
+			<strong>Total :</strong>
 		###GW1E###</td>
-		
+
 		<td valign=top align=right colspan=3 nowrap>###GW1B###
 		<b>EUR  TTC###PRICE_TOTAL_TAX###</b><br>
 		(HT : ###PRICE_TOTAL_NO_TAX###)<br>
-						
+
 		###GW1E###</td>
 	</TR>
 </TABLE>
@@ -848,8 +849,8 @@ Exact same features as BASKET_TEMPLATE<BR>
 		<td colspan=3><img src="clear.gif" width=200 height=1></td>
 	</tr>
 
-	
-	
+
+
 	<tr>
 		<td colspan=6>
 		###GW1B###
@@ -861,8 +862,8 @@ Exact same features as BASKET_TEMPLATE<BR>
 								Utilisez ce n° dans toute correspondance avec nos services.<br>
 			Cette confirmation est également envoyée par mail à l'adresse de livraison saisie :(###DELIVERY_EMAIL###). Vous devez néanmoins dans tous les cas faire une impression de cette commande en cas de litige.<br>
 			<br>
-		
-			<!-- ###MESSAGE_PAYMENT### 
+
+			<!-- ###MESSAGE_PAYMENT###
 				This whole subpart, message_payment is substituted with the subpart 'message_payment_[number-of-method-in-typoscript]'
 			-->
 				<!-- ###MESSAGE_PAYMENT_10### begin
@@ -896,7 +897,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 			<strong>###ORDER_TRACKING_NO###</strong>. Cliquez ici <a href="http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###"> pour en voir l'état actuel.</a><br><br>
 			<br>
 		###GW1E###
-		###EXTERNAL_COBJECT###				
+		###EXTERNAL_COBJECT###
 		</td>
 	</tr>
 	<tr>
@@ -906,7 +907,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 		<td bgcolor="###GC2###">###GW2B###<b>Total:</b>###GW2E###</td>
 	</tr>
 	<!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
-		<!-- ###ITEM_CATEGORY### begin -->		
+		<!-- ###ITEM_CATEGORY### begin -->
 			<tr>
 				<td colspan=6><br>###CATEGORY_TITLE###<br>
 				</td>
@@ -922,7 +923,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 					<td></td>
 					<TD valign=top>
 						###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###
-						
+
 					</TD>
 					<td valign=top>###GW1B### ###PRICE_TAX### ###GW1E###</td>
 					<TD valign=top>###GW1B### ###FIELD_QTY### ###GW1E###</TD>
@@ -957,7 +958,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 				<td>###GW1B###Email:###GW1E###</td>
 				<td>###GW1B###<strong>###PERSON_EMAIL###</strong>###GW1E###</td>
 			</tr>
-	
+
 				<!-- ###FE_USER_SECTION###  begin -->
 			<tr>
 				<td>###GW1B###Nom d'utilisateur:###GW1E###</td>
@@ -968,7 +969,7 @@ Exact same features as BASKET_TEMPLATE<BR>
 				<td>###GW1B###<strong>###FE_USER_UID###</strong>###GW1E###</td>
 			</tr>
 				<!-- ###FE_USER_SECTION###  end -->
-	
+
 			</table>
 		</td>
 		<td colspan=3></td>
@@ -1031,14 +1032,14 @@ Exact same features as BASKET_TEMPLATE<BR>
 	<TR>
 		<td valign=top colspan=3>###GW1B###
 			<strong>Methode de transport :</strong><br>
-			###SHIPPING_IMAGE### ###SHIPPING_TITLE###				
-			
+			###SHIPPING_IMAGE### ###SHIPPING_TITLE###
+
 		###GW1E###</td>
-		
+
 		<td valign=top align=right colspan=3>###GW1B###
 		<b>###PRICE_SHIPPING_TAX###</b><br>
 		(###PRICE_SHIPPING_NO_TAX###)<br>
-						
+
 		###GW1E###</td>
 	</TR>
 	<TR>
@@ -1046,11 +1047,11 @@ Exact same features as BASKET_TEMPLATE<BR>
 			<strong>Moyen de paiement:</strong><br>
 			###PAYMENT_IMAGE### ###PAYMENT_TITLE###
 		###GW1E###</td>
-		
+
 		<td valign=top align=right colspan=3>###GW1B###
 		<b>###PRICE_PAYMENT_TAX###</b><br>
 		(###PRICE_PAYMENT_NO_TAX###)<br>
-						
+
 		###GW1E###</td>
 	</TR>
 	<tr>
@@ -1061,25 +1062,25 @@ Exact same features as BASKET_TEMPLATE<BR>
 	</tr>
 	<TR>
 		<td valign=top colspan=3>###GW1B###
-			<strong>Total en EUR:</strong>				
+			<strong>Total en EUR:</strong>
 		###GW1E###</td>
-		
+
 		<td valign=top align=right colspan=3>###GW1B###
 		<b>USD ###PRICE_TOTAL_TAX###</b><br>
 		(w/o VAT: ###PRICE_TOTAL_NO_TAX###)<br>
-						
+
 		###GW1E###</td>
 	</TR>
 		<tr>
 			<td colspan=6>
 			###GW1B###
-	
+
 	<br>
 	<br>
 	Bien cordialement,
 	<br>
 	<br>
-	
+
 	&nbsp;&nbsp;&nbsp;<strong>Mon magasin</strong><br>
 	&nbsp;&nbsp;&nbsp;Ma rue<br>
 	&nbsp;&nbsp;&nbsp;1234 Ma Ville<br>
@@ -1175,20 +1176,20 @@ Displays the view of the order status by tracking codes.<br>
 		<td>###GW2B### <strong>Action:</strong> ###GW2E###</td>
 		<td>###GW2B### <strong>Commentaire:</strong> ###GW2E###</td>
 	</tr>
-	<!-- ###STATUS_ITEM### begin 
+	<!-- ###STATUS_ITEM### begin
 		This part is repeated for each order status item and finally this part in the template code is substituted with the accumulated code for all order status actions.
-	-->		
+	-->
 	<tr>
 		<td nowrap valign=top>###GW2B### ###ORDER_STATUS_TIME### &nbsp;###GW2E###</td>
 		<td valign=top>###GW2B### ###ORDER_STATUS### &nbsp;###GW2E###</td>
 		<td nowrap valign=top>###GW2B### ###ORDER_STATUS_INFO### &nbsp;###GW2E###</td>
 		<td valign=top>###GW2B### ###ORDER_STATUS_COMMENT### &nbsp;###GW2E###</td>
 	</tr>
-	<!-- ###STATUS_ITEM### end -->		
+	<!-- ###STATUS_ITEM### end -->
 </table>
 <br>
 
-<!-- ###ADMIN_CONTROL### begin -->		
+<!-- ###ADMIN_CONTROL### begin -->
 <table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
 	<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
 		###GW1B### <strong>Accès administrateur : saisissez le mot de passe pour accéder au suivi des commandes</strong><br>
@@ -1196,15 +1197,15 @@ Displays the view of the order status by tracking codes.<br>
 		<br>
 		###GW1B###
 
-		<!-- ###ADMIN_CONTROL_OK### begin -->		
+		<!-- ###ADMIN_CONTROL_OK### begin -->
 		<FORM method="post" action="###FORM_URL###">
 		<select name="orderRecord[status][]" size="9" multiple>
 			###STATUS_OPTIONS###
-		</select>	
+		</select>
 			<br>
 			###GW1B###Commentaire sur le nouvel état:###GW1B###<br>
 			<textarea cols="40" rows="5" name="orderRecord[status_comment]"></textarea><br>
-	
+
 			<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
 			<input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
 			<input type="Submit" name="submit" value="Ajouter un état de commande">
@@ -1218,15 +1219,15 @@ Displays the view of the order status by tracking codes.<br>
 				<input type="Submit" name="submit" value="Valider">
 				<input type="hidden" name="update_code" value="###UPDATE_CODE###"><br>
 			</FORM>
-		<!-- ###ADMIN_CONTROL_OK### begin -->		
-		<!-- ###ADMIN_CONTROL_DENY### begin -->		
+		<!-- ###ADMIN_CONTROL_OK### begin -->
+		<!-- ###ADMIN_CONTROL_DENY### begin -->
 			<FORM method="post" action="###FORM_URL###">
 			<input type="hidden" name="tracking" value="###TRACKING_NUMBER###"><br>
 			###GW1B###Mot de passe :###GW1B###<br>
 			<input type="password" size=40 name="update_code" value="###UPDATE_CODE###">
 			<input type="Submit" name="submit" value="Entrez le mot de passe">
 			</FORM>
-		<!-- ###ADMIN_CONTROL_DENY### begin -->		
+		<!-- ###ADMIN_CONTROL_DENY### begin -->
 		</td></tr></table>
 	</td></tr>
 </table><br>
@@ -1236,12 +1237,12 @@ Displays the view of the order status by tracking codes.<br>
 <strong>Contenu Email :</strong><br>
 Cochez cette case si vous souhaitez recevoir un Email à l'adresse (###FIELD_EMAIL###) à chaque changement d'état de votre commande :<br>
 	<FORM method="post" action="###FORM_URL###">
-	
+
 	<input type="hidden" name="orderRecord[email_notify]" value="0">
 	<input type="checkbox" name="orderRecord[email_notify]" value="1"###FIELD_EMAIL_NOTIFY###>Recevoir messages à chaque mise à jour de la commande.<br>
 	<input type="text" size=40 name="orderRecord[email]" value="###FIELD_EMAIL###">
 	<input type="hidden" name="tracking" value="###TRACKING_NUMBER###">
-	
+
 	<input type="Submit" name="submit" value="Mettre à jour">
 	</FORM>
 <br><br>
@@ -1254,7 +1255,7 @@ Vous pouvez envoyer un message au magasin concernant cette commande.<br>
 		<!-- NOTICE: The values/topics MUST correspond with those setup in the TypoScript of the shop! -->
 		<option value=51>Message du client au magasin</option>
 		<option value=50>Le client souhaite annuler sa commande</option>
-	</select>	
+	</select>
 	<br>
 	###GW1B###Comment to follow:###GW1B###<br>
 	<textarea cols="40" rows="5" name="orderRecord[status_comment]"></textarea><br>
@@ -1300,25 +1301,25 @@ Displays form for entering the tracking number.<br>
 	<input type="Submit" name="submit" value="Voir état">
 	</FORM>
 
-<!-- ###ADMIN_CONTROL### begin -->		
+<!-- ###ADMIN_CONTROL### begin -->
 <table border=0 cellpadding=1 cellspacing=0 bgcolor="black"><tr><td>
 	<table border=0 cellpadding=10 cellspacing=0 bgcolor="#92AFCB"><tr><td>
 		###GW1B### <strong>Accès administrateur : saisissez le mot de passe pour accéder au suivi des commandes
 </strong><br>
-		<!-- ###ADMIN_CONTROL_DENY### begin -->		
+		<!-- ###ADMIN_CONTROL_DENY### begin -->
 			<FORM method="post" action="###FORM_URL###">
 			###GW1B###Mot de passe:###GW1B###<br>
 			<input type="password" size=40 name="update_code" value="">
 			<input type="Submit" name="submit" value="Entrez le mot de passe">
 			</FORM>
-		<!-- ###ADMIN_CONTROL_DENY### begin -->		
+		<!-- ###ADMIN_CONTROL_DENY### begin -->
 		</td></tr></table>
 	</td></tr>
 </table><br>
 <!-- ###ADMIN_CONTROL### end -->
 
-	
-	
+
+
 <!-- ###TRACKING_ENTER_NUMBER### end -->
 
 
@@ -1376,14 +1377,14 @@ L'etat de votre commande (####ORDER_UID###) a changé :
 Time: ###ORDER_STATUS_TIME###
 Status: ###ORDER_STATUS_INFO###
 
-Commentaire: 
+Commentaire:
 ###ORDER_STATUS_COMMENT###
 
 
 SUIVI:
 Vous avez reçu ce mail car vous avez demandé à être informés de tout changement d'état de votre commande. Vous pouvez consulter son état et modifier son suivie en saisissant le code de suivi :
         ###ORDER_TRACKING_NO###
-		
+
 Cliquez ici pour voir l'information maintenant:
         http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###
 
@@ -1394,7 +1395,7 @@ Bien cordialement
 	Ma Rue
 	1234 Ma ville
 	Téléphone: +x xxx xxx-xxxx
-	
+
 <!-- ###TRACKING_EMAILNOTIFY_TEMPLATE### end -->
 </pre>
 
@@ -1406,9 +1407,9 @@ Bien cordialement
   <div class="shop_minibasket">
      <div class="shop_minibasket_image"><!--###LINK_BASKET###-->###IMAGE_BASKET###<!--###LINK_BASKET###-->###NUMBER_GOODSTOTAL### Produits ( Total  ###PRICE_GOODSTOTAL_TAX###.- EUR TTC)</div></DIV>
 <!-- ###BASKET_OVERVIEW_TEMPLATE### end -->
- 
- 
- 
+
+
+
 <!-- ###BASKET_OVERVIEW_EMPTY### begin -->
   <p>Panier vide.</p>
 <!-- ###BASKET_OVERVIEW_EMPTY### end -->
@@ -1442,12 +1443,12 @@ First line is used as subject for the mail.<br>
 Commande Ma Boutique : ####ORDER_UID###
 
 
-CONFIRMATION DE COMMANDE: 
+CONFIRMATION DE COMMANDE:
 Votre commande est en cours de traitement sous la référence : ###ORDER_UID###.
 Utilisez ce n° pour tout contact avec nous.
 
 SUIVI:
-Vous pouvez suivre votre commande en saisissant le n° de commande suivant ###ORDER_TRACKING_NO### à l'adresse suivante : 
+Vous pouvez suivre votre commande en saisissant le n° de commande suivant ###ORDER_TRACKING_NO### à l'adresse suivante :
         http://###DOMAIN###/index.php?id=###PID_TRACKING###&type=0&tracking=###ORDER_TRACKING_NO###
 
 
@@ -1485,7 +1486,7 @@ Email: ###DELIVERY_EMAIL###
 
 
 5) Port:
-###SHIPPING_TITLE###				
+###SHIPPING_TITLE###
 Prix: ###PRICE_SHIPPING_TAX### EUR(###PRICE_SHIPPING_NO_TAX### HT)
 
 
@@ -1727,28 +1728,28 @@ Bien cordialement, Ma Boutique
 <!-- ###DELIVERY_TEMPLATE### end -->
 
 
-<BR><BR><BR><BR><HR><BR><BR><BR> 
-<h3>EMAIL_NEWUSER_TEMPLATE</h3> 
-<em> 
-Subpart used as template for the account-creation-emails. First line is 
-used as subject for the mail.<br> 
-</em><br> 
-<pre> 
-<!-- ###EMAIL_NEWUSER_TEMPLATE### begin 
-Subpart used as template for the account-creation-emails First line is 
-used as subject for the mail. 
---> 
-Nouveau compte utilisateur : 
-Cher(e) ###PERSON_NAME###, 
-Vous avez passé commande à http://###DOMAIN###/ pour la première fois. 
-Afin de faciliter vos futurs achats un compte utilisateur a été créé. 
-Vos informations personnelles : 
-Nom d'utilisateur: ###USERNAME### 
-Votre mot de passe: ###PASSWORD### 
+<BR><BR><BR><BR><HR><BR><BR><BR>
+<h3>EMAIL_NEWUSER_TEMPLATE</h3>
+<em>
+Subpart used as template for the account-creation-emails. First line is
+used as subject for the mail.<br>
+</em><br>
+<pre>
+<!-- ###EMAIL_NEWUSER_TEMPLATE### begin
+Subpart used as template for the account-creation-emails First line is
+used as subject for the mail.
+-->
+Nouveau compte utilisateur :
+Cher(e) ###PERSON_NAME###,
+Vous avez passé commande à http://###DOMAIN###/ pour la première fois.
+Afin de faciliter vos futurs achats un compte utilisateur a été créé.
+Vos informations personnelles :
+Nom d'utilisateur: ###USERNAME###
+Votre mot de passe: ###PASSWORD###
 Cordialement,
 L'équipe de ###DOMAIN###
-<!-- ###EMAIL_NEWUSER_TEMPLATE### end --> 
-</pre> 
+<!-- ###EMAIL_NEWUSER_TEMPLATE### end -->
+</pre>
 
 
 <!-- ###BASKET_ORDERTHANKS_TEMPLATE#### begin (Page meer wijn = bestellingsbevestiging, CODE = finalize)

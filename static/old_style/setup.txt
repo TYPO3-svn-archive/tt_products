@@ -13,6 +13,7 @@ plugin.tt_products = USER
 plugin.tt_products {
   userFunc = tx_ttproducts_pi1->main
   templateFile = {$plugin.tt_products.file.templateFile}
+  defaultSetup = 1
   templateStyle = old-style
   pid_list = {$plugin.tt_products.pid_list}
   code.field = select_key
@@ -66,7 +67,7 @@ plugin.tt_products {
   listcatImage.file.maxH = {$plugin.tt_products.maxH_listcat}
   listcatImage.imageLinkWrap = {$plugin.tt_products.clickEnlarge_listcat}
 
-  image.wrap = | <BR>
+  image.wrap = | <br />
 
   noImageAvailable = {$plugin.tt_products.file.noImageAvailable}
   datasheetIcon {
@@ -112,8 +113,10 @@ plugin.tt_products {
   CSSListCurrent = {$plugin.tt_products.CSSListCurrent}
 
   NoSingleViewOnList = {$plugin.tt_products.NoSingleViewOnList}
+  listViewOnSearch = {$plugin.tt_products.listViewOnSearch}
 
   PIDagb = {$plugin.tt_products.PIDagb}
+  PIDrevocation = {$plugin.tt_products.PIDrevocation}
   PIDinfo = {$plugin.tt_products.PIDinfo}
   PIDfinalize = {$plugin.tt_products.PIDfinalize}
   PIDpayment = {$plugin.tt_products.PIDpayment}
@@ -177,7 +180,7 @@ plugin.tt_products {
 
   email_notify_default = {$plugin.tt_products.email_notify_default}
   statusCodes {
-# 1: Incoming orders    
+# 1: Incoming orders
     1 = Order submitted by user
 # 2-49: Useable by the shop admin
     2 = Order is received and accepted by store
@@ -223,7 +226,7 @@ plugin.tt_products {
       niceText = 1
     }
   }
- 
+
   max_note_length = {$plugin.tt_products.max_note_length}
 
   bulkilyWarning = {$plugin.tt_products.bulkilyWarning}
@@ -235,7 +238,7 @@ plugin.tt_products {
   PIDuserFolder = {$plugin.tt_products.PIDuserFolder}
   pidsRelatedProducts = {$plugin.tt_products.pidsRelatedProducts}
   pidsAddresses = {$plugin.tt_products.pidsAddresses}
-  outputFolder = {$plugin.tt_products.outputFolder} 
+  outputFolder = {$plugin.tt_products.outputFolder}
   memberOfGroup = {$plugin.tt_products.memberOfGroup}
   discountGroupName = {$plugin.tt_products.discountGroupName}
   getDiscountPrice = {$plugin.tt_products.getDiscountPrice}
@@ -255,20 +258,25 @@ plugin.tt_products {
   inStockPieces = {$plugin.tt_products.inStockPieces}
   warningInStockLimit = {$plugin.tt_products.warningInStockLimit}
   newItemDays = {$plugin.tt_products.newItemDays}
-  substitutePagetitle = {$plugin.tt_products.substitutePagetitle}  
+  substitutePagetitle = {$plugin.tt_products.substitutePagetitle}
 
   whereGift = {$plugin.tt_products.whereGift}
   whereGiftService = {$plugin.tt_products.whereGiftService}
 
   form.SEARCH.name = ShopSearchForm
 
+  basket.store = 1
+
+  memo.allow = fe_users,session
+
   # table settings
   # attention: Do not change the tt_products fields if you don't know what you do
+  table.address = fe_users
 
-  table.address = tx_partner_main
-  table.address {
-    name = last_name
-  }
+#  table.address = tx_party_addresses
+#  table.address {
+#    name = last_name
+#  }
 
   table.tt_products = tt_products
   table.tt_products {
@@ -292,7 +300,7 @@ plugin.tt_products {
 
   conf.tt_products.ALL {
     orderBy = title
-    requiredFields = uid,pid,category,price,price2,directcost,graduated_price_uid,tax,inStock
+    requiredFields = uid,pid,category,price,price2,directcost,graduated_price_uid,tax,inStock,datasheet,unit_factor,weight
       language.type = table
       language.table = tt_products_language
     functions {
@@ -301,6 +309,23 @@ plugin.tt_products {
     controlFields {
       newItemDays = crdate, starttime
     }
+	field {
+	  weight = TEXT
+	  weight {
+		preUserFunc = tx_div2007_alpha->phpFunc
+		preUserFunc {
+			php = round($value,2);
+		}
+	  }
+	}
+  }
+
+  conf.tt_products.LIST {
+	field {
+		note = TEXT
+		note.postUserFunc = tx_pmkhtmlcrop->htmlCrop
+		note.postUserFunc.htmlCrop = 50 | ... More
+	}
   }
 
   table.tt_products_articles = tt_products_articles
@@ -354,7 +379,7 @@ plugin.tt_products {
   }
 
   conf.pages.ALL {
-    requiredFields = uid,pid,title,subtitle,media,shortcut
+    requiredFields = uid,pid,title,subtitle,media
     language.type = table
     language.table = pages_language_overlay
   }
@@ -392,9 +417,35 @@ plugin.tt_products {
 
   _CSS_DEFAULT_STYLE (
       .tx-ttproducts-pi1-wrap1 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }
-      .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }   
+      .tx-ttproducts-pi1-wrap2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000; }
   )
+
+  marks {
+   BASKET_MINI_HEADER = Warenkorb
+   BASKET_INTO = in den Warenkorb
+   BASKET_INTO_ID = basketInto
+  }
+
+  shopAdmin = BE
+  control.ALL.param {
+    use = backPID
+  }
+
+  orderEmail {
+       10000.suffix = shop
+       10000.from = customer
+       10002.suffix = customer
+       10002.from = shop
+  }
 }
+
+[globalVar = GP:ttp_basket != '']
+plugin.tt_products = USER_INT
+[global]
+
+[globalVar = GP:tt_products|sword != '']
+plugin.tt_products = USER_INT
+[global]
 
 
 ## This enables the record item to display product items

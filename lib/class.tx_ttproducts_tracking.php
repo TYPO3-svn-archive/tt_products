@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2005-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,16 +31,14 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_email_div.php');
 
 
 class tx_ttproducts_tracking {
@@ -57,8 +55,8 @@ class tx_ttproducts_tracking {
 	function init(&$cObj) {
 		global $TSFE;
 
-		$this->cObj = &$cObj;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->cObj = $cObj;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 	}
@@ -100,8 +98,8 @@ class tx_ttproducts_tracking {
 	function getTrackingInformation($orderRow, $templateCode, $trackingCode, $updateCode, &$orderRecord, $admin) {
 		global $TSFE, $TYPO3_DB;
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$orderObj = &$tablesObj->get('sys_products_orders');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$orderObj = $tablesObj->get('sys_products_orders');
 
 		if ($orderRow['uid'])	{
 				// Initialize update of status...
@@ -133,7 +131,7 @@ class tx_ttproducts_tracking {
 							$recipient .= ','.$orderRow['email'];
 						}
 						$templateMarker = 'TRACKING_EMAILNOTIFY_TEMPLATE';
-						$feusersObj = &$tablesObj->get('fe_users', TRUE);
+						$feusersObj = $tablesObj->get('fe_users', TRUE);
 						tx_ttproducts_email_div::sendNotifyEmail($this->cObj, $this->conf, $feusersObj, $orderObj->getNumber($orderRow['uid']), $recipient, $status_log_element, t3lib_div::_GP('tracking'), $orderRow, $templateCode, $templateMarker);
 						$status_log[] = $status_log_element;
 						$update=1;
@@ -152,25 +150,25 @@ class tx_ttproducts_tracking {
 				}
 				if ($update)	{
 					$fieldsArray['status_log'] = serialize($status_log);
-					$fieldsArray['status'] = intval($status_log_element['status'],'sys_products_orders');
+					$fieldsArray['status'] = intval($status_log_element['status']);
 					if ($fieldsArray['status'] >= 100)  {
 
 							// Deletes any M-M relations between the tt_products table and the order.
 							// In the future this should maybe also automatically count down the stock number of the product records. Else it doesn't make sense.
-						$TYPO3_DB->exec_DELETEquery('sys_products_orders_mm_tt_products', 'sys_products_orders_uid='.intval($orderRow['uid']));
+						$TYPO3_DB->exec_DELETEquery('sys_products_orders_mm_tt_products', 'sys_products_orders_uid=' . intval($orderRow['uid']));
 					}
 				}
 			}
 
 			if (count($fieldsArray))	{		// If any items in the field array, save them
 				$fieldsArray['tstamp'] = time();
-				$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid='.intval($orderRow['uid']), $fieldsArray);
+				$TYPO3_DB->exec_UPDATEquery('sys_products_orders', 'uid=' . intval($orderRow['uid']), $fieldsArray);
 				$orderRow = $orderObj->getRecord($orderRow['uid']);
 			}
 		}
 
 			// Getting the template stuff and initialize order data.
-		$content=$this->cObj->getSubpart($templateCode,'###TRACKING_DISPLAY_INFO###');
+		$content=$this->cObj->getSubpart($templateCode, '###TRACKING_DISPLAY_INFO###');
 		$status_log = unserialize($orderRow['status_log']);
 		$orderData = unserialize($orderRow['orderData']);
 		$orderPayed = false;
@@ -194,21 +192,21 @@ class tx_ttproducts_tracking {
 			$subpartArray=Array();
 			$subpartArray['###STATUS_CODE_60###']= '';
 
-			$content = $this->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+			$content = $this->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		}
 
 			// Status:
-		$STATUS_ITEM=$this->cObj->getSubpart($content,'###STATUS_ITEM###');
-		$STATUS_ITEM_c='';
+		$STATUS_ITEM = $this->cObj->getSubpart($content, '###STATUS_ITEM###');
+		$STATUS_ITEM_c = '';
 		if (is_array($status_log))  {
 			reset($status_log);
 
 			while(list($k,$v)=each($status_log))	{
 				$markerArray=Array();
-				$markerArray['###ORDER_STATUS_TIME###']=$this->cObj->stdWrap($v['time'],$this->conf['statusDate_stdWrap.']);
-				$markerArray['###ORDER_STATUS###']=$v['status'];
-				$markerArray['###ORDER_STATUS_INFO###']=$v['info'];
-				$markerArray['###ORDER_STATUS_COMMENT###']=nl2br($v['comment']);
+				$markerArray['###ORDER_STATUS_TIME###'] = $this->cObj->stdWrap($v['time'], $this->conf['statusDate_stdWrap.']);
+				$markerArray['###ORDER_STATUS###'] = $v['status'];
+				$markerArray['###ORDER_STATUS_INFO###'] = $v['info'];
+				$markerArray['###ORDER_STATUS_COMMENT###'] = nl2br($v['comment']);
 
 				$STATUS_ITEM_c.=$this->cObj->substituteMarkerArrayCached($STATUS_ITEM, $markerArray);
 			}
@@ -233,11 +231,11 @@ class tx_ttproducts_tracking {
 				reset($this->conf['statusCodes.']);
 				while(list($k,$v)=each($this->conf['statusCodes.']))  {
 					if ($k!=1)  {
-						$markerArray['###STATUS_OPTIONS###'].='<option value="'.$k.'">'.htmlspecialchars($k.': '.$v).'</option>';
+						$markerArray['###STATUS_OPTIONS###'].='<option value="' . $k . '">' . htmlspecialchars($k . ': ' . $v) . '</option>';
 					}
 				}
 			}
-			$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+			$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 
 				// Get unprocessed orders.
 			$res = $TYPO3_DB->exec_SELECTquery('uid,name,tracking_code,amount,status', 'sys_products_orders', 'NOT deleted AND status!=0 AND status<100', '', 'crdate');
@@ -245,7 +243,7 @@ class tx_ttproducts_tracking {
 				$markerArray['###OTHER_ORDERS_OPTIONS###'] .=
 					'<option value="'.$row['tracking_code'].'">'.
 					htmlspecialchars($orderObj->getNumber($row['uid']).': '.
-					$row['name'].' ('.$priceViewObj->priceFormat($row['amount']).' '.$this->conf['currencySymbol'].') /' .$row['status']).'</option>';
+					$row['name'].' ('.$priceViewObj->priceFormat($row['amount']) . ' ' . $this->conf['currencySymbol'] . ') /' . $row['status']) . '</option>';
 			}
 			$TYPO3_DB->sql_free_result($res);
 		}
@@ -255,12 +253,12 @@ class tx_ttproducts_tracking {
 		$markerArray['###FIELD_EMAIL_NOTIFY###'] = $orderRow['email_notify'] ? ' checked' : '';
 		$markerArray['###FIELD_EMAIL###'] = $orderRow['email'];
 		$markerArray['###ORDER_UID###'] = $orderObj->getNumber($orderRow['uid']);
-		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($orderRow['crdate'],$this->conf['orderDate_stdWrap.']);
+		$markerArray['###ORDER_DATE###'] = $this->cObj->stdWrap($orderRow['crdate'], $this->conf['orderDate_stdWrap.']);
 		$markerArray['###TRACKING_NUMBER###'] =  $trackingCode;
 		$markerArray['###UPDATE_CODE###'] = $updateCode;
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tracking'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['tracking'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['tracking'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['tracking'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getTrackingInformation')) {
 					$hookObj->getTrackingInformation ($this, $orderRow, $templateCode, $trackingCode, $updateCode, $orderRecord, $admin, $content, $markerArray,$subpartArray);
 				}

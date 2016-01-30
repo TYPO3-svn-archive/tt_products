@@ -61,7 +61,7 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 		);
 
 		// Add Language File
-		$this->addLanguageFile(t3lib_div::getFileAbsFileName('EXT:tt_products/widgets/labels.xml'));
+		$this->addLanguageFile(t3lib_div::getFileAbsFileName('EXT:tt_products/widgets/locallang.xml'));
 
 		// Set the Default config
 		$this->setDefaultConfig($config);
@@ -98,7 +98,7 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 			case 'order':
 
 				// Show Database List
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','sys_products_orders','deleted=0','','uid DESC',$limit);
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_products_orders', 'deleted=0', '', 'uid DESC', $limit);
 
 				// Render List
 				$c .= $this->showDatabaseList('Orders:',$res,'uid,name,amount,crdate,note');
@@ -128,7 +128,7 @@ class tx_ttproducts_latest extends tx_mydashboard_template implements tx_mydashb
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tt_products','deleted=0 AND hidden=0 AND inStock>0','','inStock',$limit);
 
 				// Render List
-				$c .= $this->showDatabaseList('Products:',$res,'uid,itemnumber,title,inStock');
+				$c .= $this->showDatabaseList('Products:', $res, 'uid,itemnumber,title,inStock');
 			break;
 		}
 

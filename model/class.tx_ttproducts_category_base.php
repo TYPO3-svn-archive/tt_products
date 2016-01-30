@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2008 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -70,7 +70,7 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 	 *
 	 * @return	[type]		...
 	 */
-	function getRootCat()	{
+	function getRootCat ()	{
 		$rc = 0;
 		return $rc;
 	}
@@ -84,6 +84,14 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 	function getRowCategory ($row) {
 		$rc = '';
 		return $rc;
+	}
+
+	public function setMMTablename ($mm_table) {
+		$this->mm_table = $mm_table;
+	}
+
+	public function getMMTablename () {
+		return $this->mm_table;
 	}
 
 	/**
@@ -160,53 +168,58 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 			} else if($functablename == 'tx_dam_cat')	{
 				$hookVar = 'DAMCategory';
 			}
-			$tmpArray = array();
 				// Call all addWhere hooks for categories at the end of this method
-			if ($hookVar && isset ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar]) && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
-				foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
-					$hookObj= &t3lib_div::getUserObj($classRef);
+			if ($hookVar && isset ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar]) && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar])) {
+				foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar] as $classRef) {
+					$hookObj= t3lib_div::getUserObj($classRef);
 					if (method_exists($hookObj, 'init')) {
 						$hookObj->init($this->parentField);
 					}
 					if (method_exists($hookObj, 'getCategories')) {
-						$tmpArray = $hookObj->getCategories($this, $uid, $this->mm_table, $orderBy);
+						$retArray = $hookObj->getCategories($this, $uid, $this->mm_table, $orderBy);
+						if (isset($retArray) && is_array($retArray))	{
+							foreach ($retArray as $k => $row)	{
+								$catArray[] = $row['cat'];
+							}
+						}
 					}
 				}
-			}
-			foreach ($tmpArray as $k => $row)	{
-				$catArray[] = $row['cat'];
 			}
 		}
 		return $catArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$start: ...
-	 * @param	[type]		$endArray: ...
-	 * @return	[type]		...
-	 */
-	function getLineArray ($start, $endArray)	{
+	public function getDepth ($theCode) {
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$functablename = $this->getFuncTablename();
+		$tableconf = $cnf->getTableConf($functablename, $theCode);
+		$rc = $tableconf['hierarchytiers'];
+		if (!isset($rc)) {
+			$rc = 1;
+		}
+		return $rc;
+	}
 
+	function getLineArray ($start, $endArray) {
 		$catArray = array();
 		$hookVar = '';
 		$functablename = $this->getFuncTablename ();
-		if ($functablename == 'tt_products_cat')	{
+		if ($functablename == 'tt_products_cat') {
 			$hookVar = 'prodCategory';
-		} else if($functablename == 'tx_dam_cat')	{
+		} else if($functablename == 'tx_dam_cat') {
 			$hookVar = 'DAMCategory';
 		}
+
 		$tmpArray = array();
 			// Call all addWhere hooks for categories at the end of this method
-		if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'init')) {
 					$hookObj->init($this->parentField);
 				}
 				if (method_exists($hookObj, 'getLineCategories')) {
-					$catArray = $hookObj->getLineCategories($start, $endArray, $this->getFuncTablename(), $this->getTableObj()->enableFields());
+					$catArray = $hookObj->getLineCategories($this, $start, $endArray, $this->getTableObj()->enableFields());
 				}
 			}
 		}
@@ -241,9 +254,9 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 
 		$tmpArray = array();
 			// Call all addWhere hooks for categories at the end of this method
-		if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'init')) {
 					$hookObj->init($this->parentField);
 				}
@@ -257,7 +270,6 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 				$catArray[] = $row['cat'];
 			}
 		}
-
 		return $catArray;
 	}
 
@@ -268,18 +280,19 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 	 * @param	[type]		$categoryArray: ...
 	 * @return	[type]		...
 	 */
-	function &getRootArray($rootCat, &$categoryArray)	{
+	function &getRootArray ($rootCat, &$categoryArray)	{
 		$rootArray = array();
 		$rootCatArray = t3lib_div::trimExplode(',', $rootCat);
 
 		foreach ($categoryArray as $uid => $row)	{
 
-			if (t3lib_div::testInt($uid) && (!$row['parent_category']	||
-				in_array($uid, $rootCatArray)))	{
+			if (
+				tx_div2007_core::testInt($uid) &&
+				(!$row['parent_category'] || in_array($uid, $rootCatArray))
+			) {
 				$rootArray[] = $uid;
 			}
 		}
-
 		return $rootArray;
 	}
 
@@ -318,7 +331,7 @@ abstract class tx_ttproducts_category_base extends tx_ttproducts_table_base {
 	 * @param	[type]		$allowedCats: ...
 	 * @return	[type]		...
 	 */
-	function &getRelationArray ($excludeCats='',$rootUids='',$allowedCats='')	{
+	function &getRelationArray ($excludeCats = '', $rootUids = '', $allowedCats = '')	{
 		$relationArray = array();
 		return $relationArray;
 	}

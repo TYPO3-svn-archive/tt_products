@@ -38,8 +38,10 @@
  */
 class tx_ttproducts_form_div {
 
-	function createSelect (&$pibase, &$valueArray, $name, $selectedKey, $bSelectTags=true, $bTranslateText=true, $allowedArray = array(), $type = 'select') {
+	static public function createSelect (&$langObj, &$valueArray, $name, $selectedKey, $bSelectTags=true, $bTranslateText=true, $allowedArray = array(), $type = 'select') {
 		global $TYPO3_DB, $TSFE;
+
+		$flags = ENT_QUOTES;
 
 		if (is_array($valueArray))	{
 			$totaltext = '';
@@ -53,8 +55,8 @@ class tx_ttproducts_form_div {
 					$selectValue = $parts;
 				}
 				if ($bTranslateText)	{
-					$tmp = tx_div2007_alpha::sL_fh001($selectValue);
-					$text = tx_div2007_alpha::getLL($pibase, $tmp);
+					$tmp = tx_div2007_alpha5::sL_fh002($selectValue);
+					$text = tx_div2007_alpha5::getLL_fh002($langObj, $tmp);
 				} else {
 					$text = '';
 				}
@@ -64,9 +66,10 @@ class tx_ttproducts_form_div {
 					}
 					$text = $selectValue;
 				}
+
 				if (!count($allowedArray) || in_array($selectKey, $allowedArray))	{
-					$nameText = htmlentities(trim($text),ENT_QUOTES,$TSFE->renderCharset);
-					$valueText = htmlentities($selectKey,ENT_QUOTES,$TSFE->renderCharset);
+					$nameText = trim($text);
+					$valueText = $selectKey;
 					$selectedText = '';
 					if ($selectKey == $selectedKey)	{
 						switch ($type)	{
@@ -80,10 +83,10 @@ class tx_ttproducts_form_div {
 					}
 					switch ($type)	{
 						case 'select':
-							$totaltext .= '<option value="'.$valueText.'"'.$selectedText.'>'.$nameText.'</option>';
+							$totaltext .= '<option value="' . $valueText . '"' . htmlspecialchars($selectedText, $flags) . '>' . $nameText . '</option>';
 							break;
 						case 'radio':
-							$totaltext .= '<input type="radio" name="'.$name.'" value="'.$valueText.'" '.$selectedText.'> '.$nameText;
+							$totaltext .= '<input type="radio" name="' . $name . '" value="' . htmlspecialchars($valueText, $flags) . '" ' . $selectedText . '> ' . $nameText;
 							break;
 					}
 				}
@@ -102,7 +105,7 @@ class tx_ttproducts_form_div {
 
 
 	// fetches the valueArray needed for the functions of this class form a valueArray setup
-	function fetchValueArray($confArray)	{
+	static public function fetchValueArray($confArray)	{
 		$rcArray = array();
 		if (is_array($confArray))	{
 			foreach ($confArray as $k => $vArray)	{
@@ -118,7 +121,7 @@ class tx_ttproducts_form_div {
 	 * @param	[type]		$valueArray: ...
 	 * @return	[type]		...
 	 */
-	function getKeyValueArray($valueArray)	{
+	static public function getKeyValueArray($valueArray)	{
 		$rc = array();
 
 		foreach ($valueArray as $k => $row)	{

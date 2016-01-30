@@ -57,7 +57,7 @@ class tx_ttproducts_graduated_price {
 	function init($tablename, $mmtablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
@@ -85,18 +85,20 @@ class tx_ttproducts_graduated_price {
 			}
 		}
 		if (!$rc) {
-			$where = '1=1 '.$this->tableObj->enableFields();
+			$where = '1=1 ' . $this->tableObj->enableFields();
 			if ($uid)	{
-				$uidWhere = $this->mm_table.'.product_uid ';
+				$uidWhere = $this->mm_table .'.product_uid ';
 				if (is_array($uid))	{
 					foreach ($uid as $v)	{
-						if (!t3lib_div::testInt($v))	{
+						if (
+							!tx_div2007_core::testInt($v)
+						) {
 							return 'ERROR: not integer '.$v;
 						}
 					}
-					$uidWhere .= 'IN ('.implode(',',$uid).')';
+					$uidWhere .= 'IN (' . implode(',', $uid) . ')';
 				} else {
-					$uidWhere .= '='.intval($uid);
+					$uidWhere .= '=' . intval($uid);
 				}
 				$where .= ' AND '.$uidWhere;
 			}

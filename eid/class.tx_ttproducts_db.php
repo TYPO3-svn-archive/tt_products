@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2007-2012 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -32,8 +32,8 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
@@ -41,24 +41,8 @@
  */
 
 
-require_once (PATH_t3lib.'class.t3lib_stdgraphic.php');
-require_once (PATH_tslib.'class.tslib_content.php');
-require_once (PATH_tslib.'class.tslib_gifbuilder.php');
-
-require_once(PATH_BE_div2007.'class.tx_div2007_alpha.php');
-require_once(PATH_BE_div2007.'class.tx_div2007_ff.php');
-
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_language.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_config.php');
-require_once (PATH_BE_ttproducts.'lib/class.tx_ttproducts_tables.php');
-require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_image.php');
-require_once (PATH_BE_ttproducts.'model/field/class.tx_ttproducts_field_price.php');
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_image_view.php');
-require_once (PATH_BE_ttproducts.'view/field/class.tx_ttproducts_field_price_view.php');
-
-
 class tx_ttproducts_db {
-	var $extKey = TT_PRODUCTS_EXTkey;	// The extension key.
+	var $extKey = TT_PRODUCTS_EXT;	// The extension key.
 	var $conf;				// configuration from template
 	var $config;
 	var $ajax;
@@ -73,41 +57,61 @@ class tx_ttproducts_db {
 	 * @param	object	$ajax: tx_ttproducts_ajax
 	 * @return	void
 	 */
-	function init(&$conf, &$config, &$ajax)	{
+	public function init (&$conf, &$config, $ajax, $pObj, &$error_code) {
 		$this->conf = &$conf;
 		$this->ajax = &$ajax;
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		if (is_object($pObj)) {
+			$this->cObj = $pObj->cObj;
+		} else {
+			$this->cObj = t3lib_div::makeInstance('tslib_cObj');	// Local cObj.
+			$this->cObj->start(array());
+		}
+
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$cnf->init(
 			$conf,
 			$config
 		);
 
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 		$tablesObj->init($this);
-		$ajax->taxajax->registerFunction(array(TT_PRODUCTS_EXTkey.'_fetchRow',&$this,'fetchRow'));
-		tx_div2007_alpha::loadLL_fh001($this,'EXT:'.TT_PRODUCTS_EXTkey.'/pi1/locallang.xml');
 
-		$this->cObj = t3lib_div::makeInstance('tslib_cObj');	// Local cObj.
-		$this->cObj->start(array());
+		$dblangfile = 'locallang_db.xml';
+
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
+		$pLangObj = $this;
+		$langObj->init($pLangObj, $this->cObj, $this->conf, 'pi1/class.tx_ttproducts_pi1.php');
+
+		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXT . '/' . $dblangfile);
+		tx_div2007_alpha5::loadLL_fh002($langObj, 'EXT:' . TT_PRODUCTS_EXT . '/pi1/locallang.xml');
+
+		if (isset($ajax) && is_object($ajax)) {
+
+			$ajax->taxajax->registerFunction(array(TT_PRODUCTS_EXT.'_fetchRow', $this, 'fetchRow'));
+		}
+
+		return TRUE;
 	}
+
 
 	/**
 	 * main function
 	 *
 	 * @return	void
 	 */
-	function main()	{
+	function main ()	{
 	}
+
 
 	/**
 	 * output of content
 	 *
 	 * @return	void
 	 */
-	function printContent()	{
+	function printContent ()	{
 	}
+
 
 	/**
 	 * fetches the table rows
@@ -115,7 +119,7 @@ class tx_ttproducts_db {
 	 * @param	array		$data: information received from Ajax
 	 * @return	string		answer to XML httpRequest
 	 */
-	function &fetchRow($data) {
+	function &fetchRow ($data) {
 		global $TYPO3_DB, $TSFE;
 
 		$rc = '';
@@ -123,10 +127,10 @@ class tx_ttproducts_db {
 		$rowArray = array();
 		$variantArray = array();
 		$theCode = 'ALL';
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 			// price
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
 		$priceObj->init(
 			$this->cObj,
 			$cnf->conf
@@ -212,6 +216,7 @@ class tx_ttproducts_db {
 		return $rc;
 	}
 
+
 	/**
 	 * generate response to XML HttpRequest
 	 *
@@ -220,35 +225,35 @@ class tx_ttproducts_db {
 	 * @param	array		$variantArray
 	 * @return	string		response in XML format
 	 */
-	function &generateResponse($view, &$rowArray, &$variantArray)	{
+	function &generateResponse ($view, &$rowArray, &$variantArray)	{
 		global $TSFE;
 
-		$charset = $TSFE->renderCharset;
+		$csConvObj = $TSFE->csConvObj;
 		$theCode = strtoupper($view);
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image');
-		$imageViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
-		$langObj = t3lib_div::makeInstance('tx_ttproducts_language');	// language object which replaces pibase
-		$langObj->init($this->cObj, $this->conf);
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image');
+		$imageViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 		$imageObj->init($this->cObj);
-		$imageViewObj->init ($langObj, $imageObj);
+		$imageViewObj->init($langObj, $imageObj);
 
-		$priceObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price');
+		$priceObj = t3lib_div::getUserObj('&tx_ttproducts_field_price');
 			// price
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 		$priceViewObj->init(
 			$langObj,
 			$this->cObj,
 			$priceObj
 		);
 
+		$typoVersion = tx_div2007_core::getTypoVersion();
+
 		$priceFieldArray = $priceObj->getPriceFieldArray();
 		$tableObjArray = array();
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$objResponse = new tx_taxajax_response('iso-8859-1', true);
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$objResponse = new tx_taxajax_response($this->ajax->taxajax->getCharEncoding(), TRUE);
 
 		foreach ($rowArray as $functablename => $row)	{ // tt-products-list-1-size
 			if (!is_object($tableObjArray[$functablename]))	{
-				$tableObjArray[$functablename] = $tablesObj->get ('tt_products_articles');
+				$tableObjArray[$functablename] = $tablesObj->get('tt_products_articles');
 				$tablename = 'tt_products_articles';
 			} else {
 				$tablename = $functablename;
@@ -262,16 +267,31 @@ class tx_ttproducts_db {
 					continue;
 				}
 
-				if (($field == 'title') || ($field == 'note') || ($field == 'note2'))	{
-					$v = htmlentities($v,ENT_QUOTES,$charset);
+				if (($field == 'title') || ($field == 'subtitle') || ($field == 'note') || ($field == 'note2'))	{
+					// $v = htmlentities($v,ENT_QUOTES,$charset);
+
+					if ($typoVersion < '6000000') {
+						$v = $csConvObj->conv($v, $TSFE->renderCharset, $this->ajax->taxajax->getCharEncoding());
+					}
+
+					if (($field == 'note') || ($field == 'note2'))	{
+						$v = ($this->conf['nl2brNote'] ? nl2br($v) : $v);
+
+							// Extension CSS styled content
+						if (t3lib_extMgm::isLoaded('css_styled_content')) {
+							$v = tx_div2007_alpha5::RTEcssText($this->cObj, $v);
+						} else if (is_array($this->conf['parseFunc.']))	{
+							$v = $this->cObj->parseFunc($v,$this->conf['parseFunc.']);
+						}
+					}
 				}
 
 				if (!in_array($field, $variantArray))	{
 					$tagId = $jsTableName.'-'.$view.'-'.$uid.'-'.$field;
-					switch ($field)	{
+					switch ($field) {
 						case 'image': // $this->cObj
 							$imageRenderObj = 'image';
-							if ($theCode == 'LIST')	{
+							if ($theCode == 'LIST' || $theCode == 'SEARCH') {
 								$imageRenderObj = 'listImage';
 							}
 							$imageArray = $imageObj->getImageArray($row, 'image');
@@ -319,10 +339,13 @@ class tx_ttproducts_db {
 			}
 		}
 
-		$rc = &$objResponse->getXML();
+		$rc = $objResponse->getXML();
 		return $rc;
 	}
 }
 
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/eid/class.tx_ttproducts_db.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/eid/class.tx_ttproducts_db.php']);
+}
 
 ?>

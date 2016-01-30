@@ -40,10 +40,6 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
-
-
 class tx_ttproducts_currency_view {
 
 	var $pibase; // reference to object of pibase
@@ -51,15 +47,15 @@ class tx_ttproducts_currency_view {
 	var $subpartMarkerObj; // marker functions
 	var $urlObj;
 
-	function init(&$pibase) {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($pibase) {
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 
 		$this->subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
 		$this->subpartmarkerObj->init($pibase->cObj);
-		$this->urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
+		$this->urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
 	}
 
 

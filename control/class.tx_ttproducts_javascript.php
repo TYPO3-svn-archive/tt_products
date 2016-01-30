@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2010 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,7 +31,7 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <contact@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
@@ -45,13 +45,13 @@ class tx_ttproducts_javascript {
 	var $copyright;
 
 
-	function init(&$pibase, &$ajax) {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+	function init($pibase, $ajax) {
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
-		$this->ajax = &$ajax;
+		$this->ajax = $ajax;
 		$this->bAjaxAdded = false;
 		$this->bCopyrightShown = false;
 		$this->copyright = '
@@ -62,7 +62,7 @@ class tx_ttproducts_javascript {
 *
 *  Copyright notice
 *
-*  (c) 2006-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2006-2014 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  Released under GNU/GPL (http://typo3.com/License.1625.0.html)
@@ -108,7 +108,9 @@ class tx_ttproducts_javascript {
 		$bDirectHTML = false;
 		$code = '';
 		$bError = false;
-		$emailArr =  explode('|', $message = tx_div2007_alpha::getLL($this->pibase,'invalid_email'));
+		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
+		$message = tx_div2007_alpha5::getLL_fh002($langObj, 'invalid_email');
+		$emailArr =  explode('|', $message);
 
 		if (!$this->bCopyrightShown && $fieldname != 'xajax')	{
 			$code = $this->copyright;
@@ -171,7 +173,7 @@ class tx_ttproducts_javascript {
 			case 'selectcat':
 				if (is_array($params))	{
 					$funcs = count ($params);
-					$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+					$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 					$ajaxConf = $cnf->getAJAXConf();
 					if (is_array($ajaxConf))	{
@@ -422,7 +424,7 @@ class tx_ttproducts_javascript {
 			case 'xajax':
 				// XAJAX part
 				if (!$this->bAjaxAdded && is_object($this->ajax) && is_object($this->ajax->taxajax))	{
-					$code = $this->ajax->taxajax->getJavascript(PATH_FE_taxajax_rel);
+					$code = $this->ajax->taxajax->getJavascript(t3lib_extMgm::siteRelPath(TAXAJAX_EXT));
 					$this->bXajaxAdded = true;
 				}
 				$bDirectHTML = true;
@@ -439,7 +441,7 @@ class tx_ttproducts_javascript {
 					// $TSFE->setHeaderHTML ($fieldname, $code);
 					$TSFE->additionalHeaderData['tx_ttproducts-xajax'] = $code;
 				} else {
-					$TSFE->setJS ($JSfieldname, $code);
+					$TSFE->setJS($JSfieldname, $code);
 				}
 			}
 		}

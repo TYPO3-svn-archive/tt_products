@@ -40,10 +40,6 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_order.php');
-
-
 
 class tx_ttproducts_order_view {
 
@@ -51,10 +47,10 @@ class tx_ttproducts_order_view {
 	var $conf;
 	var $subpartmarkerObj; 		// subpart marker functions
 
-	function init(&$pibase, $formerBasket) {
+	function init($pibase, $formerBasket) {
 
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 
 		$this->conf = &$cnf->conf;
 
@@ -75,20 +71,21 @@ class tx_ttproducts_order_view {
 		global $TSFE, $TYPO3_DB;
 
 		$feusers_uid = $TSFE->fe_user->user['uid'];
-		$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 			// order
-		$orderObj = &$tablesObj->get('sys_products_orders');
+		$orderObj = $tablesObj->get('sys_products_orders');
 
 		if (!$feusers_uid)	{
 			return $this->pibase->cObj->getSubpart($templateCode,$this->subpartmarkerObj->spMarker('###MEMO_NOT_LOGGED_IN###'));
 		}
 
-		$where = 'feusers_uid='.intval($feusers_uid).' AND NOT deleted ORDER BY crdate';
+		$where = 'feusers_uid=' . intval($feusers_uid) . $this->pibase->cObj->enableFields('sys_products_orders') . ' ORDER BY crdate';
 		$res = $TYPO3_DB->exec_SELECTquery('*', 'sys_products_orders', $where);
 
 		$content = $this->pibase->cObj->getSubpart($templateCode,$this->subpartmarkerObj->spMarker('###ORDERS_LIST_TEMPLATE###'));
+
 		$orderitem = $this->pibase->cObj->getSubpart($content,'###ORDER_ITEM###');
 		$count = $TYPO3_DB->sql_num_rows($res);
 		if ($count) {
@@ -157,10 +154,10 @@ class tx_ttproducts_order_view {
 			$markerArray['###CALC_DATE###'] = date('d M Y');
 			$subpartArray['###ORDER_LIST###'] = $orderlistc;
 			$subpartArray['###ORDER_NOROWS###'] = '';
-		 	$content= $this->pibase->cObj->substituteMarkerArrayCached($content,$markerArray,$subpartArray);
+		 	$content= $this->pibase->cObj->substituteMarkerArrayCached($content, $markerArray, $subpartArray);
 		} else {
 			$TYPO3_DB->sql_free_result($res);
-			$norows=$this->pibase->cObj->getSubpart($content,'###ORDER_NOROWS###');
+			$norows=$this->pibase->cObj->getSubpart($content, '###ORDER_NOROWS###');
 			$content = $norows;
 		} // else of if ($GLOBALS['TYPO3_DB']->sql_num_rows($res))
 

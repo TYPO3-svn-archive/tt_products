@@ -39,9 +39,9 @@ class tx_ttproducts_wizicon {
 		$LL = $this->includeLocalLang();
 		$params = '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=5&defVals[tt_content][select_key]=HELP';
 		$wizardItems['plugins_tx_ttproducts_pi1'] = array(
-			'icon'=>PATH_BE_ttproducts_rel.'res/icons/be/ce_wiz.gif',
-			'title'=>$LANG->getLLL('plugins_title',$LL),
-			'description'=>$LANG->getLLL('plugins_description',$LL),
+			'icon'=>PATH_BE_ttproducts_rel . 'res/icons/be/ce_wiz.gif',
+			'title'=>$LANG->getLLL('plugins_title', $LL),
+			'description'=>$LANG->getLLL('plugins_description', $LL),
 			'params'=> $params);
 
 		return $wizardItems;
@@ -52,13 +52,8 @@ class tx_ttproducts_wizicon {
 	 * @return	[type]		...
 	 */
 	function includeLocalLang()	{
-		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
-		if ($typoVersion >= 3008000)	{
-			$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(PATH_BE_ttproducts.'locallang.xml',FALSE);
-		} else {
-			include(PATH_BE_ttproducts.'locallang.php');
-		}
+		$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(PATH_BE_ttproducts.'locallang.xml',FALSE);
 		return $LOCAL_LANG;
 	}
 

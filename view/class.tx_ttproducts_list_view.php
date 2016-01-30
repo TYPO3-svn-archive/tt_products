@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -32,17 +32,13 @@
  * $Id$
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
-
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_javascript_marker.php');
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
 
 
 class tx_ttproducts_list_view {
@@ -59,29 +55,30 @@ class tx_ttproducts_list_view {
 	var $pidListObj;
 
 
-	function init(
-		&$pibase, $pid, $bUseArticles, $uidArray, $pid_list, $recursive
+	function init (
+		$pibase, $pid, $bUseArticles, $uidArray, $pid_list, $recursive
 	) {
-		$this->pibase = &$pibase;
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$this->pibase = $pibase;
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 		$this->pid = $pid;
 		$this->bUseArticles = $bUseArticles;
 		$this->uidArray = $uidArray;
-		$this->urlObj = &t3lib_div::getUserObj('&tx_ttproducts_url_view');
+		$this->urlObj = t3lib_div::getUserObj('&tx_ttproducts_url_view');
 
 		$this->javaScriptMarker = t3lib_div::makeInstance('tx_ttproducts_javascript_marker');
 		$this->javaScriptMarker->init($pibase);
-		$this->pidListObj = &t3lib_div::getUserObj('tx_ttproducts_pid_list');
+		$this->pidListObj = t3lib_div::getUserObj('tx_ttproducts_pid_list');
 		$this->pidListObj->init($pibase->cObj);
 		$this->pidListObj->applyRecursive($recursive, $pid_list, TRUE);
 		$this->pidListObj->setPageArray();
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
 
 			//extend standard search fields with user setup
 		$this->searchFieldList = trim($this->conf['stdSearchFieldExt']) ? implode(',', array_unique(t3lib_div::trimExplode(',',$this->searchFieldList.','.trim($this->conf['stdSearchFieldExt']),1))) : 'title,note,'.$tablesObj->get('tt_products')->fields['itemnumber'];
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -92,7 +89,7 @@ class tx_ttproducts_list_view {
 	 * @param	[type]		$displayColumns: ...
 	 * @return	[type]		...
 	 */
-	function finishHTMLRow(&$cssConf, &$iColCount, $tableRowOpen, $displayColumns)  {
+	function finishHTMLRow (&$cssConf, &$iColCount, $tableRowOpen, $displayColumns)  {
 		$itemsOut = '';
 
 		if ($tableRowOpen)	{
@@ -114,17 +111,20 @@ class tx_ttproducts_list_view {
 	} // comp
 
 
-	function &advanceCategory(&$categoryAndItemsFrameWork, &$itemListOut, &$categoryOut, $itemListSubpart, &$formCount)	{
+	function &advanceCategory (&$categoryAndItemsFrameWork, &$itemListOut, &$categoryOut, $itemListSubpart, $oldFormCount, &$formCount)	{
 
 		$subpartArray = array();
 		$subpartArray['###ITEM_CATEGORY###'] = $categoryOut;
 		$subpartArray[$itemListSubpart] = $itemListOut;
 		$rc = $this->pibase->cObj->substituteMarkerArrayCached($categoryAndItemsFrameWork,array(),$subpartArray);
-		$formCount++; // next form must have another name
+		if ($formCount == $oldFormCount) {
+			$formCount++; // next form must have another name
+		}
 		$categoryOut = '';
 		$itemListOut = '';	// Clear the item-code var
 		return $rc;
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -136,7 +136,7 @@ class tx_ttproducts_list_view {
 	 * @param	[type]		$categoryMarkerArray: ...
 	 * @return	[type]		...
 	 */
-	function &advanceProduct(&$productAndItemsFrameWork, &$productFrameWork, &$itemListOut, &$productMarkerArray, &$categoryMarkerArray)	{
+	function &advanceProduct (&$productAndItemsFrameWork, &$productFrameWork, &$itemListOut, &$productMarkerArray, &$categoryMarkerArray)	{
 		$markerArray = array_merge($productMarkerArray, $categoryMarkerArray);
 		$productOut = $this->pibase->cObj->substituteMarkerArray($productFrameWork,$markerArray);
 		$subpartArray = array();
@@ -149,23 +149,33 @@ class tx_ttproducts_list_view {
 		return $rc;
 	}
 
+
 	/**
 	 * [Describe function...]
 	 *
 	 * @param	[type]		$$queryString: ...
 	 * @return	[type]		...
 	 */
-	function getSearchParams(&$queryString) {
-		$temp = t3lib_div::_GP('sword') ? rawurlencode(t3lib_div::_GP('sword')) : '';
+	function getSearchParams (&$queryString) {
+		$sword = t3lib_div::_GP('sword');
 
-		if (!$temp)	{
-			$temp = t3lib_div::_GP('swords') ? rawurlencode(t3lib_div::_GP('swords')) : '';
+		if (!isset($sword))	{
+			$sword = t3lib_div::_GP('swords');
 		}
 
-		if ($temp) {
-			$queryString['sword'] = $temp;
+		if ($sword)	{
+			$sword = rawurlencode($sword);
+		}
+
+		if (!isset($sword))	{
+			$sword = $this->pibase->piVars['sword'];
+		}
+
+		if ($sword) {
+			$queryString['sword'] = $sword;
 		}
 	}
+
 
 	/**
 	 * [Describe function...]
@@ -196,6 +206,7 @@ class tx_ttproducts_list_view {
 		$rootLineArray = $catObj->getLineArray($currentCat, $rootCatArray);
 	}
 
+
 	/**
 	 * [Describe function...]
 	 *
@@ -205,11 +216,14 @@ class tx_ttproducts_list_view {
 	 * @param	[type]		$bLast: ...
 	 * @return	[type]		...
 	 */
-	function getDisplayInfo($displayConf, $type, $depth, $bLast)	{
+	function getDisplayInfo ($displayConf, $type, $depth, $bLast)	{
 		$rc = '';
 		if (is_array($displayConf[$type]))	{
 			foreach ($displayConf[$type] as $k => $val)	{
-				if (t3lib_div::testInt($k) && $depth >= $k)	{
+				if (
+					tx_div2007_core::testInt($k) &&
+					$depth >= $k
+				) {
 					$rc = $val;
 				} else {
 					break;
@@ -220,14 +234,13 @@ class tx_ttproducts_list_view {
 				$rc = $displayConf[$type]['last'];
 			}
 		}
-
 		return $rc;
 	}
 
 
 	// returns the products list view
-	function &printView(
-		&$templateCode,
+	function &printView (
+		$templateCode,
 		$theCode,
 		$functablename,
 		$allowedItems,
@@ -240,14 +253,20 @@ class tx_ttproducts_list_view {
 	) {
 		global $TSFE, $TCA, $TYPO3_DB;
 
-		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
-		$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
-		$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-		$subpartmarkerObj = &t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
+		if (count($error_code))	{
+			return '';
+		}
+		$bUseCache = TRUE;
+
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
+		$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+		$subpartmarkerObj = t3lib_div::getUserObj('&tx_ttproducts_subpartmarker');
 
 		$content = '';
 		$out = '';
+		$contentEmpty = '';
 		$t = array();
 		$childCatArray = array();
 		$rootCatArray = array();
@@ -265,45 +284,59 @@ class tx_ttproducts_list_view {
 		$htmlSwords = '';
 
 		if ($calllevel == 0)	{
-			$sword = $this->pibase->piVars['sword'];
-			if (!$sword)	{
-				$sword = t3lib_div::_GP('sword');
-				$sword = ($sword ? $sword : t3lib_div::_GP('swords'));
+			$sword = t3lib_div::_GP('sword');
+			$sword = (isset($sword) ? $sword : t3lib_div::_GP('swords'));
+
+			if (!isset($sword))	{
+				$postVars = t3lib_div::_POST($this->pibase->prefixId);
+				$sword = $postVars['sword'];
+
+				if (!isset($sword))	{
+					$getVars = t3lib_div::_GET($this->pibase->prefixId);
+					$sword = $getVars['sword'];
+				}
 			}
 			$sword = rawurldecode($sword);
 			$htmlSwords = htmlspecialchars($sword);
 		}
+
 		$more = 0;	// If set during this loop, the next-item is drawn
 		$where = '';
 		$formName = 'ShopListForm';
-		$itemTableView = &$tablesObj->get($functablename, TRUE);
-		$itemTable = &$itemTableView->getModelObj();
+		$itemTableView = $tablesObj->get($functablename, TRUE);
+		$itemTable = $itemTableView->getModelObj();
 		$tablename = $itemTable->getTablename();
-
-		if ($itemTable->type == 'product' && $this->bUseArticles == 1) {
-			$articleViewObj = &$tablesObj->get('tt_products_articles', TRUE);
-			$articleTable = &$articleViewObj->getModelObj();
-		}
+		$tableConfArray = array();
+		$tableConfArray[$functablename] = &$itemTable->getTableConf($theCode);
+		$itemTable->initCodeConf($theCode,$tableConfArray[$functablename]);
+		$prodAlias = $itemTable->getTableObj()->getAlias();
 
 		$variantFieldArray = $itemTable->variant->getFieldArray();
-		$param = array($itemTable->getFuncTablename() => $variantFieldArray);
-		$javaScriptObj = &t3lib_div::getUserObj('&tx_ttproducts_javascript');
-		if (t3lib_extMgm::isLoaded('taxajax')) {
-			$javaScriptObj->set('fetchdata', $param);
+
+		if ($itemTable->type == 'product' && $this->bUseArticles == 1) {
+			$articleViewObj = $tablesObj->get('tt_products_articles', TRUE);
+			$articleTable = $articleViewObj->getModelObj();
+			$param = array($itemTable->getFuncTablename() => $variantFieldArray);
+			$javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
+			if ($theCode != 'LISTRELATED' && t3lib_extMgm::isLoaded('taxajax')) {
+				$javaScriptObj->set('fetchdata', $param);
+			}
 		}
+
 		$cssConf = $cnf->getCSSConf($itemTable->getFuncTablename(), $theCode);
 
-		if (!$pageAsCategory || $pageAsCategory == 1)	{
-			if ($theCode == 'LISTDAM')	{
-				$categoryTableView = &$tablesObj->get('tx_dam_cat', true);
-			} else {
-				$categoryTableView = &$tablesObj->get('tt_products_cat', true);
-			}
+		if ($theCode == 'LISTDAM')	{
+			$categoryfunctablename = 'tx_dam_cat';
 		} else {
-			$categoryTableView = &$tablesObj->get('pages', true);
+			if (!$pageAsCategory || $pageAsCategory == 1)	{
+				$categoryfunctablename = 'tt_products_cat';
+			} else {
+				$categoryfunctablename = 'pages';
+			}
 		}
+		$categoryTableView = $tablesObj->get($categoryfunctablename, TRUE);
 
-		$categoryTable = &$categoryTableView->getModelObj();
+		$categoryTable = $categoryTableView->getModelObj();
 		$catconf = $cnf->getTableConf($categoryTable->getFuncTablename(), $theCode);
 		$whereArray = $this->pibase->piVars['tt_products'];
 		if (is_array($whereArray))	{
@@ -312,6 +345,10 @@ class tx_ttproducts_list_view {
 			}
 		}
 		$productsConf = $cnf->getTableConf($functablename,$theCode);
+
+		if (!$productsConf['orderBy'] && $allowedItems != '') {
+			$productsConf['orderBy'] = 'FIELD(' . $prodAlias . '.uid, ' . $allowedItems . ')';
+		}
 		// if parameter 'newitemdays' is specified, only new items from the last X days are displayed
 		$newitemdays = $this->pibase->piVars['newitemdays'];
 		$newitemdays = ($newitemdays ? $newitemdays : t3lib_div::_GP('newitemdays'));
@@ -330,19 +367,19 @@ class tx_ttproducts_list_view {
 			}
 		}
 
-		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'] != '2')	{
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['pageAsCategory'] != '2')	{
 			$cat = $categoryTable->getParamDefault($theCode, $this->pibase->piVars[$categoryTableView->piVar]);
 		}
-		$pageViewObj = &$tablesObj->get('pages',1);
+		$pageViewObj = $tablesObj->get('pages',1);
 		$pid = $pageViewObj->getModelObj()->getParamDefault($theCode,  $this->pibase->piVars[$pageViewObj->piVar]);
 
 		if ($itemTable->type == 'product')	{
 			$address = $this->pibase->piVars['a'];
 		}
 		$hookVar = 'allowedItems';
-		if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$hookVar] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if ($hookVar && is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$hookVar] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'init')) {
 					$hookObj->init($this);
 				}
@@ -352,26 +389,37 @@ class tx_ttproducts_list_view {
 			}
 		}
 
-		if (($this->conf['table.']['address'] != 'tt_address' || t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)) && $address && $itemTable->fields['address'])	{
-			$where = ' AND ('.$itemTable->fields['address'].'='.intval($address);
-			$addressViewObj = &$tablesObj->get('address',1);
-			$addressObj = &$addressViewObj->getModelObj();
+		$addrTablename = $this->conf['table.']['address'];
+		if (
+				(
+					$addrTablename == 'tx_party_addresses' && t3lib_extMgm::isLoaded(PARTY_EXTkey) ||
+					$addrTablename == 'tx_partner_main' && t3lib_extMgm::isLoaded(PARTNER_EXTkey) ||
+					$addrTablename == 'tt_address' && t3lib_extMgm::isLoaded(TT_ADDRESS_EXTkey)
+				)
+				&& $address && $itemTable->fields['address']
+		)	{
+			$whereAddress = ' AND ('.$itemTable->fields['address'].'='.intval($address);
+			$addressViewObj = $tablesObj->get('address',1);
+			$addressObj = $addressViewObj->getModelObj();
 			$addressRow = $addressObj->get($address);
 			$addressText = $addressRow[$addressObj->fields['name']];
-			$where .= ' OR '.$itemTable->fields['address'].'='.$TYPO3_DB->fullQuoteStr($addressText,$addressObj->getTableObj()->name).')';
-		} else {	// do not mix address with category filter
+			$whereAddress .= ' OR ' . $itemTable->fields['address'] . '=' . $TYPO3_DB->fullQuoteStr($addressText, $addressObj->getTableObj()->name) . ')';
+			$where .= $whereAddress;
+		}
+
+		if ($whereAddress == '') {	// do not mix address with category filter
 			if ($allowedItems == '')	{
-				$whereCat = $itemTable->addWhereCat($cat, $this->pidListObj->getPidlist());
+				$whereCat = $itemTable->addWhereCat($categoryTable, $theCode, $cat, $this->pidListObj->getPidlist(),TRUE);
 			}
 
 			if ($whereCat == '' && $allowedItems == '')	{
 				$neededParams = $itemTable->getNeededUrlParams($functablename, $theCode);
 				$needArray = t3lib_div::trimExplode(',', $neededParams);
-				$bListStartEmpty = false;
+				$bListStartEmpty = FALSE;
 
 				foreach ($needArray as $k => $param)	{
 					if ($param && !isset($this->pibase->piVars[$param]))	{
-						$bListStartEmpty = true;
+						$bListStartEmpty = TRUE;
 						break;
 					}
 				}
@@ -386,20 +434,12 @@ class tx_ttproducts_list_view {
 		if (is_array($this->conf['form.'][$theCode.'.']) && is_array($this->conf['form.'][$theCode.'.']['data.']))	{
 			$formNameSetup = $this->conf['form.'][$theCode.'.']['data.']['name'];
 		}
-
 		$formName = ($formNameSetup ? $formNameSetup : $formName);
-		$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
 
 		if ($allowedItems || $allowedItems == '0')	{
 			$allowedItemArray = array();
 			$tempArray = t3lib_div::trimExplode(',',$allowedItems);
-			if ($typoVersion < 4000000)	{
-				foreach ($tempArray as $k => $value)	{
-					$allowedItemArray[$k] = $TYPO3_DB->fullQuoteStr($value,$itemTable->getTableObj()->name);
-				}
-			} else {
-				$allowedItemArray = $TYPO3_DB->fullQuoteArray($tempArray,$itemTable->getTableObj()->name);
-			}
+			$allowedItemArray = $TYPO3_DB->cleanIntArray($tempArray);
 			$where .= ' AND uid IN ('.implode(',',$allowedItemArray).')';
 		}
 
@@ -414,17 +454,25 @@ class tx_ttproducts_list_view {
 				$t['search'] = $this->pibase->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###ITEM_SEARCH###'));
 					// Substitute a few markers
 				$out = $t['search'];
-				$tmpPid = ($this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : ($this->pibase->pid ? $this->pibase->pid : $TSFE->id));
-				$markerArray = $this->urlObj->addURLMarkers($tmpPid,array(),array(),'sword');
+				$tmpPid = ($this->conf['PIDsearch'] ? $this->conf['PIDsearch'] : $TSFE->id);
+				$addQueryString=array();
+				$this->getSearchParams($addQueryString);
+				$excludeList = 'sword';
+				$markerArray = $this->urlObj->addURLMarkers($tmpPid,array(),$addQueryString,$excludeList,$bUseBackPid);
+
 				$markerArray['###FORM_NAME###'] = $formName;
 				$markerArray['###SWORD###'] = $htmlSwords;
+				$markerArray['###SWORD_NAME###'] = $this->pibase->prefixId . '[sword]';
 				$markerArray['###SWORDS###'] = $htmlSwords; // for backwards compatibility
 				$out = $this->pibase->cObj->substituteMarkerArrayCached($out,$markerArray);
+
 				if ($formName)	{
 						// Add to content
 					$content .= $out;
 				}
 				$out = '';
+				// $entitySwords = htmlentities($sword); if the data has been entered e.g. with '&uuml;' instead of '&uuml;'
+				$bUseCache = FALSE;
 			break;
 			case 'LISTDAM':
 				$formName = 'ListDAMForm';
@@ -433,7 +481,7 @@ class tx_ttproducts_list_view {
 				$rootCat = $this->conf['rootDAMCategoryID'];
 				$relatedArray = $categoryTable->getRelated($rootCat, $currentCat, $this->pidListObj->getPidlist());	// read only related categories;
 				$excludeCat = 0;
-				$categoryArray = $categoryTable->getRelationArray($excludeCat,$rootCat,implode(',',array_keys($relatedArray)));
+				$categoryArray = $categoryTable->getRelationArray($excludeCat, $rootCat,implode(',', array_keys($relatedArray)));
 				$rootCatArray = $categoryTable->getRootArray($rootCat, $categoryArray);
 
 				if ($this->conf['clickItemsIntoSubmenu'])	{
@@ -464,25 +512,34 @@ class tx_ttproducts_list_view {
 			break;
 			case 'MEMO':
 				$formName = 'ListMemoForm';
+				$bUseCache = FALSE;
 			break;
 			default:
 				// nothing here
 			break;
 		}
 
+// neu Anfang
+		$limit = isset($tableConfArray[$functablename]['limit']) ? $tableConfArray[$functablename]['limit'] : $this->config['limit'];
+		$limit = intval($limit);
+// neu Ende
+
 		if ($calllevel == 0)	{
 			$begin_at = $this->pibase->piVars['begin_at'];
 			$begin_at = ($begin_at ? $begin_at : t3lib_div::_GP('begin_at'));
 		}
-		$begin_at = t3lib_div::intInRange($begin_at,0,100000);
+		$begin_at = tx_div2007_core::intInRange($begin_at, 0, 100000);
+
 		if ($theCode == 'SINGLE')	{
 			$begin_at = ''; // no page browser in single view for related products
 		}
-		if ($theCode != 'SEARCH' || ($theCode == 'SEARCH' && $sword))	{
+
+		if ($theCode != 'SEARCH' || ($this->conf['listViewOnSearch'] == '1' && $theCode == 'SEARCH' && $sword))	{
 			$t['listFrameWork'] = $this->pibase->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###'.$templateArea.'###'));
+
 			// $templateArea = 'ITEM_LIST_TEMPLATE'
 			if (!$t['listFrameWork']) {
-				$mainObj = &t3lib_div::getUserObj('&tx_ttproducts_main');
+				$mainObj = t3lib_div::getUserObj('&tx_ttproducts_main');
 				$error_code[0] = 'no_subtemplate';
 				$error_code[1] = '###'.$templateArea.'###';
 				$error_code[2] = $mainObj->templateFile;
@@ -490,17 +547,22 @@ class tx_ttproducts_list_view {
 			}
 
 			$addQueryString = $this->uidArray;
-			$markerArray = $this->urlObj->addURLMarkers($this->pid,$markerArray,$addQueryString, FALSE);
+			$excludeList = ($theCode == 'SEARCH' ? 'sword' : '');
+			$this->getSearchParams($addQueryString);
+			$markerArray = array();
+			$markerArray = $this->urlObj->addURLMarkers($TSFE->id,$markerArray,$addQueryString,$excludeList,TRUE);
+
 			$wrappedSubpartArray = array();
 			$this->urlObj->getWrappedSubpartArray($wrappedSubpartArray);
 			$subpartArray = array();
-			$tablesObj->get('fe_users',true)->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray, $itemTable->getFuncTablename());
+			$tablesObj->get('fe_users',TRUE)->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray, $itemTable->getFuncTablename());
 			$t['listFrameWork'] = $this->pibase->cObj->substituteMarkerArrayCached(
 				$t['listFrameWork'],
 				$markerArray,
 				$subpartArray,
 				$wrappedSubpartArray
 			);
+
 			$t['categoryAndItemsFrameWork'] = $this->pibase->cObj->getSubpart($t['listFrameWork'],'###ITEM_CATEGORY_AND_ITEMS###');
 			$t['categoryFrameWork'] = $this->pibase->cObj->getSubpart(
 				$t['categoryAndItemsFrameWork'],
@@ -514,7 +576,7 @@ class tx_ttproducts_list_view {
 			$t['item'] = $this->pibase->cObj->getSubpart($t['itemFrameWork'],'###ITEM_SINGLE###');
 
 			$dum = strstr($t['item'], 'ITEM_SINGLE_POST_HTML');
-			$bItemPostHtml = (strstr($t['item'], 'ITEM_SINGLE_POST_HTML') != false);
+			$bItemPostHtml = (strstr($t['item'], 'ITEM_SINGLE_POST_HTML') != FALSE);
 
 				// Get products count
 			$selectConf = array();
@@ -526,6 +588,7 @@ class tx_ttproducts_list_view {
 			$wherestock = ($this->conf['showNotinStock'] || !is_array(($TCA[$tablename]['columns']['inStock'])) ? '' : ' AND (inStock > 0) ');
 			$whereNew = $wherestock.$where;
 			$whereNew = $itemTable->getTableObj()->transformWhere($whereNew);
+
 			$selectConf['where'] = '1=1 '.$whereNew;
 			$selectConf['from'] = $itemTable->getTableObj()->getAdditionalTables();
 
@@ -539,7 +602,9 @@ class tx_ttproducts_list_view {
 			$productsCount = $row[0];
 
 				// range check to current productsCount
-			$begin_at = t3lib_div::intInRange(($begin_at >= $productsCount)?($productsCount > $this->config['limit'] ? $productsCount-$this->config['limit'] : $productsCount):$begin_at,0);
+
+			$begin_at_start = (($begin_at >= $productsCount) ? ($productsCount >= $limit ? $productsCount - $limit : $productsCount) : $begin_at);
+			$begin_at = tx_div2007_core::intInRange($begin_at_start, 0);
 
 			$displayConf = array();
 				// Get products count
@@ -560,20 +625,20 @@ class tx_ttproducts_list_view {
 			}
 
 			$selectConf['orderBy'] = $productsConf['orderBy'];
+
 				// performing query for display:
 			if (!$selectConf['orderBy'])	{
 				$selectConf['orderBy'] = $this->conf['orderBy'];
 			}
 			$tmpArray = t3lib_div::trimExplode(',', $selectConf['orderBy']);
 			$orderByProduct = $tmpArray[0];
-			if ($whereCat == '')	{
-				$orderByCat = $catconf['orderBy'];
-			}
+
+			$orderByCat = $catconf['orderBy'];
 
 				// sorting by category not yet possible for articles
 			if ($itemTable->type == 'article')	{ // ($itemTable === $this->tt_products_articles)
 				$orderByCat = '';	// articles do not have a direct category
-				$orderByArray = split (',', $selectConf['orderBy']);
+				$orderByArray = t3lib_div::trimExplode(',', $selectConf['orderBy']);
 				$orderByArray = array_diff($orderByArray, array('category'));
 				$selectConf['orderBy'] = implode (',', $orderByArray);
 			}
@@ -581,11 +646,12 @@ class tx_ttproducts_list_view {
 				$selectConf['orderBy'] = str_replace ('itemnumber', $itemTable->fields['itemnumber'], $selectConf['orderBy']);
 			}
 			$selectConf['orderBy'] = $itemTable->getTableObj()->transformOrderby($selectConf['orderBy']);
+
 			$productMarkerFieldArray = array(
 				'BULKILY_WARNING' => 'bulkily',
 				'PRODUCT_SPECIAL_PREP' => 'special_preparation',
 				'PRODUCT_ADDITIONAL_SINGLE' => 'additional',
-				'LINK_DATASHEET' => 'datasheet'
+				'PRODUCT_LINK_DATASHEET' => 'datasheet'
 			);
 
 			$markerFieldArray = array();
@@ -595,6 +661,7 @@ class tx_ttproducts_list_view {
 
 			$viewTagArray = array();
 			$parentArray = array();
+
 			$fieldsArray = $markerObj->getMarkerFields(
 				$t['item'],
 				$itemTable->getTableObj()->tableFieldArray,
@@ -604,6 +671,7 @@ class tx_ttproducts_list_view {
 				$viewTagArray,
 				$parentArray
 			);
+
 			if ($itemTable->type == 'product' && $this->bUseArticles == 1) {
 				$markerFieldArray = array();
 				$articleViewTagArray = array();
@@ -644,8 +712,21 @@ class tx_ttproducts_list_view {
 			$itemTableConf = $cnf->getTableConf($itemTable->getFuncTablename(), $theCode);
 			$itemTableLangFields = $cnf->getTranslationFields($itemTableConf);
 			$fieldsArray = array_merge($fieldsArray, $itemTableLangFields);
+
 			$itemImageFields = $cnf->getImageFields($itemTableConf);
 			$fieldsArray = array_merge($fieldsArray, $itemImageFields);
+
+			$columnFields = $cnf->getColumnFields($itemTableConf);
+			if (isset($columnFields) && is_array($columnFields) && count($columnFields)) {
+				foreach ($columnFields as $field => $value) {
+					$key = array_search($field, $fieldsArray);
+					if ($key !== FALSE) {
+						unset($fieldsArray[$key]);
+						$fieldsArray[] = str_replace($field, $prodAlias . '.' . $field, $value) . ' ' . $field;
+					}
+				}
+			}
+
 			$viewCatTagArray = array();
 			$catParentArray = array();
 			$catFramework = '';
@@ -658,33 +739,37 @@ class tx_ttproducts_list_view {
 				$viewCatTagArray,
 				$catParentArray
 			);
-
 			$catTitle = '';
 			$catTableConf = $cnf->getTableConf($categoryTable->getTableObj()->getName(), $theCode);
+
 			if ($orderByCat && ($pageAsCategory < 2))	{
 				// $catFields = ($orderByCat == 'uid' ? $orderByCat : 'uid,'.$orderByCat);
 				$catOrderBy = $categoryTable->getTableObj()->transformOrderby($orderByCat);
 				$orderByCatFieldArray = t3lib_div::trimExplode(',',$catOrderBy);
 
-				$selectConf['orderBy'] = $catOrderBy . ($selectConf['orderBy'] ? ','. $selectConf['orderBy'] : '');
-				$prodAlias = $itemTable->getTableObj()->getAliasName();
-				$catAlias = $categoryTable->getTableObj()->getAliasName();
+				$selectConf['orderBy'] = $catOrderBy . ($selectConf['orderBy'] ? ($catOrderBy != '' ? ',' : '') . $selectConf['orderBy'] : '');
+
+				$prodAlias = $itemTable->getTableObj()->getAlias();
+				$catAlias = $categoryTable->getTableObj()->getAlias();
 				// SELECT *
 				// FROM tt_products
 				// LEFT OUTER JOIN tt_products_cat ON tt_products.category = tt_products_cat.uid
 				$selectConf['leftjoin'] = $categoryTable->getTableObj()->name.' '.$catAlias.' ON '.$catAlias.'.uid='.$prodAlias.'.category';
 				$catTables = $categoryTable->getTableObj()->getAdditionalTables();
-				$selectConf['from'] = ($catTables ? $catTables.', '.$selectConf['from']:$selectConf['from']);
 
-				foreach ($orderByCatFieldArray as $k => $catField)	{
-					$catSelect .= ','.$catField.' '.str_replace ('.','_', $catField);
+				if ($selectConf['from'] != '')	{
+					$tmpDelim = ',';
 				}
-			}
+				$selectConf['from'] = ($catTables!='' ? $catTables.$tmpDelim.$selectConf['from'] : $selectConf['from']);
 
+// 				foreach ($orderByCatFieldArray as $k => $catField)	{
+// 					$catSelect .= ','.$catField.' '.str_replace ('.','_', $catField);
+// 				}
+			}
 			$selectFields = implode(',', $fieldsArray);
 			$selectConf['selectFields'] = 'DISTINCT '. $itemTable->getTableObj()->transformSelect($selectFields).$catSelect;
 			$join = '';
-			$tmpTables = $itemTable->getTableObj()->transformTable('', false, $join);
+			$tmpTables = $itemTable->getTableObj()->transformTable('', FALSE, $join);
 			// $selectConf['where'] = $join.$itemTable->getTableObj()->transformWhere($selectConf['where']);
 			$selectConf['where'] = $join.' '.$selectConf['where'];
 			if (is_array($itemTableConf['filter.']) && is_array($itemTableConf['filter.']['regexp.']))	{
@@ -694,12 +779,22 @@ class tx_ttproducts_list_view {
 					}
 				}
 			}
-			$selectConf['max'] = ($this->config['limit']+1);
+			$selectConf['max'] = ($limit + 1);
 			$selectConf['begin'] = $begin_at;
 			// $selectConf['from'] = ($selectConf['from'] ? $selectConf['from'].', ':'').$itemTable->getTableObj()->getAdditionalTables();
 
 			if ($selectConf['orderBy'])	{
 				$selectConf['orderBy'] = $TYPO3_DB->stripOrderBy($selectConf['orderBy']);
+			}
+
+			if (isset($productsConf['groupBy'])) {
+				$selectConf['groupBy'] = $productsConf['groupBy'];
+
+				$selectConf['groupBy'] = $itemTable->getTableObj()->transformOrderby($selectConf['groupBy']);
+
+				if ($selectConf['groupBy']) {
+					$selectConf['groupBy'] = $TYPO3_DB->stripGroupBy($selectConf['groupBy']);
+				}
 			}
 
 			$tablename = $itemTable->getTableObj()->name;
@@ -709,35 +804,41 @@ class tx_ttproducts_list_view {
 				$selectConf,
 				TRUE
 			);
+
 			if ($queryParts === FALSE)	{
 				return 'ERROR in tt_products';
 			}
-			$res = $TYPO3_DB->exec_SELECT_queryArray($queryParts);
+			$res = $itemTable->getTableObj()->exec_SELECT_queryArray($queryParts);
 			$itemArray=array();
 			$iCount = 0;
 			$uidArray = array();
-			while ($iCount < $this->config['limit'] && ($row = $TYPO3_DB->sql_fetch_assoc($res)))	{
+
+			while ($iCount < $limit && ($row = $TYPO3_DB->sql_fetch_assoc($res)))	{
 				$iCount++;
+
 				if (count($itemTableLangFields))	{
 					foreach ($itemTableLangFields as $field => $langfield)	{
 						$row[$field] = $row[$langfield];
 					}
 				}
-
 				$itemTable->getTableObj()->substituteMarkerArray($row,$variantFieldArray);
 				$itemArray[] = $row;
 				$uidArray[] = $row['uid'];
 			}
 
-			if ($iCount == $this->config['limit'] && ($row = $TYPO3_DB->sql_fetch_assoc($res)))	{
+			if ($iCount == $limit && ($row = $TYPO3_DB->sql_fetch_assoc($res)))	{
 				$more = 1;
 			}
 
 			$TYPO3_DB->sql_free_result($res);
 			if ($theCode == 'LISTGIFTS') {
 				$markerArray = tx_ttproducts_gifts_div::addGiftMarkers ($markerArray, $this->giftnumber);
+				if (!isset($javaScriptObj)) {
+					$javaScriptObj = t3lib_div::getUserObj('&tx_ttproducts_javascript');
+				}
 				$javaScriptObj->set('email');
 			}
+
 			$markerArray['###FORM_NAME###'] = $formName; // needed if form starts e.g. between ###ITEM_LIST_TEMPLATE### and ###ITEM_CATEGORY_AND_ITEMS###
 			$markerFramework = 'listFrameWork';
 			$t[$markerFramework] = $this->pibase->cObj->substituteMarkerArrayCached($t[$markerFramework],$markerArray,array(),array());
@@ -763,38 +864,39 @@ class tx_ttproducts_list_view {
 			$itemListSubpart = ($itemTable->type == 'article' && $t['productAndItemsFrameWork'] ? '###ITEM_PRODUCT_AND_ITEMS###' : '###ITEM_LIST###');
 			$prodRow = array();
 			$formCount = 1;
-			$bFormPerItem = false;
+			$bFormPerItem = FALSE;
 			$itemLower = strtolower($t['item']);
 
 			if (strstr($itemLower, '<form') !== FALSE)	{
-				$bFormPerItem = true;
+				$bFormPerItem = TRUE;
 			}
 			$bUseDAM = FALSE;
 			if (strstr($itemLower, '###dam_field_name###') !== FALSE)	{
 				$bUseDAM = TRUE;
 			}
 			$basketObj->getGraduatedPrices($uidArray);
-			if (count ($itemArray))	{	// $itemArray must have numbered indexes to work, because the next item must be determined
+
+			if (count($itemArray))	{	// $itemArray must have numbered indexes to work, because the next item must be determined
 				$itemRowWrapArray = t3lib_div::trimExplode('|', $cssConf['itemRowWrap']);
 				$categoryMarkerArray = array();
+
 				foreach ($itemArray as $k2 => $row) {
 					$iColCount++;
 					$iCount++;
-					$oldFormCount = $formCount;
 					if ($categoryTable->getFuncTablename() == 'tt_products_cat')	{
 						$currentCat = $row['category'];
 					}
 					$catArray = $categoryTable->getCategoryArray($row['uid'], 'sorting');
 					if (count($catArray))	{
-						reset ($catArray);
-						$this->getCategories ($categoryTable, $catArray, $rootCatArray, $rootLineArray, $cat, $currentCat, $displayCat);
+						reset($catArray);
+						$this->getCategories($categoryTable, $catArray, $rootCatArray, $rootLineArray, $cat, $currentCat, $displayCat);
 						$depth = 0;
 
-						$bFound = false;
+						$bFound = FALSE;
 						foreach ($rootLineArray as $catVal)	{
 							$depth++;
 							if (in_array($catVal, $rootCatArray))	{
-								$bFound = true;
+								$bFound = TRUE;
 								break;
 							}
 						}
@@ -807,15 +909,18 @@ class tx_ttproducts_list_view {
 						reset($catLineArray);
 
 						$confDisplayColumns = $this->getDisplayInfo($displayConf, 'columns', $depth, !count($childCatArray));
-						$displayColumns = (t3lib_div::testInt($confDisplayColumns) ? $confDisplayColumns : $displayColumns);
+						$displayColumns = (
+							tx_div2007_core::testInt($confDisplayColumns) ?
+								$confDisplayColumns : $displayColumns
+						);
 
 						if (count($childCatArray))	{
 							$linkCat = next($catLineArray);
 							if ($linkCat)	{
 								$addQueryString = array($categoryTableView->getPivar() => $linkCat);
 								$tempUrl = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($addQueryString,1,1,$TSFE->id));
-								$childCatWrap = '<a href="'. $tempUrl .'"'.$css.'> | </a>';
-								$imageWrap = false;
+								$childCatWrap = '<a href="'. htmlspecialchars($tempUrl) .'"'.$css.'> | </a>';
+								$imageWrap = FALSE;
 							}
 						}
 					} else {
@@ -833,17 +938,16 @@ class tx_ttproducts_list_view {
 							($pageAsCategory == 2) && ($row['pid'] != $currentArray['category']) ||
 							$displayCatHeader == 'always'
 						)	{
-
 						$catItemsListOut = &$itemListOut;
 						if ($itemTable->type == 'article' && $productListOut && $t['productAndItemsFrameWork'])	{
 							$catItemsListOut = &$productListOut;
 						}
 
 						if ($catItemsListOut)	{
-							$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $formCount);
+							$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $oldFormCount, $formCount);
 						}
 						$currentArray['category'] = (($pageAsCategory < 2 || $itemTable->type == 'dam') ? $displayCat : $row['pid']);
-						$bCategoryHasChanged = true;
+						$bCategoryHasChanged = TRUE;
 						if ($displayCatHeader != 'always')	{
 							$iColCount = 1;
 						}
@@ -880,12 +984,13 @@ class tx_ttproducts_list_view {
 								1,
 								''
 							);
+
 							if ($t['categoryFrameWork'])	{
 								$categoryOut = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $categoryMarkerArray);
 							}
 						}
 					} else {
-						$bCategoryHasChanged = false;
+						$bCategoryHasChanged = FALSE;
 					}
 					$subpartArray = array();
 
@@ -909,7 +1014,7 @@ class tx_ttproducts_list_view {
 								$iCount,
 								'',
 								$imageWrap,
-								true,
+								TRUE,
 								$TSFE->renderCharset
 							);
 
@@ -948,17 +1053,17 @@ class tx_ttproducts_list_view {
 					$pid = $pagesObj->getPID($this->conf['PIDitemDisplay'], $this->conf['PIDitemDisplay.'], $row);
 					$addQueryString[$itemTableView->getPivar()] = intval($row['uid']);
 					$piVarCat = $this->pibase->piVars[$categoryTableView->getPivar()];
-					$bUseBackPid = true;
+					$bUseBackPid = ($pid != $TSFE->id);
 					if ($piVarCat)	{
 						if ($this->conf['PIDlistDisplay'])	{
-							$bUseBackPid = false;
+							$bUseBackPid = FALSE;
 						}
 						$cat = $piVarCat;
 					}
 					if ($cat)	{
 						$addQueryString[$categoryTableView->getPivar()] = $cat;
 					}
-					$queryString = $this->urlObj->getLinkParams('begin_at', $addQueryString, false, $bUseBackPid, $categoryTableView->getPivar());
+					$queryString = $this->urlObj->getLinkParams('begin_at', $addQueryString, FALSE, $bUseBackPid, $itemTableView->getPivar(), $categoryTableView->getPivar());
 					$pageLink = htmlspecialchars($this->pibase->pi_linkTP_keepPIvars_url($queryString,1,0,$pid));
 
 					if ($childCatWrap)	{
@@ -1004,7 +1109,7 @@ class tx_ttproducts_list_view {
 							$iCount,
 							'',
 							$imageWrap,
-							true,
+							TRUE,
 							$TSFE->renderCharset
 						);
 
@@ -1019,8 +1124,8 @@ class tx_ttproducts_list_view {
 						);
 					}
 
-					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
-					$basketItemView = &t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
+// 					include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_basketitem_view.php');
+					$basketItemView = t3lib_div::getUserObj('tx_ttproducts_basketitem_view');
 					$basketItemView->init($this->pibase, $basketObj->basketExt);
 					$basketItemView->getItemMarkerArray (
 						$functablename,
@@ -1030,7 +1135,7 @@ class tx_ttproducts_list_view {
 						$tmpHidden,
 						$theCode,
 						$iCount,
-						true,
+						TRUE,
 						$TSFE->renderCharset
 					);
 					$itemTableView->getItemMarkerArray (
@@ -1045,9 +1150,10 @@ class tx_ttproducts_list_view {
 						$iCount,
 						'',
 						$imageWrap,
-						true,
+						TRUE,
 						$TSFE->renderCharset
 					);
+
 					$itemTableView->getItemSubpartArrays (
 						$t['item'],
 						$row,
@@ -1088,12 +1194,16 @@ class tx_ttproducts_list_view {
 					// $markerArray['###FORM_URL###']=$this->formUrl; // Applied later as well.
 					$addQueryString = array();
 					$addQueryString = $this->uidArray;
-					$this->urlObj->addURLMarkers($this->pid,$markerArray,$addQueryString,'',FALSE);
+					$this->getSearchParams($addQueryString);
+					$this->urlObj->addURLMarkers($TSFE->id,$markerArray,$addQueryString,'',$bUseBackPid);
+					$oldFormCount = $formCount;
+
 					$markerArray['###FORM_NAME###'] = $formName.$formCount;
 
-					if ($bFormPerItem && $oldFormCount == $formCount)	{
+					if ($bFormPerItem)	{
 						$formCount++;
 					}
+
 					$markerArray['###ITEM_NAME###'] = 'item_'.$iCount;
 					if (!$displayColumns)	{
 						$markerArray['###FORM_NAME###'] = $markerArray['###ITEM_NAME###'];
@@ -1121,16 +1231,24 @@ class tx_ttproducts_list_view {
 						}
 						$tableRowOpen = 1;
 					}
+
+					$itemSingleWrapArray = t3lib_div::trimExplode('|', $cssConf['itemSingleWrap']);
+					if ($itemSingleWrapArray[0]) {
+						$temp .= str_replace('###UNEVEN###', $evenUneven, $itemSingleWrapArray[0]);
+					}
+
 					$markerArray['###ITEM_SINGLE_PRE_HTML###'] = $temp;
-					$temp='';
+
+					$temp = $itemSingleWrapArray[1];
 
 					if (!$displayColumns || $iColCount == $displayColumns) {
-						$temp = $itemRowWrapArray[1];
+						$temp .= $itemRowWrapArray[1];
 						$tableRowOpen = 0;
 					}
+
 					$markerArray['###ITEM_SINGLE_POST_HTML###'] = $temp;
 					$pid = ( $this->conf['PIDmemo'] ? $this->conf['PIDmemo'] : $TSFE->id);
-					$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->urlObj->getLinkParams('', array(), true))); //$this->getLinkUrl($this->conf['PIDmemo']);
+					$markerArray['###FORM_MEMO###'] = htmlspecialchars($this->pibase->pi_getPageLink($pid,'',$this->urlObj->getLinkParams('', array(), TRUE, TRUE, $itemTableView->getPivar()))); //$this->getLinkUrl($this->conf['PIDmemo']);
 
 					// cuts note in list view
 					if (strlen($markerArray['###'.$itemTableView->marker.'_NOTE###']) > $this->conf['max_note_length']) {
@@ -1143,6 +1261,7 @@ class tx_ttproducts_list_view {
 						$itemTableView->variant->removeEmptyMarkerSubpartArray($markerArray,$subpartArray, $row, $this->conf, $itemTable->hasAdditional($row,'isSingle'), !$itemTable->hasAdditional($row,'noGiftService'));
 					}
 
+
 					if ($t['item'])	{
 						$tempContent = $this->pibase->cObj->substituteMarkerArrayCached(
 							$t['item'],
@@ -1152,16 +1271,20 @@ class tx_ttproducts_list_view {
 						);
 					}
 					$itemsOut .= $tempContent;
+
 	//				} // foreach ($productList as $k2 => $row)
 
 					// max. number of columns reached?
 
 					if (!$displayColumns || $iColCount == $displayColumns || $displayCatHeader == 'always') {
+
 						if ($t['itemFrameWork'])	{
+
 							// complete the last table row
 							if (!$displayColumns || $iColCount == $displayColumns)	{
 								$itemsOut .= $this->finishHTMLRow($cssConf, $iColCount, $tableRowOpen, $displayColumns);
 							}
+							// $itemListOut .= $this->pibase->cObj->substituteSubpart($t['itemFrameWork'],'###ITEM_SINGLE###',$itemsOut,0);
 							$markerArray = array_merge ($productMarkerArray, $categoryMarkerArray, $markerArray);
 							$subpartArray = array();
 							$subpartArray['###ITEM_SINGLE###'] = $itemsOut;
@@ -1170,12 +1293,19 @@ class tx_ttproducts_list_view {
 						}
 //						$iColCount = 0; // restart in the first column
 					}
-					$nextRow = $itemArray[$iCount];
-					$nextCat = $nextRow['category'];
-					$catArray = $categoryTable->getCategoryArray($nextRow['uid']);
+
+					$nextCat = 0;
+					$nextRow = array();
+					$catArray = array();
+					if (isset($itemArray[$iCount])) {
+						$nextRow = $itemArray[$iCount];
+						$nextCat = $nextRow['category'];
+						$catArray = $categoryTable->getCategoryArray($nextRow['uid']);
+					}
+
 					if (count($catArray))	{
 						reset ($catArray);
-						$this->getCategories ($categoryTable, $catArray, $rootCatArray, $rootLineArray, $cat, $nextCurrentCat, $nextCat);
+						$this->getCategories($categoryTable, $catArray, $rootCatArray, $rootLineArray, $cat, $nextCurrentCat, $nextCat);
 					}
 
 					$nextArray['category'] = (($pageAsCategory < 2) ? $nextCat : $nextRow['pid']);
@@ -1200,6 +1330,7 @@ class tx_ttproducts_list_view {
 						}
 
 						if (($nextArray['category'] != $currentArray['category'] || $nextRow == '') && $itemsOut && $t['itemFrameWork'])	{
+
 							$subpartArray = array();
 							$subpartArray['###ITEM_SINGLE###'] = $itemsOut;
 							$itemListNewOut = $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'], $markerArray, $subpartArray, $wrappedSubpartArray);
@@ -1209,7 +1340,53 @@ class tx_ttproducts_list_view {
 					}
 				}	// foreach ($itemArray as $k1 => $productList) {
 			} else {
-				$out = '';  // TODO: keine Produkte gefunden
+				if (isset($catTableConf['subpart.']))	{
+					$displayCat = $cat;
+					$categoryTableView->getMarkerArray (
+						$categoryMarkerArray,
+						$displayCat,
+						$TSFE->id,
+						$this->config['limitImage'],
+						'listcatImage',
+						$viewCatTagArray,
+						$tmp = array(),
+						$pageAsCategory,
+						$theCode,
+						$iCount,
+						'',
+						''
+					);
+
+					foreach($catTableConf['subpart.'] as $subpart => $subpartConfig)	{
+						if (
+							is_array($subpartConfig) &&
+							$subpartConfig['show'] == 'default'
+						)	{
+
+							if (
+								$subpart == 'ITEM_CATEGORY.' &&
+								$t['categoryFrameWork']
+							)	{
+								$catTitle = $categoryTableView->getMarkerArrayCatTitle($categoryMarkerArray);
+								$categoryOut = $this->pibase->cObj->substituteMarkerArray($t['categoryFrameWork'], $categoryMarkerArray);
+							}
+
+							if (
+								$subpart == 'ITEM_LIST.' &&
+								$t['itemFrameWork']
+							)	{
+								$markerArray = $categoryMarkerArray;
+								$subpartArray = array();
+								$markerArray['###ITEM_SINGLE_PRE_HTML###'] = '';
+								$markerArray['###ITEM_SINGLE_POST_HTML###'] = '';
+								$subpartArray['###ITEM_SINGLE###'] = '';
+								$itemListOut = $this->pibase->cObj->substituteMarkerArrayCached($t['itemFrameWork'], $categoryMarkerArray, $subpartArray, $wrappedSubpartArray);
+							}
+						}
+					}
+				} else {
+					$out = '';  // TODO: keine Produkte gefunden
+				}
 			}
 
 			if ($itemListOut || $categoryOut || $productListOut)	{
@@ -1218,11 +1395,11 @@ class tx_ttproducts_list_view {
 					$productListOut .= $this->advanceProduct($t['productAndItemsFrameWork'], $t['productFrameWork'], $itemListOut, $productMarkerArray, $categoryMarkerArray);
 					$catItemsListOut = &$productListOut;
 				}
-				$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $formCount);
+				$out .= $this->advanceCategory($t['categoryAndItemsFrameWork'], $catItemsListOut, $categoryOut, $itemListSubpart, $oldFormCount, $formCount);
 			}
 		}	// if ($theCode != 'SEARCH' || ($theCode == 'SEARCH' && $sword))	{
 
-		if ($out)	{
+		if (count($itemArray)) {
 			// next / prev:
 			// $url = $this->getLinkUrl('','begin_at');
 				// Reset:
@@ -1231,52 +1408,51 @@ class tx_ttproducts_list_view {
 			$markerArray=array();
 			$splitMark = md5(microtime());
 			$addQueryString=array();
+			$memoControls = tx_ttproducts_control_memo::getControlVars();
+			foreach ($memoControls as $memoControl) {
+				$addQueryString[$memoControl] = '';
+			}
+
 			if ($cat)	{
 				$addQueryString['cat'] = $cat;
 			}
-
-			$backPID = $this->pibase->piVars['backPID'];
-			$pid = ( $backPID ? $backPID : $TSFE->id);
-			$linkUrl = $this->pibase->pi_getPageLink($pid,'',$this->urlObj->getLinkParams('',array(),true));
-			$linkUrl = htmlspecialchars($linkUrl);
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'. $linkUrl .'">','</a>',array('useCacheHash' => true));
 
 			if ($sword) 	{
 				$addQueryString['sword'] = $sword;
 			}
 
 			if ($more)	{
-				$next = ($begin_at+$this->config['limit'] > $productsCount) ? $productsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
+				$next = ($begin_at + $limit > $productsCount) ? $productsCount - $limit : $begin_at + $limit;
 				$addQueryString['begin_at'] = $next;
 				$this->getSearchParams($addQueryString);
-
-				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,1,0);
+				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark, $addQueryString, $bUseCache, 0);
 				$wrappedSubpartArray['###LINK_NEXT###'] = explode ($splitMark, $tempUrl);
 			} else {
 				$subpartArray['###LINK_NEXT###']='';
 			}
-			$bUseCache = count($basketObj->itemArray)>0;
+			$bUseCache = $bUseCache && (count($basketObj->itemArray) == 0);
+
 			if ($begin_at)	{
-				$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
+				$prev = ($begin_at-$limit < 0) ? 0 : $begin_at - $limit;
 				$addQueryString['begin_at'] = $prev;
 				$this->getSearchParams($addQueryString);
-				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark,$addQueryString,$bUseCache,0);
-				$wrappedSubpartArray['###LINK_PREV###']=explode ($splitMark, $tempUrl); // array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
+				$tempUrl = $this->pibase->pi_linkTP_keepPIvars($splitMark, $addQueryString, $bUseCache, 0);
+				$wrappedSubpartArray['###LINK_PREV###'] = explode ($splitMark, $tempUrl); // array('<a href="'.$url.'&begin_at='.$prev.'">','</a>');
 			} else {
-				$subpartArray['###LINK_PREV###']='';
+				$subpartArray['###LINK_PREV###'] = '';
 			}
 			$markerArray['###BROWSE_LINKS###']='';
-			if ($productsCount > $this->config['limit'] )	{ // there is more than one page, so let's browse
-				$wrappedSubpartArray['###LINK_BROWSE###']=array('',''); // <- this could be done better I think, or not?
-				for ($i = 0 ; $i < ($productsCount/$this->config['limit']); $i++)	 {
-					if (($begin_at >= $i*$this->config['limit']) && ($begin_at < $i*$this->config['limit']+$this->config['limit']))	{
-						$markerArray['###BROWSE_LINKS###'].= ' <b>'.(string)($i+1).'</b> ';
+			if ($productsCount > $limit )	{ // there is more than one page, so let's browse
+				$wrappedSubpartArray['###LINK_BROWSE###'] = array('',''); // <- this could be done better I think, or not?
+				for ($i = 0 ; $i < ($productsCount / $limit); $i++)	 {
+					if (($begin_at >= $i * $limit) && ($begin_at < $i * $limit + $limit))	{
+						$markerArray['###BROWSE_LINKS###'].= ' <b>' . (string) ($i + 1) . '</b> ';
 						//	you may use this if you want to link to the current page also
 						//
 					} else {
-						$addQueryString['begin_at'] = (string)($i * $this->config['limit']);
+						$addQueryString['begin_at'] = (string)($i * $limit);
 						$tempUrl = $this->pibase->pi_linkTP_keepPIvars((string)($i+1).' ',$addQueryString,$bUseCache,0);
-						$markerArray['###BROWSE_LINKS###'] .= $tempUrl; // ' <a href="'.$url.'&begin_at='.(string)($i * $this->config['limit']).'">'.(string)($i+1).'</a> ';
+						$markerArray['###BROWSE_LINKS###'] .= $tempUrl; // ' <a href="'.$url.'&begin_at='.(string)($i * $limit).'">'.(string)($i+1).'</a> ';
 					}
 				}
 			} else {
@@ -1284,28 +1460,46 @@ class tx_ttproducts_list_view {
 			}
 
 			$subpartArray['###ITEM_CATEGORY_AND_ITEMS###'] = $out;
-			// $markerArray['###FORM_URL###']=$this->formUrl;	  // Applied it here also...
+			// $markerArray['###FORM_URL###'] = $this->formUrl;	  // Applied it here also...
 			$addQueryString = array();
 			$addQueryString = $this->uidArray;
-			$markerArray = $this->urlObj->addURLMarkers($this->pid,$markerArray,$addQueryString,'',FALSE); //Applied it here also...
+			$excludeList = ($theCode == 'SEARCH' ? 'sword' : '');
+			$this->getSearchParams($addQueryString);
+			$markerArray = $this->urlObj->addURLMarkers($TSFE->id,$markerArray,$addQueryString,$excludeList,$bUseBackPid); //Applied it here also...
 			$markerArray['###AMOUNT_CREDITPOINTS###'] = number_format($TSFE->fe_user->user['tt_products_creditpoints'],0);
 			$markerArray['###ITEMS_SELECT_COUNT###'] = $productsCount;
  			$this->javaScriptMarker->getMarkerArray($jsMarkerArray, $markerArray);
  			$markerArray = array_merge ($jsMarkerArray, $markerArray);
 			$markerArray['###HIDDENFIELDS###'] = $hiddenText; // TODO
-
 			$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'],$markerArray,$subpartArray,$wrappedSubpartArray);
-			$content .= $out;
-		} elseif ($sword && $allowedItems!='0' && $theCode=='SEARCH')	{
-			$content .= $this->pibase->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###ITEM_SEARCH_EMPTY###'));
-		} // if ($out)
 
+			$content .= $out;
+		} elseif ($this->conf['listViewOnSearch'] == '1' && $sword && $allowedItems!='0' && $theCode=='SEARCH')	{
+			$content .= $this->pibase->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###ITEM_SEARCH_EMPTY###'));
+		} else if ($out) {
+			$content .= $out;
+		} else if ($whereCat != '' || $allowedItems != '0' || !$bListStartEmpty) {
+			$subpartArray = array();
+			$subpartArray['###ITEM_CATEGORY_AND_ITEMS###'] = '';
+			$subpartArray['###LINK_PREV###'] = '';
+			$subpartArray['###LINK_NEXT###'] = '';
+
+			$markerArray['###BROWSE_LINKS###'] = '';
+
+			$out = $this->pibase->cObj->substituteMarkerArrayCached($t['listFrameWork'], $markerArray, $subpartArray);
+			$content .= $out;
+			$contentEmpty = $this->pibase->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###ITEM_LIST_EMPTY###'));
+		} else {
+			// nothing is shown
+		} // if (count ($itemArray))
+
+		$content .= $contentEmpty;
 
 		if ($bCheckUnusedArticleMarkers)	{
 			$markerFieldArray = array();
 			$articleViewTagArray = array();
 			$articleParentArray = array();
-			$articleViewObj = &$tablesObj->get('tt_products_articles', TRUE);
+			$articleViewObj = $tablesObj->get('tt_products_articles', TRUE);
 			$searchString = '###'.$articleViewObj->marker.'_';
 			if (strpos($t['item'], $searchString) > 0)	{
 				$error_code[0] = 'article_markers_unsubstituted';
@@ -1313,7 +1507,6 @@ class tx_ttproducts_list_view {
 				$error_code[2] = $this->bUseArticles;
 			}
 		}
-
 		return $content;
 	}
 }

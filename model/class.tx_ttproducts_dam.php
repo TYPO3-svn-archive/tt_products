@@ -39,8 +39,6 @@
  */
 
 
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_article_base.php');
-
 
 class tx_ttproducts_dam extends tx_ttproducts_article_base {
 	var $dataArray; // array of read in categories
@@ -60,11 +58,11 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 	 * @param	[type]		$functablename: ...
 	 * @return	[type]		...
 	 */
-	function init(&$cObj, $functablename)  {
+	function init($cObj, $functablename)  {
 		global $TYPO3_DB,$TSFE,$TCA;
 
 		parent::init($cObj, $functablename);
-		$tableObj = &$this->getTableObj();
+		$tableObj = $this->getTableObj();
 		$tableObj->addDefaultFieldArray(array('sorting' => 'sorting'));
 
 		$requiredFields = 'uid,pid,parent_id,category,file_mime_type,file_name,file_path';
@@ -76,35 +74,21 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		$requiredListArray = t3lib_div::trimExplode(',', $requiredFields);
 		$tableObj->setRequiredFieldArray($requiredListArray);
 
-		$cnf = &t3lib_div::getUserObj('&tx_ttproducts_config');
+		$cnf = t3lib_div::getUserObj('&tx_ttproducts_config');
 		$tablename = $cnf->getTableName($functablename);
 		$tableObj->setTCAFieldArray($tablename, 'dam');
 	} // init
 
-/*
-	function get($uid=0,$pid=0,$bStore=true,$where_clause='',$limit='',$fields='',$bCount=FALSE) {
-		global $TYPO3_DB;
-		$rc = $this->dataArray[$uid];
-		if (!$rc) {
-			$this->getTableObj()->enableFields();
-			$res = $this->getTableObj()->exec_SELECTquery('*','uid = '.intval($uid));
-			$row = $TYPO3_DB->sql_fetch_assoc($res);
-			$TYPO3_DB->sql_free_result($res);
-			$rc = $this->dataArray[$uid] = $row;
-		}
-		return $rc;
-	}
-*/
 
 	function getRelated ($uid, $type) {
 		$rcArray = array();
 
 		if ($type == 'products')	{
-			$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-			$productTable = &$tablesObj->get('tt_products', FALSE);
+			$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+			$productTable = $tablesObj->get('tt_products', FALSE);
 
 			$additional = $productTable->getFlexQuery ('isImage',1);
-			$rowArray = $productTable->getWhere ('additional REGEXP \''.$additional.'\'');
+			$rowArray = $productTable->getWhere ('additional REGEXP \'' . $additional . '\'');
 
 			$rcArray = array_keys($rowArray);
 		}
@@ -122,7 +106,7 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 
 		$rowArray = array();
 		$this->getTableObj()->enableFields();
-		$res = $this->getTableObj()->exec_SELECTquery('*',$where);
+		$res = $this->getTableObj()->exec_SELECTquery('*', $where);
 
 		while ($row = $TYPO3_DB->sql_fetch_assoc($res))	{
 			$uid = intval($row[uid]);
@@ -133,32 +117,31 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		return $rowArray;
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$cat: ...
-	 * @param	[type]		$pid_list: ...
-	 * @return	[type]		...
-	 */
-	function addWhereCat($cat, $pid_list)	{
+	public function addWhereCat ($catObject, $theCode, $cat, $pid_list, $bLeadingOperator=TRUE) {
 		$bOpenBracket = FALSE;
 		$where = '';
 
 			// Call all addWhere hooks for categories at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['DAMCategory'])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['DAMCategory'] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['DAMCategory'])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['DAMCategory'] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'addWhereCat')) {
-					$whereNew = $hookObj->addWhereCat($this, $cat, $where, $operator, $pid_list, $this->mm_table);
-					$operator = ($operator ? $operator : 'OR');
-					$where .= ($whereNew ? ' '.$operator.' '.$whereNew : '');
+					$whereNew = $hookObj->addWhereCat($this, $catObject, $cat, $where, $operator, $pid_list, $catObject->getDepth($theCode));
+					if ($bLeadingOperator) {
+						$operator = ($operator ? $operator : 'OR');
+						$where .= ($whereNew ? ' '.$operator.' '.$whereNew : '');
+					} else {
+						$where .= $whereNew;
+					}
 				}
 			}
-		} else if($cat || $cat=='0') {
+		} else if($cat || $cat == '0') {
 			$cat = implode(',',t3lib_div::intExplode(',', $cat));
-			$where = ' AND ( category IN ('.$cat.') )';
+			$where = 'category IN ('.$cat.')';
+			if ($bLeadingOperator) {
+				$where = ' AND ( ' . $where . ')';
+			}
 		}
-
 		return $where;
 	}
 
@@ -188,7 +171,7 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		global $TSFE;
 		$row = &$item['rec'];
 
-		$imageObj = &t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
+		$imageObj = t3lib_div::getUserObj('&tx_ttproducts_field_image_view');
 			// Get image
 		$imageObj->getItemMarkerArrayEnhanced ($this->getFuncTablename(), $row, $this->marker, $markerArray, $row['pid'], $imageNum, $imageRenderObj, $tagArray, $code, $id, $prefix, $linkWrap);
 
@@ -199,9 +182,9 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		}
 
 			// Call all getItemMarkerArray hooks at the end of this method
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker])) {
-			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey][$this->marker] as $classRef) {
-				$hookObj= &t3lib_div::getUserObj($classRef);
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$this->marker])) {
+			foreach  ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT][$this->marker] as $classRef) {
+				$hookObj= t3lib_div::getUserObj($classRef);
 				if (method_exists($hookObj, 'getItemMarkerArray')) {
 					$hookObj->getItemMarkerArray ($this, $item, $markerArray, $catTitle, $basketExt, $imageNum, $imageRenderObj, $tagArray, $forminfoArray, $code, $id, $prefix, $linkWrap);
 				}
@@ -249,13 +232,7 @@ class tx_ttproducts_dam extends tx_ttproducts_article_base {
 		$damRow = $this->get($uid);
 
 		if ($damRow)	{
-// 			$damRow['damdescription'] = $damRow['description'];
-// 			unset($damRow['description']);
-// 			foreach ($damRow as $field => $value)	{
-// 				if (isset($row[$field]) && !$row[$field])	{
-// 					$row[$field] = $value;
-// 				}
-// 			}
+
 			if ($damRow['file_mime_type'] == 'image' && !$row['image'])	{
 				$row['image'] = $damRow['file_name'];
 				$row['file_mime_type'] = 'image';

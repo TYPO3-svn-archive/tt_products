@@ -45,79 +45,35 @@ define ('DQT', '"');
 define ('QT', "'");
 
 
-// *********************
-// Libraries included
-// *********************
-$TT->push('Include Frontend libraries','');
-    require_once(PATH_tslib.'class.tslib_fe.php');
-    require_once(PATH_t3lib.'class.t3lib_page.php');
-    require_once(PATH_t3lib.'class.t3lib_userauth.php');
-    require_once(PATH_tslib.'class.tslib_feuserauth.php');
-    require_once(PATH_t3lib.'class.t3lib_tstemplate.php');
-    require_once(PATH_t3lib.'class.t3lib_cs.php');
-$TT->pull();
-
-$typoVersion = t3lib_div::int_from_ver($GLOBALS['TYPO_VERSION']);
-if ($typoVersion >= 4003000)    {
-
-	// ***********************************
-	// Initializing the Caching System
-	// ***********************************
-
-	$TT->push('Initializing the Caching System','');
-			// TODO implement autoloading so that we only require stuff we really need
-		require_once(PATH_t3lib . 'class.t3lib_cache.php');
-
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_abstractbackend.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_abstractcache.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_exception.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_factory.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_manager.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_variablecache.php');
-
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_classalreadyloaded.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_duplicateidentifier.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_invalidbackend.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_invalidcache.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_invaliddata.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_nosuchcache.php');
-
-		$typo3CacheManager = t3lib_div::makeInstance('t3lib_cache_Manager');
-		$cacheFactoryClass = t3lib_div::makeInstanceClassName('t3lib_cache_Factory');
-		$typo3CacheFactory = new $cacheFactoryClass($typo3CacheManager);
-
-		unset($cacheFactoryClass);
-	$TT->pull();
-}
 
 // ***********************************
 // Create $TSFE object (TSFE = TypoScript Front End)
 // Connecting to database
 // ***********************************
-$temp_TSFEclassName=t3lib_div::makeInstanceClassName('tslib_fe');
-$TSFE = new $temp_TSFEclassName(
-        $GLOBALS['TYPO3_CONF_VARS'],
-        t3lib_div::_GP('id'),
-        t3lib_div::_GP('type'),
-        t3lib_div::_GP('no_cache'),
-        t3lib_div::_GP('cHash'),
-        t3lib_div::_GP('jumpurl'),
-        t3lib_div::_GP('MP'),
-        t3lib_div::_GP('RDCT')
-    );
+$TSFE = t3lib_div::makeInstance('tslib_fe',
+	$TYPO3_CONF_VARS,
+	t3lib_div::_GP('id'),
+	t3lib_div::_GP('type'),
+	t3lib_div::_GP('no_cache'),
+	t3lib_div::_GP('cHash'),
+	t3lib_div::_GP('jumpurl'),
+	t3lib_div::_GP('MP'),
+	t3lib_div::_GP('RDCT')
+);
+/** @var $TSFE tslib_fe */
 
-$TSFE->connectToMySQL();
+
+if($TYPO3_CONF_VARS['FE']['pageUnavailable_force'] &&
+	!t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $TYPO3_CONF_VARS['SYS']['devIPmask'])) {
+	$TSFE->pageUnavailableAndExit('This page is temporarily unavailable.');
+}
+
+$TSFE->connectToDB();
+
 if ($TSFE->RDCT)    {
 	$TSFE->sendRedirect();
 }
 
-// *******************
-// output compression
-// *******************
-if ($GLOBALS['TYPO3_CONF_VARS']['FE']['compressionLevel'])    {
-    ob_start();
-    require_once(PATH_t3lib.'class.gzip_encode.php');
-}
 
 // *********
 // FE_USER
@@ -175,22 +131,34 @@ $TT->pull();
 // ******************************************************
 $TSFE->getConfigArray();
 
-$conf = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXTkey.'.'];
+
+$typoVersion = tx_div2007_core::getTypoVersion();
+
+if ($typoVersion >= '6000000') {
+	// Initialize admin panel since simulation settings are required here:
+	$callingClassName3 = '\\TYPO3\\CMS\\Core\\Core\\Bootstrap';
+	$bootStrap = call_user_func($callingClassName3 . '::getInstance');
+	if ($TSFE->isBackendUserLoggedIn()) {
+		$BE_USER->initializeAdminPanel();
+		$bootStrap->loadExtensionTables(TRUE);
+	} else {
+		$bootStrap->loadCachedTca();
+	}
+}
+
+$conf = $TSFE->tmpl->setup['plugin.'][TT_PRODUCTS_EXT.'.'];
 $config = array();
 $config['LLkey'] = '';
 
-// tt_products specific parts
-
-require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_ajax.php');
-require_once(PATH_BE_ttproducts.'eid/class.tx_ttproducts_db.php');
-
 
 // Make instance:
-$ajax = &t3lib_div::makeInstance('tx_ttproducts_ajax');
+$ajax = t3lib_div::makeInstance('tx_ttproducts_ajax');
 $ajax->init();
 
-$SOBE = &t3lib_div::makeInstance('tx_ttproducts_db');
-$SOBE->init($conf, $config, $ajax);
+$SOBE = t3lib_div::makeInstance('tx_ttproducts_db');
+$errorCode = '';
+$SOBE->init($conf, $config, $ajax, $tmp = '', $errorCode);
+
 if($_POST['xajax']){
 	global $trans;
 	$trans = $this;

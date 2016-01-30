@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Franz Holzinger <kontakt@fholzinger.com>
+*  (c) 2005-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,8 +31,8 @@
  *
  * $Id$
  *
- * @author	Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
+ * @author	Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  */
@@ -46,8 +46,8 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	var $asterisk = '********';
 
 
-	function init(&$pibase, $functablename) {
-		$basketObj = &t3lib_div::getUserObj('&tx_ttproducts_basket');
+	function init ($pibase, $functablename) {
+		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$formerBasket = $basketObj->recs;
 		$bIsAllowed = $basketObj->basketExtra['payment.']['accounts'];
 
@@ -72,11 +72,10 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 				$acArray = array();
 			}
 			$acArray['ac_uid'] = $this->create ($acArray['ac_uid'], $this->acArray);
-			$TSFE->fe_user->setKey('ses','ac',$acArray);
+			$TSFE->fe_user->setKey('ses', 'ac', $acArray);
 			$this->acArray['ac_number'] = $this->asterisk;
 		}
 	}
-
 
 	// **************************
 	// ORDER related functions
@@ -92,14 +91,14 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 	 * @param	[type]		$acArray: ...
 	 * @return	[type]		...
 	 */
-	function create($uid, $acArray)	{
+	function create ($uid, $acArray)	{
 		global $TSFE, $TYPO3_DB;
 
 		$newId = 0;
 		$pid = intval($this->conf['PID_sys_products_orders']);
 		if (!$pid)	$pid = intval($TSFE->id);
 
-		if ($acArray['ac_number'] && $TSFE->sys_page->getPage_noCheck ($pid))	{
+		if ($acArray['owner_name'] != '' && $acArray['bic'] != '' && $acArray['ac_number'] && $TSFE->sys_page->getPage_noCheck ($pid))	{
 			$time = time();
 			$newFields = array (
 				'pid' => intval($pid),
@@ -113,19 +112,17 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 			}
 
 			if ($uid)	{
-				$TYPO3_DB->exec_UPDATEquery($this->tablename,'uid='.$uid,$newFields);
+				$TYPO3_DB->exec_UPDATEquery($this->tablename,'uid=' . $uid, $newFields);
 				$newId = $uid;
 			} else {
 				$TYPO3_DB->exec_INSERTquery($this->tablename, $newFields);
 				$newId = $TYPO3_DB->sql_insert_id();
 			}
 		}
-
 		return $newId;
 	} // create
 
-
-	function getUid()	{
+	function getUid ()	{
 		global $TSFE;
 
 		$acArray = $TSFE->fe_user->getKey('ses','ac');
@@ -162,10 +159,18 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 				$rcArray = $row;
 			}
 		}
-
 		return $rcArray;
 	}
 
+	/**
+	 * Returns the label of the record, Usage in the following format:
+	 *
+	 * @param	array		$row: current record
+	 * @return	string		Label of the record
+	 */
+	public function getLabel ($row) {
+		return $row['owner_name'] . ':' . $row['ac_number'] . ':' . $row['bic'];
+	}
 
 	/**
 	 * Template marker substitution
@@ -199,19 +204,30 @@ class tx_ttproducts_account extends tx_ttproducts_table_base {
 		$markerArray['###PERSON_ACCOUNTS_BIC###'] = $acBic;
 	} // getMarkerArray
 
-
 	/**
 	 * Checks if required fields for bank accounts are filled in
-	 *
-	 * @return	[type]		...
 	 */
-	function checkRequired()	{
+	function checkRequired ()	{
 		$rc = '';
+		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+
+		if (t3lib_extMgm::isLoaded('static_info_tables_banks_de')) {
+
+			$bankObj = $tablesObj->get('static_banks_de');
+		}
 
 		foreach ($this->fieldArray as $k => $field)	{
 			if (!$this->acArray[$field])	{
 				$rc = $field;
 				break;
+			}
+			if ($field == 'bic' && is_object($bankObj) /* && t3lib_extMgm::isLoaded('static_info_tables_banks_de')*/)	{
+				$where_clause = 'sort_code=' . intval(implode('',t3lib_div::trimExplode(' ',$this->acArray[$field]))) . ' AND level=1';
+				$bankRow = $bankObj->get('',0,FALSE,$where_clause);
+				if (!$bankRow)	{
+					$rc = $field;
+					break;
+				}
 			}
 		}
 		return $rc;

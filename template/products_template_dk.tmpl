@@ -46,7 +46,7 @@ It's also used by search-results.
 			<tr>
 				<td colspan=4><img src="clear.gif" width=1 height=6></td>
 			</tr>
-          			
+
 			<tr>
 			<td>
 			<form method="post" action="###FORM_URL###"  name="###FORM_NAME###">
@@ -146,7 +146,7 @@ This subpart is used to display the regular list of gift products.
 			<tr>
 				<td colspan=4><img src="clear.gif" width=1 height=6></td>
 			</tr>
-          			
+
 			<!-- ###ITEM_SINGLE### begin-->
 			<tr>
           	<td>
@@ -178,7 +178,7 @@ This subpart is used to display the regular list of gift products.
 				<tr>
 					<td valign=top nowrap align=right>###GW2B### quantity: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"><br>
 					</td>
-				</tr>			
+				</tr>
 				</tr>
 				</table>
 			</td>
@@ -200,7 +200,7 @@ This subpart is used to display the regular list of gift products.
 				<tr>
 					<td>###GW1B###<strong>receiver email:</strong>###GW1E###</td>
 					<td><input type="text" name="###FIELD_NAME_DELIVERY_EMAIL###" size="30" value="###GIFT_DELIVERY_EMAIL###"'></td>
-				</tr> 
+				</tr>
 				<tr>
 					<td>###GW1B###<strong>message: </strong>###GW1E###</td>
 					<td><textarea cols=30 rows=5 name="###FIELD_NAME_GIFT_NOTE###" wrap="off">###GIFT_NOTE###</textarea></td>
@@ -261,7 +261,7 @@ This subpart is used to display single products.
 			<tr>
 				<td colspan=3><img src="clear.gif" width=1 height=6></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td colspan=3 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###</b>###GW1E###<!-- ###LINK_ITEM###--></td>
   				<td>
   				<!-- ###display_variant2### -->
@@ -277,13 +277,13 @@ This subpart is used to display single products.
 						<b>category:</b> ###CATEGORY_TITLE### <br>
 						<b>product:</b> ###PRODUCT_ITEMNUMBER###<br>
 						<b>price:</b> <font color=red><strong>###PRICE_TAX### ¤</strong></font>###GW2B### &nbsp; (excl. tax ###PRICE_NO_TAX###)###GW2E###<br>
-						
+
 						<B>Link to manufacturer:</B> <A href="###PRODUCT_WWW###" target="_blank">###PRODUCT_WWW###</A><BR>
 						###BULKILY_WARNING###
 						<b>info:</b><br>
 						###PRODUCT_NOTE###<br>
 					###GW1E###	<br>
-						<nobr>###GW2B### quantity: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; 
+						<nobr>###GW2B### quantity: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp;
 						<input type="Submit" name="order" value="put in basket"
 onClick="if(!document.forms['###FORM_NAME###']['###FIELD_NAME###'].value!=''){document.forms['###FORM_NAME###']['###FIELD_NAME###'].value=1;};">
 						</nobr>
@@ -326,7 +326,7 @@ This subpart is used to display single gift products.
 				<td align="right"><!--###LINK_NEXT_SINGLE### begin-->###GW2B###next article &gt;&gt;###GW2E###<!--###LINK_NEXT_SINGLE### end--></td>
 			</tr>
 		</table>
-		
+
 		<H2>gift item</H2>
 
 		<table border="0" cellspacing="0" cellpadding="1" width=1>
@@ -339,7 +339,7 @@ This subpart is used to display single gift products.
 				<td colspan=2><img src="clear.gif" width=1 height=6></td>
 			</tr>
 			<!-- ###PRODUCT_DATA### begin-->
-			<tr> 
+			<tr>
 				<td colspan=2 bgcolor="###GC1###"><!-- ###LINK_ITEM###-->###GW1B###<b>###PRODUCT_TITLE###<!-- ###display_variant2### --> (Size
   ###FIELD_SIZE_VALUE###)<!-- ###display_variant2### --></b>###GW1E###<!-- ###LINK_ITEM###--></td>
 			</tr>
@@ -354,7 +354,7 @@ This subpart is used to display single gift products.
 						<b>info:</b><br>
 						###PRODUCT_NOTE###<br>
 					###GW1E###	<br>
-				</td>				
+				</td>
 			</tr>
 			<!-- ###PRODUCT_DATA### end-->
 			<!-- ###PERSON_DATA### begin-->
@@ -373,13 +373,13 @@ This subpart is used to display single gift products.
 			<tr>
 				<td>###GW1B###<strong>receiver email:</strong>###GW1E###</td>
 				<td><input type="text" name="###FIELD_NAME_DELIVERY_EMAIL###" size="30" value="###GIFT_DELIVERY_EMAIL###"></td>
-			</tr> 
+			</tr>
 			<tr>
 				<td>###GW1B###<strong>message: </strong>###GW1E###</td>
 				<td><textarea cols=30 rows=5 name="###FIELD_NAME_GIFT_NOTE###" wrap="off">###GIFT_NOTE###</textarea></td>
 			</tr>
 			<tr> <td>
-			<nobr>###GW2B### quantity: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp; 
+			<nobr>###GW2B### quantity: ###GW2E###<input size="3" maxlength="4" type="text" name="###FIELD_NAME###" value="###FIELD_QTY###"> &nbsp;
 						<input type="hidden" name="giftnumber" value="###GIFTNO###">
 						<input type="hidden" name="mode_update" value="1">
 						<input type="Submit" name="order" value="put in basket"
@@ -576,6 +576,7 @@ In addition there's a number of fields used for delivery and payment information
 	<form method="post" action="###FORM_URL###" name="###FORM_NAME_GIFT_CERTIFICATE###">
 	number of gift certificate:<br/>
 		<input size="30" maxlength="30" type="text" name="###GIFT_CERTIFICATE_UNIQUE_NUMBER_NAME###">
+		<input type="hidden" name="mode_update" value="1" />
 		<input type="hidden" name="products_info" value="1">
 		<input type="Submit" name="products_redeem_gift" value="redeem gift certificate">&nbsp;&nbsp;
 	</form>
@@ -586,8 +587,8 @@ In addition there's a number of fields used for delivery and payment information
 
 <h3>BASKET_OVERVIEW_TEMPLATE</h3>
 <em>The basket overview</em>
- 
- 
+
+
 <!-- ###BASKET_OVERVIEW_TEMPLATE### begin -->
 <!-- ###ITEM_CATEGORY_AND_ITEMS### begin -->
 <!-- ###ITEM_LIST### begin -->
@@ -761,7 +762,7 @@ Exact same features as BASKET_TEMPLATE
 	<br>
   <fieldset>
   <legend>Videre</legend>
-	<input type="Submit" name="products_update" value="back to basket">&nbsp;&nbsp;	
+	<input type="Submit" name="products_update" value="back to basket">&nbsp;&nbsp;
 	<input type="Submit" name="products_payment" value="pay / order" onClick="document.forms['###FORM_NAME###'].action='###FORM_URL_FINALIZE###';">
 	<input type="hidden" name="products_cmd" value="cardno" />
   </fieldset>
@@ -987,7 +988,7 @@ Exact same features as BASKET_TEMPLATE
 	<br>
 
 	<form method="post" action="###FORM_URL###" name="paymentform">
-	<input type="Submit" name="products_update" value="back to shopping">&nbsp;&nbsp;	
+	<input type="Submit" name="products_update" value="back to shopping">&nbsp;&nbsp;
 	<input type="Submit" name="products_finalize" value="Udfør ordre" onclick="document.getElementsByName('paymentform')[0].action='###FORM_URL_THANKS###'; document.getElementsByName('paymentform')[0].target='###FORM_URL_TARGET###';">
 	</form>
 
@@ -1592,7 +1593,7 @@ You have received a certificate
 Sender:     ###PERSON_NAME###
 Receiver:   ###DELIVERY_NAME###
 
-Comment:  
+Comment:
 ###ORDER_STATUS_COMMENT###
 
 value certificate in Euros:
@@ -1695,7 +1696,7 @@ Med venlig hilsen, Inter-Photo
 <!-- ###EMAIL_PLAINTEXT_TEMPLATE### end -->
 
 
- 	
+
 
 
 
@@ -1786,4 +1787,4 @@ Best Regards,
 <!-- ###EMAIL_HTML_SHELL### end -->
 
 
- 
+

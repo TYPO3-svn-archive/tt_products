@@ -39,63 +39,31 @@
 class tx_ttproducts_memo_view {
 	var $pibase; // reference to object of pibase
 	var $conf;
-	var $config;
 	var $pid_list;
 	var $pid; // pid where to go
 	var $useArticles;
-
-	var $searchFieldList='';
 	var $memoItems;
 
-	function init(
-			&$pibase,
-			&$pid_list,
+	public function init(
+			$pibase,
+			$pid_list,
 			$pid,
+			$conf,
 			$useArticles
 		) {
-
-		global $TSFE, $TYPO3_DB;
-
-		$this->pibase = &$pibase;
-		$this->conf = &$cnf->conf;
-		$this->config = &$cnf->config;
-
+		$this->pibase = $pibase;
 		$this->pid_list = $pid_list;
 		$this->pid = $pid;
+		$this->conf = $conf;
 		$this->useArticles = $useArticles;
-		$fe_user_uid = $TSFE->fe_user->user['uid'];
 		$this->memoItems = array();
 
-		if ($fe_user_uid)	{
-			if ($TSFE->fe_user->user['tt_products_memoItems'] != '')	{
-				$this->memoItems = explode(',', $TSFE->fe_user->user['tt_products_memoItems']);
-			}
-
-			if ($this->pibase->piVars['addmemo'])	{
-				$addMemo = explode(',', $this->pibase->piVars['addmemo']);
-
-				foreach ($addMemo as $addMemoSingle)
-					if (!in_array($addMemoSingle, $this->memoItems))
-						$this->memoItems[] = intval($addMemoSingle);
-
-				$fieldsArray = array();
-				$fieldsArray['tt_products_memoItems'] = implode(',', $this->memoItems);
-				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
-			}
-
-			if ($this->pibase->piVars['delmemo'])	{
-				$delMemo = explode(',', $this->pibase->piVars['delmemo']);
-
-				foreach ($delMemo as $delMemoSingle)	{
-					$val = intval($delMemoSingle);
-					if (in_array($val, $this->memoItems))
-						unset($this->memoItems[array_search($val, $this->memoItems)]);
-				}
-
-				$fieldsArray = array();
-				$fieldsArray['tt_products_memoItems']=implode(',', $this->memoItems);
-				$TYPO3_DB->exec_UPDATEquery('fe_users', 'uid='.$fe_user_uid, $fieldsArray);
-			}
+		if (
+			tx_ttproducts_control_memo::bUseFeuser($conf) ||
+			tx_ttproducts_control_memo::bUseSession($conf)
+		) {
+			$functablename = 'tt_products';
+			$this->memoItems = tx_ttproducts_control_memo::getMemoItems($functablename);
 		}
 	}
 
@@ -107,16 +75,16 @@ class tx_ttproducts_memo_view {
 	 * @param	[type]		$error_code: ...
 	 * @return	[type]		...
 	 */
-	function &printView(&$templateCode, &$error_code)	{
+	function printView($templateCode, &$error_code)	{
 		global $TSFE;
 
 		$content = '';
 
-		$fe_user_uid = $TSFE->fe_user->user['uid'];
-		if ($fe_user_uid)	{
-			if ($this->memoItems)	{
-				include_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_list_view.php');
-
+		if (
+			tx_ttproducts_control_memo::bUseFeuser($this->conf) ||
+			tx_ttproducts_control_memo::bUseSession($this->conf)
+		) {
+			if ($this->memoItems) {
 				// List all products:
 				$listView = t3lib_div::makeInstance('tx_ttproducts_list_view');
 				$listView->init (
@@ -137,22 +105,18 @@ class tx_ttproducts_memo_view {
 					false,
 					$error_code,
 					$templateArea,
-					$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXTkey]['pageAsCategory'],
+					$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['pageAsCategory'],
 					array()
 				);
 			} else {
-				include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-
 				$subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
 				$subpartmarkerObj->init(
 					$this->pibase->cObj
 				);
 
-				$content = $this->pibase->cObj->getSubpart($templateCode,$subpartmarkerObj->spMarker('###MEMO_EMPTY###'));
+				$content = $this->pibase->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###MEMO_EMPTY###'));
 			}
-		} else {
-			include_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-
+		} else if (tx_ttproducts_control_memo::bIsAllowed('fe_users', $this->conf)) {
 			$subpartmarkerObj = t3lib_div::makeInstance('tx_ttproducts_subpartmarker');
 			$subpartmarkerObj->init(
 				$this->pibase->cObj
@@ -163,13 +127,10 @@ class tx_ttproducts_memo_view {
 
 		return $content;
 	}
-
 }
-
 
 if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tt_products/view/class.tx_ttproducts_memo_view.php']);
 }
-
 
 ?>

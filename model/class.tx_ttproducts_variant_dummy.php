@@ -38,8 +38,6 @@
  *
  */
 
-require_once (PATH_BE_ttproducts.'model/int.tx_ttproducts_variant_int.php');
-
 
 class tx_ttproducts_variant_dummy implements tx_ttproducts_variant_int {
 	var $bSelectableArray = array();
@@ -52,7 +50,7 @@ class tx_ttproducts_variant_dummy implements tx_ttproducts_variant_int {
 	 * @param	[type]		$useArticles: ...
 	 * @return	[type]		...
 	 */
-	function init(&$itemTable, $tablename, $useArticles)  {
+	function init($itemTable, $tablename, $useArticles)  {
 
 	} // init
 

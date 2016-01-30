@@ -38,7 +38,7 @@
  */
 class tx_ttproducts_pricecalc_base {
 
-	function getPrice (&$conf, $offset, $num='1')	{
+	function getPrice (&$conf, $offset, $num = '1')	{
 		$rc = 0;
 		$priceCalcTemp = $conf[$offset];
 		if (is_array($priceCalcTemp))	{

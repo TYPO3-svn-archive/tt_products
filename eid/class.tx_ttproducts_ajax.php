@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2008 Franz Holzinger <contact@fholzinger.com>
+*  (c) 2007-2009 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,16 +31,14 @@
  *
  * $Id$
  *
- * @author  Franz Holzinger <contact@fholzinger.com>
- * @maintainer	Franz Holzinger <contact@fholzinger.com>
+ * @author  Franz Holzinger <franz@ttproducts.de>
+ * @maintainer	Franz Holzinger <franz@ttproducts.de>
  * @package TYPO3
  * @subpackage tt_products
  *
  *
  */
 
-
-require_once (PATH_BE_ttproducts.'control/class.tx_ttproducts_javascript.php');
 
 
 class tx_ttproducts_ajax {
@@ -55,11 +53,11 @@ class tx_ttproducts_ajax {
 	function init()	{
 		global $TSFE;
 
-		include_once(PATH_BE_taxajax.'class.tx_taxajax.php');
-		$this->taxajax = &t3lib_div::makeInstance('tx_taxajax');
-		$charset = $TSFE->renderCharset;
-		$this->taxajax->setCharEncoding($charset);
+// 		include_once(PATH_BE_taxajax.'class.tx_taxajax.php');
+		$this->taxajax = t3lib_div::makeInstance('tx_taxajax');
+		$this->taxajax->setCharEncoding('utf-8');
 	}
+
 
 	/**
 	 * set the setup configuration
@@ -70,6 +68,7 @@ class tx_ttproducts_ajax {
 	function setConf(&$conf)	{
 		$this->conf = $conf;
 	}
+
 
 	/**
 	 * get the configuration
@@ -115,8 +114,20 @@ class tx_ttproducts_ajax {
 // 			);
 
 			// Encoding of the response to FE charset
-		$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING');
-		$reqURI .= '&no_cache=1&eID='.TT_PRODUCTS_EXTkey.$param;
+	//	$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT') . '?' . t3lib_div::getIndpEnv('QUERY_STRING');
+		$reqURI = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
+		if (strpos($reqURI, '?'))	{
+			$nextDelimiter = '&';
+		} else {
+			$nextDelimiter = '?';
+		}
+
+		$pos = strpos($reqURI, '&cHash=');
+		if ($pos !== FALSE) {
+			$reqURI = substr($reqURI, 0, $pos);
+		}
+		$reqURI .= $nextDelimiter.'no_cache=1&eID='.TT_PRODUCTS_EXT.$param;
+
 		// $reqURI = htmlspecialchars ($reqURI,ENT_QUOTES,$charset);  ==> funktioniert mit einigen Browsern nicht!
 		// $reqURI = tx_ttproducts_javascript::jsspecialchars($reqURI);
 		$this->taxajax->setRequestURI($reqURI);

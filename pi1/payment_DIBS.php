@@ -1,22 +1,22 @@
 <?php
 /***************************************************************
 *  Copyright notice
-*  
+*
 *  (c) 1999-2008 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
-*  This script is part of the TYPO3 project. The TYPO3 project is 
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License or
 *  (at your option) any later version.
-* 
+*
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license 
+*  A copy is found in the textfile GPL.txt and important notices to the license
 *  from the author is found in LICENSE.txt distributed with these scripts.
 *
-* 
+*
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -33,12 +33,12 @@
  * This script is used as a "handleScript" with the default lib/class.tx_ttproducts_basket_view.php of the Shop System.
  *
  * DIBS:	http://www.dibs.dk
- * 
+ *
  * $Id$
  *
  * @author  Kasper Skårhøj <kasperYYYY@typo3.com>
  * @author  Franz Holzinger <kontakt@fholzinger.com>
- * @maintainer	Franz Holzinger <kontakt@fholzinger.com> 
+ * @maintainer	Franz Holzinger <kontakt@fholzinger.com>
  *
  */
 
@@ -46,7 +46,7 @@
 if (!is_object($pibase) || !is_object($this->cObj)  || !is_object($this->basket))	die('tt_products: $pibase and $pibase->cObj must be objects!');
 
 
-// $lConf = $this->basketExtra["payment."]["handleScript."];		
+// $lConf = $this->basketExtra["payment."]["handleScript."];
 // Loads the handleScript TypoScript into $lConf.
 $lConf = $confScript;
 
@@ -54,14 +54,14 @@ $lConf = $confScript;
 $localTemplateCode = $this->cObj->fileResource($lConf['templateFile'] ? $lConf['templateFile'] : 'EXT:tt_products/template/payment_DIBS_template.tmpl');		// Fetches the DIBS template file
 if (!is_object($basketView))	{
 	$error_code = '';
-	$basketView = &t3lib_div::getUserObj('tx_ttproducts_basket_view',1);
+	$basketView = t3lib_div::getUserObj('tx_ttproducts_basket_view',1);
 	$basketView->init ($pibase, array(), FALSE, $this->templateCode, $error_code);
 }
-$markerObj = &t3lib_div::getUserObj('&tx_ttproducts_marker');
+$markerObj = t3lib_div::getUserObj('&tx_ttproducts_marker');
 $localTemplateCode = $this->cObj->substituteMarkerArrayCached($localTemplateCode, $markerObj->getGlobalMarkerArray());
 
-$tablesObj = &t3lib_div::getUserObj('&tx_ttproducts_tables');
-$order = &$tablesObj->get('sys_products_orders');
+$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');
+$order = $tablesObj->get('sys_products_orders');
 
 $orderUid = $order->getBlankUid();	// Gets an order number, creates a new order if no order is associated with the current session
 
@@ -81,7 +81,7 @@ switch($products_cmd)	{
 		$tSubpart = $lConf['direct'] ? '###DIBS_DIRECT_TEMPLATE###' : $tSubpart;		// If direct is selected, use different subpart from template
 		$content=$basketView->getView($localTemplateCode,'PAYMENT', $infoViewObj, false, false, true, $tSubpart);		// This not only gets the output but also calculates the basket total, so it's NECESSARY!
 		$markerArray=array();
-		$markerArray['###HIDDENFIELDS###'] = 
+		$markerArray['###HIDDENFIELDS###'] =
 ' <input type="hidden" name="merchant"
 value="'.$lConf['merchant'].'">
 <input type="hidden" name="amount"
@@ -91,14 +91,14 @@ value="'.round($this->basket->calculatedArray['priceTax']['total']
 value="'.$lConf['currency'].'">		<!--Valuta som angivet i
 ISO4217, danske kroner=208-->
 <input type="hidden" name="orderid"
-value="'.$this->order->getNumber($orderUid).'">		
+value="'.$this->order->getNumber($orderUid).'">
 <!--Butikkens ordrenummer der skal knyttes til denne transaktion-->
 <input type="hidden" name="uniqueoid" value="1">
 <input type="hidden" name="accepturl"
 value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=accept&products_finalize=1'.$param.'">
 <input type="hidden" name="declineurl"
 value="https://payment.architrade.com/cgi-ssl/relay.cgi/'.$lConf['relayURL'].'&products_cmd=decline&products_finalize=1'.$param.'">';
-	
+
 		if ($lConf['soloe'] || $lConf['direct'])	{
 		$markerArray['###HIDDENFIELDS###'].= '
 <input type="hidden" name="cancelurl"
@@ -129,7 +129,7 @@ doPopup(this);" target="Betaling"'; // if this is empty then no popup window wil
 					DIN(DK)	 Diners Club, Danmark
 					DIN		 Diners Club, international
 				*/
-		
+
 			$markerArray['###HIDDENFIELDS###'].= '
 				<input type="hidden" name="cardtype" value="'.$lConf['cardType'].'">
 			';
@@ -139,10 +139,10 @@ doPopup(this);" target="Betaling"'; // if this is empty then no popup window wil
 				<input type="hidden" name="account" value="'.$lConf['account'].'">
 			';
 		}
-		
-		
+
+
 				// Adds order info to hiddenfields.
-		if ($lConf['addOrderInfo']) {	
+		if ($lConf['addOrderInfo']) {
 			$theFields="";
 				// Delivery info
 			reset($this->address->infoArray['delivery']);
@@ -154,7 +154,7 @@ doPopup(this);" target="Betaling"'; // if this is empty then no popup window wil
 					$theFields.=chr(10).'<input type="hidden" name="delivery'.$cc.'.'.$field.'" value="'.htmlspecialchars($value).'">';
 				}
 			}
-			
+
 				// Order items
 			reset($this->basket->itemArray);
 			$theFields.='
@@ -162,9 +162,9 @@ doPopup(this);" target="Betaling"'; // if this is empty then no popup window wil
 <input type="hidden" name="ordline1-2" value="Beskrivelse">
 <input type="hidden" name="ordline1-3" value="Antal">
 <input type="hidden" name="ordline1-4" value="Pris">
-';			  
+';
 			$cc=1;
-			$priceViewObj = &t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
+			$priceViewObj = t3lib_div::getUserObj('&tx_ttproducts_field_price_view');
 //while(list(,$rec)=each($this->basket->calculatedBasket))	  {
 			// loop over all items in the basket indexed by a sorting text
 			foreach ($this->basket->itemArray as $sort=>$actItemArray) {
@@ -177,7 +177,7 @@ doPopup(this);" target="Betaling"'; // if this is empty then no popup window wil
 	<input type="hidden" name="ordline'.$cc.'-4" value="'.$priceViewObj->priceFormat($actItem['totalTax']).'">';
 				}
 			}
-		
+
 			$theFields.='
 <input type="hidden" name="priceinfo1.Shipping"
 value="'.$priceViewObj->priceFormat($this->basket->calculatedArray['priceTax']['shipping']).'">';
@@ -190,7 +190,7 @@ value="'.$priceViewObj->priceFormat( $this->basket->calculatedArray['priceTax'][
 			$markerArray['###HIDDENFIELDS###'].=$theFields;
 		}
 		$content= $pibase->cObj->substituteMarkerArrayCached($content, $markerArray);
-	break;	  
+	break;
 	case 'decline':
 		$markerArray=array();
 		$markerArray['###REASON_CODE###'] = t3lib_div::_GP('reason');
@@ -206,7 +206,7 @@ value="'.$priceViewObj->priceFormat( $this->basket->calculatedArray['priceTax'][
 			// DIBS md5 keys
 		$k1=$lConf['k1'];
 		$k2=$lConf['k2'];
-	
+
 			// Checking transaction
 		$amount=round($this->basket->calculatedArray['priceTax']['total'] *100);
 		$currency='208';
@@ -236,4 +236,5 @@ value="'.$priceViewObj->priceFormat( $this->basket->calculatedArray['priceTax'][
 		}
 	break;
 }
+
 ?>
