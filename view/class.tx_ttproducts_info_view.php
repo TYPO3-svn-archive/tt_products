@@ -307,28 +307,30 @@ class tx_ttproducts_info_view {
 
 		$requiredInfoFields = $this->getRequiredInfoFields();
 
-		if ($requiredInfoFields)	{
-			$bBillingTo = true;
-			$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
+		if (!$this->bDeliveryAddress || $type == 'billing')	{
+			if ($requiredInfoFields)	{
+				$bBillingTo = true;
+				$infoFields = t3lib_div::trimExplode(',',$requiredInfoFields);
 
-			foreach($infoFields as $k => $fName)	{
-				$bBillingTo &= !empty($this->infoArray['billing'][$fName]);
-			}
-			foreach($infoFields as $k => $fName)	{
-				if (
-					(
-						is_array($this->infoArray['billing']) &&
-						trim($this->infoArray['billing'][$fName]) == ''
-					) ||
-					(
-						$type != 'billing' &&
-						$bBillingTo &&
-						is_array($this->infoArray['delivery']) &&
-						trim($this->infoArray['delivery'][$fName]) == ''
-					)
-				) {
-					$rc = $fName;
-					break;
+				foreach($infoFields as $k => $fName)	{
+					$bBillingTo &= !empty($this->infoArray['billing'][$fName]);
+				}
+				foreach($infoFields as $k => $fName)	{
+					if (
+						(
+							is_array($this->infoArray['billing']) &&
+							trim($this->infoArray['billing'][$fName]) == ''
+						) ||
+						(
+							$type != 'billing' &&
+							$bBillingTo &&
+							is_array($this->infoArray['delivery']) &&
+							trim($this->infoArray['delivery'][$fName]) == ''
+						)
+					) {
+						$rc = $fName;
+						break;
+					}
 				}
 			}
 		}
