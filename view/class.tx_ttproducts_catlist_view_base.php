@@ -275,7 +275,7 @@ abstract class tx_ttproducts_catlist_view_base {
 		$wrongPounds = preg_match_all('/(([^#]|[\xD\xA])+##([^#]|[\xD\xA])+)/', $t['listFrameWork'], $matches);
 
 		if ($wrongPounds) {
-			$error_code[0] = 'template_invalid_marker_name';
+			$error_code[0] = 'template_invalid_marker_border';
 			$error_code[1] = '###' . $templateArea . $templateSuffix . '###';
 			$error_code[2] = htmlspecialchars(implode('|', $matches['0']));
 

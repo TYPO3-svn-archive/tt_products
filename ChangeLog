@@ -1,4 +1,7 @@
 2016-02-20 Franz Holzinger <franz@ttproducts.de>
+	* bugfix: show the correct error message with label template_invalid_marker_border
+
+2016-02-20 Franz Holzinger <franz@ttproducts.de>
 	* bugfix: Do not use the global tx_ttproducts_language with markers. Generate only markers from the texts beneath the marker folder. Otherwise the markers of general texts would be replaced too early by not completed texts which also have variables.
 	* bugfix: the product single view must always be reinitalized
 	* Set the default overview activity store value to 1, because TYPO3 does not execute the Typoscript in an ordered manner
