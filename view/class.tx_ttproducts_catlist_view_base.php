@@ -272,7 +272,7 @@ abstract class tx_ttproducts_catlist_view_base {
 		$rc = TRUE;
 		$mode = '';
 		$this->getFrameWork($t, $templateCode, $templateArea . $templateSuffix);
-		$wrongPounds = preg_match_all('/(([^#]|[\xD\xA])+##([^#]|[\xD\xA])+)/', $t['listFrameWork'], $matches);
+		$wrongPounds = preg_match_all('/([^#]+(#{2}|#{4,5}|#{7,8})([^#])+?)/', $t['listFrameWork'], $matches);
 
 		if ($wrongPounds) {
 			$error_code[0] = 'template_invalid_marker_border';

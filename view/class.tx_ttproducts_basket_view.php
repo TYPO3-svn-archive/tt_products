@@ -226,7 +226,7 @@ class tx_ttproducts_basket_view {
 		}
 
 		if ($t['basketFrameWork'])	{
-			$wrongPounds = preg_match_all('/(([^#]|[\xD\xA])+##([^#]|[\xD\xA])+)/', $t['basketFrameWork'], $matches);
+			$wrongPounds = preg_match_all('/([^#]+(#{2}|#{4,5}|#{7,8})([^#])+?)/', $t['basketFrameWork'], $matches);
 			if ($wrongPounds) {
 				$templateObj = t3lib_div::getUserObj('&tx_ttproducts_template');
 				$this->error_code[0] = 'template_invalid_marker_border';
