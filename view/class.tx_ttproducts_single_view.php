@@ -202,12 +202,12 @@ class tx_ttproducts_single_view {
 			// Add the template suffix
 			$subPartMarker = $subPartMarker.$templateSuffix;
 			$itemFrameWork = $this->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###' . $subPartMarker . '###'));
-			$wrongPounds = preg_match_all('/[^#]#{1,2}[^#]/', $itemFrameWork, $matches);
+			$wrongPounds = preg_match_all('/(([^#]|[\xD\xA])+##([^#]|[\xD\xA])+)/', $itemFrameWork, $matches);
 
 			if ($wrongPounds) {
 				$error_code[0] = 'template_invalid_marker_name';
-				$error_code[1] = implode('|', $matches['0']);;
-
+				$error_code[1] = '###' . $subPartMarker . '###';
+				$error_code[2] = htmlspecialchars(implode('|', $matches['0']));
 				return '';
 			}
 

@@ -226,10 +226,12 @@ class tx_ttproducts_basket_view {
 		}
 
 		if ($t['basketFrameWork'])	{
-			$wrongPounds = preg_match_all('/[^#]#{1,2}[^#]/', $t['basketFrameWork'], $matches);
+			$wrongPounds = preg_match_all('/(([^#]|[\xD\xA])+##([^#]|[\xD\xA])+)/', $t['basketFrameWork'], $matches);
 			if ($wrongPounds) {
-				$this->error_code[0] = 'template_invalid_marker_name';
-				$this->error_code[1] = implode('|', $matches['0']);;
+				$templateObj = t3lib_div::getUserObj('&tx_ttproducts_template');
+				$this->error_code[0] = 'template_invalid_marker_border';
+				$this->error_code[1] = '###' . $subpartMarker . $templateObj->getTemplateSuffix() . '###';
+				$this->error_code[2] = htmlspecialchars(implode('|', $matches['0']));
 
 				return '';
 			}

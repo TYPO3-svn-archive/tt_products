@@ -271,12 +271,13 @@ abstract class tx_ttproducts_catlist_view_base {
 		$pibaseObj = t3lib_div::getUserObj('&' . $this->pibaseClass);
 		$rc = TRUE;
 		$mode = '';
-		$this->getFrameWork($t, $templateCode, $templateArea.$templateSuffix);
-		$wrongPounds = preg_match_all('/[^#]#{1,2}[^#]/', $t['listFrameWork'], $matches);
+		$this->getFrameWork($t, $templateCode, $templateArea . $templateSuffix);
+		$wrongPounds = preg_match_all('/(([^#]|[\xD\xA])+##([^#]|[\xD\xA])+)/', $t['listFrameWork'], $matches);
 
 		if ($wrongPounds) {
 			$error_code[0] = 'template_invalid_marker_name';
-			$error_code[1] = implode('|', $matches['0']);;
+			$error_code[1] = '###' . $templateArea . $templateSuffix . '###';
+			$error_code[2] = htmlspecialchars(implode('|', $matches['0']));
 
 			return FALSE;
 		}

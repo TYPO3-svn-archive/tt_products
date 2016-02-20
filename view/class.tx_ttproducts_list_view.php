@@ -663,11 +663,13 @@ class tx_ttproducts_list_view {
 				return $content;
 			}
 
-			$wrongPounds = preg_match_all('/[^#]#{1,2}[^#]/', $t['listFrameWork'], $matches);
+			$wrongPounds = preg_match_all('/(([^#]|[\xD\xA])+##([^#]|[\xD\xA])+)/', $t['listFrameWork'], $matches);
+			debug ($wrongPounds, '$wrongPounds');
 
 			if ($wrongPounds) {
 				$error_code[0] = 'template_invalid_marker_name';
-				$error_code[1] = implode('|', $matches['0']);;
+				$error_code[1] = '###' . $templateArea . '###';
+				$error_code[2] =  htmlspecialchars(implode('|', $matches['0']));
 
 				return '';
 			}
