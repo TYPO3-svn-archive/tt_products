@@ -1009,16 +1009,16 @@ class tx_ttproducts_main {
 			if (!is_object($this->singleView)) {
 				// List single product:
 				$this->singleView = t3lib_div::makeInstance('tx_ttproducts_single_view');
-				$this->singleView->init (
-					$this->pibaseClass,
-					$this->tt_product_single,
-					$extVars,
-					$this->pid,
-					$this->conf['useArticles'],
-					$this->config['pid_list'],
-					$this->config['recursive']
-				);
 			}
+			$this->singleView->init(
+				$this->pibaseClass,
+				$this->tt_product_single,
+				$extVars,
+				$this->pid,
+				$this->conf['useArticles'],
+				$this->config['pid_list'],
+				$this->config['recursive']
+			);
 			$content = $this->singleView->printView(
 				$templateCode,
 				$error_code,

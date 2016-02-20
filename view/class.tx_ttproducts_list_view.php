@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2011 Franz Holzinger <franz@ttproducts.de>
+*  (c) 2007-2016 Franz Holzinger <franz@ttproducts.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -661,6 +661,15 @@ class tx_ttproducts_list_view {
 				$error_code[1] = '###' . $templateArea . '###';
 				$error_code[2] = $templateObj->getTemplateFile();
 				return $content;
+			}
+
+			$wrongPounds = preg_match_all('/[^#]#{1,2}[^#]/', $t['listFrameWork'], $matches);
+
+			if ($wrongPounds) {
+				$error_code[0] = 'template_invalid_marker_name';
+				$error_code[1] = implode('|', $matches['0']);;
+
+				return '';
 			}
 
 			$addQueryString = $this->uidArray;

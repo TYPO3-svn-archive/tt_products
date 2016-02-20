@@ -226,6 +226,14 @@ class tx_ttproducts_basket_view {
 		}
 
 		if ($t['basketFrameWork'])	{
+			$wrongPounds = preg_match_all('/[^#]#{1,2}[^#]/', $t['basketFrameWork'], $matches);
+			if ($wrongPounds) {
+				$this->error_code[0] = 'template_invalid_marker_name';
+				$this->error_code[1] = implode('|', $matches['0']);;
+
+				return '';
+			}
+
 			if (!$bHtml)	{
 				$t['basketFrameWork'] = html_entity_decode($t['basketFrameWork'],ENT_QUOTES,$TSFE->renderCharset);
 			}
@@ -334,7 +342,7 @@ class tx_ttproducts_basket_view {
 					}
 					$quantity = $basketObj->getItemObj()->getQuantity($actItem);
 					$minQuantity = $basketObj->getItemObj()->getMinQuantity($actItem);
-					if ($quantity < $minQuantity)	{
+					if ($minQuantity != '0.00' && $quantity < $minQuantity) {
 						$minQuantityArray[] = array('rec' => $row, 'minQuantity' => $minQuantity, 'quantity' => $quantity);
 					}
 					$count++;

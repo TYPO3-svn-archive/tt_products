@@ -42,15 +42,6 @@
  *
  */
 
-/*
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_marker.php');
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_subpartmarker.php');
-require_once (PATH_BE_ttproducts.'marker/class.tx_ttproducts_javascript_marker.php');
-require_once (PATH_BE_ttproducts.'model/class.tx_ttproducts_pid_list.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_url_view.php');
-require_once (PATH_BE_ttproducts.'view/class.tx_ttproducts_relatedlist_view.php');
-*/
-
 
 class tx_ttproducts_single_view {
 	public $conf;
@@ -211,6 +202,15 @@ class tx_ttproducts_single_view {
 			// Add the template suffix
 			$subPartMarker = $subPartMarker.$templateSuffix;
 			$itemFrameWork = $this->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###' . $subPartMarker . '###'));
+			$wrongPounds = preg_match_all('/[^#]#{1,2}[^#]/', $itemFrameWork, $matches);
+
+			if ($wrongPounds) {
+				$error_code[0] = 'template_invalid_marker_name';
+				$error_code[1] = implode('|', $matches['0']);;
+
+				return '';
+			}
+
 			$tablesObj->get('fe_users', TRUE)->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray, $itemTableArray ['product']->getFuncTablename());
 
 
@@ -782,7 +782,7 @@ class tx_ttproducts_single_view {
 					array()
 				);
 			} while($row_parent['uid'] != $this->conf['id_shop']);
-			$wrappedSubpartArray['###LINK_BACK2LIST###'] = implode(' &laquo; ', array_reverse($breadcrumbArray));
+			$markerArray['###LINK_BACK2LIST###'] = implode(' &laquo; ', array_reverse($breadcrumbArray));
 			// edit jf end
 
 			// set the title of the single view

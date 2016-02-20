@@ -68,7 +68,7 @@ class tx_ttproducts_marker {
 		$this->conf = &$cnf->conf;
 		$this->config = &$cnf->config;
 		$this->markerArray = array('CATEGORY', 'PRODUCT', 'ARTICLE');
-		$langObj = t3lib_div::getUserObj('&tx_ttproducts_language');
+		$langObj = t3lib_div::getUserObj('tx_ttproducts_language');
 		$langObj->init($this, $this->cObj, $this->conf['marks.'], 'marker/class.tx_ttproducts_marker.php');
 
 		$markerFile = $this->conf['markerFile'];

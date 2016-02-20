@@ -272,6 +272,15 @@ abstract class tx_ttproducts_catlist_view_base {
 		$rc = TRUE;
 		$mode = '';
 		$this->getFrameWork($t, $templateCode, $templateArea.$templateSuffix);
+		$wrongPounds = preg_match_all('/[^#]#{1,2}[^#]/', $t['listFrameWork'], $matches);
+
+		if ($wrongPounds) {
+			$error_code[0] = 'template_invalid_marker_name';
+			$error_code[1] = implode('|', $matches['0']);;
+
+			return FALSE;
+		}
+
 		$bUseFilter = FALSE;
 		$ctrlArray['bUseBrowser'] = FALSE;
 		$tablesObj = t3lib_div::getUserObj('&tx_ttproducts_tables');

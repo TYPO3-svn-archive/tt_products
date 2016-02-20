@@ -1,3 +1,10 @@
+2016-02-20 Franz Holzinger <franz@ttproducts.de>
+	* bugfix: Do not use the global tx_ttproducts_language with markers. Generate only markers from the texts beneath the marker folder. Otherwise the markers of general texts would be replaced too early by not completed texts which also have variables.
+	* bugfix: the product single view must always be reinitalized
+	* Set the default overview activity store value to 1, because TYPO3 does not execute the Typoscript in an ordered manner
+	* Workaround for TYPO3 6.2.17 pitfall bug #73240: Show a warning message if a marker without '###' has been found.
+	* bugfix for TYPO3 7.6: copy the TCA into the Configuration folder
+
 2016-01-27 Franz Holzinger <franz@ttproducts.de>
 	* bugfix for TYPO3 7.6.2: no call to t3lib_extMgm in the files ext_tables.php and ext_localconf.php
 	* bugfix: the product variants in the single view must come from the product record

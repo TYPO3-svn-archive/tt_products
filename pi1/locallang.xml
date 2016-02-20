@@ -17,6 +17,7 @@
 			<label index="no_template">The shop template file has not been found. Check your template setup about</label>
 			<label index="empty_template">The shop template file | is empty.</label>
 			<label index="no_subtemplate">The subpart part marker | or the template file | has not been found.</label>
+			<label index="template_invalid_marker_name">The following invalid marker characters have been found in your template file: |.</label>
 			<label index="accept_AGB">You have to accept the general trading conditions to proceed.</label>
 			<label index="additional_single">buy this product</label>
 			<label index="additional_gift_service">wrap product by gift service</label>
@@ -83,6 +84,7 @@
 			<label index="no_template">Die Shop-Template Datei wurde nicht gefunden. Überprüfen Sie im Template Setup: |</label>
 			<label index="empty_template">Die Shop-Template Datei | ist leer.</label>
 			<label index="no_subtemplate">Der Bereich | wurde in der Template Datei | nicht gefunden.</label>
+			<label index="template_invalid_marker_name">In der Shop Template Datei sind folgende ungültige Zeichen für Marker gefunden worden: |.</label>
 			<label index="accept_AGB">Sie haben unsere AGB nicht akzeptiert.</label>
 			<label index="additional_single">Produkt kaufen</label>
 			<label index="additional_gift_service">Verpacke Produkt mit Geschenk Service</label>

@@ -16,6 +16,46 @@ if (
 	$emClass = 't3lib_extMgm';
 }
 
+if (!defined ('TT_PRODUCTS_EXT')) {
+	define('TT_PRODUCTS_EXT', $_EXTKEY);
+}
+
+if (!defined ('PATH_BE_TTPRODUCTS')) {
+	define('PATH_BE_TTPRODUCTS', call_user_func($emClass . '::extPath', $_EXTKEY));
+}
+
+if (!defined ('PATH_BE_TTPRODUCTS_REL')) {
+	define('PATH_BE_TTPRODUCTS_REL', call_user_func($emClass . '::extRelPath', $_EXTKEY));
+}
+
+if (!defined ('PATH_FE_TTPRODUCTS_REL')) {
+	define('PATH_FE_TTPRODUCTS_REL', call_user_func($emClass . '::siteRelPath', $_EXTKEY));
+}
+
+if (!defined ('PATH_TTPRODUCTS_ICON_TABLE_REL')) {
+	define('PATH_TTPRODUCTS_ICON_TABLE_REL', PATH_BE_TTPRODUCTS_REL . 'res/icons/table/');
+}
+
+if (!defined ('ADDONS_EXT')) {
+	define('ADDONS_EXT', 'addons_tt_products');
+}
+
+if (!defined ('PARTY_EXT')) {
+	define('PARTY_EXT', 'party');
+}
+
+if (!defined ('TT_ADDRESS_EXT')) {
+	define('TT_ADDRESS_EXT', 'tt_address');
+}
+
+if (!defined ('PARTNER_EXT')) {
+	define('PARTNER_EXT', 'partner');
+}
+
+if (!defined ('POOL_EXT')) {
+	define('POOL_EXT', 'pool');
+}
+
 if (!defined ('TT_PRODUCTS_EXTkey')) {
 	define('TT_PRODUCTS_EXTkey',$_EXTKEY);
 }
@@ -23,6 +63,20 @@ if (!defined ('TT_PRODUCTS_EXTkey')) {
 if (!defined ('TT_PRODUCTS_EXT')) {
 	define('TT_PRODUCTS_EXT', $_EXTKEY);
 }
+
+
+if (!defined ('DAM_EXT')) {
+	define('DAM_EXT', 'dam');
+}
+
+if (!defined ('STATIC_INFO_TABLES_TAXES_EXT')) {
+	define('STATIC_INFO_TABLES_TAXES_EXT', 'static_info_tables_taxes');
+}
+
+
+
+
+// deprecated constants:
 
 if (!defined ('PATH_BE_ttproducts')) {
 	define('PATH_BE_ttproducts', call_user_func($emClass . '::extPath', TT_PRODUCTS_EXT));
@@ -49,6 +103,7 @@ if (call_user_func($emClass . '::isLoaded', TABLE_EXTkey)) {
 		define('PATH_BE_table', call_user_func($emClass . '::extPath', TABLE_EXTkey));
 	}
 }
+
 
 if (!defined ('ADDONS_EXTkey')) {
 	define('ADDONS_EXTkey', 'addons_tt_products');
