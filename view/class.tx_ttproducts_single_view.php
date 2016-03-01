@@ -109,6 +109,7 @@ class tx_ttproducts_single_view {
 
 		$itemTableArray = array();
 		$itemTableArray['product'] = $tablesObj->get('tt_products');
+
 		$tableConf=&$itemTableArray['product']->getTableConf ('SINGLE');
 		$itemTableArray['product']->initCodeConf ('SINGLE',$tableConf);
 		$itemTableArray['article'] = $tablesObj->get('tt_products_articles');
@@ -600,7 +601,7 @@ class tx_ttproducts_single_view {
 			$bDefaultOrder = TRUE;
 
 			if ($this->conf['orderByItemNumberSg']) {
-				$itemnumberField = $itemTableArray[$this->type]->fields['itemnumber'];
+				$itemnumberField = $itemTableArray[$this->type]->fieldArray['itemnumber'];
 				$queryPrevPrefix = $itemnumberField . ' < ' . $TYPO3_DB->fullQuoteStr($origRow[$itemnumberField], $tablename);
 				$queryNextPrefix = $itemnumberField . ' > ' . $TYPO3_DB->fullQuoteStr($origRow[$itemnumberField], $tablename);
 				$prevOrderby = $itemnumberField . ' DESC';

@@ -1,5 +1,6 @@
 2016-03-01 Franz Holzinger <franz@ttproducts.de>
-	* bugfix #73736: Remove unused fields from the TCA Configuration files
+	* bugfix #73736: Remove unused fields from the TCA Configuration files.
+	* And if orderByItemNumberSg is used then use the fieldArray instead of the wrong fields array of the table model
 	* make the regular expression for the template check (pound # detection) configurable
 	* bugfix: CSSListCurrent must be a class and not an id
 
