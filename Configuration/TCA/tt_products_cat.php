@@ -29,7 +29,7 @@ $result = array (
 		'searchFields' => 'uid,title,subtitle,note,note2',
 	),
 	'interface' => array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title, subtitle, note, note2, image, email_uid, highlight'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title, subtitle, note, note2, image, email_uid'
 	),
 	'columns' => array (
 		'sorting' => Array (
@@ -176,46 +176,14 @@ $result = array (
 				'maxitems' => 1,
 			)
 		),
-		'highlight' => array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products_cat.highlight',
-			'config' => array (
-				'type' => 'check',
-			)
-		),
 	),
 	'types' => array (
-		'0' => array('showitem' => 'title, subtitle, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], email_uid,image;;;;3-3-3, highlight,hidden;;1;;')
+		'0' => array('showitem' => 'title, subtitle, note;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], note2;;;richtext[]:rte_transform[mode=ts_css|imgpath=uploads/tx_ttproducts/rte/], email_uid,image;;;;3-3-3, hidden;;1;;')
 	),
 	'palettes' => array (
 		'1' => array('showitem' => 'starttime, endtime, fe_group')
 	)
 );
-
-if (
-	t3lib_extMgm::isLoaded('filelist') &&
-	t3lib_extMgm::isLoaded('div2007') &&
-	\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version('6.2')
-) {
-	$result['ctrl']['interface']['showRecordFieldList'] .= ',image_uid';
-
-	$result['columns']['image_uid'] = array (
-		'exclude' => 1,
-		'displayCond' => 'EXT:filelist:LOADED:true',
-		'label' => 'LLL:EXT:lang/locallang_general.php:LGL.image',
-		'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig('image_uid')
-	);
-
-
-	if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['fal']) {
-		$result['types']['0']['showitem'] = str_replace(',image;', ',image_uid;', $result['types']['0']['showitem']);
-
-		unset($result['columns']['image']);
-	} else {
-		$result['types']['0']['showitem'] = str_replace(',image;;;;3-3-3,', ',image;;;;4-4-4,image_uid;;;;3-3-3,', $result['types']['0']['showitem']);
-	}
-}
-
 
 $table = 'tt_products_cat';
 
@@ -235,6 +203,9 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('addons_em')) {
 		isset($excludeArray[$table])
 	) {
 		$fieldArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $excludeArray[$table], 1);
+		if (!class_exists('tx_addonsem_tca_div')) {
+			include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('addons_em') . 'lib/class.tx_addonsem_tca_div.php');
+		}
 		tx_addonsem_tca_div::removeFieldsFromTCA($result, $fieldArray);
 	}
 }

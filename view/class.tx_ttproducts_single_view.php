@@ -202,13 +202,16 @@ class tx_ttproducts_single_view {
 			// Add the template suffix
 			$subPartMarker = $subPartMarker.$templateSuffix;
 			$itemFrameWork = $this->cObj->getSubpart($templateCode, $subpartmarkerObj->spMarker('###' . $subPartMarker . '###'));
-			$wrongPounds = preg_match_all('/([^#]+(#{2}|#{4,5}|#{7,8})([^#])+?)/', $itemFrameWork, $matches);
+			$checkExpression = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['templateCheck'];
+			if (!empty($checkExpression)) {
+				$wrongPounds = preg_match_all($checkExpression, $itemFrameWork, $matches);
 
-			if ($wrongPounds) {
-				$error_code[0] = 'template_invalid_marker_border';
-				$error_code[1] = '###' . $subPartMarker . '###';
-				$error_code[2] = htmlspecialchars(implode('|', $matches['0']));
-				return '';
+				if ($wrongPounds) {
+					$error_code[0] = 'template_invalid_marker_border';
+					$error_code[1] = '###' . $subPartMarker . '###';
+					$error_code[2] = htmlspecialchars(implode('|', $matches['0']));
+					return '';
+				}
 			}
 
 			$tablesObj->get('fe_users', TRUE)->getWrappedSubpartArray($subpartArray, $wrappedSubpartArray, $itemTableArray ['product']->getFuncTablename());

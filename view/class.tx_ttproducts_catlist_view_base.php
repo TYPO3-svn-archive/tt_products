@@ -272,14 +272,17 @@ abstract class tx_ttproducts_catlist_view_base {
 		$rc = TRUE;
 		$mode = '';
 		$this->getFrameWork($t, $templateCode, $templateArea . $templateSuffix);
-		$wrongPounds = preg_match_all('/([^#]+(#{2}|#{4,5}|#{7,8})([^#])+?)/', $t['listFrameWork'], $matches);
+		$checkExpression = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['templateCheck'];
+		if (!empty($checkExpression)) {
+			$wrongPounds = preg_match_all($checkExpression, $t['listFrameWork'], $matches);
 
-		if ($wrongPounds) {
-			$error_code[0] = 'template_invalid_marker_border';
-			$error_code[1] = '###' . $templateArea . $templateSuffix . '###';
-			$error_code[2] = htmlspecialchars(implode('|', $matches['0']));
+			if ($wrongPounds) {
+				$error_code[0] = 'template_invalid_marker_border';
+				$error_code[1] = '###' . $templateArea . $templateSuffix . '###';
+				$error_code[2] = htmlspecialchars(implode('|', $matches['0']));
 
-			return FALSE;
+				return FALSE;
+			}
 		}
 
 		$bUseFilter = FALSE;

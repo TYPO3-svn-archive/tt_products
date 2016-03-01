@@ -226,14 +226,17 @@ class tx_ttproducts_basket_view {
 		}
 
 		if ($t['basketFrameWork'])	{
-			$wrongPounds = preg_match_all('/([^#]+(#{2}|#{4,5}|#{7,8})([^#])+?)/', $t['basketFrameWork'], $matches);
-			if ($wrongPounds) {
-				$templateObj = t3lib_div::getUserObj('&tx_ttproducts_template');
-				$this->error_code[0] = 'template_invalid_marker_border';
-				$this->error_code[1] = '###' . $subpartMarker . $templateObj->getTemplateSuffix() . '###';
-				$this->error_code[2] = htmlspecialchars(implode('|', $matches['0']));
+			$checkExpression = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['templateCheck'];
+			if (!empty($checkExpression)) {
+				$wrongPounds = preg_match_all($checkExpression, $t['basketFrameWork'], $matches);
+				if ($wrongPounds) {
+					$templateObj = t3lib_div::getUserObj('&tx_ttproducts_template');
+					$this->error_code[0] = 'template_invalid_marker_border';
+					$this->error_code[1] = '###' . $subpartMarker . $templateObj->getTemplateSuffix() . '###';
+					$this->error_code[2] = htmlspecialchars(implode('|', $matches['0']));
 
-				return '';
+					return '';
+				}
 			}
 
 			if (!$bHtml)	{

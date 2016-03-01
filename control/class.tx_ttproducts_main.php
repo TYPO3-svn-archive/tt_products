@@ -154,7 +154,7 @@ class tx_ttproducts_main {
 		$basketObj = t3lib_div::getUserObj('&tx_ttproducts_basket');
 		$eInfo = tx_div2007_alpha5::getExtensionInfo_fh003(TT_PRODUCTS_EXT);
 		$this->config['version'] = $eInfo['version'];
-//		$pibaseObj->pi_initPIflexForm();
+
 		// Save the original flexform in case if we need it later as USER_INT
 		$this->cObj->data['_original_pi_flexform'] = $this->cObj->data['pi_flexform'];
 		$this->cObj->data['pi_flexform'] = t3lib_div::xml2array($this->cObj->data['pi_flexform']);

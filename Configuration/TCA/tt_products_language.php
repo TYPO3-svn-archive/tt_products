@@ -276,30 +276,6 @@ $result = array (
 );
 
 
-if (
-	t3lib_extMgm::isLoaded('filelist') &&
-	t3lib_extMgm::isLoaded('div2007') &&
-	\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version('6.2')
-) {
-	$result['interface']['showRecordFieldList'] .= ',image_uid';
-
-	$result['columns']['image_uid'] = array (
-		'exclude' => 1,
-		'displayCond' => 'EXT:filelist:LOADED:true',
-		'label' => 'LLL:EXT:lang/locallang_general.php:LGL.image',
-		'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig('image_uid')
-	);
-
-
-	if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][TT_PRODUCTS_EXT]['fal']) {
-		$result['types']['0']['showitem'] = str_replace(',image;', ',image_uid;', $result['types']['0']['showitem']);
-
-		unset($result['columns']['image']);
-	} else {
-		$result['types']['0']['showitem'] = str_replace(',image;;;;4-4-4,', ',image;;;;4-4-4,image_uid;;;;4-4-4,', $result['types']['0']['showitem']);
-	}
-}
-
 
 $table = 'tt_products_language';
 
@@ -320,6 +296,9 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('addons_em')) {
 		isset($excludeArray[$table])
 	) {
 		$fieldArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $excludeArray[$table], 1);
+		if (!class_exists('tx_addonsem_tca_div')) {
+			include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('addons_em') . 'lib/class.tx_addonsem_tca_div.php');
+		}
 		tx_addonsem_tca_div::removeFieldsFromTCA($result, $fieldArray);
 	}
 }

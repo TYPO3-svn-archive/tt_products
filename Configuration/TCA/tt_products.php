@@ -50,7 +50,7 @@ $result = array(
 		'searchFields' => 'uid,title,subtitle,itemnumber,ean,note,note2,www',
 	),
 	'interface' => array (
-		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,accessory_uid,related_uid,itemnumber,ean,price,price2,discount,discount_disable,creditpoints,graduated_price_uid,article_uid,note,note2,note_uid,text_uid,category,address,inStock,basketminquantity,tax_id,weight,usebydate,bulkily,offer,highlight,bargain,directcost,color,color2,color3,size,size2,size3,description,gradings,material,quality,additional,damcat,unit,unit_factor,www,datasheet,special_preparation,image,sellstarttime,sellendtime,shipping,shipping2,handling,dam_uid'
+		'showRecordFieldList' => 'hidden,starttime,endtime,fe_group,title,subtitle,accessory_uid,related_uid,itemnumber,ean,price,price2,creditpoints,graduated_price_uid,article_uid,note,note2,note_uid,text_uid,category,address,inStock,basketminquantity,tax_id,weight,usebydate,bulkily,offer,highlight,bargain,directcost,color,color2,color3,size,size2,size3,description,gradings,material,quality,additional,damcat,unit,unit_factor,www,datasheet,special_preparation,image,sellstarttime,sellendtime,shipping,shipping2,handling,dam_uid'
 	),
 	'columns' => array (
 		'sorting' => Array (
@@ -201,29 +201,6 @@ $result = array(
 				'size' => '20',
 				'eval' => 'trim,double2',
 				'max' => '20'
-			)
-		),
-		'discount' => array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products.discount',
-			'config' => array (
-				'type' => 'input',
-				'size' => '4',
-				'max' => '8',
-				'eval' => 'trim,double2',
-				'checkbox' => '0',
-				'range' => array (
-					'upper' => '1000',
-					'lower' => '0'
-				),
-				'default' => 0
-			)
-		),
-		'discount_disable' => array (
-			'exclude' => 1,
-			'label' => 'LLL:EXT:' . TT_PRODUCTS_EXT . '/locallang_db.xml:tt_products.discount_disable',
-			'config' => array (
-				'type' => 'check',
 			)
 		),
 		'creditpoints' => array (
@@ -819,7 +796,7 @@ $result = array(
 		'2' =>
 			array('showitem' => 'inStock,basketminquantity,ean'),
 		'3' =>
-			array('showitem' => 'price2,discount,discount_disable,directcost'),
+			array('showitem' => 'price2,directcost'),
 		'4' =>
 			array('showitem' => 'creditpoints'),
 		'6' =>
@@ -922,6 +899,9 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('addons_em')) {
 		isset($excludeArray[$table])
 	) {
 		$fieldArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $excludeArray[$table], 1);
+		if (!class_exists('tx_addonsem_tca_div')) {
+			include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('addons_em') . 'lib/class.tx_addonsem_tca_div.php');
+		}
 		tx_addonsem_tca_div::removeFieldsFromTCA($result, $fieldArray);
 	}
 }
